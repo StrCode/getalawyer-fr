@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LexConnect — Find Your Lawyer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2744;
+    --navy-mid: #1a3a5c;
+    --blue: #2563eb;
+    --blue-light: #3b82f6;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #faf8f4;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --text: #1e293b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+    background: rgba(15, 39, 68, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-logo span { color: var(--gold); }
+
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+    transition: color 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .nav-links a:hover { color: var(--gold-light); }
+
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy) !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--gold-light) !important; }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    background: var(--navy);
+    position: relative;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 120px 5% 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37, 99, 235, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 30% 30% at 20% 70%, rgba(37, 99, 235, 0.1) 0%, transparent 50%);
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    position: relative;
+    animation: fadeUp 0.8s ease forwards;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.08;
+    max-width: 800px;
+    margin-bottom: 1.2rem;
+    position: relative;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    position: relative;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  /* SEARCH BAR */
+  .search-container {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .search-box {
+    display: flex;
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(201, 168, 76, 0.3);
+    transition: box-shadow 0.3s;
+  }
+
+  .search-box:focus-within {
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 0 2px var(--gold);
+  }
+
+  .search-filters {
+    display: flex; flex-shrink: 0;
+    border-right: 1px solid var(--gray-200);
+  }
+
+  .search-select {
+    appearance: none;
+    border: none; outline: none;
+    padding: 0 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    padding-right: 1.8rem;
+    cursor: pointer;
+    border-right: 1px solid var(--gray-200);
+  }
+
+  .search-select:last-child { border-right: none; }
+
+  .search-input-wrap {
+    flex: 1;
+    display: flex; align-items: center;
+    padding: 0 1.2rem;
+    gap: 0.6rem;
+  }
+
+  .search-input-wrap svg { color: var(--gray-400); flex-shrink: 0; }
+
+  .search-input {
+    flex: 1;
+    border: none; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--gray-800);
+    background: transparent;
+  }
+
+  .search-input::placeholder { color: var(--gray-400); }
+
+  .search-btn {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .search-btn:hover { background: var(--blue); }
+
+  .search-tags {
+    display: flex; gap: 0.6rem; flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .search-tag {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.65);
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .search-tag:hover {
+    background: rgba(255,255,255,0.15);
+    color: var(--white);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .hero-stats {
+    display: flex; gap: 3rem;
+    margin-top: 3.5rem;
+    position: relative;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+
+  .hero-stat { text-align: center; }
+
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+
+  .hero-stat-label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 0.2rem;
+    display: block;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+    align-self: stretch;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HOW IT WORKS ===== */
+  .how-it-works {
+    padding: 100px 5%;
+    background: var(--cream);
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--navy);
+    text-align: center;
+    margin-bottom: 0.6rem;
+    line-height: 1.15;
+  }
+
+  .section-sub {
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto 4rem;
+    line-height: 1.7;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .step {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .step:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(15, 39, 68, 0.1);
+  }
+
+  .step-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--gray-100);
+    position: absolute;
+    top: 1rem; right: 1.2rem;
+    line-height: 1;
+  }
+
+  .step-icon {
+    width: 48px; height: 48px;
+    background: var(--navy);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+
+  .step h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  /* ===== FEATURED LAWYERS ===== */
+  .featured {
+    padding: 100px 5%;
+    background: var(--white);
+  }
+
+  .lawyers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .lawyer-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    background: var(--white);
+  }
+
+  .lawyer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(15, 39, 68, 0.12);
+  }
+
+  .lawyer-card-header {
+    background: var(--navy);
+    padding: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    position: relative;
+  }
+
+  .lawyer-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .lawyer-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--white);
+    margin-bottom: 0.15rem;
+  }
+
+  .lawyer-specialty {
+    font-size: 0.8rem;
+    color: var(--gold-light);
+  }
+
+  .verified-badge {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    color: var(--gold-light);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+
+  .lawyer-card-body {
+    padding: 1.2rem 1.5rem 1.5rem;
+  }
+
+  .lawyer-meta {
+    display: flex; gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+  }
+
+  .lawyer-tags {
+    display: flex; gap: 0.4rem; flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+
+  .lawyer-tag {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+  }
+
+  .card-actions {
+    display: flex; gap: 0.6rem;
+  }
+
+  .btn-book {
+    flex: 1;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0.65rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-book:hover { background: var(--blue); }
+
+  .btn-view {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border: none;
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-view:hover { background: var(--gray-200); }
+
+  .rating {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--gray-800);
+  }
+
+  .stars { color: #f59e0b; font-size: 0.75rem; }
+
+  /* ===== FOR LAWYERS CTA ===== */
+  .for-lawyers {
+    padding: 100px 5%;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .for-lawyers-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 100% 50%, rgba(37, 99, 235, 0.2) 0%, transparent 60%);
+  }
+
+  .for-lawyers-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    position: relative;
+  }
+
+  .for-lawyers h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .for-lawyers h2 em { color: var(--gold); font-style: italic; }
+
+  .for-lawyers p {
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .perks {
+    display: grid; gap: 1rem;
+  }
+
+  .perk {
+    display: flex; align-items: flex-start; gap: 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    transition: background 0.2s;
+  }
+
+  .perk:hover { background: rgba(255,255,255,0.08); }
+
+  .perk-icon {
+    width: 36px; height: 36px;
+    background: rgba(201, 168, 76, 0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .perk h4 { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 0.2rem; }
+  .perk p { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0; line-height: 1.4; }
+
+  .btn-register {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.9rem 2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-register:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  /* ===== PRACTICE AREAS ===== */
+  .practice-areas {
+    padding: 100px 5%;
+    background: var(--gray-50);
+  }
+
+  .areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .area-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .area-card:hover {
+    background: var(--navy);
+    border-color: var(--navy);
+    transform: translateY(-3px);
+  }
+
+  .area-card:hover .area-icon { background: rgba(201, 168, 76, 0.2); }
+  .area-card:hover .area-name { color: var(--white); }
+  .area-card:hover .area-count { color: var(--gold-light); }
+
+  .area-icon {
+    width: 44px; height: 44px;
+    background: var(--gray-100);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.8rem;
+    transition: background 0.2s;
+  }
+
+  .area-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 0.2rem;
+    transition: color 0.2s;
+  }
+
+  .area-count {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    transition: color 0.2s;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #07192e;
+    padding: 60px 5% 30px;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 2rem;
+  }
+
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.8rem;
+  }
+
+  .footer-brand span { color: var(--gold); }
+
+  .footer-desc {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    max-width: 260px;
+  }
+
+  .footer-col h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 1rem;
+  }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .footer-col a {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover { color: var(--gold-light); }
+
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+
+  .footer-bottom p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .footer-note {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.25);
+    font-style: italic;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(7, 25, 46, 0.85);
+    backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%; max-width: 480px;
+    overflow: hidden;
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    background: var(--navy);
+    padding: 1.5rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--white);
+    font-weight: 700;
+  }
+
+  .modal-close {
+    background: rgba(255,255,255,0.1);
+    border: none; width: 32px; height: 32px;
+    border-radius: 50%;
+    color: var(--white); font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.2); }
+
+  .modal-body { padding: 2rem; }
+
+  .modal-tabs {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-tab {
+    flex: 1; padding: 0.6rem;
+    border: none; background: none;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--gray-600);
+    transition: all 0.2s;
+  }
+
+  .modal-tab.active {
+    background: var(--white);
+    color: var(--navy);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .form-group { margin-bottom: 1rem; }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 0.4rem;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--white);
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--blue);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0.85rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-submit:hover { background: var(--blue); }
+
+  .modal-footer-text {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-top: 0.8rem;
+  }
+
+  .modal-footer-text a { color: var(--blue); cursor: pointer; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .search-filters { display: none; }
+    .for-lawyers-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .hero-stats { gap: 1.5rem; }
+    .hero-stat-num { font-size: 1.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .footer-top { grid-template-columns: 1fr; }
+    .areas-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Join LexConnect</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchTab('signin')">Sign In</button>
+        <button class="modal-tab" onclick="switchTab('signup')">Create Account</button>
+      </div>
+
+      <div id="signin-form">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        <button class="btn-submit">Sign In</button>
+        <p class="modal-footer-text">Don't have an account? <a onclick="switchTab('signup')">Sign up free</a></p>
+      </div>
+
+      <div id="signup-form" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Doe">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label>I am a</label>
+          <select>
+            <option>Client seeking legal help</option>
+            <option>Lawyer / Legal Professional</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="Create a strong password">
+        </div>
+        <button class="btn-submit">Create Free Account</button>
+        <p class="modal-footer-text">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Lex<span>Connect</span></div>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#lawyers">Find Lawyers</a></li>
+    <li><a href="#practice-areas">Practice Areas</a></li>
+    <li><a href="#for-lawyers">For Lawyers</a></li>
+    <li><a href="#" class="nav-cta" onclick="openModal(); return false;">Sign In</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">Verified Legal Professionals</div>
+
+  <h1>Find the Right Lawyer<br>for <em>Your</em> Legal Matter</h1>
+  <p>Search thousands of verified, credentialed lawyers. Book a consultation in minutes — no fees, no pressure, just the right legal guidance.</p>
+
+  <!-- SEARCH BAR -->
+  <div class="search-container">
+    <div class="search-box">
+      <div class="search-filters">
+        <select class="search-select">
+          <option>All Areas</option>
+          <option>Corporate Law</option>
+          <option>Family Law</option>
+          <option>Criminal Defense</option>
+          <option>Immigration</option>
+          <option>Real Estate</option>
+          <option>Employment</option>
+          <option>Personal Injury</option>
+          <option>Tax Law</option>
+        </select>
+        <select class="search-select">
+          <option>Location</option>
+          <option>Lagos</option>
+          <option>Abuja</option>
+          <option>Port Harcourt</option>
+          <option>Kano</option>
+          <option>Ibadan</option>
+          <option>Remote / Online</option>
+        </select>
+      </div>
+      <div class="search-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input class="search-input" placeholder='e.g. "divorce lawyer", "startup legal advice", "trademark filing"'>
+      </div>
+      <button class="search-btn" onclick="openModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        Search
+      </button>
+    </div>
+    <div class="search-tags">
+      <span class="search-tag" onclick="fillSearch(this)">Divorce & Separation</span>
+      <span class="search-tag" onclick="fillSearch(this)">Business Registration</span>
+      <span class="search-tag" onclick="fillSearch(this)">Property Dispute</span>
+      <span class="search-tag" onclick="fillSearch(this)">Contract Review</span>
+      <span class="search-tag" onclick="fillSearch(this)">Immigration Visa</span>
+      <span class="search-tag" onclick="fillSearch(this)">Criminal Defense</span>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num">2,400+</span>
+      <span class="hero-stat-label">Verified Lawyers</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">38</span>
+      <span class="hero-stat-label">Practice Areas</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">15K+</span>
+      <span class="hero-stat-label">Consultations Booked</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">4.8★</span>
+      <span class="hero-stat-label">Average Rating</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how-it-works">
+  <p class="section-label">Simple Process</p>
+  <h2 class="section-title">How LexConnect Works</h2>
+  <p class="section-sub">From legal question to qualified consultation in just a few steps.</p>
+
+  <div class="steps">
+    <div class="step">
+      <span class="step-number">01</span>
+      <div class="step-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <h3>Create Your Account</h3>
+      <p>Register for free as a client. Takes less than 2 minutes — no credit card required.</p>
+    </div>
+    <div class="step">
+      <span class="step-number">02</span>
+      <div class="step-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </div>
+      <h3>Search & Filter</h3>
+      <p>Use our smart search to find lawyers by specialty, location, language, and availability.</p>
+    </div>
+    <div class="step">
+      <span class="step-number">03</span>
+      <div class="step-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <h3>Review Profiles</h3>
+      <p>Read verified credentials, client reviews, and practice history before deciding.</p>
+    </div>
+    <div class="step">
+      <span class="step-number">04</span>
+      <div class="step-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <h3>Book Consultation</h3>
+      <p>Select a time slot and book directly. Video, phone, or in-person — your choice.</p>
+    </div>
+    <div class="step">
+      <span class="step-number">05</span>
+      <div class="step-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <h3>Consult & Connect</h3>
+      <p>Have your consultation. Discuss fees and next steps directly with your lawyer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED LAWYERS -->
+<section class="featured" id="lawyers">
+  <p class="section-label">Verified Professionals</p>
+  <h2 class="section-title">Featured Lawyers</h2>
+  <p class="section-sub">Hand-verified, highly rated legal professionals ready to take your consultation.</p>
+
+  <div class="lawyers-grid">
+    <!-- Card 1 -->
+    <div class="lawyer-card">
+      <div class="lawyer-card-header">
+        <div class="lawyer-avatar" style="background:#e8c97a">AI</div>
+        <div>
+          <div class="lawyer-name">Adaeze Ihejirika, Esq.</div>
+          <div class="lawyer-specialty">Corporate & Business Law</div>
+        </div>
+        <span class="verified-badge">✓ Verified</span>
+      </div>
+      <div class="lawyer-card-body">
+        <div class="lawyer-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Lagos, NG
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            12 yrs exp.
+          </span>
+          <span class="rating">
+            <span class="stars">★★★★★</span> 4.9
+          </span>
+        </div>
+        <div class="lawyer-tags">
+          <span class="lawyer-tag">M&A</span>
+          <span class="lawyer-tag">Contracts</span>
+          <span class="lawyer-tag">Startups</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-book" onclick="openModal()">Book Consultation</button>
+          <button class="btn-view" onclick="openModal()">Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="lawyer-card">
+      <div class="lawyer-card-header">
+        <div class="lawyer-avatar" style="background:#93c5fd">OB</div>
+        <div>
+          <div class="lawyer-name">Olumide Bankole, SAN</div>
+          <div class="lawyer-specialty">Criminal Defense</div>
+        </div>
+        <span class="verified-badge">✓ Featured</span>
+      </div>
+      <div class="lawyer-card-body">
+        <div class="lawyer-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Abuja, NG
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            20 yrs exp.
+          </span>
+          <span class="rating">
+            <span class="stars">★★★★★</span> 5.0
+          </span>
+        </div>
+        <div class="lawyer-tags">
+          <span class="lawyer-tag">Federal Court</span>
+          <span class="lawyer-tag">Appeals</span>
+          <span class="lawyer-tag">Fraud</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-book" onclick="openModal()">Book Consultation</button>
+          <button class="btn-view" onclick="openModal()">Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="lawyer-card">
+      <div class="lawyer-card-header">
+        <div class="lawyer-avatar" style="background:#86efac">FK</div>
+        <div>
+          <div class="lawyer-name">Fatima Kwara-Ibrahim</div>
+          <div class="lawyer-specialty">Family & Matrimonial Law</div>
+        </div>
+        <span class="verified-badge">✓ Verified</span>
+      </div>
+      <div class="lawyer-card-body">
+        <div class="lawyer-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Kano, NG
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            8 yrs exp.
+          </span>
+          <span class="rating">
+            <span class="stars">★★★★★</span> 4.8
+          </span>
+        </div>
+        <div class="lawyer-tags">
+          <span class="lawyer-tag">Divorce</span>
+          <span class="lawyer-tag">Custody</span>
+          <span class="lawyer-tag">Inheritance</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-book" onclick="openModal()">Book Consultation</button>
+          <button class="btn-view" onclick="openModal()">Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="lawyer-card">
+      <div class="lawyer-card-header">
+        <div class="lawyer-avatar" style="background:#fca5a5">CE</div>
+        <div>
+          <div class="lawyer-name">Chukwuemeka Eze</div>
+          <div class="lawyer-specialty">Immigration Law</div>
+        </div>
+        <span class="verified-badge">✓ Verified</span>
+      </div>
+      <div class="lawyer-card-body">
+        <div class="lawyer-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Remote / Online
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            15 yrs exp.
+          </span>
+          <span class="rating">
+            <span class="stars">★★★★☆</span> 4.7
+          </span>
+        </div>
+        <div class="lawyer-tags">
+          <span class="lawyer-tag">Visas</span>
+          <span class="lawyer-tag">Asylum</span>
+          <span class="lawyer-tag">Work Permits</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-book" onclick="openModal()">Book Consultation</button>
+          <button class="btn-view" onclick="openModal()">Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRACTICE AREAS -->
+<section class="practice-areas" id="practice-areas">
+  <p class="section-label">Browse by Specialty</p>
+  <h2 class="section-title">Practice Areas</h2>
+  <p class="section-sub">Find a lawyer who specializes in exactly what you need.</p>
+
+  <div class="areas-grid">
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      </div>
+      <div class="area-name">Corporate Law</div>
+      <div class="area-count">340 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="area-name">Family Law</div>
+      <div class="area-count">210 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="area-name">Criminal Defense</div>
+      <div class="area-count">180 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div class="area-name">Immigration</div>
+      <div class="area-count">155 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="area-name">Real Estate</div>
+      <div class="area-count">190 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="area-name">Personal Injury</div>
+      <div class="area-count">140 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="area-name">Tax Law</div>
+      <div class="area-count">120 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+      </div>
+      <div class="area-name">Intellectual Property</div>
+      <div class="area-count">98 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="area-name">Employment Law</div>
+      <div class="area-count">162 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div class="area-name">Contract Review</div>
+      <div class="area-count">230 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+      </div>
+      <div class="area-name">Civil Litigation</div>
+      <div class="area-count">175 lawyers</div>
+    </div>
+    <div class="area-card" onclick="openModal()">
+      <div class="area-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <div class="area-name">Estate Planning</div>
+      <div class="area-count">110 lawyers</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR LAWYERS -->
+<section class="for-lawyers" id="for-lawyers">
+  <div class="for-lawyers-bg"></div>
+  <div class="for-lawyers-inner">
+    <div>
+      <p class="section-label" style="text-align:left">For Legal Professionals</p>
+      <h2>Grow Your Practice<br>with <em>Verified</em> Visibility</h2>
+      <p>LexConnect connects you directly with clients who need your specific expertise. No ads, no bidding wars — just a trusted profile that works for you around the clock.</p>
+      <button class="btn-register" onclick="openModal()">
+        Register as a Lawyer
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <h4>Bar-Verified Credentials</h4>
+          <p>Your bar number and license are verified, building instant client trust.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div>
+          <h4>Smart Booking Calendar</h4>
+          <p>Manage your availability and accept or decline consultations with ease.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <h4>Direct Client Communication</h4>
+          <p>All communication stays on-platform, secure and professionally documented.</p>
+        </div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div>
+          <h4>Zero Commission Model</h4>
+          <p>We never touch your fees. All financial arrangements are made directly with clients.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Lex<span>Connect</span></div>
+      <p class="footer-desc">A trusted platform connecting clients with verified legal professionals. We facilitate introductions — never financial transactions.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Find a Lawyer</a></li>
+        <li><a href="#">Practice Areas</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Pricing</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>For Lawyers</h4>
+      <ul>
+        <li><a href="#">Register Now</a></li>
+        <li><a href="#">Verification Process</a></li>
+        <li><a href="#">Lawyer Dashboard</a></li>
+        <li><a href="#">Success Stories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 LexConnect. All rights reserved.</p>
+    <p class="footer-note">LexConnect is a discovery and booking platform. We do not provide legal advice or handle financial transactions.</p>
+  </div>
+</footer>
+
+<script>
+  function openModal() {
+    document.getElementById('authModal').classList.add('active');
+  }
+  function closeModal() {
+    document.getElementById('authModal').classList.remove('active');
+  }
+  function switchTab(tab) {
+    document.querySelectorAll('.modal-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'signin') || (i === 1 && tab === 'signup'));
+    });
+    document.getElementById('signin-form').style.display = tab === 'signin' ? 'block' : 'none';
+    document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('modalTitle').textContent = tab === 'signin' ? 'Welcome Back' : 'Join LexConnect';
+  }
+  function fillSearch(el) {
+    document.querySelector('.search-input').value = el.textContent;
+    document.querySelector('.search-input').focus();
+  }
+  document.getElementById('authModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
