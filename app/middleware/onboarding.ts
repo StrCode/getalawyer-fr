@@ -5,11 +5,11 @@ export default defineNuxtRouteMiddleware(() => {
   if (!session.value) {
     return
   }
-
+ 
   const user = session.value.user
   
   // Check if user has completed onboarding
-  if (!user.onboardingComplete) {
+  if (!user.onboarding_completed) {
     return navigateTo(`/onboarding/${user.role}/step-1`)
   }
 })
