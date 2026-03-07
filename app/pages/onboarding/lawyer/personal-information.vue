@@ -95,7 +95,7 @@ const handleSubmit = async () => {
       <!-- Progress -->
       <div class="mb-6">
         <div class="flex items-center justify-between text-sm mb-2">
-          <span class="font-medium text-gray-600">Step 2 of 6</span>
+          <span class="font-medium text-gray-600">Step 1 of 6</span>
           <span class="text-gray-500">Personal Information</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">

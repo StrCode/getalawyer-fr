@@ -6,7 +6,7 @@
 
 export default defineNuxtRouteMiddleware(async (to) => {
   // Skip for public routes
-  const publicRoutes = ['/register/create-account','/login', '/register', '/terms', '/privacy', '/']
+  const publicRoutes = ['/login', '/register', '/terms', '/privacy', '/']
   if (publicRoutes.includes(to.path) || to.path.startsWith('/api/')) {
     return
   }
@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
           resolve()
         }
       }, { immediate: true })
-      
+
       // Timeout after 2 seconds
       setTimeout(() => {
         unwatch()
@@ -66,11 +66,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (user.userType === 'lawyer') {
     // Prevent access to client onboarding
     if (to.path.startsWith('/onboarding/client')) {
-      return navigateTo('/register/step2')
+      return navigateTo('/onboarding/lawyer/personal-information')
     }
 
-    // Allow access to registration routes
-    if (to.path.startsWith('/register/') || to.path === '/pending-approval') {
+    // Allow access to registration and onboarding routes
+    if (to.path.startsWith('/register/') || to.path.startsWith('/onboarding/lawyer/') || to.path === '/pending-approval') {
       // Fetch registration status to validate step access
       try {
         const config = useRuntimeConfig()
@@ -102,7 +102,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         const targetStep = parseInt(to.path.match(/step(\d+)/)?.[1] || '0')
         if (targetStep > 0) {
           const currentStep = getStepNumber(currentStatus)
-          
+
           // Prevent skipping ahead
           if (targetStep > currentStep) {
             const redirectRoute = STATUS_TO_ROUTE[currentStatus]
@@ -121,7 +121,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     // Redirect to registration if trying to access other routes
-    return navigateTo('/register/step2')
+    return navigateTo(STATUS_TO_ROUTE['step1']) // Fix: was STATUS_TO_ROUTE. (missing key)
   }
 
   // --- CLIENT ONBOARDING FLOW ---
@@ -144,13 +144,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
   return navigateTo('/login')
 })
 
-// Helper function - Map backend status to route
+// Helper functions
+function getStepNumber(status: string): number {
+  const match = status?.match(/step(\d+)/);
+  return match && match[1] ? parseInt(match[1]) : 1;
+}
+
+// Map backend status to route
 const STATUS_TO_ROUTE: Record<string, string> = {
   step1: '/onboarding/lawyer/personal-information',
   step2: '/onboarding/lawyer/personal-information',
   step3: '/onboarding/lawyer/nin-verification',
   step4: '/onboarding/lawyer/professional-information',
   step5: '/onboarding/lawyer/practice-information',
+  step6: '/onboarding/lawyer/practice-information', // Fix: was missing, added same route as step5
   step7: '/onboarding/lawyer/review-submit',
   submitted: '/pending-approval',
   approved: '/dashboard',

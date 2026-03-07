@@ -2,7 +2,7 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Inter', sans-serif;
   
    --shadow-layered:
     0px 12.18px 26.54px 0px #18181B0A,
