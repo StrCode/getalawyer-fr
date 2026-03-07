@@ -88,8 +88,12 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 
 const sidebarCollapsed = ref(false)
 const route = useRoute()
+const { session } = useAuth()
 
-const mainLinks = computed<NavigationMenuItem[]>(() => [
+const role = computed(() => session.value?.user.role)
+
+// Lawyer Menu Items
+const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
   { 
     label: 'Overview', 
     icon: 'i-hugeicons-home-01', 
@@ -98,39 +102,25 @@ const mainLinks = computed<NavigationMenuItem[]>(() => [
     active: route.path === '/dashboard'
   },
   { 
-    label: 'Listings', 
-    icon: 'i-hugeicons-building-03', 
-    to: '/dashboard/listings', 
+    label: 'Cases', 
+    icon: 'i-hugeicons-folder-01', 
+    to: '/dashboard/cases', 
     type: 'link',
-    active: route.path.startsWith('/dashboard/listings')
+    active: route.path.startsWith('/dashboard/cases')
   },
   { 
-    label: 'Booking Management', 
-    icon: 'i-hugeicons-calendar-03', 
-    to: '/dashboard/bookings', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/bookings')
-  },
-  { 
-    label: 'People', 
+    label: 'Clients', 
     icon: 'i-hugeicons-user-multiple', 
-    to: '/dashboard/people', 
+    to: '/dashboard/clients', 
     type: 'link',
-    active: route.path.startsWith('/dashboard/people')
+    active: route.path.startsWith('/dashboard/clients')
   },
   { 
-    label: 'Finance & Payments', 
-    icon: 'i-hugeicons-wallet-03', 
-    to: '/dashboard/finances', 
+    label: 'Appointments', 
+    icon: 'i-hugeicons-calendar-03', 
+    to: '/dashboard/appointments', 
     type: 'link',
-    active: route.path.startsWith('/dashboard/finances')
-  },
-  { 
-    label: 'Maintenance', 
-    icon: 'i-hugeicons-wrench-01', 
-    to: '/dashboard/maintenance', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/maintenance')
+    active: route.path.startsWith('/dashboard/appointments')
   },
   { 
     label: 'Messages', 
@@ -140,20 +130,78 @@ const mainLinks = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith('/dashboard/messages')
   },
   { 
+    label: 'Documents', 
+    icon: 'i-hugeicons-file-02', 
+    to: '/dashboard/documents', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/documents')
+  },
+  { 
+    label: 'Finance & Payments', 
+    icon: 'i-hugeicons-wallet-03', 
+    to: '/dashboard/finance', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/finance')
+  },
+  { 
     label: 'Analytics & Reporting', 
     icon: 'i-hugeicons-analytics-02', 
     to: '/dashboard/analytics', 
     type: 'link',
     active: route.path.startsWith('/dashboard/analytics')
-  },
-  { 
-    label: 'Team Management', 
-    icon: 'i-hugeicons-user-group', 
-    to: '/dashboard/team', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/team')
   }
 ])
+
+// Client Menu Items
+const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
+  { 
+    label: 'Dashboard', 
+    icon: 'i-hugeicons-home-01', 
+    to: '/dashboard', 
+    type: 'link',
+    active: route.path === '/dashboard'
+  },
+  { 
+    label: 'Search Lawyers', 
+    icon: 'i-hugeicons-search-01', 
+    to: '/lawyers', 
+    type: 'link',
+    active: route.path.startsWith('/lawyers')
+  },
+  { 
+    label: 'My Cases', 
+    icon: 'i-hugeicons-folder-01', 
+    to: '/dashboard/cases', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/cases')
+  },
+  { 
+    label: 'Appointments', 
+    icon: 'i-hugeicons-calendar-03', 
+    to: '/dashboard/appointments', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/appointments')
+  },
+  { 
+    label: 'Messages', 
+    icon: 'i-hugeicons-message-02', 
+    to: '/dashboard/messages', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/messages')
+  },
+  { 
+    label: 'My Lawyers', 
+    icon: 'i-hugeicons-user-multiple', 
+    to: '/dashboard/my-lawyers', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/my-lawyers')
+  }
+])
+
+// Computed main links based on role
+const mainLinks = computed<NavigationMenuItem[]>(() => {
+  return role.value === 'lawyer' ? lawyerMainMenuItems.value : clientMainMenuItems.value
+})
 
 const supportLinks: NavigationMenuItem[] = [
   { label: 'Settings', icon: 'i-hugeicons-settings-02', to: '/dashboard/settings', type: 'link' }

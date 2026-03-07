@@ -3,8 +3,14 @@ const isMenuOpen = ref(false)
 const activeDropdown = ref<string | null>(null)
 let closeTimer: ReturnType<typeof setTimeout> | null = null
 
-// Auth modal
+// Auth
+const { session, signOut } = useAuth()
 const { open: openAuthModal } = useAuthModal()
+
+const handleSignOut = async () => {
+  await signOut()
+  navigateTo('/')
+}
 
 const nav = [
   {
@@ -228,21 +234,37 @@ function cancelClose() {
 
         <!-- Right CTAs -->
         <div class="hidden lg:flex items-center gap-2">
-          <button
-            class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
-            @click="openAuthModal('entry')"
-          >
-            Sign in
-          </button>
-          <UButton
-            to="/listings"
-            size="sm"
-            color="neutral"
-            variant="solid"
-            class="rounded-xl font-semibold px-4"
-            label="Find a Home"
-            trailing-icon="i-heroicons-arrow-right"
-          />
+          <template v-if="session">
+            <NuxtLink
+              to="/dashboard"
+              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+            >
+              Dashboard
+            </NuxtLink>
+            <button
+              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+              @click="handleSignOut"
+            >
+              Sign out
+            </button>
+          </template>
+          <template v-else>
+            <button
+              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+              @click="openAuthModal('entry')"
+            >
+              Sign in
+            </button>
+            <UButton
+              to="/listings"
+              size="sm"
+              color="neutral"
+              variant="solid"
+              class="rounded-xl font-semibold px-4"
+              label="Find a Home"
+              trailing-icon="i-heroicons-arrow-right"
+            />
+          </template>
         </div>
 
         <!-- Mobile menu toggle -->
@@ -305,22 +327,42 @@ function cancelClose() {
           </template>
 
           <div class="pt-4 pb-2 flex flex-col gap-2 border-t border-neutral-100 mt-2">
-            <button
-              class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
-              @click="openAuthModal('entry'); isMenuOpen = false"
-            >
-              Sign in
-            </button>
-            <UButton
-              to="/listings"
-              size="md"
-              color="neutral"
-              variant="solid"
-              block
-              label="Find a Home"
-              class="rounded-xl font-semibold"
-              @click="isMenuOpen = false"
-            />
+            <template v-if="session">
+              <UButton
+                to="/dashboard"
+                size="md"
+                color="neutral"
+                variant="outline"
+                block
+                label="Dashboard"
+                class="rounded-xl font-semibold"
+                @click="isMenuOpen = false"
+              />
+              <button
+                class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
+                @click="handleSignOut(); isMenuOpen = false"
+              >
+                Sign out
+              </button>
+            </template>
+            <template v-else>
+              <button
+                class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
+                @click="openAuthModal('entry'); isMenuOpen = false"
+              >
+                Sign in
+              </button>
+              <UButton
+                to="/listings"
+                size="md"
+                color="neutral"
+                variant="solid"
+                block
+                label="Find a Home"
+                class="rounded-xl font-semibold"
+                @click="isMenuOpen = false"
+              />
+            </template>
           </div>
         </div>
       </div>
