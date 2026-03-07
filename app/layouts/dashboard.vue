@@ -3,10 +3,7 @@
 
 <template>
     <AppLayout>
-        <AppHeader/>
         <slot />
-        <ClientOnly>
-            <AuthModal />
-        </ClientOnly>
+        <AuthModal />
     </AppLayout>
 </template>
