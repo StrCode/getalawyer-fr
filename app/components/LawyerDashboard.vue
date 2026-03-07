@@ -22,7 +22,6 @@ const completedBookings = computed(() => {
   if (!bookings.value) return 0
   return bookings.value.filter(b => b.status === 'completed').length
 })
-
 </script>
 
 <template>
@@ -37,12 +36,12 @@ const completedBookings = computed(() => {
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <UIcon name="heroicons:calendar" class="h-5 w-5 text-primary-500" />
+            <Icon name="i-hugeicons-calendar-01" class="h-5 w-5 text-primary-500" />
             <h3 class="font-semibold">Active Bookings</h3>
           </div>
         </template>
         <div v-if="isLoadingBookings" class="text-center py-2">
-          <Icon name="lucide:loader-circle" class="w-6 h-6 text-primary animate-spin mx-auto" />
+          <Icon name="i-hugeicons-loading-03" class="w-6 h-6 text-primary animate-spin mx-auto" />
         </div>
         <div v-else>
           <div class="text-3xl font-bold">{{ activeBookings }}</div>
@@ -56,12 +55,12 @@ const completedBookings = computed(() => {
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <UIcon name="heroicons:clock" class="h-5 w-5 text-primary-500" />
+            <Icon name="i-hugeicons-time-02" class="h-5 w-5 text-primary-500" />
             <h3 class="font-semibold">Pending Requests</h3>
           </div>
         </template>
         <div v-if="isLoadingBookings" class="text-center py-2">
-          <Icon name="lucide:loader-circle" class="w-6 h-6 text-primary animate-spin mx-auto" />
+          <Icon name="i-hugeicons-loading-03" class="w-6 h-6 text-primary animate-spin mx-auto" />
         </div>
         <div v-else>
           <div class="text-3xl font-bold">{{ pendingBookings }}</div>
@@ -75,12 +74,12 @@ const completedBookings = computed(() => {
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <UIcon name="heroicons:check-circle" class="h-5 w-5 text-primary-500" />
+            <Icon name="i-hugeicons-tick-double-02" class="h-5 w-5 text-primary-500" />
             <h3 class="font-semibold">Completed</h3>
           </div>
         </template>
         <div v-if="isLoadingBookings" class="text-center py-2">
-          <Icon name="lucide:loader-circle" class="w-6 h-6 text-primary animate-spin mx-auto" />
+          <Icon name="i-hugeicons-loading-03" class="w-6 h-6 text-primary animate-spin mx-auto" />
         </div>
         <div v-else>
           <div class="text-3xl font-bold">{{ completedBookings }}</div>
@@ -92,7 +91,7 @@ const completedBookings = computed(() => {
       <UCard>
         <template #header>
           <div class="flex items-center gap-3">
-            <UIcon name="heroicons:banknotes" class="h-5 w-5 text-primary-500" />
+            <Icon name="i-hugeicons-money-01" class="h-5 w-5 text-primary-500" />
             <h3 class="font-semibold">Revenue</h3>
           </div>
         </template>

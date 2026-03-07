@@ -6,7 +6,7 @@
 
 export default defineNuxtRouteMiddleware(async (to) => {
   // Skip for public routes
-  const publicRoutes = ['/login', '/register', '/terms', '/privacy', '/']
+  const publicRoutes = ['/register/create-account','/login', '/register', '/terms', '/privacy', '/']
   if (publicRoutes.includes(to.path) || to.path.startsWith('/api/')) {
     return
   }
@@ -63,7 +63,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // ============================================
 
   // --- LAWYER REGISTRATION FLOW ---
-  if (user.role === 'lawyer') {
+  if (user.userType === 'lawyer') {
     // Prevent access to client onboarding
     if (to.path.startsWith('/onboarding/client')) {
       return navigateTo('/register/step2')
@@ -125,7 +125,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   // --- CLIENT ONBOARDING FLOW ---
-  if (user.role === 'user') {
+  if (user.userType === 'user') {
     // Prevent access to lawyer registration
     if (to.path.startsWith('/register/')) {
       return navigateTo('/onboarding/client/location')
@@ -144,20 +144,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   return navigateTo('/login')
 })
 
-// Helper functions
-function getStepNumber(status: string): number {
-  const match = status.match(/step(\d+)/)
-  return match ? parseInt(match[1]) : 2
-}
-
+// Helper function - Map backend status to route
 const STATUS_TO_ROUTE: Record<string, string> = {
-  step1: '/register/step2',
-  step2: '/register/step2',
-  step3: '/register/step3',
-  step4: '/register/step4',
-  step5: '/register/step5',
-  step7: '/register/step7',
+  step1: '/onboarding/lawyer/personal-information',
+  step2: '/onboarding/lawyer/personal-information',
+  step3: '/onboarding/lawyer/nin-verification',
+  step4: '/onboarding/lawyer/professional-information',
+  step5: '/onboarding/lawyer/practice-information',
+  step7: '/onboarding/lawyer/review-submit',
   submitted: '/pending-approval',
   approved: '/dashboard',
-  rejected: '/register',
+  rejected: '/onboarding/lawyer/personal-information',
 }
