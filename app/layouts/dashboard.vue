@@ -69,7 +69,9 @@
         </template>
 
         <template #footer>
-          <UserDropdown />
+          <ClientOnly>
+            <UserDropdown />
+          </ClientOnly>
         </template>
       </UDashboardSidebar>
         <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full overflow-hidden">

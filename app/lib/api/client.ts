@@ -86,6 +86,7 @@ async function request<T>(
   return retryWithBackoff(async () => {
     const response = await fetch(url, {
       ...options,
+      credentials: options.credentials || 'include', // Ensure credentials are included by default
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
