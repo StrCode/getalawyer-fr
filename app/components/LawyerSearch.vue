@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { motion } from 'motion-v'
 import type { ConsultationType } from '~/composables/useLawyerSearch'
 import { useLawyerSearch } from '~/composables/useLawyerSearch'
@@ -9,6 +9,9 @@ import { useReducedMotion, getTransition } from '~/composables/useReducedMotion'
 interface LawyerSearchProps {
   isScrolled?: boolean
   searchExpanded?: boolean
+  initialPracticeArea?: string | null
+  initialLocation?: string | null
+  initialConsultationType?: ConsultationType | null
 }
 
 // Emits interface
@@ -21,7 +24,10 @@ interface SearchData {
 // Define props with defaults
 const props = withDefaults(defineProps<LawyerSearchProps>(), {
   isScrolled: false,
-  searchExpanded: false
+  searchExpanded: false,
+  initialPracticeArea: null,
+  initialLocation: null,
+  initialConsultationType: null
 })
 
 // Define emits
@@ -35,6 +41,36 @@ const { searchState, updatePracticeArea, updateLocation, updateConsultationType,
 
 // Use reduced motion composable
 const { prefersReducedMotion } = useReducedMotion()
+
+// Initialize search state from props (URL query parameters)
+onMounted(() => {
+  if (props.initialPracticeArea) {
+    updatePracticeArea(props.initialPracticeArea)
+  }
+  if (props.initialLocation) {
+    updateLocation(props.initialLocation)
+  }
+  if (props.initialConsultationType) {
+    updateConsultationType(props.initialConsultationType)
+  }
+})
+
+// Watch for prop changes and update search state
+watch(() => [props.initialPracticeArea, props.initialLocation, props.initialConsultationType], 
+  ([newArea, newLocation, newType]) => {
+    if (newArea !== searchState.value.practiceArea) {
+      updatePracticeArea(newArea || '')
+    }
+    if (newLocation !== searchState.value.location) {
+      updateLocation(newLocation || '')
+    }
+    if (newType !== searchState.value.consultationType) {
+      if (newType) {
+        updateConsultationType(newType)
+      }
+    }
+  }
+)
 
 // Local state for UI
 const isOpen = ref(false)

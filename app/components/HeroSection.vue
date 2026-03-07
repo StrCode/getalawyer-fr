@@ -1,339 +1,317 @@
 <script setup lang="ts">
 import { motion } from 'motion-v'
-import LawyerSearch from './LawyerSearch.vue'
-import { useLawyerSearch } from '~/composables/useLawyerSearch'
-import { useReducedMotion, getTransition } from '~/composables/useReducedMotion'
+import { ref } from 'vue'
 
-// Props interface
-interface HeroSectionProps {
+interface Props {
   isScrolled?: boolean
   searchExpanded?: boolean
 }
-
-// Define props with defaults
-const props = withDefaults(defineProps<HeroSectionProps>(), {
+const props = withDefaults(defineProps<Props>(), {
   isScrolled: false,
-  searchExpanded: false
+  searchExpanded: false,
 })
 
-// Define emits
 const emit = defineEmits<{
   search: [data: { practiceArea: string | null; location: string | null; consultationType: string | null }]
   toggleExpanded: []
   quickSearchTag: [tag: string]
 }>()
 
-// Use the composable to update search state
-const { updatePracticeArea } = useLawyerSearch()
+// Search bar state — Care.com / Airbnb field-focus model
+const activeField = ref<string | null>(null)
+const practiceArea = ref('')
+const location = ref('')
+const consultationType = ref<'video' | 'phone' | 'in-person' | ''>('')
 
-// Use reduced motion composable
-const { prefersReducedMotion } = useReducedMotion()
+const focusField = (f: string) => { activeField.value = f }
+const blurField = () => { setTimeout(() => { activeField.value = null }, 160) }
 
-// Quick search tags for common legal needs
-const quickSearchTags = [
-  'Family Law',
-  'Criminal Defense',
-  'Real Estate Law',
-  'Immigration Law',
-  'Corporate Law'
-]
+const handleSearch = () => {
+  emit('search', {
+    practiceArea: practiceArea.value || null,
+    location: location.value || null,
+    consultationType: consultationType.value || null,
+  })
+}
 
-// Platform statistics
-const statistics = [
-  { value: '2,500+', label: 'Verified Lawyers' },
-  { value: '50+', label: 'Practice Areas' },
-  { value: '10,000+', label: 'Consultations Booked' },
-  { value: '4.8', label: 'Average Rating' }
-]
-
-// Handle quick search tag click
-const handleQuickSearchTag = (tag: string) => {
-  updatePracticeArea(tag)
+const quickSearchTags = ['Family Law', 'Criminal Defense', 'Real Estate', 'Immigration', 'Corporate Law']
+const handleTag = (tag: string) => {
+  practiceArea.value = tag
   emit('quickSearchTag', tag)
 }
 
-// Handle search event from LawyerSearch component
-const handleSearch = (data: { practiceArea: string | null; location: string | null; consultationType: string | null }) => {
-  emit('search', data)
-}
+const statistics = [
+  { value: '2,500+', label: 'Verified Lawyers' },
+  { value: '50+', label: 'Practice Areas' },
+  { value: '10k+', label: 'Consultations' },
+  { value: '4.8★', label: 'Avg Rating' },
+]
 
-// Handle toggle expanded event
-const handleToggleExpanded = () => {
-  emit('toggleExpanded')
-}
+const consultationOptions = [
+  { value: 'video', label: 'Video', icon: '🎥' },
+  { value: 'phone', label: 'Phone', icon: '📞' },
+  { value: 'in-person', label: 'In-Person', icon: '🤝' },
+]
 </script>
 
 <template>
-  <section class="hero-section">
-    <!-- Gradient overlay -->
-    <div class="hero-overlay" />
-    
-    <!-- Hero content -->
-    <div class="hero-content">
-      <!-- Main heading with fade-up animation -->
+  <section
+    id="hero"
+    class="relative min-h-screen flex items-center justify-center overflow-hidden"
+    style="background: linear-gradient(160deg, #0d3320 0%, #1a5c3a 45%, #154a2f 100%)"
+  >
+    <!-- Subtle texture dots -->
+    <div class="absolute inset-0 opacity-[0.04]"
+      style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 28px 28px;" />
+
+    <!-- Glow blob -->
+    <div class="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
+      style="background: radial-gradient(circle, #4caf78, transparent)" />
+
+    <div class="relative z-10 w-full max-w-[860px] mx-auto px-6 text-center py-32">
+
+      <!-- Verified badge — staggered in -->
+      <motion.div
+        :initial="{ opacity: 0, y: 12 }"
+        :animate="{ opacity: 1, y: 0 }"
+        :transition="{ duration: 0.5, delay: 0.05 }"
+        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm mb-8 text-sm font-medium text-white/90"
+      >
+        <span class="w-2 h-2 rounded-full bg-[#4caf78] animate-pulse" />
+        All lawyers are bar-verified
+      </motion.div>
+
+      <!-- Headline -->
       <motion.h1
-        class="hero-heading"
         :initial="{ opacity: 0, y: 20 }"
         :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.1 })"
+        :transition="{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }"
+        class="text-white font-bold mb-5 leading-[1.12] tracking-tight"
+        style="font-size: clamp(2.4rem, 5vw, 3.8rem); font-family: 'DM Sans', sans-serif;"
       >
-        Find the Right Lawyer
+        Find the Right<br>
+        <span style="color: #81c995;">Lawyer</span>, Fast.
       </motion.h1>
 
-      <!-- Subtitle with fade-up animation -->
+      <!-- Subtitle -->
       <motion.p
-        class="hero-subtitle"
         :initial="{ opacity: 0, y: 20 }"
         :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.2 })"
+        :transition="{ duration: 0.6, delay: 0.18 }"
+        class="text-white/75 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
       >
-        Connect with verified legal professionals for video, phone, or in-person consultations
+        Connect with verified legal professionals for video, phone, or in-person consultations.
       </motion.p>
 
-      <!-- Search component with fade-up animation -->
+      <!-- ── Search Bar (Care.com / Airbnb style) ── -->
       <motion.div
-        class="hero-search"
-        :initial="{ opacity: 0, y: 20 }"
+        :initial="{ opacity: 0, y: 24 }"
         :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.3 })"
+        :transition="{ duration: 0.55, delay: 0.26 }"
+        class="mb-5"
       >
-        <LawyerSearch
-          :is-scrolled="isScrolled"
-          :search-expanded="searchExpanded"
-          @search="handleSearch"
-          @toggle-expanded="handleToggleExpanded"
-        />
+        <motion.div
+          :animate="{
+            boxShadow: activeField
+              ? '0 12px 48px rgba(0,0,0,0.28)'
+              : '0 4px 20px rgba(0,0,0,0.18)',
+            scale: activeField ? 1.01 : 1,
+          }"
+          :transition="{ duration: 0.22, ease: 'easeOut' }"
+          class="flex items-stretch bg-white rounded-full overflow-hidden search-bar-responsive"
+          :class="activeField ? 'ring-2 ring-[#4caf78]/60' : ''"
+        >
+          <!-- Practice Area -->
+          <motion.div
+            @click="focusField('area')"
+            @blur.capture="blurField"
+            :animate="{
+              backgroundColor: activeField === 'area' ? '#f2faf4' : '#ffffff',
+            }"
+            :transition="{ duration: 0.18 }"
+            class="flex-[1.4] px-5 py-3.5 cursor-text border-r border-neutral-200 rounded-l-full search-field"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Practice Area</div>
+            <input
+              v-model="practiceArea"
+              placeholder="e.g. Family Law"
+              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-[DM_Sans]"
+              @focus="focusField('area')"
+              @blur="blurField"
+            />
+          </motion.div>
+
+          <!-- Location -->
+          <motion.div
+            @click="focusField('location')"
+            :animate="{
+              backgroundColor: activeField === 'location' ? '#f2faf4' : '#ffffff',
+            }"
+            :transition="{ duration: 0.18 }"
+            class="flex-[1] px-5 py-3.5 cursor-text border-r border-neutral-200 search-field"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Location</div>
+            <input
+              v-model="location"
+              placeholder="City or ZIP"
+              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-[DM_Sans]"
+              @focus="focusField('location')"
+              @blur="blurField"
+            />
+          </motion.div>
+
+          <!-- Consultation Type -->
+          <motion.div
+            @click="focusField('type')"
+            :animate="{
+              backgroundColor: activeField === 'type' ? '#f2faf4' : '#ffffff',
+            }"
+            :transition="{ duration: 0.18 }"
+            class="flex-[1] px-5 py-3.5 cursor-pointer search-field"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Consultation</div>
+            <div class="flex gap-2 mt-0.5 consultation-buttons">
+              <button
+                v-for="opt in consultationOptions"
+                :key="opt.value"
+                @click.stop="consultationType = (consultationType === opt.value ? '' : opt.value as any)"
+                class="text-xs px-2.5 py-1 rounded-full border font-medium font-[DM_Sans] transition-all duration-150"
+                :class="consultationType === opt.value
+                  ? 'bg-[#1d6b44] text-white border-[#1d6b44]'
+                  : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'"
+              >
+                {{ opt.label }}
+              </button>
+            </div>
+          </motion.div>
+
+          <!-- Search button -->
+          <div class="flex items-center pr-2 pl-2 bg-white search-button-wrapper">
+            <motion.button
+              :whileHover="{ scale: 1.06 }"
+              :whileTap="{ scale: 0.94 }"
+              :transition="{ type: 'spring', stiffness: 420, damping: 18 }"
+              @click="handleSearch"
+              class="w-11 h-11 rounded-full bg-[#1d6b44] hover:bg-[#154a2f] border-none cursor-pointer flex items-center justify-center transition-colors duration-150 flex-shrink-0"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </motion.button>
+          </div>
+        </motion.div>
       </motion.div>
 
-      <!-- Quick search tags with fade-up animation -->
+      <!-- Quick tags -->
       <motion.div
-        class="quick-search-tags"
-        :initial="{ opacity: 0, y: 20 }"
+        :initial="{ opacity: 0, y: 16 }"
         :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.4 })"
+        :transition="{ duration: 0.5, delay: 0.38 }"
+        class="flex flex-wrap items-center justify-center gap-2 mb-14"
       >
-        <span class="tags-label">Popular searches:</span>
-        <button
+        <span class="text-xs text-white/50 font-medium">Popular:</span>
+        <motion.button
           v-for="tag in quickSearchTags"
           :key="tag"
-          type="button"
-          class="quick-tag"
-          @click="handleQuickSearchTag(tag)"
+          :whileHover="{ y: -2, backgroundColor: 'rgba(129,201,149,0.18)', borderColor: '#81c995' }"
+          :whileTap="{ scale: 0.96 }"
+          :transition="{ duration: 0.15 }"
+          @click="handleTag(tag)"
+          class="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-medium text-white backdrop-blur-sm cursor-pointer font-[DM_Sans]"
         >
           {{ tag }}
-        </button>
+        </motion.button>
       </motion.div>
 
-      <!-- Verified badge with fade-up animation -->
+      <!-- Stats bar -->
       <motion.div
-        class="verified-badge"
-        :initial="{ opacity: 0, y: 20 }"
+        :initial="{ opacity: 0, y: 16 }"
         :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.5 })"
-      >
-        <svg class="badge-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <span>Verified Legal Professionals</span>
-      </motion.div>
-
-      <!-- Platform statistics with fade-up animation -->
-      <motion.div
-        class="platform-statistics"
-        :initial="{ opacity: 0, y: 20 }"
-        :animate="{ opacity: 1, y: 0 }"
-        :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.6 })"
+        :transition="{ duration: 0.5, delay: 0.46 }"
+        class="grid grid-cols-4 gap-4 max-w-lg mx-auto"
       >
         <div
-          v-for="(stat, index) in statistics"
-          :key="index"
-          class="stat-item"
+          v-for="(stat, i) in statistics"
+          :key="i"
+          class="text-center"
+          :class="i < statistics.length - 1 ? 'border-r border-white/15' : ''"
         >
-          <div class="stat-value">{{ stat.value }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
+          <div class="text-xl font-bold text-white mb-0.5">{{ stat.value }}</div>
+          <div class="text-xs text-white/50 font-medium">{{ stat.label }}</div>
         </div>
       </motion.div>
     </div>
+
+    <!-- Bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+      style="background: linear-gradient(to bottom, transparent, #f9f9f6)" />
   </section>
 </template>
 
+
 <style scoped>
-.hero-section {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0f2744;
-  overflow: hidden;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(15, 39, 68, 0.95) 0%, rgba(15, 39, 68, 0.85) 50%, rgba(201, 168, 76, 0.1) 100%);
-  pointer-events: none;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1200px;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-.hero-heading {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
-  color: white;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-}
-
-.hero-subtitle {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero-search {
-  margin-bottom: 2rem;
-}
-
-.quick-search-tags {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-}
-
-.tags-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-}
-
-.quick-tag {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(8px);
-}
-
-.quick-tag:hover {
-  background: rgba(201, 168, 76, 0.2);
-  border-color: #c9a84c;
-  transform: translateY(-2px);
-}
-
-.verified-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(201, 168, 76, 0.15);
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  border-radius: 9999px;
-  margin-bottom: 3rem;
-  backdrop-filter: blur(8px);
-}
-
-.badge-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #c9a84c;
-}
-
-.verified-badge span {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  color: white;
-  font-weight: 600;
-}
-
-.platform-statistics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 700;
-  color: #c9a84c;
-  margin-bottom: 0.5rem;
-}
-
-.stat-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-}
-
-/* Responsive adjustments */
+/* Responsive adjustments for search bar */
 @media (max-width: 768px) {
-  .hero-section {
-    min-height: 100svh; /* Use svh for better mobile support */
-  }
-
-  .hero-content {
-    padding: 0 1.5rem;
-  }
-
-  .hero-heading {
-    margin-bottom: 1rem;
-  }
-
-  .hero-subtitle {
-    margin-bottom: 2rem;
-  }
-
-  .quick-search-tags {
+  .search-bar-responsive {
     flex-direction: column;
-    gap: 0.5rem;
+    border-radius: 16px !important;
   }
-
-  .tags-label {
-    width: 100%;
-    text-align: center;
+  
+  .search-field {
+    border-right: none !important;
+    border-bottom: 1px solid #e5e5e5;
+    border-radius: 0 !important;
+    padding: 16px 20px !important;
   }
-
-  .platform-statistics {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+  
+  .search-field:first-child {
+    border-radius: 16px 16px 0 0 !important;
   }
-
-  .stat-value {
-    font-size: 1.5rem;
+  
+  .search-field:last-of-type {
+    border-bottom: none;
   }
+  
+  .consultation-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .search-button-wrapper {
+    padding: 12px !important;
+    border-radius: 0 0 16px 16px !important;
+  }
+  
+  .search-button-wrapper button {
+    width: 100% !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+  }
+}
 
-  .stat-label {
-    font-size: 0.75rem;
+@media (max-width: 640px) {
+  #hero {
+    min-height: auto;
+    padding: 80px 0 60px;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+  
+  .grid-cols-4 > div:nth-child(2) {
+    border-right: none !important;
+  }
+  
+  .grid-cols-4 > div:nth-child(1),
+  .grid-cols-4 > div:nth-child(3) {
+    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .grid-cols-4 > div:nth-child(1),
+  .grid-cols-4 > div:nth-child(2) {
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   }
 }
 </style>

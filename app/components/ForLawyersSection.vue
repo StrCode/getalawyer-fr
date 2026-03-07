@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { motion } from 'motion-v'
-import { useReducedMotion, getTransition } from '~/composables/useReducedMotion'
 
 interface Perk {
   icon: string
@@ -9,112 +8,126 @@ interface Perk {
 }
 
 const perks: Perk[] = [
-  {
-    icon: 'i-heroicons-shield-check',
-    title: 'Bar-Verified Credentials',
-    description: 'Your credentials are verified and prominently displayed to build client trust'
-  },
-  {
-    icon: 'i-heroicons-calendar',
-    title: 'Smart Booking Calendar',
-    description: 'Automated scheduling that syncs with your calendar and reduces no-shows'
-  },
-  {
-    icon: 'i-heroicons-chat-bubble-left-right',
-    title: 'Direct Client Communication',
-    description: 'Secure messaging platform to communicate with clients before and after consultations'
-  },
-  {
-    icon: 'i-heroicons-currency-dollar',
-    title: 'Zero Commission Model',
-    description: 'Keep 100% of your consultation fees. We charge lawyers a flat monthly subscription'
-  }
+  { icon: 'i-lucide-shield-check',    title: 'Bar-Verified Credentials',    description: 'Your credentials are verified and prominently displayed to build client trust.' },
+  { icon: 'i-lucide-calendar',        title: 'Smart Booking Calendar',      description: 'Automated scheduling that syncs with your calendar and reduces no-shows.' },
+  { icon: 'i-lucide-message-circle',  title: 'Direct Client Messaging',     description: 'Secure messaging platform to communicate with clients before and after consultations.' },
+  { icon: 'i-lucide-dollar-sign',     title: 'Zero Commission Model',       description: 'Keep 100% of your consultation fees. We charge lawyers a flat monthly subscription.' },
 ]
-
-// Use reduced motion composable
-const { prefersReducedMotion } = useReducedMotion()
 </script>
 
 <template>
-  <section id="for-lawyers" class="relative bg-navy py-16 md:py-24 overflow-hidden">
-    <!-- Gradient overlay -->
-    <div class="absolute inset-0 bg-gradient-to-br from-navy via-navy to-navy/90" />
-    
-    <div class="relative mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-      <!-- Two-column layout -->
-      <div class="items-center gap-12 lg:gap-16 grid grid-cols-1 lg:grid-cols-2">
-        <!-- Left column: Heading and CTA -->
-        <div class="text-white">
-          <motion.h2
-            :initial="{ opacity: 0, y: 20 }"
-            :whileInView="{ opacity: 1, y: 0 }"
-            :transition="getTransition(prefersReducedMotion, { duration: 0.6 })"
-            :viewport="{ once: true }"
-            class="mb-6 font-playfair font-bold text-4xl md:text-5xl"
-          >
-            Grow Your Practice
-          </motion.h2>
-          
-          <motion.p
-            :initial="{ opacity: 0, y: 20 }"
-            :whileInView="{ opacity: 1, y: 0 }"
-            :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.1 })"
-            :viewport="{ once: true }"
-            class="mb-8 text-white/90 text-lg md:text-xl leading-relaxed"
-          >
-            Join thousands of verified legal professionals who are expanding their client base 
-            and building their reputation on LexConnect. Our platform provides the tools you 
-            need to manage your practice efficiently while connecting with clients who need your expertise.
-          </motion.p>
-          
-          <motion.div
-            :initial="{ opacity: 0, y: 20 }"
-            :whileInView="{ opacity: 1, y: 0 }"
-            :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.2 })"
-            :viewport="{ once: true }"
-          >
-            <UButton
-              size="xl"
-              :class="[
-                'bg-gold hover:bg-gold-light px-8 py-4 rounded-full font-semibold text-navy',
-                prefersReducedMotion ? 'transition-none' : 'hover:scale-105 transition-all duration-200'
-              ]"
-              label="Register as a Lawyer"
-            />
-          </motion.div>
-        </div>
+  <section
+    id="for-lawyers"
+    class="relative py-20 md:py-28 overflow-hidden"
+    style="background: linear-gradient(150deg, #0d3320 0%, #1d6b44 60%, #1a5c3a 100%)"
+  >
+    <!-- Dot texture -->
+    <div class="absolute inset-0 opacity-[0.035]"
+      style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 24px 24px;" />
 
-        <!-- Right column: Perk cards -->
-        <div class="gap-6 grid grid-cols-1 sm:grid-cols-2">
-          <motion.div
-            v-for="(perk, index) in perks"
-            :key="perk.title"
-            :initial="{ opacity: 0, y: 20 }"
+    <!-- Glow -->
+    <div class="absolute bottom-0 left-1/3 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none"
+      style="background: radial-gradient(circle, #81c995, transparent)" />
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
+        <!-- Left: copy -->
+        <div>
+          <motion.p
+            :initial="{ opacity: 0, y: 10 }"
             :whileInView="{ opacity: 1, y: 0 }"
-            :transition="getTransition(prefersReducedMotion, { duration: 0.6, delay: 0.1 * index })"
             :viewport="{ once: true }"
-            :class="[
-              'bg-white/10 hover:bg-white/15 backdrop-blur-sm p-6 border border-white/20 rounded-2xl',
-              prefersReducedMotion ? 'transition-none' : 'transition-all duration-200'
-            ]"
+            :transition="{ duration: 0.4 }"
+            class="text-xs font-semibold uppercase tracking-widest text-[#81c995] mb-4"
+          >For Legal Professionals</motion.p>
+
+          <motion.h2
+            :initial="{ opacity: 0, y: 18 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.55, delay: 0.06 }"
+            class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-[1.1]"
           >
-            <div class="flex items-start space-x-4">
-              <div class="flex-shrink-0">
-                <div class="flex justify-center items-center bg-gold/20 rounded-full w-12 h-12">
-                  <UIcon :name="perk.icon" class="w-6 h-6 text-gold" />
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3 class="mb-2 font-semibold text-white text-lg">
-                  {{ perk.title }}
-                </h3>
-                <p class="text-white/80 text-sm leading-relaxed">
-                  {{ perk.description }}
-                </p>
-              </div>
+            Grow Your<br>Practice.
+          </motion.h2>
+
+          <motion.p
+            :initial="{ opacity: 0, y: 14 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.5, delay: 0.12 }"
+            class="text-white/70 text-lg leading-relaxed mb-9 max-w-md"
+          >
+            Join thousands of verified legal professionals expanding their client base on LexConnect.
+            The tools you need to manage your practice, zero commission taken.
+          </motion.p>
+
+          <motion.div
+            :initial="{ opacity: 0, y: 12 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.45, delay: 0.18 }"
+            class="flex flex-wrap gap-3"
+          >
+            <motion.button
+              :whileHover="{ scale: 1.03, backgroundColor: '#e8f3ec' }"
+              :whileTap="{ scale: 0.97 }"
+              :transition="{ duration: 0.15 }"
+              class="px-7 py-3.5 rounded-full bg-white text-[#1d6b44] font-semibold text-sm border-none cursor-pointer font-[DM_Sans]"
+            >
+              Register as a Lawyer
+            </motion.button>
+            <motion.button
+              :whileHover="{ backgroundColor: 'rgba(255,255,255,0.18)' }"
+              :whileTap="{ scale: 0.97 }"
+              :transition="{ duration: 0.15 }"
+              class="px-7 py-3.5 rounded-full bg-white/10 border border-white/25 text-white font-semibold text-sm cursor-pointer font-[DM_Sans]"
+            >
+              Learn More
+            </motion.button>
+          </motion.div>
+
+          <!-- Trust strip -->
+          <motion.div
+            :initial="{ opacity: 0 }"
+            :whileInView="{ opacity: 1 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.5, delay: 0.28 }"
+            class="mt-10 flex items-center gap-5"
+          >
+            <div v-for="(item, i) in [['2,500+', 'Lawyers'], ['$0', 'Commission'], ['4.8★', 'Avg Rating']]"
+              :key="i"
+              class="text-center"
+              :class="i < 2 ? 'pr-5 border-r border-white/15' : ''"
+            >
+              <div class="text-lg font-bold text-white">{{ item[0] }}</div>
+              <div class="text-xs text-white/45 font-medium">{{ item[1] }}</div>
             </div>
           </motion.div>
         </div>
+
+        <!-- Right: perk cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <motion.div
+            v-for="(perk, i) in perks"
+            :key="perk.title"
+            :initial="{ opacity: 0, y: 22 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.45, delay: 0.06 * i, ease: [0.25, 0.46, 0.45, 0.94] }"
+            :whileHover="{ backgroundColor: 'rgba(255,255,255,0.14)' }"
+            :transition-hover="{ duration: 0.15 }"
+            class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl p-5 cursor-default"
+          >
+            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mb-4">
+              <UIcon :name="perk.icon" class="w-5 h-5 text-[#81c995]" />
+            </div>
+            <h3 class="font-semibold text-white text-[15px] mb-1.5">{{ perk.title }}</h3>
+            <p class="text-white/60 text-sm leading-relaxed">{{ perk.description }}</p>
+          </motion.div>
+        </div>
+
       </div>
     </div>
   </section>
