@@ -3,6 +3,9 @@ const isMenuOpen = ref(false)
 const activeDropdown = ref<string | null>(null)
 let closeTimer: ReturnType<typeof setTimeout> | null = null
 
+// Auth modal
+const { open: openAuthModal } = useAuthModal()
+
 const nav = [
   {
     label: 'Listings',
@@ -225,12 +228,12 @@ function cancelClose() {
 
         <!-- Right CTAs -->
         <div class="hidden lg:flex items-center gap-2">
-          <NuxtLink
-            to="/auth/login"
+          <button
             class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+            @click="openAuthModal('entry')"
           >
             Sign in
-          </NuxtLink>
+          </button>
           <UButton
             to="/listings"
             size="sm"
@@ -302,13 +305,12 @@ function cancelClose() {
           </template>
 
           <div class="pt-4 pb-2 flex flex-col gap-2 border-t border-neutral-100 mt-2">
-            <NuxtLink
-              to="/auth/login"
+            <button
               class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
-              @click="isMenuOpen = false"
+              @click="openAuthModal('entry'); isMenuOpen = false"
             >
               Sign in
-            </NuxtLink>
+            </button>
             <UButton
               to="/listings"
               size="md"

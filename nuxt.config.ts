@@ -16,8 +16,36 @@ export default defineNuxtConfig({
     '@nuxtjs/leaflet',
     '@nuxtjs/seo',
     '@peterbud/nuxt-query',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    'nuxt-viewport',
   ],
+  viewport: {
+    breakpoints: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      '2xl': 1536,
+    },
+    defaultBreakpoints: {
+      desktop: 'lg',
+      mobile: 'xs',
+      tablet: 'md',
+    },
+    fallbackBreakpoint: 'lg',
+  },
+  fonts: {
+    families: [
+      {
+        name: 'Plus Jakarta Sans',
+        provider: 'google',
+        weights: [200, 300, 400, 500, 600, 700],
+        styles: ['normal'],
+        subsets: ['latin'],
+      }
+    ]
+  },
   runtimeConfig: {
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001',
