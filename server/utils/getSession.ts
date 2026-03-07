@@ -37,8 +37,18 @@ export async function getSessionFromBackend(event: H3Event) {
     }
 
     const data = await res.json();
+    console.log('[getSession] Raw response data:', JSON.stringify(data, null, 2));
     console.log('[getSession] Session data:', data ? 'Found' : 'Null');
-    return data;
+    
+    // Better Auth returns the session directly, not wrapped
+    // Check if data has a user property
+    if (data && data.user) {
+      console.log('[getSession] Valid session found for user:', data.user.email);
+      return data;
+    }
+    
+    console.log('[getSession] No valid session in response');
+    return null;
   } catch (error) {
     console.error('[getSession] Failed to fetch session from backend:', error);
     return null;

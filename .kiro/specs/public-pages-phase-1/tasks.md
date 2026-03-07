@@ -272,7 +272,7 @@ This implementation plan breaks down the development of four public-facing pages
     - Ensure FilterPanel works on mobile (drawer/modal)
     - _Requirements: All requirements (cross-cutting concern)_
 
-- [-] 17. Final checkpoint - Ensure all tests pass
+- [x] 17. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

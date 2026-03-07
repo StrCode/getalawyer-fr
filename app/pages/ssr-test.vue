@@ -167,8 +167,14 @@ const apiUrl = config.public.apiUrl;
 const renderContext = ref(import.meta.server ? 'SSR' : 'Client');
 
 // Server-side session (from middleware)
-const event = import.meta.server ? useRequestEvent() : null;
-const serverSession = ref(event?.context.session || null);
+// Use useState to persist the session from SSR to client
+const serverSession = useState('server-session', () => {
+  if (import.meta.server) {
+    const event = useRequestEvent();
+    return event?.context.session || null;
+  }
+  return null;
+});
 
 // Client-side session (from Better Auth)
 const sessionData = authClient.useSession();
