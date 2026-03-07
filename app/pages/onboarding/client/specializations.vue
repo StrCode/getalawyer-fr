@@ -2,7 +2,7 @@
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 
 definePageMeta({
-  middleware: ['auth', 'onboarding-guard'],
+  middleware: ['auth'],
   layout: 'onboarding',
 })
 
@@ -128,7 +128,7 @@ const isDisabled = (id: string) => {
       <!-- Header -->
       <div class="mb-6 text-center">
         <div class="inline-flex justify-center items-center bg-primary/10 mb-3 rounded-full w-12 h-12">
-          <Icon name="heroicons:scale" class="w-5 h-5 text-primary" />
+          <Icon name="i-hugeicons-legal-document-02" class="w-5 h-5 text-primary" />
         </div>
         <h1 class="mb-1 font-semibold text-gray-900 text-lg">
           What legal services are you interested in?
@@ -142,7 +142,7 @@ const isDisabled = (id: string) => {
       <div class="bg-white shadow-sm mb-4 p-4 border rounded-xl">
         <div class="flex items-center gap-3">
           <div class="flex flex-shrink-0 justify-center items-center bg-blue-100 rounded-full w-10 h-10">
-            <Icon name="heroicons:map-pin" class="w-5 h-5 text-blue-600" />
+            <Icon name="i-hugeicons-location-04" class="w-5 h-5 text-blue-600" />
           </div>
           <div>
             <p class="text-muted-foreground text-xs">Your Location</p>
@@ -155,7 +155,7 @@ const isDisabled = (id: string) => {
 
       <!-- Specializations Grid -->
       <div v-if="isLoadingSpecializations" class="bg-white shadow-sm mb-4 p-6 border rounded-3xl text-center">
-        <Icon name="lucide:loader-circle" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
+        <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
         <p class="text-sm text-gray-600">Loading specializations...</p>
       </div>
       
@@ -185,7 +185,7 @@ const isDisabled = (id: string) => {
               >
                 <Icon
                   v-if="(onboardingData.specializations || []).includes(spec.id)"
-                  name="heroicons:check"
+                  name="i-hugeicons-tick-02"
                   class="w-3 h-3 text-white"
                 />
               </div>
@@ -199,7 +199,7 @@ const isDisabled = (id: string) => {
 
         <!-- Error Message -->
         <div v-if="error" class="flex items-center gap-2 bg-red-50 p-3 border border-red-200 rounded-lg">
-          <Icon name="heroicons:exclamation-circle" class="w-4 h-4 text-red-600" />
+          <Icon name="i-hugeicons-alert-circle" class="w-4 h-4 text-red-600" />
           <span class="text-red-800 text-xs">{{ error }}</span>
         </div>
 
@@ -230,7 +230,7 @@ const isDisabled = (id: string) => {
           :disabled="completeOnboarding.isPending.value || isLoadingSpecializations"
           class="flex-1 h-10 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
-          <Icon name="heroicons:arrow-left" class="mr-1.5 w-4 h-4 inline" />
+          <Icon name="i-hugeicons-arrow-left-01" class="mr-1.5 w-4 h-4 inline" />
           Back
         </button>
         <button
@@ -243,7 +243,7 @@ const isDisabled = (id: string) => {
               : 'bg-primary text-white hover:bg-primary/90'
           ]"
         >
-          <Icon v-if="completeOnboarding.isPending.value" name="lucide:loader-circle" class="w-4 h-4 inline animate-spin mr-1.5" />
+          <Icon v-if="completeOnboarding.isPending.value" name="i-hugeicons-loading-03" class="w-4 h-4 inline animate-spin mr-1.5" />
           <span v-if="completeOnboarding.isPending.value">Completing...</span>
           <span v-else>Complete Onboarding</span>
         </button>

@@ -2,7 +2,7 @@
 import { useRegistration } from '~/composables/useRegistration'
 
 definePageMeta({
-  middleware: ['auth', 'registration-guard'],
+  middleware: ['auth'],
   layout: 'registration',
 })
 
@@ -60,7 +60,7 @@ const editStep = (step: number) => {
       </div>
 
       <div v-if="isPending" class="text-center py-12">
-        <Icon name="lucide:loader-circle" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
+        <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
         <p class="text-sm text-gray-600">Loading your information...</p>
       </div>
 
@@ -84,7 +84,7 @@ const editStep = (step: number) => {
           <div class="flex justify-between items-start mb-4">
             <h2 class="font-semibold text-gray-900">Identity Verification</h2>
             <div class="flex items-center gap-2">
-              <Icon name="heroicons:check-circle" class="w-5 h-5 text-green-600" />
+              <Icon name="i-hugeicons-tick-double-02" class="w-5 h-5 text-green-600" />
               <span class="text-sm text-green-600 font-medium">Verified</span>
             </div>
           </div>
@@ -140,7 +140,7 @@ const editStep = (step: number) => {
         <!-- Error Message -->
         <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
           <div class="flex gap-3">
-            <Icon name="heroicons:exclamation-circle" class="w-5 h-5 text-red-600 flex-shrink-0" />
+            <Icon name="i-hugeicons-alert-circle" class="w-5 h-5 text-red-600 flex-shrink-0" />
             <p class="text-sm text-red-800">{{ error }}</p>
           </div>
         </div>

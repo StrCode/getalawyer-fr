@@ -2,7 +2,7 @@
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 
 definePageMeta({
-  middleware: ['auth', 'onboarding-guard'],
+  middleware: ['auth'],
   layout: 'onboarding',
 })
 
@@ -110,7 +110,7 @@ const selectedStateName = computed(() => {
       <!-- Header -->
       <div class="mb-6 text-center">
         <div class="inline-flex justify-center items-center bg-primary/10 mb-3 rounded-full w-12 h-12">
-          <Icon name="heroicons:map-pin" class="w-5 h-5 text-primary" />
+          <Icon name="i-hugeicons-location-04" class="w-5 h-5 text-primary" />
         </div>
         <h1 class="mb-1 font-semibold text-gray-900 text-lg">
           Where are you located?
@@ -122,7 +122,7 @@ const selectedStateName = computed(() => {
 
       <!-- Loading State -->
       <div v-if="isLoading" class="text-center py-12">
-        <Icon name="lucide:loader-circle" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
+        <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
         <p class="text-sm text-gray-600">Loading countries...</p>
       </div>
 
@@ -136,7 +136,7 @@ const selectedStateName = computed(() => {
         <!-- Country Select -->
         <div>
           <label class="flex items-center gap-1.5 mb-2 font-medium text-gray-700 text-sm">
-            <Icon name="heroicons:globe-alt" class="w-4 h-4 text-primary" />
+            <Icon name="i-hugeicons-globe-02" class="w-4 h-4 text-primary" />
             Country
             <span class="text-red-500">*</span>
           </label>
@@ -154,7 +154,7 @@ const selectedStateName = computed(() => {
             </option>
           </select>
           <p v-if="errors.country" class="flex items-center gap-1.5 mt-1.5 text-red-500 text-xs">
-            <Icon name="heroicons:exclamation-circle" class="w-3.5 h-3.5" />
+            <Icon name="i-hugeicons-alert-circle" class="w-3.5 h-3.5" />
             {{ errors.country }}
           </p>
         </div>
@@ -162,7 +162,7 @@ const selectedStateName = computed(() => {
         <!-- State Select -->
         <div v-if="country && availableStates.length > 1">
           <label class="flex items-center gap-1.5 mb-2 font-medium text-gray-700 text-sm">
-            <Icon name="heroicons:map-pin" class="w-4 h-4 text-primary" />
+            <Icon name="i-hugeicons-location-04" class="w-4 h-4 text-primary" />
             State / Region
             <span class="text-red-500">*</span>
           </label>
@@ -180,7 +180,7 @@ const selectedStateName = computed(() => {
             </option>
           </select>
           <p v-if="errors.state" class="flex items-center gap-1.5 mt-1.5 text-red-500 text-xs">
-            <Icon name="heroicons:exclamation-circle" class="w-3.5 h-3.5" />
+            <Icon name="i-hugeicons-alert-circle" class="w-3.5 h-3.5" />
             {{ errors.state }}
           </p>
         </div>
@@ -189,7 +189,7 @@ const selectedStateName = computed(() => {
         <div v-if="country" class="bg-gradient-to-br from-green-50 to-emerald-50 p-3 border border-green-200 rounded-lg">
           <div class="flex items-center gap-2">
             <div class="flex flex-shrink-0 justify-center items-center bg-green-100 rounded-full w-8 h-8">
-              <Icon name="heroicons:check-circle" class="w-4 h-4 text-green-600" />
+              <Icon name="i-hugeicons-tick-double-02" class="w-4 h-4 text-green-600" />
             </div>
             <div>
               <p class="font-medium text-green-900 text-xs">Selected Location</p>
@@ -207,7 +207,7 @@ const selectedStateName = computed(() => {
         class="w-full h-10 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
       >
         Continue to Specializations
-        <Icon name="heroicons:arrow-right" class="ml-1.5 w-4 h-4 inline" />
+        <Icon name="i-hugeicons-arrow-right-01" class="ml-1.5 w-4 h-4 inline" />
       </button>
     </div>
   </div>

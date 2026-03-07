@@ -5,7 +5,7 @@ import { NIGERIA_STATES, getLGAsForState } from '~/constants/nigeria-states-lgas
 import { GENDER_OPTIONS } from '~/constants/registration'
 
 definePageMeta({
-  middleware: ['auth', 'registration-guard'],
+  middleware: ['auth'],
   layout: 'registration',
 })
 
@@ -111,7 +111,7 @@ const handleSubmit = async () => {
 
       <!-- Loading State -->
       <div v-if="isLoadingData" class="text-center py-12">
-        <Icon name="lucide:loader-circle" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
+        <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin mx-auto mb-2" />
         <p class="text-sm text-gray-600">Loading your information...</p>
       </div>
       

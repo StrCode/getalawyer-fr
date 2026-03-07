@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Plus Jakarta Sans',
+        name: 'Geist',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal'],
@@ -51,5 +51,12 @@ export default defineNuxtConfig({
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001',
       betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3001/api/auth',
     },
+  },
+  icon: {
+    provider: 'iconify',
+    collections: ['hugeicons'],
+    serverBundle: {
+      collections: ['hugeicons']
+    }
   },
 })

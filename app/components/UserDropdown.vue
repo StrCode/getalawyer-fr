@@ -34,19 +34,19 @@ const user = computed(() => session.data?.user)
 const items = computed(() => [[
   {
     label: 'Profile',
-    icon: 'i-heroicons-user',
+    icon: 'i-hugeicons-user',
     onSelect: () => navigateTo('/profile')
   }
 ], [
   {
     label: 'Settings',
-    icon: 'i-heroicons-cog-6-tooth',
+    icon: 'i-hugeicons-settings-01',
     onSelect: () => navigateTo('/settings')
   }
 ], [
   {
     label: 'Sign out',
-    icon: 'i-heroicons-arrow-right-on-rectangle',
+    icon: 'i-hugeicons-logout-01',
     onSelect: async () => {
       await authClient.signOut()
       navigateTo('/login')

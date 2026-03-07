@@ -27,7 +27,7 @@ const handleSignOut = async () => {
     <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
       <!-- Success Icon -->
       <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-        <Icon name="heroicons:check-circle" class="w-10 h-10 text-green-600" />
+        <Icon name="i-hugeicons-tick-double-02" class="w-10 h-10 text-green-600" />
       </div>
 
       <!-- Title -->
@@ -52,15 +52,15 @@ const handleSignOut = async () => {
         <h2 class="font-semibold text-gray-900 mb-2">What happens next?</h2>
         <ul class="space-y-2 text-sm text-gray-600">
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <Icon name="i-hugeicons-tick-02" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <span>Our team will verify your credentials</span>
           </li>
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <Icon name="i-hugeicons-tick-02" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <span>You'll receive an email notification once approved</span>
           </li>
           <li class="flex items-start gap-2">
-            <Icon name="heroicons:check" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <Icon name="i-hugeicons-tick-02" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <span>You can then access your lawyer dashboard</span>
           </li>
         </ul>

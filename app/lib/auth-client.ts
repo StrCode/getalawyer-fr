@@ -1,14 +1,19 @@
 import { createAuthClient } from "better-auth/vue";
 import { emailOTPClient, inferAdditionalFields } from "better-auth/client/plugins";
 
-// Get runtime config - this works because Nuxt makes it available globally
-function getApiUrl() {
+// Get API URL - use environment variable directly to avoid composable issues
+const getApiUrl = () => {
+  // Check if we're in browser
   if (typeof window !== 'undefined') {
-    // @ts-ignore - Nuxt injects useRuntimeConfig globally
-    const config = useRuntimeConfig();
-    return config.public.apiUrl;
+    // Use window.__NUXT__ injected config if available
+    if (window.__NUXT__?.config?.public?.apiUrl) {
+      return window.__NUXT__.config.public.apiUrl;
+    }
   }
-  return "http://localhost:3000";
+  // Fallback to environment variable
+  return import.meta.env.VITE_NUXT_PUBLIC_API_URL || 
+         import.meta.env.NUXT_PUBLIC_API_URL || 
+         'http://localhost:3001';
 }
 
 // Create auth client with proper configuration for external Hono backend
