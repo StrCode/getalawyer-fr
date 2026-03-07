@@ -39,7 +39,7 @@ const currentUniqueIdDetails = computed(() => {
 const step2 = computed(() => {
   return {
     login: { heading: "Login to your account", subheading: "Enter your details to login.", btnText: "Login" },
-    register: { heading: "Welcome to Smart Stay Rentals", subheading: "Please enter your details to create an account.", btnText: "Continue" },
+    register: { heading: "Welcome to LexConnect", subheading: "Please enter your details to create an account.", btnText: "Continue" },
     resetPassword: { heading: "Reset Password", subheading: `Enter your ${currentUniqueIdDetails.value().longName} to reset your password.`, btnText: "Reset Password" },
     verifyOTP: { heading: "Verify OTP", subheading: `Enter the OTP sent to your ${currentUniqueIdDetails.value().slug}.`, btnText: "Verify OTP" },
     setPassword: { heading: "Set Password", subheading: "Enter your new password.", btnText: "Set Password" },
@@ -473,10 +473,10 @@ watch(
               </div>
 
               <h3 class="text-2xl font-semibold text-foreground text-center w-2/3">
-                What brings you to<br>Smart Stay Rentals?
+                What brings you to<br>LexConnect?
               </h3>
-              <p class="text-muted-foreground mt-2 ">
-                Choose your starting point
+              <p class="mt-3 text-lg text-muted-foreground max-w-sm">
+                We'll tailor your experience based on your goals.
               </p>
 
               <hr class="w-full h-px bg-border my-6">
@@ -484,8 +484,8 @@ watch(
               <div class="w-full space-y-4">
                 <label class="flex items-start gap-4 p-4 border border-border rounded-xl bg-background" @click="registerForm.user_type = 'tenant'">
                   <div class="flex-1">
-                    <div class="font-medium">Book or rent a property</div>
-                    <div class="text-sm text-muted-foreground">Find your next short or long-term stay.</div>
+                    <div class="font-medium">I'm a client</div>
+                    <div class="text-sm text-muted-foreground">Find legal services and connect with lawyers.</div>
                   </div>
                   <input
                     type="radio"
@@ -496,9 +496,9 @@ watch(
                 </label>
 
                 <label class="flex items-start gap-4 p-4 border border-border rounded-xl bg-background" @click="registerForm.user_type = 'property_owner'">
-                  <div class="flex-1">
-                    <div class="font-medium">I own a property</div>
-                    <div class="text-sm text-muted-foreground">Smart Stay handles the rental, you sit back and earn.</div>
+                  <div>
+                    <div class="font-semibold text-lg mb-1">I'm a lawyer</div>
+                    <div class="text-sm text-muted-foreground">Join our network to connect with clients seeking legal advice.</div>
                   </div>
                   <input
                     type="radio"
@@ -508,8 +508,8 @@ watch(
                 </label>
               </div>
 
-              <div class="w-full mt-6">
-                <button class="w-full bg-[#007AFC] hover:bg-[#0066D6] text-white py-3 rounded-xl text-center" @click="next">
+              <div class="mt-8 pt-6 border-t font-semibold">
+                <button class="w-full bg-[#1d6b44] hover:bg-[#154a2f] text-white py-3 rounded-xl text-center" @click="next">
                   Continue
                 </button>
               </div>
@@ -660,7 +660,7 @@ watch(
 
                 <Button
                   :loading="loading"
-                  class="w-full bg-[#007AFC] hover:bg-[#0066D6] text-white py-3 rounded-xl text-center mb-4"
+                  class="w-full bg-[#1d6b44] hover:bg-[#154a2f] text-white py-3 rounded-xl text-center mb-4"
                   :disabled="!canContinue"
                   @click="next"
                 >
@@ -789,7 +789,7 @@ watch(
                   <div class="flex items-center relative">
                     <component :is="currentUniqueIdDetails().icon" class="absolute left-3 top-1/2 transform -translate-y-1/2" />
                     <Input
-                      v-if="uniqueIdType === 'email'"
+                      v-if="uniqueIdType === "email""
                       v-model="(isLoggingIn ? loginForm : registerForm).email"
                       type="email"
                       placeholder="hello@designer.com"
@@ -844,20 +844,17 @@ watch(
                   <div v-if="registerForm.password.length" class="">
                     <div class="flex items-center gap-2 my-2">
                       <div
-                        class="flex-1 h-2 rounded-full border"
-                        :class="{ 'bg-[#007AFC]': hasUpper, 'bg-gray-300': !hasUpper }"
-                        :style="{ width: '33%' }"
-                      />
+                        class="h-1.5 w-full rounded-full transition-colors duration-300"
+                        :class="{ 'bg-gray-900': hasUpper, 'bg-gray-300': !hasUpper }"
+                      ></div>
                       <div
-                        class="flex-1 h-2 rounded-full"
-                        :class="{ 'bg-[#007AFC]': hasNumber, 'bg-gray-300': !hasNumber }"
-                        :style="{ width: '33%' }"
-                      />
+                        class="h-1.5 w-full rounded-full transition-colors duration-300"
+                        :class="{ 'bg-gray-900': hasNumber, 'bg-gray-300': !hasNumber }"
+                      ></div>
                       <div
-                        class="flex-1 h-2 rounded-full"
-                        :class="{ 'bg-[#007AFC]': hasLength, 'bg-gray-300': !hasLength }"
-                        :style="{ width: '33%' }"
-                      />
+                        class="h-1.5 w-full rounded-full transition-colors duration-300"
+                        :class="{ 'bg-gray-900': hasLength, 'bg-gray-300': !hasLength }"
+                      ></div>
                     </div>
 
                     <div v-if="score < 3" class="text-sm">
@@ -895,23 +892,6 @@ watch(
                   </div>
                 </div>
 
-                <div class="text-xs text-muted-foreground">
-                  By clicking Agree and continue, you agree to accept Smart Stay Rental's <NuxtLink
-                    to="/terms-and-conditions"
-                    class="underline"
-                  >
-                    Terms and Conditions
-                  </NuxtLink>
-                </div>
-
-                <p v-if="registrationError" class="errorText mt-4">
-                  {{ registrationError }}
-                </p>
-
-                <div class="mt-4">
-                  <Button
-                    :loading="loading"
-                    class="w-full py-3 rounded-xl"
                     :disabled="formHasError"
                     @click="register"
                   >

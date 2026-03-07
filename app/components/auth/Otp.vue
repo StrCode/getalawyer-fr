@@ -220,7 +220,7 @@ async function resendCode() {
       :disabled="!isComplete"
       block
       size="lg"
-      class="bg-[#007AFC] hover:bg-[#0066D6] rounded-xl mb-3"
+      class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl mb-3"
       @click="verify"
     >
       {{ loading ? 'Verifying...' : 'Verify' }}

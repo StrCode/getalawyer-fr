@@ -30,14 +30,14 @@ const handleClick = () => {
   <button
     @click="handleClick"
     :class="[
-      'group relative flex flex-col justify-center items-center bg-white hover:bg-navy hover:shadow-lg p-6 border border-gray-200 hover:border-navy rounded-2xl practice-area-card',
+      'group relative flex flex-col justify-center items-center bg-white hover:bg-[#fafafa] hover:shadow-md p-6 border border-neutral-200 hover:border-[#1d6b44]/30 rounded-2xl practice-area-card',
       prefersReducedMotion ? 'transition-none' : 'transition-all duration-200'
     ]"
   >
     <!-- Icon -->
     <div
       :class="[
-        'flex justify-center items-center bg-cream group-hover:bg-gold/20 mb-3 rounded-xl w-12 h-12',
+        'flex justify-center items-center bg-neutral-50 group-hover:bg-[#e8f3ec] mb-3 rounded-xl w-12 h-12 text-neutral-600 group-hover:text-[#1d6b44]',
         prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
       ]"
     >
@@ -47,7 +47,7 @@ const handleClick = () => {
     <!-- Area Name -->
     <h3
       :class="[
-        'mb-1 font-semibold text-navy group-hover:text-white text-base text-center',
+        'mb-1 font-semibold text-neutral-900 group-hover:text-[#1d6b44] text-base text-center',
         prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
       ]"
     >
@@ -57,7 +57,7 @@ const handleClick = () => {
     <!-- Lawyer Count -->
     <p
       :class="[
-        'text-gray-600 group-hover:text-white/80 text-sm',
+        'text-neutral-500 group-hover:text-neutral-600 text-sm',
         prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
       ]"
     >

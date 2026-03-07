@@ -42,8 +42,8 @@ const strengthConfig = computed(() => {
   if (!state.password) return { label: 'Use at least 8 characters', color: 'text-gray-400' }
   if (s <= 1) return { label: 'Weak', color: 'text-gray-500' }
   if (s <= 2) return { label: 'Could be stronger', color: 'text-gray-600' }
-  if (s <= 3) return { label: 'Strong', color: 'text-[#007AFC]' }
-  return { label: 'Very strong', color: 'text-[#007AFC]' }
+  if (s <= 3) return { label: 'Strong', color: 'text-[#1d6b44]' }
+  return { label: 'Very strong', color: 'text-[#1d6b44]' }
 })
 
 function segColor(index: number) {
@@ -51,7 +51,7 @@ function segColor(index: number) {
   const s = passwordStrength.value
   if (s <= 1) return 'bg-gray-300'
   if (s <= 2) return 'bg-gray-400'
-  return 'bg-[#007AFC]'
+  return 'bg-[#1d6b44]'
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -176,7 +176,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         :loading="loading"
         block
         size="lg"
-        class="bg-[#007AFC] hover:bg-[#0066D6] rounded-xl"
+        class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl"
       >
         {{ loading ? 'Resetting...' : 'Reset password' }}
       </UButton>

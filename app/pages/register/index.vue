@@ -148,7 +148,7 @@
               <!-- Submit Button -->
               <UButton
                 type="submit"
-                color="black"
+                color="neutral"
                 size="lg"
                 block
                 class="mt-6 font-semibold"

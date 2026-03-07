@@ -5,16 +5,17 @@ const { identifier } = useAuthModal()
 </script>
 
 <template>
-  <div class="px-6 pb-8 pt-4 text-center">
-    <div class="w-16 h-16 rounded-full bg-[#007AFC] flex items-center justify-center mx-auto mb-5 animate-[pop_0.4s_cubic-bezier(0.34,1.56,0.64,1)]">
-      <UIcon name="i-lucide-check" class="w-7 h-7 text-white" />
+  <div class="text-center p-6 flex flex-col items-center">
+    <!-- Success Icon -->
+    <div class="w-16 h-16 rounded-full bg-[#1d6b44] flex items-center justify-center mx-auto mb-5 animate-[pop_0.4s_cubic-bezier(0.34,1.56,0.64,1)]">
+      <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-white scale-0 animate-[scaleIn_0.3s_cubic-bezier(0.34,1.56,0.64,1)_0.2s_forwards]" />
     </div>
 
     <h2 class="text-[22px] font-bold text-gray-900 tracking-tight mb-2">
       You're in!
     </h2>
-    <p class="text-sm text-gray-500 mb-8 leading-relaxed">
-      Welcome to Smart Stay Rentals{{ identifier ? `, ${identifier}` : '' }}.<br />Your account is ready.
+    <p class="text-gray-500 mb-8 max-w-[280px]">
+      Welcome to LexConnect{{ identifier ? `, ${identifier}` : '' }}.<br />Your account is ready.
     </p>
 
     <UButton

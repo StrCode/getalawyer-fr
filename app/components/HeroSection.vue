@@ -57,16 +57,15 @@ const consultationOptions = [
 <template>
   <section
     id="hero"
-    class="relative min-h-screen flex items-center justify-center overflow-hidden"
-    style="background: linear-gradient(160deg, #0d3320 0%, #1a5c3a 45%, #154a2f 100%)"
+    class="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]"
   >
     <!-- Subtle texture dots -->
-    <div class="absolute inset-0 opacity-[0.04]"
-      style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 28px 28px;" />
+    <div class="absolute inset-0 opacity-[0.03]"
+      style="background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 28px 28px;" />
 
     <!-- Glow blob -->
-    <div class="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
-      style="background: radial-gradient(circle, #4caf78, transparent)" />
+    <div class="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full opacity-10 blur-[80px] pointer-events-none"
+      style="background: radial-gradient(circle, #1d6b44, transparent)" />
 
     <div class="relative z-10 w-full max-w-[860px] mx-auto px-6 text-center py-32">
 
@@ -75,9 +74,9 @@ const consultationOptions = [
         :initial="{ opacity: 0, y: 12 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.5, delay: 0.05 }"
-        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm mb-8 text-sm font-medium text-white/90"
+        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neutral-200 bg-white shadow-sm mb-8 text-sm font-medium text-neutral-600"
       >
-        <span class="w-2 h-2 rounded-full bg-[#4caf78] animate-pulse" />
+        <span class="w-2 h-2 rounded-full bg-[#1d6b44] animate-pulse" />
         All lawyers are bar-verified
       </motion.div>
 
@@ -86,11 +85,11 @@ const consultationOptions = [
         :initial="{ opacity: 0, y: 20 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }"
-        class="text-white font-bold mb-5 leading-[1.12] tracking-tight"
+        class="text-neutral-900 font-bold mb-5 leading-[1.12] tracking-tight"
         style="font-size: clamp(2.4rem, 5vw, 3.8rem); font-family: 'DM Sans', sans-serif;"
       >
         Find the Right<br>
-        <span style="color: #81c995;">Lawyer</span>, Fast.
+        <span class="text-[#1d6b44]">Lawyer</span>, Fast.
       </motion.h1>
 
       <!-- Subtitle -->
@@ -98,7 +97,7 @@ const consultationOptions = [
         :initial="{ opacity: 0, y: 20 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.6, delay: 0.18 }"
-        class="text-white/75 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
+        class="text-neutral-500 text-lg mb-10 max-w-xl mx-auto leading-relaxed"
       >
         Connect with verified legal professionals for video, phone, or in-person consultations.
       </motion.p>
@@ -113,23 +112,23 @@ const consultationOptions = [
         <motion.div
           :animate="{
             boxShadow: activeField
-              ? '0 12px 48px rgba(0,0,0,0.28)'
-              : '0 4px 20px rgba(0,0,0,0.18)',
+              ? '0 12px 32px rgba(0,0,0,0.08)'
+              : '0 4px 12px rgba(0,0,0,0.03)',
             scale: activeField ? 1.01 : 1,
           }"
           :transition="{ duration: 0.22, ease: 'easeOut' }"
-          class="flex items-stretch bg-white rounded-full overflow-hidden search-bar-responsive"
-          :class="activeField ? 'ring-2 ring-[#4caf78]/60' : ''"
+          class="flex items-stretch bg-white rounded-full overflow-hidden search-bar-responsive border border-neutral-200/60"
+          :class="activeField ? 'border-[#1d6b44]/30 ring-1 ring-[#1d6b44]/10' : ''"
         >
           <!-- Practice Area -->
           <motion.div
             @click="focusField('area')"
             @blur.capture="blurField"
             :animate="{
-              backgroundColor: activeField === 'area' ? '#f2faf4' : '#ffffff',
+              backgroundColor: activeField === 'area' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
-            class="flex-[1.4] px-5 py-3.5 cursor-text border-r border-neutral-200 rounded-l-full search-field"
+            class="flex-[1.4] px-5 py-3.5 cursor-text border-r border-neutral-100 rounded-l-full search-field"
           >
             <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Practice Area</div>
             <input
@@ -145,10 +144,10 @@ const consultationOptions = [
           <motion.div
             @click="focusField('location')"
             :animate="{
-              backgroundColor: activeField === 'location' ? '#f2faf4' : '#ffffff',
+              backgroundColor: activeField === 'location' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
-            class="flex-[1] px-5 py-3.5 cursor-text border-r border-neutral-200 search-field"
+            class="flex-[1] px-5 py-3.5 cursor-text border-r border-neutral-100 search-field"
           >
             <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Location</div>
             <input
@@ -164,7 +163,7 @@ const consultationOptions = [
           <motion.div
             @click="focusField('type')"
             :animate="{
-              backgroundColor: activeField === 'type' ? '#f2faf4' : '#ffffff',
+              backgroundColor: activeField === 'type' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
             class="flex-[1] px-5 py-3.5 cursor-pointer search-field"
@@ -178,7 +177,7 @@ const consultationOptions = [
                 class="text-xs px-2.5 py-1 rounded-full border font-medium font-[DM_Sans] transition-all duration-150"
                 :class="consultationType === opt.value
                   ? 'bg-[#1d6b44] text-white border-[#1d6b44]'
-                  : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-400'"
+                  : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'"
               >
                 {{ opt.label }}
               </button>
@@ -188,9 +187,9 @@ const consultationOptions = [
           <!-- Search button -->
           <div class="flex items-center pr-2 pl-2 bg-white search-button-wrapper">
             <motion.button
-              :whileHover="{ scale: 1.06 }"
-              :whileTap="{ scale: 0.94 }"
-              :transition="{ type: 'spring', stiffness: 420, damping: 18 }"
+              :whileHover="{ scale: 1.04 }"
+              :whileTap="{ scale: 0.96 }"
+              :transition="{ type: 'spring', stiffness: 400, damping: 25 }"
               @click="handleSearch"
               class="w-11 h-11 rounded-full bg-[#1d6b44] hover:bg-[#154a2f] border-none cursor-pointer flex items-center justify-center transition-colors duration-150 flex-shrink-0"
             >
@@ -209,15 +208,15 @@ const consultationOptions = [
         :transition="{ duration: 0.5, delay: 0.38 }"
         class="flex flex-wrap items-center justify-center gap-2 mb-14"
       >
-        <span class="text-xs text-white/50 font-medium">Popular:</span>
+        <span class="text-xs text-neutral-400 font-medium">Popular:</span>
         <motion.button
           v-for="tag in quickSearchTags"
           :key="tag"
-          :whileHover="{ y: -2, backgroundColor: 'rgba(129,201,149,0.18)', borderColor: '#81c995' }"
+          :whileHover="{ y: -2, backgroundColor: '#f9f9f9', borderColor: '#e5e5e5' }"
           :whileTap="{ scale: 0.96 }"
           :transition="{ duration: 0.15 }"
           @click="handleTag(tag)"
-          class="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-medium text-white backdrop-blur-sm cursor-pointer font-[DM_Sans]"
+          class="px-3.5 py-1.5 rounded-full bg-white border border-neutral-200 text-xs font-medium text-neutral-600 cursor-pointer font-[DM_Sans] shadow-sm"
         >
           {{ tag }}
         </motion.button>
@@ -234,17 +233,17 @@ const consultationOptions = [
           v-for="(stat, i) in statistics"
           :key="i"
           class="text-center"
-          :class="i < statistics.length - 1 ? 'border-r border-white/15' : ''"
+          :class="i < statistics.length - 1 ? 'border-r border-neutral-200' : ''"
         >
-          <div class="text-xl font-bold text-white mb-0.5">{{ stat.value }}</div>
-          <div class="text-xs text-white/50 font-medium">{{ stat.label }}</div>
+          <div class="text-xl font-bold text-neutral-900 mb-0.5">{{ stat.value }}</div>
+          <div class="text-xs text-neutral-500 font-medium">{{ stat.label }}</div>
         </div>
       </motion.div>
     </div>
 
     <!-- Bottom fade -->
     <div class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
-      style="background: linear-gradient(to bottom, transparent, #f9f9f6)" />
+      style="background: linear-gradient(to bottom, transparent, #ffffff)" />
   </section>
 </template>
 
@@ -305,13 +304,13 @@ const consultationOptions = [
   
   .grid-cols-4 > div:nth-child(1),
   .grid-cols-4 > div:nth-child(3) {
-    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-right: 1px solid #e5e5e5 !important;
   }
   
   .grid-cols-4 > div:nth-child(1),
   .grid-cols-4 > div:nth-child(2) {
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid #e5e5e5;
   }
 }
 </style>

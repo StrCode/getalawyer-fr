@@ -18,7 +18,7 @@ const options = [
     {
         value: 'property_owner' as StartOption,
         title: 'I own a property',
-        description: 'Smart Stay handles the rental, you sit back and earn.',
+        description: 'Join our network to connect with clients seeking legal advice.',
     },
 ]
 
@@ -38,7 +38,7 @@ function goToLogin() {
 <template>
   <div class="px-6 py-6">
     <h2 class="mb-1 font-semibold text-gray-900 text-xl text-center tracking-tight">
-      Welcome to Smart Stay Rentals
+      Welcome to LexConnect
     </h2>
     <p class="mb-6 text-gray-500 text-sm text-center">
       Let's get started. What brings you here?

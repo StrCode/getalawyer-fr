@@ -68,7 +68,7 @@ const validateAndNext = () => {
     newErrors.country = "Please select a country"
   }
   
-  if (availableStates.value.length > 1 && !state.value) {
+  if (availableStates.value.length > 0 && !state.value) {
     newErrors.state = "Please select a state/region"
   }
   
@@ -196,7 +196,7 @@ const selectedStateName = computed(() => {
             </div>
 
             <!-- State Select -->
-            <div class="space-y-2" :class="[(!country || availableStates.length <= 1) ? 'opacity-50 pointer-events-none blur-[1px] transition-all' : 'opacity-100 transition-all']">
+            <div class="space-y-2" :class="[(!country || availableStates.length === 0) ? 'opacity-50 pointer-events-none transition-all' : 'opacity-100 transition-all']">
               <label class="block font-medium text-gray-700 text-sm">
                 State / Region <span class="text-red-500">*</span>
               </label>
@@ -204,7 +204,7 @@ const selectedStateName = computed(() => {
                 <select
                   :value="state"
                   @change="handleStateChange"
-                  :disabled="!country || availableStates.length <= 1"
+                  :disabled="!country || availableStates.length === 0"
                   :class="[
                     'w-full h-12 px-4 appearance-none rounded-xl border bg-gray-50/50 outline-none transition-all duration-200',
                     errors.state ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-gray-200 hover:border-black/30 focus:border-black focus:ring-1 focus:ring-black'
@@ -230,7 +230,7 @@ const selectedStateName = computed(() => {
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Confirmed Location</p>
                 <p class="text-sm font-semibold text-gray-900 mt-0.5">
-                  {{ selectedCountryName }}{{ state && availableStates.length > 1 ? `, ${selectedStateName}` : '' }}
+                  {{ selectedCountryName }}{{ state && availableStates.length > 0 ? `, ${selectedStateName}` : '' }}
                 </p>
               </div>
             </div>

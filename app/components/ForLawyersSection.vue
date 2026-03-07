@@ -18,16 +18,15 @@ const perks: Perk[] = [
 <template>
   <section
     id="for-lawyers"
-    class="relative py-20 md:py-28 overflow-hidden"
-    style="background: linear-gradient(150deg, #0d3320 0%, #1d6b44 60%, #1a5c3a 100%)"
+    class="relative py-20 md:py-28 overflow-hidden bg-white border-t border-neutral-200"
   >
     <!-- Dot texture -->
-    <div class="absolute inset-0 opacity-[0.035]"
-      style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 24px 24px;" />
+    <div class="absolute inset-0 opacity-[0.03]"
+      style="background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 24px 24px;" />
 
     <!-- Glow -->
     <div class="absolute bottom-0 left-1/3 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none"
-      style="background: radial-gradient(circle, #81c995, transparent)" />
+      style="background: radial-gradient(circle, #1d6b44, transparent)" />
 
     <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -39,7 +38,7 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.4 }"
-            class="text-xs font-semibold uppercase tracking-widest text-[#81c995] mb-4"
+            class="text-xs font-semibold uppercase tracking-widest text-[#1d6b44] mb-4"
           >For Legal Professionals</motion.p>
 
           <motion.h2
@@ -47,7 +46,7 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.55, delay: 0.06 }"
-            class="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-[1.1]"
+            class="text-4xl md:text-5xl font-bold text-neutral-900 mb-6 tracking-tight leading-[1.1]"
           >
             Grow Your<br>Practice.
           </motion.h2>
@@ -57,7 +56,7 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.5, delay: 0.12 }"
-            class="text-white/70 text-lg leading-relaxed mb-9 max-w-md"
+            class="text-neutral-500 text-lg leading-relaxed mb-9 max-w-md"
           >
             Join thousands of verified legal professionals expanding their client base on LexConnect.
             The tools you need to manage your practice, zero commission taken.
@@ -71,18 +70,18 @@ const perks: Perk[] = [
             class="flex flex-wrap gap-3"
           >
             <motion.button
-              :whileHover="{ scale: 1.03, backgroundColor: '#e8f3ec' }"
+              :whileHover="{ scale: 1.03 }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-white text-[#1d6b44] font-semibold text-sm border-none cursor-pointer font-[DM_Sans]"
+              class="px-7 py-3.5 rounded-full bg-[#1d6b44] text-white font-semibold text-sm border-none cursor-pointer font-[DM_Sans] shadow-sm"
             >
               Register as a Lawyer
             </motion.button>
             <motion.button
-              :whileHover="{ backgroundColor: 'rgba(255,255,255,0.18)' }"
+              :whileHover="{ backgroundColor: '#f9f9f9', borderColor: '#e5e5e5' }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-white/10 border border-white/25 text-white font-semibold text-sm cursor-pointer font-[DM_Sans]"
+              class="px-7 py-3.5 rounded-full bg-white border border-neutral-200 text-neutral-700 font-semibold text-sm cursor-pointer font-[DM_Sans] shadow-sm"
             >
               Learn More
             </motion.button>
@@ -99,10 +98,10 @@ const perks: Perk[] = [
             <div v-for="(item, i) in [['2,500+', 'Lawyers'], ['$0', 'Commission'], ['4.8★', 'Avg Rating']]"
               :key="i"
               class="text-center"
-              :class="i < 2 ? 'pr-5 border-r border-white/15' : ''"
+              :class="i < 2 ? 'pr-5 border-r border-neutral-200' : ''"
             >
-              <div class="text-lg font-bold text-white">{{ item[0] }}</div>
-              <div class="text-xs text-white/45 font-medium">{{ item[1] }}</div>
+              <div class="text-lg font-bold text-neutral-900">{{ item[0] }}</div>
+              <div class="text-xs text-neutral-500 font-medium">{{ item[1] }}</div>
             </div>
           </motion.div>
         </div>
@@ -116,15 +115,14 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.45, delay: 0.06 * i, ease: [0.25, 0.46, 0.45, 0.94] }"
-            :whileHover="{ backgroundColor: 'rgba(255,255,255,0.14)' }"
-            :transition-hover="{ duration: 0.15 }"
-            class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl p-5 cursor-default"
+            :whileHover="{ y: -4, boxShadow: '0 10px 30px rgba(0,0,0,0.06)' }"
+            class="bg-white border border-neutral-200 rounded-xl p-5 cursor-default transition-shadow duration-200"
           >
-            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mb-4">
-              <UIcon :name="perk.icon" class="w-5 h-5 text-[#81c995]" />
+            <div class="w-10 h-10 rounded-lg bg-[#e8f3ec] flex items-center justify-center mb-4">
+              <UIcon :name="perk.icon" class="w-5 h-5 text-[#1d6b44]" />
             </div>
-            <h3 class="font-semibold text-white text-[15px] mb-1.5">{{ perk.title }}</h3>
-            <p class="text-white/60 text-sm leading-relaxed">{{ perk.description }}</p>
+            <h3 class="font-semibold text-neutral-900 text-[15px] mb-1.5">{{ perk.title }}</h3>
+            <p class="text-neutral-500 text-sm leading-relaxed">{{ perk.description }}</p>
           </motion.div>
         </div>
 

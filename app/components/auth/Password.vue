@@ -125,7 +125,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         :loading="loading"
         block
         size="lg"
-        class="bg-[#007AFC] hover:bg-[#0066D6] rounded-xl"
+        class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl"
       >
         {{ loading ? 'Logging in...' : 'Log in' }}
       </UButton>

@@ -34,11 +34,11 @@ const navLinks = [
   <header 
     :class="[
       'top-0 right-0 left-0 z-50 fixed',
-      transparent ? 'bg-transparent' : 'bg-navy/90 backdrop-blur-md',
+      transparent ? 'bg-transparent' : 'bg-white/80 backdrop-blur-md',
       prefersReducedMotion ? 'transition-none' : 'transition-colors duration-300'
     ]"
   >
-    <div class="border-gold/20 border-b">
+    <div :class="transparent ? 'border-transparent' : 'border-neutral-200/50'" class="border-b transition-colors duration-300">
       <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
@@ -46,11 +46,12 @@ const navLinks = [
             <button 
               @click="scrollToSection('hero')"
               :class="[
-                'hover:opacity-80 font-serif font-bold text-white text-2xl',
+                'hover:opacity-80 font-serif font-bold text-2xl tracking-tight',
+                transparent ? 'text-neutral-900' : 'text-neutral-900',
                 prefersReducedMotion ? 'transition-none' : 'transition-opacity'
               ]"
             >
-              Lex<span class="text-gold">Connect</span>
+              Lex<span class="text-[#1d6b44]">Connect</span>
             </button>
           </div>
 
@@ -61,7 +62,8 @@ const navLinks = [
               :key="link.target"
               @click="scrollToSection(link.target)"
               :class="[
-                'font-medium text-white/90 hover:text-gold text-sm',
+                'font-medium text-sm',
+                transparent ? 'text-neutral-700 hover:text-neutral-950' : 'text-neutral-600 hover:text-neutral-900',
                 prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
               ]"
             >
@@ -73,7 +75,7 @@ const navLinks = [
           <div class="flex-shrink-0">
             <button
               :class="[
-                'bg-gold hover:bg-gold-light px-6 py-2 rounded-full font-medium text-navy text-sm',
+                'bg-[#e8f3ec] hover:bg-[#d1e8dc] px-6 py-2 rounded-full font-medium text-[#1d6b44] text-sm tracking-wide',
                 prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
               ]"
             >
