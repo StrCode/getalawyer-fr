@@ -12,25 +12,16 @@ import { getSessionFromBackend } from '../utils/getSession';
 export default defineEventHandler(async (event) => {
   const path = event.path;
   
-  console.log('[Session Middleware] Running for path:', path);
-  
   // Skip for static assets, API routes, and files with extensions
   if (path.startsWith('/_nuxt') || path.startsWith('/api') || path.match(/\.\w+$/)) {
-    console.log('[Session Middleware] Skipping:', path);
     return;
   }
-
-  console.log('[Session Middleware] Fetching session...');
   
   try {
     const session = await getSessionFromBackend(event);
-    console.log('[Session Middleware] Session result:', session ? 'Found' : 'Null');
-    if (session) {
-      console.log('[Session Middleware] User:', session.user?.email);
-    }
     event.context.session = session;
   } catch (error) {
-    console.error('[Session Middleware] Error:', error);
+    console.error('[Session Middleware] Error fetching session:', error);
     event.context.session = null;
   }
 });

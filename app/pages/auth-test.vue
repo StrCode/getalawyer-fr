@@ -165,8 +165,6 @@
 </template>
 
 <script setup lang="ts">
-import { authClient } from '~/lib/auth-client';
-
 definePageMeta({
   layout: 'default',
 });
@@ -174,10 +172,8 @@ definePageMeta({
 const config = useRuntimeConfig();
 const apiUrl = config.public.apiUrl;
 
-// Session state
-const sessionData = authClient.useSession();
-const session = computed(() => sessionData.value.data);
-const isPending = computed(() => sessionData.value.isPending);
+// Use the unified auth composable
+const { session, isPending, signIn, signUp, signOut } = useAuth();
 
 // Sign in form
 const email = ref('');
@@ -200,7 +196,7 @@ async function handleSignIn() {
   isSigningIn.value = true;
 
   try {
-    const result = await authClient.signIn.email({
+    const result = await signIn.email({
       email: email.value,
       password: password.value,
       rememberMe: true,
@@ -225,7 +221,7 @@ async function handleSignUp() {
   isSigningUp.value = true;
 
   try {
-    const result = await authClient.signUp.email({
+    const result = await signUp.email({
       email: signupEmail.value,
       password: signupPassword.value,
       name: signupName.value,
@@ -252,7 +248,7 @@ async function handleSignOut() {
   isSigningOut.value = true;
 
   try {
-    await authClient.signOut();
+    await signOut();
   } catch (err: any) {
     console.error('Sign out error:', err);
   } finally {
