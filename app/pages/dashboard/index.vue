@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
+  layout: 'dashboard',
   middleware: 'auth', // Protect this route
 })
 </script>
