@@ -77,17 +77,58 @@ const bookingsAPI = {
   },
 
   // Lawyer Bookings
-  getLawyerBookings: async (): Promise<Booking[]> => {
-    const response = await httpClient.getAuth<ApiResponse<Booking[]>>('/api/lawyer/bookings')
-    return response.data || []
+  getLawyerBookings: async (filters?: { status?: string; upcoming?: boolean; date?: string }): Promise<Booking[]> => {
+    const params = new URLSearchParams()
+    if (filters?.status) params.append('status', filters.status)
+    if (filters?.upcoming !== undefined) params.append('upcoming', filters.upcoming.toString())
+    if (filters?.date) params.append('date', filters.date)
+
+    const qs = params.toString()
+    const url = qs ? `/api/lawyer/bookings?${qs}` : '/api/lawyer/bookings'
+
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] }>>>(url)
+    return response.data?.bookings || []
   },
 
   getLawyerBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.getAuth<ApiResponse<Booking>>(
+    const response = await httpClient.getAuth<ApiResponse<{ booking: Booking }>>(
       `/api/lawyer/bookings/${id}`
     )
-    if (!response.data) throw new Error('Booking not found')
-    return response.data
+    if (!response.data?.booking) throw new Error('Booking not found')
+    return response.data.booking
+  },
+
+  confirmBooking: async (id: string): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+      `/api/lawyer/bookings/${id}/confirm`
+    )
+    if (!response.data?.booking) throw new Error('Failed to confirm booking')
+    return response.data.booking
+  },
+
+  completeBooking: async (id: string): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+      `/api/lawyer/bookings/${id}/complete`
+    )
+    if (!response.data?.booking) throw new Error('Failed to complete booking')
+    return response.data.booking
+  },
+
+  markAsNoShow: async (id: string): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+      `/api/lawyer/bookings/${id}/no-show`
+    )
+    if (!response.data?.booking) throw new Error('Failed to mark as no-show')
+    return response.data.booking
+  },
+
+  cancelLawyerBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+      `/api/lawyer/bookings/${id}/cancel`,
+      data
+    )
+    if (!response.data?.booking) throw new Error('Failed to cancel booking')
+    return response.data.booking
   },
 
   updateLawyerBooking: async (
@@ -179,10 +220,10 @@ export const useBookings = () => {
   }
 
   // Query: Get lawyer bookings
-  const useLawyerBookings = () => {
+  const useLawyerBookings = (filters?: Ref<{ status?: string; upcoming?: boolean; date?: string }>) => {
     return useQuery({
-      queryKey: queryKeys.bookings.lawyer,
-      queryFn: bookingsAPI.getLawyerBookings,
+      queryKey: computed(() => [...queryKeys.bookings.lawyer, unref(filters)]),
+      queryFn: () => bookingsAPI.getLawyerBookings(unref(filters)),
     })
   }
 
@@ -192,6 +233,51 @@ export const useBookings = () => {
       queryKey: computed(() => queryKeys.bookings.detail(id.value)),
       queryFn: () => bookingsAPI.getLawyerBooking(id.value),
       enabled: computed(() => !!id.value),
+    })
+  }
+
+  // Mutation: Confirm booking
+  const useConfirmBooking = () => {
+    return useMutation({
+      mutationFn: (id: string) => bookingsAPI.confirmBooking(id),
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(id) })
+      },
+    })
+  }
+
+  // Mutation: Complete booking
+  const useCompleteBooking = () => {
+    return useMutation({
+      mutationFn: (id: string) => bookingsAPI.completeBooking(id),
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(id) })
+      },
+    })
+  }
+
+  // Mutation: Mark as no-show
+  const useMarkAsNoShow = () => {
+    return useMutation({
+      mutationFn: (id: string) => bookingsAPI.markAsNoShow(id),
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(id) })
+      },
+    })
+  }
+
+  // Mutation: Cancel lawyer booking
+  const useCancelLawyerBooking = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: string; data: CancelBookingInput }) =>
+        bookingsAPI.cancelLawyerBooking(id, data),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(variables.id) })
+      },
     })
   }
 
@@ -236,6 +322,10 @@ export const useBookings = () => {
     useUpdateClientBooking,
     useLawyerBookings,
     useLawyerBooking,
+    useConfirmBooking,
+    useCompleteBooking,
+    useMarkAsNoShow,
+    useCancelLawyerBooking,
     useUpdateLawyerBooking,
   }
 }
