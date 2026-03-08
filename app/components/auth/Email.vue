@@ -64,30 +64,36 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
   <div class="px-6 pb-6 pt-2">
-    <h2 class="text-[22px] font-bold text-gray-900 tracking-tight mb-1">
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-10 w-auto" />
+    </div>
+
+    <h2 class="text-[24px] font-bold text-gray-900 tracking-tight mb-2 text-center">
       Continue with email
     </h2>
-    <p class="text-sm text-gray-500 mb-6">
+    <p class="text-sm text-gray-500 mb-6 text-center">
       We'll check if you have an account, and help create one if you don't.
     </p>
 
     <UAlert
       v-if="errorMessage"
-      color="red"
+      color="error"
       variant="soft"
       :title="errorMessage"
-      :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'red', variant: 'link' }"
+      :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'error', variant: 'link' }"
       class="mb-4"
       @close="errorMessage = ''"
     />
 
     <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UFormField label="Email address" name="email">
+      <UFormField label="Email address" name="email" size="xl">
         <UInput
           v-model="state.email"
           type="email"
-          placeholder="Email address"
-          size="lg"
+          placeholder="Enter your email address"
+          size="xl"
+          icon="heroicons:envelope"
           autofocus
         />
       </UFormField>
@@ -96,8 +102,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         type="submit"
         :loading="loading"
         block
-        size="lg"
-        class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl"
+        size="xl"
+        color="primary"
+        class="rounded-xl font-semibold"
       >
         {{ loading ? 'Checking...' : 'Continue' }}
       </UButton>

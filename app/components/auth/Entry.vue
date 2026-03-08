@@ -130,36 +130,41 @@ async function handleAppleLogin() {
 
 <template>
   <div class="p-6">
-    <h2 class="mb-1 font-bold text-[22px] text-gray-900 tracking-tight">
-      Welcome to Smart Stay Rentals
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-10 w-auto" />
+    </div>
+
+    <h2 class="mb-2 font-bold text-[24px] text-gray-900 tracking-tight text-center">
+      Welcome to GetALawyer
     </h2>
-    <p class="mb-5 text-gray-500 text-sm">
-      Please enter your details to create an account.
+    <p class="mb-6 text-gray-500 text-sm text-center">
+      Connect with qualified legal professionals across Nigeria
     </p>
 
     <UAlert
       v-if="errorMessage"
-      color="red"
+      color="error"
       variant="soft"
       :title="errorMessage"
-      :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'red', variant: 'link' }"
+      :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'error', variant: 'link' }"
       class="mb-4"
       @close="errorMessage = ''"
     />
 
     <form @submit.prevent="onSubmit">
       <div class="mb-3 flex gap-2">
-        <USelect
+        <USelectMenu
           v-model="country"
-          :options="countries"
-          size="lg"
-          class="w-40"
+          :items="countries"
+          size="xl"
+          class="w-44"
         />
         <UInput
           v-model="phone"
           type="tel"
           placeholder="Phone number"
-          size="lg"
+          size="xl"
           class="flex-1"
           @keyup.enter="onSubmit"
         />
@@ -167,40 +172,41 @@ async function handleAppleLogin() {
 
       <p class="mb-4 text-gray-500 text-xs leading-relaxed">
         We'll call or text you to confirm your number. Standard message and data rates apply.
-        <a href="#" class="text-gray-700 underline">Privacy Policy</a>
+        <a href="#" class="text-gray-700 underline hover:text-gray-900">Privacy Policy</a>
       </p>
 
       <UButton
         type="submit"
         :loading="loading"
         block
-        size="lg"
-        class="bg-[#007AFC] hover:bg-[#0066D6] mb-5 rounded-xl"
+        size="xl"
+        color="primary"
+        class="mb-5 rounded-xl font-semibold"
       >
         {{ loading ? 'Checking...' : 'Continue' }}
       </UButton>
     </form>
 
     <!-- Divider -->
-    <div class="flex items-center gap-3 mb-4 text-gray-400 text-sm">
+    <div class="flex items-center gap-3 mb-5 text-gray-400 text-sm">
       <div class="flex-1 bg-gray-200 h-px" />
       <span>or</span>
       <div class="flex-1 bg-gray-200 h-px" />
     </div>
 
     <!-- Social buttons -->
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-3">
       <button
-        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-medium text-gray-900 text-sm text-left transition-all"
+        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="emit('push', 'email')"
       >
-        <UIcon name="i-heroicons-envelope" class="w-5 h-5 shrink-0" />
+        <UIcon name="i-heroicons-envelope" class="w-5 h-5 shrink-0 text-gray-600" />
         <span class="flex-1 text-center">Continue with email</span>
         <span class="w-5" />
       </button>
 
       <button 
-        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-medium text-gray-900 text-sm text-left transition-all"
+        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="handleGoogleLogin"
       >
         <svg class="w-5 h-5 shrink-0" viewBox="0 0 32 32">
@@ -216,16 +222,16 @@ async function handleAppleLogin() {
       </button>
 
       <button 
-        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-medium text-gray-900 text-sm text-left transition-all"
+        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="handleAppleLogin"
       >
-        <UIcon name="i-lucide-apple" class="w-5 h-5 shrink-0" />
+        <UIcon name="i-lucide-apple" class="w-5 h-5 shrink-0 text-gray-900" />
         <span class="flex-1 text-center">Continue with Apple</span>
         <span class="w-5" />
       </button>
 
       <button 
-        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-medium text-gray-900 text-sm text-left transition-all"
+        class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="handleFacebookLogin"
       >
         <svg class="w-5 h-5 shrink-0" viewBox="0 0 32 32">
