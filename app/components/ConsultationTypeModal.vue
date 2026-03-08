@@ -198,14 +198,8 @@ const isSubmitting = computed(() => createMutation.isPending.value || updateMuta
 </script>
 
 <template>
-  <UModal v-model="isOpen">
-    <UCard>
-      <template #header>
-        <h3 class="text-lg font-semibold">
-          {{ isEdit ? 'Edit Consultation Type' : 'Create Consultation Type' }}
-        </h3>
-      </template>
-
+  <UModal v-model:open="isOpen" :title="isEdit ? 'Edit Consultation Type' : 'Create Consultation Type'">
+    <template #body>
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Name -->
         <UFormGroup label="Name" required :error="errors.name">
@@ -317,31 +311,31 @@ const isSubmitting = computed(() => createMutation.isPending.value || updateMuta
         <!-- Active Status -->
         <UFormGroup label="Status">
           <div class="flex items-center gap-2">
-            <UToggle v-model="formData.isActive" :disabled="isSubmitting" />
+            <USwitch v-model="formData.isActive" :disabled="isSubmitting" />
             <span class="text-sm text-gray-600">
               {{ formData.isActive ? 'Active (visible to clients)' : 'Inactive (hidden from clients)' }}
             </span>
           </div>
         </UFormGroup>
       </form>
+    </template>
 
-      <template #footer>
-        <div class="flex justify-end gap-3">
-          <UButton
-            variant="outline"
-            @click="isOpen = false"
-            :disabled="isSubmitting"
-          >
-            Cancel
-          </UButton>
-          <UButton
-            @click="handleSubmit"
-            :loading="isSubmitting"
-          >
-            {{ isEdit ? 'Update' : 'Create' }}
-          </UButton>
-        </div>
-      </template>
-    </UCard>
+    <template #footer>
+      <div class="flex justify-end gap-3">
+        <UButton
+          variant="outline"
+          @click="isOpen = false"
+          :disabled="isSubmitting"
+        >
+          Cancel
+        </UButton>
+        <UButton
+          @click="handleSubmit"
+          :loading="isSubmitting"
+        >
+          {{ isEdit ? 'Update' : 'Create' }}
+        </UButton>
+      </div>
+    </template>
   </UModal>
 </template>

@@ -92,7 +92,7 @@ const sidebarCollapsed = ref(false)
 const route = useRoute()
 const { session } = useAuth()
 
-const role = computed(() => session.value?.user.role)
+const role = computed(() => session.value?.user.userType)
 
 // Lawyer Menu Items
 const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
@@ -145,9 +145,9 @@ const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
   { 
     label: 'My Bookings', 
     icon: 'i-hugeicons-calendar-03', 
-    to: '/bookings', 
+    to: '/dashboard/bookings', 
     type: 'link',
-    active: route.path.startsWith('/bookings')
+    active: route.path.startsWith('/dashboard/bookings')
   }
 ])
 

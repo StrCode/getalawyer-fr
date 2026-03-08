@@ -8,7 +8,7 @@
           label="Back to Booking"
           color="neutral"
           variant="ghost"
-          :to="`/bookings/${bookingId}`"
+          :to="`/dashboard/bookings/${bookingId}`"
           class="mb-4"
         />
         <h1 class="text-3xl font-bold text-gray-900">Reschedule Booking</h1>
@@ -34,7 +34,7 @@
           label="Back to Booking"
           color="primary"
           class="mt-4 bg-[#007AFC]"
-          :to="`/bookings/${bookingId}`"
+          :to="`/dashboard/bookings/${bookingId}`"
         />
       </div>
 
@@ -56,7 +56,7 @@
                   label="Cancel"
                   color="neutral"
                   variant="ghost"
-                  :to="`/bookings/${bookingId}`"
+                  :to="`/dashboard/bookings/${bookingId}`"
                 />
                 <UButton
                   label="Confirm Reschedule"
@@ -130,7 +130,7 @@ import { useBookings } from '~/composables/useBookings'
 import BookingCalendar from '~/components/booking/BookingCalendar.vue'
 
 definePageMeta({
-  layout: 'default',
+  layout: 'dashboard',
   middleware: 'auth'
 })
 
@@ -178,7 +178,7 @@ const handleReschedule = () => {
           description: 'Booking rescheduled successfully',
           color: 'success'
         })
-        router.push(`/bookings/${bookingId.value}`)
+        router.push(`/dashboard/bookings/${bookingId.value}`)
       },
       onError: (error: any) => {
         const errorMessage = error.message || 'Failed to reschedule booking'

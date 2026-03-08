@@ -1,259 +1,340 @@
 <template>
-  <div class="p-6">
-    <UPageHeader 
-      title="Bookings"
-      description="Manage your consultations and appointments here."
-      :links="links"
-      :ui="{
-        root: 'border-none py-0',
-        title: 'font-semibold !text-3xl leading-6 tracking-tight',
-        description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
-      }"
-    />
-    
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+  <div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <UPageHeader
+        title="My Bookings"
+        description="View and manage your consultation bookings"
+        :ui="{
+          root: 'border-none py-0',
+          title: 'font-semibold !text-3xl leading-6 tracking-tight',
+          description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
+        }"
+      />
+
+      <!-- Filters -->
+      <div class="mt-6 flex items-center gap-3">
+        <UButton
+          :label="`All (${allBookings.length})`"
+          :color="filter === 'all' ? 'primary' : 'neutral'"
+          :variant="filter === 'all' ? 'solid' : 'ghost'"
+          @click="filter = 'all'"
+        />
+        <UButton
+          :label="`Upcoming (${upcomingBookings.length})`"
+          :color="filter === 'upcoming' ? 'primary' : 'neutral'"
+          :variant="filter === 'upcoming' ? 'solid' : 'ghost'"
+          @click="filter = 'upcoming'"
+        />
+        <UButton
+          :label="`Past (${pastBookings.length})`"
+          :color="filter === 'past' ? 'primary' : 'neutral'"
+          :variant="filter === 'past' ? 'solid' : 'ghost'"
+          @click="filter = 'past'"
+        />
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center py-12 mt-6">
+        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="isError" class="mt-6 text-center py-12 text-red-500">
+        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4" />
+        <p>Failed to load bookings. Please try again later.</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="filteredBookings.length === 0" class="mt-6">
+        <UCard>
+          <div class="text-center py-12">
+            <UIcon name="i-hugeicons-calendar-03" class="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
+            <p class="text-gray-600 mb-6">You haven't made any bookings yet</p>
+            <UButton
+              label="Find a Lawyer"
+              color="primary"
+              class="bg-[#007AFC]"
+              to="/lawyers"
+            />
+          </div>
+        </UCard>
+      </div>
+
+      <!-- Bookings List -->
+      <div v-else class="mt-6 space-y-4">
+        <UCard
+          v-for="booking in filteredBookings"
+          :key="booking.id"
+          class="hover:shadow-md transition-shadow cursor-pointer"
+          @click="navigateToBooking(booking.id)"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 space-y-3">
+              <!-- Status Badge -->
+              <div class="flex items-center gap-3">
+                <UBadge
+                  :color="getStatusColor(booking.status)"
+                  variant="subtle"
+                  size="sm"
+                  class="capitalize"
+                >
+                  {{ booking.status.replace('_', ' ') }}
+                </UBadge>
+                <span class="text-sm font-medium text-gray-500">{{ booking.bookingReference }}</span>
+              </div>
+
+              <!-- Lawyer Info -->
+              <div class="flex items-center gap-3">
+                <UAvatar
+                  :src="booking.lawyer?.profilePicture"
+                  :alt="booking.lawyer?.name"
+                  size="md"
+                />
+                <div>
+                  <h4 class="font-semibold text-gray-900">{{ booking.lawyer?.name || 'Lawyer' }}</h4>
+                  <p class="text-sm text-gray-600">{{ booking.consultationType?.name || 'Consultation' }}</p>
+                </div>
+              </div>
+
+              <!-- Date & Time -->
+              <div class="flex items-center gap-4 text-sm text-gray-600">
+                <div class="flex items-center gap-1.5">
+                  <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
+                  <span>{{ formatDate(booking.scheduledDate) }}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
+                  <span>{{ booking.scheduledStartTime }}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
+                  <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div v-if="canTakeAction(booking)" class="flex flex-col gap-2">
+              <UButton
+                v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
+                label="Join"
+                color="primary"
+                size="sm"
+                class="bg-[#007AFC]"
+                :to="booking.meetingUrl"
+                target="_blank"
+                @click.stop
+              />
+              <UButton
+                v-if="booking.status === 'pending' || booking.status === 'confirmed'"
+                label="Reschedule"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                @click.stop="handleReschedule(booking.id)"
+              />
+              <UButton
+                v-if="booking.status === 'pending' || booking.status === 'confirmed'"
+                label="Cancel"
+                color="error"
+                variant="ghost"
+                size="sm"
+                @click.stop="handleCancelBooking(booking.id)"
+              />
+            </div>
+          </div>
+        </UCard>
+      </div>
     </div>
-    <div v-else-if="isError" class="py-12 text-center text-red-500">
-      Error loading bookings. Please try again later.
-    </div>
-    <UTabs 
-      v-else
-      v-model="activeTab"
-      default-value="all"
-      color="neutral" 
-      size="md" 
-      variant="link" 
-      :items="tabItems"
-      :ui="{
-        root: 'py-6',
-        list: 'gap-6',
-        label: 'font-medium text-sm leading-5 tracking-tight text-center data-[state=active]:text-[#007AFC]',
-        trigger: 'justify-start px-0 data-[state=active]:text-[#007AFC] data-[state=inactive]:text-[#525866] hover:data-[state=inactive]:not-disabled:text-[#525866]',
-        indicator: 'absolute transition-[translate,40%] duration-200 bg-[#007AFC]',
-        content: 'py-3.5'
-      }"
-    >
-      <template #all>
-        <BookingList 
-          title="All Bookings"
-          :bookings="bookings || []" 
-          :pagination="pagination"
-          @update:pagination="p => pagination = p"
-        />
-      </template>
 
-      <template #upcoming>
-        <BookingList 
-          title="Upcoming Consultations"
-          :bookings="upcomingBookings || []" 
-          :pagination="pagination"
-          @update:pagination="p => pagination = p"
-        />
+    <!-- Cancel Modal -->
+    <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">
+      <template #body>
+        <div class="space-y-4">
+          <p class="text-sm text-gray-600">
+            Are you sure you want to cancel this booking? The lawyer will be notified.
+          </p>
+          <UFormGroup label="Cancellation Reason (Optional)">
+            <UTextarea
+              v-model="cancelReason"
+              placeholder="Let the lawyer know why you're cancelling..."
+              :rows="3"
+            />
+          </UFormGroup>
+        </div>
       </template>
-
-      <template #pending>
-        <BookingList 
-          title="Pending Approvals"
-          :bookings="pendingBookings" 
-          :pagination="pagination"
-          @update:pagination="p => pagination = p"
-        />
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <UButton
+            label="Nevermind"
+            color="neutral"
+            variant="ghost"
+            @click="isCancelModalOpen = false"
+          />
+          <UButton
+            label="Cancel Booking"
+            color="error"
+            :loading="isCanceling"
+            @click="confirmCancel"
+          />
+        </div>
       </template>
-    </UTabs>
-
-    <BookingModal v-model:open="isBookingModalOpen" />
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, h, resolveComponent } from 'vue'
-import type { ButtonProps, TabsItem } from '@nuxt/ui'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
-import { getPaginationRowModel } from '@tanstack/vue-table'
-
-// Add subcomponent locally to clean up the template
-const BookingList = defineComponent({
-  props: {
-    title: String,
-    bookings: { type: Array as PropType<Booking[]>, required: true },
-    pagination: Object
-  },
-  emits: ['update:pagination'],
-  setup(props, { emit }) {
-    const tableApi = ref()
-    const columns = [
-      {
-        accessorKey: 'bookingReference',
-        header: 'Reference',
-        cell: ({ row }: any) => h('span', { class: 'font-medium text-gray-900' }, row.original.bookingReference || `REQ-${row.original.id.substring(0,6).toUpperCase()}`)
-      },
-      {
-        accessorKey: 'lawyer',
-        header: 'Lawyer / Consultation',
-        cell: ({ row }: any) => h('div', {}, [
-          h('div', { class: 'text-sm font-medium text-gray-900' }, row.original.lawyer?.name || 'Assigned Lawyer'),
-          h('div', { class: 'text-[#525866] text-sm' }, row.original.consultationType?.name || 'General Consultation')
-        ])
-      },
-      {
-        accessorKey: 'scheduledDate',
-        header: 'Date & Time',
-        cell: ({ row }: any) => h('div', {}, [
-          h('div', { class: 'text-sm font-medium text-gray-900' }, new Date(row.original.scheduledDate || row.original.createdAt).toLocaleDateString()),
-          h('div', { class: 'text-[#525866] text-sm' }, row.original.scheduledStartTime || 'TBD')
-        ])
-      },
-      {
-        accessorKey: 'meetingType',
-        header: 'Meeting Type',
-        cell: ({ row }: any) => {
-          const t = row.original.meetingType
-          const UBadge = resolveComponent('UBadge') as any
-          return h(UBadge, { variant: 'subtle', color: 'gray', size: 'sm' }, () => [
-            h('span', {}, t === 'video' ? 'Video Call' : t === 'in_person' ? 'In Person' : 'Phone Call')
-          ])
-        }
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ row }: any) => {
-          const status = row.original.status as string
-          const color = status === 'confirmed' ? 'success' : status === 'pending' ? 'warning' : status === 'cancelled' ? 'error' : 'neutral'
-          const bg = color === 'success' ? 'bg-green-500' : color === 'warning' ? 'bg-orange-500' : color === 'error' ? 'bg-red-500' : 'bg-gray-500'
-          const UBadge = resolveComponent('UBadge') as any
-          
-          return h(UBadge, { 
-            color, 
-            variant: 'subtle', 
-            size: 'sm',
-            class: 'inline-flex items-center gap-1.5 capitalize'
-          }, () => [
-            h('span', { class: `w-1.5 h-1.5 rounded-full ${bg}` }),
-            h('span', {}, status.replace('_', ' '))
-          ])
-        }
-      },
-      {
-        id: 'actions',
-        header: '',
-        meta: { class: { td: 'text-right' } },
-        cell: ({ row }: any) => {
-          const UButton = resolveComponent('UButton') as any
-          const UDropdownMenu = resolveComponent('UDropdownMenu') as any
-          const items = [
-            { label: 'View Details', icon: 'i-hugeicons-eye', to: `/dashboard/bookings/${row.original.id}` },
-            { label: 'Reschedule', icon: 'i-hugeicons-calendar-01' },
-            { label: 'Cancel Booking', icon: 'i-hugeicons-cancel-01', color: 'red' }
-          ]
-          return h('div', [
-            h(UDropdownMenu, {
-              content: { align: 'end' },
-              items,
-              ui: { group: 'p-1', label: 'font-medium text-sm leading-5 tracking-normal', item: 'p-2' }
-            }, {
-              default: () => h(UButton, { icon: 'i-hugeicons-more-vertical', color: 'neutral', variant: 'ghost', size: 'lg' })
-            })
-          ])
-        }
-      }
-    ]
-
-    return () => {
-      const UCard = resolveComponent('UCard') as any
-      const UInput = resolveComponent('UInput') as any
-      const UTable = resolveComponent('UTable') as any
-      const UPagination = resolveComponent('UPagination') as any
-
-      return h('div', {}, [
-        h(UCard, { ui: { body: 'rounded-none sm:p-0' } }, () => [
-          h('div', { class: 'flex justify-between items-center gap-1.5 px-6 py-5' }, [
-            h('div', {}, [
-              h('span', { class: 'font-medium text-[#1C1C1E] text-[20px] leading-6 tracking-tight' }, props.title),
-              h('span', { class: 'ml-2 font-normal text-[#8E8E93] text-sm leading-5' }, `Total ${props.bookings.length}`)
-            ]),
-            h('div', { class: 'flex items-center gap-3' }, [
-              h(UInput, { 
-                icon: 'i-hugeicons-search-01', 
-                placeholder: 'Search bookings', 
-                class: 'w-64',
-                ui: { base: 'placeholder:font-normal placeholder:text-sm placeholder:leading-5 placeholder:tracking-tight placeholder:text-[#8E8E93]', leadingIcon: 'p-2.5 size-3' }
-              })
-            ])
-          ]),
-          h(UTable, {
-            ref: (el: any) => tableApi.value = el,
-            data: props.bookings,
-            columns,
-            pagination: props.pagination,
-            'onUpdate:pagination': (val: any) => emit('update:pagination', val),
-            paginationOptions: { getPaginationRowModel: getPaginationRowModel() },
-            ui: {
-              root: 'border border-gray-200 border-x-0 rounded-none overflow-hidden',
-              thead: 'bg-gray-50',
-              th: 'text-left text-sm font-medium leading-tight text-[#525866] tracking-normal',
-              td: 'text-sm text-gray-900'
-            }
-          })
-        ]),
-        h('div', { class: 'flex justify-center mt-4' }, [
-          h(UPagination, {
-            page: (tableApi.value?.tableApi?.getState().pagination.pageIndex || 0) + 1,
-            itemsPerPage: tableApi.value?.tableApi?.getState().pagination.pageSize || 10,
-            total: tableApi.value?.tableApi?.getFilteredRowModel().rows.length || 0,
-            'onUpdate:page': (p: number) => tableApi.value?.tableApi?.setPageIndex(p - 1)
-          })
-        ])
-      ])
-    }
-  }
-})
-
-useHead({
-  title: 'Bookings - LexConnect',
-  meta: [
-    { name: 'description', content: 'Manage your legal consultations and bookings' }
-  ]
-})
 
 definePageMeta({
   layout: 'dashboard',
+  middleware: 'auth'
 })
 
-const isBookingModalOpen = ref(false)
-const activeTab = ref('all')
+useHead({
+  title: 'My Bookings - LexConnect',
+  meta: [
+    { name: 'description', content: 'View and manage your consultation bookings' }
+  ]
+})
 
-const { useClientBookings, useUpcomingBookings } = useBookings()
+const router = useRouter()
+const toast = useToast()
+
+const { useClientBookings, useCancelBooking } = useBookings()
+
+// Fetch bookings
 const { data: bookings, isLoading, isError } = useClientBookings()
-const { data: upcomingBookings } = useUpcomingBookings()
 
-const pendingBookings = computed(() => {
-  return bookings.value?.filter(b => b.status === 'pending') || []
+// Filter state
+const filter = ref<'all' | 'upcoming' | 'past'>('upcoming')
+
+// Computed bookings
+const allBookings = computed(() => bookings.value || [])
+
+const upcomingBookings = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  return allBookings.value.filter(b =>
+    b.scheduledDate >= today &&
+    (b.status === 'pending' || b.status === 'confirmed')
+  )
 })
 
-const tabItems = computed<TabsItem[]>(() => [
-  { label: 'All Bookings', value: 'all', slot: 'all' },
-  { label: 'Upcoming', value: 'upcoming', slot: 'upcoming' },
-  { 
-    label: 'Pending Approvals', 
-    value: 'pending', 
-    slot: 'pending',
-    badge: pendingBookings.value.length > 0 ? pendingBookings.value.length.toString() : undefined,
-    ui: { trailingBadge: 'border-0 ring-0 rounded-full text-white bg-orange-400' }
-  }
-])
+const pastBookings = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  return allBookings.value.filter(b =>
+    b.scheduledDate < today ||
+    b.status === 'completed' ||
+    b.status === 'cancelled' ||
+    b.status === 'no_show'
+  )
+})
 
-const links = ref<ButtonProps[]>([
-  {
-    label: 'New Booking',
-    icon: 'i-hugeicons-add-01',
-    onClick: () => { isBookingModalOpen.value = true },
-    color: 'secondary',
-    class: 'font-medium py-2.5 px-3 rounded-lg text-white text-sm leading-5 tracking-tight bg-[#007AFC] shadow-xs hover:bg-blue-600 transition-colors'
+const filteredBookings = computed(() => {
+  switch (filter.value) {
+    case 'upcoming':
+      return upcomingBookings.value
+    case 'past':
+      return pastBookings.value
+    default:
+      return allBookings.value
   }
-])
+})
 
-const pagination = ref({ pageIndex: 0, pageSize: 10 })
+// Cancel booking
+const isCancelModalOpen = ref(false)
+const cancelReason = ref('')
+const bookingToCancel = ref<string | null>(null)
+
+const { mutate: cancelBooking, isPending: isCanceling } = useCancelBooking()
+
+const handleCancelBooking = (bookingId: string) => {
+  bookingToCancel.value = bookingId
+  cancelReason.value = ''
+  isCancelModalOpen.value = true
+}
+
+const confirmCancel = () => {
+  if (!bookingToCancel.value) return
+
+  cancelBooking(
+    { id: bookingToCancel.value, data: { reason: cancelReason.value } },
+    {
+      onSuccess: () => {
+        toast.add({
+          title: 'Success',
+          description: 'Booking cancelled successfully',
+          color: 'success'
+        })
+        isCancelModalOpen.value = false
+        bookingToCancel.value = null
+        cancelReason.value = ''
+      },
+      onError: (error: any) => {
+        toast.add({
+          title: 'Error',
+          description: error.message || 'Failed to cancel booking',
+          color: 'error'
+        })
+      }
+    }
+  )
+}
+
+// Reschedule
+const handleReschedule = (bookingId: string) => {
+  router.push(`/dashboard/bookings/${bookingId}/reschedule`)
+}
+
+// Navigation
+const navigateToBooking = (bookingId: string) => {
+  router.push(`/dashboard/bookings/${bookingId}`)
+}
+
+// Helpers
+const canTakeAction = (booking: Booking) => {
+  return ['pending', 'confirmed'].includes(booking.status)
+}
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'confirmed':
+      return 'success'
+    case 'pending':
+      return 'warning'
+    case 'completed':
+      return 'success'
+    case 'cancelled':
+      return 'error'
+    case 'no_show':
+      return 'error'
+    default:
+      return 'neutral'
+  }
+}
+
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const getMeetingIcon = (type: string) => {
+  switch (type) {
+    case 'video':
+      return 'i-hugeicons-video-01'
+    case 'phone':
+      return 'i-hugeicons-call'
+    case 'in_person':
+      return 'i-hugeicons-location-01'
+    default:
+      return 'i-hugeicons-calendar-03'
+  }
+}
 </script>

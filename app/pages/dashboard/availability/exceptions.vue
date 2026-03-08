@@ -239,7 +239,7 @@ const getExceptionColor = (exception: AvailabilityException) => {
     <!-- Actions -->
     <div class="flex justify-between items-center">
       <div class="flex items-center gap-2">
-        <UToggle v-model="showPast" />
+        <USwitch v-model="showPast" />
         <span class="text-sm text-gray-600">Show past exceptions</span>
       </div>
       <div class="flex gap-3">
@@ -321,12 +321,8 @@ const getExceptionColor = (exception: AvailabilityException) => {
     </div>
 
     <!-- Add Exception Modal -->
-    <UModal v-model="isAddModalOpen">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">Add Exception</h3>
-        </template>
-
+    <UModal v-model:open="isAddModalOpen" title="Add Exception">
+      <template #body>
         <div class="space-y-4">
           <UFormGroup label="Date" required>
             <UInput
@@ -349,7 +345,7 @@ const getExceptionColor = (exception: AvailabilityException) => {
 
           <UFormGroup label="Duration">
             <div class="flex items-center gap-2">
-              <UToggle v-model="exceptionForm.isAllDay" />
+              <USwitch v-model="exceptionForm.isAllDay" />
               <span class="text-sm text-gray-700">All day</span>
             </div>
           </UFormGroup>
@@ -379,33 +375,29 @@ const getExceptionColor = (exception: AvailabilityException) => {
             />
           </UFormGroup>
         </div>
+      </template>
 
-        <template #footer>
-          <div class="flex justify-end gap-3">
-            <UButton
-              variant="outline"
-              @click="isAddModalOpen = false"
-            >
-              Cancel
-            </UButton>
-            <UButton
-              @click="handleAddException"
-              :loading="createMutation.isPending.value"
-            >
-              Add Exception
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <UButton
+            variant="outline"
+            @click="isAddModalOpen = false"
+          >
+            Cancel
+          </UButton>
+          <UButton
+            @click="handleAddException"
+            :loading="createMutation.isPending.value"
+          >
+            Add Exception
+          </UButton>
+        </div>
+      </template>
     </UModal>
 
     <!-- Block Vacation Modal -->
-    <UModal v-model="isVacationModalOpen">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">Block Vacation Period</h3>
-        </template>
-
+    <UModal v-model:open="isVacationModalOpen" title="Block Vacation Period">
+      <template #body>
         <div class="space-y-4">
           <UFormGroup label="Start Date" required>
             <UInput
@@ -439,25 +431,25 @@ const getExceptionColor = (exception: AvailabilityException) => {
             </p>
           </div>
         </div>
+      </template>
 
-        <template #footer>
-          <div class="flex justify-end gap-3">
-            <UButton
-              variant="outline"
-              @click="isVacationModalOpen = false"
-            >
-              Cancel
-            </UButton>
-            <UButton
-              color="error"
-              @click="handleBlockVacation"
-              :loading="bulkCreateMutation.isPending.value"
-            >
-              Block Dates
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <UButton
+            variant="outline"
+            @click="isVacationModalOpen = false"
+          >
+            Cancel
+          </UButton>
+          <UButton
+            color="error"
+            @click="handleBlockVacation"
+            :loading="bulkCreateMutation.isPending.value"
+          >
+            Block Dates
+          </UButton>
+        </div>
+      </template>
     </UModal>
   </div>
 </template>

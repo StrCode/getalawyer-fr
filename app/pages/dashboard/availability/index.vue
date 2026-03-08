@@ -257,7 +257,7 @@ const handleSaveAll = async () => {
             <div class="flex items-center gap-4">
               <!-- Enable Toggle -->
               <div class="w-40 flex items-center gap-2">
-                <UToggle
+                <USwitch
                   v-model="weekSchedule[day as DayOfWeek].enabled"
                 />
                 <span class="font-medium text-gray-900">{{ dayNames[index] }}</span>

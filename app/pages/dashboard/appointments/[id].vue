@@ -1,4 +1,4 @@
-<template>
+j<template>
   <div class="p-6 max-w-5xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
       <UButton 
@@ -240,11 +240,8 @@
     </div>
 
     <!-- Cancel Modal -->
-    <UModal v-model="isCancelModalOpen">
-      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100' }">
-        <template #header>
-          <h3 class="text-base font-semibold leading-6 text-gray-900">Cancel Appointment</h3>
-        </template>
+    <UModal v-model:open="isCancelModalOpen" title="Cancel Appointment">
+      <template #body>
         <div class="space-y-4">
           <p class="text-sm text-gray-600">
             Are you sure you want to cancel this appointment? The client will be notified.
@@ -257,24 +254,24 @@
             />
           </UFormGroup>
         </div>
-        <template #footer>
-          <div class="flex justify-end gap-3">
-            <UButton 
-              label="Nevermind" 
-              color="neutral" 
-              variant="ghost" 
-              @click="isCancelModalOpen = false" 
-            />
-            <UButton 
-              label="Cancel Appointment" 
-              color="error" 
-              :loading="isCanceling" 
-              :disabled="!cancelReason"
-              @click="confirmCancel" 
-            />
-          </div>
-        </template>
-      </UCard>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <UButton 
+            label="Nevermind" 
+            color="neutral" 
+            variant="ghost" 
+            @click="isCancelModalOpen = false" 
+          />
+          <UButton 
+            label="Cancel Appointment" 
+            color="error" 
+            :loading="isCanceling" 
+            :disabled="!cancelReason"
+            @click="confirmCancel" 
+          />
+        </div>
+      </template>
     </UModal>
   </div>
 </template>

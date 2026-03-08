@@ -111,8 +111,11 @@ const completedBookings = computed(() => {
       </UCard>
     </div>
 
-    <!-- Consultation Types Card -->
-    <DashboardConsultationTypesCard />
+    <!-- Consultation Types & Availability -->
+    <div class="grid gap-6 md:grid-cols-2">
+      <DashboardConsultationTypesCard />
+      <DashboardAvailabilityCard />
+    </div>
 
     <!-- Quick Actions -->
     <UCard>
@@ -120,7 +123,7 @@ const completedBookings = computed(() => {
         <h3 class="font-semibold">Quick Actions</h3>
       </template>
       <div class="flex flex-wrap gap-3">
-        <UButton to="/dashboard/bookings" color="primary">Manage Bookings</UButton>
+        <UButton to="/dashboard/appointments" color="primary" class="bg-[#007AFC]">Manage Appointments</UButton>
         <UButton to="/dashboard/consultation-types" variant="outline">Consultation Types</UButton>
         <UButton to="/dashboard/availability" variant="outline">Set Availability</UButton>
         <UButton to="/dashboard/profile" variant="outline">Edit Profile</UButton>

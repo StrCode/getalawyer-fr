@@ -124,7 +124,7 @@ const getMeetingTypeLabel = (type: string) => {
 
     <!-- Filter Toggle -->
     <div class="flex items-center gap-2">
-      <UToggle v-model="showInactive" />
+      <USwitch v-model="showInactive" />
       <span class="text-sm text-gray-600">Show inactive types</span>
     </div>
 
