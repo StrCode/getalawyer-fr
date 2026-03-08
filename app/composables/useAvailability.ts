@@ -25,7 +25,14 @@ const availabilityAPI = {
     const response = await httpClient.getAuth<ApiResponse<WeeklyScheduleResponse>>(
       '/api/lawyer/availability/schedule'
     )
-    return response.data?.schedule || []
+    console.log('API Response:', {
+      fullResponse: response,
+      data: response.data,
+      schedule: response.data?.schedule,
+      directSchedule: (response as any).schedule
+    });
+    // The API returns schedule directly on the response, not in response.data
+    return (response as any).schedule || response.data?.schedule || []
   },
 
   setSchedule: async (data: CreateScheduleInput): Promise<LawyerAvailabilitySchedule> => {

@@ -93,25 +93,28 @@
     <!-- Cancel Modal -->
     <UModal v-model:open="isCancelModalOpen" title="Cancel Appointment">
       <template #body>
-        <div class="space-y-4">
+        <div class="space-y-6">
           <p class="text-sm text-gray-600">
             Are you sure you want to cancel this appointment? The client will be notified.
           </p>
-          <UFormGroup label="Cancellation Reason" required>
+          <UFormField label="Cancellation Reason" name="cancelReason" required size="xl">
             <UTextarea 
               v-model="cancelReason" 
               placeholder="Let the client know why you're cancelling..."
+              size="xl"
               :rows="3"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton label="Nevermind" color="neutral" variant="ghost" @click="isCancelModalOpen = false" />
+          <UButton label="Nevermind" color="neutral" variant="ghost" size="lg" @click="isCancelModalOpen = false" />
           <UButton 
             label="Cancel Appointment" 
             color="error" 
+            size="lg"
             :loading="isCanceling" 
             :disabled="!cancelReason"
             @click="confirmCancel" 

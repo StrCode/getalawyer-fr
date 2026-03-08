@@ -13,7 +13,20 @@ const {
   useDeleteSchedule 
 } = useAvailability();
 
-const { data: schedules, isPending, refetch } = useAvailabilitySchedule();
+const { data: schedules, isPending, isError, error, isSuccess } = useAvailabilitySchedule();
+
+// Debug TanStack Query state
+watch([schedules, isPending, isError, isSuccess], ([data, pending, err, success]) => {
+  console.log('TanStack Query State:', {
+    isPending: pending,
+    isError: err,
+    isSuccess: success,
+    dataType: typeof data,
+    dataIsArray: Array.isArray(data),
+    dataLength: data?.length,
+    rawData: data
+  });
+}, { immediate: true });
 const setScheduleMutation = useSetSchedule();
 const bulkSetMutation = useBulkSetSchedule();
 const deleteMutation = useDeleteSchedule();
@@ -21,6 +34,20 @@ const deleteMutation = useDeleteSchedule();
 const toast = useToast();
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Track which day is currently being saved
+const savingDay = ref<DayOfWeek | null>(null);
+
+// Track validation errors for each day
+const validationErrors = ref<Record<DayOfWeek, string | null>>({
+  '0': null,
+  '1': null,
+  '2': null,
+  '3': null,
+  '4': null,
+  '5': null,
+  '6': null,
+});
 
 // Initialize form state
 const weekSchedule = ref<Record<DayOfWeek, { enabled: boolean; startTime: string; endTime: string }>>({
@@ -33,16 +60,67 @@ const weekSchedule = ref<Record<DayOfWeek, { enabled: boolean; startTime: string
   '6': { enabled: false, startTime: '09:00', endTime: '17:00' },
 });
 
+// Validate time range for a specific day
+const validateDay = (dayOfWeek: DayOfWeek): boolean => {
+  const config = weekSchedule.value[dayOfWeek];
+  
+  if (!config.enabled) {
+    validationErrors.value[dayOfWeek] = null;
+    return true;
+  }
+  
+  if (!config.startTime || !config.endTime) {
+    validationErrors.value[dayOfWeek] = 'Please set both start and end times';
+    return false;
+  }
+  
+  // Compare times as strings (HH:mm format)
+  if (config.startTime >= config.endTime) {
+    validationErrors.value[dayOfWeek] = 'End time must be after start time';
+    return false;
+  }
+  
+  validationErrors.value[dayOfWeek] = null;
+  return true;
+};
+
+// Watch for changes to clear errors
+watch(weekSchedule, (newSchedule) => {
+  Object.keys(newSchedule).forEach((day) => {
+    validateDay(day as DayOfWeek);
+  });
+}, { deep: true });
+
 // Load existing schedules
 watch(schedules, (newSchedules) => {
-  if (newSchedules) {
+  console.log('Schedules updated:', newSchedules, 'Length:', newSchedules?.length);
+  if (newSchedules && Array.isArray(newSchedules) && newSchedules.length > 0) {
+    // Create a fresh schedule object
+    const freshSchedule: Record<DayOfWeek, { enabled: boolean; startTime: string; endTime: string }> = {
+      '0': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '1': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '2': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '3': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '4': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '5': { enabled: false, startTime: '09:00', endTime: '17:00' },
+      '6': { enabled: false, startTime: '09:00', endTime: '17:00' },
+    };
+    
+    // Populate with actual schedule data
     newSchedules.forEach((schedule: LawyerAvailabilitySchedule) => {
-      weekSchedule.value[schedule.dayOfWeek] = {
+      console.log('Processing schedule:', schedule.dayOfWeek, schedule.isAvailable, schedule.startTime, schedule.endTime);
+      freshSchedule[schedule.dayOfWeek] = {
         enabled: schedule.isAvailable,
         startTime: schedule.startTime.substring(0, 5), // HH:mm
         endTime: schedule.endTime.substring(0, 5),
       };
     });
+    
+    console.log('Fresh schedule:', JSON.stringify(freshSchedule, null, 2));
+    // Replace the entire ref value to trigger reactivity
+    weekSchedule.value = freshSchedule;
+  } else {
+    console.log('Schedules is empty or undefined');
   }
 }, { immediate: true });
 
@@ -87,7 +165,6 @@ const handleQuickSetup = async (preset: 'weekdays' | 'weekdays-sat') => {
       description: 'Quick setup applied successfully',
       color: 'success'
     });
-    refetch();
   } catch (error: any) {
     toast.add({
       title: 'Error',
@@ -98,6 +175,17 @@ const handleQuickSetup = async (preset: 'weekdays' | 'weekdays-sat') => {
 };
 
 const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
+  // Validate before saving
+  if (!validateDay(dayOfWeek)) {
+    toast.add({
+      title: 'Validation Error',
+      description: validationErrors.value[dayOfWeek] || 'Invalid time range',
+      color: 'error'
+    });
+    return;
+  }
+  
+  savingDay.value = dayOfWeek;
   const config = weekSchedule.value[dayOfWeek];
   
   if (!config.enabled) {
@@ -111,7 +199,6 @@ const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
           description: `${dayNames[parseInt(dayOfWeek)]} schedule removed`,
           color: 'success'
         });
-        refetch();
       } catch (error: any) {
         toast.add({
           title: 'Error',
@@ -120,6 +207,7 @@ const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
         });
       }
     }
+    savingDay.value = null;
     return;
   }
 
@@ -135,21 +223,28 @@ const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
       description: `${dayNames[parseInt(dayOfWeek)]} schedule updated`,
       color: 'success'
     });
-    refetch();
   } catch (error: any) {
     toast.add({
       title: 'Error',
       description: error.message || 'Failed to update schedule',
       color: 'error'
     });
+  } finally {
+    savingDay.value = null;
   }
 };
 
 const handleSaveAll = async () => {
   const schedulesToSet = [];
+  let hasErrors = false;
   
   for (const [day, config] of Object.entries(weekSchedule.value)) {
     if (config.enabled) {
+      if (!validateDay(day as DayOfWeek)) {
+        hasErrors = true;
+        continue;
+      }
+      
       schedulesToSet.push({
         dayOfWeek: day as DayOfWeek,
         startTime: config.startTime + ':00',
@@ -157,6 +252,15 @@ const handleSaveAll = async () => {
         isAvailable: true
       });
     }
+  }
+
+  if (hasErrors) {
+    toast.add({
+      title: 'Validation Error',
+      description: 'Please fix the time range errors before saving',
+      color: 'error'
+    });
+    return;
   }
 
   if (schedulesToSet.length === 0) {
@@ -175,7 +279,6 @@ const handleSaveAll = async () => {
       description: 'Weekly schedule saved successfully',
       color: 'success'
     });
-    refetch();
   } catch (error: any) {
     toast.add({
       title: 'Error',
@@ -253,6 +356,7 @@ const handleSaveAll = async () => {
             v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
             :key="day"
             class="border rounded-lg p-4"
+            :class="{ 'border-red-300 bg-red-50': validationErrors[day as DayOfWeek] }"
           >
             <div class="flex items-center gap-4">
               <!-- Enable Toggle -->
@@ -271,6 +375,7 @@ const handleSaveAll = async () => {
                     type="time"
                     placeholder="Start time"
                     size="lg"
+                    :color="validationErrors[day as DayOfWeek] ? 'error' : undefined"
                   />
                 </div>
                 <span class="text-gray-500">to</span>
@@ -280,6 +385,7 @@ const handleSaveAll = async () => {
                     type="time"
                     placeholder="End time"
                     size="lg"
+                    :color="validationErrors[day as DayOfWeek] ? 'error' : undefined"
                   />
                 </div>
                 <UButton
@@ -287,7 +393,8 @@ const handleSaveAll = async () => {
                   size="sm"
                   variant="outline"
                   @click="handleSaveDay(day as DayOfWeek)"
-                  :loading="setScheduleMutation.isPending.value"
+                  :loading="savingDay === day"
+                  :disabled="!!validationErrors[day as DayOfWeek]"
                 >
                   Save
                 </UButton>
@@ -296,6 +403,12 @@ const handleSaveAll = async () => {
               <div v-else class="flex-1 text-gray-400 italic">
                 Not available
               </div>
+            </div>
+            
+            <!-- Error Message -->
+            <div v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled" class="mt-2 text-sm text-red-600 flex items-center gap-1">
+              <UIcon name="i-hugeicons-alert-circle" class="w-4 h-4" />
+              {{ validationErrors[day as DayOfWeek] }}
             </div>
           </div>
         </div>

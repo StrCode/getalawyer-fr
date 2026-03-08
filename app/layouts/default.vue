@@ -3,7 +3,7 @@
 
 <template>
     <AppLayout>
-        <NavigationBar />
+        <AppHeader />
         <slot />
         <ClientOnly>
             <AuthModal />

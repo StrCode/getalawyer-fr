@@ -1,57 +1,66 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
-import { api } from "~/lib/api";
-import { queryKeys } from "~/lib/query-client";
+/**
+ * Composable for lawyers listing and search
+ */
 
-// Query: Fetch all lawyers with 5-minute stale time
-export function useLawyers() {
-  return useQuery({
-    queryKey: queryKeys.lawyers.all,
-    queryFn: async () => {
-      const response = await api.lawyer.getAll();
-      return response.data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+import { useQuery } from '@tanstack/vue-query'
+import { computed, type MaybeRef, unref } from 'vue'
+import { api } from '~/lib/api'
+import { queryKeys } from '~/lib/query-client'
+
+export interface LawyersSearchParams {
+  q?: string
+  specializations?: string[]
+  minExperience?: number
+  maxExperience?: number
+  page?: number
+  limit?: number
+  sortBy?: 'relevance' | 'experience' | 'recent'
 }
 
-// Query: Fetch single lawyer with consultation types
-export function useLawyer(id: MaybeRef<string>) {
-  const lawyerId = computed(() => unref(id));
+export const useLawyers = () => {
+  // Query: Get all lawyers
+  const useLawyersList = (params?: MaybeRef<LawyersSearchParams>) => {
+    const searchParams = computed(() => unref(params))
+    
+    return useQuery({
+      queryKey: computed(() => ['lawyers', 'list', searchParams.value]),
+      queryFn: () => {
+        // If we have search params, use search endpoint
+        if (searchParams.value && Object.keys(searchParams.value).length > 0) {
+          return api.search.lawyers(searchParams.value)
+        }
+        // Otherwise use simple list endpoint
+        return api.lawyer.getAll()
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    })
+  }
 
-  return useQuery({
-    queryKey: computed(() => queryKeys.lawyers.detail(lawyerId.value)),
-    queryFn: async () => {
-      const response = await api.lawyer.getById(lawyerId.value);
-      return response.data;
-    },
-    enabled: computed(() => !!lawyerId.value),
-    staleTime: 5 * 60 * 1000,
-  });
-}
+  // Query: Get lawyer by ID
+  const useLawyerDetail = (id: MaybeRef<string>) => {
+    const lawyerId = computed(() => unref(id))
+    
+    return useQuery({
+      queryKey: computed(() => queryKeys.lawyers.detail(lawyerId.value)),
+      queryFn: () => api.lawyer.getById(lawyerId.value),
+      enabled: computed(() => !!lawyerId.value),
+    })
+  }
 
-// Query: Fetch public lawyer profile
-export function usePublicLawyerProfile(id: MaybeRef<string>) {
-  const lawyerId = computed(() => unref(id));
+  // Query: Get public lawyer profile
+  const useLawyerPublicProfile = (id: MaybeRef<string>) => {
+    const lawyerId = computed(() => unref(id))
+    
+    return useQuery({
+      queryKey: computed(() => queryKeys.lawyers.public(lawyerId.value)),
+      queryFn: () => api.lawyer.getPublicProfile(lawyerId.value),
+      enabled: computed(() => !!lawyerId.value),
+    })
+  }
 
-  return useQuery({
-    queryKey: computed(() => queryKeys.lawyers.public(lawyerId.value)),
-    queryFn: async () => {
-      const response = await api.lawyer.getPublicProfile(lawyerId.value);
-      return response.data;
-    },
-    enabled: computed(() => !!lawyerId.value),
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-// Query: Fetch own lawyer profile (authenticated)
-export function useLawyerProfile() {
-  return useQuery({
-    queryKey: queryKeys.lawyers.all,
-    queryFn: async () => {
-      const response = await api.lawyer.getProfile();
-      return response.data;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  return {
+    useLawyersList,
+    useLawyerDetail,
+    useLawyerPublicProfile,
+  }
 }

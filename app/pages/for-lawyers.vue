@@ -106,7 +106,6 @@ onMounted(() => {
 
 <template>
   <div class="for-lawyers-page">
-    <NavigationBar />
     
     <!-- Hero Section -->
     <section class="hero-section">

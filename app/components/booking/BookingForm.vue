@@ -32,75 +32,102 @@
       </div>
 
       <!-- Meeting Type -->
-      <UFormGroup label="Meeting Type" required class="mb-4">
+      <UFormField label="Meeting Type" name="meetingType" required size="xl" class="mb-6">
         <USelectMenu
           v-model="formData.meetingType"
-          :options="meetingTypeOptions"
+          :items="meetingTypeOptions"
           placeholder="Select meeting type"
+          size="xl"
+          value-key="value"
+          class="w-full"
         />
-      </UFormGroup>
+      </UFormField>
 
       <!-- Meeting URL (for video) -->
-      <UFormGroup
+      <UFormField
         v-if="formData.meetingType === 'video'"
         label="Meeting URL"
+        name="meetingUrl"
         required
-        help="Provide your Zoom, Google Meet, or other video call link"
-        class="mb-4"
+        size="xl"
+        class="mb-6"
       >
         <UInput
           v-model="formData.meetingUrl"
           type="url"
+          size="xl"
           placeholder="https://zoom.us/j/..."
+          class="w-full"
         />
-      </UFormGroup>
+        <template #hint>
+          <span class="text-xs text-gray-500">Provide your Zoom, Google Meet, or other video call link</span>
+        </template>
+      </UFormField>
 
       <!-- Phone Number (for phone) -->
-      <UFormGroup
+      <UFormField
         v-if="formData.meetingType === 'phone'"
         label="Phone Number"
+        name="meetingPhone"
         required
-        help="The lawyer will call you at this number"
-        class="mb-4"
+        size="xl"
+        class="mb-6"
       >
         <UInput
           v-model="formData.meetingPhone"
           type="tel"
+          size="xl"
           placeholder="+234 XXX XXX XXXX"
+          class="w-full"
         />
-      </UFormGroup>
+        <template #hint>
+          <span class="text-xs text-gray-500">The lawyer will call you at this number</span>
+        </template>
+      </UFormField>
 
       <!-- Meeting Location (for in-person) -->
-      <UFormGroup
+      <UFormField
         v-if="formData.meetingType === 'in_person'"
         label="Meeting Location"
+        name="meetingLocation"
         required
-        help="Where would you like to meet?"
-        class="mb-4"
+        size="xl"
+        class="mb-6"
       >
         <UTextarea
           v-model="formData.meetingLocation"
           placeholder="Enter the meeting location..."
+          size="xl"
           :rows="2"
+          class="w-full"
         />
-      </UFormGroup>
+        <template #hint>
+          <span class="text-xs text-gray-500">Where would you like to meet?</span>
+        </template>
+      </UFormField>
 
       <!-- Client Notes -->
-      <UFormGroup
+      <UFormField
         label="Notes (Optional)"
-        help="Tell the lawyer what you need help with"
+        name="clientNotes"
+        size="xl"
         class="mb-6"
       >
         <UTextarea
           v-model="formData.clientNotes"
           placeholder="Describe your legal issue or what you'd like to discuss..."
+          size="xl"
           :rows="4"
           :maxlength="1000"
+          class="w-full"
         />
-        <div class="text-xs text-gray-500 mt-1 text-right">
-          {{ formData.clientNotes?.length || 0 }} / 1000
-        </div>
-      </UFormGroup>
+        <template #hint>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-500">Tell the lawyer what you need help with</span>
+            <span class="text-xs text-gray-500">{{ formData.clientNotes?.length || 0 }} / 1000</span>
+          </div>
+        </template>
+      </UFormField>
 
       <!-- Actions -->
       <div class="flex gap-3">
@@ -108,12 +135,14 @@
           label="Back"
           color="neutral"
           variant="ghost"
+          size="lg"
           class="flex-1"
           @click="$emit('back')"
         />
         <UButton
           label="Confirm Booking"
           color="primary"
+          size="lg"
           class="flex-1 bg-[#007AFC]"
           :loading="isSubmitting"
           :disabled="!isFormValid"

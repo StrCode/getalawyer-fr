@@ -323,57 +323,62 @@ const getExceptionColor = (exception: AvailabilityException) => {
     <!-- Add Exception Modal -->
     <UModal v-model:open="isAddModalOpen" title="Add Exception">
       <template #body>
-        <div class="space-y-4">
-          <UFormGroup label="Date" required>
+        <div class="space-y-6">
+          <UFormField label="Date" name="date" required size="xl">
             <UInput
               v-model="exceptionForm.date"
               type="date"
-              size="lg"
+              size="xl"
               :min="new Date().toISOString().split('T')[0]"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Type" required>
+          <UFormField label="Type" name="isAvailable" required size="xl">
             <URadioGroup
               v-model="exceptionForm.isAvailable"
-              :options="[
+              :items="[
                 { value: false, label: 'Block time (unavailable)' },
                 { value: true, label: 'Add special availability' }
               ]"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Duration">
+          <UFormField label="Duration" name="isAllDay" size="xl">
             <div class="flex items-center gap-2">
               <USwitch v-model="exceptionForm.isAllDay" />
               <span class="text-sm text-gray-700">All day</span>
             </div>
-          </UFormGroup>
+          </UFormField>
 
-          <div v-if="!exceptionForm.isAllDay" class="grid grid-cols-2 gap-4">
-            <UFormGroup label="Start Time" required>
+          <div v-if="!exceptionForm.isAllDay" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <UFormField label="Start Time" name="startTime" required size="xl">
               <UInput
                 v-model="exceptionForm.startTime"
                 type="time"
-                size="lg"
+                size="xl"
+                class="w-full"
               />
-            </UFormGroup>
-            <UFormGroup label="End Time" required>
+            </UFormField>
+            <UFormField label="End Time" name="endTime" required size="xl">
               <UInput
                 v-model="exceptionForm.endTime"
                 type="time"
-                size="lg"
+                size="xl"
+                class="w-full"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
-          <UFormGroup label="Reason (optional)">
+          <UFormField label="Reason (optional)" name="reason" size="xl">
             <UTextarea
               v-model="exceptionForm.reason"
               placeholder="e.g., Lunch meeting, Court appearance"
+              size="xl"
               :rows="3"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
       </template>
 
@@ -381,11 +386,13 @@ const getExceptionColor = (exception: AvailabilityException) => {
         <div class="flex justify-end gap-3">
           <UButton
             variant="outline"
+            size="lg"
             @click="isAddModalOpen = false"
           >
             Cancel
           </UButton>
           <UButton
+            size="lg"
             @click="handleAddException"
             :loading="createMutation.isPending.value"
           >
@@ -398,32 +405,35 @@ const getExceptionColor = (exception: AvailabilityException) => {
     <!-- Block Vacation Modal -->
     <UModal v-model:open="isVacationModalOpen" title="Block Vacation Period">
       <template #body>
-        <div class="space-y-4">
-          <UFormGroup label="Start Date" required>
+        <div class="space-y-6">
+          <UFormField label="Start Date" name="startDate" required size="xl">
             <UInput
               v-model="vacationForm.startDate"
               type="date"
-              size="lg"
+              size="xl"
               :min="new Date().toISOString().split('T')[0]"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="End Date" required>
+          <UFormField label="End Date" name="endDate" required size="xl">
             <UInput
               v-model="vacationForm.endDate"
               type="date"
-              size="lg"
+              size="xl"
               :min="vacationForm.startDate || new Date().toISOString().split('T')[0]"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Reason (optional)">
+          <UFormField label="Reason (optional)" name="reason" size="xl">
             <UInput
               v-model="vacationForm.reason"
               placeholder="e.g., Summer vacation, Conference"
-              size="lg"
+              size="xl"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
           <div v-if="vacationForm.startDate && vacationForm.endDate" class="p-4 bg-blue-50 rounded-lg">
             <p class="text-sm text-blue-900">
@@ -437,12 +447,14 @@ const getExceptionColor = (exception: AvailabilityException) => {
         <div class="flex justify-end gap-3">
           <UButton
             variant="outline"
+            size="lg"
             @click="isVacationModalOpen = false"
           >
             Cancel
           </UButton>
           <UButton
             color="error"
+            size="lg"
             @click="handleBlockVacation"
             :loading="bulkCreateMutation.isPending.value"
           >

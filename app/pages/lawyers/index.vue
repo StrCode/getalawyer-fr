@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
 import { usePagination } from '~/composables/usePagination'
+import { useLawyers } from '~/composables/useLawyers'
 import type { Lawyer } from '~/types/lawyer'
 
 // Page metadata
@@ -17,15 +18,20 @@ useHead({
 const { filters, resetFilters, filtersFromQuery, filtersToQuery } = useLawyerFilters()
 const route = useRoute()
 const router = useRouter()
+const { useLawyersList } = useLawyers()
 
 // State
-const loading = ref(false)
-const lawyers = ref<Lawyer[]>([])
-const totalItems = ref(0)
 const isMobileFiltersOpen = ref(false)
 const isMobile = ref(false)
+const totalItems = ref(0)
 
-// Check if mobile on mount
+// Pagination - must be declared before searchParams
+const { currentPage, totalPages, itemsPerPage } = usePagination({
+  itemsPerPage: 12,
+  totalItems
+})
+
+// Initialize filters from query params
 onMounted(() => {
   filters.value = filtersFromQuery(route.query)
   
@@ -40,10 +46,34 @@ onMounted(() => {
   return () => window.removeEventListener('resize', checkMobile)
 })
 
-// Pagination
-const { currentPage, totalPages, itemsPerPage } = usePagination({
-  itemsPerPage: 12,
-  totalItems
+// Build search params from filters
+const searchParams = computed(() => {
+  const params: any = {}
+  
+  if (filters.value.keywords) params.q = filters.value.keywords
+  if (filters.value.practiceAreas.length > 0) params.specializations = filters.value.practiceAreas
+  if (filters.value.minExperience) params.minExperience = filters.value.minExperience
+  if (filters.value.priceRange.max) params.maxExperience = filters.value.priceRange.max
+  if (currentPage.value > 1) params.page = currentPage.value
+  params.limit = itemsPerPage.value
+  
+  return params
+})
+
+// Fetch lawyers using TanStack Query
+const { data: lawyersData, isLoading, error } = useLawyersList(searchParams)
+
+// Extract lawyers and total from response
+const lawyers = computed(() => {
+  if (!lawyersData.value?.data) return []
+  return Array.isArray(lawyersData.value.data) ? lawyersData.value.data : []
+})
+
+// Update total items when data changes
+watch(lawyersData, (newData) => {
+  if (newData?.data) {
+    totalItems.value = Array.isArray(newData.data) ? newData.data.length : 0
+  }
 })
 
 // Practice areas
@@ -60,63 +90,11 @@ const practiceAreas = [
   { name: 'Estate Planning', slug: 'estate-planning' }
 ]
 
-// Data fetching
-const fetchLawyers = async () => {
-  loading.value = true
-  
-  try {
-    // Mock data
-    const mockLawyers: Lawyer[] = [
-      {
-        id: '1',
-        name: 'Carina R.',
-        verified: true,
-        specialty: 'Family Law',
-        practiceAreas: ['Family Law', 'Divorce'],
-        location: 'Menlo Park, CA 94025',
-        yearsExperience: 6,
-        rating: 4.8,
-        reviewCount: 12,
-        consultationTypes: ['video', 'phone'],
-        priceRange: { min: 34, max: 50 },
-        bio: 'Nurturing children comes naturally to me, and I have six years of experience providing attentive care. My approach focuses on creating a safe and engaging environment.',
-        certifications: ['board-certified'],
-        languages: ['spanish']
-      },
-      {
-        id: '2',
-        name: 'Aura Z.',
-        verified: true,
-        specialty: 'Corporate Law',
-        practiceAreas: ['Corporate Law', 'M&A'],
-        location: 'Menlo Park, CA 94025',
-        yearsExperience: 3,
-        rating: 4.5,
-        consultationTypes: ['video', 'in-person'],
-        priceRange: { min: 35, max: 60 },
-        bio: 'I am a very responsible and committed person, respectful, patient, lovely, honest, kind and caring person.',
-        certifications: [],
-        languages: []
-      }
-    ]
-    
-    lawyers.value = mockLawyers
-    totalItems.value = mockLawyers.length
-  } catch (err) {
-    console.error('Error fetching lawyers:', err)
-    lawyers.value = []
-    totalItems.value = 0
-  } finally {
-    loading.value = false
-  }
-}
-
-// Watch for filter changes
+// Watch for filter changes and update URL
 watch([filters, currentPage], () => {
-  fetchLawyers()
   const query = filtersToQuery(filters.value)
   router.push({ query })
-}, { deep: true, immediate: true })
+}, { deep: true })
 
 // Active filter count
 const activeFilterCount = computed(() => {
@@ -134,20 +112,22 @@ const activeFilterCount = computed(() => {
   if (f.languages.length > 0) count++
   return count
 })
-
-const handleSearch = (searchData: any) => {
-  console.log('Search:', searchData)
-  // Handle search logic here
-}
 </script>
 
 <template>
   <div class="page-wrapper">
     <!-- Navigation Bar -->
-    <NavigationBar />
+    <AppHeader />
     
-    <!-- Search Bar -->
-    <LawyerSearchBar @search="handleSearch" />
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find Your Lawyer</h1>
+        <p class="text-lg text-gray-600 max-w-2xl">
+          Connect with qualified legal professionals across Nigeria. Search by practice area, location, and expertise.
+        </p>
+      </div>
+    </div>
     
     <!-- Main Content -->
     <div class="main-container">
@@ -157,7 +137,7 @@ const handleSearch = (searchData: any) => {
           <FilterPanel
             v-model="filters"
             :practice-areas="practiceAreas"
-            :loading="loading"
+            :loading="isLoading"
             @reset="resetFilters"
           />
         </aside>
@@ -167,7 +147,7 @@ const handleSearch = (searchData: any) => {
           v-if="isMobile"
           v-model="filters"
           :practice-areas="practiceAreas"
-          :loading="loading"
+          :loading="isLoading"
           :is-mobile="true"
           :is-open="isMobileFiltersOpen"
           @reset="resetFilters"
@@ -211,8 +191,17 @@ const handleSearch = (searchData: any) => {
           </div>
           
           <!-- Lawyer Cards -->
-          <div v-if="loading" class="loading-state">
+          <div v-if="isLoading" class="loading-state">
             <div v-for="i in 3" :key="i" class="skeleton-card"></div>
+          </div>
+          
+          <div v-else-if="error" class="empty-state">
+            <EmptyState
+              title="Error loading lawyers"
+              description="There was an error loading the lawyers list. Please try again."
+              action-text="Retry"
+              @action="() => {}"
+            />
           </div>
           
           <div v-else-if="lawyers.length === 0" class="empty-state">
@@ -243,6 +232,11 @@ const handleSearch = (searchData: any) => {
   background: #f9f9f6;
 }
 
+.page-header {
+  background: white;
+  border-b: 1px solid #e0e0e0;
+}
+
 .main-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -270,7 +264,7 @@ const handleSearch = (searchData: any) => {
 
 .filters-sidebar {
   position: sticky;
-  top: 120px; /* Adjusted for nav + search bar */
+  top: 80px; /* Adjusted for nav only */
 }
 
 .results-section {

@@ -26,6 +26,52 @@ export interface Specialization {
   updatedAt: string;
 }
 
+export interface LawyerSpecialization {
+  id: string;
+  name: string;
+  yearsOfExperience: number;
+}
+
+export interface LawyerSearchResult {
+  id: string;
+  name: string;
+  yearsOfExperience: number;
+  country: string;
+  state: string;
+  barAssociation: string;
+  experienceDescription: string;
+  specializations: LawyerSpecialization[];
+  relevanceScore?: number;
+}
+
+export interface SearchPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+export interface SearchFilters {
+  specializations: Array<{
+    id: string;
+    name: string;
+    count: number;
+  }>;
+}
+
+export interface SearchMetadata {
+  query?: string;
+  executionTimeMs: number;
+}
+
+export interface LawyerSearchResponse {
+  results: LawyerSearchResult[];
+  pagination: SearchPagination;
+  filters: SearchFilters;
+  metadata: SearchMetadata;
+}
+
 export interface LawyerListItem {
   id: string;
   name: string;
@@ -308,6 +354,7 @@ export const api = {
   search: {
     lawyers: (params: {
       q?: string;
+      state?: string;
       specializations?: string[];
       minExperience?: number;
       maxExperience?: number;
@@ -317,6 +364,7 @@ export const api = {
     }) => {
       const searchParams = new URLSearchParams();
       if (params.q) searchParams.set("q", params.q);
+      if (params.state) searchParams.set("state", params.state);
       if (params.specializations?.length) {
         searchParams.set("specializations", params.specializations.join(","));
       }
@@ -330,7 +378,7 @@ export const api = {
       if (params.limit) searchParams.set("limit", params.limit.toString());
       if (params.sortBy) searchParams.set("sortBy", params.sortBy);
 
-      return httpClient.get<ApiResponse>(
+      return httpClient.get<LawyerSearchResponse>(
         `/api/search/lawyers?${searchParams.toString()}`,
       );
     },

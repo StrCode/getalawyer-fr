@@ -36,8 +36,6 @@ const formData = ref<CreateConsultationTypeInput>({
   isActive: true,
 });
 
-const errors = ref<Record<string, string>>({});
-
 // Duration options
 const durationOptions = [
   { label: '15 minutes', value: 15 },
@@ -109,54 +107,10 @@ watch(isOpen, (newValue) => {
       bufferMinutes: 15,
       isActive: true,
     };
-    errors.value = {};
   }
 });
 
-const validateForm = (): boolean => {
-  errors.value = {};
-
-  if (!formData.value.name || formData.value.name.length < 3) {
-    errors.value.name = 'Name must be at least 3 characters';
-  }
-
-  if (formData.value.durationMinutes < 15 || formData.value.durationMinutes > 480) {
-    errors.value.durationMinutes = 'Duration must be between 15 minutes and 8 hours';
-  }
-
-  if (formData.value.price !== undefined && formData.value.price < 0) {
-    errors.value.price = 'Price cannot be negative';
-  }
-
-  if (formData.value.meetingType === 'in_person' && !formData.value.officeAddress) {
-    errors.value.officeAddress = 'Office address is required for in-person consultations';
-  }
-
-  if (formData.value.defaultMeetingLink && !isValidUrl(formData.value.defaultMeetingLink)) {
-    errors.value.defaultMeetingLink = 'Must be a valid URL';
-  }
-
-  if (formData.value.bufferMinutes !== undefined && (formData.value.bufferMinutes < 0 || formData.value.bufferMinutes > 120)) {
-    errors.value.bufferMinutes = 'Buffer must be between 0 and 120 minutes';
-  }
-
-  return Object.keys(errors.value).length === 0;
-};
-
-const isValidUrl = (url: string): boolean => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
 const handleSubmit = async () => {
-  if (!validateForm()) {
-    return;
-  }
-
   try {
     // Clean up data before submission
     const submitData = { ...formData.value };
@@ -202,121 +156,136 @@ const isSubmitting = computed(() => createMutation.isPending.value || updateMuta
     <template #body>
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <!-- Name -->
-        <UFormGroup label="Name" required :error="errors.name">
+        <UFormField label="Name" name="name" required size="xl">
           <UInput
             v-model="formData.name"
             placeholder="e.g., 30-min Initial Consultation"
+            size="xl"
             :disabled="isSubmitting"
+            class="w-full"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Description -->
-        <UFormGroup label="Description" :error="errors.description">
+        <UFormField label="Description" name="description" size="xl">
           <UTextarea
             v-model="formData.description"
             placeholder="What's included in this consultation?"
+            size="xl"
             :rows="3"
             :disabled="isSubmitting"
+            class="w-full"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Duration and Buffer -->
-        <div class="grid grid-cols-2 gap-4">
-          <UFormGroup label="Duration" required :error="errors.durationMinutes">
-            <USelect
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <UFormField label="Duration" name="durationMinutes" required size="xl">
+            <USelectMenu
               v-model="formData.durationMinutes"
-              :options="durationOptions"
-              option-attribute="label"
-              value-attribute="value"
+              :items="durationOptions"
+              size="xl"
+              value-key="value"
               :disabled="isSubmitting"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Buffer Time" :error="errors.bufferMinutes">
-            <USelect
+          <UFormField label="Buffer Time" name="bufferMinutes" size="xl">
+            <USelectMenu
               v-model="formData.bufferMinutes"
-              :options="bufferOptions"
-              option-attribute="label"
-              value-attribute="value"
+              :items="bufferOptions"
+              size="xl"
+              value-key="value"
               :disabled="isSubmitting"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <!-- Price and Currency -->
-        <div class="grid grid-cols-2 gap-4">
-          <UFormGroup label="Price" :error="errors.price">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <UFormField label="Price" name="price" size="xl">
             <UInput
               v-model.number="formData.price"
               type="number"
               min="0"
               step="0.01"
+              size="xl"
               placeholder="0 for free"
               :disabled="isSubmitting"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Currency" :error="errors.currency">
-            <USelect
+          <UFormField label="Currency" name="currency" size="xl">
+            <USelectMenu
               v-model="formData.currency"
-              :options="currencyOptions"
-              option-attribute="label"
-              value-attribute="value"
+              :items="currencyOptions"
+              size="xl"
+              value-key="value"
               :disabled="isSubmitting"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <!-- Meeting Type -->
-        <UFormGroup label="Meeting Type" required :error="errors.meetingType">
+        <UFormField label="Meeting Type" name="meetingType" required size="xl">
           <URadioGroup
             v-model="formData.meetingType"
-            :options="meetingTypeOptions"
+            :items="meetingTypeOptions"
             :disabled="isSubmitting"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Office Address (conditional) -->
-        <UFormGroup
+        <UFormField
           v-if="formData.meetingType === 'in_person'"
           label="Office Address"
+          name="officeAddress"
           required
-          :error="errors.officeAddress"
+          size="xl"
         >
           <UTextarea
             v-model="formData.officeAddress"
             placeholder="Enter your office address"
+            size="xl"
             :rows="2"
             :disabled="isSubmitting"
+            class="w-full"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Default Meeting Link (conditional) -->
-        <UFormGroup
+        <UFormField
           v-if="formData.meetingType === 'video'"
           label="Default Meeting Link"
-          :error="errors.defaultMeetingLink"
+          name="defaultMeetingLink"
+          size="xl"
         >
           <UInput
             v-model="formData.defaultMeetingLink"
             type="url"
+            size="xl"
             placeholder="https://zoom.us/j/..."
             :disabled="isSubmitting"
+            class="w-full"
           />
-          <template #help>
-            Optional: Your default Zoom/Meet link for video consultations
+          <template #hint>
+            <span class="text-xs text-gray-500">Optional: Your default Zoom/Meet link for video consultations</span>
           </template>
-        </UFormGroup>
+        </UFormField>
 
         <!-- Active Status -->
-        <UFormGroup label="Status">
+        <UFormField label="Status" name="isActive" size="xl">
           <div class="flex items-center gap-2">
             <USwitch v-model="formData.isActive" :disabled="isSubmitting" />
             <span class="text-sm text-gray-600">
               {{ formData.isActive ? 'Active (visible to clients)' : 'Inactive (hidden from clients)' }}
             </span>
           </div>
-        </UFormGroup>
+        </UFormField>
       </form>
     </template>
 
@@ -324,12 +293,14 @@ const isSubmitting = computed(() => createMutation.isPending.value || updateMuta
       <div class="flex justify-end gap-3">
         <UButton
           variant="outline"
+          size="lg"
           @click="isOpen = false"
           :disabled="isSubmitting"
         >
           Cancel
         </UButton>
         <UButton
+          size="lg"
           @click="handleSubmit"
           :loading="isSubmitting"
         >

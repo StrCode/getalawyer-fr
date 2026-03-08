@@ -149,7 +149,7 @@ async function onSubmit() {
       </div>
 
       <!-- Date of birth -->
-      <UFormGroup label="Date of birth">
+      <UFormField label="Date of birth">
         <UInput
           v-model="dob"
           type="date"
@@ -162,10 +162,10 @@ async function onSubmit() {
             <span>To sign up, you need to be at least 18.</span>
           </div>
         </template>
-      </UFormGroup>
+      </UFormField>
 
       <!-- Email or Phone (read-only) -->
-      <UFormGroup :label="isPhoneRegistration ? 'Phone Number' : 'Email'">
+      <UFormField :label="isPhoneRegistration ? 'Phone Number' : 'Email'">
         <UInput
           v-model="email"
           :type="isPhoneRegistration ? 'tel' : 'email'"
@@ -173,10 +173,10 @@ async function onSubmit() {
           readonly
           class="bg-gray-50"
         />
-      </UFormGroup>
+      </UFormField>
 
       <!-- Password -->
-      <UFormGroup label="Password">
+      <UFormField label="Password">
         <UInput
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
@@ -193,7 +193,7 @@ async function onSubmit() {
             />
           </template>
         </UInput>
-      </UFormGroup>
+      </UFormField>
 
       <!-- Password strength -->
       <div v-if="password && password.length > 0" class="space-y-2">

@@ -212,17 +212,19 @@
     <!-- Cancel Modal -->
     <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">
       <template #body>
-        <div class="space-y-4">
+        <div class="space-y-6">
           <p class="text-sm text-gray-600">
             Are you sure you want to cancel this booking? The lawyer will be notified.
           </p>
-          <UFormGroup label="Cancellation Reason (Optional)">
+          <UFormField label="Cancellation Reason (Optional)" name="cancelReason" size="xl">
             <UTextarea
               v-model="cancelReason"
               placeholder="Let the lawyer know why you're cancelling..."
+              size="xl"
               :rows="3"
+              class="w-full"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
       </template>
       <template #footer>
@@ -231,11 +233,13 @@
             label="Nevermind"
             color="neutral"
             variant="ghost"
+            size="lg"
             @click="isCancelModalOpen = false"
           />
           <UButton
             label="Cancel Booking"
             color="error"
+            size="lg"
             :loading="isCanceling"
             @click="confirmCancel"
           />
