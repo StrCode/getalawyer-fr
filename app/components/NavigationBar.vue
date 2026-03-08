@@ -42,17 +42,10 @@ const navLinks = [
       <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
-          <div class="flex-shrink-0">
-            <button 
-              @click="scrollToSection('hero')"
-              :class="[
-                'hover:opacity-80 font-serif font-bold text-2xl tracking-tight',
-                transparent ? 'text-neutral-900' : 'text-neutral-900',
-                prefersReducedMotion ? 'transition-none' : 'transition-opacity'
-              ]"
-            >
-              Lex<span class="text-[#1d6b44]">Connect</span>
-            </button>
+          <div class="shrink-0">
+            <NuxtLink to="/" class="flex items-center">
+              <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-8 w-auto" />
+            </NuxtLink>
           </div>
 
           <!-- Navigation Links (hidden on mobile) -->
@@ -72,7 +65,7 @@ const navLinks = [
           </nav>
 
           <!-- CTA Button -->
-          <div class="flex-shrink-0">
+          <div class="shrink-0">
             <button
               :class="[
                 'bg-[#e8f3ec] hover:bg-[#d1e8dc] px-6 py-2 rounded-full font-medium text-[#1d6b44] text-sm tracking-wide',

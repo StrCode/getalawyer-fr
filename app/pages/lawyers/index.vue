@@ -128,7 +128,7 @@ const activeFilterCount = computed(() => {
 <template>
   <div class="page-wrapper">
     <!-- Navigation Bar -->
-    <AppHeader />
+    <NavigationBar />
     
     <!-- Page Header -->
     <div class="page-header">

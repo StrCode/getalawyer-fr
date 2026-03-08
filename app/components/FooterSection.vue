@@ -18,7 +18,7 @@ const links = {
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1">
           <div class="font-serif font-bold text-2xl tracking-tight text-neutral-900 mb-3">
-            Lex<span class="text-[#1d6b44]">Connect</span>
+            Get<span class="text-[#1d6b44]">alawyer</span>
           </div>
           <p class="text-neutral-500 text-sm leading-relaxed max-w-[180px]">
             Connecting people with verified legal professionals.
