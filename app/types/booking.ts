@@ -43,13 +43,20 @@ export interface Booking {
   consultationType?: ConsultationType
 }
 
+export type MeetingType = 'video' | 'phone' | 'in_person' | 'any';
+
 export interface ConsultationType {
   id: string
   lawyerId: string
   name: string
-  description: string
-  duration: number // minutes
-  price: number // currency amount
+  description: string | null
+  durationMinutes: number
+  price: string // Decimal as string
+  currency: string
+  meetingType: MeetingType
+  officeAddress: string | null
+  defaultMeetingLink: string | null
+  bufferMinutes: number
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -90,16 +97,15 @@ export interface UpdateLawyerBookingInput {
 
 export interface CreateConsultationTypeInput {
   name: string
-  description: string
-  duration: number
-  price: number
+  description?: string
+  durationMinutes: number
+  price?: number
+  currency?: string
+  meetingType: MeetingType
+  officeAddress?: string
+  defaultMeetingLink?: string
+  bufferMinutes?: number
   isActive?: boolean
 }
 
-export interface UpdateConsultationTypeInput {
-  name?: string
-  description?: string
-  duration?: number
-  price?: number
-  isActive?: boolean
-}
+export interface UpdateConsultationTypeInput extends Partial<CreateConsultationTypeInput> {}

@@ -46,10 +46,14 @@ export interface ConsultationType {
   id: string;
   lawyerId: string;
   name: string;
-  description: string;
-  duration: number;
-  price: number;
+  description: string | null;
+  durationMinutes: number;
+  price: string; // Decimal as string
   currency: string;
+  meetingType: 'video' | 'phone' | 'in_person' | 'any';
+  officeAddress: string | null;
+  defaultMeetingLink: string | null;
+  bufferMinutes: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -243,24 +247,30 @@ export const api = {
 
   // Consultation Types API
   consultationTypes: {
-    getAll: () =>
-      httpClient.getAuth<ApiResponse<ConsultationType[]>>(
-        "/api/consultation-types",
-      ),
+    getAll: (includeInactive?: boolean) => {
+      const params = includeInactive ? '?includeInactive=true' : '';
+      return httpClient.getAuth<{ consultationTypes: ConsultationType[] }>(
+        `/api/lawyer/consultation-types${params}`,
+      );
+    },
     getById: (id: string) =>
-      httpClient.getAuth<ApiResponse<ConsultationType>>(
-        `/api/consultation-types/${id}`,
+      httpClient.getAuth<{ consultationType: ConsultationType }>(
+        `/api/lawyer/consultation-types/${id}`,
       ),
     create: (data: {
       name: string;
-      description: string;
-      duration: number;
-      price: number;
-      currency: string;
-      isActive: boolean;
+      description?: string;
+      durationMinutes: number;
+      price?: number;
+      currency?: string;
+      meetingType: 'video' | 'phone' | 'in_person' | 'any';
+      officeAddress?: string;
+      defaultMeetingLink?: string;
+      bufferMinutes?: number;
+      isActive?: boolean;
     }) =>
-      httpClient.post<ApiResponse<ConsultationType>>(
-        "/api/consultation-types",
+      httpClient.post<{ consultationType: ConsultationType; message: string }>(
+        "/api/lawyer/consultation-types",
         data,
       ),
     update: (
@@ -268,18 +278,30 @@ export const api = {
       data: {
         name?: string;
         description?: string;
-        duration?: number;
+        durationMinutes?: number;
         price?: number;
         currency?: string;
+        meetingType?: 'video' | 'phone' | 'in_person' | 'any';
+        officeAddress?: string;
+        defaultMeetingLink?: string;
+        bufferMinutes?: number;
         isActive?: boolean;
       },
     ) =>
-      httpClient.put<ApiResponse<ConsultationType>>(
-        `/api/consultation-types/${id}`,
+      httpClient.put<{ consultationType: ConsultationType; message: string }>(
+        `/api/lawyer/consultation-types/${id}`,
         data,
       ),
     delete: (id: string) =>
-      httpClient.delete<ApiResponse>(`/api/consultation-types/${id}`),
+      httpClient.delete<{ message: string }>(`/api/lawyer/consultation-types/${id}`),
+    activate: (id: string) =>
+      httpClient.post<{ consultationType: ConsultationType; message: string }>(
+        `/api/lawyer/consultation-types/${id}/activate`,
+      ),
+    deactivate: (id: string) =>
+      httpClient.post<{ consultationType: ConsultationType; message: string }>(
+        `/api/lawyer/consultation-types/${id}/deactivate`,
+      ),
   },
 
   // Search API

@@ -100,6 +100,9 @@ const completedBookings = computed(() => {
       </UCard>
     </div>
 
+    <!-- Consultation Types Card -->
+    <DashboardConsultationTypesCard />
+
     <!-- Quick Actions -->
     <UCard>
       <template #header>
@@ -107,6 +110,7 @@ const completedBookings = computed(() => {
       </template>
       <div class="flex flex-wrap gap-3">
         <UButton to="/dashboard/bookings" color="primary">Manage Bookings</UButton>
+        <UButton to="/dashboard/consultation-types" variant="outline">Consultation Types</UButton>
         <UButton to="/dashboard/availability" variant="outline">Set Availability</UButton>
         <UButton to="/dashboard/profile" variant="outline">Edit Profile</UButton>
       </div>
