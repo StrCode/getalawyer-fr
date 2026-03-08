@@ -5,11 +5,11 @@ definePageMeta({
 })
 
 const { session } = useAuth()
-const role = computed(() => session.value?.user.role)
+const role = computed(() => session.value?.user.userType)
 </script>
 
 <template>
-  <ClientDashboard v-if="role === 'user'" />
+  <ClientDashboard v-if="role === 'client'" />
   <LawyerDashboard v-else-if="role === 'lawyer'" />
   <div v-else class="text-center py-12">
     <p class="text-gray-600">Loading dashboard...</p>

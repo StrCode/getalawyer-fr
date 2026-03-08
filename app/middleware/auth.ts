@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(async (to) => {
   const { session, isPending } = useAuth()
 
   // On client side, wait for session to load if it's pending
@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async () => {
           resolve()
         }
       }, { immediate: true })
-      
+
       // Timeout after 2 seconds
       setTimeout(() => {
         unwatch()
@@ -22,5 +22,19 @@ export default defineNuxtRouteMiddleware(async () => {
   // If user is not authenticated, redirect to login
   if (!session.value?.user) {
     return navigateTo('/login', { replace: true })
+  }
+
+  // Enforce lawyer onboarding
+  const user = session.value.user
+  console.log(user)
+  // Use `as any` or handle the typing gracefully if `userType` / `onboarding_completed` 
+  // are not natively on the generic type but are on the actual returned session object
+  const userType = (user as any).userType || (user as any).role
+  const onboardingCompleted = (user as any).onboarding_completed
+  console.log(onboardingCompleted)
+  if (userType === 'lawyer' && !onboardingCompleted) {
+    if (!to.path.startsWith('/onboarding/lawyer')) {
+      return navigateTo('/onboarding/lawyer', { replace: true })
+    }
   }
 })

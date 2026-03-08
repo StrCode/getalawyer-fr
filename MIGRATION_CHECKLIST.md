@@ -1,187 +1,176 @@
-# API Migration Checklist
+# Onboarding Refactor - Migration Checklist
 
-## ✅ Phase 1: Setup (COMPLETE)
+## ✅ Pre-Migration (Completed)
 
-- [x] Verify `@tanstack/vue-query` is installed (v5.62.7)
-- [x] Verify query client is configured
-- [x] Verify plugin is set up
+- [x] Create new `onboarding_progress` table schema
+- [x] Create state machine logic
+- [x] Create repository layer (data access)
+- [x] Create service layer (business logic)
+- [x] Create new API routes
+- [x] Create error handling
+- [x] Update schema exports
+- [x] Create migration SQL file
+- [x] Document changes
 
-## ✅ Phase 2: Constants (COMPLETE)
+## 🔄 Migration Steps (To Do)
 
-- [x] Create `app/constants/nigeria-states-lgas.ts`
-- [x] Create `app/constants/registration.ts`
-- [x] Add helper functions for states/LGAs
+### 1. Database Migration
 
-## ✅ Phase 3: Types (COMPLETE)
+```bash
+# Backup database first!
+pg_dump your_database > backup_$(date +%Y%m%d).sql
 
-- [x] Create `app/types/availability.ts`
-- [x] Create `app/types/booking.ts`
-- [x] Create `app/types/registration.ts`
-- [x] Update `app/types/index.ts` to export new types
+# Run migration
+cd src/db
+bun run drizzle-kit push
 
-## ✅ Phase 4: Composables (COMPLETE)
+# Or manually:
+psql -d your_database -f migrations/0003_unified_onboarding.sql
+```
 
-- [x] Create `app/composables/useAvailability.ts`
-  - [x] Queries: schedule, exceptions, available slots
-  - [x] Mutations: update schedule, create/delete exceptions
-  - [x] Optimistic updates
-- [x] Create `app/composables/useBookings.ts`
-  - [x] Client queries and mutations
-  - [x] Lawyer queries and mutations
-  - [x] Optimistic updates
-- [x] Create `app/composables/useRegistration.ts`
-  - [x] All step queries (2, 4, 5, 7)
-  - [x] All step mutations
-  - [x] NIN verification workflow
-  - [x] Status tracking
+### 2. Update Admin Dashboard
 
-## 🔄 Phase 5: Integration (COMPLETE ✅)
+Files to update:
+- `src/routes/admin.routes.ts` - Remove `registrationStatus` filters
+- `src/services/admin.service.ts` - Update queries to use `onboarding_progress`
+- `src/services/statistics.service.ts` - Keep `applicationStatus` queries (still works)
 
-### Registration Pages
+### 3. Update Frontend
 
-- [x] Update `app/pages/register/step2.vue`
-  - [x] Replace `useFetch` with `usePersonalInfo()`
-  - [x] Replace manual submit with `useSavePersonalInfo()`
-  - [x] Use constants for states/LGAs
-  - [x] Test form submission
-  
-- [x] Update `app/pages/register/step3.vue`
-  - [x] Replace manual API calls with `useVerifyNIN()`
-  - [x] Replace manual API calls with `useConfirmNIN()`
-  - [x] Test NIN verification flow
-  
-- [x] Update `app/pages/register/step4.vue`
-  - [x] Replace `useFetch` with `useProfessionalInfo()`
-  - [x] Replace manual submit with `useSaveProfessionalInfo()`
-  - [x] Use constants for law schools
-  - [x] Test form submission
-  
-- [x] Update `app/pages/register/step5.vue`
-  - [x] Replace `useFetch` with `usePracticeInfo()`
-  - [x] Replace manual submit with `useSavePracticeInfo()`
-  - [x] Use constants for practice types
-  - [x] Test form submission
-  
-- [x] Update `app/pages/register/step7.vue`
-  - [x] Replace `useFetch` with `useRegistrationSummary()`
-  - [x] Replace manual submit with `useSubmitApplication()`
-  - [x] Test application submission
+Replace API endpoints:
+```typescript
+// OLD → NEW
+/api/register/status → /api/onboarding/status
+/api/register/step2 → /api/onboarding/steps/personal-info
+/api/register/step3/verify-nin → /api/onboarding/nin/initiate
+/api/register/step3/confirm → /api/onboarding/nin/confirm
+/api/register/step4 → /api/onboarding/steps/professional-info
+/api/register/step5 → /api/onboarding/steps/practice-info
+/api/register/submit → /api/onboarding/submit
+/api/register/summary → /api/onboarding/summary
+```
 
-### Dashboard Components
+Update response handling:
+```typescript
+// OLD
+interface OldStatus {
+  currentStep: number;
+  registrationStatus: string;
+  completedSteps: number[];
+}
 
-- [x] Update `app/components/LawyerDashboard.vue`
-  - [x] Use `useLawyerBookings()` for bookings
-  - [x] Use `useAvailabilitySchedule()` for schedule
-  - [x] Test booking management
-  
-- [x] Update `app/components/ClientDashboard.vue`
-  - [x] Use `useClientBookings()` for bookings
-  - [x] Test booking display
+// NEW
+interface NewStatus {
+  currentState: 'personal_info' | 'nin_verification' | ...;
+  completedSteps: string[];
+  stepNumber: number;
+  startedAt: string;
+  lastActivityAt: string;
+}
+```
 
-### Client Onboarding
+### 4. Remove Old Code (After Frontend Migration)
 
-- [x] Update `app/pages/onboarding/client/location.vue`
-  - [x] Use `useCountries()` query instead of `useFetch`
-  - [x] Test location selection
-  
-- [x] Update `app/pages/onboarding/client/specializations.vue`
-  - [x] Use `useSpecializations()` query instead of `useFetch`
-  - [x] Use `useCompleteOnboarding()` mutation
-  - [x] Remove manual `isSubmitting` state
-  - [x] Test specialization selection
+Once frontend is fully migrated:
 
-## 📋 Phase 6: Testing
+```bash
+# Remove old services
+rm src/services/lawyer.service.ts
+rm src/services/registration.service.ts
 
-### Unit Tests
-- [ ] Test `useAvailability` composable
-- [ ] Test `useBookings` composable
-- [ ] Test `useRegistration` composable
-- [ ] Test constants helper functions
+# Remove old routes
+rm src/routes/registration.routes.ts
+rm src/routes/lawyers.routes.ts  # Or refactor to remove onboarding endpoints
 
-### Integration Tests
-- [ ] Test complete registration flow
-- [ ] Test booking creation flow
-- [ ] Test availability management flow
-- [ ] Test error handling
-- [ ] Test optimistic updates
+# Remove old validators (if not used elsewhere)
+# Check usage first!
+```
 
-### E2E Tests
-- [ ] Test lawyer registration journey
-- [ ] Test client onboarding journey
-- [ ] Test booking journey
-- [ ] Test availability management journey
+### 5. Testing
 
-## 🔧 Phase 7: Optional Enhancements
+```bash
+# Run tests
+bun test
 
-- [ ] Install `@tanstack/vue-query-devtools`
-- [ ] Add DevTools to layout
-- [ ] Create additional composables:
-  - [ ] `useCalendar` for calendar integration
-  - [ ] `useConsultationTypes` for consultation type management
-  - [ ] Enhanced `useLawyers` for search/filtering
-- [ ] Add query prefetching on hover
-- [ ] Add infinite scroll for lists
-- [ ] Add suspense mode for loading states
+# Test each endpoint manually
+curl -X GET http://localhost:3000/api/onboarding/status \
+  -H "Authorization: Bearer YOUR_TOKEN"
 
-## 📚 Phase 8: Documentation
+curl -X PUT http://localhost:3000/api/onboarding/steps/personal-info \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"firstName":"John","lastName":"Doe",...}'
+```
 
-- [x] Create API migration summary
-- [x] Create integration examples
-- [x] Create migration checklist
-- [ ] Update developer documentation
-- [ ] Add inline code comments
-- [ ] Create troubleshooting guide
+### 6. Monitor & Rollback Plan
 
-## 🚀 Phase 9: Deployment
+Monitor for errors:
+```bash
+# Check logs for errors
+tail -f logs/app.log | grep "OnboardingError"
 
-- [ ] Test on staging environment
-- [ ] Monitor query performance
-- [ ] Check cache hit rates
-- [ ] Verify error handling
-- [ ] Deploy to production
-- [ ] Monitor production metrics
+# Check database for stuck states
+psql -d your_database -c "
+  SELECT current_state, COUNT(*) 
+  FROM onboarding_progress 
+  GROUP BY current_state;
+"
+```
 
-## Common Issues & Solutions
+If issues arise:
+1. Keep old `/api/register/*` routes active
+2. Add feature flag to switch between systems
+3. Restore from backup if needed
 
-### Issue: Query not refetching
-**Solution:** Check `staleTime` and `gcTime` settings in query client
+## 📋 Verification Checklist
 
-### Issue: Mutation not invalidating cache
-**Solution:** Verify query keys match between query and invalidation
+After migration, verify:
 
-### Issue: Optimistic update not rolling back
-**Solution:** Check `onError` handler and context return value
+- [ ] Users can start new onboarding
+- [ ] Users can resume incomplete onboarding
+- [ ] NIN verification works (both phases)
+- [ ] Bar number uniqueness validation works
+- [ ] Practice areas validation (1-5) works
+- [ ] Submit button only enabled when all steps complete
+- [ ] Admin can approve/reject applications
+- [ ] Email notifications sent (if implemented)
+- [ ] Dashboard statistics still work
+- [ ] No TypeScript errors
+- [ ] No runtime errors in logs
 
-### Issue: Type errors with query data
-**Solution:** Ensure API response types match expected types
+## 🚨 Breaking Changes
 
-### Issue: Loading state not updating
-**Solution:** Use `.value` to access reactive refs in Vue 3
+### For Frontend Developers
 
-## Resources
+1. **State field renamed**: `registrationStatus` → `currentState`
+2. **Step tracking changed**: `currentStep: number` → `stepNumber: number` + `currentState: string`
+3. **Completed steps format**: `number[]` → `string[]`
+4. **API endpoints changed**: `/api/register/*` → `/api/onboarding/*`
+5. **HTTP methods changed**: Some `POST` → `PUT` for idempotency
 
-- [TanStack Query Docs](https://tanstack.com/query/latest/docs/vue/overview)
-- [Vue Query DevTools](https://tanstack.com/query/latest/docs/vue/devtools)
-- [Query Key Patterns](https://tkdodo.eu/blog/effective-react-query-keys)
-- [Optimistic Updates Guide](https://tanstack.com/query/latest/docs/vue/guides/optimistic-updates)
+### For Backend Developers
 
-## Notes
+1. **Schema changes**: Multiple fields removed from `lawyers` table
+2. **New table**: `onboarding_progress` must exist
+3. **Enum changes**: `onboardingStepEnum` and `registrationStatusEnum` removed
+4. **Service layer**: Use `OnboardingService` instead of `LawyerService`/`RegistrationService`
 
-- All composables follow the same pattern for consistency
-- Query keys are centralized in `app/lib/query-client.ts`
-- Error handling uses existing `ApiError` class
-- Optimistic updates are used for better UX where appropriate
-- All mutations automatically invalidate related queries
+## 📞 Support
 
-## Success Criteria
+If you encounter issues:
 
-- [ ] All registration pages use new composables
-- [ ] All dashboard components use new composables
-- [ ] No manual loading state management
-- [ ] No manual error state management
-- [ ] All queries properly cached
-- [ ] All mutations properly invalidate cache
-- [ ] Optimistic updates work correctly
-- [ ] Error handling works correctly
-- [ ] Type safety maintained throughout
-- [ ] Performance improved or maintained
+1. Check `ONBOARDING_REFACTOR.md` for detailed documentation
+2. Review code comments in service files
+3. Check error logs for `OnboardingError` messages
+4. Contact backend team for assistance
+
+## 🎯 Success Criteria
+
+Migration is successful when:
+
+- [ ] All new users complete onboarding via new system
+- [ ] No errors in production logs related to onboarding
+- [ ] Admin dashboard shows correct statistics
+- [ ] Old routes can be safely removed
+- [ ] Frontend team confirms everything works
+- [ ] QA team signs off on testing
