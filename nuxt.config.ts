@@ -9,6 +9,10 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    define: {
+      'import.meta.env.VITE_NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'https://api.getalawyer.ng'),
+      'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'https://api.getalawyer.ng'),
+    },
   },
   modules: [
     '@nuxt/image',
