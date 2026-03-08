@@ -22,42 +22,40 @@ const getStepStatus = (stepId: string) => {
 </script>
 
 <template>
-  <nav aria-label="Progress">
-    <ol role="list" class="flex items-center">
-      <li v-for="(step, stepIdx) in steps" :key="step.id" :class="[stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20' : '', 'relative']">
+  <nav aria-label="Progress" class="mt-auto md:mt-0 relative">
+    <ol role="list" class="space-y-6">
+      <li v-for="(step, stepIdx) in steps" :key="step.id" class="relative">
         <template v-if="getStepStatus(step.id) === 'complete'">
-          <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="h-0.5 w-full bg-primary" />
-          </div>
-          <div class="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary hover:bg-primary/90">
-            <UIcon name="i-heroicons-check" class="h-5 w-5 text-white" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
-          </div>
+           <!-- Completed Step -->
+           <div v-if="stepIdx !== steps.length - 1" class="absolute left-[15px] top-[30px] -ml-px h-[calc(100%+10px)] w-0.5 bg-primary-500/50" aria-hidden="true" />
+           <div class="group relative flex items-center gap-4">
+              <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white relative z-10 shrink-0">
+                 <UIcon name="i-heroicons-check" class="h-4 w-4 text-primary-700 font-bold" aria-hidden="true" />
+              </span>
+              <span class="text-[15px] font-semibold tracking-wide text-white">{{ parseInt(step.id) === 0 ? '' : '' }}{{ step.name }}</span>
+           </div>
         </template>
         <template v-else-if="getStepStatus(step.id) === 'current'">
-          <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="h-0.5 w-full bg-gray-200" />
-          </div>
-          <div class="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary bg-white" aria-current="step">
-            <span class="h-2.5 w-2.5 rounded-full bg-primary" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
-          </div>
+           <!-- Current Step -->
+           <div v-if="stepIdx !== steps.length - 1" class="absolute left-[15px] top-[32px] -ml-px h-[calc(100%+10px)] w-0.5 bg-primary-800/60" aria-hidden="true" />
+           <div class="group relative flex items-center gap-4" aria-current="step">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white bg-transparent relative z-10 shrink-0">
+                 <span class="text-white text-xs font-bold">{{ step.number }}</span>
+              </span>
+              <span class="text-[15px] font-bold tracking-wide text-white">{{ step.name }}</span>
+           </div>
         </template>
         <template v-else>
-          <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="h-0.5 w-full bg-gray-200" />
-          </div>
-          <div class="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
-            <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
-          </div>
+           <!-- Upcoming Step -->
+           <div v-if="stepIdx !== steps.length - 1" class="absolute left-[15px] top-[32px] -ml-px h-[calc(100%+10px)] w-0.5 bg-primary-800/60" aria-hidden="true" />
+           <div class="group relative flex items-center gap-4">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full border border-primary-500/60 bg-transparent relative z-10 shrink-0">
+                 <span class="text-primary-300 text-xs font-bold">{{ step.number }}</span>
+              </span>
+              <span class="text-[15px] font-medium tracking-wide text-primary-300">{{ step.name }}</span>
+           </div>
         </template>
       </li>
     </ol>
-    <div class="mt-4 flex justify-between text-sm font-medium text-gray-500 max-w-[calc(100%-2rem)]">
-      <div v-for="step in steps" :key="step.number" :class="{'text-primary': getStepStatus(step.id) === 'current', 'hidden sm:block': true}">
-        {{ step.name }}
-      </div>
-    </div>
   </nav>
 </template>

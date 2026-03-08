@@ -36,31 +36,103 @@ const currentStepComponent = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    <div v-if="isPending" class="flex flex-col items-center justify-center py-20">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-primary animate-spin" />
-      <p class="mt-4 text-gray-500">Loading your onboarding progress...</p>
-    </div>
+  <div class="min-h-screen flex flex-col md:flex-row bg-gray-50 font-sans">
     
-    <div v-else-if="isError" class="p-4 bg-red-50 text-red-700 rounded-lg">
-      <p>Error loading onboarding status. Please try refreshing the page.</p>
-    </div>
-    
-    <div v-else-if="status">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Lawyer Onboarding</h1>
-        <p class="mt-2 text-gray-600">Please complete all steps to submit your application for review.</p>
+    <!-- Left Sidebar -->
+    <div class="md:w-[360px] lg:w-[420px] bg-primary-700 text-white shrink-0 flex flex-col pt-10 px-8 lg:px-12 pb-10 min-h-screen relative overflow-hidden">
+      <!-- Background Glow Details -->
+      <div class="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-primary-600 rounded-full blur-3xl opacity-50"></div>
+      <div class="absolute bottom-0 left-0 translate-y-24 -translate-x-12 w-80 h-80 bg-primary-800 rounded-full blur-3xl opacity-50"></div>
+
+      <div class="relative z-10 w-full flex flex-col h-full">
+         <!-- Brand / Logo -->
+         <div class="mb-14 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded bg-white flex items-center justify-center">
+               <UIcon name="i-heroicons-scale" class="w-5 h-5 text-primary-700" />
+            </div>
+            <span class="text-2xl font-bold tracking-tight text-white">LexConnect</span>
+         </div>
+
+         <template v-if="status?.currentState === 'review'">
+            <h2 class="text-3xl font-bold mb-4">Almost there!</h2>
+            <p class="text-primary-100 text-[15px] mb-12 leading-relaxed">
+              We're excited to have you join our network of verified legal professionals.
+            </p>
+         </template>
+         <template v-else>
+            <h2 class="text-3xl font-bold mb-4 leading-tight text-white">Complete your profile</h2>
+            <p class="text-primary-100 text-[15px] mb-12 leading-relaxed">
+              Adding your details is simple and fast. Joining LexConnect gives you:
+            </p>
+
+            <ul class="space-y-4 text-[15px] text-primary-100 mb-14 font-medium">
+              <li class="flex items-center gap-3.5"><UIcon name="i-heroicons-briefcase" class="w-5 h-5 shrink-0 opacity-80"/> Access to verified clients</li>
+              <li class="flex items-center gap-3.5"><UIcon name="i-heroicons-globe-alt" class="w-5 h-5 shrink-0 opacity-80"/> Global identity verification</li>
+              <li class="flex items-center gap-3.5"><UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 shrink-0 opacity-80"/> Seamless invoicing & payments</li>
+            </ul>
+         </template>
+
+         <!-- Vertical Progress -->
+         <OnboardingLawyerProgressBar 
+           v-if="status"
+           :current-state="status.currentState || 'not_started'" 
+           :completed-steps="status.completedSteps || []" 
+         />
       </div>
+    </div>
+
+    <!-- Right Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 bg-[#fafafa]">
       
-      <!-- Progress Bar -->
-      <OnboardingLawyerProgressBar 
-        :current-state="status.currentState || 'not_started'" 
-        :completed-steps="status.completedSteps || []" 
-      />
-      
-      <!-- Current Step Component -->
-      <div class="mt-8 bg-white p-6 shadow sm:rounded-lg">
-        <component :is="currentStepComponent" />
+      <!-- Top nav bar -->
+      <div class="h-20 border-b border-gray-200 bg-white flex items-center justify-between px-6 lg:px-10 shrink-0">
+          <UButton icon="i-heroicons-chevron-left" color="neutral" variant="ghost" class="rounded-full shadow-sm bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900" />
+          
+          <div class="flex items-center gap-6">
+             <!-- Fake Progress indicator -->
+             <div class="hidden sm:flex items-center gap-3">
+                <div class="w-32 h-1 bg-gray-100 rounded-full overflow-hidden">
+                   <div class="h-full bg-blue-400 rounded-full" style="width: 60%"></div>
+                </div>
+                <span class="text-xs font-bold text-gray-500">60%</span>
+             </div>
+             <UButton variant="outline" color="neutral" size="sm" class="rounded-full px-4 text-primary-600 font-semibold border-gray-200">
+               Save for later
+             </UButton>
+          </div>
+      </div>
+
+      <!-- Scrollable Form Container -->
+      <div class="flex-1 overflow-y-auto w-full relative">
+         <div class="max-w-3xl mx-auto py-12 px-6 sm:px-10 lg:px-12 relative z-10 w-full" :class="{ 'max-w-5xl': status?.currentState === 'review'}">
+            
+            <!-- Headers for forms (Skip on review) -->
+            <div v-if="status?.currentState !== 'review'" class="mb-10 text-center">
+               <span class="text-[10px] font-bold tracking-widest text-primary-600 uppercase bg-primary-50 px-3 py-1 rounded-full mb-3 inline-block">LAWYER ONBOARDING</span>
+               <h1 class="text-[32px] font-bold text-gray-900 tracking-tight">
+                  <template v-if="status?.currentState === 'not_started' || status?.currentState === 'personal_info'">Basic information</template>
+                  <template v-else-if="status?.currentState === 'nin_verification'">Identity verification</template>
+                  <template v-else-if="status?.currentState === 'professional_info'">Professional background</template>
+                  <template v-else-if="status?.currentState === 'practice_info'">Practice details</template>
+               </h1>
+            </div>
+
+            <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
+               <UIcon name="i-heroicons-arrow-path" class="w-10 h-10 text-primary animate-spin mb-4" />
+               <p class="text-gray-500 font-medium">Loading workspace...</p>
+            </div>
+            
+            <div v-else-if="isError" class="p-6 bg-red-50 text-red-700 rounded-xl border border-red-100 flex gap-4 mt-10">
+               <UIcon name="i-heroicons-exclamation-circle" class="w-6 h-6 shrink-0" />
+               <p class="font-medium">Error loading onboarding status. Please try refreshing the page.</p>
+            </div>
+            
+            <div v-else-if="status" class="w-full">
+               <!-- Current Step Component -->
+               <component :is="currentStepComponent" />
+            </div>
+
+         </div>
       </div>
     </div>
   </div>

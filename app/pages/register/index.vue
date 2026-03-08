@@ -248,10 +248,13 @@ const handleSubmit = async () => {
     }
 
     // Success - redirect will be handled by middleware based on role
-    window.location.href = role.value === 'lawyer' ? '/register/step2' : '/onboarding/client/location'
+    // Redirect to the onboarding flow base
+    navigateTo('/onboarding/lawyer')
+    
   } catch (err: any) {
     error.value = err.message || 'An unexpected error occurred'
     isSubmitting.value = false
   }
 }
 </script>
+```

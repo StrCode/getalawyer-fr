@@ -17,117 +17,97 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div v-if="isLoadingSummary" class="flex justify-center py-8">
-    <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-primary animate-spin" />
-  </div>
-
-  <div v-else-if="summary" class="space-y-8">
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-900">Review Application</h2>
-      <p class="text-sm text-gray-500">Please review your information carefully before finalizing your submission. This cannot be updated once submitted.</p>
+  <div class="h-full flex flex-col pt-8 pb-32">
+    <div v-if="isLoadingSummary" class="flex justify-center py-20">
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-primary animate-spin" />
     </div>
 
-    <!-- Error Banner -->
-    <UAlert v-if="submitError" color="error" variant="soft" title="Submission Failed" :description="submitError.message || 'Failed to submit the application. Please try again.'" />
-
-    <!-- Personal Info -->
-    <div class="bg-gray-50 rounded-lg p-5 border shadow-sm">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
-         <h3 class="text-lg font-medium text-gray-900 border-l-4 border-primary pl-2">Personal Information</h3>
+    <div v-else-if="summary" class="max-w-2xl mx-auto w-full text-center">
+      
+      <!-- Top Icon -->
+      <div class="mx-auto w-[72px] h-[72px] bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-8 relative">
+         <!-- decorative arc -->
+         <svg class="absolute inset-0 w-full h-full text-blue-500" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="4" stroke-dasharray="210 100" stroke-linecap="round" class="opacity-10" />
+            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="4" stroke-dasharray="100 200" stroke-linecap="round" class="opacity-100" stroke-dashoffset="-20" />
+         </svg>
+         <UIcon name="i-heroicons-check" class="w-8 h-8 font-bold" />
       </div>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Full Name</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Date of Birth</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ formatDate(summary.personal?.dateOfBirth || '') }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Gender</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.gender }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Location</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.lga ? summary.personal?.lga + ', ' : '' }}{{ summary.personal?.state }}</dd>
-        </div>
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">NIN Status</dt>
-          <dd class="mt-1 text-sm text-gray-900">Verified as {{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</dd>
-        </div>
-      </dl>
-    </div>
 
-    <!-- Verification -->
-    <div class="bg-gray-50 rounded-lg p-5 border shadow-sm">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
-         <h3 class="text-lg font-medium text-gray-900 border-l-4 border-primary pl-2">Identity Verification</h3>
+      <!-- Header -->
+      <h2 class="text-[28px] font-bold text-gray-900 mb-4 tracking-tight leading-snug max-w-sm mx-auto">
+         Ready to submit your application?
+      </h2>
+      <p class="text-gray-500 text-[15px] mb-8 max-w-[420px] mx-auto leading-relaxed">
+         If the details look good, submit your profile for verification. You can also save this draft and submit it from your dashboard later.
+      </p>
+
+      <!-- Buttons -->
+      <div class="flex items-center justify-center gap-4 mb-16">
+         <UButton color="neutral" variant="solid" size="lg" class="px-7 font-semibold shadow-sm text-gray-700 bg-white hover:bg-gray-50 rounded-full border border-gray-200">
+            Save as draft
+         </UButton>
+         <UButton color="primary" size="lg" class="px-8 font-semibold shadow-md rounded-full" @click="handleSubmit" :loading="isSubmitting">
+            Submit now
+         </UButton>
       </div>
-      <div class="flex items-center space-x-2">
-         <UIcon v-if="summary.ninVerification?.verified" name="i-heroicons-check-circle" class="w-6 h-6 text-green-500" />
-         <UIcon v-else name="i-heroicons-x-circle" class="w-6 h-6 text-red-500" />
-         <span class="text-sm text-gray-900">National Identification Number (NIN) {{ summary.ninVerification?.verified ? 'Verified' : 'Not Verified' }}</span>
+
+      <!-- Summary Card -->
+      <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-200/60 text-left w-full">
+         <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xl font-bold text-gray-900">Summary</h3>
+            <UButton variant="ghost" color="primary" class="font-semibold text-sm px-2 hover:bg-primary-50">
+               <template #leading><UIcon name="i-heroicons-pencil" class="w-4 h-4 mr-1"/></template>
+               Edit
+            </UButton>
+         </div>
+
+         <!-- The table rows -->
+         <div class="divide-y divide-gray-100 text-[14px]">
+            
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Full name</span>
+               <span class="text-gray-500 text-right">{{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</span>
+            </div>
+            
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Date of Birth</span>
+               <span class="text-gray-500 text-right">{{ formatDate(summary.personal?.dateOfBirth || '') }}</span>
+            </div>
+
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">NIN Status</span>
+               <span class="flex items-center gap-1.5 text-gray-500 text-right">
+                  <UIcon v-if="summary.ninVerification?.verified" name="i-heroicons-check-circle-solid" class="w-4 h-4 text-green-500" />
+                  <UIcon v-else name="i-heroicons-x-circle-solid" class="w-4 h-4 text-red-500" />
+                  {{ summary.ninVerification?.verified ? 'Verified' : 'Not verified' }}
+               </span>
+            </div>
+
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Firm Name</span>
+               <span class="text-gray-500 text-right">{{ summary.practice?.firmName }}</span>
+            </div>
+            
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Bar Number</span>
+               <span class="text-gray-500 text-right font-mono text-xs">{{ summary.professional?.barNumber }}</span>
+            </div>
+            
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Experience</span>
+               <span class="text-gray-500 text-right">{{ summary.practice?.yearsOfExperience }} Years</span>
+            </div>
+            
+            <div class="py-4 flex items-start justify-between gap-4">
+               <span class="text-gray-900 font-semibold min-w-32">Country</span>
+               <span class="text-gray-500 text-right flex items-center justify-end gap-2">
+                   <span>🇳🇬</span> {{ summary.practice?.officeCountry || 'Nigeria' }}
+               </span>
+            </div>
+            
+         </div>
       </div>
-    </div>
-
-    <!-- Professional Info -->
-    <div class="bg-gray-50 rounded-lg p-5 border shadow-sm">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
-         <h3 class="text-lg font-medium text-gray-900 border-l-4 border-primary pl-2">Professional Credentials</h3>
-      </div>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Bar Number</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.barNumber }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Year of Call to Bar</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.yearOfCall }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">University</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.university }} ({{ summary.professional?.llbYear }})</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Law School</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.lawSchool }}</dd>
-        </div>
-      </dl>
-    </div>
-
-    <!-- Practice Info -->
-    <div class="bg-gray-50 rounded-lg p-5 border shadow-sm">
-      <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
-         <h3 class="text-lg font-medium text-gray-900 border-l-4 border-primary pl-2">Practice Details</h3>
-      </div>
-      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">Firm Name</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.firmName }}</dd>
-        </div>
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">Office Address</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.officeStreet }}, {{ summary.practice?.officeCity }}, {{ summary.practice?.officeState }} {{ summary.practice?.officePostalCode }}</dd>
-        </div>
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">States of Practice</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.statesOfPractice?.join(', ') || 'None' }}</dd>
-        </div>
-      </dl>
-    </div>
-
-    <!-- User Consent & Submit -->
-    <div class="bg-blue-50 p-4 rounded-md border border-blue-200">
-       <p class="text-sm text-blue-800">
-         By submitting this application, I declare that all information provided is true and accurate. I understand that providing false information may result in the rejection of my application or suspension of my account.
-       </p>
-    </div>
-
-    <div class="flex justify-end pt-4 border-t">
-      <UButton type="button" size="lg" color="primary" @click="handleSubmit" :loading="isSubmitting" trailing-icon="i-heroicons-paper-airplane">
-        Submit Application
-      </UButton>
     </div>
   </div>
 </template>
