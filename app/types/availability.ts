@@ -2,24 +2,29 @@
  * Availability types for lawyer scheduling
  */
 
-export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
+export type DayOfWeek = '0' | '1' | '2' | '3' | '4' | '5' | '6' // 0=Sunday, 6=Saturday
 
-export interface TimeRange {
-  start: string // HH:mm format
-  end: string // HH:mm format
-}
-
-export interface WeeklySchedule {
-  [day: string]: TimeRange[] // day: DayOfWeek
+export interface LawyerAvailabilitySchedule {
+  id: string
+  lawyerId: string
+  dayOfWeek: DayOfWeek
+  startTime: string // HH:mm:ss
+  endTime: string // HH:mm:ss
+  isAvailable: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface AvailabilityException {
   id: string
   lawyerId: string
-  startDate: string // ISO date (YYYY-MM-DD)
-  endDate: string // ISO date (YYYY-MM-DD)
-  reason?: string
+  date: string // YYYY-MM-DD
+  startTime: string | null // HH:mm:ss or null for all-day
+  endTime: string | null // HH:mm:ss or null for all-day
+  isAvailable: boolean // false = block, true = add availability
+  reason: string | null
   createdAt: string
+  updatedAt: string
 }
 
 export interface AvailableSlot {
@@ -27,13 +32,47 @@ export interface AvailableSlot {
   endTime: string // ISO datetime
 }
 
+export interface CreateScheduleInput {
+  dayOfWeek: DayOfWeek
+  startTime: string // HH:mm:ss or HH:mm
+  endTime: string // HH:mm:ss or HH:mm
+  isAvailable?: boolean
+}
+
+export interface BulkScheduleInput {
+  schedules: CreateScheduleInput[]
+}
+
 export interface CreateExceptionInput {
-  startDate: string
-  endDate: string
+  date: string // YYYY-MM-DD
+  startTime?: string // HH:mm:ss or HH:mm
+  endTime?: string // HH:mm:ss or HH:mm
+  isAvailable?: boolean
+  reason?: string
+}
+
+export interface BulkExceptionInput {
+  dates: string[] // Array of YYYY-MM-DD
+  startTime?: string
+  endTime?: string
+  isAvailable?: boolean
   reason?: string
 }
 
 export interface DateRange {
   startDate: string
   endDate: string
+}
+
+export interface WeeklyScheduleResponse {
+  schedule: LawyerAvailabilitySchedule[]
+}
+
+export interface ExceptionsResponse {
+  exceptions: AvailabilityException[]
+}
+
+export interface AvailabilityRangeResponse {
+  weeklySchedule: LawyerAvailabilitySchedule[]
+  exceptions: AvailabilityException[]
 }

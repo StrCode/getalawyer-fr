@@ -7,48 +7,88 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { httpClient, type ApiResponse } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import type {
-  WeeklySchedule,
+  LawyerAvailabilitySchedule,
   AvailabilityException,
+  CreateScheduleInput,
+  BulkScheduleInput,
   CreateExceptionInput,
+  BulkExceptionInput,
   AvailableSlot,
+  WeeklyScheduleResponse,
+  ExceptionsResponse,
+  AvailabilityRangeResponse,
 } from '~/types'
 
 // API functions
 const availabilityAPI = {
-  getSchedule: async (): Promise<WeeklySchedule> => {
-    const response = await httpClient.getAuth<ApiResponse<WeeklySchedule>>(
+  getSchedule: async (): Promise<LawyerAvailabilitySchedule[]> => {
+    const response = await httpClient.getAuth<ApiResponse<WeeklyScheduleResponse>>(
       '/api/lawyer/availability/schedule'
     )
-    return response.data || {}
+    return response.data?.schedule || []
   },
 
-  updateSchedule: async (schedule: WeeklySchedule): Promise<WeeklySchedule> => {
-    const response = await httpClient.post<ApiResponse<WeeklySchedule>>(
+  setSchedule: async (data: CreateScheduleInput): Promise<LawyerAvailabilitySchedule> => {
+    const response = await httpClient.post<ApiResponse<{ schedule: LawyerAvailabilitySchedule }>>(
       '/api/lawyer/availability/schedule',
-      schedule
+      data
     )
-    if (!response.data) throw new Error('Failed to update schedule')
-    return response.data
+    if (!response.data?.schedule) throw new Error('Failed to set schedule')
+    return response.data.schedule
   },
 
-  getExceptions: async (): Promise<AvailabilityException[]> => {
-    const response = await httpClient.getAuth<ApiResponse<AvailabilityException[]>>(
-      '/api/lawyer/availability/exceptions'
+  bulkSetSchedule: async (data: BulkScheduleInput): Promise<LawyerAvailabilitySchedule[]> => {
+    const response = await httpClient.post<ApiResponse<{ schedules: LawyerAvailabilitySchedule[] }>>(
+      '/api/lawyer/availability/schedule/bulk',
+      data
     )
-    return response.data || []
+    if (!response.data?.schedules) throw new Error('Failed to set bulk schedule')
+    return response.data.schedules
+  },
+
+  deleteSchedule: async (id: string): Promise<void> => {
+    await httpClient.delete<ApiResponse>(`/api/lawyer/availability/schedule/${id}`)
+  },
+
+  getExceptions: async (params?: { startDate?: string; endDate?: string; futureOnly?: boolean }): Promise<AvailabilityException[]> => {
+    const queryParams = new URLSearchParams()
+    if (params?.startDate) queryParams.append('startDate', params.startDate)
+    if (params?.endDate) queryParams.append('endDate', params.endDate)
+    if (params?.futureOnly !== undefined) queryParams.append('futureOnly', String(params.futureOnly))
+    
+    const url = `/api/lawyer/availability/exceptions${queryParams.toString() ? `?${queryParams}` : ''}`
+    const response = await httpClient.getAuth<ApiResponse<ExceptionsResponse>>(url)
+    return response.data?.exceptions || []
   },
 
   createException: async (data: CreateExceptionInput): Promise<AvailabilityException> => {
-    const response = await httpClient.post<ApiResponse<AvailabilityException>>(
+    const response = await httpClient.post<ApiResponse<{ exception: AvailabilityException }>>(
       '/api/lawyer/availability/exceptions',
       data
     )
-    if (!response.data) throw new Error('Failed to create exception')
-    return response.data
+    if (!response.data?.exception) throw new Error('Failed to create exception')
+    return response.data.exception
+  },
+
+  bulkCreateExceptions: async (data: BulkExceptionInput): Promise<AvailabilityException[]> => {
+    const response = await httpClient.post<ApiResponse<{ exceptions: AvailabilityException[] }>>(
+      '/api/lawyer/availability/exceptions/bulk',
+      data
+    )
+    if (!response.data?.exceptions) throw new Error('Failed to create bulk exceptions')
+    return response.data.exceptions
   },
 
   deleteException: async (id: string): Promise<void> => {
     await httpClient.delete<ApiResponse>(`/api/lawyer/availability/exceptions/${id}`)
+  },
+
+  getAvailabilityRange: async (startDate: string, endDate: string): Promise<AvailabilityRangeResponse> => {
+    const params = new URLSearchParams({ startDate, endDate })
+    const response = await httpClient.getAuth<ApiResponse<AvailabilityRangeResponse>>(
+      `/api/lawyer/availability/range?${params}`
+    )
+    return response.data || { weeklySchedule: [], exceptions: [] }
   },
 
   getAvailableSlots: async (
@@ -81,10 +121,32 @@ export const useAvailability = () => {
     })
   }
 
-  // Mutation: Update availability schedule
-  const useUpdateAvailabilitySchedule = () => {
+  // Mutation: Set schedule for single day
+  const useSetSchedule = () => {
     return useMutation({
-      mutationFn: availabilityAPI.updateSchedule,
+      mutationFn: availabilityAPI.setSchedule,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.availability.schedule })
+        queryClient.invalidateQueries({ queryKey: ['available-slots'] })
+      },
+    })
+  }
+
+  // Mutation: Bulk set schedule
+  const useBulkSetSchedule = () => {
+    return useMutation({
+      mutationFn: availabilityAPI.bulkSetSchedule,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.availability.schedule })
+        queryClient.invalidateQueries({ queryKey: ['available-slots'] })
+      },
+    })
+  }
+
+  // Mutation: Delete schedule entry
+  const useDeleteSchedule = () => {
+    return useMutation({
+      mutationFn: availabilityAPI.deleteSchedule,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.availability.schedule })
         queryClient.invalidateQueries({ queryKey: ['available-slots'] })
@@ -93,10 +155,10 @@ export const useAvailability = () => {
   }
 
   // Query: Get availability exceptions
-  const useAvailabilityExceptions = () => {
+  const useAvailabilityExceptions = (params?: MaybeRef<{ startDate?: string; endDate?: string; futureOnly?: boolean }>) => {
     return useQuery({
-      queryKey: queryKeys.availability.exceptions,
-      queryFn: availabilityAPI.getExceptions,
+      queryKey: computed(() => [...queryKeys.availability.exceptions, unref(params)]),
+      queryFn: () => availabilityAPI.getExceptions(unref(params)),
     })
   }
 
@@ -104,35 +166,17 @@ export const useAvailability = () => {
   const useCreateAvailabilityException = () => {
     return useMutation({
       mutationFn: availabilityAPI.createException,
-      onMutate: async (newException) => {
-        await queryClient.cancelQueries({ queryKey: queryKeys.availability.exceptions })
-        const previousExceptions = queryClient.getQueryData<AvailabilityException[]>(
-          queryKeys.availability.exceptions
-        )
-
-        if (previousExceptions) {
-          const optimisticException: AvailabilityException = {
-            id: `temp-${Date.now()}`,
-            lawyerId: 'current-lawyer',
-            startDate: newException.startDate,
-            endDate: newException.endDate,
-            reason: newException.reason,
-            createdAt: new Date().toISOString(),
-          }
-
-          queryClient.setQueryData<AvailabilityException[]>(
-            queryKeys.availability.exceptions,
-            [...previousExceptions, optimisticException]
-          )
-        }
-
-        return { previousExceptions }
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.availability.exceptions })
+        queryClient.invalidateQueries({ queryKey: ['available-slots'] })
       },
-      onError: (_err, _newException, context) => {
-        if (context?.previousExceptions) {
-          queryClient.setQueryData(queryKeys.availability.exceptions, context.previousExceptions)
-        }
-      },
+    })
+  }
+
+  // Mutation: Bulk create exceptions
+  const useBulkCreateExceptions = () => {
+    return useMutation({
+      mutationFn: availabilityAPI.bulkCreateExceptions,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.availability.exceptions })
         queryClient.invalidateQueries({ queryKey: ['available-slots'] })
@@ -144,30 +188,19 @@ export const useAvailability = () => {
   const useDeleteAvailabilityException = () => {
     return useMutation({
       mutationFn: availabilityAPI.deleteException,
-      onMutate: async (id) => {
-        await queryClient.cancelQueries({ queryKey: queryKeys.availability.exceptions })
-        const previousExceptions = queryClient.getQueryData<AvailabilityException[]>(
-          queryKeys.availability.exceptions
-        )
-
-        if (previousExceptions) {
-          queryClient.setQueryData<AvailabilityException[]>(
-            queryKeys.availability.exceptions,
-            previousExceptions.filter((exception) => exception.id !== id)
-          )
-        }
-
-        return { previousExceptions }
-      },
-      onError: (_err, _id, context) => {
-        if (context?.previousExceptions) {
-          queryClient.setQueryData(queryKeys.availability.exceptions, context.previousExceptions)
-        }
-      },
-      onSettled: () => {
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.availability.exceptions })
         queryClient.invalidateQueries({ queryKey: ['available-slots'] })
       },
+    })
+  }
+
+  // Query: Get availability range
+  const useAvailabilityRange = (startDate: Ref<string>, endDate: Ref<string>) => {
+    return useQuery({
+      queryKey: computed(() => ['availability-range', startDate.value, endDate.value]),
+      queryFn: () => availabilityAPI.getAvailabilityRange(startDate.value, endDate.value),
+      enabled: computed(() => !!startDate.value && !!endDate.value),
     })
   }
 
@@ -206,10 +239,14 @@ export const useAvailability = () => {
 
   return {
     useAvailabilitySchedule,
-    useUpdateAvailabilitySchedule,
+    useSetSchedule,
+    useBulkSetSchedule,
+    useDeleteSchedule,
     useAvailabilityExceptions,
     useCreateAvailabilityException,
+    useBulkCreateExceptions,
     useDeleteAvailabilityException,
+    useAvailabilityRange,
     useAvailableSlots,
   }
 }

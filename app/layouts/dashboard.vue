@@ -132,6 +132,13 @@ const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith('/dashboard/consultation-types')
   },
   { 
+    label: 'Availability', 
+    icon: 'i-hugeicons-clock-01', 
+    to: '/dashboard/availability', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/availability')
+  },
+  { 
     label: 'Messages', 
     icon: 'i-hugeicons-message-02', 
     to: '/dashboard/messages', 
