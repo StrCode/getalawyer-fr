@@ -128,7 +128,7 @@ const clientBookingAPI = {
 
   // Create booking
   createBooking: async (data: CreateBookingInput): Promise<Booking> => {
-    const response = await httpClient.post<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.post<ApiResponse<{ booking: Booking }> >(
       '/api/bookings',
       data
     )

@@ -31,7 +31,7 @@ const bookingsAPI = {
     const qs = params.toString()
     const url = qs ? `/api/bookings?${qs}` : '/api/bookings'
 
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>(url)
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]> >(url)
 
     // Handle both { bookings: [...] } and [...] responses
     if (response.data && 'bookings' in (response.data as any)) {
@@ -41,7 +41,7 @@ const bookingsAPI = {
   },
 
   getUpcomingBookings: async (): Promise<Booking[]> => {
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>('/api/bookings?upcoming=true')
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]> >('/api/bookings?upcoming=true')
     if (response.data && 'bookings' in (response.data as any)) {
       return (response.data as any).bookings || []
     }
@@ -49,30 +49,30 @@ const bookingsAPI = {
   },
 
   getClientBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.getAuth<ApiResponse<Booking>>(`/api/bookings/${id}`)
+    const response = await httpClient.getAuth<ApiResponse<Booking> >(`/api/bookings/${id}`)
     if (!response.data) throw new Error('Booking not found')
     return response.data
   },
 
   createBooking: async (data: CreateBookingInput): Promise<Booking> => {
-    const response = await httpClient.post<ApiResponse<Booking>>('/api/bookings', data)
+    const response = await httpClient.post<ApiResponse<Booking> >('/api/bookings', data)
     if (!response.data) throw new Error('Failed to create booking')
     return response.data
   },
 
   updateClientBooking: async (id: string, data: UpdateBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<Booking>>(`/api/bookings/${id}`, data)
+    const response = await httpClient.put<ApiResponse<Booking> >(`/api/bookings/${id}`, data)
     if (!response.data) throw new Error('Failed to update booking')
     return response.data
   },
 
   cancelClientBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(`/api/bookings/${id}/cancel`, data)
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(`/api/bookings/${id}/cancel`, data)
     return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
   },
 
   rescheduleClientBooking: async (id: string, data: RescheduleBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(`/api/bookings/${id}/reschedule`, data)
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(`/api/bookings/${id}/reschedule`, data)
     return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
   },
 
@@ -86,12 +86,12 @@ const bookingsAPI = {
     const qs = params.toString()
     const url = qs ? `/api/lawyer/bookings?${qs}` : '/api/lawyer/bookings'
 
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] }>>>(url)
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] }> >(url)
     return response.data?.bookings || []
   },
 
   getLawyerBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.getAuth<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.getAuth<ApiResponse<{ booking: Booking }> >(
       `/api/lawyer/bookings/${id}`
     )
     if (!response.data?.booking) throw new Error('Booking not found')
@@ -99,7 +99,7 @@ const bookingsAPI = {
   },
 
   confirmBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
       `/api/lawyer/bookings/${id}/confirm`
     )
     if (!response.data?.booking) throw new Error('Failed to confirm booking')
@@ -107,7 +107,7 @@ const bookingsAPI = {
   },
 
   completeBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
       `/api/lawyer/bookings/${id}/complete`
     )
     if (!response.data?.booking) throw new Error('Failed to complete booking')
@@ -115,7 +115,7 @@ const bookingsAPI = {
   },
 
   markAsNoShow: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
       `/api/lawyer/bookings/${id}/no-show`
     )
     if (!response.data?.booking) throw new Error('Failed to mark as no-show')
@@ -123,7 +123,7 @@ const bookingsAPI = {
   },
 
   cancelLawyerBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
       `/api/lawyer/bookings/${id}/cancel`,
       data
     )
@@ -135,7 +135,7 @@ const bookingsAPI = {
     id: string,
     data: UpdateLawyerBookingInput
   ): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<Booking>>(
+    const response = await httpClient.put<ApiResponse<Booking> >(
       `/api/lawyer/bookings/${id}`,
       data
     )
