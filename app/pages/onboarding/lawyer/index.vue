@@ -82,24 +82,6 @@ const currentStepComponent = computed(() => {
 
     <!-- Right Content Area -->
     <div class="flex-1 flex flex-col min-w-0 bg-[#fafafa]">
-      
-      <!-- Top nav bar -->
-      <div class="h-20 border-b border-gray-200 bg-white flex items-center justify-between px-6 lg:px-10 shrink-0">
-          <UButton icon="i-heroicons-chevron-left" color="neutral" variant="ghost" class="rounded-full shadow-sm bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900" />
-          
-          <div class="flex items-center gap-6">
-             <!-- Fake Progress indicator -->
-             <div class="hidden sm:flex items-center gap-3">
-                <div class="w-32 h-1 bg-gray-100 rounded-full overflow-hidden">
-                   <div class="h-full bg-blue-400 rounded-full" style="width: 60%"></div>
-                </div>
-                <span class="text-xs font-bold text-gray-500">60%</span>
-             </div>
-             <UButton variant="outline" color="neutral" size="sm" class="rounded-full px-4 text-primary-600 font-semibold border-gray-200">
-               Save for later
-             </UButton>
-          </div>
-      </div>
 
       <!-- Scrollable Form Container -->
       <div class="flex-1 overflow-y-auto w-full relative">
