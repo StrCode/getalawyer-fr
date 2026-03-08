@@ -62,6 +62,12 @@ export interface NinInitiateResponse {
         dateOfBirth: string
         gender: string
     }
+    photo?: string | null
+    firstName?: string
+    lastName?: string
+    middleName?: string
+    dateOfBirth?: string
+    gender?: string
 }
 
 export interface NinConfirmData {
@@ -113,6 +119,7 @@ const lawyerOnboardingAPI = {
 
     initiateNinVerification: async (data: NinInitiateData): Promise<NinInitiateResponse> => {
         const res = await httpClient.post<any>('/api/onboarding/nin/initiate', data)
+        console.log('[useLawyerOnboarding] Raw response from initiateNinVerification:', res)
         return res.data || res
     },
 

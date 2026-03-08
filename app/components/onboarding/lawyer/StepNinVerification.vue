@@ -26,16 +26,28 @@ const confirmState = reactive({
 })
 
 const handleInitiate = async () => {
+  console.log('[NIN Initiate] Form submitted with:', ninState)
   initiateNin(ninState, {
     onSuccess: (res) => {
+      console.log('[NIN Initiate] onSuccess callback triggered with res:', res)
       // res is already unwrapped from the axios/fetch layer via useLawyerOnboarding
       // When success is true and data exists, we transition to the confirmation phase
       if (res.success && res.data) {
+        console.log('[NIN Initiate] Condition met! Transitioning to confirmation phase.')
         showConfirmationPhase.value = true
+      } else {
+        console.warn('[NIN Initiate] Condition NOT met. res.success:', res.success, 'res.data:', res.data)
       }
+    },
+    onError: (err) => {
+      console.error('[NIN Initiate] onError callback triggered:', err)
     }
   })
 }
+
+watchEffect(() => {
+  console.log('[NIN Initiate] initResult reactive variable changed:', initResult.value)
+})
 
 const handleConfirm = async () => {
   if (!ninState.nin) return
