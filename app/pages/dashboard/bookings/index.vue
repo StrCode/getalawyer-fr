@@ -39,6 +39,7 @@
           title="All Bookings"
           :bookings="bookings || []" 
           :pagination="pagination"
+          @update:pagination="p => pagination = p"
         />
       </template>
 
@@ -47,6 +48,7 @@
           title="Upcoming Consultations"
           :bookings="upcomingBookings || []" 
           :pagination="pagination"
+          @update:pagination="p => pagination = p"
         />
       </template>
 
@@ -55,9 +57,12 @@
           title="Pending Approvals"
           :bookings="pendingBookings" 
           :pagination="pagination"
+          @update:pagination="p => pagination = p"
         />
       </template>
     </UTabs>
+
+    <BookingModal v-model:open="isBookingModalOpen" />
   </div>
 </template>
 
@@ -66,6 +71,7 @@ import { computed, ref, h, resolveComponent } from 'vue'
 import type { ButtonProps, TabsItem } from '@nuxt/ui'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
+import { getPaginationRowModel } from '@tanstack/vue-table'
 
 // Add subcomponent locally to clean up the template
 const BookingList = defineComponent({
@@ -74,7 +80,8 @@ const BookingList = defineComponent({
     bookings: { type: Array as PropType<Booking[]>, required: true },
     pagination: Object
   },
-  setup(props) {
+  emits: ['update:pagination'],
+  setup(props, { emit }) {
     const tableApi = ref()
     const columns = [
       {
@@ -159,7 +166,6 @@ const BookingList = defineComponent({
       const UInput = resolveComponent('UInput') as any
       const UTable = resolveComponent('UTable') as any
       const UPagination = resolveComponent('UPagination') as any
-      const getPaginationRowModel = require('@tanstack/vue-table').getPaginationRowModel
 
       return h('div', {}, [
         h(UCard, { ui: { body: 'rounded-none sm:p-0' } }, () => [
@@ -182,7 +188,7 @@ const BookingList = defineComponent({
             data: props.bookings,
             columns,
             pagination: props.pagination,
-            'onUpdate:pagination': (val: any) => props.pagination = val,
+            'onUpdate:pagination': (val: any) => emit('update:pagination', val),
             paginationOptions: { getPaginationRowModel: getPaginationRowModel() },
             ui: {
               root: 'border border-gray-200 border-x-0 rounded-none overflow-hidden',
@@ -216,6 +222,7 @@ definePageMeta({
   layout: 'dashboard',
 })
 
+const isBookingModalOpen = ref(false)
 const activeTab = ref('all')
 
 const { useClientBookings, useUpcomingBookings } = useBookings()
@@ -242,7 +249,7 @@ const links = ref<ButtonProps[]>([
   {
     label: 'New Booking',
     icon: 'i-hugeicons-add-01',
-    to: '/dashboard/bookings/new',
+    onClick: () => { isBookingModalOpen.value = true },
     color: 'secondary',
     class: 'font-medium py-2.5 px-3 rounded-lg text-white text-sm leading-5 tracking-tight bg-[#007AFC] shadow-xs hover:bg-blue-600 transition-colors'
   }

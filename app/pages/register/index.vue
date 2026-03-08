@@ -237,9 +237,9 @@ const handleSubmit = async () => {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      userType: role.value === 'lawyer' ? 'lawyer' : 'user',
+      userType: role.value === 'lawyer' ? 'lawyer' : 'client',
       onboarding_completed: false,
-      callbackURL: role.value === 'lawyer' ? '/register/step2' : '/onboarding/client/location'
+      callbackURL: role.value === 'lawyer' ? '/onboarding/lawyer' : '/onboarding/client/location'
     })
 
     if (signUpError) {

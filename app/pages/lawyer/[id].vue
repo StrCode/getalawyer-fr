@@ -25,6 +25,8 @@ const lawyer = ref({
 useHead({
   title: `${lawyer.value.name} - ${lawyer.value.specialty} | Getalawyer`
 })
+
+const isBookingModalOpen = ref(false)
 </script>
 
 <template>
@@ -68,9 +70,8 @@ useHead({
                 </div>
              </div>
              
-             <!-- Quick Actions (Desktop Right Side) -->
              <div class="w-full md:w-auto flex flex-col gap-3 shrink-0 mt-4 md:mt-2">
-               <UButton size="xl" color="primary" class="w-full md:justify-center shadow-sm font-semibold px-8" icon="i-heroicons-calendar-days">
+               <UButton size="xl" color="primary" class="w-full md:justify-center shadow-sm font-semibold px-8" icon="i-heroicons-calendar-days" @click="isBookingModalOpen = true">
                   Book Consultation
                </UButton>
                <UButton size="xl" color="neutral" variant="solid" class="w-full md:justify-center shadow-sm text-gray-700 font-semibold px-8 hover:bg-gray-50" icon="i-heroicons-chat-bubble-left-ellipsis">
@@ -252,7 +253,7 @@ useHead({
 
                 <!-- Call to Action -->
                 <div class="pt-2">
-                   <UButton size="xl" block color="neutral" class="h-14 font-bold text-base shadow-md hover:shadow-lg transition-all duration-200 bg-gray-900 text-white hover:bg-gray-800">
+                   <UButton size="xl" block color="neutral" class="h-14 font-bold text-base shadow-md hover:shadow-lg transition-all duration-200 bg-gray-900 text-white hover:bg-gray-800" @click="isBookingModalOpen = true">
                       Request a Meeting
                    </UButton>
                    <p class="text-xs text-center text-gray-500 mt-4 flex items-center justify-center gap-1.5">
@@ -266,5 +267,7 @@ useHead({
        </div>
 
     </div>
+
+    <BookingModal v-model:open="isBookingModalOpen" :initialLawyerId="lawyerId as string" />
   </div>
 </template>

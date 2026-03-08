@@ -41,7 +41,7 @@ const bookingsAPI = {
   },
 
   getUpcomingBookings: async (): Promise<Booking[]> => {
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>('/api/bookings/upcoming')
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>('/api/bookings?upcoming=true')
     if (response.data && 'bookings' in (response.data as any)) {
       return (response.data as any).bookings || []
     }

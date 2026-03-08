@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  css: ['~/assets/css/main.css'], 
+  css: ['~/assets/css/main.css'],
   vite: {
     plugins: [
       tailwindcss(),
@@ -13,12 +13,14 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/image',
     '@nuxt/ui',
-    '@nuxtjs/leaflet',
     '@nuxtjs/seo',
     '@peterbud/nuxt-query',
     '@pinia/nuxt',
     'nuxt-viewport',
   ],
+  leaflet: {
+    markerCluster: false,
+  },
   viewport: {
     breakpoints: {
       xs: 320,
@@ -38,7 +40,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Geist',
+        name: 'Plus Jakarta Sans',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal'],

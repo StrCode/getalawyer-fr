@@ -185,6 +185,13 @@ const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith('/dashboard/appointments')
   },
   { 
+    label: 'Bookings', 
+    icon: 'i-hugeicons-notebook', 
+    to: '/dashboard/bookings', 
+    type: 'link',
+    active: route.path.startsWith('/dashboard/bookings')
+  },
+  { 
     label: 'Messages', 
     icon: 'i-hugeicons-message-02', 
     to: '/dashboard/messages', 

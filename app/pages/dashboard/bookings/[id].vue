@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-      <UButton icon="i-hugeicons-arrow-left-01" color="gray" variant="ghost" to="/dashboard/bookings" />
+      <UButton icon="i-hugeicons-arrow-left-01" color="neutral" variant="ghost" to="/dashboard/bookings" />
       <UPageHeader 
         title="Booking Details"
         :description="booking ? `Reference: ${booking.bookingReference || 'N/A'}` : 'Loading...'"
@@ -75,8 +75,8 @@
           </div>
           <template #footer v-if="canModify">
             <div class="flex flex-col gap-2">
-              <UButton label="Reschedule" color="gray" block @click="isRescheduleModalOpen = true" />
-              <UButton label="Cancel Booking" color="red" variant="soft" block @click="isCancelModalOpen = true" />
+              <UButton label="Reschedule" color="neutral" block @click="isRescheduleModalOpen = true" />
+              <UButton label="Cancel Booking" color="error" variant="soft" block @click="isCancelModalOpen = true" />
             </div>
           </template>
         </UCard>
@@ -98,8 +98,8 @@
         </div>
         <template #footer>
           <div class="flex justify-end gap-3">
-            <UButton label="Nevermind" color="gray" @click="isCancelModalOpen = false" />
-            <UButton label="Yes, Cancel" color="red" :loading="isCanceling" @click="handleCancel" />
+            <UButton label="Nevermind" color="neutral" @click="isCancelModalOpen = false" />
+            <UButton label="Yes, Cancel" color="error" :loading="isCanceling" @click="handleCancel" />
           </div>
         </template>
       </UCard>
@@ -120,7 +120,7 @@
         </div>
         <template #footer>
           <div class="flex justify-end gap-3">
-            <UButton label="Cancel" color="gray" @click="isRescheduleModalOpen = false" />
+            <UButton label="Cancel" color="neutral" @click="isRescheduleModalOpen = false" />
             <UButton label="Reschedule" color="primary" class="bg-[#007AFC]" :loading="isRescheduling" @click="handleReschedule" />
           </div>
         </template>
@@ -144,10 +144,10 @@ const { useClientBooking, useCancelBooking, useRescheduleBooking } = useBookings
 const { data: booking, isLoading, isError } = useClientBooking(bookingId)
 
 const statusColor = computed(() => {
-  if (!booking.value) return 'gray'
+  if (!booking.value) return 'neutral' as any
   const s = booking.value.status
-  return s === 'confirmed' ? 'green' : s === 'pending' ? 'orange' : s === 'cancelled' ? 'red' : 'gray'
-})
+  return s === 'confirmed' ? 'success' : s === 'pending' ? 'warning' : s === 'cancelled' ? 'error' : 'neutral'
+}) as any
 
 const canModify = computed(() => {
   return booking.value && (booking.value.status === 'pending' || booking.value.status === 'confirmed')
@@ -162,10 +162,10 @@ function handleCancel() {
   cancelBooking({ id: bookingId.value, data: { reason: cancelReason.value } }, {
     onSuccess: () => {
       isCancelModalOpen.value = false
-      useToast().add({ title: 'Success', description: 'Booking cancelled.', color: 'green' })
+      useToast().add({ title: 'Success', description: 'Booking cancelled.', color: 'success' })
     },
     onError: (err) => {
-      useToast().add({ title: 'Error', description: err.message || 'Failed to cancel', color: 'red' })
+      useToast().add({ title: 'Error', description: err.message || 'Failed to cancel', color: 'error' })
     }
   })
 }
@@ -183,10 +183,10 @@ function handleReschedule() {
   }, {
     onSuccess: () => {
       isRescheduleModalOpen.value = false
-      useToast().add({ title: 'Success', description: 'Booking rescheduled.', color: 'green' })
+      useToast().add({ title: 'Success', description: 'Booking rescheduled.', color: 'success' })
     },
     onError: (err) => {
-      useToast().add({ title: 'Error', description: err.message || 'Failed to reschedule', color: 'red' })
+      useToast().add({ title: 'Error', description: err.message || 'Failed to reschedule', color: 'error' })
     }
   })
 }
