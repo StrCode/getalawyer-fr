@@ -81,71 +81,167 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div v-if="isLoadingSummary || isLoadingSpecs" class="flex justify-center py-8">
-    <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-primary animate-spin" />
+  <div v-if="isLoadingSummary || isLoadingSpecs" class="flex justify-center py-20">
+    <Icon name="lucide:loader-circle" class="w-12 h-12 text-primary animate-spin" />
   </div>
 
-  <UForm v-else :schema="schema" :state="state" class="space-y-6" @submit="handleSubmit">
-    <div class="mb-4 border-b pb-4">
-      <h2 class="text-xl font-semibold text-gray-900 border-l-4 border-primary pl-2 mb-2">Practice Details</h2>
-      <p class="text-sm text-gray-500 ml-3">Tell us about your law firm and your areas of expertise.</p>
-    </div>
-
+  <UForm v-else :schema="schema" :state="state" class="space-y-8" @submit="handleSubmit">
     <!-- Error Banner -->
-    <UAlert v-if="saveError" color="error" variant="soft" title="Error" :description="saveError.message || 'Failed to save practice info. Please try again.'" />
+    <UAlert 
+      v-if="saveError" 
+      color="error" 
+      variant="soft" 
+      title="Error" 
+      :description="saveError.message || 'Failed to save practice info. Please try again.'"
+      icon="heroicons:exclamation-triangle"
+    />
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <UFormField label="Law Firm Name" name="firmName" class="sm:col-span-2">
-        <UInput v-model="state.firmName" placeholder="e.g. Doe & Partners Legal" class="w-full" />
-      </UFormField>
-
-      <div class="sm:col-span-2 pt-4">
-        <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Primary Office Address</h3>
+    <!-- Firm Information Section -->
+    <div class="space-y-6">
+      <div class="border-b border-gray-200 pb-3">
+        <h3 class="text-xl font-semibold text-gray-900">Law Firm Information</h3>
+        <p class="text-sm text-gray-500 mt-1">Provide details about your law firm or practice</p>
       </div>
 
-      <UFormField label="Street Address" name="officeAddress.street" class="sm:col-span-2">
-        <UInput v-model="state.officeAddress.street" placeholder="e.g. 13B Fake Street" class="w-full" />
+      <UFormField label="Law Firm Name" name="firmName" required size="xl">
+        <UInput 
+          v-model="state.firmName" 
+          size="xl"
+          placeholder="e.g. Doe & Partners Legal" 
+          icon="heroicons:building-office-2"
+          class="w-full"
+        />
       </UFormField>
 
-      <UFormField label="City" name="officeAddress.city">
-        <UInput v-model="state.officeAddress.city" placeholder="e.g. Ikeja" class="w-full" />
-      </UFormField>
-
-      <UFormField label="State" name="officeAddress.state">
-        <UInput v-model="state.officeAddress.state" placeholder="e.g. Lagos" class="w-full" />
-      </UFormField>
-
-      <UFormField label="Postal Code" name="officeAddress.postalCode">
-        <UInput v-model="state.officeAddress.postalCode" placeholder="e.g. 100001" class="w-full" />
-      </UFormField>
-
-      <UFormField label="Country" name="officeAddress.country">
-        <UInput v-model="state.officeAddress.country" disabled class="w-full" />
-      </UFormField>
-
-      <div class="sm:col-span-2 pt-4">
-        <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Practice Details</h3>
-      </div>
-
-      <UFormField label="Years of Experience" name="yearsOfExperience" class="sm:col-span-2">
-        <UInput v-model.number="state.yearsOfExperience" type="number" :min="0" :max="70" class="w-full" />
-      </UFormField>
-
-      <div class="sm:col-span-2 pt-4">
-        <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Areas of Practice</h3>
-      </div>
-      
-      <UFormField label="States of Practice (Max 5)" name="statesOfPractice" class="sm:col-span-2">
-         <USelectMenu v-model="state.statesOfPractice" :items="nigerianStatesOptions" value-key="value" multiple placeholder="Select states" class="w-full" />
-      </UFormField>
-      
-      <UFormField label="Practice Areas (Max 3)" name="practiceAreas" class="sm:col-span-2">
-         <USelectMenu v-model="state.practiceAreas" :items="specializationsOptions" value-key="value" multiple placeholder="Select your areas of expertise" class="w-full" />
+      <UFormField label="Years of Experience" name="yearsOfExperience" required size="xl">
+        <UInput 
+          v-model.number="state.yearsOfExperience" 
+          type="number" 
+          size="xl"
+          :min="0" 
+          :max="70"
+          icon="heroicons:briefcase"
+          class="w-full"
+        />
+        <template #hint>
+          <span class="text-xs text-gray-500">Total years of legal practice experience</span>
+        </template>
       </UFormField>
     </div>
 
-    <div class="flex justify-end pt-4 border-t">
-      <UButton type="submit" color="primary" :loading="isSaving" trailing-icon="i-heroicons-arrow-right">
+    <!-- Office Address Section -->
+    <div class="space-y-6">
+      <div class="border-b border-gray-200 pb-3">
+        <h3 class="text-xl font-semibold text-gray-900">Primary Office Address</h3>
+        <p class="text-sm text-gray-500 mt-1">Where clients can reach you</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <UFormField label="Street Address" name="officeAddress.street" required size="xl" class="md:col-span-2">
+          <UInput 
+            v-model="state.officeAddress.street" 
+            size="xl"
+            placeholder="e.g. 13B Fake Street" 
+            icon="heroicons:map-pin"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField label="City" name="officeAddress.city" required size="xl">
+          <UInput 
+            v-model="state.officeAddress.city" 
+            size="xl"
+            placeholder="e.g. Ikeja" 
+            icon="heroicons:building-office-2"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField label="State" name="officeAddress.state" required size="xl">
+          <UInput 
+            v-model="state.officeAddress.state" 
+            size="xl"
+            placeholder="e.g. Lagos" 
+            icon="heroicons:map-pin"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField label="Postal Code" name="officeAddress.postalCode" required size="xl">
+          <UInput 
+            v-model="state.officeAddress.postalCode" 
+            size="xl"
+            placeholder="e.g. 100001" 
+            icon="heroicons:envelope"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField label="Country" name="officeAddress.country" required size="xl">
+          <UInput 
+            v-model="state.officeAddress.country" 
+            size="xl"
+            disabled
+            icon="heroicons:globe-alt"
+            class="w-full"
+          />
+        </UFormField>
+      </div>
+    </div>
+
+    <!-- Practice Areas Section -->
+    <div class="space-y-6">
+      <div class="border-b border-gray-200 pb-3">
+        <h3 class="text-xl font-semibold text-gray-900">Areas of Practice</h3>
+        <p class="text-sm text-gray-500 mt-1">Select your practice areas and states where you practice</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6">
+        <UFormField label="States of Practice" name="statesOfPractice" required size="xl">
+          <USelectMenu 
+            v-model="state.statesOfPractice" 
+            :items="nigerianStatesOptions" 
+            value-key="value"
+            size="xl"
+            multiple 
+            placeholder="Select states where you practice" 
+            icon="heroicons:map"
+            class="w-full"
+          />
+          <template #hint>
+            <span class="text-xs text-gray-500">Select up to 5 states (minimum 1 required)</span>
+          </template>
+        </UFormField>
+
+        <UFormField label="Practice Areas / Specializations" name="practiceAreas" required size="xl">
+          <USelectMenu 
+            v-model="state.practiceAreas" 
+            :items="specializationsOptions" 
+            value-key="value"
+            size="xl"
+            multiple 
+            placeholder="Select your areas of expertise" 
+            icon="heroicons:scale"
+            class="w-full"
+          />
+          <template #hint>
+            <span class="text-xs text-gray-500">Select up to 3 specializations (minimum 1 required)</span>
+          </template>
+        </UFormField>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="pt-6 border-t border-gray-200">
+      <UButton
+        type="submit"
+        size="xl"
+        color="primary"
+        block
+        :loading="isSaving"
+        icon="heroicons:arrow-right"
+        trailing
+      >
         Save & Continue
       </UButton>
     </div>
