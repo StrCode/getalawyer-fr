@@ -510,7 +510,7 @@ const isBookingModalOpen = ref(false)
     </div>
 
 
-      <BookingModal v-model:open="isBookingModalOpen" :initialLawyerId="lawyerId" />
+      <BookingModal v-model:open="isBookingModalOpen" :initialLawyerId="lawyerId" :lawyerInfo="lawyer" />
       </template>
   </div>
 </template>

@@ -26,9 +26,7 @@ const navLinks = [
 
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
-          <span class="text-[15px] font-serif font-bold tracking-tight text-neutral-900">
-            Lex<span class="text-[#1d6b44]">Connect</span>
-          </span>
+          <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-8 w-auto" />
         </NuxtLink>
 
         <!-- Desktop Nav -->

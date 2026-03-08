@@ -51,11 +51,19 @@ const searchParams = computed(() => {
   const params: any = {}
   
   if (filters.value.keywords) params.q = filters.value.keywords
+  if (filters.value.location) params.state = filters.value.location
   if (filters.value.practiceAreas.length > 0) params.specializations = filters.value.practiceAreas
   if (filters.value.minExperience) params.minExperience = filters.value.minExperience
   if (filters.value.priceRange.max) params.maxExperience = filters.value.priceRange.max
   if (currentPage.value > 1) params.page = currentPage.value
   params.limit = itemsPerPage.value
+  
+  // Set sort by
+  if (filters.value.keywords) {
+    params.sortBy = 'relevance'
+  } else {
+    params.sortBy = 'experience'
+  }
   
   return params
 })
@@ -63,18 +71,21 @@ const searchParams = computed(() => {
 // Fetch lawyers using TanStack Query
 const { data: lawyersData, isLoading, error } = useLawyersList(searchParams)
 
-// Extract lawyers and total from response
+// Extract lawyers and pagination from response
 const lawyers = computed(() => {
-  if (!lawyersData.value?.data) return []
-  return Array.isArray(lawyersData.value.data) ? lawyersData.value.data : []
+  if (!lawyersData.value?.results) return []
+  return lawyersData.value.results
 })
 
+const pagination = computed(() => lawyersData.value?.pagination)
+const availableFilters = computed(() => lawyersData.value?.filters)
+
 // Update total items when data changes
-watch(lawyersData, (newData) => {
-  if (newData?.data) {
-    totalItems.value = Array.isArray(newData.data) ? newData.data.length : 0
+watch(pagination, (newPagination) => {
+  if (newPagination) {
+    totalItems.value = newPagination.total
   }
-})
+}, { immediate: true })
 
 // Practice areas
 const practiceAreas = [
@@ -167,6 +178,11 @@ const activeFilterCount = computed(() => {
                 Filters ({{ activeFilterCount }})
               </button>
               
+              <!-- Results Count -->
+              <div v-if="pagination" class="results-count">
+                Showing {{ ((pagination.page - 1) * pagination.limit) + 1 }}-{{ Math.min(pagination.page * pagination.limit, pagination.total) }} of {{ pagination.total }} lawyers
+              </div>
+              
               <div v-if="filters.keywords" class="active-filter-tag">
                 Keyword Search: {{ filters.keywords }}
                 <button class="tag-close" @click="filters.keywords = ''">&times;</button>
@@ -175,17 +191,10 @@ const activeFilterCount = computed(() => {
             
             <div class="header-right">
               <button class="sort-button">
-                Recommended
+                {{ searchParams.sortBy === 'relevance' ? 'Most Relevant' : searchParams.sortBy === 'experience' ? 'Most Experienced' : 'Recently Joined' }}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
-              </button>
-              
-              <button class="save-search-button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
-                Save search
               </button>
             </div>
           </div>
@@ -214,11 +223,47 @@ const activeFilterCount = computed(() => {
           </div>
           
           <div v-else class="cards-list">
-            <LawyerCard
+            <LawyerSearchCard
               v-for="lawyer in lawyers"
               :key="lawyer.id"
               :lawyer="lawyer"
             />
+          </div>
+          
+          <!-- Pagination -->
+          <div v-if="pagination && pagination.totalPages > 1" class="pagination">
+            <UButton
+              color="neutral"
+              variant="outline"
+              icon="i-heroicons-chevron-left"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Previous
+            </UButton>
+            
+            <div class="page-numbers">
+              <button
+                v-for="page in Math.min(pagination.totalPages, 5)"
+                :key="page"
+                class="page-number"
+                :class="{ active: page === currentPage }"
+                @click="currentPage = page"
+              >
+                {{ page }}
+              </button>
+              <span v-if="pagination.totalPages > 5" class="page-ellipsis">...</span>
+            </div>
+            
+            <UButton
+              color="neutral"
+              variant="outline"
+              trailing-icon="i-heroicons-chevron-right"
+              :disabled="!pagination.hasMore"
+              @click="currentPage++"
+            >
+              Next
+            </UButton>
           </div>
         </main>
       </div>
@@ -414,9 +459,71 @@ const activeFilterCount = computed(() => {
   text-align: center;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 24px 0;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-number {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.page-number:hover {
+  background: #f9f9f6;
+  border-color: #1d6b44;
+}
+
+.page-number.active {
+  background: #1d6b44;
+  color: white;
+  border-color: #1d6b44;
+}
+
+.page-ellipsis {
+  color: #888;
+  font-weight: 600;
+}
+
+.results-count {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .empty-state {
     padding: 32px 16px;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .page-numbers {
+    order: 3;
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>

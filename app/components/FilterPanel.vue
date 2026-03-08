@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { FilterState } from '~/types/filter'
 import type { ConsultationType } from '~/types/lawyer'
 
@@ -28,6 +28,28 @@ const localFilters = computed({
 // Local state for name search
 const firstNameInput = ref('')
 const lastInitialInput = ref('')
+
+// Local state for keywords with debounce
+const keywordsInput = ref(props.modelValue.keywords || '')
+let keywordsTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Watch keywords input and debounce updates
+watch(keywordsInput, (newValue) => {
+  if (keywordsTimeout) {
+    clearTimeout(keywordsTimeout)
+  }
+  
+  keywordsTimeout = setTimeout(() => {
+    localFilters.value = { ...localFilters.value, keywords: newValue }
+  }, 500) // 500ms debounce
+})
+
+// Sync keywords input when external value changes
+watch(() => props.modelValue.keywords, (newValue) => {
+  if (newValue !== keywordsInput.value) {
+    keywordsInput.value = newValue || ''
+  }
+})
 
 // Count active filters
 const activeFilterCount = computed(() => {
@@ -88,21 +110,14 @@ const handleReset = () => {
       <div class="section-label">
         Smart keywords
         <span class="info-icon">ⓘ</span>
-        <span class="ai-badge">
-          <span class="sparkle">✦</span>
-          Powered by AI (Beta)
-        </span>
       </div>
       <input
-        v-model="localFilters.keywords"
+        v-model="keywordsInput"
         type="text"
         class="filter-input"
-        placeholder="Example: arts and crafts, meal prep"
+        placeholder="Example: corporate law, contract disputes"
         :disabled="loading"
       />
-      <button v-if="localFilters.keywords" class="apply-btn" :disabled="loading">
-        Apply keyword
-      </button>
     </div>
 
     <!-- Search by Name -->
@@ -330,23 +345,6 @@ const handleReset = () => {
   font-size: 14px;
   color: #bbb;
   cursor: pointer;
-}
-
-.ai-badge {
-  font-size: 10px;
-  font-weight: 600;
-  color: #888;
-  background: #f2f2f2;
-  padding: 2px 8px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: auto;
-}
-
-.sparkle {
-  font-size: 10px;
 }
 
 .new-badge {

@@ -9,6 +9,7 @@ import { queryKeys } from '~/lib/query-client'
 
 export interface LawyersSearchParams {
   q?: string
+  state?: string
   specializations?: string[]
   minExperience?: number
   maxExperience?: number
@@ -18,20 +19,13 @@ export interface LawyersSearchParams {
 }
 
 export const useLawyers = () => {
-  // Query: Get all lawyers
+  // Query: Search lawyers with filters
   const useLawyersList = (params?: MaybeRef<LawyersSearchParams>) => {
     const searchParams = computed(() => unref(params))
     
     return useQuery({
-      queryKey: computed(() => ['lawyers', 'list', searchParams.value]),
-      queryFn: () => {
-        // If we have search params, use search endpoint
-        if (searchParams.value && Object.keys(searchParams.value).length > 0) {
-          return api.search.lawyers(searchParams.value)
-        }
-        // Otherwise use simple list endpoint
-        return api.lawyer.getAll()
-      },
+      queryKey: computed(() => ['lawyers', 'search', searchParams.value]),
+      queryFn: () => api.search.lawyers(searchParams.value || {}),
       staleTime: 5 * 60 * 1000, // 5 minutes
     })
   }

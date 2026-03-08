@@ -11,8 +11,9 @@
       >
         <template #header="{ collapsed, collapse }">
           <div class="flex flex-row justify-between items-center w-full">
-            <div class="w-3/4">
-            </div>
+            <NuxtLink to="/" class="flex items-center w-3/4">
+              <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-7 w-auto" />
+            </NuxtLink>
             <UButton 
               icon="i-hugeicons-arrow-right-01" 
               color="neutral" 
