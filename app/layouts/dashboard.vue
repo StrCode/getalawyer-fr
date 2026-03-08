@@ -104,20 +104,6 @@ const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
     active: route.path === '/dashboard'
   },
   { 
-    label: 'Cases', 
-    icon: 'i-hugeicons-folder-01', 
-    to: '/dashboard/cases', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/cases')
-  },
-  { 
-    label: 'Clients', 
-    icon: 'i-hugeicons-user-multiple', 
-    to: '/dashboard/clients', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/clients')
-  },
-  { 
     label: 'Appointments', 
     icon: 'i-hugeicons-calendar-03', 
     to: '/dashboard/appointments', 
@@ -137,34 +123,6 @@ const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
     to: '/dashboard/availability', 
     type: 'link',
     active: route.path.startsWith('/dashboard/availability')
-  },
-  { 
-    label: 'Messages', 
-    icon: 'i-hugeicons-message-02', 
-    to: '/dashboard/messages', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/messages')
-  },
-  { 
-    label: 'Documents', 
-    icon: 'i-hugeicons-file-02', 
-    to: '/dashboard/documents', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/documents')
-  },
-  { 
-    label: 'Finance & Payments', 
-    icon: 'i-hugeicons-wallet-03', 
-    to: '/dashboard/finance', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/finance')
-  },
-  { 
-    label: 'Analytics & Reporting', 
-    icon: 'i-hugeicons-analytics-02', 
-    to: '/dashboard/analytics', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/analytics')
   }
 ])
 
@@ -185,39 +143,11 @@ const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
     active: route.path.startsWith('/lawyers')
   },
   { 
-    label: 'My Cases', 
-    icon: 'i-hugeicons-folder-01', 
-    to: '/dashboard/cases', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/cases')
-  },
-  { 
-    label: 'Appointments', 
+    label: 'My Bookings', 
     icon: 'i-hugeicons-calendar-03', 
-    to: '/dashboard/appointments', 
+    to: '/bookings', 
     type: 'link',
-    active: route.path.startsWith('/dashboard/appointments')
-  },
-  { 
-    label: 'Bookings', 
-    icon: 'i-hugeicons-notebook', 
-    to: '/dashboard/bookings', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/bookings')
-  },
-  { 
-    label: 'Messages', 
-    icon: 'i-hugeicons-message-02', 
-    to: '/dashboard/messages', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/messages')
-  },
-  { 
-    label: 'My Lawyers', 
-    icon: 'i-hugeicons-user-multiple', 
-    to: '/dashboard/my-lawyers', 
-    type: 'link',
-    active: route.path.startsWith('/dashboard/my-lawyers')
+    active: route.path.startsWith('/bookings')
   }
 ])
 
