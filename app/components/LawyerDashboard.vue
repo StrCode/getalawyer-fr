@@ -2,6 +2,17 @@
 import { useBookings } from '~/composables/useBookings'
 
 const { session } = useAuth()
+const router = useRouter()
+
+// Check application status and redirect if rejected
+const applicationStatus = computed(() => (session.value?.user as any)?.applicationStatus)
+
+// Redirect to rejection page if application is rejected
+watch(applicationStatus, (status) => {
+  if (status === 'rejected') {
+    router.push('/onboarding/lawyer/rejected')
+  }
+}, { immediate: true })
 
 // Use bookings composable
 const { useLawyerBookings } = useBookings()
