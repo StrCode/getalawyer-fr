@@ -271,7 +271,6 @@ import type { ButtonProps, TableColumn } from '@nuxt/ui'
 import type { TabsItem } from '@nuxt/ui'
 import type { Row } from '@tanstack/vue-table'
 import { getPaginationRowModel } from '@tanstack/vue-table'
-import { faker } from '@faker-js/faker'
 
 useHead({
   title: 'Listings - Smart Stay Rentals',
@@ -374,67 +373,54 @@ function handleClearFilters() {
   // TODO: Implement clear filter logic
 }
 
-const propertyTypes = ['House', 'Apartment', 'Guesthouse', 'Villa', 'Condo']
-const statuses: ('Occupied' | 'Vacant')[] = ['Occupied', 'Vacant']
+// Mock data - replace with real API calls in production
+const listings = ref<Property[]>([
+  { id: 1, name: 'Sunset Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/prop1/400/400', type: 'Villa', status: 'Occupied', views: 45, reviews: 12 },
+  { id: 2, name: 'Ocean View Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/prop2/400/400', type: 'Apartment', status: 'Vacant', views: 32, reviews: 8 },
+  { id: 3, name: 'Downtown Condo', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/prop3/400/400', type: 'Condo', status: 'Occupied', views: 67, reviews: 23 },
+  { id: 4, name: 'Garden House', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/prop4/400/400', type: 'House', status: 'Vacant', views: 28, reviews: 5 },
+  { id: 5, name: 'Luxury Guesthouse', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/prop5/400/400', type: 'Guesthouse', status: 'Occupied', views: 89, reviews: 34 },
+  { id: 6, name: 'Modern Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/prop6/400/400', type: 'Apartment', status: 'Vacant', views: 41, reviews: 15 },
+  { id: 7, name: 'Beachfront Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/prop7/400/400', type: 'Villa', status: 'Occupied', views: 93, reviews: 42 },
+  { id: 8, name: 'City Center Condo', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/prop8/400/400', type: 'Condo', status: 'Vacant', views: 56, reviews: 19 },
+  { id: 9, name: 'Suburban House', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/prop9/400/400', type: 'House', status: 'Occupied', views: 38, reviews: 11 },
+  { id: 10, name: 'Cozy Apartment', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/prop10/400/400', type: 'Apartment', status: 'Vacant', views: 24, reviews: 6 }
+])
 
-// Use a seeded faker to ensure consistent data between server and client
-const seededFaker = faker
-seededFaker.seed(123)
+const shortStayListings = ref<Property[]>([
+  { id: 11, name: 'Holiday Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/short1/400/400', type: 'Villa', status: 'Occupied', views: 78, reviews: 28 },
+  { id: 12, name: 'Weekend Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/short2/400/400', type: 'Apartment', status: 'Vacant', views: 45, reviews: 14 },
+  { id: 13, name: 'Beach Condo', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/short3/400/400', type: 'Condo', status: 'Occupied', views: 62, reviews: 21 },
+  { id: 14, name: 'City House', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/short4/400/400', type: 'House', status: 'Vacant', views: 33, reviews: 9 },
+  { id: 15, name: 'Tourist Guesthouse', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/short5/400/400', type: 'Guesthouse', status: 'Occupied', views: 51, reviews: 17 },
+  { id: 16, name: 'Vacation Apartment', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/short6/400/400', type: 'Apartment', status: 'Vacant', views: 39, reviews: 12 },
+  { id: 17, name: 'Resort Villa', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/short7/400/400', type: 'Villa', status: 'Occupied', views: 87, reviews: 35 },
+  { id: 18, name: 'Short Stay Condo', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/short8/400/400', type: 'Condo', status: 'Vacant', views: 44, reviews: 13 }
+])
 
-const listings = ref<Property[]>(
-  Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    name: seededFaker.location.streetAddress({ useFullAddress: false }) + ' ' + seededFaker.helpers.arrayElement(['Condo', 'Apartment', 'House', 'Villa']),
-    location: `${seededFaker.location.street()}, ${seededFaker.location.city()}, ${seededFaker.location.state()}`,
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(8)}/400/400`,
-    type: seededFaker.helpers.arrayElement(propertyTypes),
-    status: seededFaker.helpers.arrayElement(statuses),
-    views: seededFaker.number.int({ min: 0, max: 100 }),
-    reviews: seededFaker.number.int({ min: 0, max: 50 })
-  }))
-)
+const rentalListings = ref<Property[]>([
+  { id: 21, name: 'Long Term Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/rent1/400/400', type: 'Villa', status: 'Occupied', views: 56, reviews: 18 },
+  { id: 22, name: 'Rental Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/rent2/400/400', type: 'Apartment', status: 'Vacant', views: 42, reviews: 11 },
+  { id: 23, name: 'Family House', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/rent3/400/400', type: 'House', status: 'Occupied', views: 68, reviews: 24 },
+  { id: 24, name: 'Studio Apartment', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/rent4/400/400', type: 'Apartment', status: 'Vacant', views: 31, reviews: 8 },
+  { id: 25, name: 'Residential Condo', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/rent5/400/400', type: 'Condo', status: 'Occupied', views: 73, reviews: 27 },
+  { id: 26, name: 'Townhouse', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/rent6/400/400', type: 'House', status: 'Vacant', views: 49, reviews: 15 }
+])
 
-// Short Stay listings data
-const shortStayListings = ref<Property[]>(
-  Array.from({ length: 8 }, (_, i) => ({
-    id: i + 11,
-    name: seededFaker.location.streetAddress({ useFullAddress: false }) + ' ' + seededFaker.helpers.arrayElement(['Condo', 'Apartment', 'House', 'Villa']),
-    location: `${seededFaker.location.street()}, ${seededFaker.location.city()}, ${seededFaker.location.state()}`,
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(8)}/400/400`,
-    type: seededFaker.helpers.arrayElement(propertyTypes),
-    status: seededFaker.helpers.arrayElement(statuses),
-    views: seededFaker.number.int({ min: 0, max: 100 }),
-    reviews: seededFaker.number.int({ min: 0, max: 50 })
-  }))
-)
-
-// Rental listings data
-const rentalListings = ref<Property[]>(
-  Array.from({ length: 6 }, (_, i) => ({
-    id: i + 21,
-    name: seededFaker.location.streetAddress({ useFullAddress: false }) + ' ' + seededFaker.helpers.arrayElement(['Condo', 'Apartment', 'House', 'Villa']),
-    location: `${seededFaker.location.street()}, ${seededFaker.location.city()}, ${seededFaker.location.state()}`,
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(8)}/400/400`,
-    type: seededFaker.helpers.arrayElement(propertyTypes),
-    status: seededFaker.helpers.arrayElement(statuses),
-    views: seededFaker.number.int({ min: 0, max: 100 }),
-    reviews: seededFaker.number.int({ min: 0, max: 50 })
-  }))
-)
-
-// Pending approvals data
-const pendingApprovals = ref<PendingApproval[]>(
-  Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    name: seededFaker.location.streetAddress({ useFullAddress: false }) + ' ' + seededFaker.helpers.arrayElement(['Condo', 'Apartment', 'House', 'Villa']),
-    location: `${seededFaker.location.street()}, ${seededFaker.location.city()}, ${seededFaker.location.state()}`,
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(8)}/400/400`,
-    type: seededFaker.helpers.arrayElement(propertyTypes),
-    price: seededFaker.number.int({ min: 50000, max: 500000 }),
-    submittedBy: seededFaker.person.fullName(),
-    date: seededFaker.date.recent({ days: 30 }).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  }))
-)
+const pendingApprovals = ref<PendingApproval[]>([
+  { id: 1, name: 'New Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/pend1/400/400', type: 'Villa', price: 250000, submittedBy: 'John Doe', date: 'Feb 15, 2026' },
+  { id: 2, name: 'Modern Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/pend2/400/400', type: 'Apartment', price: 120000, submittedBy: 'Jane Smith', date: 'Feb 20, 2026' },
+  { id: 3, name: 'Luxury Condo', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/pend3/400/400', type: 'Condo', price: 180000, submittedBy: 'Mike Johnson', date: 'Feb 22, 2026' },
+  { id: 4, name: 'Family House', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/pend4/400/400', type: 'House', price: 150000, submittedBy: 'Sarah Williams', date: 'Feb 25, 2026' },
+  { id: 5, name: 'Guesthouse', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/pend5/400/400', type: 'Guesthouse', price: 95000, submittedBy: 'David Brown', date: 'Feb 28, 2026' },
+  { id: 6, name: 'Beach Villa', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/pend6/400/400', type: 'Villa', price: 320000, submittedBy: 'Emily Davis', date: 'Mar 1, 2026' },
+  { id: 7, name: 'Downtown Apartment', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/pend7/400/400', type: 'Apartment', price: 135000, submittedBy: 'Chris Wilson', date: 'Mar 3, 2026' },
+  { id: 8, name: 'Suburban House', location: 'Port Harcourt, Nigeria', image: 'https://picsum.photos/seed/pend8/400/400', type: 'House', price: 165000, submittedBy: 'Lisa Anderson', date: 'Mar 5, 2026' },
+  { id: 9, name: 'City Condo', location: 'Ibadan, Nigeria', image: 'https://picsum.photos/seed/pend9/400/400', type: 'Condo', price: 145000, submittedBy: 'Tom Martinez', date: 'Mar 6, 2026' },
+  { id: 10, name: 'Penthouse', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/pend10/400/400', type: 'Apartment', price: 280000, submittedBy: 'Anna Taylor', date: 'Mar 7, 2026' },
+  { id: 11, name: 'Garden Villa', location: 'Abuja, Nigeria', image: 'https://picsum.photos/seed/pend11/400/400', type: 'Villa', price: 295000, submittedBy: 'Robert Lee', date: 'Mar 7, 2026' },
+  { id: 12, name: 'Studio Apartment', location: 'Lagos, Nigeria', image: 'https://picsum.photos/seed/pend12/400/400', type: 'Apartment', price: 85000, submittedBy: 'Maria Garcia', date: 'Mar 8, 2026' }
+])
 
 const table = useTemplateRef('table')
 const shortStayTable = useTemplateRef('shortStayTable')

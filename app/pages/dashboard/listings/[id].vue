@@ -586,8 +586,6 @@
 </template>
 
 <script setup lang="ts">
-import { faker } from '@faker-js/faker'
-
 useHead({
   title: 'Property Details - Smart Stay Rentals',
   meta: [
@@ -611,16 +609,12 @@ type Property = {
   description?: string
 }
 
-// Seed faker for consistent data
-const seededFaker = faker
-seededFaker.seed(123)
-
 // Mock property data - in a real app, this would come from an API
 const property = ref<Property>({
   id: 1,
   name: 'Luxury Beachfront Villa',
   location: 'Miami, Florida, USA',
-  image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(8)}/800/600`,
+  image: 'https://picsum.photos/seed/prop1/800/600',
   type: 'Villa',
   status: 'Occupied',
   views: 1250,
@@ -663,9 +657,9 @@ const amenities = [
 
 const photos = [
   property.value.image,
-  `https://picsum.photos/seed/${seededFaker.string.alphanumeric(5)}/400/200`,
-  `https://picsum.photos/seed/${seededFaker.string.alphanumeric(7)}/400/200`,
-  `https://picsum.photos/seed/${seededFaker.string.alphanumeric(9)}/400/200`
+  'https://picsum.photos/seed/photo2/400/200',
+  'https://picsum.photos/seed/photo3/400/200',
+  'https://picsum.photos/seed/photo4/400/200'
 ]
 
 const pricingDetails = [
@@ -723,7 +717,7 @@ const assets = [
     brand: 'LG',
     serial: '0LED55C1PUB',
     location: 'Mounted on living room wall',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(10)}/200/200`
+    image: 'https://picsum.photos/seed/asset1/200/200'
   },
   {
     id: 2,
@@ -733,7 +727,7 @@ const assets = [
     brand: 'LG',
     serial: '0LED55C1PUB',
     location: 'Mounted on living room wall',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(11)}/200/200`
+    image: 'https://picsum.photos/seed/asset2/200/200'
   },
   {
     id: 3,
@@ -743,7 +737,7 @@ const assets = [
     brand: 'LG',
     serial: '0LED55C1PUB',
     location: 'Mounted on living room wall',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(12)}/200/200`
+    image: 'https://picsum.photos/seed/asset3/200/200'
   },
   {
     id: 4,
@@ -753,7 +747,7 @@ const assets = [
     brand: 'LG',
     serial: '0LED55C1PUB',
     location: 'Mounted on living room wall',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(13)}/200/200`
+    image: 'https://picsum.photos/seed/asset4/200/200'
   }
 ]
 
@@ -765,7 +759,7 @@ const conditionLogs = [
     reporter: 'Property Manager',
     description: 'Noticed water pooling under the machine after wash cycle',
     condition: 'Excellent',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(14)}/200/200`
+    image: 'https://picsum.photos/seed/log1/200/200'
   },
   {
     id: 2,
@@ -774,7 +768,7 @@ const conditionLogs = [
     reporter: 'Property Manager',
     description: 'Noticed water pooling under the machine after wash cycle',
     condition: 'Excellent',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(15)}/200/200`
+    image: 'https://picsum.photos/seed/log2/200/200'
   },
   {
     id: 3,
@@ -783,7 +777,7 @@ const conditionLogs = [
     reporter: 'Property Manager',
     description: 'Noticed water pooling under the machine after wash cycle',
     condition: 'Excellent',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(16)}/200/200`
+    image: 'https://picsum.photos/seed/log3/200/200'
   }
 ]
 
@@ -798,7 +792,7 @@ const incidentReports = [
     description: 'Water leaking from the bottom of the washing machine. Appears to be from the drain hose connection.',
     severity: 'Medium',
     status: 'In Progress',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(17)}/200/200`
+    image: 'https://picsum.photos/seed/incident1/200/200'
   },
   {
     id: 2,
@@ -810,7 +804,7 @@ const incidentReports = [
     description: 'Water leaking from the bottom of the washing machine. Appears to be from the drain hose connection.',
     severity: 'Low',
     status: 'Resolved',
-    image: `https://picsum.photos/seed/${seededFaker.string.alphanumeric(18)}/200/200`
+    image: 'https://picsum.photos/seed/incident2/200/200'
   }
 ]
 
