@@ -37,13 +37,12 @@ const state = reactive<Schema>({
   phoneNumber: ''
 })
 
-// Populate initial data from summary if available
 watchEffect(() => {
-  if (summary.value?.personalInfo) {
+  if (summary.value?.personal) {
     Object.assign(state, {
-      ...summary.value.personalInfo,
+      ...summary.value.personal,
       // Convert ISO to YYYY-MM-DD for the HTML date input
-      dateOfBirth: summary.value.personalInfo.dateOfBirth ? summary.value.personalInfo.dateOfBirth.split('T')[0] : ''
+      dateOfBirth: summary.value.personal.dateOfBirth ? summary.value.personal.dateOfBirth.split('T')[0] : ''
     })
   }
 })
@@ -80,23 +79,23 @@ const handleSubmit = async () => {
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <UFormField label="First Name" name="firstName">
-        <UInput v-model="state.firstName" placeholder="John" />
+        <UInput v-model="state.firstName" placeholder="John" class="w-full" />
       </UFormField>
 
       <UFormField label="Last Name" name="lastName">
-        <UInput v-model="state.lastName" placeholder="Doe" />
+        <UInput v-model="state.lastName" placeholder="Doe" class="w-full" />
       </UFormField>
       
       <UFormField label="Date of Birth" name="dateOfBirth">
-        <UInput v-model="state.dateOfBirth" type="date" />
+        <UInput v-model="state.dateOfBirth" type="date" class="w-full" />
       </UFormField>
       
       <UFormField label="Gender" name="gender">
-        <USelect v-model="state.gender" :options="genderOptions" />
+        <USelect v-model="state.gender" :options="genderOptions" class="w-full" />
       </UFormField>
       
       <UFormField label="Phone Number" name="phoneNumber" class="sm:col-span-2">
-        <UInput v-model="state.phoneNumber" placeholder="+234 800 000 0000" />
+        <UInput v-model="state.phoneNumber" placeholder="+234 800 000 0000" class="w-full" />
       </UFormField>
 
       <div class="sm:col-span-2 pt-4">
@@ -104,23 +103,23 @@ const handleSubmit = async () => {
       </div>
 
       <UFormField label="Country" name="country">
-        <UInput v-model="state.country" disabled />
+        <UInput v-model="state.country" disabled class="w-full" />
       </UFormField>
 
       <UFormField label="State" name="state">
-        <UInput v-model="state.state" placeholder="Lagos" />
+        <UInput v-model="state.state" placeholder="Lagos" class="w-full" />
       </UFormField>
       
       <UFormField label="LGA" name="lga">
-        <UInput v-model="state.lga" placeholder="Ikeja" />
+        <UInput v-model="state.lga" placeholder="Ikeja" class="w-full" />
       </UFormField>
       
       <UFormField label="City" name="city">
-        <UInput v-model="state.city" placeholder="Ikeja" />
+        <UInput v-model="state.city" placeholder="Ikeja" class="w-full" />
       </UFormField>
       
       <UFormField label="Address" name="address" class="sm:col-span-2">
-        <UTextarea v-model="state.address" autoresize placeholder="123 Example Street" />
+        <UTextarea v-model="state.address" autoresize placeholder="123 Example Street" class="w-full" />
       </UFormField>
     </div>
 

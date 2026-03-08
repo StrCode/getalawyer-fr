@@ -11,6 +11,8 @@ const schema = z.object({
   lawSchool: z.string().min(3, 'Law school name is required'),
   yearOfCall: z.number().int().min(1950, 'Invalid year').max(new Date().getFullYear(), 'Cannot be in the future'),
   graduationYear: z.number().int().min(1950, 'Invalid year').max(new Date().getFullYear(), 'Cannot be in the future'),
+  university: z.string().min(3, 'University name is required'),
+  llbYear: z.number().int().min(1950, 'Invalid year').max(new Date().getFullYear(), 'Cannot be in the future'),
 })
 
 type Schema = z.infer<typeof schema>
@@ -20,11 +22,13 @@ const state = reactive<Schema>({
   lawSchool: '',
   yearOfCall: new Date().getFullYear(),
   graduationYear: new Date().getFullYear(),
+  university: '',
+  llbYear: new Date().getFullYear(),
 })
 
 watchEffect(() => {
-  if (summary.value?.professionalInfo) {
-    Object.assign(state, summary.value.professionalInfo)
+  if (summary.value?.professional) {
+    Object.assign(state, summary.value.professional)
   }
 })
 
@@ -51,23 +55,31 @@ const handleSubmit = async () => {
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <UFormField label="NBA Supreme Court Number (Bar Number)" name="barNumber" class="sm:col-span-2">
-        <UInput v-model="state.barNumber" placeholder="e.g. SCN000000" />
+        <UInput v-model="state.barNumber" placeholder="e.g. SCN000000" class="w-full" />
       </UFormField>
 
       <UFormField label="Year of Call to Bar" name="yearOfCall">
-        <UInput v-model.number="state.yearOfCall" type="number" :min="1950" :max="currentYear" />
+        <UInput v-model.number="state.yearOfCall" type="number" :min="1950" :max="currentYear" class="w-full" />
       </UFormField>
 
       <div class="sm:col-span-2 pt-4">
         <h3 class="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Educational Background</h3>
       </div>
       
-      <UFormField label="Law School Attended" name="lawSchool" class="sm:col-span-2">
-         <UInput v-model="state.lawSchool" placeholder="e.g. Nigerian Law School, Lagos Campus" />
+      <UFormField label="University Attended" name="university" class="sm:col-span-2">
+         <UInput v-model="state.university" placeholder="e.g. University of Lagos" class="w-full" />
+      </UFormField>
+      
+      <UFormField label="Year of LLB Graduation" name="llbYear">
+        <UInput v-model.number="state.llbYear" type="number" :min="1950" :max="currentYear" class="w-full" />
+      </UFormField>
+
+      <UFormField label="Law School Attended" name="lawSchool" class="sm:col-span-2 mt-4">
+         <UInput v-model="state.lawSchool" placeholder="e.g. Nigerian Law School, Lagos Campus" class="w-full" />
       </UFormField>
       
       <UFormField label="Year of Graduation" name="graduationYear">
-        <UInput v-model.number="state.graduationYear" type="number" :min="1950" :max="currentYear" />
+        <UInput v-model.number="state.graduationYear" type="number" :min="1950" :max="currentYear" class="w-full" />
       </UFormField>
     </div>
 

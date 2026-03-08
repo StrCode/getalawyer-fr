@@ -25,9 +25,9 @@ export interface OnboardingStatus {
 
 export interface OnboardingSummary {
     status: OnboardingStatus
-    personalInfo?: PersonalInfoData
-    professionalInfo?: ProfessionalInfoData
-    practiceInfo?: PracticeInfoData
+    personal?: any
+    professional?: any
+    practice?: any
     ninVerification?: {
         verified: boolean
         verifiedAt: string
@@ -53,26 +53,49 @@ export interface NinInitiateData {
 }
 
 export interface NinInitiateResponse {
-    success: boolean
-    data?: {
-        photo: string | null
-        firstName: string
-        lastName: string
-        middleName: string
-        dateOfBirth: string
-        gender: string
-    }
     photo?: string | null
+    signature?: string | null
     firstName?: string
     lastName?: string
     middleName?: string
     dateOfBirth?: string
     gender?: string
+    mobile?: string
+    religion?: string
+    birthState?: string
+    birthLGA?: string
+    birthCountry?: string
+    idNumber?: string
+    address?: {
+        town?: string
+        lga?: string
+        state?: string
+        addressLine?: string
+    }
 }
 
 export interface NinConfirmData {
     nin: string
     confirmed: boolean
+    verificationData: {
+        firstName?: string
+        lastName?: string
+        middleName?: string
+        dateOfBirth?: string
+        gender?: string
+        mobile?: string
+        religion?: string
+        birthState?: string
+        birthLGA?: string
+        address?: {
+            town?: string
+            lga?: string
+            state?: string
+            addressLine?: string
+        }
+        photo?: string | null
+        signature?: string | null
+    }
 }
 
 export interface NinConfirmResponse {
@@ -85,12 +108,21 @@ export interface ProfessionalInfoData {
     yearOfCall: number
     lawSchool: string
     graduationYear: number
+    university: string
+    llbYear: number
 }
 
 export interface PracticeInfoData {
     firmName: string
-    officeAddress: string
+    officeAddress: {
+        street: string
+        city: string
+        state: string
+        country: string
+        postalCode: string
+    }
     statesOfPractice: string[]
+    practiceAreas: string[]
     specializationIds: string[]
     yearsOfExperience: number
 }

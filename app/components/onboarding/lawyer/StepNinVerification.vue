@@ -9,11 +9,11 @@ const {
 } = useLawyerOnboarding()
 
 const { data: summary, isPending: isLoadingSummary } = useSummary()
-const { mutate: initiateNin, isPending: isInitiating, error: initError, data: initResult } = useInitiateNinVerification()
+const { mutate: initiateNin, isPending: isInitiating, error: initError, data: initResult, reset: resetInit } = useInitiateNinVerification()
 const { mutate: confirmNin, isPending: isConfirming, error: confirmError } = useConfirmNinVerification()
 
 const isVerified = computed(() => summary.value?.ninVerification?.verified || false)
-const showConfirmationPhase = ref(false)
+const showConfirmationPhase = computed(() => !!initResult.value?.firstName)
 
 const ninFormSchema = z.object({
   nin: z.string().min(11, 'NIN must be 11 digits').max(11, 'NIN must be 11 digits'),
@@ -26,23 +26,7 @@ const confirmState = reactive({
 })
 
 const handleInitiate = async () => {
-  console.log('[NIN Initiate] Form submitted with:', ninState)
-  initiateNin(ninState, {
-    onSuccess: (res) => {
-      console.log('[NIN Initiate] onSuccess callback triggered with res:', res)
-      // res is already unwrapped from the axios/fetch layer via useLawyerOnboarding
-      // When success is true and data exists, we transition to the confirmation phase
-      if (res.success && res.data) {
-        console.log('[NIN Initiate] Condition met! Transitioning to confirmation phase.')
-        showConfirmationPhase.value = true
-      } else {
-        console.warn('[NIN Initiate] Condition NOT met. res.success:', res.success, 'res.data:', res.data)
-      }
-    },
-    onError: (err) => {
-      console.error('[NIN Initiate] onError callback triggered:', err)
-    }
-  })
+  initiateNin(ninState)
 }
 
 watchEffect(() => {
@@ -55,18 +39,32 @@ const handleConfirm = async () => {
   if (confirmState.confirmed) {
      confirmNin({ 
       nin: ninState.nin,
-      confirmed: true 
+      confirmed: true,
+      verificationData: {
+        firstName: initResult.value?.firstName,
+        lastName: initResult.value?.lastName,
+        middleName: initResult.value?.middleName,
+        dateOfBirth: initResult.value?.dateOfBirth,
+        gender: initResult.value?.gender,
+        mobile: initResult.value?.mobile,
+        religion: initResult.value?.religion,
+        birthState: initResult.value?.birthState,
+        birthLGA: initResult.value?.birthLGA,
+        address: initResult.value?.address,
+        photo: initResult.value?.photo,
+        signature: initResult.value?.signature
+      }
     })
   } else {
     // If not confirmed, reset to initiation phase
-    showConfirmationPhase.value = false
+    resetInit()
   }
 }
 
 // Check if they are already verified based on summary
 watchEffect(() => {
    if (isVerified.value) {
-      showConfirmationPhase.value = false
+      resetInit()
    }
 })
 </script>
@@ -99,11 +97,12 @@ watchEffect(() => {
 
     <div class="flex flex-col sm:flex-row gap-6 bg-gray-50 rounded border p-4">
        <!-- Photo Column -->
-       <div class="flex-shrink-0 flex justify-center">
-         <img v-if="initResult?.data?.photo" :src="initResult.data.photo" alt="Identity Photo" class="w-48 h-48 object-cover rounded shadow-md" />
+       <div class="flex-shrink-0 flex flex-col items-center gap-2">
+         <img v-if="initResult?.photo" :src="initResult.photo" alt="Identity Photo" class="w-48 h-48 object-cover rounded shadow-md border" />
          <div v-else class="w-48 h-48 bg-gray-200 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
            <UIcon name="i-heroicons-user" class="w-16 h-16 text-gray-400" />
          </div>
+         <img v-if="initResult?.signature" :src="initResult.signature" alt="Digital Signature" class="w-48 h-16 object-contain mix-blend-multiply opacity-80" />
        </div>
        
        <!-- Data Details Column -->
@@ -111,18 +110,30 @@ watchEffect(() => {
          <div>
            <h3 class="text-sm font-medium text-gray-500">Full Name</h3>
            <p class="text-base font-semibold text-gray-900 mt-1">
-             {{ initResult?.data?.firstName }} {{ initResult?.data?.middleName }} {{ initResult?.data?.lastName }}
+             {{ initResult?.firstName }} {{ initResult?.middleName }} {{ initResult?.lastName }}
            </p>
          </div>
          <div class="grid grid-cols-2 gap-4">
            <div>
              <h3 class="text-sm font-medium text-gray-500">Date of Birth</h3>
-             <p class="text-base font-medium text-gray-900 mt-1">{{ initResult?.data?.dateOfBirth }}</p>
+             <p class="text-base font-medium text-gray-900 mt-1">{{ initResult?.dateOfBirth }}</p>
            </div>
            <div>
              <h3 class="text-sm font-medium text-gray-500">Gender</h3>
-             <p class="text-base font-medium text-gray-900 mt-1">{{ initResult?.data?.gender }}</p>
+             <p class="text-base font-medium text-gray-900 mt-1 uppercase">{{ initResult?.gender === 'f' ? 'Female' : initResult?.gender === 'm' ? 'Male' : initResult?.gender }}</p>
            </div>
+           <div>
+             <h3 class="text-sm font-medium text-gray-500">Phone</h3>
+             <p class="text-base font-medium text-gray-900 mt-1">{{ initResult?.mobile || 'N/A' }}</p>
+           </div>
+           <div>
+             <h3 class="text-sm font-medium text-gray-500">Birth Area</h3>
+             <p class="text-base font-medium text-gray-900 mt-1">{{ initResult?.birthLGA }}, {{ initResult?.birthState }}</p>
+           </div>
+         </div>
+         <div v-if="initResult?.address">
+           <h3 class="text-sm font-medium text-gray-500">Registered Address</h3>
+           <p class="text-base font-medium text-gray-900 mt-1">{{ initResult.address.addressLine }}, {{ initResult.address.lga }}</p>
          </div>
        </div>
     </div>
@@ -132,7 +143,7 @@ watchEffect(() => {
     </div>
 
     <div class="flex justify-end gap-3 pt-4 border-t">
-      <UButton type="button" color="neutral" variant="soft" @click="showConfirmationPhase = false" :disabled="isConfirming">
+      <UButton type="button" color="neutral" variant="soft" @click="resetInit()" :disabled="isConfirming">
         Back
       </UButton>
       <UButton type="button" color="primary" @click="handleConfirm" :loading="isConfirming" :disabled="!confirmState.confirmed" trailing-icon="i-heroicons-arrow-right">
@@ -151,7 +162,7 @@ watchEffect(() => {
     <UAlert v-if="initError" color="error" variant="soft" title="Verification Failed" :description="initError.message || 'We could not verify your NIN. Please check the number and try again.'" />
 
     <UFormField label="National Identification Number (NIN)" name="nin">
-      <UInput v-model="ninState.nin" placeholder="Enter your 11-digit NIN" autocomplete="off" />
+      <UInput v-model="ninState.nin" placeholder="Enter your 11-digit NIN" autocomplete="off" class="w-full" />
     </UFormField>
 
     <UFormField name="consent">

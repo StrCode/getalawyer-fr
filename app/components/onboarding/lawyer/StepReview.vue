@@ -38,23 +38,23 @@ const formatDate = (dateStr: string) => {
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
         <div>
           <dt class="text-sm font-medium text-gray-500">Full Name</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personalInfo?.firstName }} {{ summary.personalInfo?.lastName }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">Date of Birth</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ formatDate(summary.personalInfo?.dateOfBirth || '') }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ formatDate(summary.personal?.dateOfBirth || '') }}</dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">Gender</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personalInfo?.gender }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.gender }}</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-gray-500">Phone</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personalInfo?.phoneNumber }}</dd>
+          <dt class="text-sm font-medium text-gray-500">Location</dt>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.personal?.lga ? summary.personal?.lga + ', ' : '' }}{{ summary.personal?.state }}</dd>
         </div>
         <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">Address</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.personalInfo?.address }}, {{ summary.personalInfo?.city }}, {{ summary.personalInfo?.lga ? summary.personalInfo?.lga + ', ' : '' }}{{ summary.personalInfo?.state }}, {{ summary.personalInfo?.country }}</dd>
+          <dt class="text-sm font-medium text-gray-500">NIN Status</dt>
+          <dd class="mt-1 text-sm text-gray-900">Verified as {{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</dd>
         </div>
       </dl>
     </div>
@@ -79,19 +79,19 @@ const formatDate = (dateStr: string) => {
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
         <div>
           <dt class="text-sm font-medium text-gray-500">Bar Number</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professionalInfo?.barNumber }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.barNumber }}</dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">Year of Call to Bar</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professionalInfo?.yearOfCall }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.yearOfCall }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">University</dt>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.university }} ({{ summary.professional?.llbYear }})</dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">Law School</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professionalInfo?.lawSchool }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Graduation Year</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.professionalInfo?.graduationYear }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.professional?.lawSchool }}</dd>
         </div>
       </dl>
     </div>
@@ -104,23 +104,15 @@ const formatDate = (dateStr: string) => {
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
         <div class="sm:col-span-2">
           <dt class="text-sm font-medium text-gray-500">Firm Name</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practiceInfo?.firmName }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.firmName }}</dd>
         </div>
         <div class="sm:col-span-2">
           <dt class="text-sm font-medium text-gray-500">Office Address</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practiceInfo?.officeAddress }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">Years of Experience</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practiceInfo?.yearsOfExperience }}</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.officeStreet }}, {{ summary.practice?.officeCity }}, {{ summary.practice?.officeState }} {{ summary.practice?.officePostalCode }}</dd>
         </div>
         <div class="sm:col-span-2">
           <dt class="text-sm font-medium text-gray-500">States of Practice</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practiceInfo?.statesOfPractice?.join(', ') || 'None' }}</dd>
-        </div>
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">Specializations</dt>
-          <dd class="mt-1 text-sm text-gray-900">{{ summary.practiceInfo?.specializationIds?.length }} Selected</dd>
+          <dd class="mt-1 text-sm text-gray-900">{{ summary.practice?.statesOfPractice?.join(', ') || 'None' }}</dd>
         </div>
       </dl>
     </div>
