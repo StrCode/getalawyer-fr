@@ -15,7 +15,7 @@ const { identifier } = useAuthModal()
       You're in!
     </h2>
     <p class="text-gray-500 mb-8 max-w-[280px]">
-      Welcome to LexConnect{{ identifier ? `, ${identifier}` : '' }}.<br />Your account is ready.
+      Welcome to Getalawyer{{ identifier ? `, ${identifier}` : '' }}.<br />Your account is ready.
     </p>
 
     <UButton

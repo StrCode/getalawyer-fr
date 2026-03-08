@@ -68,30 +68,24 @@
 
             <!-- Role Segmented Control -->
             <div class="flex p-1 space-x-1 bg-gray-100/80 rounded-xl mb-8 border border-gray-200/50">
-              <button 
-                :class="[
-                  'flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-200', 
-                  role === 'client' 
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200/50' 
-                    : 'text-gray-500 hover:text-gray-700'
-                ]" 
+              <UButton
+                :color="role === 'client' ? 'neutral' : 'neutral'"
+                :variant="role === 'client' ? 'solid' : 'ghost'"
+                class="flex-1 justify-center"
+                size="lg"
+                icon="i-hugeicons-user"
+                label="Client"
                 @click="role = 'client'"
-              >
-                <Icon name="i-hugeicons-user" class="w-4 h-4" />
-                I need a lawyer
-              </button>
-              <button 
-                :class="[
-                  'flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-200', 
-                  role === 'lawyer' 
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200/50' 
-                    : 'text-gray-500 hover:text-gray-700'
-                ]" 
+              />
+              <UButton
+                :color="role === 'lawyer' ? 'neutral' : 'neutral'"
+                :variant="role === 'lawyer' ? 'solid' : 'ghost'"
+                class="flex-1 justify-center"
+                size="lg"
+                icon="i-hugeicons-briefcase-01"
+                label="Lawyer"
                 @click="role = 'lawyer'"
-              >
-                <Icon name="i-hugeicons-briefcase-01" class="w-4 h-4" />
-                I am a lawyer
-              </button>
+              />
             </div>
 
             <!-- Form -->
@@ -102,7 +96,7 @@
                   placeholder="Alex Smith"
                   size="lg"
                   :disabled="isSubmitting"
-                  class="font-medium"
+                  class="w-full font-medium"
                 />
               </UFormField>
 
@@ -113,7 +107,7 @@
                   placeholder="alex@example.com"
                   size="lg"
                   :disabled="isSubmitting"
-                  class="font-medium"
+                  class="w-full font-medium"
                 />
               </UFormField>
 
@@ -125,6 +119,7 @@
                     placeholder="••••••••"
                     size="lg"
                     :disabled="isSubmitting"
+                    class="w-full font-medium"
                   />
                 </UFormField>
 
@@ -135,15 +130,21 @@
                     placeholder="••••••••"
                     size="lg"
                     :disabled="isSubmitting"
+                    class="w-full font-medium"
                   />
                 </UFormField>
               </div>
 
               <!-- Error Message -->
-              <div v-if="error" class="p-3 mt-4 bg-red-50 text-red-600 border border-red-100 rounded-lg text-sm flex items-start gap-2">
-                <Icon name="i-hugeicons-alert-circle" class="w-5 h-5 shrink-0" />
-                <span>{{ error }}</span>
-              </div>
+              <UAlert
+                v-if="error"
+                color="error"
+                variant="soft"
+                title="Error"
+                :description="error"
+                icon="i-hugeicons-alert-circle"
+                class="mt-4"
+              />
 
               <!-- Submit Button -->
               <UButton

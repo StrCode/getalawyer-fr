@@ -69,7 +69,7 @@ const testimonials: Testimonial[] = [
     name: 'Sarah Mitchell',
     title: 'Family Law Attorney',
     location: 'New York, NY',
-    quote: 'LexConnect has transformed my practice. The verified credentials give clients confidence, and the zero commission model means I keep what I earn.'
+    quote: 'Getalawyer has transformed my practice. The verified credentials give clients confidence, and the zero commission model means I keep what I earn.'
   },
   {
     name: 'Michael Chen',
@@ -87,11 +87,11 @@ const testimonials: Testimonial[] = [
 
 // SEO metadata
 useHead({
-  title: 'For Lawyers - Join LexConnect',
+  title: 'For Lawyers - Join Getalawyer',
   meta: [
     {
       name: 'description',
-      content: 'Grow your legal practice with LexConnect. Bar-verified credentials, smart booking calendar, direct client communication, and zero commission fees. Join thousands of lawyers connecting with clients.'
+      content: 'Grow your legal practice with Getalawyer. Bar-verified credentials, smart booking calendar, direct client communication, and zero commission fees. Join thousands of lawyers connecting with clients.'
     }
   ]
 })
@@ -113,7 +113,7 @@ onMounted(() => {
       <UContainer>
         <div class="hero-content">
           <h1 class="hero-title">
-            Grow Your Practice with LexConnect
+            Grow Your Practice with Getalawyer
           </h1>
           <p class="hero-description">
             Join thousands of lawyers connecting with clients who need your expertise
@@ -134,7 +134,7 @@ onMounted(() => {
       <UContainer>
         <div class="section-header">
           <h2 class="section-title">
-            Why Join LexConnect?
+            Why Join Getalawyer?
           </h2>
           <p class="section-description">
             Everything you need to grow your practice and connect with clients
@@ -244,7 +244,7 @@ onMounted(() => {
             What Lawyers Say
           </h2>
           <p class="section-description">
-            Hear from lawyers who have grown their practice with LexConnect
+            Hear from lawyers who have grown their practice with Getalawyer
           </p>
         </div>
         
@@ -319,7 +319,7 @@ onMounted(() => {
             Ready to Get Started?
           </h2>
           <p class="final-cta-description">
-            Join LexConnect today and start connecting with clients who need your expertise
+            Join Getalawyer today and start connecting with clients who need your expertise
           </p>
           <UButton
             size="xl"

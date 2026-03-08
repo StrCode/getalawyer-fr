@@ -23,7 +23,7 @@ const lawyer = ref({
 })
 
 useHead({
-  title: `${lawyer.value.name} - ${lawyer.value.specialty} | LexConnect`
+  title: `${lawyer.value.name} - ${lawyer.value.specialty} | Getalawyer`
 })
 </script>
 

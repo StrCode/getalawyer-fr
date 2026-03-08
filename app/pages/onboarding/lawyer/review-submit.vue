@@ -126,30 +126,28 @@ const editStep = (step: number) => {
 
         <!-- Terms and Conditions -->
         <div class="bg-white rounded-xl shadow-sm p-6 border">
-          <label class="flex items-start gap-3 cursor-pointer">
-            <input v-model="acceptTerms" type="checkbox" class="mt-1 w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary" />
-            <div class="flex-1">
-              <p class="text-sm text-gray-900 font-medium mb-1">I accept the Terms and Conditions</p>
-              <p class="text-xs text-gray-600">
-                I confirm that all information provided is accurate and complete. I understand that providing false information may result in rejection of my application or termination of my account.
-              </p>
-            </div>
-          </label>
+          <UCheckbox v-model="acceptTerms">
+            <template #label>
+              <div class="text-sm font-medium text-gray-900 mb-1">I accept the Terms and Conditions</div>
+            </template>
+            <template #description>
+              I confirm that all information provided is accurate and complete. I understand that providing false information may result in rejection of my application or termination of my account.
+            </template>
+          </UCheckbox>
         </div>
 
-        <!-- Error Message -->
-        <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div class="flex gap-3">
-            <Icon name="i-hugeicons-alert-circle" class="w-5 h-5 text-red-600 flex-shrink-0" />
-            <p class="text-sm text-red-800">{{ error }}</p>
-          </div>
-        </div>
+        <UAlert v-if="error" color="error" variant="soft" :description="error" icon="i-hugeicons-alert-circle" />
 
         <!-- Submit Button -->
-        <button @click="handleSubmit" :disabled="submitApplication.isPending.value || !acceptTerms" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium text-lg">
-          <Icon v-if="submitApplication.isPending.value" name="lucide:loader-circle" class="w-5 h-5 inline animate-spin mr-2" />
-          {{ submitApplication.isPending.value ? 'Submitting Application...' : 'Submit Application' }}
-        </button>
+        <UButton
+          color="primary"
+          class="w-full justify-center py-3 font-medium text-lg mt-6"
+          :loading="submitApplication.isPending.value"
+          :disabled="!acceptTerms"
+          @click="handleSubmit"
+        >
+          Submit Application
+        </UButton>
       </div>
     </div>
   </div>

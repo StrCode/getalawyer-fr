@@ -4,7 +4,7 @@ import type { PracticeArea } from '~/types/practice-area'
 
 // SEO metadata
 useHead({
-  title: 'Practice Areas - LexConnect',
+  title: 'Practice Areas - Getalawyer',
   meta: [
     {
       name: 'description',

@@ -37,7 +37,6 @@ const currentStepComponent = computed(() => {
 
 <template>
   <div class="min-h-screen flex flex-col md:flex-row bg-gray-50 font-sans">
-    
     <!-- Left Sidebar -->
     <div class="md:w-[360px] lg:w-[420px] bg-primary-700 text-white shrink-0 flex flex-col pt-10 px-8 lg:px-12 pb-10 min-h-screen relative overflow-hidden">
       <!-- Background Glow Details -->
@@ -50,7 +49,7 @@ const currentStepComponent = computed(() => {
             <div class="w-8 h-8 rounded bg-white flex items-center justify-center">
                <UIcon name="i-heroicons-scale" class="w-5 h-5 text-primary-700" />
             </div>
-            <span class="text-2xl font-bold tracking-tight text-white">LexConnect</span>
+            <span class="text-2xl font-bold tracking-tight text-white">Getalawyer</span>
          </div>
 
          <template v-if="status?.currentState === 'review'">
@@ -62,7 +61,7 @@ const currentStepComponent = computed(() => {
          <template v-else>
             <h2 class="text-3xl font-bold mb-4 leading-tight text-white">Complete your profile</h2>
             <p class="text-primary-100 text-[15px] mb-12 leading-relaxed">
-              Adding your details is simple and fast. Joining LexConnect gives you:
+              Adding your details is simple and fast. Joining Getalawyer gives you:
             </p>
 
             <ul class="space-y-4 text-[15px] text-primary-100 mb-14 font-medium">

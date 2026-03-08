@@ -89,17 +89,12 @@ const toggleState = (code: string) => {
   }
 }
 
-const handleSubmit = async () => {
+const handleSubmit = async (event: any) => {
   try {
-    schema.parse(formData.value)
-    errors.value = {}
-    
-    await savePracticeInfo.mutateAsync(formData.value)
+    await savePracticeInfo.mutateAsync(event.data)
     await navigateTo('/register/step7')
   } catch (err: any) {
-    if (err instanceof z.ZodError) {
-      errors.value = err.flatten().fieldErrors
-    }
+    console.error(err)
   }
 }
 </script>
@@ -127,11 +122,10 @@ const handleSubmit = async () => {
         <p class="text-sm text-gray-600">Loading your information...</p>
       </div>
       
-      <form v-else @submit.prevent="handleSubmit" class="space-y-6 bg-white rounded-xl shadow-sm p-6 border">
+      <UForm v-else :schema="schema" :state="formData" class="space-y-6 bg-white rounded-xl shadow-sm p-6 border" @submit="handleSubmit">
         <!-- Practice Type -->
-        <div>
-          <label class="block text-sm font-medium mb-2 text-gray-700">Practice Type <span class="text-red-500">*</span></label>
-          <div class="grid grid-cols-2 gap-3">
+        <UFormField label="Practice Type" name="practiceType" required>
+          <div class="grid grid-cols-2 gap-3 w-full">
             <label :class="['border-2 rounded-lg p-4 cursor-pointer transition-all', formData.practiceType === 'solo' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50']">
               <input v-model="formData.practiceType" type="radio" value="solo" class="sr-only" />
               <div class="font-medium text-sm">Solo Practitioner</div>
@@ -143,71 +137,61 @@ const handleSubmit = async () => {
               <div class="text-xs text-gray-600 mt-1">Part of a firm</div>
             </label>
           </div>
-        </div>
+        </UFormField>
 
         <!-- Firm Name -->
-        <div v-if="formData.practiceType === 'firm'">
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">Firm Name <span class="text-red-500">*</span></label>
-          <input v-model="formData.firmName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" :class="{ 'border-red-500': errors.firmName }" />
-          <p v-if="errors.firmName" class="text-red-500 text-xs mt-1">{{ errors.firmName[0] }}</p>
-        </div>
+        <UFormField v-if="formData.practiceType === 'firm'" label="Firm Name" name="firmName" required>
+          <UInput v-model="formData.firmName" class="w-full" />
+        </UFormField>
 
         <!-- Practice Areas -->
-        <div>
-          <label class="block text-sm font-medium mb-2 text-gray-700">Practice Areas <span class="text-red-500">*</span></label>
-          <div class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
+        <UFormField label="Practice Areas" name="practiceAreas" required>
+          <div class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-2 border rounded-lg w-full">
             <label v-for="spec in specializations" :key="spec.id" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
               <input type="checkbox" :checked="formData.practiceAreas.includes(spec.id)" @change="togglePracticeArea(spec.id)" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />
               <span class="text-sm">{{ spec.name }}</span>
             </label>
           </div>
-          <p v-if="errors.practiceAreas" class="text-red-500 text-xs mt-1">{{ errors.practiceAreas[0] }}</p>
-        </div>
+        </UFormField>
 
         <!-- States of Practice -->
-        <div>
-          <label class="block text-sm font-medium mb-2 text-gray-700">States of Practice <span class="text-red-500">*</span></label>
-          <div class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
+        <UFormField label="States of Practice" name="statesOfPractice" required>
+          <div class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-2 border rounded-lg w-full">
             <label v-for="state in states" :key="state.code" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
               <input type="checkbox" :checked="formData.statesOfPractice.includes(state.code)" @change="toggleState(state.code)" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />
               <span class="text-sm">{{ state.name }}</span>
             </label>
           </div>
-          <p v-if="errors.statesOfPractice" class="text-red-500 text-xs mt-1">{{ errors.statesOfPractice[0] }}</p>
-        </div>
+        </UFormField>
 
         <!-- Office Address -->
         <div class="space-y-4">
-          <h3 class="font-medium text-gray-900">Office Address</h3>
-          <div>
-            <label class="block text-sm font-medium mb-1.5 text-gray-700">Street Address <span class="text-red-500">*</span></label>
-            <input v-model="formData.officeAddress.street" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" />
-            <p v-if="errors['officeAddress.street']" class="text-red-500 text-xs mt-1">{{ errors['officeAddress.street'][0] }}</p>
-          </div>
+          <h3 class="font-medium text-gray-900 border-b pb-2">Office Address</h3>
+          
+          <UFormField label="Street Address" name="officeAddress.street" required>
+            <UInput v-model="formData.officeAddress.street" class="w-full" />
+          </UFormField>
+          
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1.5 text-gray-700">City <span class="text-red-500">*</span></label>
-              <input v-model="formData.officeAddress.city" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1.5 text-gray-700">State <span class="text-red-500">*</span></label>
-              <select v-model="formData.officeAddress.state" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors">
-                <option value="">Select state</option>
-                <option v-for="state in states" :key="state.code" :value="state.code">{{ state.name }}</option>
-              </select>
-            </div>
+            <UFormField label="City" name="officeAddress.city" required>
+              <UInput v-model="formData.officeAddress.city" class="w-full" />
+            </UFormField>
+            <UFormField label="State" name="officeAddress.state" required>
+              <USelect v-model="formData.officeAddress.state" :items="states" value-key="code" label-key="name" class="w-full" />
+            </UFormField>
           </div>
-          <div>
-            <label class="block text-sm font-medium mb-1.5 text-gray-700">Postal Code <span class="text-red-500">*</span></label>
-            <input v-model="formData.officeAddress.postalCode" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" />
-          </div>
+          
+          <UFormField label="Postal Code" name="officeAddress.postalCode" required>
+            <UInput v-model="formData.officeAddress.postalCode" class="w-full" />
+          </UFormField>
         </div>
 
-        <button type="submit" :disabled="savePracticeInfo.isPending.value" class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium">
-          <Icon v-if="savePracticeInfo.isPending.value" name="lucide:loader-circle" class="w-4 h-4 inline animate-spin mr-2" />
-          {{ savePracticeInfo.isPending.value ? 'Saving...' : 'Continue to Review' }}
-        </button>
-      </form>
+        <UButton type="submit" color="primary" class="w-full justify-center py-2.5 font-medium mt-4" :loading="savePracticeInfo.isPending.value">
+          Continue to Review
+        </UButton>
+
+        <UAlert v-if="savePracticeInfo.error.value" color="error" variant="soft" :description="savePracticeInfo.error.value.message" />
+      </UForm>
     </div>
   </div>
 </template>

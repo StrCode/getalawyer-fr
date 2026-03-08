@@ -38,7 +38,7 @@ function goToLogin() {
 <template>
   <div class="px-6 py-6">
     <h2 class="mb-1 font-semibold text-gray-900 text-xl text-center tracking-tight">
-      Welcome to LexConnect
+      Welcome to Getalawyer
     </h2>
     <p class="mb-6 text-gray-500 text-sm text-center">
       Let's get started. What brings you here?

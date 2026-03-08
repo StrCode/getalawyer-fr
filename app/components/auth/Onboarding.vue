@@ -39,7 +39,7 @@ const currentUniqueIdDetails = computed(() => {
 const step2 = computed(() => {
   return {
     login: { heading: "Login to your account", subheading: "Enter your details to login.", btnText: "Login" },
-    register: { heading: "Welcome to LexConnect", subheading: "Please enter your details to create an account.", btnText: "Continue" },
+    register: { heading: "Welcome to Getalawyer", subheading: "Please enter your details to create an account.", btnText: "Continue" },
     resetPassword: { heading: "Reset Password", subheading: `Enter your ${currentUniqueIdDetails.value().longName} to reset your password.`, btnText: "Reset Password" },
     verifyOTP: { heading: "Verify OTP", subheading: `Enter the OTP sent to your ${currentUniqueIdDetails.value().slug}.`, btnText: "Verify OTP" },
     setPassword: { heading: "Set Password", subheading: "Enter your new password.", btnText: "Set Password" },
@@ -473,7 +473,7 @@ watch(
               </div>
 
               <h3 class="text-2xl font-semibold text-foreground text-center w-2/3">
-                What brings you to<br>LexConnect?
+                What brings you to<br>Getalawyer?
               </h3>
               <p class="mt-3 text-lg text-muted-foreground max-w-sm">
                 We'll tailor your experience based on your goals.

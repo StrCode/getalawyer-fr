@@ -46,7 +46,7 @@ const links = {
 
       <!-- Bottom bar -->
       <div class="border-t border-neutral-200 mt-14 pt-7 flex flex-col md:flex-row items-center justify-between gap-3">
-        <p class="text-xs text-neutral-500">© {{ year }} LexConnect. All rights reserved.</p>
+        <p class="text-xs text-neutral-500">© {{ year }} Getalawyer. All rights reserved.</p>
         <div class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1d6b44" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           All lawyers bar-verified &amp; background checked

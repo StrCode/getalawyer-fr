@@ -58,7 +58,7 @@ const perks: Perk[] = [
             :transition="{ duration: 0.5, delay: 0.12 }"
             class="text-neutral-500 text-lg leading-relaxed mb-9 max-w-md"
           >
-            Join thousands of verified legal professionals expanding their client base on LexConnect.
+            Join thousands of verified legal professionals expanding their client base on Getalawyer.
             The tools you need to manage your practice, zero commission taken.
           </motion.p>
 

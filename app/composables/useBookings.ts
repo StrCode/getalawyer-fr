@@ -10,15 +10,42 @@ import type {
   Booking,
   CreateBookingInput,
   UpdateBookingInput,
+  CancelBookingInput,
+  RescheduleBookingInput,
   UpdateLawyerBookingInput,
 } from '~/types'
+
+export interface BookingFilters {
+  status?: string
+  upcoming?: boolean
+}
 
 // API functions
 const bookingsAPI = {
   // Client Bookings
-  getClientBookings: async (): Promise<Booking[]> => {
-    const response = await httpClient.getAuth<ApiResponse<Booking[]>>('/api/bookings')
-    return response.data || []
+  getClientBookings: async (filters?: BookingFilters): Promise<Booking[]> => {
+    const params = new URLSearchParams()
+    if (filters?.status) params.append('status', filters.status)
+    if (filters?.upcoming !== undefined) params.append('upcoming', filters.upcoming.toString())
+
+    const qs = params.toString()
+    const url = qs ? `/api/bookings?${qs}` : '/api/bookings'
+
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>(url)
+
+    // Handle both { bookings: [...] } and [...] responses
+    if (response.data && 'bookings' in (response.data as any)) {
+      return (response.data as any).bookings || []
+    }
+    return (response.data as Booking[]) || []
+  },
+
+  getUpcomingBookings: async (): Promise<Booking[]> => {
+    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]>>('/api/bookings/upcoming')
+    if (response.data && 'bookings' in (response.data as any)) {
+      return (response.data as any).bookings || []
+    }
+    return (response.data as Booking[]) || []
   },
 
   getClientBooking: async (id: string): Promise<Booking> => {
@@ -37,6 +64,16 @@ const bookingsAPI = {
     const response = await httpClient.put<ApiResponse<Booking>>(`/api/bookings/${id}`, data)
     if (!response.data) throw new Error('Failed to update booking')
     return response.data
+  },
+
+  cancelClientBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(`/api/bookings/${id}/cancel`, data)
+    return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
+  },
+
+  rescheduleClientBooking: async (id: string, data: RescheduleBookingInput): Promise<Booking> => {
+    const response = await httpClient.put<ApiResponse<{ booking: Booking }>>(`/api/bookings/${id}/reschedule`, data)
+    return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
   },
 
   // Lawyer Bookings
@@ -71,10 +108,18 @@ export const useBookings = () => {
   const queryClient = useQueryClient()
 
   // Query: Get client bookings
-  const useClientBookings = () => {
+  const useClientBookings = (filters?: Ref<BookingFilters> | BookingFilters) => {
     return useQuery({
-      queryKey: queryKeys.bookings.client,
-      queryFn: bookingsAPI.getClientBookings,
+      queryKey: computed(() => [...queryKeys.bookings.client, unref(filters)]),
+      queryFn: () => bookingsAPI.getClientBookings(unref(filters)),
+    })
+  }
+
+  // Query: Get upcoming client bookings
+  const useUpcomingBookings = () => {
+    return useQuery({
+      queryKey: [...queryKeys.bookings.client, 'upcoming'],
+      queryFn: bookingsAPI.getUpcomingBookings,
     })
   }
 
@@ -93,6 +138,30 @@ export const useBookings = () => {
       mutationFn: bookingsAPI.createBooking,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.bookings.client })
+      },
+    })
+  }
+
+  // Mutation: Cancel client booking
+  const useCancelBooking = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: string; data: CancelBookingInput }) =>
+        bookingsAPI.cancelClientBooking(id, data),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.client })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(variables.id) })
+      },
+    })
+  }
+
+  // Mutation: Reschedule client booking
+  const useRescheduleBooking = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: string; data: RescheduleBookingInput }) =>
+        bookingsAPI.rescheduleClientBooking(id, data),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.client })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(variables.id) })
       },
     })
   }
@@ -159,8 +228,11 @@ export const useBookings = () => {
 
   return {
     useClientBookings,
+    useUpcomingBookings,
     useClientBooking,
     useCreateBooking,
+    useCancelBooking,
+    useRescheduleBooking,
     useUpdateClientBooking,
     useLawyerBookings,
     useLawyerBooking,

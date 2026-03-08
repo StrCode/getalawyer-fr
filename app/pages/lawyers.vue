@@ -7,7 +7,7 @@ import type { Lawyer } from '~/types/lawyer'
 
 // Page metadata
 useHead({
-  title: 'Find Lawyers - LexConnect',
+  title: 'Find Lawyers - Getalawyer',
   meta: [
     { name: 'description', content: 'Search and find qualified lawyers by practice area, location, and consultation type.' }
   ]

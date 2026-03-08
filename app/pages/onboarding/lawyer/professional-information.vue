@@ -46,17 +46,12 @@ watch(existingData, (data) => {
   }
 }, { immediate: true })
 
-const handleSubmit = async () => {
+const handleSubmit = async (event: any) => {
   try {
-    schema.parse(formData.value)
-    errors.value = {}
-    
-    await saveProfessionalInfo.mutateAsync(formData.value)
+    await saveProfessionalInfo.mutateAsync(event.data)
     await navigateTo('/register/step5')
   } catch (err: any) {
-    if (err instanceof z.ZodError) {
-      errors.value = err.flatten().fieldErrors
-    }
+    console.error(err)
   }
 }
 </script>
@@ -84,89 +79,62 @@ const handleSubmit = async () => {
         <p class="text-sm text-gray-600">Loading your information...</p>
       </div>
       
-      <form v-else @submit.prevent="handleSubmit" class="space-y-5 bg-white rounded-xl shadow-sm p-6 border">
-        <div>
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">
-            Bar Number <span class="text-red-500">*</span>
-          </label>
-          <input
+      <UForm v-else :schema="schema" :state="formData" class="space-y-5 bg-white rounded-xl shadow-sm p-6 border" @submit="handleSubmit">
+        <UFormField label="Bar Number" name="barNumber" required>
+          <UInput
             v-model="formData.barNumber"
-            type="text"
             placeholder="e.g., SCN123456"
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            :class="{ 'border-red-500': errors.barNumber }"
+            class="w-full"
           />
-          <p v-if="errors.barNumber" class="text-red-500 text-xs mt-1">{{ errors.barNumber[0] }}</p>
-        </div>
+        </UFormField>
 
-        <div>
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">
-            Year of Call to Bar <span class="text-red-500">*</span>
-          </label>
-          <input
+        <UFormField label="Year of Call to Bar" name="yearOfCall" required>
+          <UInput
             v-model.number="formData.yearOfCall"
             type="number"
             :min="1960"
             :max="currentYear"
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            :class="{ 'border-red-500': errors.yearOfCall }"
+            class="w-full"
           />
-          <p v-if="errors.yearOfCall" class="text-red-500 text-xs mt-1">{{ errors.yearOfCall[0] }}</p>
-        </div>
+        </UFormField>
 
-        <div>
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">
-            Law School <span class="text-red-500">*</span>
-          </label>
-          <select
+        <UFormField label="Law School" name="lawSchool" required>
+          <USelect
             v-model="formData.lawSchool"
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            :class="{ 'border-red-500': errors.lawSchool }"
-          >
-            <option value="">Select law school</option>
-            <option v-for="school in LAW_SCHOOLS" :key="school" :value="school">{{ school }}</option>
-          </select>
-          <p v-if="errors.lawSchool" class="text-red-500 text-xs mt-1">{{ errors.lawSchool[0] }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">
-            University (LLB) <span class="text-red-500">*</span>
-          </label>
-          <input
-            v-model="formData.university"
-            type="text"
-            placeholder="e.g., University of Lagos"
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            :class="{ 'border-red-500': errors.university }"
+            :items="[...LAW_SCHOOLS]"
+            class="w-full"
           />
-          <p v-if="errors.university" class="text-red-500 text-xs mt-1">{{ errors.university[0] }}</p>
-        </div>
+        </UFormField>
 
-        <div>
-          <label class="block text-sm font-medium mb-1.5 text-gray-700">
-            Year of LLB Graduation <span class="text-red-500">*</span>
-          </label>
-          <input
+        <UFormField label="University (LLB)" name="university" required>
+          <UInput
+            v-model="formData.university"
+            placeholder="e.g., University of Lagos"
+            class="w-full"
+          />
+        </UFormField>
+
+        <UFormField label="Year of LLB Graduation" name="llbYear" required>
+          <UInput
             v-model.number="formData.llbYear"
             type="number"
             :min="1960"
             :max="currentYear"
-            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            :class="{ 'border-red-500': errors.llbYear }"
+            class="w-full"
           />
-          <p v-if="errors.llbYear" class="text-red-500 text-xs mt-1">{{ errors.llbYear[0] }}</p>
-        </div>
+        </UFormField>
 
-        <button
+        <UButton
           type="submit"
-          :disabled="saveProfessionalInfo.isPending.value"
-          class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+          color="primary"
+          class="w-full justify-center py-2.5 font-medium mt-4"
+          :loading="saveProfessionalInfo.isPending.value"
         >
-          <Icon v-if="saveProfessionalInfo.isPending.value" name="lucide:loader-circle" class="w-4 h-4 inline animate-spin mr-2" />
-          {{ saveProfessionalInfo.isPending.value ? 'Saving...' : 'Continue to Practice Information' }}
-        </button>
-      </form>
+          Continue to Practice Information
+        </UButton>
+
+        <UAlert v-if="saveProfessionalInfo.error.value" color="error" variant="soft" :description="saveProfessionalInfo.error.value.message" />
+      </UForm>
     </div>
   </div>
 </template>

@@ -45,25 +45,18 @@ const errors = ref<Record<string, string[]>>({})
 const verificationResult = ref<NINVerificationResult | null>(null)
 
 // Verify NIN
-const handleVerify = async () => {
+const handleVerify = async (event: any) => {
   try {
-    schema.parse(formData.value)
-    errors.value = {}
-    
     const response = await verifyNIN.mutateAsync({
-      nin: formData.value.nin,
-      consent: formData.value.consent,
+      nin: event.data.nin,
+      consent: event.data.consent,
     })
     
     if (response.success) {
       verificationResult.value = response.data
     }
   } catch (err: any) {
-    if (err instanceof z.ZodError) {
-      errors.value = err.flatten().fieldErrors
-    } else {
-      errors.value = { nin: [err.data?.message || 'Failed to verify NIN. Please try again.'] }
-    }
+    errors.value = { nin: [err.data?.message || 'Failed to verify NIN. Please try again.'] }
   }
 }
 
@@ -108,71 +101,57 @@ const handleRetry = () => {
 
       <!-- Verification Form -->
       <div v-if="!verificationResult" class="bg-white rounded-xl shadow-sm p-6 border">
-        <form @submit.prevent="handleVerify" class="space-y-5">
+        <UForm :schema="schema" :state="formData" class="space-y-5" @submit="handleVerify">
           <!-- NIN Input -->
-          <div>
-            <label class="block text-sm font-medium mb-1.5 text-gray-700">
-              National Identification Number (NIN) <span class="text-red-500">*</span>
-            </label>
-            <input
+          <UFormField label="National Identification Number (NIN)" name="nin" required>
+            <UInput
               v-model="formData.nin"
-              type="text"
               maxlength="11"
               placeholder="Enter your 11-digit NIN"
-              class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-              :class="{ 'border-red-500': errors.nin }"
+              class="w-full"
             />
-            <p v-if="errors.nin" class="text-red-500 text-xs mt-1">
-              {{ errors.nin[0] }}
-            </p>
-            <p class="text-gray-500 text-xs mt-1">Your NIN is an 11-digit number on your National ID card</p>
-          </div>
+            <template #description>
+              Your NIN is an 11-digit number on your National ID card
+            </template>
+          </UFormField>
 
           <!-- Consent Checkbox -->
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <label class="flex items-start gap-3 cursor-pointer">
-              <input
-                v-model="formData.consent"
-                type="checkbox"
-                class="mt-0.5 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-              <div class="flex-1">
-                <p class="text-sm text-gray-900 font-medium mb-1">Consent to Verify</p>
-                <p class="text-xs text-gray-600">
-                  I consent to the verification of my National Identification Number (NIN) for identity verification purposes. 
-                  This information will be used solely for registration and will be handled in accordance with data protection regulations.
-                </p>
-              </div>
-            </label>
-            <p v-if="errors.consent" class="text-red-500 text-xs mt-2">
-              {{ errors.consent[0] }}
-            </p>
-          </div>
+          <UFormField name="consent">
+            <UCheckbox v-model="formData.consent" class="mt-2">
+              <template #label>
+                <div class="text-sm text-gray-900 font-medium mb-1">Consent to Verify</div>
+              </template>
+              <template #description>
+                I consent to the verification of my National Identification Number (NIN) for identity verification purposes. 
+                This information will be used solely for registration and will be handled in accordance with data protection regulations.
+              </template>
+            </UCheckbox>
+          </UFormField>
 
           <!-- Info Box -->
-          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div class="flex gap-3">
-              <Icon name="i-hugeicons-information-circle" class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p class="text-sm font-medium text-yellow-900 mb-1">Why do we need this?</p>
-                <p class="text-xs text-yellow-800">
-                  NIN verification helps us ensure the authenticity of lawyer registrations and maintain the integrity of our platform. 
-                  Your information is secure and will only be used for verification purposes.
-                </p>
-              </div>
-            </div>
-          </div>
+          <UAlert
+            color="warning"
+            variant="soft"
+            icon="i-hugeicons-information-circle"
+            title="Why do we need this?"
+            description="NIN verification helps us ensure the authenticity of lawyer registrations and maintain the integrity of our platform. Your information is secure and will only be used for verification purposes."
+            class="my-4"
+          />
 
           <!-- Submit Button -->
-          <button
+          <UButton
             type="submit"
-            :disabled="verifyNIN.isPending.value || !formData.consent"
-            class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+            color="primary"
+            class="w-full justify-center py-2.5 font-medium mt-4"
+            :loading="verifyNIN.isPending.value"
+            :disabled="!formData.consent"
           >
-            <Icon v-if="verifyNIN.isPending.value" name="lucide:loader-circle" class="w-4 h-4 inline animate-spin mr-2" />
-            {{ verifyNIN.isPending.value ? 'Verifying...' : 'Verify NIN' }}
-          </button>
-        </form>
+            Verify NIN
+          </UButton>
+
+          <!-- Global Error -->
+          <UAlert v-if="errors.nin" color="error" variant="soft" :description="errors.nin[0]" />
+        </UForm>
       </div>
 
       <!-- Verification Result -->
@@ -246,21 +225,23 @@ const handleRetry = () => {
 
         <!-- Action Buttons -->
         <div class="flex gap-3">
-          <button
+          <UButton
             @click="handleRetry"
+            color="neutral"
+            variant="outline"
+            class="flex-1 justify-center py-2.5 font-medium"
             :disabled="confirmNIN.isPending.value"
-            class="flex-1 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
           >
             Retry Verification
-          </button>
-          <button
+          </UButton>
+          <UButton
             @click="handleConfirm"
-            :disabled="confirmNIN.isPending.value"
-            class="flex-1 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+            color="primary"
+            class="flex-1 justify-center py-2.5 font-medium"
+            :loading="confirmNIN.isPending.value"
           >
-            <Icon v-if="confirmNIN.isPending.value" name="lucide:loader-circle" class="w-4 h-4 inline animate-spin mr-2" />
-            {{ confirmNIN.isPending.value ? 'Confirming...' : 'Confirm & Continue' }}
-          </button>
+            Confirm & Continue
+          </UButton>
         </div>
       </div>
     </div>

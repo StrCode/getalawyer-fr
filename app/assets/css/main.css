@@ -1,10 +1,14 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+body {
+  font-synthesis: none;
+}
+
 @theme {
-  --font-sans: 'Geist', sans-serif;
-  
-   --shadow-layered:
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  --shadow-layered:
     0px 12.18px 26.54px 0px #18181B0A,
     0px 48.46px 48.46px 0px #18181B0A,
     0px 108.85px 60.88px 0px #18181B05,

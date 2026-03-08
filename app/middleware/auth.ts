@@ -26,7 +26,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Enforce lawyer onboarding
   const user = session.value.user
-  console.log(user)
+  console.log(user.userType, user.onboarding_completed)
   // Use `as any` or handle the typing gracefully if `userType` / `onboarding_completed` 
   // are not natively on the generic type but are on the actual returned session object
   const userType = (user as any).userType || (user as any).role
@@ -35,6 +35,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (userType === 'lawyer' && !onboardingCompleted) {
     if (!to.path.startsWith('/onboarding/lawyer')) {
       return navigateTo('/onboarding/lawyer', { replace: true })
+    }
+  }
+  if (userType === 'client' && !onboardingCompleted) {
+    if (!to.path.startsWith('/onboarding/client')) {
+      return navigateTo('/onboarding/client/location', { replace: true })
     }
   }
 })
