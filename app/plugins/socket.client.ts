@@ -22,7 +22,6 @@ export default defineNuxtPlugin(() => {
         // Extract token from the correct path: session.data.session.token
         const token = session?.data?.session?.token || ''
         
-        console.log('[Socket] Auth callback - token:', token ? 'present' : 'missing')
         cb({ token })
       }
     })
@@ -48,7 +47,6 @@ export default defineNuxtPlugin(() => {
     if (token) {
       // Update auth callback to use provided token
       socket.auth = (cb: (data: { token: string }) => void) => {
-        console.log('[Socket] Using provided token')
         cb({ token })
       }
     }

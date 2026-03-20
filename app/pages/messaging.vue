@@ -30,49 +30,32 @@ const { mutate: sendMsg } = useSendMessage()
 const { mutate: createConv } = useCreateConversation()
 
 const connect = () => {
-  console.log('[DEBUG] Connect button clicked')
-  console.log('[DEBUG] Session token:', sessionToken.value ? `${sessionToken.value.substring(0, 10)}...` : 'empty')
-  
   if (!sessionToken.value.trim()) {
     addLog('Error: Please enter a session token first', 'error')
-    console.error('[DEBUG] No token provided')
     return
   }
   
   addLog(`Connecting with token: ${sessionToken.value.substring(0, 10)}...`)
-  console.log('[DEBUG] Calling $connectSocket with token')
   $connectSocket(sessionToken.value.trim())
 }
 
 const disconnect = () => {
-  console.log('[DEBUG] Disconnect button clicked')
   addLog('Disconnecting...')
   $disconnectSocket()
 }
 
 const connectWithToken = () => {
-  console.log('[DEBUG] Connect with Token button clicked')
-  console.log('[DEBUG] Session token value:', sessionToken.value)
-  console.log('[DEBUG] Session token length:', sessionToken.value.length)
-  
   if (!sessionToken.value.trim()) {
     addLog('Error: Please enter a session token', 'error')
-    console.error('[DEBUG] Token is empty after trim')
     return
   }
   
   const trimmedToken = sessionToken.value.trim()
-  console.log('[DEBUG] Trimmed token:', trimmedToken.substring(0, 10) + '...')
-  console.log('[DEBUG] Trimmed token length:', trimmedToken.length)
-  
   addLog(`Attempting to connect with token: ${trimmedToken.substring(0, 10)}...`)
-  console.log('[DEBUG] About to call $connectSocket')
   
   try {
     $connectSocket(trimmedToken)
-    console.log('[DEBUG] $connectSocket called successfully')
   } catch (error) {
-    console.error('[DEBUG] Error calling $connectSocket:', error)
     addLog(`Error: ${error}`, 'error')
   }
 }
@@ -138,18 +121,12 @@ onMounted(() => {
   initSocketListeners()
   
   // Auto-connect if user has a Better Auth session
-  // The socket plugin will handle getting the token via authClient.getSession()
   const { session } = useAuth()
   
-  console.log('[DEBUG] Better Auth session:', session.value)
-  console.log('[DEBUG] Session user:', session.value?.user)
-  
   if (session.value?.user) {
-    console.log('[DEBUG] User is logged in, auto-connecting socket')
     addLog(`User authenticated (${session.value.user.email}), connecting automatically...`)
     $connectSocket()
   } else {
-    console.log('[DEBUG] No active session, waiting for manual connection')
     addLog('No active session. Please sign in or enter a token manually.')
   }
   

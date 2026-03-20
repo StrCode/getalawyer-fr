@@ -13,12 +13,12 @@ export async function getSessionFromBackend(event: H3Event) {
   }
 
   try {
-    const url = `${config.public.apiUrl}/api/auth/get-session`;
+    // Better Auth's session endpoint is at /api/auth/session
+    const url = `${config.public.apiUrl}/api/auth/session`;
     
     const res = await fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Cookie': cookieHeader,
       },
       credentials: 'include',
@@ -30,7 +30,7 @@ export async function getSessionFromBackend(event: H3Event) {
 
     const data = await res.json();
     
-    // Better Auth returns the session directly with a user property
+    // Better Auth returns { session, user } structure
     if (data && data.user) {
       return data;
     }
