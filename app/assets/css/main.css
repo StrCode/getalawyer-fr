@@ -2,18 +2,14 @@
 @import "@nuxt/ui";
 
 body {
-  font-synthesis: none;
+  @apply m-0;
+  font-family: "Geist", sans-serif;
 }
 
-@theme {
-  --font-sans: "Plus Jakarta Sans", sans-serif;
+@custom-variant dark (&:is(.dark *));
 
-  --shadow-layered:
-    0px 12.18px 26.54px 0px #18181B0A,
-    0px 48.46px 48.46px 0px #18181B0A,
-    0px 108.85px 60.88px 0px #18181B05,
-    0px 193.34px 60.88px 0px #18181B03,
-    0px 302.19px 60.88px 0px #18181B00;
+@theme inline {
+  --font-sans: 'DM Sans', sans-serif;
 }
 
 /* Drag and Drop Styles for Kanban Board */

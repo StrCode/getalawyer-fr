@@ -44,10 +44,10 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Plus Jakarta Sans',
+        name: 'DM Sans',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
-        styles: ['normal'],
+        styles: ['normal', 'italic'],
         subsets: ['latin'],
       }
     ]
