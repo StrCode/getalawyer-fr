@@ -8,13 +8,19 @@ export async function getSessionFromBackend(event: H3Event) {
   const config = useRuntimeConfig();
   const cookieHeader = getHeader(event, 'cookie');
 
+  console.log('[getSession] Cookie header:', cookieHeader ? 'present' : 'missing');
+  console.log('[getSession] Cookie header value:', cookieHeader?.substring(0, 100));
+
   if (!cookieHeader) {
+    console.log('[getSession] No cookie header, returning null');
     return null;
   }
 
   try {
     // Better Auth's session endpoint
     const url = `${config.public.apiUrl}/api/auth/get-session`;
+    
+    console.log('[getSession] Fetching from:', url);
     
     const res = await fetch(url, {
       method: 'GET',
@@ -24,17 +30,25 @@ export async function getSessionFromBackend(event: H3Event) {
       credentials: 'include',
     });
 
+    console.log('[getSession] Response status:', res.status);
+
     if (!res.ok) {
+      console.log('[getSession] Response not OK, returning null');
       return null;
     }
 
     const data = await res.json();
     
+    console.log('[getSession] Response data:', data ? 'has data' : 'no data');
+    console.log('[getSession] Has user:', data?.user ? 'yes' : 'no');
+    
     // Better Auth returns { session, user } structure
     if (data && data.user) {
+      console.log('[getSession] Returning session for user:', data.user.id);
       return data;
     }
     
+    console.log('[getSession] No user in response, returning null');
     return null;
   } catch (error) {
     console.error('[getSession] Failed to fetch session from backend:', error);
