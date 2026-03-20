@@ -13,8 +13,8 @@ export async function getSessionFromBackend(event: H3Event) {
   }
 
   try {
-    // Better Auth's session endpoint is at /api/auth/session
-    const url = `${config.public.apiUrl}/api/auth/session`;
+    // Better Auth's session endpoint
+    const url = `${config.public.apiUrl}/api/auth/get-session`;
     
     const res = await fetch(url, {
       method: 'GET',
