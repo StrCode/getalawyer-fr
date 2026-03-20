@@ -134,10 +134,10 @@ const addLog = (message: string, type = 'info') => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   initSocketListeners()
   
-  // Auto-connect if user has a Better Auth session
+  // Try to get session from Better Auth
   const { session } = useAuth()
   
   console.log('[DEBUG] Better Auth session:', session.value)
@@ -146,11 +146,34 @@ onMounted(() => {
   console.log('[DEBUG] Session token length:', session.value?.session?.token?.length)
   console.log('[DEBUG] Document cookies:', document.cookie)
   
-  if (session.value?.user && session.value?.session?.token) {
+  // Check if session exists
+  let hasSession = session.value?.user && session.value?.session?.token
+  
+  // If useAuth() returns null, try to fetch session directly from API
+  if (!hasSession) {
+    console.log('[DEBUG] useAuth() returned null, trying to fetch session from API')
+    try {
+      const response = await $fetch('/api/auth/get-session', {
+        credentials: 'include'
+      })
+      console.log('[DEBUG] Session from API:', response)
+      
+      if (response && typeof response === 'object' && 'session' in response && 'user' in response) {
+        hasSession = true
+        const sessionData = response as { session: { token: string }, user: { email: string } }
+        addLog(`User authenticated (${sessionData.user.email}), connecting automatically...`)
+        $connectSocket()
+      }
+    } catch (error) {
+      console.log('[DEBUG] Failed to fetch session from API:', error)
+    }
+  }
+  
+  if (hasSession && session.value?.user && session.value?.session?.token) {
     console.log('[DEBUG] User is logged in with valid token, auto-connecting socket')
     addLog(`User authenticated (${session.value.user.email}), connecting automatically...`)
     $connectSocket()
-  } else {
+  } else if (!hasSession) {
     console.log('[DEBUG] No active session or token, waiting for manual connection')
     addLog('No active session. Please sign in or enter a token manually.')
   }
