@@ -14,12 +14,10 @@ export default defineNuxtPlugin(() => {
 
     socketInstance = io(apiUrl, {
       autoConnect: false,
-      withCredentials: true,
-      transports: ['websocket'],
+      withCredentials: true, // Critical: sends cookies cross-origin
+      transports: ['websocket', 'polling'], // Try polling first for cookie handshake
       auth: (cb) => {
-        // Get token from Better Auth session
-        // The session object contains the session ID (32 chars)
-        // The full token with signature is sent automatically via cookies (withCredentials: true)
+        // Send token in auth for backend fallback
         const token = session.value?.session?.token || ''
         cb({ token })
       }
@@ -47,11 +45,6 @@ export default defineNuxtPlugin(() => {
       // Update auth callback to use provided token
       socket.auth = (cb: (data: { token: string }) => void) => {
         cb({ token })
-      }
-      
-      // Update extraHeaders with the provided token
-      socket.io.opts.extraHeaders = {
-        Cookie: `__Secure-better-auth.session_token=${token}`
       }
     }
 
