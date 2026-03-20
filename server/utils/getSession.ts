@@ -9,7 +9,16 @@ export async function getSessionFromBackend(event: H3Event) {
   const cookieHeader = getHeader(event, 'cookie');
 
   console.log('[getSession] Cookie header:', cookieHeader ? 'present' : 'missing');
-  console.log('[getSession] Cookie header value:', cookieHeader?.substring(0, 100));
+  
+  if (cookieHeader) {
+    // Log all cookie names to see what we're getting
+    const cookies = cookieHeader.split(';').map(c => c.trim().split('=')[0]);
+    console.log('[getSession] Cookie names:', cookies.join(', '));
+    
+    // Check specifically for Better Auth cookies
+    const hasBetterAuthCookie = cookieHeader.includes('better-auth') || cookieHeader.includes('session_token');
+    console.log('[getSession] Has Better Auth cookie:', hasBetterAuthCookie);
+  }
 
   if (!cookieHeader) {
     console.log('[getSession] No cookie header, returning null');
