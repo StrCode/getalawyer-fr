@@ -3,7 +3,7 @@ import type { ClientToServerEvents, ServerToClientEvents } from '~/types/messagi
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-  const { session } = useAuth()
+  const authClient = useAuthClient()
   
   let socketInstance: Socket<ServerToClientEvents, ClientToServerEvents> | null = null
 
@@ -14,11 +14,15 @@ export default defineNuxtPlugin(() => {
 
     socketInstance = io(apiUrl, {
       autoConnect: false,
-      withCredentials: true, // Critical: sends cookies cross-origin
-      transports: ['websocket', 'polling'], // Try polling first for cookie handshake
-      auth: (cb) => {
-        // Send token in auth for backend fallback
-        const token = session.value?.session?.token || ''
+      withCredentials: true,
+      transports: ['websocket', 'polling'],
+      auth: async (cb) => {
+        // Get session from Better Auth using authClient
+        const session = await authClient.getSession()
+        // Extract token from the correct path: session.data.session.token
+        const token = session?.data?.session?.token || ''
+        
+        console.log('[Socket] Auth callback - token:', token ? 'present' : 'missing')
         cb({ token })
       }
     })
@@ -44,6 +48,7 @@ export default defineNuxtPlugin(() => {
     if (token) {
       // Update auth callback to use provided token
       socket.auth = (cb: (data: { token: string }) => void) => {
+        console.log('[Socket] Using provided token')
         cb({ token })
       }
     }

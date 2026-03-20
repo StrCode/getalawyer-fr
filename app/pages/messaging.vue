@@ -134,47 +134,22 @@ const addLog = (message: string, type = 'info') => {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   initSocketListeners()
   
-  // Try to get session from Better Auth
+  // Auto-connect if user has a Better Auth session
+  // The socket plugin will handle getting the token via authClient.getSession()
   const { session } = useAuth()
   
   console.log('[DEBUG] Better Auth session:', session.value)
   console.log('[DEBUG] Session user:', session.value?.user)
-  console.log('[DEBUG] Full session token:', session.value?.session?.token)
-  console.log('[DEBUG] Session token length:', session.value?.session?.token?.length)
-  console.log('[DEBUG] Document cookies:', document.cookie)
   
-  // Check if session exists
-  let hasSession = session.value?.user && session.value?.session?.token
-  
-  // If useAuth() returns null, try to fetch session directly from API
-  if (!hasSession) {
-    console.log('[DEBUG] useAuth() returned null, trying to fetch session from API')
-    try {
-      const response = await $fetch('/api/auth/get-session', {
-        credentials: 'include'
-      })
-      console.log('[DEBUG] Session from API:', response)
-      
-      if (response && typeof response === 'object' && 'session' in response && 'user' in response) {
-        hasSession = true
-        const sessionData = response as { session: { token: string }, user: { email: string } }
-        addLog(`User authenticated (${sessionData.user.email}), connecting automatically...`)
-        $connectSocket()
-      }
-    } catch (error) {
-      console.log('[DEBUG] Failed to fetch session from API:', error)
-    }
-  }
-  
-  if (hasSession && session.value?.user && session.value?.session?.token) {
-    console.log('[DEBUG] User is logged in with valid token, auto-connecting socket')
+  if (session.value?.user) {
+    console.log('[DEBUG] User is logged in, auto-connecting socket')
     addLog(`User authenticated (${session.value.user.email}), connecting automatically...`)
     $connectSocket()
-  } else if (!hasSession) {
-    console.log('[DEBUG] No active session or token, waiting for manual connection')
+  } else {
+    console.log('[DEBUG] No active session, waiting for manual connection')
     addLog('No active session. Please sign in or enter a token manually.')
   }
   
