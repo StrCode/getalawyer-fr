@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Urbanist', sans-serif;
+  --font-sans: 'Host Grotesk', sans-serif;
 }
 
 body {
@@ -13,6 +13,19 @@ body {
 
 :root {
   --ui-radius: 0.4rem;
+
+  /* Primary color (brand green) */
+  --color-primary-50: 236 253 245;
+  --color-primary-100: 209 250 229;
+  --color-primary-200: 167 243 208;
+  --color-primary-300: 110 231 183;
+  --color-primary-400: 52 211 153;
+  --color-primary-500: 16 185 129;
+  --color-primary-600: 29 107 68;
+  --color-primary-700: 21 128 61;
+  --color-primary-800: 22 101 52;
+  --color-primary-900: 20 83 45;
+  --color-primary-950: 5 46 22;
 
   /* Backgrounds */
   --ui-bg:          oklch(1 0 0);

@@ -44,7 +44,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Urbanist',
+        name: 'Inter',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],

@@ -4,5 +4,8 @@ export default defineAppConfig({
     input:     { defaultVariants: { size: 'lg' } },
     select:    { defaultVariants: { size: 'lg' } },
     textarea:  { defaultVariants: { size: 'lg' } },
+    colors: {
+      primary: 'green'
+    }
   }
 })
