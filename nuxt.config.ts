@@ -44,7 +44,14 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'DM Sans',
+        name: 'Urbanist',
+        provider: 'google',
+        weights: [200, 300, 400, 500, 600, 700],
+        styles: ['normal', 'italic'],
+        subsets: ['latin'],
+      },
+       {
+        name: 'Host Grotesk',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],

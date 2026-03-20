@@ -1,9 +1,8 @@
 export default defineAppConfig({
   ui: {
-    // Use Care.com green as primary color
-    colors: {
-      primary: 'care-green',
-      neutral: 'care-neutral'
-    }
+    formField: { defaultVariants: { size: 'lg' } },
+    input:     { defaultVariants: { size: 'lg' } },
+    select:    { defaultVariants: { size: 'lg' } },
+    textarea:  { defaultVariants: { size: 'lg' } },
   }
 })
