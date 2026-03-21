@@ -44,7 +44,7 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Public Sans',
+        name: 'Archivo',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],
