@@ -132,6 +132,8 @@
 
 <script setup lang="ts">
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
+import { authClient } from '~/lib/auth-client'
+const session = authClient.useSession()
 
 definePageMeta({
   middleware: ['auth'],
@@ -224,8 +226,15 @@ const handleSubmit = async () => {
       state: onboardingData.value.state,
       specializationIds: onboardingData.value.specializations,
     })
+
     localStorage.removeItem(STORAGE_KEY)
+    
+
+    // Force a fresh session fetch from the backend
+    await authClient.getSession({ query: { disableCookieCache: true } })
+    await session.value.refetch()
     await navigateTo('/dashboard')
+
   } catch (err: any) {
     error.value = err?.data?.message || 'Failed to complete setup. Please try again.'
   }

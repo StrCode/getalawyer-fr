@@ -44,14 +44,14 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Inter',
+        name: 'Wix Madefor Display',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],
         subsets: ['latin'],
       },
        {
-        name: 'Faustina',
+        name: 'Host Grotesk',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],
