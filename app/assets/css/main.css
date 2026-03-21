@@ -5,12 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'DM Sans', 'Inter', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
   @apply m-0 font-sans antialiased;
-  font-family: "DM Sans", "Inter", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 :root {
