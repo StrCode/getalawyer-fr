@@ -22,7 +22,7 @@
                 <!-- Client Card -->
                 <button
                   type="button"
-                  class="group border rounded overflow-hidden text-left transition-all duration-200 cursor-pointer"
+                  class="group border rounded-lg overflow-hidden text-left transition-all duration-200 cursor-pointer"
                   :class="role === 'client'
                     ? 'border-primary-400 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]'
                     : 'border-slate-200 hover:border-slate-300'"
@@ -82,7 +82,7 @@
                 <!-- Lawyer Card -->
                 <button
                   type="button"
-                  class="group border rounded overflow-hidden text-left transition-all duration-200 cursor-pointer"
+                  class="group border rounded-lg overflow-hidden text-left transition-all duration-200 cursor-pointer"
                   :class="role === 'lawyer'
                     ? 'border-primary-400 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]'
                     : 'border-slate-200 hover:border-slate-300'"

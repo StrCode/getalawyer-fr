@@ -64,7 +64,7 @@ export default defineNuxtConfig({
         subsets: ['latin'],
       },
        {
-        name: 'Host Grotesk',
+        name: 'Plus Jakarta Sans',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],
