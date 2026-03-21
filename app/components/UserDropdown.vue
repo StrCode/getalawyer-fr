@@ -1,114 +1,115 @@
+<template>
+  <ClientOnly>
+    <UDropdownMenu
+      v-if="userData"
+      :items="items"
+      :content="{ align: 'end', side: 'top', sideOffset: 8 }"
+      :ui="{ content: 'w-56' }"
+    >
+      <!-- Dropdown Trigger Button -->
+      <template #default="{ open }">
+        <UButton 
+          color="neutral" 
+          variant="ghost" 
+          class="justify-start gap-3 py-2 w-full h-auto" 
+          :class="[open && 'bg-gray-50 dark:bg-gray-800']"
+        >
+          <template #leading>
+            <UAvatar 
+              :src="userData.avatar" 
+              size="lg" 
+              class="w-10 h-10" 
+            />
+          </template>
+
+          <div class="flex flex-col flex-1 gap-1 text-left">
+            <div 
+              class="font-medium text-[#1C1C1E] text-sm" 
+              style="font-family: 'Plus Jakarta Sans'; font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: -0.6%;"
+            >
+              {{ userData.name }}
+            </div>
+            <div 
+              class="text-[#525866]" 
+              style="font-family: 'Plus Jakarta Sans'; font-weight: 400; font-size: 12px; line-height: 16px; letter-spacing: 0%;"
+            >
+              {{ userData.role }}
+            </div>
+          </div>
+
+          <UIcon 
+            name="i-heroicons-chevron-right" 
+            class="ms-auto w-4 h-4 shrink-0" 
+          />
+        </UButton>
+      </template>
+
+      <!-- Dropdown Menu Items -->
+      <template #item="{ item }">
+        <span class="truncate">{{ item.label }}</span>
+        <UIcon 
+          v-if="item.icon" 
+          :name="item.icon" 
+          class="ms-auto w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" 
+        />
+      </template>
+    </UDropdownMenu>
+  </ClientOnly>
+</template>
+
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-interface Props {
-  collapsed?: boolean
-}
-
-defineProps<Props>()
-
 const { session, signOut } = useAuth()
-const router = useRouter()
 
-const user = computed(() => {
+// Computed user data for display
+const userData = computed(() => {
   if (!session.value?.user) return null
   
+  const user = session.value.user
+  const roleLabel = user.userType === 'lawyer' ? 'Lawyer' : user.userType === 'client' ? 'Client' : 'Admin'
+  
   return {
-    name: session.value.user.name || session.value.user.email || 'User',
-    email: session.value.user.email,
-    role: session.value.user.userType,
-    avatar: (session.value.user as any).image || null
+    name: user.name || user.email || 'User',
+    role: roleLabel,
+    email: user.email || 'user@example.com',
+    avatar: (user as Record<string, unknown>).image as string || 'https://avatars.githubusercontent.com/u/739984?v=4'
   }
 })
 
-const userInitials = computed(() => {
-  if (!user.value?.name) return 'U'
-  return user.value.name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
-const roleLabel = computed(() => {
-  if (user.value?.role === 'lawyer') return 'Lawyer'
-  if (user.value?.role === 'client') return 'Client'
-  return 'User'
-})
-
-const handleSignOut = async () => {
-  try {
-    await signOut()
-    await router.push('/login')
-  } catch (error) {
-    console.error('Sign out error:', error)
-  }
+// Handle logout
+const router = useRouter()
+const handleLogout = async () => {
+  await signOut()
+  await router.push('/login')
 }
 
-const items = computed<DropdownMenuItem[][]>(() => [[{
-  type: 'label',
-  label: user.value?.name || 'User',
-  avatar: user.value?.avatar ? {
-    src: user.value.avatar,
-    alt: user.value.name || 'User'
-  } : undefined
-}], [{
-  label: 'Profile',
-  icon: 'i-heroicons-user-circle',
-  to: '/dashboard/profile'
-}, {
-  label: 'Settings',
-  icon: 'i-heroicons-cog-6-tooth',
-  to: '/dashboard/settings'
-}], [{
-  label: 'Help Center',
-  icon: 'i-heroicons-question-mark-circle',
-  to: '/help'
-}, {
-  label: 'Documentation',
-  icon: 'i-heroicons-book-open',
-  to: '/docs'
-}], [{
-  label: 'Sign out',
-  icon: 'i-heroicons-arrow-right-on-rectangle',
-  onSelect: handleSignOut
-}]])
+// Dropdown menu items
+const items = computed<DropdownMenuItem[][]>(() => {
+  if (!userData.value) return []
+  
+  return [
+    // User email (disabled)
+    [{
+      label: userData.value.email,
+      disabled: true
+    }],
+    // Profile and Settings
+    [{
+      label: 'Profile',
+      icon: 'i-heroicons-user-circle',
+      to: '/dashboard/profile'
+    }, {
+      label: 'Settings',
+      icon: 'i-heroicons-cog-8-tooth',
+      to: '/dashboard/settings'
+    }],
+    // Sign out
+    [{
+      label: 'Sign out',
+      icon: 'i-heroicons-arrow-left-on-rectangle',
+      onSelect: handleLogout
+    }]
+  ]
+})
 </script>
-
-<template>
-  <UDropdownMenu
-    :items="items"
-    :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
-  >
-    <UButton
-      :label="collapsed ? undefined : user?.name"
-      :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
-      color="neutral"
-      variant="ghost"
-      block
-      :square="collapsed"
-      class="data-[state=open]:bg-elevated"
-      :ui="{
-        trailingIcon: 'text-dimmed'
-      }"
-    >
-      <template #leading>
-        <UAvatar
-          v-if="user?.avatar"
-          :src="user.avatar"
-          :alt="user.name || 'User'"
-          size="xs"
-        />
-        <UAvatar
-          v-else
-          :alt="user?.name || 'User'"
-          size="xs"
-        >
-          {{ userInitials }}
-        </UAvatar>
-      </template>
-    </UButton>
-  </UDropdownMenu>
-</template>

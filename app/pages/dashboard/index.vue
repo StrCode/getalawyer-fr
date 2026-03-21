@@ -6,24 +6,34 @@ definePageMeta({
 
 const { session } = useAuth()
 const role = computed(() => session.value?.user.userType)
+
+useHead({
+  title: 'Dashboard Overview - GetALawyer',
+  meta: [
+    {
+      name: 'description',
+      content: 'GetALawyer dashboard overview.'
+    },
+    {
+      name: 'robots',
+      content: 'noindex, nofollow'
+    }
+  ]
+})
 </script>
 
 <template>
-  <UDashboardPanel id="dashboard">
-    <template #header>
-      <UDashboardNavbar :title="role === 'lawyer' ? 'Practice Overview' : 'Dashboard'">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
-    </template>
+  <div>
+    <!-- Page Header -->
+ 
 
-    <template #body>
+    <!-- Page Content -->
+    <div class="space-y-7 mt-7">
       <ClientDashboard v-if="role === 'client'" />
       <LawyerDashboard v-else-if="role === 'lawyer'" />
       <div v-else class="py-12 text-center">
         <p class="text-gray-600">Loading dashboard...</p>
       </div>
-    </template>
-  </UDashboardPanel>
+    </div>
+  </div>
 </template>

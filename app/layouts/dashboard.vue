@@ -1,71 +1,99 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex bg-[#F1F3F5] h-screen">
     <UDashboardGroup unit="px">
+      <!-- SIDEBAR -->
       <UDashboardSidebar 
         v-model:collapsed="sidebarCollapsed"
         collapsible
-        :default-size="280"
-        :min-size="260"
-        :max-size="320"
-        :ui="{ footer: 'border-t border-neutral-100' }"
+        :default-size="250"
+        :min-size="250"
+        :max-size="350"
+        :ui="{ root: 'border-r-0' }"
       >
-        <template #header="{ collapsed }">
-          <NuxtLink to="/" class="flex justify-center items-center hover:opacity-80 px-5 py-5 transition-opacity">
-            <img 
-              v-if="!collapsed" 
-              src="/getalawyer-logo.svg" 
-              alt="GetALawyer" 
-              class="w-auto h-8" 
+        <!-- SIDEBAR HEADER -->
+        <template #header="{ collapsed, collapse }">
+          <div class="flex flex-row justify-between items-center w-full">
+            <div class="w-3/4">
+              <img 
+                v-if="!collapsed" 
+                src="/getalawyer-logo.svg" 
+                alt="GetALawyer" 
+                class="h-9" 
+              />
+            </div>
+            <UButton 
+              icon="i-heroicons-chevron-right" 
+              color="neutral" 
+              variant="ghost" 
+              size="sm"
+              @click="collapse?.(!collapsed)"
             />
-            <img 
-              v-else 
-              src="/getalawyer-icon.svg" 
-              alt="GL" 
-              class="w-8 h-8" 
-            />
-          </NuxtLink>
+          </div>
         </template>
 
-        <template #default="{ collapsed }">
-          <UDashboardSearchButton v-if="!collapsed" class="mb-4" />
-          
+        <!-- SIDEBAR CONTENT -->
+        <template #default>
+          <!-- Search Bar -->
+          <UInput 
+            icon="i-heroicons-magnifying-glass" 
+            placeholder="Search..." 
+            :ui="{
+              base: 'h-9 rounded-lg shadow-none bg-white',
+              icon: { leading: { wrapper: 'p-[2.5px]', base: 'size-[15px]' } }
+            }"
+          />
+
+          <!-- Menu Section Title -->
+          <div class="text-[#8E8E93] text-xs">MENU</div>
+
+          <!-- Main Navigation Links -->
           <UNavigationMenu
-            :collapsed="collapsed"
+            :collapsed="sidebarCollapsed"
             :items="mainLinks"
             orientation="vertical"
-            tooltip
-            color="primary"
-            variant="pill"
+            variant="link"
             :ui="{
-              link: 'rounded-xl font-medium transition-all data-[active=true]:bg-[#1d6b44] data-[active=true]:text-white data-[active=true]:font-semibold hover:data-[active=true]:bg-[#16a34a]',
-              linkLeadingIcon: 'data-[active=true]:text-white',
-              linkLabel: 'font-medium data-[active=true]:text-white',
-              linkTrailingBadge: 'rounded-full font-bold bg-[#f0fdf4] text-[#15803d] data-[active=true]:bg-white/20 data-[active=true]:text-white',
+              root: 'relative flex gap-1 [&>div]:min-w-0',
+              link: 'text-sm font-normal h-9 gap-2 rounded-lg px-3 py-2 border border-transparent transition-colors data-[active]:bg-white data-[active]:border-gray-200 data-[active]:text-gray-900 data-[inactive]:text-gray-600 hover:data-[inactive]:bg-gray-100',
+              linkLeadingIcon: 'size-4 text-gray-900 flex-shrink-0',
+              label: 'text-gray-900',
+              item: 'py-0.5 text-gray-900'
             }"
           />
 
+          <!-- Help & Support Section Title -->
+          <div class="font-medium text-[#8E8E93] text-xs">HELP & SUPPORT</div>
+
+          <!-- Support Links -->
           <UNavigationMenu
-            :collapsed="collapsed"
+            :collapsed="sidebarCollapsed"
             :items="supportLinks"
             orientation="vertical"
-            tooltip
-            color="primary"
-            variant="pill"
+            variant="link"
             :ui="{
-              link: 'rounded-xl font-medium transition-all data-[active=true]:bg-[#1d6b44] data-[active=true]:text-white data-[active=true]:font-semibold hover:data-[active=true]:bg-[#16a34a]',
-              linkLeadingIcon: 'data-[active=true]:text-white',
-              linkLabel: 'font-medium data-[active=true]:text-white',
+              root: 'relative flex gap-1 [&>div]:min-w-0',
+              link: 'h-9 gap-2 rounded-lg px-3 py-2 border border-transparent transition-colors data-[active]:bg-white data-[active]:border-gray-200 data-[active]:text-gray-900 data-[inactive]:bg-transparent data-[inactive]:text-gray-600 hover:data-[inactive]:bg-gray-100',
+              linkLeadingIcon: 'size-4 text-[#1C1C1E] flex-shrink-0 data-[active]:text-green-600',
+              item: 'py-0.5'
             }"
-            class="mt-auto"
           />
         </template>
 
-        <template #footer="{ collapsed }">
-          <UserDropdown :collapsed="collapsed" />
+        <!-- SIDEBAR FOOTER -->
+        <template #footer>
+          <UserDropdown />
         </template>
       </UDashboardSidebar>
-      
-      <slot />
+
+      <!-- CONTENT AREA -->
+      <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full">
+        <UScrollArea class="flex-1">
+          <div class="px-8 py-4">
+            <!-- Page content goes here via slot -->
+            <slot />
+          </div>
+        </UScrollArea>
+      </div>
     </UDashboardGroup>
   </div>
 </template>
