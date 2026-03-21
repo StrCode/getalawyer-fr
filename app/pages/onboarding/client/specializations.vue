@@ -1,10 +1,145 @@
+<template>
+  <!-- Heading -->
+  <h1 class="mb-1 font-bold text-[28px] text-gray-900 tracking-tight">
+    What do you need help with?
+  </h1>
+  <p class="mb-6 text-gray-500 text-sm leading-relaxed">
+    Pick up to 3 legal areas. We'll match you with the right lawyers.
+  </p>
+
+  <!-- Search -->
+  <div class="relative mb-4">
+    <Icon
+      name="i-hugeicons-search-01"
+      class="top-1/2 left-3.5 absolute w-4 h-4 text-gray-400 -translate-y-1/2 pointer-events-none"
+    />
+    <input
+      v-model="query"
+      type="text"
+      placeholder="Search legal areas..."
+      class="bg-white pr-4 pl-10 border border-gray-200 focus:border-[#1d6b44] rounded-xl outline-none focus:ring-[#1d6b44]/10 focus:ring-2 w-full h-11 text-gray-900 text-sm transition-all"
+    />
+  </div>
+
+  <!-- Counter + progress -->
+  <div class="flex justify-between items-center mb-1.5">
+    <span class="font-medium text-gray-400 text-xs uppercase tracking-wider">
+      Selected ({{ selectedCount }}/3)
+    </span>
+    <span
+      class="font-semibold text-xs transition-colors"
+      :class="selectedCount === 3 ? 'text-[#1d6b44]' : 'text-gray-400'"
+    >
+      {{ selectedCount === 3 ? 'Max reached' : `${3 - selectedCount} left` }}
+    </span>
+  </div>
+  <div class="bg-gray-100 mb-4 rounded-full w-full h-1.5 overflow-hidden">
+    <div
+      class="bg-[#1d6b44] rounded-full h-full transition-all duration-300"
+      :style="{ width: `${progressPercent}%` }"
+    />
+  </div>
+
+  <!-- Selected pills -->
+  <div v-if="selectedCount > 0" class="flex flex-wrap gap-2 mb-4">
+    <button
+      v-for="id in onboardingData.specializations"
+      :key="id"
+      type="button"
+      class="inline-flex items-center gap-1.5 bg-[#e8f5ee] hover:bg-[#d4f0de] py-1 pr-2 pl-3 border border-[#1d6b44]/30 rounded-full font-medium text-[#1d6b44] text-xs transition-colors cursor-pointer"
+      @click="toggle(id)"
+    >
+      {{ nameById(id) }}
+      <span class="flex flex-shrink-0 justify-center items-center bg-[#1d6b44] rounded-full w-4 h-4 text-white" style="font-size:9px">✕</span>
+    </button>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div v-if="isLoadingSpecializations" class="gap-2 grid grid-cols-2 mb-6">
+    <div v-for="i in 8" :key="i" class="bg-gray-100 rounded-xl h-16 animate-pulse" />
+  </div>
+
+  <!-- No results -->
+  <div v-else-if="filtered.length === 0" class="py-10 text-center">
+    <p class="text-gray-400 text-sm">No legal areas match "<strong>{{ query }}</strong>".</p>
+  </div>
+
+  <!-- Grid -->
+  <div v-else class="gap-2 grid grid-cols-3 mb-6">
+    <button
+      v-for="spec in filtered"
+      :key="spec.id"
+      type="button"
+      class="group relative px-3.5 py-3 pr-9 border-[1.5px] rounded-xl focus:outline-none text-left transition-all duration-150"
+      :class="isSelected(spec.id)
+        ? 'border-[#1d6b44] bg-[#f6fcf9]'
+        : isDisabled(spec.id)
+        ? 'border-gray-100 bg-white opacity-35 cursor-not-allowed'
+        : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer'"
+      :disabled="isDisabled(spec.id)"
+      @click="!isDisabled(spec.id) && toggle(spec.id)"
+    >
+      <!-- Check indicator -->
+      <div
+        class="top-3 right-3 absolute flex flex-shrink-0 justify-center items-center border-[1.5px] rounded-full w-[18px] h-[18px] transition-all"
+        :class="isSelected(spec.id)
+          ? 'border-[#1d6b44] bg-[#1d6b44]'
+          : 'border-gray-300 bg-white'"
+      >
+        <Icon v-if="isSelected(spec.id)" name="i-hugeicons-tick-02" class="w-2.5 h-2.5 text-white" />
+      </div>
+
+      <p class="mb-0.5 font-semibold text-[13px] text-gray-900 leading-snug">{{ spec.name }}</p>
+      <p class="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">{{ spec.description }}</p>
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div
+    v-if="error"
+    class="flex items-start gap-2 bg-red-50 mb-4 p-3 border border-red-100 rounded-xl text-red-600 text-sm"
+  >
+    <Icon name="i-hugeicons-alert-circle" class="mt-0.5 w-4 h-4 shrink-0" />
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-3">
+    <button
+      type="button"
+      class="bg-white hover:bg-gray-50 px-6 border border-gray-200 rounded-full h-12 font-medium text-gray-700 text-sm transition-colors"
+      @click="navigateTo('/onboarding/client/location')"
+    >
+      Back
+    </button>
+    <button
+      type="button"
+      class="flex-1 rounded-full h-12 font-semibold text-sm transition-colors"
+      :class="selectedCount > 0 && !completeOnboarding.isPending.value
+        ? 'bg-[#1d6b44] hover:bg-[#175537] text-white'
+        : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
+      :disabled="selectedCount === 0 || completeOnboarding.isPending.value"
+      @click="handleSubmit"
+    >
+      <span v-if="completeOnboarding.isPending.value" class="flex justify-center items-center gap-2">
+        <Icon name="i-hugeicons-loading-03" class="w-4 h-4 animate-spin" />
+        Finishing setup...
+      </span>
+      <span v-else>Complete Profile</span>
+    </button>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 
 definePageMeta({
   middleware: ['auth'],
-  layout: false, // Split screen layout so we disable default
+  layout: 'client-onboarding',
 })
+
+useState('onboarding-step', () => 2).value = 2
+useState('onboarding-total', () => 2).value = 2
 
 const STORAGE_KEY = 'client-onboarding-data'
 
@@ -14,15 +149,10 @@ interface OnboardingData {
   specializations: string[]
 }
 
-// State
-const onboardingData = ref<OnboardingData>({
-  country: '',
-  state: '',
-  specializations: [],
-})
+const onboardingData = ref<OnboardingData>({ country: '', state: '', specializations: [] })
+const query = ref('')
 const error = ref('')
 
-// Load saved data
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
@@ -33,238 +163,61 @@ onMounted(() => {
       specializations: parsed.specializations || [],
     }
   }
-  
-  // Redirect if no location data
   if (!onboardingData.value.country) {
     navigateTo('/onboarding/client/location')
   }
 })
 
-// Fetch specializations using TanStack Query
-const { useSpecializations } = useClientOnboarding()
+const { useSpecializations, useCompleteOnboarding } = useClientOnboarding()
 const { data: specializationsData, isPending: isLoadingSpecializations } = useSpecializations()
+
 const specializations = computed(() => specializationsData.value?.specializations || [])
 
-// Toggle specialization
-const toggleSpecialization = (id: string) => {
-  const specs = onboardingData.value.specializations || []
-  
-  if (specs.includes(id)) {
-    onboardingData.value.specializations = specs.filter(s => s !== id)
-  } else {
-    if (specs.length < 3) {
-      onboardingData.value.specializations = [...specs, id]
-    }
-  }
-  
-  // Save to localStorage
+// Filter by search query
+const filtered = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return specializations.value
+  return specializations.value.filter((s: any) =>
+    s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q)
+  )
+})
+
+const completeOnboarding = useCompleteOnboarding()
+
+const selectedCount = computed(() => onboardingData.value.specializations.length)
+const progressPercent = computed(() => (selectedCount.value / 3) * 100)
+
+const isSelected = (id: string) => onboardingData.value.specializations.includes(id)
+const isDisabled = (id: string) => !isSelected(id) && selectedCount.value >= 3
+
+const nameById = (id: string) =>
+  specializations.value.find((s: any) => s.id === id)?.name ?? id
+
+const toggle = (id: string) => {
+  const specs = onboardingData.value.specializations
+  onboardingData.value.specializations = specs.includes(id)
+    ? specs.filter(s => s !== id)
+    : [...specs, id]
   localStorage.setItem(STORAGE_KEY, JSON.stringify(onboardingData.value))
   error.value = ''
 }
 
-// Submit onboarding
-const { useCompleteOnboarding } = useClientOnboarding()
-const completeOnboarding = useCompleteOnboarding()
-
 const handleSubmit = async () => {
-  if (onboardingData.value.specializations.length === 0) {
-    error.value = "Please select at least one specialization"
+  if (selectedCount.value === 0) {
+    error.value = 'Please select at least one specialization.'
     return
   }
-  
-  if (onboardingData.value.specializations.length > 3) {
-    error.value = "Please select a maximum of 3 specializations"
-    return
-  }
-
   error.value = ''
-
   try {
     await completeOnboarding.mutateAsync({
       country: onboardingData.value.country,
       state: onboardingData.value.state,
       specializationIds: onboardingData.value.specializations,
     })
-
-    // Clear localStorage
     localStorage.removeItem(STORAGE_KEY)
-    
-    // Redirect to dashboard
     await navigateTo('/dashboard')
   } catch (err: any) {
-    error.value = err.data?.message || "Failed to complete onboarding. Please try again."
+    error.value = err?.data?.message || 'Failed to complete setup. Please try again.'
   }
 }
-
-const handleBack = () => {
-  navigateTo('/onboarding/client/location')
-}
-
-// Computed
-const selectedCount = computed(() => onboardingData.value.specializations?.length || 0)
-const progressPercentage = computed(() => (selectedCount.value / 3) * 100)
-const isDisabled = (id: string) => {
-  const specs = onboardingData.value.specializations || []
-  return !specs.includes(id) && selectedCount.value >= 3
-}
 </script>
-
-<template>
-  <div class="h-screen w-full flex overflow-hidden bg-white">
-    <!-- Left Column: Hero Image -->
-    <div class="hidden lg:flex lg:w-[40%] relative bg-gray-900">
-      <!-- Image Background -->
-      <div 
-        class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
-        style="background-image: url('/images/legal_hero.png');"
-      ></div>
-      <!-- Dark Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-black/20"></div>
-      
-      <!-- Content Overlay -->
-      <div class="relative z-10 p-12 flex flex-col justify-between h-full w-full">
-        <!-- Top Banner -->
-        <div class="flex justify-between items-center w-full">
-          <NuxtLink to="/" class="inline-flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-              <Icon name="i-hugeicons-legal-document-02" class="w-5 h-5 text-white" />
-            </div>
-            <span class="text-xl font-semibold text-white tracking-tight">GetALawyer</span>
-          </NuxtLink>
-          <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white/90 text-sm font-medium">
-            Step 2 of 2
-          </div>
-        </div>
-
-        <div class="mb-12">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-6">
-            <Icon name="i-hugeicons-legal-document-02" class="w-6 h-6 text-white" />
-          </div>
-          <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
-            Almost done. <br/>What do you need?
-          </h1>
-          <p class="text-lg text-white/80 max-w-md">
-            Pick up to three legal areas that match your current needs.
-          </p>
-
-          <div class="mt-8 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-              <Icon name="i-hugeicons-location-04" class="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p class="text-xs font-medium text-white/60 uppercase tracking-wider">Filtering for</p>
-              <p class="text-sm font-semibold text-white mt-0.5">
-                {{ onboardingData.country }}{{ onboardingData.state ? `, ${onboardingData.state}` : '' }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Specializations Selection -->
-    <div class="w-full lg:w-[60%] flex flex-col h-full bg-white relative">
-      <!-- Mobile View Header (hidden on lg) -->
-      <div class="lg:hidden p-6 gap-2 absolute top-0 left-0 w-full flex justify-between items-center z-10 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <button @click="handleBack" class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center justify-center">
-            <Icon name="i-hugeicons-arrow-left-01" class="w-4 h-4 text-gray-700" />
-        </button>
-        <div class="text-sm font-medium text-gray-500">Step 2 of 2</div>
-      </div>
-
-      <!-- Main Content Container -->
-      <div class="flex-1 overflow-y-auto w-full pt-20 lg:pt-0">
-        <div class="min-h-full flex flex-col p-6 sm:p-12 lg:px-16 xl:px-24">
-          
-          <div class="mt-8 lg:mt-12 mb-8 text-center lg:text-left">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Select Legal Areas</h2>
-            <p class="text-gray-500">
-              You can choose up to 3 specializations to help us narrow down the right attorneys for you.
-            </p>
-          </div>
-
-          <!-- Progress Bar Overlay -->
-          <div class="mb-8 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
-            <div class="flex justify-between items-end mb-2">
-              <span class="text-gray-500 text-xs font-medium uppercase tracking-wider">Selections ({{ selectedCount }}/3)</span>
-              <span class="text-xs text-black font-semibold">{{ selectedCount === 3 ? 'Max reached' : `${3 - selectedCount} left` }}</span>
-            </div>
-            <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-               <div class="bg-black h-full transition-all duration-300 rounded-full" :style="{ width: `${progressPercentage}%` }"></div>
-            </div>
-          </div>
-
-          <!-- Loading State Grid -->
-          <div v-if="isLoadingSpecializations" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div v-for="i in 6" :key="i" class="h-24 bg-gray-50 animate-pulse rounded-2xl border border-gray-100"></div>
-          </div>
-
-          <!-- Error Alert -->
-          <div v-else-if="error && !onboardingData.specializations?.length" class="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100 mb-6 flex items-start gap-3">
-             <Icon name="i-hugeicons-alert-circle" class="w-5 h-5 shrink-0 mt-0.5" />
-             <p>{{ error }}</p>
-          </div>
-
-          <!-- Specializations Grid -->
-          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 pb-12">
-            <button
-              v-for="spec in specializations"
-              :key="spec.id"
-              @click="!isDisabled(spec.id) && toggleSpecialization(spec.id)"
-              :disabled="isDisabled(spec.id) && !(onboardingData.specializations || []).includes(spec.id)"
-              :class="[
-                'group text-left p-5 rounded-2xl transition-all duration-200 border-2 relative overflow-hidden focus:outline-none',
-                (onboardingData.specializations || []).includes(spec.id)
-                  ? 'border-black bg-gray-50/80 shadow-[0_4px_12px_rgba(0,0,0,0.05)] shadow-black/5 transform -translate-y-[2px]'
-                  : isDisabled(spec.id)
-                  ? 'border-gray-100 bg-gray-50/50 opacity-40 cursor-not-allowed'
-                  : 'border-gray-100 bg-white hover:border-gray-300 hover:shadow-xs focus:ring-2 focus:ring-black/5'
-              ]"
-            >
-              <!-- Checkmark icon top right -->
-               <div :class="[
-                   'absolute top-4 right-4 w-5 h-5 rounded-full border transition-all flex items-center justify-center shadow-xs',
-                   (onboardingData.specializations || []).includes(spec.id)
-                    ? 'border-black bg-black text-white' : 'border-gray-300 bg-white'
-               ]">
-                  <Icon v-if="(onboardingData.specializations || []).includes(spec.id)" name="i-hugeicons-tick-02" class="w-3.5 h-3.5" />
-               </div>
-
-              <h3 class="font-semibold text-gray-900 text-base mb-1 pr-6 leading-tight">{{ spec.name }}</h3>
-              <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed">{{ spec.description }}</p>
-            </button>
-          </div>
-
-          <!-- Bottom Footer Action Area -->
-          <div class="mt-auto sticky bottom-0 border-t border-gray-100 bg-white/90 backdrop-blur-md pt-6 pb-6 lg:pb-10 flex gap-4">
-            <UButton
-              @click="handleBack"
-              color="white"
-              size="lg"
-              class="hidden sm:flex border border-gray-200 text-gray-700 shadow-none font-medium h-12 px-6 hover:bg-gray-50"
-              :disabled="completeOnboarding.isPending.value || isLoadingSpecializations"
-            >
-              Back
-            </UButton>
-            <UButton
-              @click="handleSubmit"
-              color="black"
-              size="lg"
-              block
-              class="font-semibold h-12 shadow-sm"
-              :disabled="completeOnboarding.isPending.value || selectedCount === 0 || isLoadingSpecializations"
-              :loading="completeOnboarding.isPending.value"
-            >
-              {{ completeOnboarding.isPending.value ? 'Finishing setup...' : 'Complete Profile' }}
-            </UButton>
-          </div>
-          <!-- Mobile back button underneath the main submit -->
-           <button @click="handleBack" class="sm:hidden text-gray-500 font-medium text-sm mt-4 pb-6 hover:text-gray-800 transition-colors">
-              Go back
-           </button>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</template>

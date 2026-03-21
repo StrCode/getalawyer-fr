@@ -51,7 +51,7 @@ export default defineNuxtConfig({
         subsets: ['latin'],
       },
        {
-        name: 'McLaren',
+        name: 'Faustina',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],

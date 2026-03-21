@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'McLaren', sans-serif;
+  --font-sans: 'Faustina', sans-serif;
 }
 
 body {
