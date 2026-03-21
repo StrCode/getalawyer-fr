@@ -1,188 +1,308 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import { authClient } from '~/lib/auth-client'
 
-defineProps<{
+interface Props {
   collapsed?: boolean
-}>()
+}
 
-const colorMode = useColorMode()
-const appConfig = useAppConfig()
+const props = defineProps<Props>()
 
-const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
+const { session, signOut } = useAuth()
+const router = useRouter()
 
-const user = ref({
-  name: 'Benjamin Canac',
-  avatar: {
-    src: 'https://github.com/benjamincanac.png',
-    alt: 'Benjamin Canac'
+const user = computed(() => {
+  if (!session.value?.user) return null
+  
+  return {
+    name: session.value.user.name || session.value.user.email || 'User',
+    email: session.value.user.email,
+    role: session.value.user.userType,
+    avatar: (session.value.user as any).image || null
   }
 })
 
-const items = computed<DropdownMenuItem[][]>(() => ([[{
-  type: 'label',
-  label: user.value.name,
-  avatar: user.value.avatar
-}], [{
-  label: 'Profile',
-  icon: 'i-lucide-user'
-}, {
-  label: 'Billing',
-  icon: 'i-lucide-credit-card'
-}, {
-  label: 'Settings',
-  icon: 'i-lucide-settings',
-  to: '/settings'
-}], [{
-  label: 'Theme',
-  icon: 'i-lucide-palette',
-  children: [{
-    label: 'Primary',
-    slot: 'chip',
-    chip: appConfig.ui.colors.primary,
-    content: {
-      align: 'center',
-      collisionPadding: 16
+const userInitials = computed(() => {
+  if (!user.value?.name) return 'U'
+  return user.value.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+})
+
+const roleLabel = computed(() => {
+  if (user.value?.role === 'lawyer') return 'Lawyer'
+  if (user.value?.role === 'client') return 'Client'
+  return 'User'
+})
+
+const handleSignOut = async () => {
+  try {
+    await signOut()
+    await router.push('/login')
+  } catch (error) {
+    console.error('Sign out error:', error)
+  }
+}
+
+const menuItems = computed(() => [
+  [
+    {
+      label: 'Profile',
+      icon: 'i-heroicons-user-circle',
+      to: '/dashboard/profile',
+      shortcuts: ['P']
     },
-    children: colors.map(color => ({
-      label: color,
-      chip: color,
-      slot: 'chip',
-      checked: appConfig.ui.colors.primary === color,
-      type: 'checkbox',
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.primary = color
-      }
-    }))
-  }, {
-    label: 'Neutral',
-    slot: 'chip',
-    chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
-    content: {
-      align: 'end',
-      collisionPadding: 16
-    },
-    children: neutrals.map(color => ({
-      label: color,
-      chip: color === 'neutral' ? 'old-neutral' : color,
-      slot: 'chip',
-      type: 'checkbox',
-      checked: appConfig.ui.colors.neutral === color,
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.neutral = color
-      }
-    }))
-  }]
-}, {
-  label: 'Appearance',
-  icon: 'i-lucide-sun-moon',
-  children: [{
-    label: 'Light',
-    icon: 'i-lucide-sun',
-    type: 'checkbox',
-    checked: colorMode.value === 'light',
-    onSelect(e: Event) {
-      e.preventDefault()
-
-      colorMode.preference = 'light'
+    {
+      label: 'Settings',
+      icon: 'i-heroicons-cog-6-tooth',
+      to: '/dashboard/settings',
+      shortcuts: ['S']
     }
-  }, {
-    label: 'Dark',
-    icon: 'i-lucide-moon',
-    type: 'checkbox',
-    checked: colorMode.value === 'dark',
-    onUpdateChecked(checked: boolean) {
-      if (checked) {
-        colorMode.preference = 'dark'
-      }
+  ],
+  [
+    {
+      label: 'Help Center',
+      icon: 'i-heroicons-question-mark-circle',
+      to: '/help'
     },
-    onSelect(e: Event) {
-      e.preventDefault()
+    {
+      label: 'Documentation',
+      icon: 'i-heroicons-book-open',
+      to: '/docs'
     }
-  }]
-}], [{
-  label: 'Templates',
-  icon: 'i-lucide-layout-template',
-  children: [{
-    label: 'Starter',
-    to: 'https://starter-template.nuxt.dev/'
-  }, {
-    label: 'Landing',
-    to: 'https://landing-template.nuxt.dev/'
-  }, {
-    label: 'Docs',
-    to: 'https://docs-template.nuxt.dev/'
-  }, {
-    label: 'SaaS',
-    to: 'https://saas-template.nuxt.dev/'
-  }, {
-    label: 'Dashboard',
-    to: 'https://dashboard-template.nuxt.dev/',
-    color: 'primary',
-    checked: true,
-    type: 'checkbox'
-  }, {
-    label: 'Chat',
-    to: 'https://chat-template.nuxt.dev/'
-  }, {
-    label: 'Portfolio',
-    to: 'https://portfolio-template.nuxt.dev/'
-  }, {
-    label: 'Changelog',
-    to: 'https://changelog-template.nuxt.dev/'
-  }]
-}], [{
-  label: 'Documentation',
-  icon: 'i-lucide-book-open',
-  to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-  target: '_blank'
-}, {
-  label: 'GitHub repository',
-  icon: 'i-simple-icons-github',
-  to: 'https://github.com/nuxt-ui-templates/dashboard',
-  target: '_blank'
-}, {
-  label: 'Log out',
-  icon: 'i-lucide-log-out'
-}]]))
+  ],
+  [
+    {
+      label: 'Sign Out',
+      icon: 'i-heroicons-arrow-right-on-rectangle',
+      click: handleSignOut
+    }
+  ]
+])
 </script>
 
 <template>
-  <UDropdownMenu
-    :items="items"
-    :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+  <UDropdown 
+    :items="menuItems" 
+    :popper="{ placement: 'top', offsetDistance: 8 }"
+    :ui="{
+      width: 'w-64',
+      item: {
+        base: 'group flex items-center gap-3 w-full',
+        padding: 'px-3 py-2',
+        size: 'text-sm',
+        active: 'bg-neutral-100',
+        inactive: 'text-neutral-700',
+        icon: {
+          base: 'flex-shrink-0 w-5 h-5',
+          active: 'text-neutral-900',
+          inactive: 'text-neutral-500'
+        }
+      }
+    }"
   >
-    <UButton
-      v-bind="{
-        ...user,
-        label: collapsed ? undefined : user?.name,
-        trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
-      }"
-      color="neutral"
-      variant="ghost"
-      block
-      :square="collapsed"
-      class="data-[state=open]:bg-elevated"
-      :ui="{
-        trailingIcon: 'text-dimmed'
-      }"
-    />
-
-    <template #chip-leading="{ item }">
-      <div class="inline-flex items-center justify-center shrink-0 size-5">
-        <span
-          class="rounded-full ring ring-bg bg-(--chip-light) dark:bg-(--chip-dark) size-2"
-          :style="{
-            '--chip-light': `var(--color-${(item as any).chip}-500)`,
-            '--chip-dark': `var(--color-${(item as any).chip}-400)`
-          }"
+    <button class="user-dropdown-trigger" :class="{ 'user-dropdown-collapsed': collapsed }">
+      <!-- Avatar -->
+      <div class="user-avatar">
+        <img 
+          v-if="user?.avatar" 
+          :src="user.avatar" 
+          :alt="user.name"
+          class="w-full h-full object-cover"
         />
+        <span v-else class="user-avatar-initials">
+          {{ userInitials }}
+        </span>
+      </div>
+
+      <!-- User Info (when not collapsed) -->
+      <div v-if="!collapsed" class="user-info">
+        <div class="user-name">{{ user?.name || 'User' }}</div>
+        <div class="user-role">{{ roleLabel }}</div>
+      </div>
+
+      <!-- Chevron (when not collapsed) -->
+      <UIcon 
+        v-if="!collapsed" 
+        name="i-heroicons-chevron-up-down" 
+        class="user-chevron" 
+      />
+    </button>
+
+    <!-- Custom dropdown header -->
+    <template #account>
+      <div class="dropdown-header">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="user-avatar-large">
+            <img 
+              v-if="user?.avatar" 
+              :src="user.avatar" 
+              :alt="user.name"
+              class="w-full h-full object-cover"
+            />
+            <span v-else class="user-avatar-initials">
+              {{ userInitials }}
+            </span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="dropdown-user-name">{{ user?.name }}</div>
+            <div class="dropdown-user-email">{{ user?.email }}</div>
+          </div>
+        </div>
+        <UBadge 
+          :color="user?.role === 'lawyer' ? 'primary' : 'info'" 
+          variant="soft" 
+          size="sm"
+        >
+          {{ roleLabel }}
+        </UBadge>
       </div>
     </template>
-  </UDropdownMenu>
+  </UDropdown>
 </template>
+
+<style scoped>
+/* User Dropdown Trigger */
+.user-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  text-align: left;
+}
+
+.user-dropdown-trigger:hover {
+  background-color: var(--color-neutral-100);
+  border-color: var(--color-neutral-200);
+}
+
+.user-dropdown-trigger:active {
+  background-color: var(--color-neutral-200);
+}
+
+.user-dropdown-collapsed {
+  justify-content: center;
+  padding: 0.625rem;
+}
+
+/* Avatar */
+.user-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar-initials {
+  font-size: 0.875rem;
+  font-weight: var(--font-bold);
+  color: white;
+  line-height: 1;
+}
+
+.user-avatar-large {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--color-neutral-100);
+}
+
+.user-avatar-large .user-avatar-initials {
+  font-size: 1.125rem;
+}
+
+/* User Info */
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.user-role {
+  font-size: var(--text-xs);
+  color: var(--color-neutral-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.user-chevron {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-neutral-400);
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.user-dropdown-trigger:hover .user-chevron {
+  color: var(--color-neutral-600);
+}
+
+/* Dropdown Header */
+.dropdown-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-neutral-200);
+  background-color: var(--color-neutral-50);
+}
+
+.dropdown-user-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-neutral-900);
+  margin-bottom: 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-user-email {
+  font-size: var(--text-xs);
+  color: var(--color-neutral-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .user-dropdown-trigger {
+    padding: 0.5rem;
+  }
+  
+  .user-avatar {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+</style>

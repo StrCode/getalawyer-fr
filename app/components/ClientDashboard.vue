@@ -1,68 +1,172 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8">
+    <!-- Welcome Header -->
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="mb-2 heading-2">Welcome back, {{ session?.user.name?.split(' ')[0] || 'there' }}!</h1>
+        <p class="text-neutral-600 body-base">Here's what's happening with your legal consultations</p>
+      </div>
+      <UButton 
+        to="/lawyers" 
+        color="primary" 
+        size="lg"
+        icon="i-heroicons-magnifying-glass"
+      >
+        Find a Lawyer
+      </UButton>
+    </div>
+
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
       <DashboardStatCard
         label="Total Bookings"
         :value="stats.totalBookings"
-        change="+12.4%"
-        trend="up"
-        icon="💰"
-        accent="#00e5a0"
+        icon="i-heroicons-calendar-days"
+        color="#1d6b44"
+        :subtitle="stats.totalBookings === '0' ? 'No bookings yet' : 'All time'"
       />
       <DashboardStatCard
-        label="Active Cases"
+        label="Active Consultations"
         :value="stats.activeCases"
-        change="+3.1%"
-        trend="up"
-        icon="👥"
-        accent="#6c8cff"
+        icon="i-heroicons-clock"
+        color="#3b82f6"
+        :subtitle="stats.activeCases === '0' ? 'No active cases' : 'In progress'"
       />
       <DashboardStatCard
         label="Upcoming"
         :value="stats.upcoming"
-        change="-0.8%"
-        trend="down"
-        icon="📅"
-        accent="#ff5e7e"
+        icon="i-heroicons-calendar"
+        color="#f59e0b"
+        :subtitle="stats.upcoming === '0' ? 'No upcoming' : 'Scheduled'"
       />
       <DashboardStatCard
         label="Completed"
         :value="stats.completed"
-        change="+0.5%"
-        trend="up"
-        icon="✅"
-        accent="#ffb830"
+        icon="i-heroicons-check-circle"
+        color="#10b981"
+        :subtitle="stats.completed === '0' ? 'None yet' : 'Finished'"
       />
     </div>
 
-    <!-- Charts and Activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <DashboardSparklineCard
-        title="Weekly Activity"
-        :data="[40, 65, 50, 80, 72, 90, 84]"
-        accent="#00e5a0"
-      />
-
-      <DashboardActivityCard :events="activityEvents" />
+    <!-- Empty State or Bookings -->
+    <div v-if="bookingsData && bookingsData.length === 0">
+      <DashboardEmptyState
+        icon="i-heroicons-calendar-days"
+        title="No consultations yet"
+        description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
+        color="#1d6b44"
+      >
+        <template #actions>
+          <UButton to="/lawyers" color="primary" size="lg" icon="i-heroicons-magnifying-glass">
+            Browse Lawyers
+          </UButton>
+          <UButton to="/practice-areas" variant="outline" size="lg" icon="i-heroicons-scale">
+            View Practice Areas
+          </UButton>
+        </template>
+      </DashboardEmptyState>
     </div>
 
-    <!-- Progress and Table -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <DashboardProgressCard
-        title="Case Progress"
-        :items="goalItems"
-      />
+    <!-- Recent Bookings -->
+    <div v-else-if="recentBookings.length > 0" class="space-y-6">
+      <div class="flex justify-between items-center">
+        <h2 class="heading-3">Recent Consultations</h2>
+        <UButton to="/dashboard/bookings" variant="ghost" trailing-icon="i-heroicons-arrow-right">
+          View All
+        </UButton>
+      </div>
+      
+      <div class="gap-4 grid grid-cols-1">
+        <div 
+          v-for="booking in recentBookings" 
+          :key="booking.id"
+          class="hover:shadow-lg p-6 transition-all cursor-pointer card"
+          @click="navigateTo(`/dashboard/bookings/${booking.id}`)"
+        >
+          <div class="flex justify-between items-start gap-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <UBadge :color="getStatusColor(booking.status)" variant="soft">
+                  {{ booking.status }}
+                </UBadge>
+                <span class="text-neutral-500 text-sm">{{ booking.bookingReference }}</span>
+              </div>
+              
+              <h3 class="mb-2 heading-4">{{ booking.lawyer?.name || 'Lawyer' }}</h3>
+              <p class="mb-4 body-small">{{ booking.consultationType?.name || 'Consultation' }}</p>
+              
+              <div class="flex flex-wrap items-center gap-4 text-neutral-600 text-sm">
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-heroicons-calendar" class="w-4 h-4" />
+                  <span>{{ formatDate(booking.scheduledDate) }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+                  <span>{{ booking.scheduledStartTime }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
+                  <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <UIcon name="i-heroicons-chevron-right" class="w-5 h-5 text-neutral-400" />
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <DashboardTableCard
-        title="Practice Areas"
-        :rows="tableRows"
-      />
+    <!-- Quick Actions -->
+    <div class="p-8 card-elevated">
+      <h2 class="mb-6 heading-3">Quick Actions</h2>
+      <div class="gap-4 grid grid-cols-1 md:grid-cols-3">
+        <button 
+          class="flex items-center gap-4 hover:bg-primary-50 p-4 border border-neutral-200 hover:border-primary-500 rounded-lg text-left transition-all"
+          @click="navigateTo('/lawyers')"
+        >
+          <div class="flex justify-center items-center bg-primary-100 rounded-lg w-12 h-12 shrink-0">
+            <UIcon name="i-heroicons-magnifying-glass" class="w-6 h-6 text-primary-600" />
+          </div>
+          <div>
+            <div class="mb-1 font-semibold text-neutral-900">Find Lawyers</div>
+            <div class="text-neutral-600 text-sm">Browse verified professionals</div>
+          </div>
+        </button>
+        
+        <button 
+          class="flex items-center gap-4 hover:bg-primary-50 p-4 border border-neutral-200 hover:border-primary-500 rounded-lg text-left transition-all"
+          @click="navigateTo('/dashboard/bookings')"
+        >
+          <div class="flex justify-center items-center bg-blue-100 rounded-lg w-12 h-12 shrink-0">
+            <UIcon name="i-heroicons-calendar-days" class="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <div class="mb-1 font-semibold text-neutral-900">My Bookings</div>
+            <div class="text-neutral-600 text-sm">View all consultations</div>
+          </div>
+        </button>
+        
+        <button 
+          class="flex items-center gap-4 hover:bg-primary-50 p-4 border border-neutral-200 hover:border-primary-500 rounded-lg text-left transition-all"
+          @click="navigateTo('/dashboard/my-lawyers')"
+        >
+          <div class="flex justify-center items-center bg-purple-100 rounded-lg w-12 h-12 shrink-0">
+            <UIcon name="i-heroicons-user-group" class="w-6 h-6 text-purple-600" />
+          </div>
+          <div>
+            <div class="mb-1 font-semibold text-neutral-900">My Lawyers</div>
+            <div class="text-neutral-600 text-sm">Saved professionals</div>
+          </div>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { session } = useAuth()
+
 // Fetch bookings data
 const { useClientBookings } = useBookings()
 const { data: bookingsData } = useClientBookings()
@@ -77,25 +181,37 @@ const stats = computed(() => {
   }
 })
 
-const activityEvents = computed(() => [
-  { text: 'Consultation scheduled — Estate Planning', time: '2m ago', color: '#00e5a0' },
-  { text: 'Document received — Contract review', time: '9m ago', color: '#6c8cff' },
-  { text: 'Lawyer responded — Family Law case', time: '21m ago', color: '#ffb830' },
-  { text: 'Payment processed — Consultation fee', time: '1h ago', color: '#00e5a0' },
-  { text: 'Case update received', time: '2h ago', color: '#6c8cff' },
-])
+const recentBookings = computed(() => {
+  const bookings = bookingsData.value || []
+  return bookings.slice(0, 3)
+})
 
-const goalItems = [
-  { name: 'Estate Planning', pct: 84, color: '#00e5a0' },
-  { name: 'Family Law', pct: 61, color: '#6c8cff' },
-  { name: 'Contract Review', pct: 77, color: '#ffb830' },
-  { name: 'Consultation', pct: 90, color: '#00e5a0' },
-]
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    confirmed: 'success',
+    pending: 'warning',
+    completed: 'success',
+    cancelled: 'error',
+    no_show: 'error'
+  }
+  return colors[status] || 'neutral'
+}
 
-const tableRows = [
-  { channel: 'Estate Planning', sessions: '8', conv: '100%', rev: '$2,440', color: '#00e5a0', convClass: 'high' as const },
-  { channel: 'Family Law', sessions: '5', conv: '80%', rev: '$1,800', color: '#6c8cff', convClass: 'mid' as const },
-  { channel: 'Corporate Law', sessions: '3', conv: '100%', rev: '$1,200', color: '#ffb830', convClass: 'high' as const },
-  { channel: 'Consultation', sessions: '12', conv: '75%', rev: '$900', color: '#ff5e7e', convClass: 'low' as const },
-]
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    month: 'short', 
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+
+const getMeetingIcon = (type: string) => {
+  const icons: Record<string, string> = {
+    video: 'i-heroicons-video-camera',
+    phone: 'i-heroicons-phone',
+    in_person: 'i-heroicons-building-office'
+  }
+  return icons[type] || 'i-heroicons-calendar'
+}
 </script>
