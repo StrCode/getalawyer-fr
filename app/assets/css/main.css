@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Manrope', sans-serif;
+  --font-sans: 'Public Sans', sans-serif;
 }
 
 body {
