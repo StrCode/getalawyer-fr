@@ -26,7 +26,7 @@
   <!-- Error -->
   <div
     v-else-if="isError"
-    class="flex items-start gap-2 bg-red-50 mb-6 p-4 border border-red-100 rounded-xl text-red-600 text-sm"
+    class="flex items-start gap-2 bg-red-50 mb-6 p-4 border border-red-100 rounded text-red-600 text-sm"
   >
     <Icon name="i-hugeicons-alert-circle" class="mt-0.5 w-4 h-4 shrink-0" />
     <span>Failed to load location data. Please refresh and try again.</span>
@@ -44,7 +44,7 @@
         <select
           :value="country"
           disabled
-          class="bg-gray-100 px-4 pr-10 border border-gray-300 rounded-xl outline-none w-full h-12 text-gray-700 text-sm appearance-none cursor-not-allowed"
+          class="bg-gray-100 px-4 pr-10 border border-gray-300 rounded outline-none w-full h-12 text-gray-700 text-sm appearance-none cursor-not-allowed"
         >
           <option value="NG">Nigeria</option>
         </select>
@@ -58,31 +58,27 @@
       <label class="block mb-1.5 font-medium text-gray-700 text-sm">
         State / Region <span class="text-red-500">*</span>
       </label>
-      <div class="relative">
-        <select
-          v-model="state"
-          class="bg-white px-4 pr-10 border rounded-xl outline-none w-full h-12 text-gray-900 text-sm transition-all appearance-none"
-          :class="errors.state
-            ? 'border-red-400 focus:border-red-500'
-            : 'border-gray-200 hover:border-gray-300 focus:border-primary-600 focus:ring-2 focus:ring-primary-600/10'"
-          @change="handleStateChange"
-        >
-          <option value="" disabled>Select state or region</option>
-          <option v-for="s in availableStates" :key="s.code" :value="s.code">{{ s.name }}</option>
-        </select>
-        <Icon name="i-hugeicons-arrow-down-01" class="top-1/2 right-3 absolute w-4 h-4 text-gray-400 -translate-y-1/2 pointer-events-none" />
-      </div>
+      <USelectMenu
+        v-model="selectedState"
+        :items="availableStates"
+        placeholder="Select state or region"
+        size="xl"
+        class="w-full"
+        @update:model-value="handleStateChange"
+      />
       <p v-if="errors.state" class="mt-1 text-red-500 text-xs">{{ errors.state }}</p>
     </div>
 
     <!-- Next -->
     <div class="pt-4">
-      <button
-        class="bg-primary-600 hover:bg-primary-700 rounded-full w-full h-12 font-semibold text-white text-sm transition-colors"
+      <UButton
+        size="xl"
+        color="primary"
+        block
         @click="validateAndNext"
       >
         Next
-      </button>
+      </UButton>
     </div>
 
   </div>
@@ -98,25 +94,37 @@ definePageMeta({
 })
 
 // Set step state so the layout can read it
-useState('onboarding-step', () => 1).value = 1
-useState('onboarding-total', () => 2).value = 2
+const currentStep = useState('onboarding-step', () => 1)
+const totalSteps = useState('onboarding-total', () => 2)
 
 const STORAGE_KEY = 'client-onboarding-data'
 
 const country = ref('NG') // Default to Nigeria
-const state = ref('')
+const state = ref<string>('')
+const selectedState = ref<{ label: string; value: string } | undefined>(undefined)
 const errors = ref<Record<string, string>>({})
 
+// Load from storage on client side only - after mount to avoid hydration mismatch
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     const data = JSON.parse(saved)
-    // Always keep country as Nigeria
-    country.value = 'NG'
-    state.value = data.state || ''
+    // Handle both old object format and new string format
+    if (typeof data.state === 'object' && data.state?.value) {
+      state.value = data.state.value
+    } else if (typeof data.state === 'string') {
+      state.value = data.state
+    }
+    // Set selectedState for USelectMenu
+    if (state.value) {
+      const stateItem = availableStates.value.find((s: any) => s.value === state.value)
+      if (stateItem) {
+        selectedState.value = stateItem
+      }
+    }
   }
-  // Save Nigeria as default
-  saveToStorage({ country: 'NG' })
+  // Save Nigeria as default with correct string format
+  saveToStorage({ country: 'NG', state: state.value })
 })
 
 const { useCountries } = useClientOnboarding()
@@ -125,25 +133,33 @@ const { data: countriesData, isPending: isLoading, isError } = useCountries()
 const countries = computed(() => countriesData.value?.data || [])
 const availableStates = computed(() => {
   const selected = countries.value.find((c: any) => c.code2 === country.value)
-  return selected?.states || []
+  const states = selected?.states || []
+  // Transform to format USelectMenu expects with label/value
+  return states.map((s: any) => ({
+    label: s.name,
+    value: s.code
+  }))
 })
 const selectedCountryName = computed(() =>
   countries.value.find((c: any) => c.code2 === country.value)?.name || ''
 )
-const selectedStateName = computed(() =>
-  availableStates.value.find((s: any) => s.code === state.value)?.name || ''
-)
+const selectedStateName = computed(() => {
+  const stateItem = availableStates.value.find((s: any) => s.value === state.value)
+  return stateItem?.label || ''
+})
 
 const saveToStorage = (data: object) => {
   const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...data }))
 }
 
-const handleStateChange = (e: Event) => {
-  const value = (e.target as HTMLSelectElement).value
-  state.value = value
-  saveToStorage({ state: value })
-  errors.value = {}
+const handleStateChange = (value: { label: string; value: string } | undefined) => {
+  if (value) {
+    state.value = value.value
+    selectedState.value = value
+    saveToStorage({ state: value.value })
+    errors.value = {}
+  }
 }
 
 const validateAndNext = () => {

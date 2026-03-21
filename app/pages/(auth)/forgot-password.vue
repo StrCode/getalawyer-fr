@@ -27,7 +27,7 @@
           <!-- Success state -->
           <div
             v-if="submitted"
-            class="flex items-start gap-3 bg-[#f0faf4] mb-6 p-4 border border-[#1d6b44]/20 rounded-xl"
+            class="flex items-start gap-3 bg-[#f0faf4] mb-6 p-4 border border-[#1d6b44]/20 rounded"
           >
             <Icon name="i-hugeicons-checkmark-circle-02" class="mt-0.5 w-5 h-5 text-[#1d6b44] shrink-0" />
             <div>

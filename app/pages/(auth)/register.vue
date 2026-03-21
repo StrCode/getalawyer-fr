@@ -22,7 +22,7 @@
                 <!-- Client Card -->
                 <button
                   type="button"
-                  class="group border rounded-xl overflow-hidden text-left transition-all duration-200 cursor-pointer"
+                  class="group border rounded overflow-hidden text-left transition-all duration-200 cursor-pointer"
                   :class="role === 'client'
                     ? 'border-primary-400 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]'
                     : 'border-slate-200 hover:border-slate-300'"
@@ -82,7 +82,7 @@
                 <!-- Lawyer Card -->
                 <button
                   type="button"
-                  class="group border rounded-xl overflow-hidden text-left transition-all duration-200 cursor-pointer"
+                  class="group border rounded overflow-hidden text-left transition-all duration-200 cursor-pointer"
                   :class="role === 'lawyer'
                     ? 'border-primary-400 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]'
                     : 'border-slate-200 hover:border-slate-300'"
@@ -144,7 +144,7 @@
               <button
                 type="button"
                 :disabled="!role"
-                class="py-3 rounded-xl w-full font-semibold text-sm transition-all duration-200"
+                class="py-3 rounded w-full font-semibold text-sm transition-all duration-200"
                 :class="role
                   ? 'bg-primary-600 text-white hover:bg-primary-700 cursor-pointer'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'"

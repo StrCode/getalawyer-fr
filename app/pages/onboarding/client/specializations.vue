@@ -8,40 +8,36 @@
   </p>
 
   <!-- Search -->
-  <div class="relative mb-4">
-    <Icon
-      name="i-hugeicons-search-01"
-      class="top-1/2 left-3.5 absolute w-4 h-4 text-gray-400 -translate-y-1/2 pointer-events-none"
-    />
-    <input
-      v-model="query"
-      type="text"
-      placeholder="Search legal areas..."
-      class="bg-white pr-4 pl-10 border border-gray-200 focus:border-[#1d6b44] rounded-xl outline-none focus:ring-[#1d6b44]/10 focus:ring-2 w-full h-11 text-gray-900 text-sm transition-all"
-    />
-  </div>
+  <UInput
+    v-model="query"
+    icon="i-hugeicons-search-01"
+    size="xl"
+    placeholder="Search legal areas..."
+    class="mb-4"
+  />
 
   <!-- Counter + progress -->
-  <div class="flex justify-between items-center mb-1.5">
-    <span class="font-medium text-gray-400 text-xs uppercase tracking-wider">
-      Selected ({{ selectedCount }}/3)
-    </span>
-    <span
-      class="font-semibold text-xs transition-colors"
-      :class="selectedCount === 3 ? 'text-[#1d6b44]' : 'text-gray-400'"
-    >
-      {{ selectedCount === 3 ? 'Max reached' : `${3 - selectedCount} left` }}
-    </span>
-  </div>
-  <div class="bg-gray-100 mb-4 rounded-full w-full h-1.5 overflow-hidden">
-    <div
-      class="bg-[#1d6b44] rounded-full h-full transition-all duration-300"
-      :style="{ width: `${progressPercent}%` }"
-    />
-  </div>
+  <ClientOnly>
+    <div class="flex justify-between items-center mb-1.5">
+      <span class="font-medium text-gray-400 text-xs uppercase tracking-wider">
+        Selected ({{ selectedCount }}/3)
+      </span>
+      <span
+        class="font-semibold text-xs transition-colors"
+        :class="selectedCount === 3 ? 'text-[#1d6b44]' : 'text-gray-400'"
+      >
+        {{ selectedCount === 3 ? 'Max reached' : `${3 - selectedCount} left` }}
+      </span>
+    </div>
+    <div class="bg-gray-100 mb-4 rounded-full w-full h-1.5 overflow-hidden">
+      <div
+        class="bg-[#1d6b44] rounded-full h-full transition-all duration-300"
+        :style="{ width: `${progressPercent}%` }"
+      />
+    </div>
 
-  <!-- Selected pills -->
-  <div v-if="selectedCount > 0" class="flex flex-wrap gap-2 mb-4">
+    <!-- Selected pills -->
+    <div v-if="selectedCount > 0" class="flex flex-wrap gap-2 mb-4">
     <button
       v-for="id in onboardingData.specializations"
       :key="id"
@@ -50,13 +46,14 @@
       @click="toggle(id)"
     >
       {{ nameById(id) }}
-      <span class="flex flex-shrink-0 justify-center items-center bg-[#1d6b44] rounded-full w-4 h-4 text-white" style="font-size:9px">✕</span>
+      <span class="flex justify-center items-center bg-[#1d6b44] rounded-full w-4 h-4 text-white shrink-0" style="font-size:9px">✕</span>
     </button>
   </div>
+  </ClientOnly>
 
   <!-- Loading skeleton -->
   <div v-if="isLoadingSpecializations" class="gap-2 grid grid-cols-2 mb-6">
-    <div v-for="i in 8" :key="i" class="bg-gray-100 rounded-xl h-16 animate-pulse" />
+    <div v-for="i in 8" :key="i" class="bg-gray-100 rounded h-16 animate-pulse" />
   </div>
 
   <!-- No results -->
@@ -65,12 +62,13 @@
   </div>
 
   <!-- Grid -->
-  <div v-else class="gap-2 grid grid-cols-3 mb-6">
+  <ClientOnly>
+    <div v-if="!isLoadingSpecializations && filtered.length > 0" class="gap-2 grid grid-cols-3 mb-6">
     <button
       v-for="spec in filtered"
       :key="spec.id"
       type="button"
-      class="group relative px-3.5 py-3 pr-9 border-[1.5px] rounded-xl focus:outline-none text-left transition-all duration-150"
+      class="group relative px-3.5 py-3 pr-9 border-[1.5px] rounded focus:outline-none text-left transition-all duration-150"
       :class="isSelected(spec.id)
         ? 'border-[#1d6b44] bg-[#f6fcf9]'
         : isDisabled(spec.id)
@@ -81,7 +79,7 @@
     >
       <!-- Check indicator -->
       <div
-        class="top-3 right-3 absolute flex flex-shrink-0 justify-center items-center border-[1.5px] rounded-full w-[18px] h-[18px] transition-all"
+        class="top-3 right-3 absolute flex justify-center items-center border-[1.5px] rounded-full w-[18px] h-[18px] transition-all shrink-0"
         :class="isSelected(spec.id)
           ? 'border-[#1d6b44] bg-[#1d6b44]'
           : 'border-gray-300 bg-white'"
@@ -93,11 +91,12 @@
       <p class="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">{{ spec.description }}</p>
     </button>
   </div>
+  </ClientOnly>
 
   <!-- Error -->
   <div
     v-if="error"
-    class="flex items-start gap-2 bg-red-50 mb-4 p-3 border border-red-100 rounded-xl text-red-600 text-sm"
+    class="flex items-start gap-2 bg-red-50 mb-4 p-3 border border-red-100 rounded text-red-600 text-sm"
   >
     <Icon name="i-hugeicons-alert-circle" class="mt-0.5 w-4 h-4 shrink-0" />
     <span>{{ error }}</span>
@@ -105,28 +104,29 @@
 
   <!-- Actions -->
   <div class="flex gap-3">
-    <button
+    <UButton
       type="button"
-      class="bg-white hover:bg-gray-50 px-6 border border-gray-200 rounded-full h-12 font-medium text-gray-700 text-sm transition-colors"
+      color="neutral"
+      variant="outline"
+      size="xl"
       @click="navigateTo('/onboarding/client/location')"
     >
       Back
-    </button>
-    <button
-      type="button"
-      class="flex-1 rounded-full h-12 font-semibold text-sm transition-colors"
-      :class="selectedCount > 0 && !completeOnboarding.isPending.value
-        ? 'bg-[#1d6b44] hover:bg-[#175537] text-white'
-        : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
-      :disabled="selectedCount === 0 || completeOnboarding.isPending.value"
-      @click="handleSubmit"
-    >
-      <span v-if="completeOnboarding.isPending.value" class="flex justify-center items-center gap-2">
-        <Icon name="i-hugeicons-loading-03" class="w-4 h-4 animate-spin" />
-        Finishing setup...
-      </span>
-      <span v-else>Complete Profile</span>
-    </button>
+    </UButton>
+    <ClientOnly>
+      <UButton
+        type="button"
+        color="primary"
+        size="xl"
+        block
+        :disabled="selectedCount === 0 || completeOnboarding.isPending.value"
+        :loading="completeOnboarding.isPending.value"
+        @click="handleSubmit"
+      >
+        <span v-if="completeOnboarding.isPending.value">Finishing setup...</span>
+        <span v-else>Complete Profile</span>
+      </UButton>
+    </ClientOnly>
   </div>
 </template>
 
@@ -137,9 +137,6 @@ definePageMeta({
   middleware: ['auth'],
   layout: 'client-onboarding',
 })
-
-useState('onboarding-step', () => 2).value = 2
-useState('onboarding-total', () => 2).value = 2
 
 const STORAGE_KEY = 'client-onboarding-data'
 
@@ -153,16 +150,29 @@ const onboardingData = ref<OnboardingData>({ country: '', state: '', specializat
 const query = ref('')
 const error = ref('')
 
+// Initialize state on server to match client expectations
+const currentStep = useState('onboarding-step', () => 2)
+const totalSteps = useState('onboarding-total', () => 2)
+
+// Load from storage on client side only - after mount to avoid hydration mismatch
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     const parsed = JSON.parse(saved)
+    // Handle both old object format and new string format for state
+    let stateValue = parsed.state || ''
+    if (typeof parsed.state === 'object' && parsed.state?.value) {
+      stateValue = parsed.state.value
+    }
     onboardingData.value = {
       country: parsed.country || '',
-      state: parsed.state || '',
+      state: stateValue,
       specializations: parsed.specializations || [],
     }
   }
+})
+
+onMounted(() => {
   if (!onboardingData.value.country) {
     navigateTo('/onboarding/client/location')
   }

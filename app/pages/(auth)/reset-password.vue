@@ -29,7 +29,7 @@
                 </p>
                 <NuxtLink
                   to="/login"
-                  class="inline-flex justify-center items-center bg-[#1d6b44] hover:bg-[#175537] py-3 rounded-xl w-full font-semibold text-white text-sm transition-colors"
+                  class="inline-flex justify-center items-center bg-[#1d6b44] hover:bg-[#175537] py-3 rounded w-full font-semibold text-white text-sm transition-colors"
                 >
                   Go to login
                 </NuxtLink>
