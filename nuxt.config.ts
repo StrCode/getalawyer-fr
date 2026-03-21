@@ -42,9 +42,22 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
+    defaults: {
+      weights: [200, 300, 400, 500, 600, 700],
+      styles: ['normal', 'italic'],
+      subsets: [
+        'cyrillic-ext',
+        'cyrillic',
+        'greek-ext',
+        'greek',
+        'vietnamese',
+        'latin-ext',
+        'latin',
+      ]
+    },
     families: [
       {
-        name: 'Archivo',
+        name: 'Inter',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],
         styles: ['normal', 'italic'],
