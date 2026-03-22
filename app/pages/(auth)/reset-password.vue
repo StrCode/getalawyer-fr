@@ -203,6 +203,15 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
+
+const email = computed(() => route.query.email as string || '')
+const otp = computed(() => route.query.otp as string || '')
+
+// Redirect if no email or OTP provided
+if (!email.value || !otp.value) {
+  router.push('/forgot-password')
+}
 
 const formData = reactive({
   password: '',
@@ -234,13 +243,19 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    await authClient.resetPassword({
-      newPassword: formData.password,
-      token: route.query.token as string,
+    // Reset password using Better Auth with OTP
+    await authClient.emailOtp.resetPassword({
+      email: email.value,
+      otp: otp.value,
+      password: formData.password,
     })
     submitted.value = true
   } catch (err: any) {
-    error.value = err?.message || 'Something went wrong. Please try again.'
+    if (err?.message?.includes('Invalid') || err?.message?.includes('expired')) {
+      error.value = 'Invalid or expired verification code. Please request a new one.'
+    } else {
+      error.value = err?.message || 'Something went wrong. Please try again.'
+    }
   } finally {
     isSubmitting.value = false
   }

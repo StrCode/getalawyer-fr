@@ -33,9 +33,21 @@
             <div>
               <p class="mb-0.5 font-semibold text-[#1d6b44] text-sm">Check your email</p>
               <p class="text-gray-500 text-xs leading-relaxed">
-                We've sent a password reset link to <strong>{{ formData.email }}</strong>. It may take a few minutes to arrive.
+                We've sent a verification code to <strong>{{ formData.email }}</strong>. It may take a few minutes to arrive.
               </p>
             </div>
+          </div>
+
+          <!-- Redirect to verify OTP -->
+          <div v-if="submitted" class="mt-4">
+            <UButton
+              size="lg"
+              block
+              class="!bg-[#1d6b44] hover:!bg-[#175537] font-semibold !text-white"
+              @click="goToVerifyOTP"
+            >
+              Enter verification code
+            </UButton>
           </div>
 
           <!-- Form -->
@@ -181,6 +193,8 @@ const isSubmitting = ref(false)
 const submitted = ref(false)
 const error = ref('')
 
+const router = useRouter()
+
 const handleSubmit = async () => {
   error.value = ''
 
@@ -192,9 +206,9 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    await authClient.forgetPassword({
+    // Request password reset OTP using Better Auth email OTP plugin
+    await authClient.emailOtp.requestPasswordReset({
       email: formData.email,
-      redirectTo: '/reset-password',
     })
     submitted.value = true
   } catch (err: any) {
@@ -202,5 +216,12 @@ const handleSubmit = async () => {
   } finally {
     isSubmitting.value = false
   }
+}
+
+const goToVerifyOTP = () => {
+  router.push({
+    path: '/verify-otp',
+    query: { email: formData.email, type: 'password-reset' }
+  })
 }
 </script>
