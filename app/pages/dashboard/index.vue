@@ -24,9 +24,6 @@ useHead({
 
 <template>
   <div>
-    <!-- Page Header -->
- 
-
     <!-- Page Content -->
     <div class="space-y-7 mt-7">
       <ClientDashboard v-if="role === 'client'" />

@@ -87,12 +87,10 @@
 
       <!-- CONTENT AREA -->
       <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full">
-        <UScrollArea class="flex-1">
           <div class="px-8 py-4">
             <!-- Page content goes here via slot -->
             <slot />
           </div>
-        </UScrollArea>
       </div>
     </UDashboardGroup>
   </div>
