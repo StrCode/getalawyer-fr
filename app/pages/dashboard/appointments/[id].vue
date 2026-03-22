@@ -1,5 +1,5 @@
 j<template>
-  <div class="p-6 max-w-5xl mx-auto space-y-6">
+  <div class="space-y-6 mx-auto p-6 max-w-5xl">
     <div class="flex items-center gap-4">
       <UButton 
         icon="i-hugeicons-arrow-left-01" 
@@ -17,8 +17,8 @@ j<template>
         }"
       />
       
-      <div v-if="booking" class="ml-auto inline-flex items-center">
-        <UBadge :color="statusColor" variant="subtle" size="md" class="capitalize px-3 py-1">
+      <div v-if="booking" class="inline-flex items-center ml-auto">
+        <UBadge :color="statusColor" variant="subtle" size="md" class="px-3 py-1 capitalize">
           <span class="flex items-center gap-1.5">
             <span :class="`w-1.5 h-1.5 rounded-full ${statusDotColor}`"></span>
             {{ booking.status.replace('_', ' ') }}
@@ -28,38 +28,38 @@ j<template>
     </div>
 
     <div v-if="isLoading" class="flex justify-center py-12">
-      <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+      <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
     </div>
     
-    <div v-else-if="isError || !booking" class="py-12 text-center text-red-500">
+    <div v-else-if="isError || !booking" class="py-12 text-red-500 text-center">
       Failed to load appointment details.
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div v-else class="gap-6 grid grid-cols-1 lg:grid-cols-3">
       <!-- Main Content -->
-      <div class="lg:col-span-2 space-y-6">
+      <div class="space-y-6 lg:col-span-2">
         <!-- Client Information -->
         <UCard>
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">Client Information</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">Client Information</h3>
           </template>
           
           <dl class="divide-y divide-gray-100">
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Name</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Name</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.client?.name || 'N/A' }}
               </dd>
             </div>
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Email</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Email</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.client?.email || 'N/A' }}
               </dd>
             </div>
-            <div v-if="booking.clientNotes" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Client Notes</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div v-if="booking.clientNotes" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Client Notes</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.clientNotes }}
               </dd>
             </div>
@@ -69,31 +69,31 @@ j<template>
         <!-- Consultation Details -->
         <UCard>
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">Consultation Details</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">Consultation Details</h3>
           </template>
           
           <dl class="divide-y divide-gray-100">
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Type</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Type</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.consultationType?.name || 'General Consultation' }}
               </dd>
             </div>
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Duration</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Duration</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.consultationType?.durationMinutes || 30 }} minutes
               </dd>
             </div>
-            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Meeting Type</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0 capitalize">
+            <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Meeting Type</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm capitalize">
                 {{ booking.meetingType.replace('_', ' ') }}
               </dd>
             </div>
-            <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Meeting Link</dt>
-              <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+            <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Meeting Link</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-sm">
                 <UButton 
                   :to="booking.meetingUrl"
                   target="_blank"
@@ -105,25 +105,89 @@ j<template>
                 />
               </dd>
             </div>
-            <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Phone Number</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Phone Number</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.phoneNumber }}
               </dd>
             </div>
-            <div v-if="booking.meetingType === 'in_person' && booking.meetingLocation" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-900">Location</dt>
-              <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+            <div v-if="booking.meetingType === 'in_person' && booking.meetingLocation" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+              <dt class="font-medium text-gray-900 text-sm">Location</dt>
+              <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                 {{ booking.meetingLocation }}
               </dd>
             </div>
           </dl>
         </UCard>
 
+        <!-- Engagement Outcome (if recorded) -->
+        <UCard v-if="booking.engagementOutcome">
+          <template #header>
+            <h3 class="font-semibold text-gray-900 text-lg">Engagement Outcome</h3>
+          </template>
+          
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <UBadge 
+                :color="booking.engagementOutcome === 'client_hired' ? 'success' : 'neutral'"
+                variant="subtle"
+                size="lg"
+                class="capitalize"
+              >
+                {{ booking.engagementOutcome.replace('_', ' ') }}
+              </UBadge>
+              <span class="text-gray-500 text-sm">
+                Recorded {{ formatDateTime(booking.engagementRecordedAt!) }}
+              </span>
+            </div>
+            
+            <div v-if="booking.engagementOutcome === 'client_hired'" class="bg-green-50 p-4 border border-green-200 rounded-lg">
+              <div class="flex items-start gap-2">
+                <UIcon name="i-heroicons-check-circle" class="mt-0.5 w-5 h-5 text-green-600" />
+                <div>
+                  <p class="font-semibold text-green-900 text-sm">Case Created</p>
+                  <p class="mt-0.5 text-green-700 text-xs">
+                    A case has been created for this engagement
+                  </p>
+                  <UButton
+                    label="View Case"
+                    color="primary"
+                    size="xs"
+                    class="mt-2"
+                    icon="i-heroicons-arrow-right"
+                    trailing
+                    @click="navigateToCase"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <!-- Conversation Link (if exists) -->
+        <UCard v-if="booking.conversationId">
+          <template #header>
+            <h3 class="font-semibold text-gray-900 text-lg">Communication</h3>
+          </template>
+          
+          <div class="space-y-3">
+            <p class="text-gray-600 text-sm">
+              Message with {{ booking.client?.name }} about this consultation
+            </p>
+            <UButton
+              label="Open Conversation"
+              color="primary"
+              icon="i-heroicons-chat-bubble-left-right"
+              block
+              :to="`/dashboard/messages?conversation=${booking.conversationId}`"
+            />
+          </div>
+        </UCard>
+
         <!-- Lawyer Notes -->
         <UCard>
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">Your Notes</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">Your Notes</h3>
           </template>
           
           <UTextarea 
@@ -151,29 +215,29 @@ j<template>
         <!-- Schedule Card -->
         <UCard>
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">Schedule</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">Schedule</h3>
           </template>
           
           <div class="space-y-4">
             <div class="flex items-start gap-3">
-              <UIcon name="i-hugeicons-calendar-03" class="w-5 h-5 text-gray-400 mt-0.5" />
+              <UIcon name="i-hugeicons-calendar-03" class="mt-0.5 w-5 h-5 text-gray-400" />
               <div>
-                <p class="text-sm font-medium text-gray-900">
+                <p class="font-medium text-gray-900 text-sm">
                   {{ formatDate(booking.scheduledDate) }}
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-gray-500 text-sm">
                   {{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}
                 </p>
-                <p class="text-xs text-gray-400 mt-1">{{ booking.timezone }}</p>
+                <p class="mt-1 text-gray-400 text-xs">{{ booking.timezone }}</p>
               </div>
             </div>
           </div>
         </UCard>
 
         <!-- Actions Card -->
-        <UCard v-if="canTakeAction">
+        <UCard v-if="canTakeAction || canRecordEngagement">
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">Actions</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">Actions</h3>
           </template>
           
           <div class="space-y-2">
@@ -193,6 +257,15 @@ j<template>
               class="bg-green-600 hover:bg-green-700 w-full"
               :loading="isCompleting"
               @click="handleComplete"
+            />
+            
+            <UButton 
+              v-if="canRecordEngagement"
+              label="Record Engagement Outcome" 
+              color="primary"
+              class="bg-blue-600 hover:bg-blue-700 w-full"
+              icon="i-heroicons-clipboard-document-check"
+              @click="isEngagementModalOpen = true"
             />
             
             <UButton 
@@ -219,14 +292,14 @@ j<template>
         <!-- Status History (if available) -->
         <UCard v-if="booking.cancelledAt || booking.rescheduledAt">
           <template #header>
-            <h3 class="font-semibold text-lg text-gray-900">History</h3>
+            <h3 class="font-semibold text-gray-900 text-lg">History</h3>
           </template>
           
           <div class="space-y-3 text-sm">
             <div v-if="booking.cancelledAt">
               <p class="font-medium text-gray-900">Cancelled</p>
               <p class="text-gray-500">{{ formatDateTime(booking.cancelledAt) }}</p>
-              <p v-if="booking.cancellationReason" class="text-gray-600 mt-1">
+              <p v-if="booking.cancellationReason" class="mt-1 text-gray-600">
                 Reason: {{ booking.cancellationReason }}
               </p>
             </div>
@@ -243,7 +316,7 @@ j<template>
     <UModal v-model:open="isCancelModalOpen" title="Cancel Appointment">
       <template #body>
         <div class="space-y-6">
-          <p class="text-sm text-gray-600">
+          <p class="text-gray-600 text-sm">
             Are you sure you want to cancel this appointment? The client will be notified.
           </p>
           <UFormField label="Cancellation Reason" name="cancelReason" required size="xl">
@@ -277,6 +350,13 @@ j<template>
         </div>
       </template>
     </UModal>
+
+    <!-- Engagement Modal -->
+    <EngagementModal 
+      v-if="booking"
+      v-model:open="isEngagementModalOpen" 
+      :booking="booking"
+    />
   </div>
 </template>
 
@@ -326,6 +406,20 @@ const isPastAppointment = computed(() => {
   const endTime = new Date(`${booking.value.scheduledDate}T${booking.value.scheduledEndTime}`)
   return endTime < new Date()
 })
+
+const canRecordEngagement = computed(() => {
+  return booking.value && 
+    booking.value.status === 'completed' && 
+    !booking.value.engagementOutcome
+})
+
+// Engagement modal
+const isEngagementModalOpen = ref(false)
+
+const navigateToCase = () => {
+  // Navigate to case - we'll need to fetch the case ID from the booking
+  router.push('/dashboard/cases')
+}
 
 // Lawyer notes
 const lawyerNotes = ref('')

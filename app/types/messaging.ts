@@ -3,6 +3,7 @@ export interface Message {
   id: string
   conversationId: string
   senderId: string
+  senderType: 'lawyer' | 'client'
   content: string
   status: 'sent' | 'delivered' | 'read'
   fileUrl: string | null
@@ -16,9 +17,10 @@ export interface Message {
   sender?: {
     id: string
     name: string
-    image?: string
+    image?: string | null
   }
   replyTo?: Message | null
+  isRead: boolean
 }
 
 // Conversation Types

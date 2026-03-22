@@ -10,17 +10,21 @@ export interface Booking {
   clientId: string
   lawyerId: string
   consultationTypeId: string
+  caseId?: string | null
   scheduledDate: string
   scheduledStartTime: string
   scheduledEndTime?: string
   meetingType: 'video' | 'in_person' | 'phone'
   meetingUrl?: string
   meetingLocation?: string
-  phoneNumber?: string
+  meetingPhone?: string // API uses meetingPhone, not phoneNumber
+  phoneNumber?: string // Keep for backward compatibility
   timezone: string
   status: BookingStatus
   clientNotes?: string
   lawyerNotes?: string
+  pricePaid?: string
+  paymentStatus?: string
   cancellationReason?: string
   cancelledAt?: string
   cancelledBy?: 'client' | 'lawyer' | 'system'
@@ -28,7 +32,13 @@ export interface Booking {
   createdAt: string
   updatedAt: string
 
-  // Populated fields
+  // Engagement tracking fields
+  conversationId?: string
+  engagementOutcome?: 'consultation_only' | 'client_hired' | null
+  engagementRecordedAt?: string
+  completedAt?: string
+
+  // Populated fields (may not always be present)
   client?: {
     id: string
     name: string
@@ -39,6 +49,7 @@ export interface Booking {
     name: string
     email: string
     specialty?: string
+    profilePicture?: string
   }
   consultationType?: ConsultationType
 }
@@ -109,3 +120,21 @@ export interface CreateConsultationTypeInput {
 }
 
 export interface UpdateConsultationTypeInput extends Partial<CreateConsultationTypeInput> {}
+
+export type FeeStructure = 'flat_fee' | 'hourly' | 'contingency' | 'retainer' | 'hybrid'
+
+export interface EngagementDetails {
+  agreedFee: string
+  feeStructure: FeeStructure
+  paymentNotes?: string
+}
+
+export interface RecordEngagementInput {
+  outcome: 'consultation_only' | 'client_hired'
+  engagementDetails?: EngagementDetails
+}
+
+export interface RecordEngagementResponse {
+  booking: Booking
+  case?: any // Case type from case management
+}

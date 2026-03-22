@@ -1,158 +1,176 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="bg-gray-50 min-h-screen">
+    <div class="mx-auto px-4 py-8 max-w-7xl">
       <UPageHeader
         title="My Bookings"
         description="View and manage your consultation bookings"
         :ui="{
-          root: 'border-none py-0',
+          root: 'border-none py-0 mb-6',
           title: 'font-semibold !text-3xl leading-6 tracking-tight',
           description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
         }"
       />
 
-      <!-- Filters -->
-      <div class="mt-6 flex items-center gap-3">
-        <UButton
-          :label="`All (${allBookings.length})`"
-          :color="filter === 'all' ? 'primary' : 'neutral'"
-          :variant="filter === 'all' ? 'solid' : 'ghost'"
-          @click="filter = 'all'"
-        />
-        <UButton
-          :label="`Upcoming (${upcomingBookings.length})`"
-          :color="filter === 'upcoming' ? 'primary' : 'neutral'"
-          :variant="filter === 'upcoming' ? 'solid' : 'ghost'"
-          @click="filter = 'upcoming'"
-        />
-        <UButton
-          :label="`Past (${pastBookings.length})`"
-          :color="filter === 'past' ? 'primary' : 'neutral'"
-          :variant="filter === 'past' ? 'solid' : 'ghost'"
-          @click="filter = 'past'"
-        />
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center py-12 mt-6">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="isError" class="mt-6 text-center py-12 text-red-500">
-        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4" />
-        <p>Failed to load bookings. Please try again later.</p>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="filteredBookings.length === 0" class="mt-6">
-        <UCard>
-          <div class="text-center py-12">
-            <UIcon name="i-hugeicons-calendar-03" class="w-16 h-16 mx-auto mb-4 text-gray-300" />
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
-            <p class="text-gray-600 mb-6">You haven't made any bookings yet</p>
-            <UButton
-              label="Find a Lawyer"
-              color="primary"
-              class="bg-[#007AFC]"
-              to="/lawyers"
-            />
+      <!-- Tabs -->
+      <UTabs v-model="selectedTab" :items="tabs" class="w-full">
+        <template #content="{ item }">
+          <!-- Loading State -->
+          <div v-if="isLoading" class="flex justify-center py-12">
+            <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
           </div>
-        </UCard>
-      </div>
 
-      <!-- Bookings List -->
-      <div v-else class="mt-6 space-y-4">
-        <UCard
-          v-for="booking in filteredBookings"
-          :key="booking.id"
-          class="hover:shadow-md transition-shadow cursor-pointer"
-          @click="navigateToBooking(booking.id)"
-        >
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1 space-y-3">
-              <!-- Status Badge -->
-              <div class="flex items-center gap-3">
-                <UBadge
-                  :color="getStatusColor(booking.status)"
-                  variant="subtle"
-                  size="sm"
-                  class="capitalize"
-                >
-                  {{ booking.status.replace('_', ' ') }}
-                </UBadge>
-                <span class="text-sm font-medium text-gray-500">{{ booking.bookingReference }}</span>
-              </div>
+          <!-- Error State -->
+          <div v-else-if="isError" class="py-12 text-red-500 text-center">
+            <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12" />
+            <p>Failed to load bookings. Please try again later.</p>
+          </div>
 
-              <!-- Lawyer Info -->
-              <div class="flex items-center gap-3">
-                <UAvatar
-                  :src="booking.lawyer?.profilePicture"
-                  :alt="booking.lawyer?.name"
-                  size="md"
+          <!-- Empty State -->
+          <div v-else-if="item.bookings.length === 0">
+            <UCard>
+              <div class="py-12 text-center">
+                <UIcon name="i-hugeicons-calendar-03" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
+                <h3 class="mb-2 font-semibold text-gray-900 text-lg">No {{ item.label.toLowerCase() }} bookings</h3>
+                <p class="mb-6 text-gray-600">
+                  {{ item.key === 'all' ? "You haven't made any bookings yet" : `No ${item.label.toLowerCase()} bookings found` }}
+                </p>
+                <UButton
+                  v-if="item.key === 'all'"
+                  label="Find a Lawyer"
+                  color="primary"
+                  class="bg-[#007AFC]"
+                  to="/lawyers"
                 />
-                <div>
-                  <h4 class="font-semibold text-gray-900">{{ booking.lawyer?.name || 'Lawyer' }}</h4>
-                  <p class="text-sm text-gray-600">{{ booking.consultationType?.name || 'Consultation' }}</p>
-                </div>
               </div>
-
-              <!-- Date & Time -->
-              <div class="flex items-center gap-4 text-sm text-gray-600">
-                <div class="flex items-center gap-1.5">
-                  <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
-                  <span>{{ formatDate(booking.scheduledDate) }}</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
-                  <span>{{ booking.scheduledStartTime }}</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
-                  <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div v-if="canTakeAction(booking)" class="flex flex-col gap-2">
-              <UButton
-                v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
-                label="Join"
-                color="primary"
-                size="sm"
-                class="bg-[#007AFC]"
-                :to="booking.meetingUrl"
-                target="_blank"
-                @click.stop
-              />
-              <UButton
-                v-if="booking.status === 'pending' || booking.status === 'confirmed'"
-                label="Reschedule"
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                @click.stop="handleReschedule(booking.id)"
-              />
-              <UButton
-                v-if="booking.status === 'pending' || booking.status === 'confirmed'"
-                label="Cancel"
-                color="error"
-                variant="ghost"
-                size="sm"
-                @click.stop="handleCancelBooking(booking.id)"
-              />
-            </div>
+            </UCard>
           </div>
-        </UCard>
-      </div>
+
+          <!-- Bookings List -->
+          <div v-else class="space-y-4">
+            <UCard
+              v-for="booking in item.bookings"
+              :key="booking.id"
+              class="hover:shadow-md transition-shadow cursor-pointer"
+              @click="navigateToBooking(booking.id)"
+            >
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex-1 space-y-3">
+                  <!-- Status Badge -->
+                  <div class="flex items-center gap-3">
+                    <UBadge
+                      :color="getStatusColor(booking.status)"
+                      variant="subtle"
+                      size="sm"
+                      class="capitalize"
+                    >
+                      {{ booking.status.replace('_', ' ') }}
+                    </UBadge>
+                    <span class="font-medium text-gray-500 text-sm">{{ booking.bookingReference }}</span>
+                  </div>
+
+                  <!-- Lawyer Info -->
+                  <div class="flex items-center gap-3">
+                    <UAvatar
+                      :src="booking.lawyer?.profilePicture"
+                      :alt="booking.lawyer?.name"
+                      size="md"
+                    />
+                    <div>
+                      <h4 class="font-semibold text-gray-900">{{ booking.lawyer?.name || 'Lawyer' }}</h4>
+                      <p class="text-gray-600 text-sm">{{ booking.consultationType?.name || 'Consultation' }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Date & Time -->
+                  <div class="flex items-center gap-4 text-gray-600 text-sm">
+                    <div class="flex items-center gap-1.5">
+                      <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
+                      <span>{{ formatDate(booking.scheduledDate) }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
+                      <span>{{ booking.scheduledStartTime }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
+                      <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Engagement & Conversation Indicators -->
+                  <div v-if="booking.conversationId || booking.engagementOutcome" class="flex items-center gap-2">
+                    <UBadge 
+                      v-if="booking.conversationId" 
+                      color="blue" 
+                      variant="subtle" 
+                      size="sm"
+                      class="flex items-center gap-1"
+                    >
+                      <UIcon name="i-hugeicons-message-01" class="w-3 h-3" />
+                      Conversation
+                    </UBadge>
+                    <UBadge 
+                      v-if="booking.caseId" 
+                      color="green" 
+                      variant="subtle" 
+                      size="sm"
+                      class="flex items-center gap-1"
+                    >
+                      <UIcon name="i-hugeicons-briefcase-01" class="w-3 h-3" />
+                      Case Created
+                    </UBadge>
+                    <UBadge 
+                      v-else-if="booking.engagementOutcome === 'consultation_only'" 
+                      color="gray" 
+                      variant="subtle" 
+                      size="sm"
+                    >
+                      Consultation Only
+                    </UBadge>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div v-if="canTakeAction(booking)" class="flex flex-col gap-2">
+                  <UButton
+                    v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
+                    label="Join"
+                    color="primary"
+                    size="sm"
+                    class="bg-[#007AFC]"
+                    :to="booking.meetingUrl"
+                    target="_blank"
+                    @click.stop
+                  />
+                  <UButton
+                    v-if="booking.status === 'pending' || booking.status === 'confirmed'"
+                    label="Reschedule"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    @click.stop="handleReschedule(booking.id)"
+                  />
+                  <UButton
+                    v-if="booking.status === 'pending' || booking.status === 'confirmed'"
+                    label="Cancel"
+                    color="error"
+                    variant="ghost"
+                    size="sm"
+                    @click.stop="handleCancelBooking(booking.id)"
+                  />
+                </div>
+              </div>
+            </UCard>
+          </div>
+        </template>
+      </UTabs>
     </div>
 
     <!-- Cancel Modal -->
     <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">
       <template #body>
         <div class="space-y-6">
-          <p class="text-sm text-gray-600">
+          <p class="text-gray-600 text-sm">
             Are you sure you want to cancel this booking? The lawyer will be notified.
           </p>
           <UFormField label="Cancellation Reason (Optional)" name="cancelReason" size="xl">
@@ -189,7 +207,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
@@ -214,8 +232,14 @@ const { useClientBookings, useCancelBooking } = useBookings()
 // Fetch bookings
 const { data: bookings, isLoading, isError } = useClientBookings()
 
-// Filter state
-const filter = ref<'all' | 'upcoming' | 'past'>('upcoming')
+// Debug logging
+watch([bookings, isLoading, isError], ([bookingsData, loading, error]) => {
+  console.log('=== BOOKINGS DEBUG ===')
+  console.log('Loading:', loading)
+  console.log('Error:', error)
+  console.log('Bookings data:', bookingsData)
+  console.log('Bookings count:', bookingsData?.length || 0)
+}, { immediate: true })
 
 // Computed bookings
 const allBookings = computed(() => bookings.value || [])
@@ -238,16 +262,28 @@ const pastBookings = computed(() => {
   )
 })
 
-const filteredBookings = computed(() => {
-  switch (filter.value) {
-    case 'upcoming':
-      return upcomingBookings.value
-    case 'past':
-      return pastBookings.value
-    default:
-      return allBookings.value
+// Tabs configuration
+const selectedTab = ref('all')
+const tabs = computed(() => [
+  {
+    key: 'all',
+    label: `All (${allBookings.value.length})`,
+    value: 'all',
+    bookings: allBookings.value
+  },
+  {
+    key: 'upcoming',
+    label: `Upcoming (${upcomingBookings.value.length})`,
+    value: 'upcoming',
+    bookings: upcomingBookings.value
+  },
+  {
+    key: 'past',
+    label: `Past (${pastBookings.value.length})`,
+    value: 'past',
+    bookings: pastBookings.value
   }
-})
+])
 
 // Cancel booking
 const isCancelModalOpen = ref(false)
@@ -278,7 +314,7 @@ const confirmCancel = () => {
         bookingToCancel.value = null
         cancelReason.value = ''
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         toast.add({
           title: 'Error',
           description: error.message || 'Failed to cancel booking',

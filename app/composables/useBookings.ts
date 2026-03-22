@@ -4,147 +4,18 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { httpClient, type ApiResponse } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
+import { bookingsAPI, type BookingFilters } from '~/lib/api/bookings'
 import type {
   Booking,
-  CreateBookingInput,
   UpdateBookingInput,
   CancelBookingInput,
   RescheduleBookingInput,
   UpdateLawyerBookingInput,
+  RecordEngagementInput,
+  CreateBookingInput,
 } from '~/types'
 
-export interface BookingFilters {
-  status?: string
-  upcoming?: boolean
-}
-
-// API functions
-const bookingsAPI = {
-  // Client Bookings
-  getClientBookings: async (filters?: BookingFilters): Promise<Booking[]> => {
-    const params = new URLSearchParams()
-    if (filters?.status) params.append('status', filters.status)
-    if (filters?.upcoming !== undefined) params.append('upcoming', filters.upcoming.toString())
-
-    const qs = params.toString()
-    const url = qs ? `/api/bookings?${qs}` : '/api/bookings'
-
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]> >(url)
-
-    // Handle both { bookings: [...] } and [...] responses
-    if (response.data && 'bookings' in (response.data as any)) {
-      return (response.data as any).bookings || []
-    }
-    return (response.data as Booking[]) || []
-  },
-
-  getUpcomingBookings: async (): Promise<Booking[]> => {
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] } | Booking[]> >('/api/bookings?upcoming=true')
-    if (response.data && 'bookings' in (response.data as any)) {
-      return (response.data as any).bookings || []
-    }
-    return (response.data as Booking[]) || []
-  },
-
-  getClientBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.getAuth<ApiResponse<Booking> >(`/api/bookings/${id}`)
-    if (!response.data) throw new Error('Booking not found')
-    return response.data
-  },
-
-  createBooking: async (data: CreateBookingInput): Promise<Booking> => {
-    const response = await httpClient.post<ApiResponse<Booking> >('/api/bookings', data)
-    if (!response.data) throw new Error('Failed to create booking')
-    return response.data
-  },
-
-  updateClientBooking: async (id: string, data: UpdateBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<Booking> >(`/api/bookings/${id}`, data)
-    if (!response.data) throw new Error('Failed to update booking')
-    return response.data
-  },
-
-  cancelClientBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(`/api/bookings/${id}/cancel`, data)
-    return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
-  },
-
-  rescheduleClientBooking: async (id: string, data: RescheduleBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(`/api/bookings/${id}/reschedule`, data)
-    return (response.data as unknown as { booking: Booking }).booking || (response.data as unknown as Booking)
-  },
-
-  // Lawyer Bookings
-  getLawyerBookings: async (filters?: { status?: string; upcoming?: boolean; date?: string }): Promise<Booking[]> => {
-    const params = new URLSearchParams()
-    if (filters?.status) params.append('status', filters.status)
-    if (filters?.upcoming !== undefined) params.append('upcoming', filters.upcoming.toString())
-    if (filters?.date) params.append('date', filters.date)
-
-    const qs = params.toString()
-    const url = qs ? `/api/lawyer/bookings?${qs}` : '/api/lawyer/bookings'
-
-    const response = await httpClient.getAuth<ApiResponse<{ bookings: Booking[] }> >(url)
-    return response.data?.bookings || []
-  },
-
-  getLawyerBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.getAuth<ApiResponse<{ booking: Booking }> >(
-      `/api/lawyer/bookings/${id}`
-    )
-    if (!response.data?.booking) throw new Error('Booking not found')
-    return response.data.booking
-  },
-
-  confirmBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
-      `/api/lawyer/bookings/${id}/confirm`
-    )
-    if (!response.data?.booking) throw new Error('Failed to confirm booking')
-    return response.data.booking
-  },
-
-  completeBooking: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
-      `/api/lawyer/bookings/${id}/complete`
-    )
-    if (!response.data?.booking) throw new Error('Failed to complete booking')
-    return response.data.booking
-  },
-
-  markAsNoShow: async (id: string): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
-      `/api/lawyer/bookings/${id}/no-show`
-    )
-    if (!response.data?.booking) throw new Error('Failed to mark as no-show')
-    return response.data.booking
-  },
-
-  cancelLawyerBooking: async (id: string, data: CancelBookingInput): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<{ booking: Booking }> >(
-      `/api/lawyer/bookings/${id}/cancel`,
-      data
-    )
-    if (!response.data?.booking) throw new Error('Failed to cancel booking')
-    return response.data.booking
-  },
-
-  updateLawyerBooking: async (
-    id: string,
-    data: UpdateLawyerBookingInput
-  ): Promise<Booking> => {
-    const response = await httpClient.put<ApiResponse<Booking> >(
-      `/api/lawyer/bookings/${id}`,
-      data
-    )
-    if (!response.data) throw new Error('Failed to update booking')
-    return response.data
-  },
-}
-
-// Composable
 export const useBookings = () => {
   const queryClient = useQueryClient()
 
@@ -312,6 +183,23 @@ export const useBookings = () => {
     })
   }
 
+  // Mutation: Record engagement outcome
+  const useRecordEngagement = () => {
+    return useMutation({
+      mutationFn: ({ id, data }: { id: string; data: RecordEngagementInput }) =>
+        bookingsAPI.recordEngagement(id, data),
+      onSuccess: (result, variables) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(variables.id) })
+        
+        // If client was hired, invalidate cases queries
+        if (result.case) {
+          queryClient.invalidateQueries({ queryKey: queryKeys.cases.lawyer })
+        }
+      },
+    })
+  }
+
   return {
     useClientBookings,
     useUpcomingBookings,
@@ -327,5 +215,6 @@ export const useBookings = () => {
     useMarkAsNoShow,
     useCancelLawyerBooking,
     useUpdateLawyerBooking,
+    useRecordEngagement,
   }
 }

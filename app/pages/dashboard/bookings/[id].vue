@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="bg-gray-50 min-h-screen">
+    <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="flex items-center gap-4 mb-8">
         <UButton
@@ -10,8 +10,8 @@
           to="/dashboard/bookings"
         />
         <div class="flex-1">
-          <h1 class="text-2xl font-bold text-gray-900">Booking Details</h1>
-          <p v-if="booking" class="text-sm text-gray-600 mt-1">
+          <h1 class="font-bold text-gray-900 text-2xl">Booking Details</h1>
+          <p v-if="booking" class="mt-1 text-gray-600 text-sm">
             Reference: {{ booking.bookingReference }}
           </p>
         </div>
@@ -20,7 +20,7 @@
           :color="getStatusColor(booking.status)"
           variant="subtle"
           size="md"
-          class="capitalize px-3 py-1"
+          class="px-3 py-1 capitalize"
         >
           <span class="flex items-center gap-1.5">
             <span :class="`w-1.5 h-1.5 rounded-full ${getStatusDotColor(booking.status)}`"></span>
@@ -31,23 +31,23 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
-      <div v-else-if="isError || !booking" class="text-center py-12">
-        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+      <div v-else-if="isError || !booking" class="py-12 text-center">
+        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load booking details</p>
       </div>
 
       <!-- Booking Details -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div v-else class="gap-6 grid grid-cols-1 lg:grid-cols-3">
         <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="space-y-6 lg:col-span-2">
           <!-- Lawyer Information -->
           <UCard>
             <template #header>
-              <h3 class="font-semibold text-lg text-gray-900">Lawyer Information</h3>
+              <h3 class="font-semibold text-gray-900 text-lg">Lawyer Information</h3>
             </template>
 
             <div class="space-y-4">
@@ -58,9 +58,9 @@
                   size="xl"
                 />
                 <div>
-                  <h4 class="text-lg font-semibold text-gray-900">{{ booking.lawyer?.name || 'Lawyer' }}</h4>
-                  <p class="text-sm text-gray-600">{{ booking.lawyer?.specialty }}</p>
-                  <p class="text-sm text-gray-500">{{ booking.lawyer?.email }}</p>
+                  <h4 class="font-semibold text-gray-900 text-lg">{{ booking.lawyer?.name || 'Lawyer' }}</h4>
+                  <p class="text-gray-600 text-sm">{{ booking.lawyer?.specialty }}</p>
+                  <p class="text-gray-500 text-sm">{{ booking.lawyer?.email }}</p>
                 </div>
               </div>
             </div>
@@ -69,31 +69,31 @@
           <!-- Consultation Details -->
           <UCard>
             <template #header>
-              <h3 class="font-semibold text-lg text-gray-900">Consultation Details</h3>
+              <h3 class="font-semibold text-gray-900 text-lg">Consultation Details</h3>
             </template>
 
             <dl class="divide-y divide-gray-100">
-              <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Type</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+              <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Type</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                   {{ booking.consultationType?.name || 'General Consultation' }}
                 </dd>
               </div>
-              <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Duration</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+              <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Duration</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                   {{ booking.consultationType?.durationMinutes || 30 }} minutes
                 </dd>
               </div>
-              <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Meeting Type</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0 capitalize">
+              <div class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Meeting Type</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm capitalize">
                   {{ booking.meetingType.replace('_', ' ') }}
                 </dd>
               </div>
-              <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Meeting Link</dt>
-                <dd class="mt-1 text-sm sm:col-span-2 sm:mt-0">
+              <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Meeting Link</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-sm">
                   <UButton
                     :to="booking.meetingUrl"
                     target="_blank"
@@ -105,43 +105,107 @@
                   />
                 </dd>
               </div>
-              <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Phone Number</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+              <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Phone Number</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                   {{ booking.phoneNumber }}
                 </dd>
               </div>
-              <div v-if="booking.meetingType === 'in_person' && booking.meetingLocation" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Location</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+              <div v-if="booking.meetingType === 'in_person' && booking.meetingLocation" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Location</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                   {{ booking.meetingLocation }}
                 </dd>
               </div>
-              <div v-if="booking.clientNotes" class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium text-gray-900">Your Notes</dt>
-                <dd class="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">
+              <div v-if="booking.clientNotes" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
+                <dt class="font-medium text-gray-900 text-sm">Your Notes</dt>
+                <dd class="sm:col-span-2 mt-1 sm:mt-0 text-gray-700 text-sm">
                   {{ booking.clientNotes }}
                 </dd>
               </div>
             </dl>
           </UCard>
 
+          <!-- Engagement Outcome (if recorded) -->
+          <UCard v-if="booking.engagementOutcome">
+            <template #header>
+              <h3 class="font-semibold text-gray-900 text-lg">Post-Consultation Status</h3>
+            </template>
+            
+            <div class="space-y-4">
+              <div class="flex items-center gap-3">
+                <UBadge 
+                  :color="booking.engagementOutcome === 'client_hired' ? 'success' : 'neutral'"
+                  variant="subtle"
+                  size="lg"
+                  class="capitalize"
+                >
+                  {{ booking.engagementOutcome.replace('_', ' ') }}
+                </UBadge>
+                <span class="text-gray-500 text-sm">
+                  Recorded {{ formatDateTime(booking.engagementRecordedAt!) }}
+                </span>
+              </div>
+              
+              <div v-if="booking.engagementOutcome === 'client_hired'" class="bg-green-50 p-4 border border-green-200 rounded-lg">
+                <div class="flex items-start gap-2">
+                  <UIcon name="i-heroicons-check-circle" class="mt-0.5 w-5 h-5 text-green-600" />
+                  <div>
+                    <p class="font-semibold text-green-900 text-sm">Case Created</p>
+                    <p class="mt-0.5 text-green-700 text-xs">
+                      Your lawyer has created a case for your matter
+                    </p>
+                    <UButton
+                      label="View Case"
+                      color="primary"
+                      size="xs"
+                      class="mt-2"
+                      icon="i-heroicons-arrow-right"
+                      trailing
+                      to="/dashboard/cases"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </UCard>
+
+          <!-- Conversation Link (if exists) -->
+          <UCard v-if="booking.conversationId">
+            <template #header>
+              <h3 class="font-semibold text-gray-900 text-lg">Communication</h3>
+            </template>
+            
+            <div class="space-y-3">
+              <p class="text-gray-600 text-sm">
+                Message with {{ booking.lawyer?.name }} about this consultation
+              </p>
+              <UButton
+                label="Open Conversation"
+                color="primary"
+                icon="i-heroicons-chat-bubble-left-right"
+                block
+                :to="`/dashboard/messages?conversation=${booking.conversationId}`"
+              />
+            </div>
+          </UCard>
+
           <!-- Cancellation Info -->
           <UCard v-if="booking.status === 'cancelled' && booking.cancellationReason">
             <template #header>
-              <h3 class="font-semibold text-lg text-gray-900">Cancellation Details</h3>
+              <h3 class="font-semibold text-gray-900 text-lg">Cancellation Details</h3>
             </template>
 
             <div class="space-y-2">
-              <p class="text-sm text-gray-600">
+              <p class="text-gray-600 text-sm">
                 <span class="font-medium">Cancelled by:</span>
-                <span class="capitalize ml-1">{{ booking.cancelledBy }}</span>
+                <span class="ml-1 capitalize">{{ booking.cancelledBy }}</span>
               </p>
-              <p class="text-sm text-gray-600">
+              <p class="text-gray-600 text-sm">
                 <span class="font-medium">Reason:</span>
                 <span class="ml-1">{{ booking.cancellationReason }}</span>
               </p>
-              <p v-if="booking.cancelledAt" class="text-sm text-gray-500">
+              <p v-if="booking.cancelledAt" class="text-gray-500 text-sm">
                 {{ formatDateTime(booking.cancelledAt) }}
               </p>
             </div>
@@ -153,20 +217,20 @@
           <!-- Schedule Card -->
           <UCard>
             <template #header>
-              <h3 class="font-semibold text-lg text-gray-900">Schedule</h3>
+              <h3 class="font-semibold text-gray-900 text-lg">Schedule</h3>
             </template>
 
             <div class="space-y-4">
               <div class="flex items-start gap-3">
-                <UIcon name="i-hugeicons-calendar-03" class="w-5 h-5 text-gray-400 mt-0.5" />
+                <UIcon name="i-hugeicons-calendar-03" class="mt-0.5 w-5 h-5 text-gray-400" />
                 <div>
-                  <p class="text-sm font-medium text-gray-900">
+                  <p class="font-medium text-gray-900 text-sm">
                     {{ formatDate(booking.scheduledDate) }}
                   </p>
-                  <p class="text-sm text-gray-500">
+                  <p class="text-gray-500 text-sm">
                     {{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}
                   </p>
-                  <p class="text-xs text-gray-400 mt-1">{{ booking.timezone }}</p>
+                  <p class="mt-1 text-gray-400 text-xs">{{ booking.timezone }}</p>
                 </div>
               </div>
             </div>
@@ -175,7 +239,7 @@
           <!-- Actions Card -->
           <UCard v-if="canTakeAction">
             <template #header>
-              <h3 class="font-semibold text-lg text-gray-900">Actions</h3>
+              <h3 class="font-semibold text-gray-900 text-lg">Actions</h3>
             </template>
 
             <div class="space-y-2">
@@ -213,7 +277,7 @@
     <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">
       <template #body>
         <div class="space-y-6">
-          <p class="text-sm text-gray-600">
+          <p class="text-gray-600 text-sm">
             Are you sure you want to cancel this booking? The lawyer will be notified.
           </p>
           <UFormField label="Cancellation Reason (Optional)" name="cancelReason" size="xl">

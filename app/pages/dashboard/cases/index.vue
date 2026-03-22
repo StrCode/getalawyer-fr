@@ -1,23 +1,41 @@
 <template>
-  <div class="p-6">
-    <UPageHeader 
-      title="My Cases"
-      description="Track and manage your legal cases."
-      :ui="{
-        root: 'border-none py-0 mb-8',
-        title: 'font-semibold !text-3xl',
-        description: 'text-sm text-gray-600 mt-2'
-      }"
-    />
-
-    <UCard>
-      <div class="text-center py-12 text-gray-500">
-        <p>No cases yet. Your cases will appear here once you start working with lawyers.</p>
-      </div>
-    </UCard>
-  </div>
+  <CaseDashboard
+    :cases="cases"
+    :loading="loading"
+    :error="error"
+    :role="role"
+    @create-case="showCreateModal = true"
+    @case-click="handleCaseClick"
+    @retry="refetch"
+    @filters-change="handleFiltersChange"
+  />
 </template>
 
 <script setup lang="ts">
+import type { CaseFilters } from '~/types'
+
 definePageMeta({ layout: 'dashboard' })
+
+const { session } = useAuth()
+const { useCasesList } = useCases()
+
+// Reactive data
+const showCreateModal = ref(false)
+const filters = ref<CaseFilters>({})
+
+// Fetch cases with filters
+const { data: casesData, isLoading: loading, error, refetch } = useCasesList(filters)
+
+// Computed properties
+const role = computed(() => session.value?.user.userType)
+const cases = computed(() => casesData.value?.cases || [])
+
+// Methods
+const handleCaseClick = (caseId: string) => {
+  navigateTo(`/dashboard/cases/${caseId}`)
+}
+
+const handleFiltersChange = (newFilters: CaseFilters) => {
+  filters.value = newFilters
+}
 </script>

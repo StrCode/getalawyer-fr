@@ -38,8 +38,7 @@
             icon="i-heroicons-magnifying-glass" 
             placeholder="Search..." 
             :ui="{
-              base: 'h-9 rounded-lg shadow-none bg-white',
-              icon: { leading: { wrapper: 'p-[2.5px]', base: 'size-[15px]' } }
+              base: 'h-9 rounded-lg shadow-none bg-white'
             }"
           />
 
@@ -86,8 +85,8 @@
       </UDashboardSidebar>
 
       <!-- CONTENT AREA -->
-      <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full">
-          <div class="px-8 py-4">
+      <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full overflow-hidden">
+          <div class="flex-1 px-8 py-4 overflow-auto">
             <!-- Page content goes here via slot -->
             <slot />
           </div>
@@ -111,6 +110,12 @@ const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
     icon: 'i-heroicons-home', 
     to: '/dashboard',
     exact: true
+  },
+  { 
+    label: 'Cases', 
+    icon: 'i-heroicons-briefcase', 
+    to: '/dashboard/cases',
+    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined
   },
   { 
     label: 'Appointments', 
@@ -142,6 +147,12 @@ const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
     icon: 'i-heroicons-home', 
     to: '/dashboard',
     exact: true
+  },
+  { 
+    label: 'My Cases', 
+    icon: 'i-heroicons-briefcase', 
+    to: '/dashboard/cases',
+    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined
   },
   { 
     label: 'Find Lawyers', 
@@ -182,4 +193,12 @@ const supportLinks = computed<NavigationMenuItem[]>(() => [
 // Mock data for badges - replace with real data
 const pendingAppointments = ref(0)
 const upcomingBookings = ref(0)
+
+// Get active cases count from composable
+const { useCasesList } = useCases()
+const { data: casesData } = useCasesList()
+const activeCases = computed(() => {
+  const cases = casesData.value?.cases || []
+  return cases.filter(c => c.status === 'active').length
+})
 </script>

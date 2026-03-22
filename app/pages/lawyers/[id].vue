@@ -509,8 +509,8 @@ const isBookingModalOpen = ref(false)
 
     </div>
 
-
-      <BookingWizard v-model:open="isBookingModalOpen" :initialLawyerId="lawyerId" :lawyerInfo="lawyer" />
-      </template>
+    <!-- Booking Wizard Modal -->
+    <BookingWizard v-model:open="isBookingModalOpen" :initialLawyerId="lawyerId" :lawyerInfo="lawyer" />
+    </template>
   </div>
 </template>

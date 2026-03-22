@@ -21,7 +21,7 @@ export const messagingAPI = {
 
   // Create or get existing conversation
   createConversation: async (participantIds: string[]): Promise<{ id: string }> => {
-    const response = await httpClient.postAuth<ApiResponse<{ id: string }>>(
+    const response = await httpClient.post<ApiResponse<{ id: string }>>(
       `${BASE_PATH}/conversations`,
       { participantIds }
     )
@@ -30,7 +30,7 @@ export const messagingAPI = {
 
   // Mark conversation as read
   markAsRead: async (id: string): Promise<void> => {
-    await httpClient.postAuth(`${BASE_PATH}/conversations/${id}/read`, {})
+    await httpClient.post(`${BASE_PATH}/conversations/${id}/read`, {})
   },
 
   // Upload file
@@ -38,7 +38,7 @@ export const messagingAPI = {
     const formData = new FormData()
     formData.append('file', file)
     
-    const response = await httpClient.postAuth<ApiResponse<FileUploadResponse>>(
+    const response = await httpClient.postFormData<ApiResponse<FileUploadResponse>>(
       `${BASE_PATH}/conversations/${conversationId}/files`,
       formData
     )
@@ -53,11 +53,11 @@ export const messagingAPI = {
 
   // Mark all notifications as read
   markAllNotificationsRead: async (): Promise<void> => {
-    await httpClient.patchAuth(`${BASE_PATH}/notifications/read`, {})
+    await httpClient.patch(`${BASE_PATH}/notifications/read`, {})
   },
 
   // Mark single notification as read
   markNotificationRead: async (id: string): Promise<void> => {
-    await httpClient.patchAuth(`${BASE_PATH}/notifications/${id}/read`, {})
+    await httpClient.patch(`${BASE_PATH}/notifications/${id}/read`, {})
   }
 }

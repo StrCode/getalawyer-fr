@@ -1,20 +1,20 @@
 <template>
-  <div class="p-6 hover:bg-gray-50 transition-colors">
-    <div class="flex items-start justify-between gap-4">
+  <div class="hover:bg-gray-50 p-6 transition-colors">
+    <div class="flex justify-between items-start gap-4">
       <div class="flex-1 space-y-3">
         <div class="flex items-center gap-3">
           <UBadge color="orange" variant="subtle" size="sm" class="capitalize">
             Pending
           </UBadge>
-          <span class="text-sm font-medium text-gray-500">{{ booking.bookingReference }}</span>
+          <span class="font-medium text-gray-500 text-sm">{{ booking.bookingReference }}</span>
         </div>
         
         <div>
           <h4 class="font-semibold text-gray-900">{{ booking.client?.name || 'Client' }}</h4>
-          <p class="text-sm text-gray-600">{{ booking.consultationType?.name || 'Consultation' }}</p>
+          <p class="text-gray-600 text-sm">{{ booking.consultationType?.name || 'Consultation' }}</p>
         </div>
         
-        <div class="flex items-center gap-4 text-sm text-gray-600">
+        <div class="flex items-center gap-4 text-gray-600 text-sm">
           <div class="flex items-center gap-1.5">
             <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
@@ -29,8 +29,40 @@
           </div>
         </div>
         
-        <div v-if="booking.clientNotes" class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-          <p class="font-medium text-gray-700 mb-1">Client Notes:</p>
+        <!-- Engagement & Conversation Indicators -->
+        <div v-if="booking.conversationId || booking.engagementOutcome" class="flex items-center gap-2">
+          <UBadge 
+            v-if="booking.conversationId" 
+            color="blue" 
+            variant="subtle" 
+            size="sm"
+            class="flex items-center gap-1"
+          >
+            <UIcon name="i-heroicons-chat-bubble-left-right" class="w-3 h-3" />
+            <span>Conversation</span>
+          </UBadge>
+          <UBadge 
+            v-if="booking.engagementOutcome === 'client_hired'" 
+            color="green" 
+            variant="subtle" 
+            size="sm"
+            class="flex items-center gap-1"
+          >
+            <UIcon name="i-heroicons-briefcase" class="w-3 h-3" />
+            <span>Case Created</span>
+          </UBadge>
+          <UBadge 
+            v-if="booking.engagementOutcome === 'consultation_only'" 
+            color="gray" 
+            variant="subtle" 
+            size="sm"
+          >
+            Consultation Only
+          </UBadge>
+        </div>
+        
+        <div v-if="booking.clientNotes" class="bg-gray-50 p-3 rounded-lg text-gray-600 text-sm">
+          <p class="mb-1 font-medium text-gray-700">Client Notes:</p>
           <p>{{ booking.clientNotes }}</p>
         </div>
       </div>

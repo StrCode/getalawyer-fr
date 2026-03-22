@@ -289,28 +289,27 @@ function close() {
             </div>
 
             <div class="space-y-4">
-              <div>
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Date</label>
+              <UFormField label="Date" name="scheduledDate" required size="xl">
                 <UInput 
                   type="date" 
                   v-model="state.scheduledDate" 
                   size="xl"
                   icon="i-heroicons-calendar"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
 
-              <div>
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Start Time</label>
+              <UFormField label="Start Time" name="scheduledStartTime" required size="xl">
                 <UInput 
                   type="time" 
                   v-model="state.scheduledStartTime" 
                   size="xl"
                   icon="i-heroicons-clock"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
 
-              <div>
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Timezone</label>
+              <UFormField label="Timezone" name="timezone" required size="xl">
                 <USelectMenu 
                   v-model="state.timezone" 
                   :items="[
@@ -322,8 +321,9 @@ function close() {
                   size="xl"
                   icon="i-heroicons-globe-alt"
                   value-key="value"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
             </div>
           </div>
 
@@ -355,46 +355,69 @@ function close() {
                 </button>
               </div>
 
-              <div v-if="state.meetingType === 'video'">
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Video Call Link (Optional)</label>
+              <UFormField 
+                v-if="state.meetingType === 'video'" 
+                label="Video Call Link" 
+                name="meetingUrl" 
+                size="xl"
+                hint="Optional: Leave blank for auto-generated link"
+              >
                 <UInput 
                   v-model="state.meetingUrl" 
                   size="xl"
                   placeholder="Leave blank for auto-generated link"
                   icon="i-heroicons-link"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
 
-              <div v-if="state.meetingType === 'in_person'">
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Meeting Location</label>
+              <UFormField 
+                v-if="state.meetingType === 'in_person'" 
+                label="Meeting Location" 
+                name="meetingLocation" 
+                required
+                size="xl"
+              >
                 <UInput 
                   v-model="state.meetingLocation" 
                   size="xl"
                   placeholder="Enter meeting address"
                   icon="i-heroicons-map-pin"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
 
-              <div v-if="state.meetingType === 'phone'">
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Phone Number</label>
+              <UFormField 
+                v-if="state.meetingType === 'phone'" 
+                label="Phone Number" 
+                name="meetingPhone" 
+                required
+                size="xl"
+              >
                 <UInput 
                   v-model="state.meetingPhone" 
                   size="xl"
                   placeholder="Enter your phone number"
                   icon="i-heroicons-phone"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
 
-              <div>
-                <label class="block mb-2 font-medium text-gray-700 text-sm">Notes for Lawyer (Optional)</label>
+              <UFormField 
+                label="Notes for Lawyer" 
+                name="clientNotes" 
+                size="xl"
+                hint="Optional: Provide any details relevant to your case"
+              >
                 <UTextarea 
                   v-model="state.clientNotes" 
                   size="xl"
                   autoresize
                   placeholder="Provide any details relevant to your case..."
                   :rows="4"
+                  class="w-full"
                 />
-              </div>
+              </UFormField>
             </div>
           </div>
 

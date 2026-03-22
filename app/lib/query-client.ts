@@ -88,4 +88,23 @@ export const queryKeys = {
     conversation: (id: string) => ["messaging", "conversation", id] as const,
     notifications: ["messaging", "notifications"] as const,
   },
+  cases: {
+    all: ["cases"] as const,
+    detail: (id: string) => ["cases", id] as const,
+    byStatus: (status: string) => ["cases", "status", status] as const,
+    byPriority: (priority: string) => ["cases", "priority", priority] as const,
+    conversation: (id: string) => ["cases", id, "conversation"] as const,
+  },
+  tasks: {
+    all: ["tasks"] as const,
+    byCase: (caseId: string) => ["tasks", "case", caseId] as const,
+    detail: (id: string) => ["tasks", id] as const,
+  },
+  documents: {
+    byCase: (caseId: string) => ["documents", "case", caseId] as const,
+    detail: (id: string) => ["documents", id] as const,
+  },
+  activities: {
+    byCase: (caseId: string) => ["activities", "case", caseId] as const,
+  },
 };
