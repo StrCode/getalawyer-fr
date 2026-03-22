@@ -4,7 +4,7 @@
       <Icon name="i-hugeicons-legal-document-02" class="w-4 h-4 text-white" />
     </div>
     <span class="font-bold text-[18px] text-gray-900 tracking-tight">
-      Lex<span class="text-primary-600">Connect</span>
+      Geta<span class="text-primary-600">Lawyer</span>
     </span>
   </NuxtLink>
 </template>

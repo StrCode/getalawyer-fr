@@ -44,7 +44,7 @@ const navLinks = [
           <!-- Logo -->
           <div class="shrink-0">
             <NuxtLink to="/" class="flex items-center">
-              <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-8 w-auto" />
+              <img src="/getalawyer-logo.svg" alt="GetALawyer" class="w-auto h-8" />
             </NuxtLink>
           </div>
 
@@ -66,14 +66,15 @@ const navLinks = [
 
           <!-- CTA Button -->
           <div class="shrink-0">
-            <button
+            <NuxtLink
+              to="/login"
               :class="[
                 'bg-[#e8f3ec] hover:bg-[#d1e8dc] px-6 py-2 rounded-full font-medium text-[#1d6b44] text-sm tracking-wide',
                 prefersReducedMotion ? 'transition-none' : 'transition-colors duration-200'
               ]"
             >
               Sign In
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>

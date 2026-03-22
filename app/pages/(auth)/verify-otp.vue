@@ -125,7 +125,7 @@
 
       <div class="flex justify-between items-center gap-4 pt-5 border-black/10 border-t w-full">
         <div>
-          <p class="mb-0.5 font-semibold text-gray-800 text-sm">Take LexConnect with you</p>
+          <p class="mb-0.5 font-semibold text-gray-800 text-sm">Take GetaLawyer with you</p>
           <p class="text-gray-500 text-xs leading-relaxed">
             Find verified lawyers on our mobile app<br>for iOS and Android.
           </p>

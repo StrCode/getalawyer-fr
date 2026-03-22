@@ -218,7 +218,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'My Bookings - LexConnect',
+  title: 'My Bookings - GetaLawyer',
   meta: [
     { name: 'description', content: 'View and manage your consultation bookings' }
   ]

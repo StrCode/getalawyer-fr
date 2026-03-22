@@ -69,7 +69,7 @@ const testimonials: Testimonial[] = [
     name: 'Sarah Mitchell',
     title: 'Family Law Attorney',
     location: 'New York, NY',
-    quote: 'Getalawyer has transformed my practice. The verified credentials give clients confidence, and the zero commission model means I keep what I earn.'
+    quote: 'GetaLawyer has transformed my practice. The verified credentials give clients confidence, and the zero commission model means I keep what I earn.'
   },
   {
     name: 'Michael Chen',
@@ -87,11 +87,11 @@ const testimonials: Testimonial[] = [
 
 // SEO metadata
 useHead({
-  title: 'For Lawyers - Join Getalawyer',
+  title: 'For Lawyers - Join GetaLawyer',
   meta: [
     {
       name: 'description',
-      content: 'Grow your legal practice with Getalawyer. Bar-verified credentials, smart booking calendar, direct client communication, and zero commission fees. Join thousands of lawyers connecting with clients.'
+      content: 'Grow your legal practice with GetaLawyer. Bar-verified credentials, smart booking calendar, direct client communication, and zero commission fees. Join thousands of lawyers connecting with clients.'
     }
   ]
 })
@@ -112,7 +112,7 @@ onMounted(() => {
       <UContainer>
         <div class="hero-content">
           <h1 class="hero-title">
-            Grow Your Practice with Getalawyer
+            Grow Your Practice with GetaLawyer
           </h1>
           <p class="hero-description">
             Join thousands of lawyers connecting with clients who need your expertise
@@ -133,7 +133,7 @@ onMounted(() => {
       <UContainer>
         <div class="section-header">
           <h2 class="section-title">
-            Why Join Getalawyer?
+            Why Join GetaLawyer?
           </h2>
           <p class="section-description">
             Everything you need to grow your practice and connect with clients
@@ -145,16 +145,16 @@ onMounted(() => {
           <div
             v-for="i in 4"
             :key="i"
-            class="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse"
+            class="bg-white dark:bg-gray-800 p-6 rounded-lg animate-pulse"
           >
             <div class="space-y-4">
-              <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-12 w-12" />
-              <div class="bg-gray-200 dark:bg-gray-700 rounded h-6 w-3/4" />
-              <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+              <div class="bg-gray-200 dark:bg-gray-700 rounded-full w-12 h-12" />
+              <div class="bg-gray-200 dark:bg-gray-700 rounded w-3/4 h-6" />
+              <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
               <div class="space-y-2">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-5/6" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-4/5" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-5/6 h-4" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-4/5 h-4" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
               </div>
             </div>
           </div>
@@ -243,7 +243,7 @@ onMounted(() => {
             What Lawyers Say
           </h2>
           <p class="section-description">
-            Hear from lawyers who have grown their practice with Getalawyer
+            Hear from lawyers who have grown their practice with GetaLawyer
           </p>
         </div>
         
@@ -252,19 +252,19 @@ onMounted(() => {
           <div
             v-for="i in 3"
             :key="i"
-            class="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse"
+            class="bg-white dark:bg-gray-800 p-6 rounded-lg animate-pulse"
           >
             <div class="space-y-4">
               <div class="space-y-2">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-5/6" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-4/5" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-5/6 h-4" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-4/5 h-4" />
               </div>
-              <div class="flex gap-4 items-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-12 w-12 shrink-0" />
+              <div class="flex items-center gap-4 pt-4 border-gray-200 dark:border-gray-700 border-t">
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-full w-12 h-12 shrink-0" />
                 <div class="flex-1 space-y-2">
-                  <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-2/3" />
-                  <div class="bg-gray-200 dark:bg-gray-700 rounded h-3 w-1/2" />
+                  <div class="bg-gray-200 dark:bg-gray-700 rounded w-2/3 h-4" />
+                  <div class="bg-gray-200 dark:bg-gray-700 rounded w-1/2 h-3" />
                 </div>
               </div>
             </div>
@@ -318,7 +318,7 @@ onMounted(() => {
             Ready to Get Started?
           </h2>
           <p class="final-cta-description">
-            Join Getalawyer today and start connecting with clients who need your expertise
+            Join GetaLawyer today and start connecting with clients who need your expertise
           </p>
           <UButton
             size="xl"

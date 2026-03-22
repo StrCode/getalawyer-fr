@@ -7,18 +7,18 @@ const handleSignOut = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="bg-gray-50 min-h-screen">
     <!-- Header -->
     <header class="bg-white border-b">
-      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <NuxtLink to="/" class="text-xl font-bold text-primary">
-          GetALawyer
+      <div class="flex justify-between items-center mx-auto px-6 py-4 max-w-7xl">
+        <NuxtLink to="/" class="font-bold text-primary text-xl">
+          GetaLawyer
         </NuxtLink>
         <div class="flex items-center gap-4">
-          <span class="text-sm text-gray-600">Lawyer Registration</span>
+          <span class="text-gray-600 text-sm">Lawyer Registration</span>
           <button
             @click="handleSignOut"
-            class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            class="text-gray-600 hover:text-gray-900 text-sm transition-colors"
           >
             Sign Out
           </button>

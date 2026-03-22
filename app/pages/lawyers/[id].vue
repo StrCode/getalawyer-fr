@@ -81,7 +81,7 @@ const workingDays = computed(() => {
 })
 
 useHead({
-  title: computed(() => `${lawyer.value?.name || 'Lawyer'} - ${primarySpecialty.value} | Getalawyer`)
+  title: computed(() => `${lawyer.value?.name || 'Lawyer'} - ${primarySpecialty.value} | GetaLawyer`)
 })
 
 const isBookingModalOpen = ref(false)

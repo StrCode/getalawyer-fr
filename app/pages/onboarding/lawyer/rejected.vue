@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-    <div class="max-w-3xl w-full">
+  <div class="flex justify-center items-center bg-gray-50 px-4 py-12 min-h-screen">
+    <div class="w-full max-w-3xl">
       <!-- Status Banner -->
       <UCard class="mb-6">
-        <div class="text-center py-8">
-          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="py-8 text-center">
+          <div class="flex justify-center items-center bg-red-100 mx-auto mb-4 rounded-full w-16 h-16">
             <UIcon name="i-hugeicons-alert-circle" class="w-8 h-8 text-red-600" />
           </div>
-          <h1 class="text-2xl font-bold text-gray-900 mb-2">Application Not Approved</h1>
+          <h1 class="mb-2 font-bold text-gray-900 text-2xl">Application Not Approved</h1>
           <p class="text-gray-600">
             Your application needs some updates before it can be approved.
           </p>
@@ -16,12 +16,12 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
-      <div v-else-if="isError" class="text-center py-12">
-        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+      <div v-else-if="isError" class="py-12 text-center">
+        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load application details</p>
       </div>
 
@@ -30,15 +30,15 @@
         <!-- Feedback Section -->
         <UCard class="mb-6">
           <template #header>
-            <h2 class="text-lg font-semibold text-gray-900">Feedback from Review Team</h2>
+            <h2 class="font-semibold text-gray-900 text-lg">Feedback from Review Team</h2>
           </template>
 
           <div class="space-y-4">
-            <div v-if="rejectionReason" class="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div class="whitespace-pre-wrap text-gray-800">{{ rejectionReason }}</div>
+            <div v-if="rejectionReason" class="bg-red-50 p-4 border border-red-200 rounded-lg">
+              <div class="text-gray-800 whitespace-pre-wrap">{{ rejectionReason }}</div>
             </div>
 
-            <div v-if="reviewedAt" class="text-sm text-gray-500">
+            <div v-if="reviewedAt" class="text-gray-500 text-sm">
               Reviewed on {{ formatDate(reviewedAt) }}
             </div>
           </div>
@@ -47,11 +47,11 @@
         <!-- Action Section -->
         <UCard class="mb-6">
           <template #header>
-            <h2 class="text-lg font-semibold text-gray-900">What to do next</h2>
+            <h2 class="font-semibold text-gray-900 text-lg">What to do next</h2>
           </template>
 
           <div class="space-y-4">
-            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+            <ol class="space-y-2 text-gray-700 list-decimal list-inside">
               <li>Review the feedback above carefully</li>
               <li>Gather the required documents or information</li>
               <li>Click "Fix and Resubmit" to update your application</li>
@@ -63,7 +63,7 @@
                 label="Fix and Resubmit Application"
                 color="primary"
                 size="lg"
-                class="w-full bg-[#007AFC]"
+                class="bg-[#007AFC] w-full"
                 :loading="isRestarting"
                 @click="handleRestart"
               />
@@ -73,7 +73,7 @@
 
         <!-- Help Section -->
         <UCard>
-          <div class="text-center py-4">
+          <div class="py-4 text-center">
             <p class="text-gray-600">
               Need help? 
               <a href="mailto:support@getalawyer.ng" class="text-[#007AFC] hover:underline">
@@ -97,7 +97,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Application Rejected - LexConnect',
+  title: 'Application Rejected - GetaLawyer',
   meta: [
     { name: 'description', content: 'Your application needs updates' }
   ]

@@ -96,7 +96,7 @@
 
           <!-- Terms -->
           <p class="mt-6 text-gray-500 text-sm leading-relaxed">
-            By continuing with Google, Apple, or Email, you agree to LexConnect's
+            By continuing with Google, Apple, or Email, you agree to GetaLawyer's
             <NuxtLink to="/terms" class="text-gray-700 hover:text-gray-900 underline">Terms of Service</NuxtLink>
             and
             <NuxtLink to="/privacy" class="text-gray-700 hover:text-gray-900 underline">Privacy Policy</NuxtLink>.
@@ -125,7 +125,7 @@
       <!-- Bottom strip -->
       <div class="flex justify-between items-center gap-4 pt-6 border-black/10 border-t w-full">
         <div>
-          <p class="mb-1 font-semibold text-gray-800 text-sm">Take LexConnect with you</p>
+          <p class="mb-1 font-semibold text-gray-800 text-sm">Take GetaLawyer with you</p>
           <p class="text-gray-600 text-sm leading-relaxed">
             Find verified lawyers on our mobile app<br>for iOS and Android.
           </p>

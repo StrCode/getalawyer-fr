@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="bg-gray-50 min-h-screen">
+    <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="mb-8">
         <UButton
@@ -11,39 +11,39 @@
           :to="`/lawyer/${lawyerId}`"
           class="mb-4"
         />
-        <h1 class="text-3xl font-bold text-gray-900">Book Consultation</h1>
-        <p class="text-gray-600 mt-2">Schedule a consultation with {{ lawyer?.name }}</p>
+        <h1 class="font-bold text-gray-900 text-3xl">Book Consultation</h1>
+        <p class="mt-2 text-gray-600">Schedule a consultation with {{ lawyer?.name }}</p>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoadingLawyer" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
-      <div v-else-if="isErrorLawyer || !lawyer" class="text-center py-12">
-        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+      <div v-else-if="isErrorLawyer || !lawyer" class="py-12 text-center">
+        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load lawyer information</p>
       </div>
 
       <!-- Booking Flow -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div v-else class="gap-8 grid grid-cols-1 lg:grid-cols-3">
         <!-- Main Content -->
         <div class="lg:col-span-2">
           <UCard>
             <!-- Step 1: Select Consultation Type -->
             <div v-if="currentStep === 1">
               <div class="mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">Select Consultation Type</h2>
-                <p class="text-sm text-gray-600">Choose the type of consultation you need</p>
+                <h2 class="mb-2 font-semibold text-gray-900 text-xl">Select Consultation Type</h2>
+                <p class="text-gray-600 text-sm">Choose the type of consultation you need</p>
               </div>
 
               <div v-if="isLoadingTypes" class="flex justify-center py-8">
-                <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
+                <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 text-gray-400 animate-spin" />
               </div>
 
-              <div v-else-if="consultationTypes.length === 0" class="text-center py-8 text-gray-500">
-                <UIcon name="i-hugeicons-file-not-found" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <div v-else-if="consultationTypes.length === 0" class="py-8 text-gray-500 text-center">
+                <UIcon name="i-hugeicons-file-not-found" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
                 <p>No consultation types available</p>
               </div>
 
@@ -59,13 +59,13 @@
                   ]"
                   @click="selectConsultationType(type)"
                 >
-                  <div class="flex items-start justify-between">
+                  <div class="flex justify-between items-start">
                     <div class="flex-1">
                       <h3 class="font-semibold text-gray-900">{{ type.name }}</h3>
-                      <p v-if="type.description" class="text-sm text-gray-600 mt-1">
+                      <p v-if="type.description" class="mt-1 text-gray-600 text-sm">
                         {{ type.description }}
                       </p>
-                      <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                      <div class="flex items-center gap-4 mt-2 text-gray-500 text-sm">
                         <span class="flex items-center gap-1">
                           <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
                           {{ type.durationMinutes }} min
@@ -74,7 +74,7 @@
                       </div>
                     </div>
                     <div class="text-right">
-                      <p class="text-lg font-semibold text-gray-900">
+                      <p class="font-semibold text-gray-900 text-lg">
                         {{ type.currency }} {{ type.price }}
                       </p>
                     </div>
@@ -82,7 +82,7 @@
                 </button>
               </div>
 
-              <div class="mt-6 flex justify-end">
+              <div class="flex justify-end mt-6">
                 <UButton
                   label="Continue"
                   color="primary"
@@ -96,8 +96,8 @@
             <!-- Step 2: Select Date & Time -->
             <div v-else-if="currentStep === 2">
               <div class="mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">Select Date & Time</h2>
-                <p class="text-sm text-gray-600">Choose when you'd like to meet</p>
+                <h2 class="mb-2 font-semibold text-gray-900 text-xl">Select Date & Time</h2>
+                <p class="text-gray-600 text-sm">Choose when you'd like to meet</p>
               </div>
 
               <BookingCalendar
@@ -108,7 +108,7 @@
                 @select="handleSlotSelect"
               />
 
-              <div class="mt-6 flex gap-3">
+              <div class="flex gap-3 mt-6">
                 <UButton
                   label="Back"
                   color="neutral"
@@ -128,8 +128,8 @@
             <!-- Step 3: Booking Details -->
             <div v-else-if="currentStep === 3">
               <div class="mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-2">Confirm Booking</h2>
-                <p class="text-sm text-gray-600">Review and confirm your booking details</p>
+                <h2 class="mb-2 font-semibold text-gray-900 text-xl">Confirm Booking</h2>
+                <p class="text-gray-600 text-sm">Review and confirm your booking details</p>
               </div>
 
               <BookingForm
@@ -162,11 +162,11 @@
                 />
                 <div>
                   <h4 class="font-semibold text-gray-900">{{ lawyer.name }}</h4>
-                  <p class="text-sm text-gray-600">{{ lawyer.specialty }}</p>
+                  <p class="text-gray-600 text-sm">{{ lawyer.specialty }}</p>
                 </div>
               </div>
               
-              <div v-if="lawyer.yearsOfExperience" class="text-sm text-gray-600">
+              <div v-if="lawyer.yearsOfExperience" class="text-gray-600 text-sm">
                 <span class="font-medium">Experience:</span> {{ lawyer.yearsOfExperience }} years
               </div>
             </div>
@@ -183,19 +183,19 @@
                 <div :class="['w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold', currentStep >= 1 ? 'bg-[#007AFC] text-white' : 'bg-gray-200']">
                   1
                 </div>
-                <span class="text-sm font-medium">Select Service</span>
+                <span class="font-medium text-sm">Select Service</span>
               </div>
               <div :class="['flex items-center gap-3', currentStep >= 2 ? 'text-[#007AFC]' : 'text-gray-400']">
                 <div :class="['w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold', currentStep >= 2 ? 'bg-[#007AFC] text-white' : 'bg-gray-200']">
                   2
                 </div>
-                <span class="text-sm font-medium">Choose Time</span>
+                <span class="font-medium text-sm">Choose Time</span>
               </div>
               <div :class="['flex items-center gap-3', currentStep >= 3 ? 'text-[#007AFC]' : 'text-gray-400']">
                 <div :class="['w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold', currentStep >= 3 ? 'bg-[#007AFC] text-white' : 'bg-gray-200']">
                   3
                 </div>
-                <span class="text-sm font-medium">Confirm Details</span>
+                <span class="font-medium text-sm">Confirm Details</span>
               </div>
             </div>
           </UCard>
@@ -273,7 +273,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Book Consultation - LexConnect',
+  title: 'Book Consultation - GetaLawyer',
   meta: [
     { name: 'description', content: 'Book a consultation with a lawyer' }
   ]

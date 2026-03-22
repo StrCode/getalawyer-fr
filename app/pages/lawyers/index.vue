@@ -8,7 +8,7 @@ import type { Lawyer } from '~/types/lawyer'
 
 // Page metadata
 useHead({
-  title: 'Find Lawyers - Getalawyer',
+  title: 'Find Lawyers - GetaLawyer',
   meta: [
     { name: 'description', content: 'Search and find qualified lawyers by practice area, location, and consultation type.' }
   ]
@@ -132,9 +132,9 @@ const activeFilterCount = computed(() => {
     
     <!-- Page Header -->
     <div class="page-header">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Find Your Lawyer</h1>
-        <p class="text-lg text-gray-600 max-w-2xl">
+      <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
+        <h1 class="mb-4 font-bold text-gray-900 text-4xl md:text-5xl">Find Your Lawyer</h1>
+        <p class="max-w-2xl text-gray-600 text-lg">
           Connect with qualified legal professionals across Nigeria. Search by practice area, location, and expertise.
         </p>
       </div>

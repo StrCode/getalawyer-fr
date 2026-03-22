@@ -4,7 +4,7 @@ import type { PracticeArea } from '~/types/practice-area'
 
 // SEO metadata
 useHead({
-  title: 'Practice Areas - Getalawyer',
+  title: 'Practice Areas - GetaLawyer',
   meta: [
     {
       name: 'description',
@@ -125,7 +125,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
     <!-- Navigation -->
     <NavigationBar />
 
@@ -136,7 +136,7 @@ onMounted(() => {
           <h1 class="mb-4 font-bold text-4xl sm:text-5xl">
             Explore Legal Practice Areas
           </h1>
-          <p class="text-lg text-primary-100 sm:text-xl">
+          <p class="text-primary-100 text-lg sm:text-xl">
             Find specialized lawyers across all areas of law
           </p>
         </div>
@@ -147,18 +147,18 @@ onMounted(() => {
     <section class="py-16">
       <UContainer>
         <!-- Loading State -->
-        <div v-if="loading" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div v-if="loading" class="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <div
             v-for="i in 12"
             :key="i"
-            class="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse"
+            class="bg-white dark:bg-gray-800 p-6 rounded-lg animate-pulse"
           >
             <div class="flex items-start gap-4">
-              <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-12 w-12" />
+              <div class="bg-gray-200 dark:bg-gray-700 rounded-lg w-12 h-12" />
               <div class="flex-1 space-y-3">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-6 w-3/4" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-1/2" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-full" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-3/4 h-6" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-1/2 h-4" />
+                <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
               </div>
             </div>
           </div>

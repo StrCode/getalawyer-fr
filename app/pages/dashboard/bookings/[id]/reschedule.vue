@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="bg-gray-50 min-h-screen">
+    <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="mb-8">
         <UButton
@@ -11,35 +11,35 @@
           :to="`/dashboard/bookings/${bookingId}`"
           class="mb-4"
         />
-        <h1 class="text-3xl font-bold text-gray-900">Reschedule Booking</h1>
-        <p class="text-gray-600 mt-2">Select a new date and time for your consultation</p>
+        <h1 class="font-bold text-gray-900 text-3xl">Reschedule Booking</h1>
+        <p class="mt-2 text-gray-600">Select a new date and time for your consultation</p>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 animate-spin text-gray-400" />
+        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
-      <div v-else-if="isError || !booking" class="text-center py-12">
-        <UIcon name="i-hugeicons-alert-circle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+      <div v-else-if="isError || !booking" class="py-12 text-center">
+        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load booking details</p>
       </div>
 
       <!-- Cannot Reschedule -->
-      <div v-else-if="!canReschedule" class="text-center py-12">
-        <UIcon name="i-hugeicons-calendar-remove-01" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+      <div v-else-if="!canReschedule" class="py-12 text-center">
+        <UIcon name="i-hugeicons-calendar-remove-01" class="mx-auto mb-4 w-12 h-12 text-gray-400" />
         <p class="text-gray-600">This booking cannot be rescheduled</p>
         <UButton
           label="Back to Booking"
           color="primary"
-          class="mt-4 bg-[#007AFC]"
+          class="bg-[#007AFC] mt-4"
           :to="`/dashboard/bookings/${bookingId}`"
         />
       </div>
 
       <!-- Reschedule Form -->
-      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div v-else class="gap-8 grid grid-cols-1 lg:grid-cols-3">
         <!-- Calendar -->
         <div class="lg:col-span-2">
           <UCard>
@@ -220,7 +220,7 @@ const formatTime = (time: string) => {
 }
 
 useHead({
-  title: 'Reschedule Booking - LexConnect',
+  title: 'Reschedule Booking - GetaLawyer',
   meta: [
     { name: 'description', content: 'Reschedule your consultation booking' }
   ]

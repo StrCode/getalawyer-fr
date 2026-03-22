@@ -3,7 +3,6 @@ const isMenuOpen = ref(false)
 
 // Auth
 const { session, signOut } = useAuth()
-const { open: openAuthModal } = useAuthModal()
 
 const handleSignOut = async () => {
   await signOut()
@@ -20,13 +19,13 @@ const navLinks = [
 </script>
 
 <template>
-  <header class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur-md border-b border-neutral-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+  <header class="top-0 z-50 fixed inset-x-0 bg-white/95 backdrop-blur-md border-neutral-100 border-b">
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div class="flex justify-between items-center h-16">
 
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center gap-2 shrink-0">
-          <img src="/getalawyer-logo.svg" alt="GetALawyer" class="h-8 w-auto" />
+          <img src="/getalawyer-logo.svg" alt="GetALawyer" class="w-auto h-8" />
         </NuxtLink>
 
         <!-- Desktop Nav -->
@@ -35,7 +34,7 @@ const navLinks = [
             v-for="link in navLinks"
             :key="link.to"
             :to="link.to"
-            class="px-3.5 py-2 text-sm text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
+            class="hover:bg-neutral-50 px-3.5 py-2 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 text-sm transition-colors"
           >
             {{ link.label }}
           </NuxtLink>
@@ -46,30 +45,30 @@ const navLinks = [
           <template v-if="session">
             <NuxtLink
               to="/dashboard"
-              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+              class="hover:bg-neutral-50 px-3.5 py-2 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 text-sm transition-colors"
             >
               Dashboard
             </NuxtLink>
             <button
-              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
+              class="hover:bg-neutral-50 px-3.5 py-2 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 text-sm transition-colors"
               @click="handleSignOut"
             >
               Sign out
             </button>
           </template>
           <template v-else>
-            <button
-              class="px-3.5 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 rounded-lg hover:bg-neutral-50 transition-colors"
-              @click="openAuthModal('entry')"
+            <NuxtLink
+              to="/login"
+              class="hover:bg-neutral-50 px-3.5 py-2 rounded-lg font-medium text-neutral-600 hover:text-neutral-900 text-sm transition-colors"
             >
               Sign in
-            </button>
+            </NuxtLink>
             <UButton
               to="/lawyers"
               size="sm"
               color="neutral"
               variant="solid"
-              class="rounded-xl font-semibold px-4 bg-[#e8f3ec] hover:bg-[#d1e8dc] text-[#1d6b44]"
+              class="bg-[#e8f3ec] hover:bg-[#d1e8dc] px-4 rounded-xl font-semibold text-[#1d6b44]"
               label="Find a Lawyer"
               trailing-icon="i-heroicons-arrow-right"
             />
@@ -78,7 +77,7 @@ const navLinks = [
 
         <!-- Mobile menu toggle -->
         <button
-          class="lg:hidden p-2 rounded-lg hover:bg-neutral-50 transition-colors"
+          class="lg:hidden hover:bg-neutral-50 p-2 rounded-lg transition-colors"
           @click="isMenuOpen = !isMenuOpen"
           :aria-expanded="isMenuOpen"
           aria-label="Toggle menu"
@@ -102,20 +101,20 @@ const navLinks = [
     >
       <div
         v-if="isMenuOpen"
-        class="lg:hidden border-t border-neutral-100 bg-white max-h-[80vh] overflow-y-auto"
+        class="lg:hidden bg-white border-neutral-100 border-t max-h-[80vh] overflow-y-auto"
       >
-        <div class="max-w-7xl mx-auto px-4 py-4 space-y-1">
+        <div class="space-y-1 mx-auto px-4 py-4 max-w-7xl">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
             :to="link.to"
-            class="block px-3 py-2.5 text-sm font-medium text-neutral-700 rounded-xl hover:bg-neutral-50"
+            class="block hover:bg-neutral-50 px-3 py-2.5 rounded-xl font-medium text-neutral-700 text-sm"
             @click="isMenuOpen = false"
           >
             {{ link.label }}
           </NuxtLink>
 
-          <div class="pt-4 pb-2 flex flex-col gap-2 border-t border-neutral-100 mt-2">
+          <div class="flex flex-col gap-2 mt-2 pt-4 pb-2 border-neutral-100 border-t">
             <template v-if="session">
               <UButton
                 to="/dashboard"
@@ -128,19 +127,20 @@ const navLinks = [
                 @click="isMenuOpen = false"
               />
               <button
-                class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
+                class="block hover:bg-neutral-50 px-4 py-2.5 border border-neutral-200 rounded-xl font-medium text-neutral-700 text-sm text-center"
                 @click="handleSignOut(); isMenuOpen = false"
               >
                 Sign out
               </button>
             </template>
             <template v-else>
-              <button
-                class="block text-center px-4 py-2.5 text-sm font-medium text-neutral-700 rounded-xl border border-neutral-200 hover:bg-neutral-50"
-                @click="openAuthModal('entry'); isMenuOpen = false"
+              <NuxtLink
+                to="/login"
+                class="block hover:bg-neutral-50 px-4 py-2.5 border border-neutral-200 rounded-xl font-medium text-neutral-700 text-sm text-center"
+                @click="isMenuOpen = false"
               >
                 Sign in
-              </button>
+              </NuxtLink>
               <UButton
                 to="/lawyers"
                 size="md"
@@ -148,7 +148,7 @@ const navLinks = [
                 variant="solid"
                 block
                 label="Find a Lawyer"
-                class="rounded-xl font-semibold bg-[#e8f3ec] hover:bg-[#d1e8dc] text-[#1d6b44]"
+                class="bg-[#e8f3ec] hover:bg-[#d1e8dc] rounded-xl font-semibold text-[#1d6b44]"
                 @click="isMenuOpen = false"
               />
             </template>

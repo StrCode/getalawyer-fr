@@ -429,7 +429,7 @@ const formatDateTime = (dateTime: string) => {
 }
 
 useHead({
-  title: computed(() => booking.value ? `Booking ${booking.value.bookingReference} - LexConnect` : 'Booking Details - LexConnect'),
+  title: computed(() => booking.value ? `Booking ${booking.value.bookingReference} - GetaLawyer` : 'Booking Details - GetaLawyer'),
   meta: [
     { name: 'description', content: 'View your booking details' }
   ]

@@ -18,18 +18,18 @@ const perks: Perk[] = [
 <template>
   <section
     id="for-lawyers"
-    class="relative py-20 md:py-28 overflow-hidden bg-white border-t border-neutral-200"
+    class="relative bg-white py-20 md:py-28 border-neutral-200 border-t overflow-hidden"
   >
     <!-- Dot texture -->
     <div class="absolute inset-0 opacity-[0.03]"
       style="background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 24px 24px;" />
 
     <!-- Glow -->
-    <div class="absolute bottom-0 left-1/3 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none"
+    <div class="bottom-0 left-1/3 absolute opacity-10 blur-3xl rounded-full w-96 h-96 pointer-events-none"
       style="background: radial-gradient(circle, #1d6b44, transparent)" />
 
-    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+    <div class="relative mx-auto px-6 lg:px-8 max-w-7xl">
+      <div class="items-center gap-12 lg:gap-20 grid grid-cols-1 lg:grid-cols-2">
 
         <!-- Left: copy -->
         <div>
@@ -38,7 +38,7 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.4 }"
-            class="text-xs font-semibold uppercase tracking-widest text-[#1d6b44] mb-4"
+            class="mb-4 font-semibold text-[#1d6b44] text-xs uppercase tracking-widest"
           >For Legal Professionals</motion.p>
 
           <motion.h2
@@ -46,7 +46,7 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.55, delay: 0.06 }"
-            class="text-4xl md:text-5xl font-bold text-neutral-900 mb-6 tracking-tight leading-[1.1]"
+            class="mb-6 font-bold text-neutral-900 text-4xl md:text-5xl leading-[1.1] tracking-tight"
           >
             Grow Your<br>Practice.
           </motion.h2>
@@ -56,9 +56,9 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1, y: 0 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.5, delay: 0.12 }"
-            class="text-neutral-500 text-lg leading-relaxed mb-9 max-w-md"
+            class="mb-9 max-w-md text-neutral-500 text-lg leading-relaxed"
           >
-            Join thousands of verified legal professionals expanding their client base on Getalawyer.
+            Join thousands of verified legal professionals expanding their client base on GetaLawyer.
             The tools you need to manage your practice, zero commission taken.
           </motion.p>
 
@@ -73,7 +73,7 @@ const perks: Perk[] = [
               :whileHover="{ scale: 1.03 }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-[#1d6b44] text-white font-semibold text-sm border-none cursor-pointer font-[DM_Sans] shadow-sm"
+              class="bg-[#1d6b44] shadow-sm px-7 py-3.5 border-none rounded-full font-[DM_Sans] font-semibold text-white text-sm cursor-pointer"
             >
               Register as a Lawyer
             </motion.button>
@@ -81,7 +81,7 @@ const perks: Perk[] = [
               :whileHover="{ backgroundColor: '#f9f9f9', borderColor: '#e5e5e5' }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-white border border-neutral-200 text-neutral-700 font-semibold text-sm cursor-pointer font-[DM_Sans] shadow-sm"
+              class="bg-white shadow-sm px-7 py-3.5 border border-neutral-200 rounded-full font-[DM_Sans] font-semibold text-neutral-700 text-sm cursor-pointer"
             >
               Learn More
             </motion.button>
@@ -93,21 +93,21 @@ const perks: Perk[] = [
             :whileInView="{ opacity: 1 }"
             :viewport="{ once: true }"
             :transition="{ duration: 0.5, delay: 0.28 }"
-            class="mt-10 flex items-center gap-5"
+            class="flex items-center gap-5 mt-10"
           >
             <div v-for="(item, i) in [['2,500+', 'Lawyers'], ['$0', 'Commission'], ['4.8★', 'Avg Rating']]"
               :key="i"
               class="text-center"
               :class="i < 2 ? 'pr-5 border-r border-neutral-200' : ''"
             >
-              <div class="text-lg font-bold text-neutral-900">{{ item[0] }}</div>
-              <div class="text-xs text-neutral-500 font-medium">{{ item[1] }}</div>
+              <div class="font-bold text-neutral-900 text-lg">{{ item[0] }}</div>
+              <div class="font-medium text-neutral-500 text-xs">{{ item[1] }}</div>
             </div>
           </motion.div>
         </div>
 
         <!-- Right: perk cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
           <motion.div
             v-for="(perk, i) in perks"
             :key="perk.title"
@@ -116,12 +116,12 @@ const perks: Perk[] = [
             :viewport="{ once: true }"
             :transition="{ duration: 0.45, delay: 0.06 * i, ease: [0.25, 0.46, 0.45, 0.94] }"
             :whileHover="{ y: -4, boxShadow: '0 10px 30px rgba(0,0,0,0.06)' }"
-            class="bg-white border border-neutral-200 rounded-xl p-5 cursor-default transition-shadow duration-200"
+            class="bg-white p-5 border border-neutral-200 rounded-xl transition-shadow duration-200 cursor-default"
           >
-            <div class="w-10 h-10 rounded-lg bg-[#e8f3ec] flex items-center justify-center mb-4">
+            <div class="flex justify-center items-center bg-[#e8f3ec] mb-4 rounded-lg w-10 h-10">
               <UIcon :name="perk.icon" class="w-5 h-5 text-[#1d6b44]" />
             </div>
-            <h3 class="font-semibold text-neutral-900 text-[15px] mb-1.5">{{ perk.title }}</h3>
+            <h3 class="mb-1.5 font-semibold text-[15px] text-neutral-900">{{ perk.title }}</h3>
             <p class="text-neutral-500 text-sm leading-relaxed">{{ perk.description }}</p>
           </motion.div>
         </div>

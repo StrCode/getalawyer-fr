@@ -244,7 +244,7 @@ watchEffect(() => {
           <label class="flex items-start gap-3 bg-blue-50 p-4 border border-blue-100 rounded-xl cursor-pointer">
             <input type="checkbox" v-model="ninState.consent" class="mt-0.5 rounded w-4 h-4 accent-gray-900 cursor-pointer shrink-0" />
             <span class="font-medium text-gray-800 text-sm">
-              I consent to GetALawyer verifying my National Identification Number (NIN) with the National Identity Management Commission (NIMC)
+              I consent to GetaLawyer verifying my National Identification Number (NIN) with the National Identity Management Commission (NIMC)
             </span>
           </label>
         </UFormField>

@@ -12,7 +12,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'GetALawyer dashboard overview.'
+      content: 'GetaLawyer dashboard overview.'
     },
     {
       name: 'robots',

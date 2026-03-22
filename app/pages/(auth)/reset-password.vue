@@ -44,7 +44,7 @@
                 Password reset
               </h1>
               <p class="mb-1 text-gray-500 text-sm leading-relaxed">
-                Please enter a new password for your LexConnect account.
+                Please enter a new password for your GetaLawyer account.
               </p>
               <p class="mb-6 text-gray-400 text-sm leading-relaxed">
                 This will end all active sessions for your account.
@@ -165,7 +165,7 @@
 
       <div class="flex justify-between items-center gap-4 pt-5 border-black/10 border-t w-full">
         <div>
-          <p class="mb-0.5 font-semibold text-gray-800 text-sm">Take LexConnect with you</p>
+          <p class="mb-0.5 font-semibold text-gray-800 text-sm">Take GetaLawyer with you</p>
           <p class="text-gray-500 text-xs leading-relaxed">
             Find verified lawyers on our mobile app<br>for iOS and Android.
           </p>
