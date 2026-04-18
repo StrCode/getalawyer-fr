@@ -40,8 +40,6 @@ watchEffect(() => {
   }
 })
 
-const currentYear = new Date().getFullYear()
-
 const handleSubmit = async () => {
   return new Promise<boolean>((resolve) => {
     saveInfo(state, {
@@ -59,116 +57,84 @@ if (registerSaveHandler) {
 </script>
 
 <template>
-  <!-- Loading -->
-  <div v-if="isLoadingSummary" class="flex flex-col justify-center items-center py-32">
-    <div class="mb-4 border-2 border-gray-200 border-t-gray-900 rounded-full w-8 h-8 animate-spin" />
-    <p class="font-medium text-gray-500 text-sm">Loading...</p>
+  <div v-if="isLoadingSummary" class="flex justify-center py-20">
+    <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 text-primary-200 animate-spin" />
   </div>
 
-  <div v-else class="w-full max-w-xl">
-
+  <UForm v-else :schema="schema" :state="state" class="space-y-12 pb-20" @submit="handleSubmit">
     <!-- Header Section -->
-    <div class="mb-12">
-      <h1 class="text-title mb-3">Professional Background</h1>
-      <p class="text-subtitle">Provide your academic and bar admission details to help us verify your qualifications.</p>
+    <div class="mb-10">
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Professional Background</h1>
+      <p class="text-sm text-gray-600">Provide your legal credentials and education details for professional verification.</p>
     </div>
 
-    <!-- Bar Admission Section -->
-    <div class="space-y-8">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">Bar Admission</h3>
+    <!-- Error Banner -->
+    <UAlert 
+      v-if="saveError" 
+      color="error" 
+      variant="soft" 
+      title="Error" 
+      :description="saveError.message || 'Failed to save professional info. Please try again.'"
+      icon="i-heroicons-exclamation-triangle"
+    />
+
+    <div class="space-y-12">
+      <!-- Bar Admission Group -->
+      <div class="space-y-8">
+        <div class="form-row border-b border-gray-100 pb-2">
+           <label class="etsy-label border-b-2 border-primary-blue pb-2 inline-block">Bar Admission</label>
+           <div class="hidden md:block"></div>
+        </div>
+
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">NBA Supreme Court Number <span class="text-primary-blue">*</span></label>
+          <div class="w-full max-w-md">
+             <UInput v-model="state.barNumber" placeholder="SCN000000" size="xl" class="etsy-input-base w-full" />
+             <p class="etsy-description">Your Supreme Court enrollment number used for official identification.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">Year of Call to Bar <span class="text-primary-blue">*</span></label>
+          <UInput v-model.number="state.yearOfCall" type="number" size="xl" class="etsy-input-base w-32" />
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UFormField label="NBA Supreme Court Number (Bar Number)" name="barNumber" required size="xl" class="md:col-span-2">
-          <UInput 
-            v-model="state.barNumber" 
-            size="xl"
-            placeholder="e.g. SCN000000" 
-            icon="heroicons:identification"
-            class="w-full"
-          />
-          <template #hint>
-            <span class="text-xs text-gray-500">Your Supreme Court enrollment number</span>
-          </template>
-        </UFormField>
+      <!-- University Education Group -->
+      <div class="space-y-8">
+        <div class="form-row border-b border-gray-100 pb-2">
+           <label class="etsy-label border-b-2 border-primary-blue pb-2 inline-block font-bold">University Education</label>
+           <div class="hidden md:block"></div>
+        </div>
 
-        <UFormField label="Year of Call to Bar" name="yearOfCall" required size="xl">
-          <UInput 
-            v-model.number="state.yearOfCall" 
-            type="number" 
-            size="xl"
-            :min="1950" 
-            :max="currentYear"
-            icon="heroicons:calendar"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-    </div>
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">University Attended <span class="text-primary-blue">*</span></label>
+          <UInput v-model="state.university" placeholder="e.g. University of Lagos" size="xl" class="etsy-input-base w-full max-w-md" />
+        </div>
 
-    <!-- University Education Section -->
-    <div class="space-y-8 pt-4">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">University Education</h3>
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">Year of LLB Graduation <span class="text-primary-blue">*</span></label>
+          <UInput v-model.number="state.llbYear" type="number" size="xl" class="etsy-input-base w-32" />
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UFormField label="University Attended" name="university" required size="xl" class="md:col-span-2">
-          <UInput 
-            v-model="state.university" 
-            size="xl"
-            placeholder="e.g. University of Lagos" 
-            icon="heroicons:building-library"
-            class="w-full"
-          />
-        </UFormField>
+      <!-- Law School Group -->
+      <div class="space-y-8">
+        <div class="form-row border-b border-gray-100 pb-2">
+           <label class="etsy-label border-b-2 border-primary-blue pb-2 inline-block">Law School</label>
+           <div class="hidden md:block"></div>
+        </div>
 
-        <UFormField label="Year of LLB Graduation" name="llbYear" required size="xl">
-          <UInput 
-            v-model.number="state.llbYear" 
-            type="number" 
-            size="xl"
-            :min="1950" 
-            :max="currentYear"
-            icon="heroicons:calendar"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-    </div>
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">Law School Campus <span class="text-primary-blue">*</span></label>
+          <UInput v-model="state.lawSchool" placeholder="e.g. Lagos Campus" size="xl" class="etsy-input-base w-full max-w-md" />
+        </div>
 
-    <!-- Law School Section -->
-    <div class="space-y-8 pt-4">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">Law School</h3>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UFormField label="Law School Campus" name="lawSchool" required size="xl" class="md:col-span-2">
-          <UInput 
-            v-model="state.lawSchool" 
-            size="xl"
-            placeholder="e.g. Nigerian Law School, Lagos Campus" 
-            icon="heroicons:academic-cap"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Year of Graduation" name="graduationYear" required size="xl">
-          <UInput 
-            v-model.number="state.graduationYear" 
-            type="number" 
-            size="xl"
-            :min="1950" 
-            :max="currentYear"
-            icon="heroicons:calendar"
-            class="w-full"
-          />
-        </UFormField>
+        <div class="form-row">
+          <label class="etsy-label text-gray-500 font-medium">Year of Graduation <span class="text-primary-blue">*</span></label>
+          <UInput v-model.number="state.graduationYear" type="number" size="xl" class="etsy-input-base w-32" />
+        </div>
       </div>
     </div>
-
-    <div class="pb-10"></div>
   </UForm>
 </template>

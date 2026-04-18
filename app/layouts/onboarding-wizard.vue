@@ -4,7 +4,7 @@ import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 
 const { useStatus } = useLawyerOnboarding()
 const { data: status, isPending, isFetching } = useStatus()
-const { currentStep, prevStep, currentIndex, steps, isFirst, isLast } = useOnboardingNavigation()
+const { currentStep, prevStep, currentIndex, steps, isFirst, isLast, nextStep } = useOnboardingNavigation()
 const router = useRouter()
 
 // --- Save Signal Pattern ---
@@ -57,13 +57,7 @@ const handleExit = async () => {
   await router.push('/dashboard')
 }
 
-const { nextStep } = useOnboardingNavigation()
-
 // --- Segmented Progress Bar Logic (SSR Style) ---
-// We divide 5 steps into 3 visual segments
-// Segment 1: Personal + NIN (Step 0, 1)
-// Segment 2: Professional + Practice (Step 2, 3)
-// Segment 3: Review (Step 4)
 const sectionProgress = computed(() => {
   const idx = currentIndex.value
   if (idx === -1) return [0, 0, 0]
@@ -97,7 +91,7 @@ onMounted(() => {
 
 <template>
   <div class="h-screen flex flex-col overflow-hidden bg-white font-sans selection:bg-primary-100 selection:text-primary-900">
-    <!-- Header (Horizontal SSR Style) -->
+    <!-- Header -->
     <header 
       class="px-8 md:px-12 py-5 flex items-center justify-between shrink-0 transition-all duration-200 z-30"
       :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
@@ -123,11 +117,11 @@ onMounted(() => {
     </header>
 
     <!-- Main Content -->
-    <main ref="scrollContainer" class="flex-1 overflow-y-auto relative bg-white">
-      <div class="max-w-3xl mx-auto py-16 px-6 sm:px-10 lg:px-12 relative z-10 w-full">
+    <main ref="scrollContainer" class="flex-1 overflow-y-auto relative bg-white border-t border-gray-50">
+      <div class="max-w-4xl mx-auto py-16 px-6 sm:px-10 lg:px-12 relative z-10 w-full transition-all duration-300">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
             <UIcon name="i-heroicons-arrow-path" class="w-10 h-10 text-primary-blue animate-spin mb-4" />
-            <p class="text-gray-500 font-medium">Syncing your progress...</p>
+            <p class="text-gray-500 font-medium tracking-tight">Syncing your progress...</p>
          </div>
          
          <div v-else class="w-full relative min-h-[400px]">
@@ -144,8 +138,8 @@ onMounted(() => {
       </div>
     </main>
 
-    <!-- Footer (Horizontal SSR Style) -->
-    <footer class="border-t border-gray-100 shrink-0 bg-white z-40 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)]">
+    <!-- Footer (Etsy Pattern) -->
+    <footer class="border-t border-gray-100 shrink-0 bg-white z-40 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)] pb-safe">
       <!-- Segmented Progress Bar -->
       <div class="flex h-1 gap-1 px-1">
         <div 
@@ -161,23 +155,31 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="xl"
-          class="font-semibold text-gray-500 hover:text-gray-900 px-6 underline-offset-4 hover:underline transition-all"
-          :disabled="isFirst || isSaving"
-          @click="handleBack"
-        >
-          Back
-        </UButton>
+      <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-6 order-2 sm:order-1">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            size="xl"
+            class="font-semibold text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline transition-all"
+            :disabled="isFirst || isSaving"
+            @click="handleBack"
+          >
+            Back
+          </UButton>
+          
+          <p class="hidden lg:block text-[11px] text-gray-400 max-w-[320px] leading-snug">
+            By clicking Continue, you agree to Getalawyer's 
+            <a href="#" class="text-primary-blue hover:underline">Terms of Use</a> and 
+            <a href="#" class="text-primary-blue hover:underline">Privacy Policy</a>.
+          </p>
+        </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 order-1 sm:order-2 w-full sm:w-auto">
           <UButton
             color="primary"
             size="xl"
-            class="px-10 font-bold bg-gray-900 hover:bg-black text-white rounded-xl shadow-lg shadow-gray-200 transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+            class="w-full sm:w-auto px-12 font-bold bg-gray-900 hover:bg-black text-white rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
             :loading="isSaving"
             @click="handleNext"
             :icon="isLast ? 'i-heroicons-check' : 'i-heroicons-arrow-right'"

@@ -75,15 +75,21 @@ watchEffect(() => {
   }
 })
 
+const selectedCount = computed(() => state.practiceAreas.length)
+const progressPercent = computed(() => (selectedCount.value / 5) * 100)
+const isSelected = (id: string) => state.practiceAreas.includes(id)
+const isDisabled = (id: string) => !isSelected(id) && selectedCount.value >= 5
+const nameById = (id: string) => specializations.value.find((s: any) => s.id === id)?.name ?? id
+
+const toggle = (id: string) => {
+  const areas = state.practiceAreas
+  state.practiceAreas = areas.includes(id) ? areas.filter(s => s !== id) : [...areas, id]
+}
+
 const handleSubmit = async () => {
-  // Map practiceAreas to specializationIds for the backend
-  const payload = {
-    ...state,
-    specializationIds: state.practiceAreas
-  }
-  
+  if (state.practiceAreas.length === 0) return false
   return new Promise<boolean>((resolve) => {
-    saveInfo(payload, {
+    saveInfo(state, {
       onSuccess: () => resolve(true),
       onError: () => resolve(false)
     })
@@ -98,12 +104,17 @@ if (registerSaveHandler) {
 </script>
 
 <template>
-  <div v-if="isLoadingSummary || isLoadingSpecs" class="flex flex-col justify-center items-center py-32">
-    <div class="mb-4 border-2 border-gray-200 border-t-gray-900 rounded-full w-8 h-8 animate-spin" />
-    <p class="font-medium text-gray-500 text-sm">Loading...</p>
+  <div v-if="isLoadingSummary || isLoadingSpecs" class="flex justify-center py-20">
+    <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 text-primary-200 animate-spin" />
   </div>
 
-  <UForm v-else :schema="schema" :state="state" class="space-y-8" @submit="handleSubmit">
+  <UForm v-else :schema="schema" :state="state" class="space-y-12 pb-20" @submit="handleSubmit">
+    <!-- Header Section -->
+    <div class="mb-10">
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Practice Details</h1>
+      <p class="text-sm text-gray-600">Tell us about your law practice, office location, and areas of legal expertise.</p>
+    </div>
+
     <!-- Error Banner -->
     <UAlert 
       v-if="saveError" 
@@ -111,147 +122,109 @@ if (registerSaveHandler) {
       variant="soft" 
       title="Error" 
       :description="saveError.message || 'Failed to save practice info. Please try again.'"
-      icon="heroicons:exclamation-triangle"
+      icon="i-heroicons-exclamation-triangle"
     />
 
-    <!-- Header Section -->
-    <div class="mb-12">
-      <h1 class="text-title mb-3">Practice Details</h1>
-      <p class="text-subtitle">Tell us about your law firm and areas of expertise to better match you with relevant clients.</p>
-    </div>
-
-    <!-- Firm Information Section -->
-    <div class="space-y-8">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">Law Firm Information</h3>
+    <div class="space-y-12">
+      <!-- Law Firm Details -->
+      <div class="form-row">
+        <label class="etsy-label">Law Firm Name <span class="text-gray-400 font-normal">(Optional)</span></label>
+        <div class="w-full max-w-md">
+           <UInput v-model="state.firmName" placeholder="e.g. Adeyemi & Partners" size="xl" class="etsy-input-base w-full" />
+           <p class="etsy-description">Leave empty if you are a Solo Practitioner.</p>
+        </div>
       </div>
 
-      <UFormField label="Law Firm Name" name="firmName" required size="xl">
-        <UInput 
-          v-model="state.firmName" 
-          size="xl"
-          placeholder="e.g. Doe & Partners Legal" 
-          icon="heroicons:building-office-2"
-          class="w-full"
-        />
-      </UFormField>
+      <!-- Practice Areas -->
+      <div class="form-row pt-4">
+        <div>
+           <label class="etsy-label block">Practice Areas <span class="text-primary-blue">*</span></label>
+           <p class="etsy-description max-w-[180px]">Select up to 5 areas that match your legal specializations.</p>
+        </div>
+        
+        <div class="space-y-4 w-full">
+          <div class="relative w-full max-w-xl">
+            <UInput v-model="query" icon="i-heroicons-magnifying-glass" size="xl" placeholder="Search legal areas..." class="etsy-input-base w-full" />
+            
+            <div class="mt-4 flex justify-between items-center px-1">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Selected ({{ selectedCount }}/5)</span>
+              <div class="h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
+                <div class="bg-primary-blue h-full transition-all duration-300" :style="{ width: `${progressPercent}%` }" />
+              </div>
+            </div>
 
-      <UFormField label="Years of Experience" name="yearsOfExperience" required size="xl">
-        <UInput 
-          v-model.number="state.yearsOfExperience" 
-          type="number" 
-          size="xl"
-          :min="0" 
-          :max="70"
-          icon="heroicons:briefcase"
-          class="w-full"
-        />
-        <template #hint>
-          <span class="text-xs text-gray-500">Total years of legal practice experience</span>
-        </template>
-      </UFormField>
-    </div>
+            <div v-if="selectedCount > 0" class="flex flex-wrap gap-2 mt-4">
+              <button v-for="id in state.practiceAreas" :key="id" type="button" class="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 py-1.5 pr-2 pl-3 border border-blue-200 rounded-full font-bold text-primary-blue text-[11px] transition-all cursor-pointer shadow-sm active:scale-95" @click="toggle(id)">
+                {{ nameById(id) }}
+                <UIcon name="i-heroicons-x-mark" class="w-3.5 h-3.5" />
+              </button>
+            </div>
 
-    <!-- Office Address Section -->
-    <div class="space-y-8 pt-4">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">Primary Office Address</h3>
+            <div class="mt-6 border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm">
+                <div v-if="filtered.length === 0" class="py-10 text-center text-gray-400 text-sm italic">
+                   No legal areas match "{{ query }}"
+                </div>
+                <div v-else class="max-h-[300px] overflow-y-auto p-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button 
+                    v-for="spec in filtered" 
+                    :key="spec.id" 
+                    type="button" 
+                    class="group p-3 border rounded-lg text-left transition-all duration-150 relative" 
+                    :class="isSelected(spec.id) ? 'border-primary-blue bg-blue-50/50' : isDisabled(spec.id) ? 'border-gray-50 bg-gray-50 opacity-50 cursor-not-allowed' : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer'" 
+                    :disabled="isDisabled(spec.id)" 
+                    @click="!isDisabled(spec.id) && toggle(spec.id)"
+                  >
+                    <p class="font-bold text-xs text-gray-900 mb-0.5">{{ spec.name }}</p>
+                    <p class="text-[10px] text-gray-400 line-clamp-1 leading-snug">{{ spec.description }}</p>
+                    <div v-if="isSelected(spec.id)" class="absolute top-2 right-2">
+                       <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-primary-blue" />
+                    </div>
+                  </button>
+                </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UFormField label="Street Address" name="officeAddress.street" required size="xl" class="md:col-span-2">
-          <UInput 
-            v-model="state.officeAddress.street" 
-            size="xl"
-            placeholder="e.g. 13B Fake Street" 
-            icon="heroicons:map-pin"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="City" name="officeAddress.city" required size="xl">
-          <UInput 
-            v-model="state.officeAddress.city" 
-            size="xl"
-            placeholder="e.g. Ikeja" 
-            icon="heroicons:building-office-2"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="State" name="officeAddress.state" required size="xl">
-          <UInput 
-            v-model="state.officeAddress.state" 
-            size="xl"
-            placeholder="e.g. Lagos" 
-            icon="heroicons:map-pin"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Postal Code" name="officeAddress.postalCode" required size="xl">
-          <UInput 
-            v-model="state.officeAddress.postalCode" 
-            size="xl"
-            placeholder="e.g. 100001" 
-            icon="heroicons:envelope"
-            class="w-full"
-          />
-        </UFormField>
-
-        <UFormField label="Country" name="officeAddress.country" required size="xl">
-          <UInput 
-            v-model="state.officeAddress.country" 
-            size="xl"
-            disabled
-            icon="heroicons:globe-alt"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-    </div>
-
-    <!-- Practice Areas Section -->
-    <div class="space-y-8 pt-4">
-      <div class="border-b border-gray-100 pb-3">
-        <h3 class="text-lg font-bold text-gray-900">Areas of Practice</h3>
+      <!-- States of Practice -->
+      <div class="form-row">
+        <label class="etsy-label">States of Practice <span class="text-primary-blue">*</span></label>
+        <div class="w-full max-w-xl">
+           <USelectMenu v-model="state.statesOfPractice" :items="nigerianStatesOptions" value-key="value" size="xl" multiple placeholder="Select states where you practice" icon="i-heroicons-map" class="etsy-input-base w-full" />
+           <p class="etsy-description">List all states where you are currently licensed or actively practicing.</p>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-6">
-        <UFormField label="States of Practice" name="statesOfPractice" required size="xl">
-          <USelectMenu 
-            v-model="state.statesOfPractice" 
-            :items="nigerianStatesOptions" 
-            value-key="value"
-            size="xl"
-            multiple 
-            placeholder="Select states where you practice" 
-            icon="heroicons:map"
-            class="w-full"
-          />
-          <template #hint>
-            <span class="text-xs text-gray-500">Select up to 5 states (minimum 1 required)</span>
-          </template>
-        </UFormField>
+      <!-- Office Address Section -->
+      <div class="form-row pt-4">
+        <div>
+          <label class="etsy-label block">Primary office address <span class="text-primary-blue">*</span></label>
+          <p class="etsy-description max-w-[180px]">The physical location of your principal law office.</p>
+        </div>
+        
+        <div class="space-y-6 max-w-xl">
+          <div>
+            <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">Street Address</label>
+            <UInput v-model="state.officeAddress.street" placeholder="e.g. 123 Marina Street" size="xl" class="etsy-input-base w-full" />
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">City</label>
+              <UInput v-model="state.officeAddress.city" placeholder="Lagos" size="xl" class="etsy-input-base" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">State</label>
+              <UInput v-model="state.officeAddress.state" placeholder="Lagos State" size="xl" class="etsy-input-base" />
+            </div>
+          </div>
 
-        <UFormField label="Practice Areas / Specializations" name="practiceAreas" required size="xl">
-          <USelectMenu 
-            v-model="state.practiceAreas" 
-            :items="specializationsOptions" 
-            value-key="value"
-            size="xl"
-            multiple 
-            placeholder="Select your areas of expertise" 
-            icon="heroicons:scale"
-            class="w-full"
-          />
-          <template #hint>
-            <span class="text-xs text-gray-500">Select up to 3 specializations (minimum 1 required)</span>
-          </template>
-        </UFormField>
+          <div>
+            <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">Postal Code</label>
+            <UInput v-model="state.officeAddress.postalCode" placeholder="100001" size="xl" class="etsy-input-base w-40" />
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="pb-10"></div>
   </UForm>
 </template>
