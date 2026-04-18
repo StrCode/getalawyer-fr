@@ -6,7 +6,18 @@ const { data: summary, isPending: isLoadingSummary } = useSummary()
 const { mutate: submitForm, isPending: isSubmitting, error: submitError } = useSubmitOnboarding()
 
 const handleSubmit = async () => {
-  submitForm()
+  return new Promise<boolean>((resolve) => {
+    submitForm(undefined, {
+      onSuccess: () => resolve(true),
+      onError: () => resolve(false)
+    })
+  })
+}
+
+// Register save handler (submit in this case) for the wizard layout
+const registerSaveHandler = inject<(handler: () => Promise<boolean>) => void>('wizard-save-handler')
+if (registerSaveHandler) {
+  registerSaveHandler(handleSubmit)
 }
 
 // Format helpers
@@ -24,39 +35,29 @@ const formatDate = (dateStr: string) => {
 
     <div v-else-if="summary" class="max-w-2xl mx-auto w-full text-center">
       
-      <!-- Top Icon -->
-      <div class="mx-auto w-[72px] h-[72px] bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-8 relative">
-         <!-- decorative arc -->
-         <svg class="absolute inset-0 w-full h-full text-blue-500" viewBox="0 0 100 100" fill="none">
-            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="4" stroke-dasharray="210 100" stroke-linecap="round" class="opacity-10" />
-            <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="4" stroke-dasharray="100 200" stroke-linecap="round" class="opacity-100" stroke-dashoffset="-20" />
-         </svg>
-         <UIcon name="i-heroicons-check" class="w-8 h-8 font-bold" />
+      <!-- Top Icon (Refined SSR Style) -->
+      <div class="mx-auto w-20 h-20 bg-primary-blue/10 text-primary-blue rounded-full flex items-center justify-center mb-8 relative border-4 border-white shadow-[0_0_15px_-3px_rgba(0,122,252,0.3)]">
+         <UIcon name="i-heroicons-check-badge" class="w-10 h-10" />
       </div>
 
-      <!-- Header -->
-      <h2 class="text-[28px] font-bold text-gray-900 mb-4 tracking-tight leading-snug max-w-sm mx-auto">
-         Ready to submit your application?
-      </h2>
-      <p class="text-gray-500 text-[15px] mb-8 max-w-[420px] mx-auto leading-relaxed">
-         If the details look good, submit your profile for verification. You can also save this draft and submit it from your dashboard later.
-      </p>
-
-      <!-- Buttons -->
-      <div class="flex items-center justify-center gap-4 mb-16">
-         <UButton color="neutral" variant="solid" size="lg" class="px-7 font-semibold shadow-sm text-gray-700 bg-white hover:bg-gray-50 rounded-full border border-gray-200">
-            Save as draft
-         </UButton>
-         <UButton color="primary" size="lg" class="px-8 font-semibold shadow-md rounded-full" @click="handleSubmit" :loading="isSubmitting">
-            Submit now
-         </UButton>
+      <!-- Header Section -->
+      <div class="mb-12">
+        <h1 class="text-title mb-3">Review & Submit</h1>
+        <p class="text-subtitle">Double-check your information before submitting. Once submitted, your profile will be reviewed by our administration team.</p>
       </div>
+
+      <div class="mb-10"></div>
 
       <!-- Summary Card -->
       <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-200/60 text-left w-full">
          <div class="flex items-center justify-between mb-8">
             <h3 class="text-xl font-bold text-gray-900">Summary</h3>
-            <UButton variant="ghost" color="primary" class="font-semibold text-sm px-2 hover:bg-primary-50">
+            <UButton 
+               variant="ghost" 
+               color="primary" 
+               class="font-semibold text-sm px-2 hover:bg-primary-50"
+               @click="() => navigateTo('/onboarding/lawyer/personal-info')"
+            >
                <template #leading><UIcon name="i-heroicons-pencil" class="w-4 h-4 mr-1"/></template>
                Edit
             </UButton>
@@ -79,8 +80,8 @@ const formatDate = (dateStr: string) => {
                <span class="text-gray-900 font-semibold min-w-32">NIN Status</span>
                <span class="flex items-center gap-1.5 text-gray-500 text-right">
                   <UIcon v-if="summary.ninVerification?.verified" name="i-heroicons-check-circle-solid" class="w-4 h-4 text-green-500" />
-                  <UIcon v-else name="i-heroicons-x-circle-solid" class="w-4 h-4 text-red-500" />
-                  {{ summary.ninVerification?.verified ? 'Verified' : 'Not verified' }}
+                  <UIcon v-else name="i-heroicons-clock-solid" class="w-4 h-4 text-amber-500" />
+                  {{ summary.ninVerification?.verified ? 'Verified' : 'Pending Review' }}
                </span>
             </div>
 

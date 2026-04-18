@@ -33,8 +33,10 @@ export const useOnboardingRestart = () => {
       mutationFn: onboardingRestartAPI.restart,
       onSuccess: () => {
         // Invalidate onboarding-related queries
-        queryClient.invalidateQueries({ queryKey: ['onboarding'] })
-        queryClient.invalidateQueries({ queryKey: ['lawyer-dashboard'] })
+        return Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding'] }),
+          queryClient.invalidateQueries({ queryKey: ['lawyer-dashboard'] })
+        ])
       },
     })
   }

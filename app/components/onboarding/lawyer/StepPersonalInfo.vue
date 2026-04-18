@@ -89,13 +89,41 @@ const handleSubmit = async () => {
   const dateOfBirth = state.dateOfBirth
     ? `${state.dateOfBirth.year}-${String(state.dateOfBirth.month).padStart(2, '0')}-${String(state.dateOfBirth.day).padStart(2, '0')}T00:00:00.000Z`
     : ''
-  savePersonalInfo({ ...state, dateOfBirth, gender: state.gender as 'male' | 'female' | 'other' })
+  
+  const payload = {
+    ...state,
+    dateOfBirth,
+    gender: state.gender as 'male' | 'female' | 'other'
+  }
+  
+  return new Promise<boolean>((resolve) => {
+    savePersonalInfo(payload, {
+      onSuccess: () => resolve(true),
+      onError: () => resolve(false)
+    })
+  })
+}
+
+// Register save handler for the wizard layout
+const registerSaveHandler = inject<(handler: () => Promise<boolean>) => void>('wizard-save-handler')
+if (registerSaveHandler) {
+  registerSaveHandler(handleSubmit)
 }
 </script>
 
 <template>
 
-  <div class="w-full max-w-2xl">
+    <!-- Header Section -->
+    <div class="mb-12">
+      <h1 class="text-title mb-3">Basic Information</h1>
+      <p class="text-subtitle">Enter your legal details and contact information so we can set up your professional profile.</p>
+    </div>
+
+    <!-- Name Section -->
+    <div class="space-y-8">
+      <div class="border-b border-gray-100 pb-3">
+        <h3 class="text-lg font-bold text-gray-900">Full Name</h3>
+      </div>
 
     <!-- Heading -->
     <div class="mb-6">
@@ -105,13 +133,11 @@ const handleSubmit = async () => {
       <p class="text-gray-500 text-sm">Let's start with your basic information</p>
     </div>
 
-    <!-- Stepper -->
-    <div class="mb-6">
-      <OnboardingLawyerProgressBar
-        :current-state="currentState"
-        :completed-steps="completedSteps"
-      />
-    </div>
+    <!-- Personal Details Section -->
+    <div class="space-y-8 pt-4">
+      <div class="border-b border-gray-100 pb-3">
+        <h3 class="text-lg font-bold text-gray-900">Personal Details</h3>
+      </div>
 
     <!-- Error banner -->
     <div
@@ -211,8 +237,21 @@ const handleSubmit = async () => {
           </UFormField>
         </div>
 
-        <UFormField label="City" name="city" required>
-          <UInput v-model="state.city" placeholder="City" size="md" class="w-full" />
+    <!-- Location Section -->
+    <div class="space-y-8 pt-4">
+      <div class="border-b border-gray-100 pb-3">
+        <h3 class="text-lg font-bold text-gray-900">Location</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <UFormField label="Country" name="country" required size="xl">
+          <UInput 
+            v-model="state.country" 
+            size="xl"
+            disabled
+            icon="heroicons:globe-alt"
+            class="w-full"
+          />
         </UFormField>
 
         <UFormField label="Address" name="address" required>
@@ -226,25 +265,6 @@ const handleSubmit = async () => {
           />
         </UFormField>
 
-        <!-- Divider -->
-        <div class="pt-2 border-gray-100 border-t" />
-
-        <!-- Submit -->
-        <button
-          type="submit"
-          :disabled="isSaving"
-          class="flex justify-center items-center gap-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 rounded-xl w-full h-[50px] font-semibold text-[15px] text-white tracking-tight transition-colors disabled:cursor-not-allowed"
-        >
-          <span v-if="isSaving" class="border-2 border-white/30 border-t-white rounded-full w-4 h-4 animate-spin" />
-          <template v-else>
-            Next Step
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </template>
-        </button>
-
-      </div>
-    </UForm>
-  </div>
+    <div class="pb-10"></div>
+  </UForm>
 </template>

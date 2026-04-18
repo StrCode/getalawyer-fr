@@ -1,44 +1,40 @@
 <script setup lang="ts">
 import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
+import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 
 definePageMeta({
-  layout: 'onboarding',
-  middleware: ['auth'],
+  middleware: ['auth']
 })
 
 const { useStatus } = useLawyerOnboarding()
 const { data: status, isPending, isError } = useStatus()
+const { getPathByState } = useOnboardingNavigation()
 
-const currentStepComponent = computed(() => {
-  if (!status.value) return null
-
-  switch (status.value.currentState) {
-    case 'not_started':
-    case 'personal_info':
-      return resolveComponent('OnboardingLawyerStepPersonalInfo')
-    case 'nin_verification':
-      return resolveComponent('OnboardingLawyerStepNinVerification')
-    case 'professional_info':
-      return resolveComponent('OnboardingLawyerStepProfessionalInfo')
-    case 'practice_info':
-      return resolveComponent('OnboardingLawyerStepPracticeInfo')
-    case 'review':
-      return resolveComponent('OnboardingLawyerStepReview')
-    case 'submitted':
-    case 'approved':
-      navigateTo('/onboarding/lawyer/pending')
-      return null
-    default:
-      return resolveComponent('OnboardingLawyerStepPersonalInfo')
+watchEffect(() => {
+  if (status.value) {
+    const destination = getPathByState(status.value.currentState)
+    navigateTo(destination, { replace: true })
   }
 })
 </script>
 
 <template>
-  <!-- Loading -->
-  <div v-if="isPending" class="flex flex-col justify-center items-center py-32">
-    <div class="mb-4 border-2 border-gray-200 border-t-gray-900 rounded-full w-8 h-8 animate-spin" />
-    <p class="font-medium text-gray-500 text-sm">Loading workspace...</p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div v-if="isPending" class="text-center">
+      <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+      <p class="text-gray-500 font-medium tracking-tight">Syncing application state...</p>
+    </div>
+    
+    <div v-else-if="isError" class="max-w-md mx-auto p-8 bg-white rounded-2xl shadow-sm border border-red-100 text-center">
+       <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <UIcon name="i-heroicons-exclamation-circle" class="w-8 h-8" />
+       </div>
+       <h1 class="text-xl font-bold text-gray-900 mb-2">Sync Error</h1>
+       <p class="text-gray-500 mb-6">We couldn't retrieve your application status. Please verify your connection and try again.</p>
+       <UButton color="primary" block size="lg" @click="() => refresh()">
+          Retry Sync
+       </UButton>
+    </div>
   </div>
 
   <!-- Error -->

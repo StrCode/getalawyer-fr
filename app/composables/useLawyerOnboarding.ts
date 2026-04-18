@@ -47,58 +47,12 @@ export interface PersonalInfoData {
     phoneNumber: string
 }
 
-export interface NinInitiateData {
+export interface NinSubmitData {
     nin: string
     consent: boolean
 }
 
-export interface NinInitiateResponse {
-    photo?: string | null
-    signature?: string | null
-    firstName?: string
-    lastName?: string
-    middleName?: string
-    dateOfBirth?: string
-    gender?: string
-    mobile?: string
-    religion?: string
-    birthState?: string
-    birthLGA?: string
-    birthCountry?: string
-    idNumber?: string
-    address?: {
-        town?: string
-        lga?: string
-        state?: string
-        addressLine?: string
-    }
-}
-
-export interface NinConfirmData {
-    nin: string
-    confirmed: boolean
-    verificationData: {
-        firstName?: string
-        lastName?: string
-        middleName?: string
-        dateOfBirth?: string
-        gender?: string
-        mobile?: string
-        religion?: string
-        birthState?: string
-        birthLGA?: string
-        address?: {
-            town?: string
-            lga?: string
-            state?: string
-            addressLine?: string
-        }
-        photo?: string | null
-        signature?: string | null
-    }
-}
-
-export interface NinConfirmResponse {
+export interface NinSubmitResponse {
     success: boolean
     message: string
 }
@@ -149,14 +103,8 @@ const lawyerOnboardingAPI = {
         return await httpClient.put('/api/onboarding/steps/personal-info', data)
     },
 
-    initiateNinVerification: async (data: NinInitiateData): Promise<NinInitiateResponse> => {
-        const res = await httpClient.post<any>('/api/onboarding/nin/initiate', data)
-        console.log('[useLawyerOnboarding] Raw response from initiateNinVerification:', res)
-        return res.data || res
-    },
-
-    confirmNinVerification: async (data: NinConfirmData): Promise<NinConfirmResponse> => {
-        const res = await httpClient.post<any>('/api/onboarding/nin/confirm', data)
+    saveNin: async (data: NinSubmitData): Promise<NinSubmitResponse> => {
+        const res = await httpClient.put<any>('/api/onboarding/steps/nin', data)
         return res.data || res
     },
 
@@ -207,16 +155,9 @@ export const useLawyerOnboarding = () => {
         })
     }
 
-    const useInitiateNinVerification = () => {
+    const useSaveNin = () => {
         return useMutation({
-            mutationFn: lawyerOnboardingAPI.initiateNinVerification,
-            // Status update might rely on confirmation, but good to invalidate summary if needed
-        })
-    }
-
-    const useConfirmNinVerification = () => {
-        return useMutation({
-            mutationFn: lawyerOnboardingAPI.confirmNinVerification,
+            mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
@@ -261,8 +202,7 @@ export const useLawyerOnboarding = () => {
         useStatus,
         useSummary,
         useSavePersonalInfo,
-        useInitiateNinVerification,
-        useConfirmNinVerification,
+        useSaveNin,
         useSaveProfessionalInfo,
         useSavePracticeInfo,
         useSubmitOnboarding,
