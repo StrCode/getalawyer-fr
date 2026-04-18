@@ -73,7 +73,7 @@ const practiceAreas: PracticeArea[] = [
           @click="emit('selectArea', area.name)"
           @mouseenter="hoveredId = area.id"
           @mouseleave="hoveredId = null"
-          class="group bg-white border border-neutral-200 rounded-xl p-4 flex flex-col items-center text-center cursor-pointer font-[DM_Sans] transition-colors duration-150"
+          class="group bg-white border border-neutral-200 rounded-xl p-4 flex flex-col items-center text-center cursor-pointer font-dm transition-colors duration-150"
           :class="hoveredId === area.id ? 'border-[#1d6b44]/30' : ''"
         >
           <span class="text-3xl mb-3 leading-none">{{ area.icon }}</span>

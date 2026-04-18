@@ -57,7 +57,7 @@ const consultationOptions = [
 <template>
   <section
     id="hero"
-    class="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]"
+    class="relative min-h-[auto] sm:min-h-screen pt-[80px] pb-[60px] sm:py-0 flex items-center justify-center overflow-hidden bg-[#fafafa]"
   >
     <!-- Subtle texture dots -->
     <div class="absolute inset-0 opacity-[0.03]"
@@ -85,8 +85,8 @@ const consultationOptions = [
         :initial="{ opacity: 0, y: 20 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }"
-        class="text-neutral-900 font-bold mb-5 leading-[1.12] tracking-tight"
-        style="font-size: clamp(2.4rem, 5vw, 3.8rem); font-family: 'DM Sans', sans-serif;"
+        class="text-neutral-900 font-bold mb-5 leading-[1.12] tracking-tight font-dm"
+        style="font-size: clamp(2.4rem, 5vw, 3.8rem);"
       >
         Find the Right<br>
         <span class="text-[#1d6b44]">Lawyer</span>, Fast.
@@ -117,7 +117,7 @@ const consultationOptions = [
             scale: activeField ? 1.01 : 1,
           }"
           :transition="{ duration: 0.22, ease: 'easeOut' }"
-          class="flex items-stretch bg-white rounded-full overflow-hidden search-bar-responsive border border-neutral-200/60"
+          class="flex flex-col md:flex-row items-stretch bg-white rounded-[16px] md:rounded-full overflow-hidden border border-neutral-200/60"
           :class="activeField ? 'border-[#1d6b44]/30 ring-1 ring-[#1d6b44]/10' : ''"
         >
           <!-- Practice Area -->
@@ -128,13 +128,13 @@ const consultationOptions = [
               backgroundColor: activeField === 'area' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
-            class="flex-[1.4] px-5 py-3.5 cursor-text border-r border-neutral-100 rounded-l-full search-field"
+            class="flex-1 md:flex-[1.4] px-5 py-4 md:py-3.5 cursor-text border-b md:border-b-0 md:border-r border-neutral-200 md:border-neutral-100 rounded-t-[16px] md:rounded-t-none md:rounded-l-full"
           >
             <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Practice Area</div>
             <input
               v-model="practiceArea"
               placeholder="e.g. Family Law"
-              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-[DM_Sans]"
+              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-dm"
               @focus="focusField('area')"
               @blur="blurField"
             />
@@ -147,13 +147,13 @@ const consultationOptions = [
               backgroundColor: activeField === 'location' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
-            class="flex-[1] px-5 py-3.5 cursor-text border-r border-neutral-100 search-field"
+            class="flex-1 px-5 py-4 md:py-3.5 cursor-text border-b md:border-b-0 md:border-r border-neutral-200 md:border-neutral-100"
           >
             <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Location</div>
             <input
               v-model="location"
               placeholder="City or ZIP"
-              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-[DM_Sans]"
+              class="w-full text-sm font-medium text-neutral-900 bg-transparent border-none outline-none placeholder-neutral-300 font-dm"
               @focus="focusField('location')"
               @blur="blurField"
             />
@@ -166,15 +166,15 @@ const consultationOptions = [
               backgroundColor: activeField === 'type' ? '#fdfdfd' : '#ffffff',
             }"
             :transition="{ duration: 0.18 }"
-            class="flex-[1] px-5 py-3.5 cursor-pointer search-field"
+            class="flex-1 px-5 py-4 md:py-3.5 cursor-pointer border-none"
           >
             <div class="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-0.5">Consultation</div>
-            <div class="flex gap-2 mt-0.5 consultation-buttons">
+            <div class="flex flex-wrap md:flex-nowrap gap-2 mt-0.5">
               <button
                 v-for="opt in consultationOptions"
                 :key="opt.value"
                 @click.stop="consultationType = (consultationType === opt.value ? '' : opt.value as any)"
-                class="text-xs px-2.5 py-1 rounded-full border font-medium font-[DM_Sans] transition-all duration-150"
+                class="text-xs px-2.5 py-1 rounded-full border font-medium font-dm transition-all duration-150"
                 :class="consultationType === opt.value
                   ? 'bg-[#1d6b44] text-white border-[#1d6b44]'
                   : 'bg-white text-neutral-500 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'"
@@ -185,17 +185,15 @@ const consultationOptions = [
           </motion.div>
 
           <!-- Search button -->
-          <div class="flex items-center pr-2 pl-2 bg-white search-button-wrapper">
+          <div class="flex items-center p-3 md:py-0 md:px-2 bg-white rounded-b-[16px] md:rounded-none">
             <motion.button
               :whileHover="{ scale: 1.04 }"
               :whileTap="{ scale: 0.96 }"
               :transition="{ type: 'spring', stiffness: 400, damping: 25 }"
               @click="handleSearch"
-              class="w-11 h-11 rounded-full bg-[#1d6b44] hover:bg-[#154a2f] border-none cursor-pointer flex items-center justify-center transition-colors duration-150 flex-shrink-0"
+              class="w-full h-12 md:w-11 md:h-11 rounded-xl md:rounded-full bg-[#1d6b44] hover:bg-[#154a2f] border-none cursor-pointer flex items-center justify-center transition-colors duration-150 shrink-0 text-white"
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
+              <UIcon name="i-lucide-search" class="w-4 h-4" />
             </motion.button>
           </div>
         </motion.div>
@@ -216,7 +214,7 @@ const consultationOptions = [
           :whileTap="{ scale: 0.96 }"
           :transition="{ duration: 0.15 }"
           @click="handleTag(tag)"
-          class="px-3.5 py-1.5 rounded-full bg-white border border-neutral-200 text-xs font-medium text-neutral-600 cursor-pointer font-[DM_Sans] shadow-sm"
+          class="px-3.5 py-1.5 rounded-full bg-white border border-neutral-200 text-xs font-medium text-neutral-600 cursor-pointer font-dm shadow-sm"
         >
           {{ tag }}
         </motion.button>
@@ -227,13 +225,17 @@ const consultationOptions = [
         :initial="{ opacity: 0, y: 16 }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: 0.5, delay: 0.46 }"
-        class="grid grid-cols-4 gap-4 max-w-lg mx-auto"
+        class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 max-w-lg mx-auto"
       >
         <div
           v-for="(stat, i) in statistics"
           :key="i"
-          class="text-center"
-          :class="i < statistics.length - 1 ? 'border-r border-neutral-200' : ''"
+          class="text-center border-neutral-200"
+          :class="[
+            (i === 0 || i === 2) ? 'border-r' : '',
+            i === 1 ? 'border-r-0 sm:border-r' : '',
+            i < 2 ? 'border-b sm:border-b-0 pb-4 sm:pb-0' : ''
+          ]"
         >
           <div class="text-xl font-bold text-neutral-900 mb-0.5">{{ stat.value }}</div>
           <div class="text-xs text-neutral-500 font-medium">{{ stat.label }}</div>
@@ -247,70 +249,3 @@ const consultationOptions = [
   </section>
 </template>
 
-
-<style scoped>
-/* Responsive adjustments for search bar */
-@media (max-width: 768px) {
-  .search-bar-responsive {
-    flex-direction: column;
-    border-radius: 16px !important;
-  }
-  
-  .search-field {
-    border-right: none !important;
-    border-bottom: 1px solid #e5e5e5;
-    border-radius: 0 !important;
-    padding: 16px 20px !important;
-  }
-  
-  .search-field:first-child {
-    border-radius: 16px 16px 0 0 !important;
-  }
-  
-  .search-field:last-of-type {
-    border-bottom: none;
-  }
-  
-  .consultation-buttons {
-    flex-wrap: wrap;
-  }
-  
-  .search-button-wrapper {
-    padding: 12px !important;
-    border-radius: 0 0 16px 16px !important;
-  }
-  
-  .search-button-wrapper button {
-    width: 100% !important;
-    height: 48px !important;
-    border-radius: 12px !important;
-  }
-}
-
-@media (max-width: 640px) {
-  #hero {
-    min-height: auto;
-    padding: 80px 0 60px;
-  }
-  
-  .grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-  }
-  
-  .grid-cols-4 > div:nth-child(2) {
-    border-right: none !important;
-  }
-  
-  .grid-cols-4 > div:nth-child(1),
-  .grid-cols-4 > div:nth-child(3) {
-    border-right: 1px solid #e5e5e5 !important;
-  }
-  
-  .grid-cols-4 > div:nth-child(1),
-  .grid-cols-4 > div:nth-child(2) {
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e5e5e5;
-  }
-}
-</style>

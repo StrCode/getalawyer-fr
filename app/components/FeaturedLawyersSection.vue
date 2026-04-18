@@ -159,7 +159,7 @@ const initials = (name: string) => name.split(' ').map(n => n[0]).join('')
             <motion.button
               :whileHover="{ scale: 1.03 }"
               :whileTap="{ scale: 0.97 }"
-              class="flex-1 py-2.5 rounded-lg bg-[#1d6b44] hover:bg-[#154a2f] text-white text-sm font-semibold border-none cursor-pointer font-[DM_Sans] transition-colors duration-150"
+              class="flex-1 py-2.5 rounded-lg bg-[#1d6b44] hover:bg-[#154a2f] text-white text-sm font-semibold border-none cursor-pointer font-dm transition-colors duration-150"
             >
               View Profile
             </motion.button>

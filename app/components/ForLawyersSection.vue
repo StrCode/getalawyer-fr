@@ -73,7 +73,7 @@ const perks: Perk[] = [
               :whileHover="{ scale: 1.03 }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="bg-[#1d6b44] shadow-sm px-7 py-3.5 border-none rounded-full font-[DM_Sans] font-semibold text-white text-sm cursor-pointer"
+              class="px-7 py-3.5 rounded-full bg-[#1d6b44] text-white font-semibold text-sm border-none cursor-pointer font-dm shadow-sm"
             >
               Register as a Lawyer
             </motion.button>
@@ -81,11 +81,8 @@ const perks: Perk[] = [
               :whileHover="{ backgroundColor: '#f9f9f9', borderColor: '#e5e5e5' }"
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
-              class="bg-white shadow-sm px-7 py-3.5 border border-neutral-200 rounded-full font-[DM_Sans] font-semibold text-neutral-700 text-sm cursor-pointer"
-            >
-              Learn More
+              class="px-7 py-3.5 rounded-full bg-white border border-neutral-200 text-neutral-700 font-semibold text-sm cursor-pointer font-dm shadow-sm"
             </motion.button>
-          </motion.div>
 
           <!-- Trust strip -->
           <motion.div

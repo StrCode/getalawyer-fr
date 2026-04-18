@@ -30,44 +30,44 @@ body {
   --color-primary-950: 5 46 22;
 
   /* Backgrounds */
-  --ui-bg:          oklch(1 0 0);
-  --ui-bg-muted:    oklch(0.967 0.003 264.542);
+  --ui-bg: oklch(1 0 0);
+  --ui-bg-muted: oklch(0.967 0.003 264.542);
   --ui-bg-elevated: oklch(0.967 0.003 264.542);
   --ui-bg-accented: oklch(0.928 0.006 264.531);
   --ui-bg-inverted: oklch(0.13 0.028 261.692);
 
   /* Text */
-  --ui-text-dimmed:      var(--ui-color-neutral-400);
-  --ui-text-muted:       var(--ui-color-neutral-500);
-  --ui-text-toned:       var(--ui-color-neutral-600);
-  --ui-text:             var(--ui-color-neutral-700);
+  --ui-text-dimmed: var(--ui-color-neutral-400);
+  --ui-text-muted: var(--ui-color-neutral-500);
+  --ui-text-toned: var(--ui-color-neutral-600);
+  --ui-text: var(--ui-color-neutral-700);
   --ui-text-highlighted: var(--ui-color-neutral-900);
-  --ui-text-inverted:    white;
+  --ui-text-inverted: white;
 
   /* Borders */
-  --ui-border:          oklch(0.928 0.006 264.531);
-  --ui-border-muted:    oklch(0.928 0.006 264.531);
+  --ui-border: oklch(0.928 0.006 264.531);
+  --ui-border-muted: oklch(0.928 0.006 264.531);
   --ui-border-accented: oklch(0.707 0.022 261.325);
 }
 
 .dark {
   /* Backgrounds */
-  --ui-bg:          oklch(0.13 0.028 261.692);
-  --ui-bg-muted:    oklch(0.278 0.033 256.848);
+  --ui-bg: oklch(0.13 0.028 261.692);
+  --ui-bg-muted: oklch(0.278 0.033 256.848);
   --ui-bg-elevated: oklch(0.21 0.034 264.665);
   --ui-bg-accented: oklch(0.278 0.033 256.848);
   --ui-bg-inverted: oklch(0.985 0.002 247.839);
 
   /* Text */
-  --ui-text-dimmed:      var(--ui-color-neutral-500);
-  --ui-text-muted:       var(--ui-color-neutral-400);
-  --ui-text-toned:       var(--ui-color-neutral-300);
-  --ui-text:             var(--ui-color-neutral-200);
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-400);
+  --ui-text-toned: var(--ui-color-neutral-300);
+  --ui-text: var(--ui-color-neutral-200);
   --ui-text-highlighted: var(--ui-color-neutral-50);
-  --ui-text-inverted:    var(--ui-color-neutral-900);
+  --ui-text-inverted: var(--ui-color-neutral-900);
 
   /* Borders */
-  --ui-border:          oklch(1 0 0 / 10%);
-  --ui-border-muted:    oklch(1 0 0 / 10%);
+  --ui-border: oklch(1 0 0 / 10%);
+  --ui-border-muted: oklch(1 0 0 / 10%);
   --ui-border-accented: oklch(1 0 0 / 15%);
 }

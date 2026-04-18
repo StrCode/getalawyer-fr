@@ -467,7 +467,7 @@ const handleToggleExpanded = () => {
 }
 
 .field-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.75rem;
   font-weight: 600;
   color: #0f2744;
@@ -476,7 +476,7 @@ const handleToggleExpanded = () => {
 }
 
 .field-value {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   color: #64748b;
 }
@@ -517,7 +517,7 @@ const handleToggleExpanded = () => {
 }
 
 .pill-text {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   color: #0f2744;
   font-weight: 500;
@@ -582,7 +582,7 @@ const handleToggleExpanded = () => {
   background: #faf8f4;
   border: 2px solid transparent;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   font-weight: 500;
   color: #0f2744;
@@ -608,7 +608,7 @@ const handleToggleExpanded = () => {
   background: #faf8f4;
   border: 2px solid transparent;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   color: #0f2744;
   transition: border-color 0.2s;
@@ -626,7 +626,7 @@ const handleToggleExpanded = () => {
   color: white;
   border: none;
   border-radius: 9999px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -653,7 +653,7 @@ const handleToggleExpanded = () => {
   background: #faf8f4;
   border: 2px solid transparent;
   border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm);
   font-size: 0.875rem;
   font-weight: 500;
   color: #0f2744;
