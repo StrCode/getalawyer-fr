@@ -35,25 +35,7 @@ watchEffect(() => {
           Retry Sync
        </UButton>
     </div>
-  </div>
 
-  <!-- Error -->
-  <div
-    v-else-if="isError"
-    class="flex gap-3 bg-red-50 p-5 border border-red-100 rounded-xl w-full max-w-xl text-red-700"
-  >
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="mt-0.5 shrink-0">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <p class="font-medium text-sm">Error loading onboarding status. Please try refreshing the page.</p>
+    <!-- If success, the watchEffect will handle the redirect -->
   </div>
-
-  <!-- Active step -->
-  <component
-    :is="currentStepComponent"
-    v-else-if="status"
-    :current-state="status.currentState"
-    :completed-steps="status.completedSteps"
-  />
 </template>
