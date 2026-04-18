@@ -82,7 +82,10 @@ const perks: Perk[] = [
               :whileTap="{ scale: 0.97 }"
               :transition="{ duration: 0.15 }"
               class="px-7 py-3.5 rounded-full bg-white border border-neutral-200 text-neutral-700 font-semibold text-sm cursor-pointer font-dm shadow-sm"
+            >
+              Learn More
             </motion.button>
+          </motion.div>
 
           <!-- Trust strip -->
           <motion.div
