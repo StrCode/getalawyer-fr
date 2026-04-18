@@ -1,34 +1,49 @@
-<script setup lang="ts">
-import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
+<script lang="ts">
+import { defineComponent, computed, ref, onMounted } from 'vue'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
+import { useToast, useRouter } from '#imports' // fallback for notifications
 
-const { useStatus } = useLawyerOnboarding()
-const { data: status, isPending, isFetching } = useStatus()
-const { currentStep, prevStep, currentIndex, steps, isFirst, isLast, nextStep } = useOnboardingNavigation()
-const router = useRouter()
+// We still need useStatus to show the initial loading state while syncing (Lawyers ONLY)
+import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 
-// --- Save Signal Pattern ---
-type SaveHandler = () => Promise<boolean>
-const currentSaveHandler = ref<SaveHandler | null>(null)
-const registerSaveHandler = (handler: SaveHandler) => {
-  currentSaveHandler.value = handler
-}
-provide('wizard-save-handler', registerSaveHandler)
+export default defineComponent({
+  setup() {
+    const { useStatus } = useLawyerOnboarding()
+    const { data: lawyerStatus, isPending: isLawyerPending, isFetching: isLawyerFetching } = useStatus()
 
-const isSaving = ref(false)
+    const lawyerStore = useLawyerOnboardingStore()
+    const clientStore = useClientOnboardingStore()
+
+    const { 
+       currentStep, prevStep, currentIndex, steps, isFirst, isLast, 
+       nextStep, sectionProgress, userType 
+    } = useOnboardingNavigation()
+
+    const router = useRouter()
+    const toast = useToast()
+
+    // Dynamic resolution of the active store interface
+    const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
+
+    // Layout loading indicators (clients have instantaneous local renders, lawyers fetch remote status)
+    const isPending = computed(() => userType.value === 'lawyer' ? isLawyerPending.value : false)
+    const isFetching = computed(() => userType.value === 'lawyer' ? isLawyerFetching.value : false)
+
+    const isSaving = ref(false)
 
 const handleBack = async () => {
-  if (isFirst.value) return
+  if (isFirst.value || !currentStep.value) return
   
-  if (currentSaveHandler.value) {
-    isSaving.value = true
-    try {
-      await currentSaveHandler.value()
+  isSaving.value = true
+  try {
+      // Save draft of current page before going back
+      await store.value.saveStep(currentStep.value.key)
     } catch (e) {
        console.error('[Wizard] Auto-save failed on Back:', e)
-    } finally {
-      isSaving.value = false
-    }
+  } finally {
+    isSaving.value = false
   }
   
   if (prevStep.value) {
@@ -37,44 +52,44 @@ const handleBack = async () => {
 }
 
 const handleNext = async () => {
-  if (currentSaveHandler.value) {
-    isSaving.value = true
-    try {
-      const success = await currentSaveHandler.value()
-      if (success && !isLast.value && nextStep.value) {
-         // Some components handle their own navigation on success (via invalidation)
-         // but we can ensure navigation here if the component doesn't.
+  if (!currentStep.value) return
+
+  isSaving.value = true
+  try {
+    const success = await store.value.saveStep(currentStep.value.key)
+    
+    if (success) {
+      if (!isLast.value && nextStep.value) {
+         router.push(nextStep.value.path)
+      } else if (isLast.value) {
+         // Final submit logic will naturally be in the review step, or if we want it here:
+         // If it's already on the review step, the page itself manages the submit
+         // but if not, we handle it. The store resolves to true basically.
       }
-    } catch (e) {
-      console.error('[Wizard] Save failed on Next:', e)
-    } finally {
-      isSaving.value = false
+    } else {
+      toast.add({
+        title: 'Save Failed',
+        description: 'Please correct the errors before proceeding.',
+        color: 'red'
+      })
     }
+  } catch (e) {
+    console.error('[Wizard] Save failed on Next:', e)
+  } finally {
+    isSaving.value = false
   }
 }
 
 const handleExit = async () => {
+  if (currentStep.value) {
+     isSaving.value = true
+     await store.value.saveStep(currentStep.value.key).catch(() => {})
+     isSaving.value = false
+  }
   await router.push('/dashboard')
 }
 
-// --- Segmented Progress Bar Logic (SSR Style) ---
-const sectionProgress = computed(() => {
-  const idx = currentIndex.value
-  if (idx === -1) return [0, 0, 0]
-  
-  const segments = [
-    { start: 0, end: 1, size: 2 },
-    { start: 2, end: 3, size: 2 },
-    { start: 4, end: 4, size: 1 }
-  ]
-  
-  return segments.map(seg => {
-    if (idx < seg.start) return { pct: 0, size: seg.size }
-    if (idx >= seg.end) return { pct: 100, size: seg.size }
-    const stepsInto = idx - seg.start + 1
-    return { pct: Math.round((stepsInto / seg.size) * 100), size: seg.size }
-  })
-})
+
 
 const isScrolled = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -86,6 +101,22 @@ const handleScroll = (e: Event) => {
 
 onMounted(() => {
   scrollContainer.value?.addEventListener('scroll', handleScroll)
+})
+
+    return {
+      isPending,
+      isFetching,
+      isSaving,
+      sectionProgress,
+      isFirst,
+      isLast,
+      isScrolled,
+      scrollContainer,
+      handleBack,
+      handleNext,
+      handleExit
+    }
+  }
 })
 </script>
 

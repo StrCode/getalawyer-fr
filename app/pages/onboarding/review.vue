@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
-const { useSummary, useSubmitOnboarding } = useLawyerOnboarding()
-const { data: summary, isPending: isLoadingSummary } = useSummary()
-const { mutate: submitForm, isPending: isSubmitting, error: submitError } = useSubmitOnboarding()
+definePageMeta({
+  layout: 'onboarding-wizard',
+  middleware: ['auth']
+})
 
-const handleSubmit = async () => {
-  return new Promise<boolean>((resolve) => {
-    submitForm(undefined, {
-      onSuccess: () => resolve(true),
-      onError: () => resolve(false)
-    })
-  })
-}
-
-// Register save handler for the wizard layout
-const registerSaveHandler = inject<(handler: () => Promise<boolean>) => void>('wizard-save-handler')
-if (registerSaveHandler) {
-  registerSaveHandler(handleSubmit)
-}
+const store = useLawyerOnboardingStore()
+// Use computed to ensure reactivity to summary changes
+const summary = computed(() => store.summary)
 
 // Format helpers
 const formatDate = (dateStr: string) => {
@@ -32,36 +22,21 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div v-if="isLoadingSummary" class="flex justify-center py-20">
-    <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 text-primary-200 animate-spin" />
-  </div>
-
-  <div v-else-if="summary" class="space-y-12 pb-20">
+  <div v-if="summary" class="space-y-12 pb-20">
     <!-- Header Section -->
     <div class="mb-10 text-center">
-      <div class="mx-auto w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-8 relative border-4 border-white shadow-[0_0_15px_-3px_rgba(37,99,235,0.2)]">
+      <div class="mx-auto w-20 h-20 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mb-8 relative border-4 border-white shadow-sm">
          <UIcon name="i-heroicons-clipboard-document-check" class="w-10 h-10" />
       </div>
       <h1 class="text-2xl font-bold text-gray-900 mb-2">Review your application</h1>
       <p class="text-sm text-gray-600 max-w-md mx-auto">Please take a moment to double-check your information before submitting your application for professional review.</p>
     </div>
 
-    <!-- Error Banner -->
-    <UAlert 
-      v-if="submitError" 
-      color="error" 
-      variant="soft" 
-      title="Submission Error" 
-      :description="submitError.message || 'We could not submit your application. Please try again.'"
-      icon="i-heroicons-exclamation-triangle"
-      class="mb-6"
-    />
-
     <div class="space-y-10">
       <!-- Summary Section: Personal Info -->
       <section class="space-y-6">
         <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary-blue pb-2">Basic Information</h3>
+           <h3 class="etsy-label border-b-2 border-primary-600 pb-2">Basic Information</h3>
            <UButton to="/onboarding/lawyer/personal-info" variant="link" color="primary" size="xs" class="font-bold underline">Edit</UButton>
         </div>
         
@@ -78,8 +53,8 @@ const formatDate = (dateStr: string) => {
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Identity Status</p>
               <div class="flex items-center gap-1.5 pt-0.5">
                  <UIcon :name="summary.ninVerification?.verified ? 'i-heroicons-check-badge' : 'i-heroicons-x-circle'" 
-                        :class="summary.ninVerification?.verified ? 'text-green-600' : 'text-red-500'" class="w-4 h-4" />
-                 <span class="text-[11px] font-bold" :class="summary.ninVerification?.verified ? 'text-green-700' : 'text-red-600'">
+                        :class="summary.ninVerification?.verified ? 'text-primary-600' : 'text-red-500'" class="w-4 h-4" />
+                 <span class="text-[11px] font-bold" :class="summary.ninVerification?.verified ? 'text-primary-700' : 'text-red-600'">
                     {{ summary.ninVerification?.verified ? 'Verified' : 'Action Required' }}
                  </span>
               </div>
@@ -90,7 +65,7 @@ const formatDate = (dateStr: string) => {
       <!-- Summary Section: Professional Info -->
       <section class="space-y-6">
         <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary-blue pb-2">Professional Background</h3>
+           <h3 class="etsy-label border-b-2 border-primary-600 pb-2">Professional Background</h3>
            <UButton to="/onboarding/lawyer/professional-information" variant="link" color="primary" size="xs" class="font-bold underline">Edit</UButton>
         </div>
         
@@ -109,7 +84,7 @@ const formatDate = (dateStr: string) => {
       <!-- Summary Section: Practice Details -->
       <section class="space-y-6">
         <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary-blue pb-2">Practice Details</h3>
+           <h3 class="etsy-label border-b-2 border-primary-600 pb-2">Practice Details</h3>
            <UButton to="/onboarding/lawyer/practice-information" variant="link" color="primary" size="xs" class="font-bold underline">Edit</UButton>
         </div>
         

@@ -6,12 +6,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
   @apply m-0 font-sans antialiased;
-  font-family: "Inter", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 :root {
@@ -92,7 +92,8 @@ body {
 
 /* Mapping legacy colors to new theme */
 :root {
-  --color-primary-blue: #1d6b44; /* Re-mapped to Legal Green */
+  --color-primary-blue: #1d6b44;
+  /* Re-mapped to Legal Green */
 }
 
 /* SmartStayRentals Logic Compatibility */

@@ -1,19 +1,38 @@
 <script setup lang="ts">
 import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
+import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
   middleware: ['auth']
 })
 
-const { useStatus } = useLawyerOnboarding()
-const { data: status, isPending, isError } = useStatus()
-const { getPathByState } = useOnboardingNavigation()
+const { session } = authClient.useSession()
+const { useStatus, useStartOnboarding } = useLawyerOnboarding()
+const { data: status, isPending, isError, refetch } = useStatus()
+const { mutate: startOnboarding, isPending: isStarting } = useStartOnboarding()
+const { getPathByState, firstStep, userType } = useOnboardingNavigation()
 
 watchEffect(() => {
+  if (userType.value === 'client') {
+     // Clients don't use the state machine tracker on the backend, 
+     // they just jump straight into the first designated map step natively.
+     navigateTo(firstStep.value.path, { replace: true })
+     return
+  }
+
   if (status.value) {
+    // We have a status, let's redirect to the correct step immediately
     const destination = getPathByState(status.value.currentState)
     navigateTo(destination, { replace: true })
+  } else if (isError.value && !isStarting.value) {
+    // If the tracker is truly missing, the backend returns an error.
+    // Automatically trigger the POST /api/onboarding/start init sequence.
+    startOnboarding(undefined, {
+       onSuccess: () => {
+         refetch()
+       }
+    })
   }
 })
 </script>

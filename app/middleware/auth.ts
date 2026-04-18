@@ -32,22 +32,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const userType = (user as any).userType || (user as any).role
   const onboardingCompleted = (user as any).onboarding_completed
   console.log(onboardingCompleted)
-  if (userType === 'lawyer') {
+  if (userType === 'lawyer' || userType === 'client') {
     if (!onboardingCompleted) {
-      if (!to.path.startsWith('/onboarding/lawyer')) {
-        return navigateTo('/onboarding/lawyer', { replace: true })
+      // If they haven't finished onboarding, trap them in the onboarding sandbox
+      if (!to.path.startsWith('/onboarding')) {
+        return navigateTo('/onboarding', { replace: true })
       }
-    } else if (to.path.startsWith('/onboarding/')) {
-      return navigateTo('/dashboard', { replace: true })
-    }
-  }
-
-  if (userType === 'client') {
-    if (!onboardingCompleted) {
-      if (!to.path.startsWith('/onboarding/client')) {
-        return navigateTo('/onboarding/client/location', { replace: true })
-      }
-    } else if (to.path.startsWith('/onboarding/')) {
+    } else if (to.path.startsWith('/onboarding')) {
+      // If they have finished, boot them out to the dashboard
       return navigateTo('/dashboard', { replace: true })
     }
   }

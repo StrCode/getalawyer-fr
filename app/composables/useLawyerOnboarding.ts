@@ -37,6 +37,7 @@ export interface OnboardingSummary {
 export interface PersonalInfoData {
     firstName: string
     lastName: string
+    middleName?: string
     dateOfBirth: string // ISO 8601 datetime format with timezone
     gender: 'male' | 'female' | 'other'
     country: string
@@ -72,13 +73,10 @@ export interface PracticeInfoData {
         street: string
         city: string
         state: string
-        country: string
         postalCode: string
     }
     statesOfPractice: string[]
     practiceAreas: string[]
-    specializationIds: string[]
-    yearsOfExperience: number
 }
 
 export interface SubmitResponse {
@@ -96,6 +94,11 @@ const lawyerOnboardingAPI = {
 
     getSummary: async (): Promise<OnboardingSummary> => {
         const res = await httpClient.get<any>('/api/onboarding/summary')
+        return res.data || res
+    },
+
+    startOnboarding: async (): Promise<any> => {
+        const res = await httpClient.post<any>('/api/onboarding/start')
         return res.data || res
     },
 
@@ -117,7 +120,7 @@ const lawyerOnboardingAPI = {
     },
 
     submitOnboarding: async (): Promise<SubmitResponse> => {
-        const res = await httpClient.post<any>('/api/onboarding/submit')
+        const res = await httpClient.post<any>('/api/onboarding/submit', { confirmSubmission: true })
         return res.data || res
     }
 }
@@ -128,23 +131,32 @@ export const useLawyerOnboarding = () => {
     const queryClient = useQueryClient()
 
     // Queries
-    const useStatus = () => {
+    const useStatus = (options?: { enabled?: any }) => {
         return useQuery({
             queryKey: ['lawyer', 'onboarding', 'status'],
             queryFn: lawyerOnboardingAPI.getStatus,
-            enabled: process.client, // Only fetch on client
+            enabled: options?.enabled !== undefined ? options.enabled : process.client, // Only fetch on client
         })
     }
 
-    const useSummary = () => {
+    const useSummary = (options?: { enabled?: any }) => {
         return useQuery({
             queryKey: ['lawyer', 'onboarding', 'summary'],
             queryFn: lawyerOnboardingAPI.getSummary,
-            enabled: process.client,
+            enabled: options?.enabled !== undefined ? options.enabled : process.client,
         })
     }
 
     // Mutations
+    const useStartOnboarding = () => {
+        return useMutation({
+            mutationFn: lawyerOnboardingAPI.startOnboarding,
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
+            }
+        })
+    }
+
     const useSavePersonalInfo = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.savePersonalInfo,
@@ -201,6 +213,7 @@ export const useLawyerOnboarding = () => {
     return {
         useStatus,
         useSummary,
+        useStartOnboarding,
         useSavePersonalInfo,
         useSaveNin,
         useSaveProfessionalInfo,
