@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
 definePageMeta({
@@ -10,9 +9,6 @@ definePageMeta({
 const store = useLawyerOnboardingStore()
 
 // We don't actually need to re-declare reactive state; we just bind to store.personalInfo.
-// However, the schema validation for this step can live here if we want to block "Next" visually,
-// or we can rely on the store API response. 
-// For now, we bind directly to store.personalInfo.
 const state = store.personalInfo
 
 // Options for dropdowns
@@ -28,8 +24,6 @@ const countries = ['Nigeria', 'United Kingdom', 'United States', 'Singapore']
 
 // We reconstruct the ISO date string locally with a watcher, because the store
 // needs the exact `dateOfBirth` ISO string for the backend API,
-// but the UI uses 3 separate dropdowns. 
-// To make this reactive without duplicating state:
 const dobDay = ref('')
 const dobMonth = ref('')
 const dobYear = ref('')
@@ -60,81 +54,119 @@ watch([dobDay, dobMonth, dobYear], () => {
       <h1 class="text-2xl font-bold text-gray-900 mb-2">Tell us a little bit about yourself</h1>
       <p class="text-sm text-gray-600">
         For compliance purposes, we may verify your identity with a secure third-party service. 
-        This information will never be displayed publicly. <a href="#" class="text-primary-600 hover:underline">Learn more</a>
+        This information will never be displayed publicly. <a href="#" class="text-primary hover:underline font-medium">Learn more</a>
       </p>
     </div>
 
     <div class="space-y-8">
       <!-- Country of Residence -->
       <div class="form-row">
-        <label class="etsy-label">Country of residence <span class="text-primary-600">*</span></label>
-        <USelect v-model="state.country" :items="countries" size="xl" class="etsy-input-base w-full max-w-md" />
+        <label class="etsy-label">Country of residence <span class="text-primary">*</span></label>
+        <div class="w-full max-w-md">
+          <Select v-model="state.country">
+            <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">
+              <SelectValue placeholder="Select country" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="c in countries" :key="c" :value="c">
+                {{ c }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <!-- First Name -->
       <div class="form-row">
-        <label class="etsy-label">First name <span class="text-primary-600">*</span></label>
-        <UInput v-model="state.firstName" placeholder="Jane" size="xl" class="etsy-input-base w-full max-w-md" />
+        <label class="etsy-label">First name <span class="text-primary">*</span></label>
+        <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Middle Name -->
       <div class="form-row">
         <label class="etsy-label">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
-        <UInput v-model="state.middleName" placeholder="Olu" size="xl" class="etsy-input-base w-full max-w-md" />
+        <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Last Name -->
       <div class="form-row">
-        <label class="etsy-label">Last name <span class="text-primary-600">*</span></label>
-        <UInput v-model="state.lastName" placeholder="Smith" size="xl" class="etsy-input-base w-full max-w-md" />
+        <label class="etsy-label">Last name <span class="text-primary">*</span></label>
+        <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Date of Birth -->
       <div class="form-row">
-        <label class="etsy-label">Your date of birth <span class="text-primary-600">*</span></label>
+        <label class="etsy-label">Your date of birth <span class="text-primary">*</span></label>
         <div class="flex gap-4">
-          <USelect v-model="dobDay" :items="days" placeholder="Day" size="xl" class="etsy-input-base w-24" />
-          <USelect v-model="dobMonth" :items="months" placeholder="Month" size="xl" class="etsy-input-base w-40" />
-          <USelect v-model="dobYear" :items="years" placeholder="Year" size="xl" class="etsy-input-base w-32" />
+          <div class="w-24">
+            <Select v-model="dobDay">
+              <SelectTrigger class="h-12 rounded-lg border-gray-200">
+                <SelectValue placeholder="Day" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="d in days" :key="d" :value="d">{{ d }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div class="w-40">
+            <Select v-model="dobMonth">
+              <SelectTrigger class="h-12 rounded-lg border-gray-200">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="m in months" :key="m" :value="m">{{ m }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div class="w-32">
+            <Select v-model="dobYear">
+              <SelectTrigger class="h-12 rounded-lg border-gray-200">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="y in years" :key="y" :value="y">{{ y }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      <div class="pt-8 border-t border-gray-100 italic text-[10px] text-gray-400">
+      <div class="pt-8 border-t border-gray-100 italic text-[10px] text-gray-400 font-medium">
          * Required fields for verification
       </div>
 
       <!-- Taxpayer Address Section -->
       <div class="form-row pt-4">
         <div>
-          <label class="etsy-label block">Professional address <span class="text-primary-600">*</span></label>
+          <label class="etsy-label block">Professional address <span class="text-primary">*</span></label>
           <p class="etsy-description max-w-[180px]">This should be the same address used for professional records or bar registration.</p>
         </div>
         
         <div class="space-y-6 max-w-xl">
           <div class="grid grid-cols-[120px_1fr] gap-4">
             <div>
-              <label class="text-[11px] font-bold mb-1 block">Number</label>
-              <UInput v-model="state.city" placeholder="75" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Number</label>
+              <Input v-model="state.city" placeholder="75" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
             <div>
-              <label class="text-[11px] font-bold mb-1 block">Street Name</label>
-              <UInput v-model="state.address" placeholder="Ayer Rajah Crescent" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Street Name</label>
+              <Input v-model="state.address" placeholder="Ayer Rajah Crescent" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
           </div>
           
           <div>
-            <label class="text-[11px] font-bold mb-1 block">Flat/Other <span class="text-gray-400 font-normal">(optional)</span></label>
-            <UInput placeholder="#02-02" size="xl" class="etsy-input-base" />
+            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Flat/Other <span class="text-gray-400 font-normal">(optional)</span></label>
+            <Input placeholder="#02-02" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-[11px] font-bold mb-1 block">State</label>
-              <UInput v-model="state.state" placeholder="Lagos" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
+              <Input v-model="state.state" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
             <div>
-              <label class="text-[11px] font-bold mb-1 block">Phone number</label>
-              <UInput v-model="state.phoneNumber" placeholder="100001" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Phone number</label>
+              <Input v-model="state.phoneNumber" placeholder="+234..." class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
           </div>
         </div>

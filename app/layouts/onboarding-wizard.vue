@@ -1,14 +1,29 @@
 <script lang="ts">
-import { defineComponent, computed, ref, onMounted } from 'vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
-import { useToast, useRouter } from '#imports' // fallback for notifications
+import { useRouter } from '#imports'
+import { 
+  PhScales, 
+  PhCaretRight, 
+  PhCaretLeft, 
+  PhCircleNotch, 
+  PhCheckCircle,
+  PhSignOut
+} from '@phosphor-icons/vue'
 
 // We still need useStatus to show the initial loading state while syncing (Lawyers ONLY)
 import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 
 export default defineComponent({
+  components: {
+    PhScales,
+    PhCaretRight,
+    PhCaretLeft,
+    PhCircleNotch,
+    PhCheckCircle,
+    PhSignOut
+  },
   setup() {
     const { useStatus } = useLawyerOnboarding()
     const { data: lawyerStatus, isPending: isLawyerPending, isFetching: isLawyerFetching } = useStatus()
@@ -22,7 +37,17 @@ export default defineComponent({
     } = useOnboardingNavigation()
 
     const router = useRouter()
-    const toast = useToast()
+    
+    // Fallback for notifications until we fully switch to sonner
+    const { $ui } = useNuxtApp() as any
+    const toast = {
+      add: (params: any) => {
+        // Nuxt UI fallback
+        if (process.client) {
+          (window as any).$nuxt?.$ui?.toast?.add(params)
+        }
+      }
+    }
 
     // Dynamic resolution of the active store interface
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
@@ -62,16 +87,10 @@ const handleNext = async () => {
       if (!isLast.value && nextStep.value) {
          router.push(nextStep.value.path)
       } else if (isLast.value) {
-         // Final submit logic will naturally be in the review step, or if we want it here:
-         // If it's already on the review step, the page itself manages the submit
-         // but if not, we handle it. The store resolves to true basically.
+         // Final submit logic handled by pages
       }
     } else {
-      toast.add({
-        title: 'Save Failed',
-        description: 'Please correct the errors before proceeding.',
-        color: 'red'
-      })
+      console.warn('Save failed')
     }
   } catch (e) {
     console.error('[Wizard] Save failed on Next:', e)
@@ -88,8 +107,6 @@ const handleExit = async () => {
   }
   await router.push('/dashboard')
 }
-
-
 
 const isScrolled = ref(false)
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -128,22 +145,21 @@ onMounted(() => {
       :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
     >
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-primary-blue flex items-center justify-center shadow-sm">
-           <UIcon name="i-heroicons-scale" class="w-6 h-6 text-white" />
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+           <PhScales class="w-6 h-6 text-white" />
         </div>
         <span class="text-xl font-bold tracking-tight text-gray-900">Getalawyer</span>
       </div>
 
       <div class="flex items-center gap-3">
-        <UButton 
+        <Button 
           variant="ghost" 
-          color="neutral" 
-          size="md" 
-          class="font-medium text-gray-600 hover:text-gray-900"
+          class="font-medium text-gray-600 hover:text-gray-900 gap-2"
           @click="handleExit"
         >
+          <PhSignOut class="w-4 h-4" />
           Exit & Save
-        </UButton>
+        </Button>
       </div>
     </header>
 
@@ -151,7 +167,7 @@ onMounted(() => {
     <main ref="scrollContainer" class="flex-1 overflow-y-auto relative bg-white border-t border-gray-50">
       <div class="max-w-4xl mx-auto py-16 px-6 sm:px-10 lg:px-12 relative z-10 w-full transition-all duration-300">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
-            <UIcon name="i-heroicons-arrow-path" class="w-10 h-10 text-primary-blue animate-spin mb-4" />
+            <PhCircleNotch class="w-10 h-10 text-primary animate-spin mb-4" />
             <p class="text-gray-500 font-medium tracking-tight">Syncing your progress...</p>
          </div>
          
@@ -159,8 +175,8 @@ onMounted(() => {
             <!-- Subtle fetch indicator -->
             <transition name="fade">
               <div v-if="isFetching && !isPending" class="absolute -top-10 right-0 flex items-center gap-2">
-                 <span class="text-[11px] font-bold text-primary-200 uppercase tracking-widest">Auto-saving</span>
-                 <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 text-primary-200 animate-spin" />
+                 <span class="text-[11px] font-bold text-primary/40 uppercase tracking-widest">Auto-saving</span>
+                 <PhCircleNotch class="w-4 h-4 text-primary/40 animate-spin" />
               </div>
             </transition>
             
@@ -180,7 +196,7 @@ onMounted(() => {
           :style="{ flex: seg.size }"
         >
           <div 
-            class="absolute inset-y-0 left-0 bg-primary-blue transition-all duration-700 ease-out"
+            class="absolute inset-y-0 left-0 bg-primary transition-all duration-700 ease-out"
             :style="{ width: seg.pct + '%' }"
           />
         </div>
@@ -188,41 +204,52 @@ onMounted(() => {
 
       <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div class="flex items-center gap-6 order-2 sm:order-1">
-          <UButton
-            color="neutral"
+          <Button
             variant="ghost"
-            size="xl"
             class="font-semibold text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline transition-all"
             :disabled="isFirst || isSaving"
             @click="handleBack"
           >
             Back
-          </UButton>
+          </Button>
           
           <p class="hidden lg:block text-[11px] text-gray-400 max-w-[320px] leading-snug">
             By clicking Continue, you agree to Getalawyer's 
-            <a href="#" class="text-primary-blue hover:underline">Terms of Use</a> and 
-            <a href="#" class="text-primary-blue hover:underline">Privacy Policy</a>.
+            <a href="#" class="text-primary hover:underline">Terms of Use</a> and 
+            <a href="#" class="text-primary hover:underline">Privacy Policy</a>.
           </p>
         </div>
         
         <div class="flex items-center gap-4 order-1 sm:order-2 w-full sm:w-auto">
-          <UButton
-            color="primary"
-            size="xl"
-            class="w-full sm:w-auto px-12 font-bold bg-gray-900 hover:bg-black text-white rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
-            :loading="isSaving"
+          <Button
+            variant="default"
+            class="w-full sm:w-auto px-12 h-12 font-bold bg-gray-900 hover:bg-black text-white rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+            :disabled="isSaving"
             @click="handleNext"
-            :icon="isLast ? 'i-heroicons-check' : 'i-heroicons-arrow-right'"
-            trailing
           >
-            {{ isSaving ? 'Saving...' : isLast ? 'Submit Application' : 'Continue' }}
-          </UButton>
+            <template v-if="isSaving">
+               <PhCircleNotch class="w-4 h-4 animate-spin mr-2" />
+              Saving...
+            </template>
+            <template v-else>
+               {{ isLast ? 'Submit Application' : 'Continue' }}
+               <component :is="isLast ? 'PhCheckCircle' : 'PhCaretRight'" class="ml-2 w-5 h-5" />
+            </template>
+          </Button>
         </div>
       </div>
     </footer>
   </div>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {

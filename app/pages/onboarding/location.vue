@@ -3,10 +3,10 @@
     <!-- Green result pill -->
     <div
       v-if="storeState.country && storeState.state"
-      class="inline-flex items-center gap-2 bg-primary-100 mb-6 px-4 py-2 rounded-full font-medium text-primary-700 text-sm"
+      class="inline-flex items-center gap-2 bg-primary/10 mb-6 px-4 py-2 rounded-full font-medium text-primary text-sm shadow-sm border border-primary/10"
     >
-      <Icon name="i-hugeicons-checkmark-circle-02" class="w-4 h-4" />
-      <span>Lawyers available in <strong>{{ selectedStateName || selectedCountryName }}</strong>!</span>
+      <PhCheckCircle class="w-4 h-4" />
+      <span>Lawyers available in <strong>{{ selectedStateName || selectedCountryName || 'your region' }}</strong>!</span>
     </div>
 
     <!-- Heading -->
@@ -14,23 +14,23 @@
       <h1 class="mb-2 font-bold text-[28px] text-gray-900 tracking-tight">
         Where are you located?
       </h1>
-      <p class="text-gray-500 text-sm leading-relaxed">
+      <p class="text-gray-500 text-sm leading-relaxed font-medium">
         We'll use your location to filter qualified lawyers near you.
       </p>
     </div>
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex justify-center items-center gap-3 py-10">
-      <Icon name="i-hugeicons-loading-03" class="w-5 h-5 text-primary-600 animate-spin" />
-      <span class="text-gray-400 text-sm">Loading regions...</span>
+      <PhCircleNotch class="w-5 h-5 text-primary animate-spin" />
+      <span class="text-gray-400 text-sm font-bold tracking-tight">Loading regions...</span>
     </div>
 
     <!-- Error -->
     <div
       v-else-if="isError"
-      class="flex items-start gap-2 bg-red-50 mb-6 p-4 border border-red-100 rounded text-red-600 text-sm"
+      class="flex items-start gap-2 bg-red-50 mb-6 p-4 border border-red-100 rounded-xl text-red-600 text-sm font-medium"
     >
-      <Icon name="i-hugeicons-alert-circle" class="mt-0.5 w-4 h-4 shrink-0" />
+      <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
       <span>Failed to load location data. Please refresh and try again.</span>
     </div>
 
@@ -38,17 +38,13 @@
     <div v-else class="space-y-8">
       <!-- Country -->
       <div class="form-row">
-        <label class="etsy-label">Country <span class="text-primary-600">*</span></label>
+        <label class="etsy-label">Country <span class="text-primary">*</span></label>
         <div class="w-full max-w-md">
            <div class="relative">
-             <select
-               :value="storeState.country"
-               disabled
-               class="etsy-input-base w-full bg-gray-50 text-gray-600 appearance-none cursor-not-allowed"
-             >
-               <option value="NG">Nigeria</option>
-             </select>
-             <Icon name="i-hugeicons-lock-01" class="top-1/2 right-3 absolute w-4 h-4 text-gray-400 -translate-y-1/2 pointer-events-none" />
+             <div class="etsy-input-base w-full bg-gray-50 text-gray-400 flex items-center justify-between h-12 px-4 rounded-lg border border-gray-100 cursor-not-allowed font-medium">
+               <span>Nigeria</span>
+               <PhLock class="w-4 h-4" />
+             </div>
            </div>
            <p class="etsy-description">Currently available in Nigeria only</p>
         </div>
@@ -56,19 +52,20 @@
 
       <!-- State -->
       <div class="form-row">
-        <label class="etsy-label">State / Region <span class="text-primary-600">*</span></label>
+        <label class="etsy-label">State / Region <span class="text-primary">*</span></label>
         <div class="w-full max-w-md">
-           <USelectMenu
-             v-model="selectedState"
-             :items="availableStates"
-             placeholder="Select state or region"
-             size="xl"
-             class="etsy-input-base w-full"
-             @update:model-value="handleStateChange"
-           />
+           <Select :model-value="storeState.state" @update:model-value="handleStateIdChange">
+             <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">
+               <SelectValue :placeholder="selectedStateName || 'Select state or region'" />
+             </SelectTrigger>
+             <SelectContent>
+               <SelectItem v-for="s in availableStates" :key="s.value" :value="s.value">
+                 {{ s.label }}
+               </SelectItem>
+             </SelectContent>
+           </Select>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -76,6 +73,12 @@
 <script setup lang="ts">
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
+import { 
+  PhCheckCircle, 
+  PhCircleNotch, 
+  PhWarningCircle, 
+  PhLock 
+} from '@phosphor-icons/vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -84,8 +87,6 @@ definePageMeta({
 
 const store = useClientOnboardingStore()
 const storeState = store.clientState
-
-const selectedState = ref<{ label: string; value: string } | undefined>(undefined)
 
 const { useCountries } = useClientOnboarding()
 const { data: countriesData, isPending: isLoading, isError } = useCountries()
@@ -107,21 +108,7 @@ const selectedStateName = computed(() => {
   return stateItem?.label || ''
 })
 
-watch(availableStates, (states) => {
-   if (storeState.state && !selectedState.value) {
-      const stateItem = states.find((s: any) => s.value === storeState.state)
-      if (stateItem) {
-        selectedState.value = stateItem
-      }
-   }
-}, { immediate: true })
-
-const handleStateChange = (value: { label: string; value: string } | undefined) => {
-  if (value) {
-    storeState.state = value.value
-    selectedState.value = value
-  }
+const handleStateIdChange = (value: string) => {
+  storeState.state = value
 }
-
-// We rely on the layout's "Next" button to trigger the store's saveStep('location')
 </script>

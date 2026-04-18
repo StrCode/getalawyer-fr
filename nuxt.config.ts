@@ -21,9 +21,21 @@ export default defineNuxtConfig({
     '@peterbud/nuxt-query',
     '@pinia/nuxt',
     'nuxt-viewport',
+    'shadcn-nuxt',
   ],
-  leaflet: {
-    markerCluster: false,
+  shadcn: {
+    /**
+     * Prefix for all the imported component.
+     * @default "Ui"
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * Will respect the Nuxt aliases.
+     * @link https://nuxt.com/docs/api/nuxt-config#alias
+     * @default "@/components/ui"
+     */
+    componentDir: '@/app/components/ui'
   },
   viewport: {
     breakpoints: {
@@ -63,7 +75,7 @@ export default defineNuxtConfig({
         styles: ['normal', 'italic'],
         subsets: ['latin'],
       },
-       {
+      {
         name: 'Poppins',
         provider: 'google',
         weights: [200, 300, 400, 500, 600, 700],

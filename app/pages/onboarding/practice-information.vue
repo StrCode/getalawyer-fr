@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useSpecializations } from '~/composables/useSpecializations'
+import { 
+  PhCircleNotch, 
+  PhMagnifyingGlass, 
+  PhX, 
+  PhCheck,
+  PhMapPin,
+  PhCheckCircle,
+  PhCaretDown
+} from '@phosphor-icons/vue'
 
 definePageMeta({
   layout: 'onboarding-wizard',
@@ -29,7 +37,7 @@ const nigerianStatesOptions = [
   'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa', 
   'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 
   'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara', 'FCT Abuja'
-].map(s => ({ label: s, value: s }))
+]
 
 const selectedCount = computed(() => state.practiceAreas.length)
 const progressPercent = computed(() => (selectedCount.value / 5) * 100)
@@ -42,12 +50,20 @@ const toggle = (id: string) => {
   state.practiceAreas = areas.includes(id) ? areas.filter(s => s !== id) : [...areas, id]
 }
 
+const toggleState = (s: string) => {
+  if (state.statesOfPractice.includes(s)) {
+    state.statesOfPractice = state.statesOfPractice.filter(item => item !== s)
+  } else {
+    state.statesOfPractice = [...state.statesOfPractice, s]
+  }
+}
+
 // We rely on the layout's "Next" button to trigger the store's saveStep('practice-information')
 </script>
 
 <template>
   <div v-if="isLoadingSpecs" class="flex justify-center py-20">
-    <UIcon name="i-heroicons-arrow-path" class="w-12 h-12 text-primary-200 animate-spin" />
+    <PhCircleNotch class="w-12 h-12 text-primary/20 animate-spin" />
   </div>
 
   <div v-else class="space-y-12 pb-20">
@@ -62,7 +78,7 @@ const toggle = (id: string) => {
       <div class="form-row">
         <label class="etsy-label">Law Firm Name <span class="text-gray-400 font-normal">(Optional)</span></label>
         <div class="w-full max-w-md">
-           <UInput v-model="state.firmName" placeholder="e.g. Adeyemi & Partners" size="xl" class="etsy-input-base w-full" />
+           <Input v-model="state.firmName" placeholder="e.g. Adeyemi & Partners" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
            <p class="etsy-description">Leave empty if you are a Solo Practitioner.</p>
         </div>
       </div>
@@ -70,29 +86,34 @@ const toggle = (id: string) => {
       <!-- Practice Areas -->
       <div class="form-row pt-4">
         <div>
-           <label class="etsy-label block">Practice Areas <span class="text-primary-600">*</span></label>
+           <label class="etsy-label block">Practice Areas <span class="text-primary">*</span></label>
            <p class="etsy-description max-w-[180px]">Select up to 5 areas that match your legal specializations.</p>
         </div>
         
         <div class="space-y-4 w-full">
           <div class="relative w-full max-w-xl">
-            <UInput v-model="query" icon="i-heroicons-magnifying-glass" size="xl" placeholder="Search legal areas..." class="etsy-input-base w-full" />
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <PhMagnifyingGlass class="w-5 h-5" />
+              </div>
+              <Input v-model="query" placeholder="Search legal areas..." class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full pl-10" />
+            </div>
             
             <div class="mt-4 flex justify-between items-center px-1">
               <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Selected ({{ selectedCount }}/5)</span>
               <div class="h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
-                <div class="bg-primary-600 h-full transition-all duration-300" :style="{ width: `${progressPercent}%` }" />
+                <div class="bg-primary h-full transition-all duration-300" :style="{ width: `${progressPercent}%` }" />
               </div>
             </div>
 
             <div v-if="selectedCount > 0" class="flex flex-wrap gap-2 mt-4">
-              <button v-for="id in state.practiceAreas" :key="id" type="button" class="inline-flex items-center gap-1.5 bg-primary-50 hover:bg-primary-100 py-1.5 pr-2 pl-3 border border-primary-200 rounded-full font-bold text-primary-600 text-[11px] transition-all cursor-pointer shadow-sm active:scale-95" @click="toggle(id)">
+              <button v-for="id in state.practiceAreas" :key="id" type="button" class="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 py-1.5 pr-2 pl-3 border border-primary/20 rounded-full font-bold text-primary text-[11px] transition-all cursor-pointer shadow-sm active:scale-95" @click="toggle(id)">
                 {{ nameById(id) }}
-                <UIcon name="i-heroicons-x-mark" class="w-3.5 h-3.5" />
+                <PhX class="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div class="mt-6 border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm">
+            <div class="mt-6 border border-gray-100 rounded-xl overflow-hidden bg-white shadow-sm ring-1 ring-black/5">
                 <div v-if="filtered.length === 0" class="py-10 text-center text-gray-400 text-sm italic">
                    No legal areas match "{{ query }}"
                 </div>
@@ -102,14 +123,14 @@ const toggle = (id: string) => {
                     :key="spec.id" 
                     type="button" 
                     class="group p-3 border rounded-lg text-left transition-all duration-150 relative" 
-                    :class="isSelected(spec.id) ? 'border-primary-600 bg-primary-50/50' : isDisabled(spec.id) ? 'border-gray-50 bg-gray-50 opacity-50 cursor-not-allowed' : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer'" 
+                    :class="isSelected(spec.id) ? 'border-primary bg-primary/5' : isDisabled(spec.id) ? 'border-gray-50 bg-gray-50 opacity-50 cursor-not-allowed' : 'border-gray-200 bg-white hover:border-gray-300 cursor-pointer'" 
                     :disabled="isDisabled(spec.id)" 
                     @click="!isDisabled(spec.id) && toggle(spec.id)"
                   >
-                    <p class="font-bold text-xs text-gray-900 mb-0.5">{{ spec.name }}</p>
-                    <p class="text-[10px] text-gray-400 line-clamp-1 leading-snug">{{ spec.description }}</p>
+                    <p class="font-bold text-[13px] text-gray-900 mb-0.5 tracking-tight">{{ spec.name }}</p>
+                    <p class="text-[10px] text-gray-400 line-clamp-1 leading-snug font-medium">{{ spec.description }}</p>
                     <div v-if="isSelected(spec.id)" class="absolute top-2 right-2">
-                       <UIcon name="i-heroicons-check-circle" class="w-4 h-4 text-primary-600" />
+                       <PhCheckCircle class="w-4.5 h-4.5 text-primary" />
                     </div>
                   </button>
                 </div>
@@ -120,9 +141,51 @@ const toggle = (id: string) => {
 
       <!-- States of Practice -->
       <div class="form-row">
-        <label class="etsy-label">States of Practice <span class="text-primary-600">*</span></label>
+        <label class="etsy-label">States of Practice <span class="text-primary">*</span></label>
         <div class="w-full max-w-xl">
-           <USelectMenu v-model="state.statesOfPractice" :items="nigerianStatesOptions" value-key="value" size="xl" multiple placeholder="Select states where you practice" icon="i-heroicons-map" class="etsy-input-base w-full" />
+           <Popover>
+             <PopoverTrigger as-child>
+               <div class="w-full h-12 px-4 rounded-lg border border-gray-200 flex items-center justify-between cursor-pointer hover:border-gray-300 transition-colors bg-white">
+                 <div class="flex items-center gap-2 overflow-hidden">
+                   <PhMapPin class="w-5 h-5 text-gray-400 shrink-0" />
+                   <div v-if="state.statesOfPractice.length === 0" class="text-gray-400 truncate font-medium">Select states where you practice</div>
+                   <div v-else class="flex gap-1.5 overflow-hidden">
+                     <span v-for="s in state.statesOfPractice.slice(0, 2)" :key="s" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-bold text-gray-700 shrink-0">
+                       {{ s }}
+                     </span>
+                     <span v-if="state.statesOfPractice.length > 2" class="text-[11px] font-bold text-gray-400 pt-0.5">
+                       +{{ state.statesOfPractice.length - 2 }} more
+                     </span>
+                   </div>
+                 </div>
+                 <div class="text-gray-400">
+                   <PhCaretDown class="w-4 h-4" />
+                 </div>
+               </div>
+             </PopoverTrigger>
+             <PopoverContent class="w-[var(--reka-popover-trigger-width)] p-0" align="start">
+               <Command>
+                 <CommandInput placeholder="Filter states..." />
+                 <CommandList class="max-h-[300px]">
+                   <CommandEmpty>No states found.</CommandEmpty>
+                   <CommandGroup>
+                     <CommandItem 
+                        v-for="s in nigerianStatesOptions" 
+                        :key="s" 
+                        :value="s"
+                        @select="toggleState(s)"
+                        class="flex items-center gap-2 cursor-pointer"
+                     >
+                       <div class="w-4 h-4 border rounded flex items-center justify-center transition-colors" :class="state.statesOfPractice.includes(s) ? 'bg-primary border-primary' : 'border-gray-300'">
+                         <PhCheck v-if="state.statesOfPractice.includes(s)" class="w-3 h-3 text-white" />
+                       </div>
+                       {{ s }}
+                     </CommandItem>
+                   </CommandGroup>
+                 </CommandList>
+               </Command>
+             </PopoverContent>
+           </Popover>
            <p class="etsy-description">List all states where you are currently licensed or actively practicing.</p>
         </div>
       </div>
@@ -130,30 +193,30 @@ const toggle = (id: string) => {
       <!-- Office Address Section -->
       <div class="form-row pt-4">
         <div>
-          <label class="etsy-label block">Primary office address <span class="text-primary-600">*</span></label>
+          <label class="etsy-label block">Primary office address <span class="text-primary">*</span></label>
           <p class="etsy-description max-w-[180px]">The physical location of your principal law office.</p>
         </div>
         
         <div class="space-y-6 max-w-xl">
           <div>
-            <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">Street Address</label>
-            <UInput v-model="state.officeAddress.street" placeholder="e.g. 123 Marina Street" size="xl" class="etsy-input-base w-full" />
+            <label class="text-[11px] font-bold mb-1.5 block uppercase tracking-wider text-gray-400">Street Address</label>
+            <Input v-model="state.officeAddress.street" placeholder="e.g. 123 Marina Street" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
           
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">City</label>
-              <UInput v-model="state.officeAddress.city" placeholder="Lagos" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block uppercase tracking-wider text-gray-400">City</label>
+              <Input v-model="state.officeAddress.city" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
             <div>
-              <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">State</label>
-              <UInput v-model="state.officeAddress.state" placeholder="Lagos State" size="xl" class="etsy-input-base" />
+              <label class="text-[11px] font-bold mb-1.5 block uppercase tracking-wider text-gray-400">State</label>
+              <Input v-model="state.officeAddress.state" placeholder="Lagos State" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] font-bold mb-1 block uppercase tracking-wider text-gray-400">Postal Code</label>
-            <UInput v-model="state.officeAddress.postalCode" placeholder="100001" size="xl" class="etsy-input-base w-40" />
+            <label class="text-[11px] font-bold mb-1.5 block uppercase tracking-wider text-gray-400">Postal Code</label>
+            <Input v-model="state.officeAddress.postalCode" placeholder="100001" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-40" />
           </div>
         </div>
       </div>
