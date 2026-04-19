@@ -17,7 +17,6 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxt/image',
-    '@nuxt/ui',
     '@nuxtjs/seo',
     '@peterbud/nuxt-query',
     '@pinia/nuxt',
