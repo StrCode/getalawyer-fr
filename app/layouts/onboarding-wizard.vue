@@ -64,29 +64,13 @@ export default defineComponent({
 
     const isSaving = ref(false)
 
-    const handleBack = async () => {
-      if (isFirst.value || !currentStep.value) return
-
-      isSaving.value = true
-      try {
-        const saved = await store.value.saveStep(currentStep.value.key)
-        if (!saved) {
-          toast.error('Could not save', {
-            description: 'Fix any issues above, then try Back again.'
-          })
-          return
-        }
-        if (prevStep.value) {
-          router.push(prevStep.value.path)
-        }
-      } catch (e) {
-        console.error('[Wizard] Save failed on Back:', e)
-        toast.error('Could not save', {
-          description: 'Your changes could not be saved. Try again before going back.'
-        })
-      } finally {
-        isSaving.value = false
+    /** Navigate only — form state lives in Pinia and survives route changes. Persisting is Next / Exit. */
+    const handleBack = () => {
+      if (isFirst.value || !prevStep.value) return
+      if (userType.value === 'lawyer') {
+        lawyerStore.validationError = null
       }
+      router.push(prevStep.value.path)
     }
 
     const handleNext = async () => {
