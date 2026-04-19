@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { formatScnForDisplay } from '~/lib/scn'
 import { 
   PhNotePencil, 
   PhCheckCircle, 
@@ -23,6 +24,11 @@ const formatDate = (dateStr: string) => {
     month: 'long',
     year: 'numeric'
   })
+}
+
+const formatScn = (raw: string | undefined) => {
+  const s = formatScnForDisplay(raw)
+  return s || 'Not provided'
 }
 </script>
 
@@ -95,8 +101,8 @@ const formatDate = (dateStr: string) => {
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">NBA Supreme Court Number</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug font-mono">{{ summary.professional?.barNumber || 'Not provided' }}</p>
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Supreme Court enrolment (SCN)</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug font-mono">{{ formatScn(summary.professional?.barNumber) }}</p>
            </div>
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Year of Call</p>
