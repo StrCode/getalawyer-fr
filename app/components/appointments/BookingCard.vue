@@ -8,75 +8,75 @@
           </UBadge>
           <span class="font-medium text-gray-500 text-sm">{{ booking.bookingReference }}</span>
         </div>
-        
+
         <div>
           <h4 class="font-semibold text-gray-900">{{ booking.client?.name || 'Client' }}</h4>
           <p class="text-gray-600 text-sm">{{ booking.consultationType?.name || 'Consultation' }}</p>
         </div>
-        
+
         <div class="flex items-center gap-4 text-gray-600 text-sm">
           <div class="flex items-center gap-1.5">
-            <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
+            <PhCalendarBlank class="w-4 h-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
+            <PhClock class="w-4 h-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
+            <component :is="meetingTypeIcon(booking.meetingType)" class="w-4 h-4" />
             <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
           </div>
         </div>
-        
+
         <!-- Engagement & Conversation Indicators -->
         <div v-if="booking.conversationId || booking.engagementOutcome" class="flex items-center gap-2">
-          <UBadge 
-            v-if="booking.conversationId" 
-            color="blue" 
-            variant="subtle" 
+          <UBadge
+            v-if="booking.conversationId"
+            color="blue"
+            variant="subtle"
             size="sm"
             class="flex items-center gap-1"
           >
-            <UIcon name="i-heroicons-chat-bubble-left-right" class="w-3 h-3" />
+            <PhChatsCircle class="w-3 h-3" />
             <span>Conversation</span>
           </UBadge>
-          <UBadge 
-            v-if="booking.engagementOutcome === 'client_hired'" 
-            color="green" 
-            variant="subtle" 
+          <UBadge
+            v-if="booking.engagementOutcome === 'client_hired'"
+            color="green"
+            variant="subtle"
             size="sm"
             class="flex items-center gap-1"
           >
-            <UIcon name="i-heroicons-briefcase" class="w-3 h-3" />
+            <PhBriefcase class="w-3 h-3" />
             <span>Case Created</span>
           </UBadge>
-          <UBadge 
-            v-if="booking.engagementOutcome === 'consultation_only'" 
-            color="gray" 
-            variant="subtle" 
+          <UBadge
+            v-if="booking.engagementOutcome === 'consultation_only'"
+            color="gray"
+            variant="subtle"
             size="sm"
           >
             Consultation Only
           </UBadge>
         </div>
-        
+
         <div v-if="booking.clientNotes" class="bg-gray-50 p-3 rounded-lg text-gray-600 text-sm">
           <p class="mb-1 font-medium text-gray-700">Client Notes:</p>
           <p>{{ booking.clientNotes }}</p>
         </div>
       </div>
-      
+
       <div class="flex flex-col gap-2">
-        <UButton 
-          label="Confirm" 
+        <UButton
+          label="Confirm"
           color="primary"
           size="sm"
           class="bg-[#007AFC]"
           @click="$emit('confirm', booking.id)"
         />
-        <UButton 
-          label="Cancel" 
+        <UButton
+          label="Cancel"
           color="neutral"
           variant="ghost"
           size="sm"
@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import { PhBriefcase, PhCalendarBlank, PhChatsCircle, PhClock } from '@phosphor-icons/vue'
 import type { Booking } from '~/types'
 
 defineProps<{
@@ -100,19 +101,10 @@ defineEmits<{
 }>()
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US', { 
-    weekday: 'short', 
-    month: 'short', 
-    day: 'numeric' 
+  return new Date(date).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
   })
-}
-
-const getMeetingIcon = (type: string) => {
-  switch (type) {
-    case 'video': return 'i-hugeicons-video-01'
-    case 'phone': return 'i-hugeicons-call'
-    case 'in_person': return 'i-hugeicons-location-01'
-    default: return 'i-hugeicons-calendar-03'
-  }
 }
 </script>

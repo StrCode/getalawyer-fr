@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { PhMagnifyingGlass } from '@phosphor-icons/vue'
+
 interface EmptyStateProps {
   title: string
   description: string
@@ -21,10 +23,7 @@ const handleAction = () => {
   <div class="empty-state">
     <UCard>
       <div class="empty-state-content">
-        <UIcon 
-          name="i-heroicons-magnifying-glass-circle" 
-          class="empty-state-icon"
-        />
+        <PhMagnifyingGlass class="empty-state-icon" />
         <h3 class="empty-state-title">
           {{ title }}
         </h3>

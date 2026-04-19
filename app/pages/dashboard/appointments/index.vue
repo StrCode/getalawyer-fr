@@ -11,7 +11,7 @@
     />
     
     <div v-if="isLoading" class="flex justify-center py-12">
-      <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+      <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
     </div>
     
     <div v-else-if="isError" class="py-12 text-red-500 text-center">
@@ -54,7 +54,7 @@
         </template>
         
         <div v-if="todayBookings.length === 0" class="p-8 text-gray-500 text-center">
-          <UIcon name="i-hugeicons-calendar-03" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
+          <PhCalendar class="mx-auto mb-3 w-12 h-12 text-gray-300" />
           <p>No appointments scheduled for today</p>
         </div>
         <div v-else class="divide-y divide-gray-200">
@@ -76,7 +76,7 @@
         </template>
         
         <div v-if="upcomingBookings.length === 0" class="p-8 text-gray-500 text-center">
-          <UIcon name="i-hugeicons-calendar-check-01" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
+          <PhCalendarCheck class="mx-auto mb-3 w-12 h-12 text-gray-300" />
           <p>No upcoming appointments</p>
         </div>
         <div v-else class="divide-y divide-gray-200">
@@ -147,8 +147,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
+import { PhCalendar, PhCalendarCheck, PhCircleNotch } from '@phosphor-icons/vue'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
 import BookingCard from '~/components/appointments/BookingCard.vue'

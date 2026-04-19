@@ -1,12 +1,15 @@
-j<template>
+<template>
   <div class="space-y-6 mx-auto p-6 max-w-5xl">
     <div class="flex items-center gap-4">
       <UButton 
-        icon="i-hugeicons-arrow-left-01" 
         color="neutral" 
         variant="ghost" 
         to="/dashboard/appointments" 
-      />
+      >
+        <template #leading>
+          <PhArrowLeft class="size-5 shrink-0" />
+        </template>
+      </UButton>
       <UPageHeader 
         title="Appointment Details"
         :description="booking ? `Reference: ${booking.bookingReference}` : 'Loading...'"
@@ -28,7 +31,7 @@ j<template>
     </div>
 
     <div v-if="isLoading" class="flex justify-center py-12">
-      <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+      <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
     </div>
     
     <div v-else-if="isError || !booking" class="py-12 text-red-500 text-center">
@@ -98,11 +101,14 @@ j<template>
                   :to="booking.meetingUrl"
                   target="_blank"
                   label="Join Video Call"
-                  icon="i-hugeicons-video-01"
                   color="primary"
                   size="sm"
                   class="bg-[#007AFC]"
-                />
+                >
+                  <template #leading>
+                    <PhVideoCamera class="size-4 shrink-0" />
+                  </template>
+                </UButton>
               </dd>
             </div>
             <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
@@ -143,7 +149,7 @@ j<template>
             
             <div v-if="booking.engagementOutcome === 'client_hired'" class="bg-green-50 p-4 border border-green-200 rounded-lg">
               <div class="flex items-start gap-2">
-                <UIcon name="i-heroicons-check-circle" class="mt-0.5 w-5 h-5 text-green-600" />
+                <PhCheckCircle class="mt-0.5 w-5 h-5 text-green-600" />
                 <div>
                   <p class="font-semibold text-green-900 text-sm">Case Created</p>
                   <p class="mt-0.5 text-green-700 text-xs">
@@ -154,10 +160,12 @@ j<template>
                     color="primary"
                     size="xs"
                     class="mt-2"
-                    icon="i-heroicons-arrow-right"
-                    trailing
                     @click="navigateToCase"
-                  />
+                  >
+                    <template #trailing>
+                      <PhArrowRight class="size-4 shrink-0" />
+                    </template>
+                  </UButton>
                 </div>
               </div>
             </div>
@@ -177,10 +185,13 @@ j<template>
             <UButton
               label="Open Conversation"
               color="primary"
-              icon="i-heroicons-chat-bubble-left-right"
               block
               :to="`/dashboard/messages?conversation=${booking.conversationId}`"
-            />
+            >
+              <template #leading>
+                <PhChatCircle class="size-5 shrink-0" />
+              </template>
+            </UButton>
           </div>
         </UCard>
 
@@ -220,7 +231,7 @@ j<template>
           
           <div class="space-y-4">
             <div class="flex items-start gap-3">
-              <UIcon name="i-hugeicons-calendar-03" class="mt-0.5 w-5 h-5 text-gray-400" />
+              <PhCalendar class="mt-0.5 w-5 h-5 text-gray-400" />
               <div>
                 <p class="font-medium text-gray-900 text-sm">
                   {{ formatDate(booking.scheduledDate) }}
@@ -264,9 +275,12 @@ j<template>
               label="Record Engagement Outcome" 
               color="primary"
               class="bg-blue-600 hover:bg-blue-700 w-full"
-              icon="i-heroicons-clipboard-document-check"
               @click="isEngagementModalOpen = true"
-            />
+            >
+              <template #leading>
+                <PhClipboard class="size-5 shrink-0" />
+              </template>
+            </UButton>
             
             <UButton 
               v-if="booking.status === 'confirmed' && isPastAppointment"
@@ -364,6 +378,16 @@ j<template>
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import {
+  PhArrowLeft,
+  PhArrowRight,
+  PhCalendar,
+  PhChatCircle,
+  PhCheckCircle,
+  PhCircleNotch,
+  PhClipboard,
+  PhVideoCamera
+} from '@phosphor-icons/vue'
 import { useBookings } from '~/composables/useBookings'
 
 definePageMeta({ layout: 'dashboard' })

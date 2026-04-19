@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PhMagnifyingGlass } from '@phosphor-icons/vue'
 import { motion } from 'motion-v'
 import { ref } from 'vue'
 
@@ -193,7 +194,7 @@ const consultationOptions = [
               @click="handleSearch"
               class="w-full h-12 md:w-11 md:h-11 rounded-xl md:rounded-full bg-[#1d6b44] hover:bg-[#154a2f] border-none cursor-pointer flex items-center justify-center transition-colors duration-150 shrink-0 text-white"
             >
-              <UIcon name="i-lucide-search" class="w-4 h-4" />
+              <PhMagnifyingGlass class="w-4 h-4" />
             </motion.button>
           </div>
         </motion.div>

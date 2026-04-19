@@ -1,200 +1,132 @@
 <template>
-  <div class="flex bg-[#F1F3F5] h-screen">
-    <UDashboardGroup unit="px">
-      <!-- SIDEBAR -->
-      <UDashboardSidebar 
-        v-model:collapsed="sidebarCollapsed"
-        collapsible
-        :default-size="250"
-        :min-size="250"
-        :max-size="350"
-        :ui="{ root: 'border-r-0' }"
-      >
-        <!-- SIDEBAR HEADER -->
-        <template #header="{ collapsed, collapse }">
-          <div class="flex flex-row justify-between items-center w-full">
-            <div class="w-3/4">
-              <img 
-                v-if="!collapsed" 
-                src="/getalawyer-logo.svg" 
-                alt="GetALawyer" 
-                class="h-9" 
-              />
-            </div>
-            <UButton 
-              icon="i-heroicons-chevron-right" 
-              color="neutral" 
-              variant="ghost" 
-              size="sm"
-              @click="collapse?.(!collapsed)"
-            />
-          </div>
-        </template>
-
-        <!-- SIDEBAR CONTENT -->
-        <template #default>
-          <!-- Search Bar -->
-          <UInput 
-            icon="i-heroicons-magnifying-glass" 
-            placeholder="Search..." 
-            :ui="{
-              base: 'h-9 rounded-lg shadow-none bg-white'
-            }"
-          />
-
-          <!-- Menu Section Title -->
-          <div class="text-[#8E8E93] text-xs">MENU</div>
-
-          <!-- Main Navigation Links -->
-          <UNavigationMenu
-            :collapsed="sidebarCollapsed"
-            :items="mainLinks"
-            orientation="vertical"
-            variant="link"
-            :ui="{
-              root: 'relative flex gap-1 [&>div]:min-w-0',
-              link: 'text-sm font-normal h-9 gap-2 rounded-lg px-3 py-2 border border-transparent transition-colors data-[active]:bg-white data-[active]:border-gray-200 data-[active]:text-gray-900 data-[inactive]:text-gray-600 hover:data-[inactive]:bg-gray-100',
-              linkLeadingIcon: 'size-4 text-gray-900 flex-shrink-0',
-              label: 'text-gray-900',
-              item: 'py-0.5 text-gray-900'
-            }"
-          />
-
-          <!-- Help & Support Section Title -->
-          <div class="font-medium text-[#8E8E93] text-xs">HELP & SUPPORT</div>
-
-          <!-- Support Links -->
-          <UNavigationMenu
-            :collapsed="sidebarCollapsed"
-            :items="supportLinks"
-            orientation="vertical"
-            variant="link"
-            :ui="{
-              root: 'relative flex gap-1 [&>div]:min-w-0',
-              link: 'h-9 gap-2 rounded-lg px-3 py-2 border border-transparent transition-colors data-[active]:bg-white data-[active]:border-gray-200 data-[active]:text-gray-900 data-[inactive]:bg-transparent data-[inactive]:text-gray-600 hover:data-[inactive]:bg-gray-100',
-              linkLeadingIcon: 'size-4 text-[#1C1C1E] flex-shrink-0 data-[active]:text-green-600',
-              item: 'py-0.5'
-            }"
-          />
-        </template>
-
-        <!-- SIDEBAR FOOTER -->
-        <template #footer>
-          <UserDropdown />
-        </template>
-      </UDashboardSidebar>
-
-      <!-- CONTENT AREA -->
-      <div class="flex flex-col bg-white my-2 mr-2 border border-gray-200 rounded-2xl w-full overflow-hidden">
-          <div class="flex-1 px-8 py-4 overflow-auto">
-            <!-- Page content goes here via slot -->
+  <div class="flex min-h-screen bg-[#F1F3F5]">
+    <SidebarProvider class="flex w-full min-h-screen flex-1">
+      <AppDashboardSidebar :main-links="mainLinks" :support-links="supportLinks" />
+      <SidebarInset class="flex min-h-screen flex-1 flex-col bg-[#F1F3F5]">
+        <div
+          class="flex my-2 mr-2 ml-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white"
+        >
+          <div class="flex-1 overflow-auto px-8 py-4">
             <slot />
           </div>
-      </div>
-    </UDashboardGroup>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+import { computed, ref } from 'vue'
+import AppDashboardSidebar from '@/components/dashboard/AppDashboardSidebar.vue'
+import type { DashboardNavItem } from '@/types/dashboard-nav'
+import {
+  SidebarInset,
+  SidebarProvider,
+} from '@/components/ui/sidebar'
+import {
+  PhBriefcase,
+  PhCalendar,
+  PhClock,
+  PhFileText,
+  PhGearSix,
+  PhHouse,
+  PhMagnifyingGlass,
+  PhQuestion,
+  PhUserCircle,
+  PhUsers,
+} from '@phosphor-icons/vue'
 
-const sidebarCollapsed = ref(false)
 const { session } = useAuth()
 
 const role = computed(() => session.value?.user.userType)
 
-// Lawyer Menu Items
-const lawyerMainMenuItems = computed<NavigationMenuItem[]>(() => [
-  { 
-    label: 'Overview', 
-    icon: 'i-heroicons-home', 
+const lawyerMainMenuItems = computed<DashboardNavItem[]>(() => [
+  {
+    label: 'Overview',
+    iconComponent: PhHouse,
     to: '/dashboard',
-    exact: true
+    exact: true,
   },
-  { 
-    label: 'Cases', 
-    icon: 'i-heroicons-briefcase', 
+  {
+    label: 'Cases',
+    iconComponent: PhBriefcase,
     to: '/dashboard/cases',
-    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined
+    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
   },
-  { 
-    label: 'Appointments', 
-    icon: 'i-heroicons-calendar-days', 
+  {
+    label: 'Appointments',
+    iconComponent: PhCalendar,
     to: '/dashboard/appointments',
-    badge: pendingAppointments.value > 0 ? pendingAppointments.value.toString() : undefined
+    badge: pendingAppointments.value > 0 ? pendingAppointments.value.toString() : undefined,
   },
-  { 
-    label: 'Consultation Types', 
-    icon: 'i-heroicons-document-text', 
-    to: '/dashboard/consultation-types'
+  {
+    label: 'Consultation Types',
+    iconComponent: PhFileText,
+    to: '/dashboard/consultation-types',
   },
-  { 
-    label: 'Availability', 
-    icon: 'i-heroicons-clock', 
-    to: '/dashboard/availability'
+  {
+    label: 'Availability',
+    iconComponent: PhClock,
+    to: '/dashboard/availability',
   },
-  { 
-    label: 'Profile', 
-    icon: 'i-heroicons-user-circle', 
-    to: '/dashboard/profile'
-  }
+  {
+    label: 'Profile',
+    iconComponent: PhUserCircle,
+    to: '/dashboard/profile',
+  },
 ])
 
-// Client Menu Items
-const clientMainMenuItems = computed<NavigationMenuItem[]>(() => [
-  { 
-    label: 'Dashboard', 
-    icon: 'i-heroicons-home', 
+const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
+  {
+    label: 'Dashboard',
+    iconComponent: PhHouse,
     to: '/dashboard',
-    exact: true
+    exact: true,
   },
-  { 
-    label: 'My Cases', 
-    icon: 'i-heroicons-briefcase', 
+  {
+    label: 'My Cases',
+    iconComponent: PhBriefcase,
     to: '/dashboard/cases',
-    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined
+    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
   },
-  { 
-    label: 'Find Lawyers', 
-    icon: 'i-heroicons-magnifying-glass', 
-    to: '/lawyers'
+  {
+    label: 'Find Lawyers',
+    iconComponent: PhMagnifyingGlass,
+    to: '/lawyers',
   },
-  { 
-    label: 'My Bookings', 
-    icon: 'i-heroicons-calendar-days', 
+  {
+    label: 'My Bookings',
+    iconComponent: PhCalendar,
     to: '/dashboard/bookings',
-    badge: upcomingBookings.value > 0 ? upcomingBookings.value.toString() : undefined
+    badge: upcomingBookings.value > 0 ? upcomingBookings.value.toString() : undefined,
   },
-  { 
-    label: 'My Lawyers', 
-    icon: 'i-heroicons-user-group', 
-    to: '/dashboard/my-lawyers'
-  }
+  {
+    label: 'My Lawyers',
+    iconComponent: PhUsers,
+    to: '/dashboard/my-lawyers',
+  },
 ])
 
-// Computed main links based on role
-const mainLinks = computed<NavigationMenuItem[]>(() => {
+const mainLinks = computed<DashboardNavItem[]>(() => {
   return role.value === 'lawyer' ? lawyerMainMenuItems.value : clientMainMenuItems.value
 })
 
-const supportLinks = computed<NavigationMenuItem[]>(() => [
-  { 
-    label: 'Settings', 
-    icon: 'i-heroicons-cog-6-tooth', 
-    to: '/dashboard/settings' 
+const supportLinks = computed<DashboardNavItem[]>(() => [
+  {
+    label: 'Settings',
+    iconComponent: PhGearSix,
+    to: '/dashboard/settings',
   },
-  { 
-    label: 'Help Center', 
-    icon: 'i-heroicons-question-mark-circle', 
-    to: '/help' 
-  }
+  {
+    label: 'Help Center',
+    iconComponent: PhQuestion,
+    to: '/help',
+  },
 ])
 
-// Mock data for badges - replace with real data
 const pendingAppointments = ref(0)
 const upcomingBookings = ref(0)
 
-// Get active cases count from composable
 const { useCasesList } = useCases()
 const { data: casesData } = useCasesList()
 const activeCases = computed(() => {

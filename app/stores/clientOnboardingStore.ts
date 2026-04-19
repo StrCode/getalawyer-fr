@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
-import { useClientOnboarding } from '~/composables/useClientOnboarding'
+import { completeClientOnboarding } from '~/composables/useClientOnboarding'
 
 export interface ClientOnboardingData {
     country: string
@@ -9,9 +9,6 @@ export interface ClientOnboardingData {
 }
 
 export const useClientOnboardingStore = defineStore('client-onboarding', () => {
-    // API composables
-    const { useCompleteOnboarding } = useClientOnboarding()
-
     // Form State
     const clientState = reactive<ClientOnboardingData>({
         country: 'NG', // Defaulted to Nigeria for now
@@ -21,36 +18,23 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
 
     // Generic save function to be called by the overall layout
     const saveStep = async (stepKey: string): Promise<boolean> => {
-        return new Promise((resolve) => {
-            switch (stepKey) {
-                case 'location':
-                    // Just basic validation, no backend draft save required for this step
-                    if (!clientState.country || !clientState.state) {
-                        resolve(false)
-                        return
-                    }
-                    resolve(true)
-                    break
-                
-                case 'specializations':
-                    // On latest step, we fire the final mutation 
-                    if (clientState.specializationIds.length === 0) {
-                        resolve(false)
-                        return
-                    }
+        switch (stepKey) {
+            case 'location':
+                if (!clientState.country || !clientState.state) return false
+                return true
 
-                    useCompleteOnboarding().mutate(toRaw(clientState), {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to complete client onboarding', e)
-                            resolve(false)
-                        }
-                    })
-                    break
-                default:
-                    resolve(true)
-            }
-        })
+            case 'specializations':
+                if (clientState.specializationIds.length === 0) return false
+                try {
+                    await completeClientOnboarding(toRaw(clientState) as ClientOnboardingData)
+                    return true
+                } catch (e) {
+                    console.error('[Store] Failed to complete client onboarding', e)
+                    return false
+                }
+            default:
+                return true
+        }
     }
 
     return {

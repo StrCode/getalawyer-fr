@@ -3,6 +3,8 @@
  * Feature: case-management-system
  */
 
+import type { Component } from 'vue'
+
 export type CaseStatus = 'active' | 'closed' | 'reopened' | 'archived'
 export type Priority = 'low' | 'medium' | 'high' | 'urgent'
 export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'overdue'
@@ -117,7 +119,7 @@ export interface Activity {
   user?: User
   
   // UI-specific properties
-  icon?: string
+  icon?: Component
   color?: string
   isRecent?: boolean
 }

@@ -3,11 +3,22 @@
  * Feature: case-management-system
  */
 
-import type { 
-  Activity, 
-  ActivityFilters, 
-  ActivitiesResponse, 
-  ActivityType 
+import type { Component } from 'vue'
+import {
+  PhArrowsClockwise,
+  PhChatCircle,
+  PhCheckCircle,
+  PhClipboardText,
+  PhFilePlus,
+  PhLockSimple,
+  PhLockSimpleOpen,
+  PhPlusCircle
+} from '@phosphor-icons/vue'
+import type {
+  Activity,
+  ActivityFilters,
+  ActivitiesResponse,
+  ActivityType
 } from '~/types'
 
 export const useActivities = () => {
@@ -19,15 +30,15 @@ export const useActivities = () => {
   const { handleApiError } = useApiErrorHandler()
 
   // Activity type configurations
-  const activityConfig: Record<ActivityType, { icon: string; color: string }> = {
-    case_created: { icon: 'i-heroicons-plus-circle', color: 'green' },
-    status_changed: { icon: 'i-heroicons-arrow-path', color: 'blue' },
-    message_sent: { icon: 'i-heroicons-chat-bubble-left', color: 'purple' },
-    document_uploaded: { icon: 'i-heroicons-document-plus', color: 'orange' },
-    task_created: { icon: 'i-heroicons-clipboard-document-list', color: 'indigo' },
-    task_completed: { icon: 'i-heroicons-check-circle', color: 'green' },
-    case_closed: { icon: 'i-heroicons-lock-closed', color: 'red' },
-    case_reopened: { icon: 'i-heroicons-lock-open', color: 'yellow' }
+  const activityConfig: Record<ActivityType, { icon: Component; color: string }> = {
+    case_created: { icon: PhPlusCircle, color: 'green' },
+    status_changed: { icon: PhArrowsClockwise, color: 'blue' },
+    message_sent: { icon: PhChatCircle, color: 'purple' },
+    document_uploaded: { icon: PhFilePlus, color: 'orange' },
+    task_created: { icon: PhClipboardText, color: 'indigo' },
+    task_completed: { icon: PhCheckCircle, color: 'green' },
+    case_closed: { icon: PhLockSimple, color: 'red' },
+    case_reopened: { icon: PhLockSimpleOpen, color: 'yellow' }
   }
 
   // Helper function to enrich activity data with UI properties

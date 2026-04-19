@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { PhInstagramLogo, PhLinkedinLogo, PhTwitterLogo } from '@phosphor-icons/vue'
+
 const year = new Date().getFullYear()
+
+const socialIcons = [
+  { network: 'twitter', icon: PhTwitterLogo },
+  { network: 'linkedin', icon: PhLinkedinLogo },
+  { network: 'instagram', icon: PhInstagramLogo }
+] as const
 
 const links = {
   'Product': ['How It Works', 'Find Lawyers', 'Practice Areas', 'Pricing'],
@@ -24,11 +32,11 @@ const links = {
             Connecting people with verified legal professionals.
           </p>
           <div class="flex gap-3 mt-5">
-            <a v-for="sn in ['twitter', 'linkedin', 'instagram']" :key="sn"
+            <a v-for="{ network, icon } in socialIcons" :key="network"
               href="#"
               class="flex justify-center items-center bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 rounded-full w-8 h-8 transition-colors duration-150"
             >
-              <UIcon :name="`i-lucide-${sn}`" class="w-4 h-4 text-neutral-500 hover:text-neutral-700" />
+              <component :is="icon" class="w-4 h-4 text-neutral-500 hover:text-neutral-700" />
             </a>
           </div>
         </div>

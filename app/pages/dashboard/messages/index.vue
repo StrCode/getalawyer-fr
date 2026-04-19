@@ -10,11 +10,11 @@
       <!-- Conversations List -->
       <div class="flex-1 overflow-y-auto">
         <div v-if="isLoadingConversations" class="flex justify-center py-8">
-          <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-gray-400 animate-spin" />
+          <PhCircleNotch class="w-6 h-6 text-gray-400 animate-spin" />
         </div>
 
         <div v-else-if="conversations.length === 0" class="p-6 text-gray-500 text-center">
-          <UIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
+          <PhChatCircleDots class="mx-auto mb-3 w-12 h-12 text-gray-300" />
           <p class="text-sm">No conversations yet</p>
           <p class="mt-1 text-xs">Start by booking a consultation</p>
         </div>
@@ -72,7 +72,7 @@
     <div class="flex flex-col flex-1 bg-gray-50">
       <div v-if="!selectedConversationId" class="flex flex-1 justify-center items-center">
         <div class="text-gray-500 text-center">
-          <UIcon name="i-heroicons-chat-bubble-left-right" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
+          <PhChatCircle class="mx-auto mb-4 w-16 h-16 text-gray-300" />
           <p class="font-medium text-lg">Select a conversation</p>
           <p class="mt-1 text-sm">Choose a conversation from the list to start messaging</p>
         </div>
@@ -99,8 +99,11 @@
               variant="ghost"
               size="sm"
               :label="selectedConversation.type === 'booking' ? 'View Booking' : 'View Case'"
-              trailing-icon="i-heroicons-arrow-right"
-            />
+            >
+              <template #trailing>
+                <PhArrowRight class="size-4 shrink-0" />
+              </template>
+            </UButton>
           </div>
         </div>
 
@@ -120,6 +123,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import {
+  PhArrowRight,
+  PhChatCircle,
+  PhChatCircleDots,
+  PhCircleNotch
+} from '@phosphor-icons/vue'
 
 definePageMeta({ layout: 'dashboard' })
 

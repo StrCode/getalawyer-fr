@@ -33,8 +33,8 @@ const handleAreaClick = (slug: string) => {
       @click="handleAreaClick(area.slug)"
     >
       <div class="flex flex-col items-center text-center space-y-3">
-        <UIcon
-          :name="area.icon"
+        <component
+          :is="area.icon"
           class="w-12 h-12 text-primary"
         />
         <h3 class="text-lg font-semibold">

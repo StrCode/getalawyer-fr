@@ -2,10 +2,10 @@
   <button
     type="button"
     :disabled="disabled"
-    class="flex justify-center items-center gap-3 bg-white hover:bg-gray-50 disabled:opacity-50 px-4 py-2.5 border border-gray-200 rounded-lg w-full font-medium text-gray-700 text-sm transition-colors disabled:cursor-not-allowed"
+    class="flex justify-center items-center gap-3 bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 px-4 py-2.5 border border-input rounded-md w-full font-medium text-foreground text-sm shadow-xs transition-colors disabled:cursor-not-allowed"
     @click="$emit('click')"
   >
-    <Icon v-if="loading" name="i-hugeicons-loading-03" class="w-5 h-5 animate-spin" />
+    <PhCircleNotch v-if="loading" class="w-5 h-5 animate-spin" />
     <svg v-else-if="provider === 'google'" viewBox="0 0 24 24" class="w-5 h-5 shrink-0">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { PhCircleNotch } from '@phosphor-icons/vue'
+
 defineProps<{
   provider: 'google' | 'facebook'
   disabled?: boolean

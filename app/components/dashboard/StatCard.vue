@@ -2,19 +2,19 @@
   <div class="stat-card">
     <div class="stat-header">
       <div class="stat-icon" :style="{ backgroundColor: `${color}15` }">
-        <UIcon :name="icon" class="w-5 h-5" :style="{ color }" />
+        <component :is="icon" class="w-5 h-5" :style="{ color }" />
       </div>
       <UBadge v-if="trend" :color="trendColor" variant="soft" size="xs">
-        <UIcon :name="trendIcon" class="w-3 h-3" />
+        <component :is="trendIconComponent" class="w-3 h-3" />
         {{ change }}
       </UBadge>
     </div>
-    
+
     <div class="stat-content">
       <div class="stat-value">{{ value }}</div>
       <div class="stat-label">{{ label }}</div>
     </div>
-    
+
     <div v-if="subtitle" class="stat-subtitle">
       {{ subtitle }}
     </div>
@@ -22,10 +22,13 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
+import { PhMinus, PhTrendDown, PhTrendUp } from '@phosphor-icons/vue'
+
 interface Props {
   label: string
   value: string | number
-  icon: string
+  icon: Component
   color?: string
   change?: string
   trend?: 'up' | 'down' | 'neutral'
@@ -43,10 +46,10 @@ const trendColor = computed(() => {
   return 'neutral'
 })
 
-const trendIcon = computed(() => {
-  if (props.trend === 'up') return 'i-heroicons-arrow-trending-up'
-  if (props.trend === 'down') return 'i-heroicons-arrow-trending-down'
-  return 'i-heroicons-minus'
+const trendIconComponent = computed<Component>(() => {
+  if (props.trend === 'up') return PhTrendUp
+  if (props.trend === 'down') return PhTrendDown
+  return PhMinus
 })
 </script>
 
@@ -110,7 +113,7 @@ const trendIcon = computed(() => {
   .stat-card {
     padding: var(--space-4);
   }
-  
+
   .stat-value {
     font-size: var(--text-2xl);
   }

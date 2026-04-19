@@ -1,5 +1,7 @@
 <!-- components/auth/AuthSuccess.vue -->
 <script setup lang="ts">
+import { PhCheckCircle } from '@phosphor-icons/vue'
+
 const emit = defineEmits<{ close: [] }>()
 const { identifier } = useAuthModal()
 </script>
@@ -8,7 +10,7 @@ const { identifier } = useAuthModal()
   <div class="text-center p-6 flex flex-col items-center">
     <!-- Success Icon -->
     <div class="w-16 h-16 rounded-full bg-[#1d6b44] flex items-center justify-center mx-auto mb-5 animate-[pop_0.4s_cubic-bezier(0.34,1.56,0.64,1)]">
-      <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-white scale-0 animate-[scaleIn_0.3s_cubic-bezier(0.34,1.56,0.64,1)_0.2s_forwards]" />
+      <PhCheckCircle class="w-8 h-8 text-white scale-0 animate-[scaleIn_0.3s_cubic-bezier(0.34,1.56,0.64,1)_0.2s_forwards]" />
     </div>
 
     <h2 class="text-[22px] font-bold text-gray-900 tracking-tight mb-2">

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+
 interface WorkflowStep {
   title: string
   description: string
-  icon: string
+  icon: Component
   illustration?: string
 }
 
@@ -28,8 +30,8 @@ const isLeft = computed(() => props.index % 2 === 0)
       </div>
       
       <div class="step-icon">
-        <UIcon 
-          :name="step.icon" 
+        <component
+          :is="step.icon"
           class="w-12 h-12 text-primary"
         />
       </div>

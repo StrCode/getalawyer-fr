@@ -3,11 +3,13 @@
  * Feature: public-pages-phase-1
  */
 
+import type { Component } from 'vue'
+
 export interface PracticeArea {
   id: string
   name: string
   slug: string
-  icon: string
+  icon: Component
   lawyerCount: number
   description: string
   popularSearches?: string[]

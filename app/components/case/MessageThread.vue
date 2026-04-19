@@ -1,4 +1,16 @@
 <script setup lang="ts">
+import {
+  PhArrowDownTray,
+  PhArrowUUpLeft,
+  PhChatCircleDots,
+  PhCheck,
+  PhCheckCircle,
+  PhClock,
+  PhMagnifyingGlass,
+  PhPaperclip,
+  PhSlidersHorizontal,
+  PhX
+} from '@phosphor-icons/vue'
 import { useMessageSearch } from '~/composables/useCaseMessaging'
 import type { Message } from '~/types/messaging'
 
@@ -133,23 +145,32 @@ const toggleSenderFilter = (senderId: string) => {
         <UInput
           v-model="searchQuery"
           placeholder="Search messages..."
-          icon="i-heroicons-magnifying-glass"
           class="flex-1"
-        />
+        >
+          <template #leading>
+            <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
+          </template>
+        </UInput>
         <UButton
           variant="ghost"
           size="sm"
-          icon="i-heroicons-adjustments-horizontal"
           @click="showAdvancedFilters = !showAdvancedFilters"
           :color="showAdvancedFilters ? 'primary' : 'gray'"
-        />
+        >
+          <template #leading>
+            <PhSlidersHorizontal class="w-4 h-4" />
+          </template>
+        </UButton>
         <UButton
           v-if="hasActiveFilters"
           variant="ghost"
           size="sm"
-          icon="i-heroicons-x-mark"
           @click="clearFilters"
-        />
+        >
+          <template #leading>
+            <PhX class="w-4 h-4" />
+          </template>
+        </UButton>
       </div>
 
       <!-- Advanced Filters -->
@@ -213,19 +234,26 @@ const toggleSenderFilter = (senderId: string) => {
             </UButton>
           </div>
         </div>
-      </div      <UIcon 
-          :name="hasActiveFilters ? 'i-heroicons-magnifying-glass' : 'i-heroicons-chat-bubble-left-ellipsis'" 
-          class="mb-3 w-12 h-12 text-gray-300" 
-        />
-        <p class="text-gray-500 text-center">
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="flex flex-col flex-1 min-h-0 overflow-y-auto">
+      <div
+        v-if="messagesByDate.length === 0"
+        class="flex flex-col flex-1 justify-center items-center px-4 py-12"
+      >
+        <PhMagnifyingGlass v-if="hasActiveFilters" class="mb-3 w-12 h-12 text-gray-300" />
+        <PhChatCircleDots v-else class="mb-3 w-12 h-12 text-gray-300" />
+        <p class="text-center text-gray-500">
           {{ hasActiveFilters ? 'No messages match your filters' : 'No messages yet' }}
         </p>
         <UButton
           v-if="hasActiveFilters"
           variant="ghost"
           size="sm"
-          @click="clearFilters"
           class="mt-2"
+          @click="clearFilters"
         >
           Clear filters
         </UButton>
@@ -266,7 +294,7 @@ const toggleSenderFilter = (senderId: string) => {
                   v-if="message.metadata?.isPreConsultation"
                   class="flex items-center space-x-1 opacity-75 mb-2 text-xs"
                 >
-                  <UIcon name="i-heroicons-clock" class="w-3 h-3" />
+                  <PhClock class="w-3 h-3" />
                   <span>Pre-consultation</span>
                 </div>
 
@@ -285,16 +313,19 @@ const toggleSenderFilter = (senderId: string) => {
                 <div v-if="message.fileName" class="bg-black bg-opacity-10 mt-3 p-2 rounded">
                   <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2 min-w-0">
-                      <UIcon name="i-heroicons-paper-clip" class="flex-shrink-0 w-4 h-4" />
+                      <PhPaperclip class="flex-shrink-0 w-4 h-4" />
                       <span class="text-sm truncate">{{ message.fileName }}</span>
                     </div>
                     <UButton
                       v-if="message.fileUrl"
                       variant="ghost"
                       size="xs"
-                      icon="i-heroicons-arrow-down-tray"
                       @click.stop="downloadFile(message)"
-                    />
+                    >
+                      <template #leading>
+                        <PhArrowDownTray class="w-4 h-4" />
+                      </template>
+                    </UButton>
                   </div>
                   <div class="opacity-75 mt-1 text-xs">
                     {{ message.fileSize ? `${(message.fileSize / 1024).toFixed(1)} KB` : '' }}
@@ -305,10 +336,8 @@ const toggleSenderFilter = (senderId: string) => {
                 <div class="flex justify-between items-center opacity-75 mt-2 text-xs">
                   <span>{{ formatMessageTime(message.createdAt) }}</span>
                   <div v-if="isMessageFromCurrentUser(message)" class="flex items-center space-x-1">
-                    <UIcon
-                      :name="message.status === 'read' ? 'i-heroicons-check-circle' : 'i-heroicons-check'"
-                      class="w-3 h-3"
-                    />
+                    <PhCheckCircle v-if="message.status === 'read'" class="w-3 h-3" />
+                    <PhCheck v-else class="w-3 h-3" />
                     <span class="capitalize">{{ message.status }}</span>
                   </div>
                 </div>
@@ -321,10 +350,13 @@ const toggleSenderFilter = (senderId: string) => {
                   <UButton
                     variant="ghost"
                     size="xs"
-                    icon="i-heroicons-arrow-uturn-left"
-                    @click.stop="handleReply(message)"
                     class="bg-white shadow-sm"
-                  />
+                    @click.stop="handleReply(message)"
+                  >
+                    <template #leading>
+                      <PhArrowUUpLeft class="w-4 h-4" />
+                    </template>
+                  </UButton>
                 </div>
               </div>
             </div>
@@ -338,10 +370,12 @@ const toggleSenderFilter = (senderId: string) => {
       <UButton
         variant="outline"
         size="sm"
-        icon="i-heroicons-arrow-down-tray"
-        @click="emit('export')"
         class="w-full"
+        @click="emit('export')"
       >
+        <template #leading>
+          <PhArrowDownTray class="w-4 h-4" />
+        </template>
         Export Messages
       </UButton>
     </div>
@@ -355,9 +389,12 @@ const toggleSenderFilter = (senderId: string) => {
             <UButton
               variant="ghost"
               size="sm"
-              icon="i-heroicons-x-mark"
               @click="selectedMessage = null"
-            />
+            >
+              <template #leading>
+                <PhX class="w-5 h-5" />
+              </template>
+            </UButton>
           </div>
         </template>
 
@@ -393,16 +430,19 @@ const toggleSenderFilter = (senderId: string) => {
             <label class="block mb-2 font-medium text-gray-700 text-sm">Attachment</label>
             <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
               <div class="flex items-center space-x-2">
-                <UIcon name="i-heroicons-paper-clip" class="w-4 h-4 text-gray-500" />
+                <PhPaperclip class="w-4 h-4 text-gray-500" />
                 <span class="text-sm">{{ selectedMessage.fileName }}</span>
               </div>
               <UButton
                 v-if="selectedMessage.fileUrl"
                 variant="ghost"
                 size="xs"
-                icon="i-heroicons-arrow-down-tray"
                 @click="downloadFile(selectedMessage)"
-              />
+              >
+                <template #leading>
+                  <PhArrowDownTray class="w-4 h-4" />
+                </template>
+              </UButton>
             </div>
           </div>
         </div>

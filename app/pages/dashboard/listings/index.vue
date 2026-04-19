@@ -3,13 +3,25 @@
     <UPageHeader 
       title="Listings"
       description="Manage your property listings here."
-      :links="links"
       :ui="{
         root: 'border-none py-0',
         title: 'font-semibold !text-3xl leading-6 tracking-tight',
         description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
       }"
-    />
+    >
+      <template #links>
+        <UButton
+          to="/dashboard/listings/new"
+          color="secondary"
+          class="font-medium py-2.5 px-3 rounded-lg text-white text-sm leading-5 tracking-tight bg-[#007AFC] shadow-xs"
+        >
+          <template #leading>
+            <PhPlus class="size-4 shrink-0" />
+          </template>
+          Add Property
+        </UButton>
+      </template>
+    </UPageHeader>
     
     <UTabs 
       v-model="activeTab"
@@ -27,6 +39,13 @@
         content: 'py-3.5'
       }"
     >
+      <template #leading="{ item }">
+        <component
+          v-if="item.leadingIcon"
+          :is="item.leadingIcon"
+          class="size-4 shrink-0 text-current"
+        />
+      </template>
       <!-- All Listings Tab -->
       <template #all-listings>
         <UCard :ui="{ 
@@ -39,14 +58,17 @@
             </div>
             <div class="flex items-center gap-3">
               <UInput 
-                icon="i-hugeicons-search-01" 
                 placeholder="Search properties" 
                 class="w-64"
                 :ui="{
                   base: 'placeholder:font-normal placeholder:text-sm placeholder:leading-5 placeholder:tracking-tight placeholder:text-[#8E8E93]',
                   leadingIcon: 'p-2.5 size-3',
                 }"
-              />
+              >
+                <template #leading>
+                  <PhMagnifyingGlass class="size-3 shrink-0 text-[#8E8E93]" />
+                </template>
+              </UInput>
               <ListingsFilter 
                 @apply="handleApplyFilters"
                 @clear="handleClearFilters"
@@ -93,14 +115,17 @@
             </div>
             <div class="flex items-center gap-3">
               <UInput 
-                icon="i-hugeicons-search-01" 
                 placeholder="Search properties" 
                 class="w-64"
                 :ui="{
                   base: 'placeholder:font-normal placeholder:text-sm placeholder:leading-5 placeholder:tracking-tight placeholder:text-[#8E8E93]',
                   leadingIcon: 'p-2.5 size-3',
                 }"
-              />
+              >
+                <template #leading>
+                  <PhMagnifyingGlass class="size-3 shrink-0 text-[#8E8E93]" />
+                </template>
+              </UInput>
               <ListingsFilter 
                 @apply="handleApplyFilters"
                 @clear="handleClearFilters"
@@ -147,14 +172,17 @@
             </div>
             <div class="flex items-center gap-3">
               <UInput 
-                icon="i-hugeicons-search-01" 
                 placeholder="Search properties" 
                 class="w-64"
                 :ui="{
                   base: 'placeholder:font-normal placeholder:text-sm placeholder:leading-5 placeholder:tracking-tight placeholder:text-[#8E8E93]',
                   leadingIcon: 'p-2.5 size-3',
                 }"
-              />
+              >
+                <template #leading>
+                  <PhMagnifyingGlass class="size-3 shrink-0 text-[#8E8E93]" />
+                </template>
+              </UInput>
               <ListingsFilter 
                 @apply="handleApplyFilters"
                 @clear="handleClearFilters"
@@ -223,14 +251,17 @@
               </div>
               <div class="flex items-center gap-3">
                 <UInput 
-                  icon="i-hugeicons-search-01" 
                   placeholder="Search pending properties" 
                   class="w-64"
                   :ui="{
                     base: 'placeholder:font-normal placeholder:text-sm placeholder:leading-5 placeholder:tracking-tight placeholder:text-[#8E8E93]',
                     leadingIcon: 'p-2.5 size-3',
                   }"
-                />
+                >
+                  <template #leading>
+                    <PhMagnifyingGlass class="size-3 shrink-0 text-[#8E8E93]" />
+                  </template>
+                </UInput>
               </div>
             </div>
             
@@ -266,9 +297,15 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { h, resolveComponent } from 'vue'
-import type { ButtonProps, TableColumn } from '@nuxt/ui'
-import type { TabsItem } from '@nuxt/ui'
+import {
+  PhClock,
+  PhDotsThreeOutline,
+  PhMagnifyingGlass,
+  PhPlus
+} from '@phosphor-icons/vue'
+import type { TableColumn } from '@nuxt/ui'
 import type { Row } from '@tanstack/vue-table'
 import { getPaginationRowModel } from '@tanstack/vue-table'
 
@@ -311,7 +348,17 @@ type PendingApproval = {
 
 const activeTab = ref('all-listings')
 
-const items = ref<TabsItem[]>([
+type ListingTabItem = {
+  label?: string
+  value?: string
+  slot?: string
+  disabled?: boolean
+  badge?: string | number
+  leadingIcon?: Component
+  ui?: Record<string, unknown>
+}
+
+const items = ref<ListingTabItem[]>([
   {
     label: 'All Listings',
     value: 'all-listings',
@@ -328,29 +375,19 @@ const items = ref<TabsItem[]>([
     slot: 'rental'
   },
   {
-    icon: 'i-ci-line-l',
+    leadingIcon: PhDotsThreeOutline,
     disabled: true
   },
   {
-    icon: 'i-hugeicons-clock-05',
+    leadingIcon: PhClock,
     label: 'Pending Approvals',
     value: 'pending-approvals',
     slot: 'pending-approvals',
     badge: '100',
-    ui: { trailingBadge: 'border-0 ring-0 rounded-full text-white bg-red-400', 
-    trailingBadgeSize: ''
-  }
-  },
-
-])
-
-const links = ref<ButtonProps[]>([
-  {
-    label: 'Add Property',
-    icon: 'i-hugeicons-add-01',
-    to: '/dashboard/listings/new',
-    color: 'secondary',
-    class: 'font-medium py-2.5 px-3 rounded-lg text-white text-sm leading-5 tracking-tight bg-[#007AFC] shadow-xs'
+    ui: {
+      trailingBadge: 'border-0 ring-0 rounded-full text-white bg-red-400',
+      trailingBadgeSize: ''
+    }
   }
 ])
 

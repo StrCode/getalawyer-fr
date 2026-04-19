@@ -1,4 +1,18 @@
 <script setup lang="ts">
+import { Badge, type BadgeVariants } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { meetingTypeIcon } from '@/composables/useMeetingTypeIcon'
+import {
+  PhCalendarBlank,
+  PhCalendarDots,
+  PhCaretRight,
+  PhCheckCircle,
+  PhClock,
+  PhMagnifyingGlass,
+  PhScales,
+  PhUsersThree
+} from '@phosphor-icons/vue'
+
 const { session } = useAuth()
 
 // Fetch bookings data
@@ -20,15 +34,29 @@ const recentBookings = computed(() => {
   return bookings.slice(0, 3)
 })
 
-const getStatusColor = (status: string) => {
-  const colors: Record<string, string> = {
-    confirmed: 'success',
-    pending: 'warning',
-    completed: 'success',
-    cancelled: 'error',
-    no_show: 'error'
+function bookingStatusBadge(status: string): {
+  variant: NonNullable<BadgeVariants['variant']>
+  class: string
+} {
+  const cap = 'capitalize'
+  switch (status) {
+    case 'confirmed':
+    case 'completed':
+      return {
+        variant: 'secondary',
+        class: `${cap} border-transparent bg-green-100 text-green-800 hover:bg-green-100/90`,
+      }
+    case 'pending':
+      return {
+        variant: 'outline',
+        class: `${cap} border-amber-200 bg-amber-50 text-amber-800`,
+      }
+    case 'cancelled':
+    case 'no_show':
+      return { variant: 'destructive', class: cap }
+    default:
+      return { variant: 'secondary', class: cap }
   }
-  return colors[status] || 'neutral'
 }
 
 const formatDate = (date: string) => {
@@ -40,14 +68,6 @@ const formatDate = (date: string) => {
   })
 }
 
-const getMeetingIcon = (type: string) => {
-  const icons: Record<string, string> = {
-    video: 'i-heroicons-video-camera',
-    phone: 'i-heroicons-phone',
-    in_person: 'i-heroicons-building-office'
-  }
-  return icons[type] || 'i-heroicons-calendar'
-}
 </script>
 
 <template>
@@ -60,15 +80,12 @@ const getMeetingIcon = (type: string) => {
         </h1>
         <p class="text-neutral-600 text-sm">Here's what's happening with your legal consultations</p>
       </div>
-      <UButton 
-        to="/lawyers" 
-        color="primary" 
-        size="md"
-        icon="i-heroicons-magnifying-glass"
-        class="shadow-sm"
-      >
-        Find a Lawyer
-      </UButton>
+      <Button as-child class="shadow-sm" size="default">
+        <NuxtLink to="/lawyers">
+          <PhMagnifyingGlass class="size-5" />
+          Find a Lawyer
+        </NuxtLink>
+      </Button>
     </div>
 
     <!-- Stats Grid -->
@@ -76,7 +93,7 @@ const getMeetingIcon = (type: string) => {
       <!-- Total Bookings -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #f0fdf4;">
-          <UIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #16a34a;" />
+          <PhCalendarDots class="w-5 h-5" style="color: #16a34a;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ stats.totalBookings }}</div>
@@ -88,7 +105,7 @@ const getMeetingIcon = (type: string) => {
       <!-- Active -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #eff6ff;">
-          <UIcon name="i-heroicons-clock" class="w-5 h-5" style="color: #3b82f6;" />
+          <PhClock class="w-5 h-5" style="color: #3b82f6;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ stats.activeCases }}</div>
@@ -100,7 +117,7 @@ const getMeetingIcon = (type: string) => {
       <!-- Upcoming -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #fef3c7;">
-          <UIcon name="i-heroicons-calendar" class="w-5 h-5" style="color: #f59e0b;" />
+          <PhCalendarBlank class="w-5 h-5" style="color: #f59e0b;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ stats.upcoming }}</div>
@@ -112,7 +129,7 @@ const getMeetingIcon = (type: string) => {
       <!-- Completed -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #f0fdf4;">
-          <UIcon name="i-heroicons-check-circle" class="w-5 h-5" style="color: #10b981;" />
+          <PhCheckCircle class="w-5 h-5" style="color: #10b981;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ stats.completed }}</div>
@@ -125,7 +142,7 @@ const getMeetingIcon = (type: string) => {
     <!-- Empty State -->
     <div v-if="bookingsData && bookingsData.length === 0" class="empty-state">
       <div class="empty-icon">
-        <UIcon name="i-heroicons-calendar-days" class="w-12 h-12 text-neutral-400" />
+        <PhCalendarDots class="w-12 h-12 text-neutral-400" />
       </div>
       
       <h3 class="empty-title">No consultations yet</h3>
@@ -135,24 +152,18 @@ const getMeetingIcon = (type: string) => {
       </p>
 
       <div class="empty-actions">
-        <UButton 
-          to="/lawyers" 
-          color="primary" 
-          size="md" 
-          icon="i-heroicons-magnifying-glass"
-          class="shadow-sm"
-        >
-          Browse Lawyers
-        </UButton>
-        <UButton 
-          to="/practice-areas" 
-          color="neutral"
-          variant="outline"
-          size="md" 
-          icon="i-heroicons-scale"
-        >
-          View Practice Areas
-        </UButton>
+        <Button as-child class="shadow-sm" size="default">
+          <NuxtLink to="/lawyers">
+            <PhMagnifyingGlass class="size-5" />
+            Browse Lawyers
+          </NuxtLink>
+        </Button>
+        <Button as-child variant="outline" size="default">
+          <NuxtLink to="/practice-areas">
+            <PhScales class="size-5" />
+            View Practice Areas
+          </NuxtLink>
+        </Button>
       </div>
     </div>
 
@@ -160,15 +171,12 @@ const getMeetingIcon = (type: string) => {
     <div v-else-if="recentBookings.length > 0" class="space-y-4">
       <div class="flex justify-between items-center">
         <h2 class="font-bold text-neutral-900 text-xl">Recent Consultations</h2>
-        <UButton 
-          to="/dashboard/bookings" 
-          color="neutral"
-          variant="ghost" 
-          trailing-icon="i-heroicons-arrow-right"
-          size="sm"
-        >
-          View All
-        </UButton>
+        <Button as-child variant="ghost" size="sm">
+          <NuxtLink to="/dashboard/bookings" class="gap-1">
+            View All
+            <PhCaretRight class="size-4" />
+          </NuxtLink>
+        </Button>
       </div>
       
       <div class="space-y-3">
@@ -181,9 +189,9 @@ const getMeetingIcon = (type: string) => {
           <div class="flex justify-between items-start gap-4">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2">
-                <UBadge :color="getStatusColor(booking.status)" variant="soft" size="sm">
-                  {{ booking.status }}
-                </UBadge>
+                <Badge v-bind="bookingStatusBadge(booking.status)">
+                  {{ booking.status.replace('_', ' ') }}
+                </Badge>
                 <span class="text-neutral-500 text-xs">{{ booking.bookingReference }}</span>
               </div>
               
@@ -192,21 +200,21 @@ const getMeetingIcon = (type: string) => {
               
               <div class="flex flex-wrap items-center gap-3 text-neutral-600 text-xs">
                 <div class="flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-calendar" class="w-3.5 h-3.5" />
+                  <PhCalendarBlank class="w-3.5 h-3.5" />
                   <span>{{ formatDate(booking.scheduledDate) }}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
+                  <PhClock class="w-3.5 h-3.5" />
                   <span>{{ booking.scheduledStartTime }}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-3.5 h-3.5" />
+                  <component :is="meetingTypeIcon(booking.meetingType)" class="w-3.5 h-3.5" />
                   <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
                 </div>
               </div>
             </div>
             
-            <UIcon name="i-heroicons-chevron-right" class="w-5 h-5 text-neutral-300 shrink-0" />
+            <PhCaretRight class="w-5 h-5 text-neutral-300 shrink-0" />
           </div>
         </div>
       </div>
@@ -221,7 +229,7 @@ const getMeetingIcon = (type: string) => {
           @click="navigateTo('/lawyers')"
         >
           <div class="quick-action-icon" style="background-color: #f0fdf4;">
-            <UIcon name="i-heroicons-magnifying-glass" class="w-5 h-5" style="color: #16a34a;" />
+            <PhMagnifyingGlass class="w-5 h-5" style="color: #16a34a;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">Find Lawyers</div>
@@ -234,7 +242,7 @@ const getMeetingIcon = (type: string) => {
           @click="navigateTo('/dashboard/bookings')"
         >
           <div class="quick-action-icon" style="background-color: #eff6ff;">
-            <UIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #3b82f6;" />
+            <PhCalendarDots class="w-5 h-5" style="color: #3b82f6;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">My Bookings</div>
@@ -247,7 +255,7 @@ const getMeetingIcon = (type: string) => {
           @click="navigateTo('/dashboard/my-lawyers')"
         >
           <div class="quick-action-icon" style="background-color: #f5f3ff;">
-            <UIcon name="i-heroicons-user-group" class="w-5 h-5" style="color: #8b5cf6;" />
+            <PhUsersThree class="w-5 h-5" style="color: #8b5cf6;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">My Lawyers</div>

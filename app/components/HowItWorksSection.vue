@@ -1,19 +1,27 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { motion } from 'motion-v'
+import {
+  PhCalendarBlank,
+  PhFileText,
+  PhMagnifyingGlass,
+  PhUserPlus,
+  PhVideoCamera
+} from '@phosphor-icons/vue'
 
 interface Step {
   number: number
-  icon: string
+  icon: Component
   title: string
   description: string
 }
 
 const steps: Step[] = [
-  { number: 1, icon: 'i-lucide-user-plus', title: 'Create Your Account', description: 'Sign up in minutes with your email or social accounts' },
-  { number: 2, icon: 'i-lucide-search', title: 'Search & Filter', description: 'Find lawyers by specialty, location, and consultation type' },
-  { number: 3, icon: 'i-lucide-file-text', title: 'Review Profiles', description: 'Check credentials, reviews, and experience before deciding' },
-  { number: 4, icon: 'i-lucide-calendar', title: 'Book Consultation', description: 'Schedule at your convenience with instant confirmation' },
-  { number: 5, icon: 'i-lucide-video', title: 'Consult & Connect', description: 'Meet via video, phone, or in-person at your preferred time' },
+  { number: 1, icon: PhUserPlus, title: 'Create Your Account', description: 'Sign up in minutes with your email or social accounts' },
+  { number: 2, icon: PhMagnifyingGlass, title: 'Search & Filter', description: 'Find lawyers by specialty, location, and consultation type' },
+  { number: 3, icon: PhFileText, title: 'Review Profiles', description: 'Check credentials, reviews, and experience before deciding' },
+  { number: 4, icon: PhCalendarBlank, title: 'Book Consultation', description: 'Schedule at your convenience with instant confirmation' },
+  { number: 5, icon: PhVideoCamera, title: 'Consult & Connect', description: 'Meet via video, phone, or in-person at your preferred time' }
 ]
 </script>
 
@@ -72,7 +80,7 @@ const steps: Step[] = [
 
           <!-- Icon -->
           <div class="w-10 h-10 rounded-lg bg-[#f2faf4] flex items-center justify-center mb-4 group-hover:bg-[#e8f3ec] transition-colors duration-200">
-            <UIcon :name="step.icon" class="w-5 h-5 text-[#1d6b44]" />
+            <component :is="step.icon" class="w-5 h-5 text-[#1d6b44]" />
           </div>
 
           <!-- Text -->

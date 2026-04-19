@@ -3,9 +3,8 @@
  * Manages client onboarding flow (2 steps)
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/vue-query'
 import { httpClient } from '~/lib/api/client'
-import { queryKeys } from '~/lib/query-client'
 
 interface OnboardingData {
   country: string
@@ -52,10 +51,15 @@ const clientOnboardingAPI = {
   },
 }
 
+/** Plain POST — safe from Pinia (no vue-query hooks). Invalidate session/profile in the wizard via `useQueryClient()`. */
+export async function completeClientOnboarding(
+  data: OnboardingData,
+): Promise<CompleteOnboardingResponse> {
+  return await clientOnboardingAPI.completeOnboarding(data)
+}
+
 // Composable
 export const useClientOnboarding = () => {
-  const queryClient = useQueryClient()
-
   // Query: Get countries
   const useCountries = () => {
     return useQuery({
@@ -76,21 +80,8 @@ export const useClientOnboarding = () => {
     })
   }
 
-  // Mutation: Complete onboarding
-  const useCompleteOnboarding = () => {
-    return useMutation({
-      mutationFn: clientOnboardingAPI.completeOnboarding,
-      onSuccess: () => {
-        // Invalidate user session to refresh onboarding_completed flag
-        queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
-        queryClient.invalidateQueries({ queryKey: queryKeys.client.profile })
-      },
-    })
-  }
-
   return {
     useCountries,
     useSpecializations,
-    useCompleteOnboarding,
   }
 }

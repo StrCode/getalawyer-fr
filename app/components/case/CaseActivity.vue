@@ -21,10 +21,13 @@
         
         <UInput
           v-model="searchQuery"
-          icon="i-heroicons-magnifying-glass"
           placeholder="Search activities..."
           class="flex-1"
-        />
+        >
+          <template #leading>
+            <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
+          </template>
+        </UInput>
       </div>
     </UCard>
 
@@ -66,11 +69,11 @@
       </template>
       
       <div v-if="loading" class="flex justify-center py-8">
-        <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin" />
+        <PhCircleNotch class="w-6 h-6 animate-spin" />
       </div>
       
       <div v-else-if="filteredActivities.length === 0" class="py-8 text-gray-500 text-center">
-        <UIcon name="i-heroicons-clock" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+        <PhClock class="mx-auto mb-4 w-12 h-12 text-gray-300" />
         <p>No activities found.</p>
       </div>
       
@@ -99,6 +102,7 @@
 </template>
 
 <script setup lang="ts">
+import { PhCircleNotch, PhClock, PhMagnifyingGlass } from '@phosphor-icons/vue'
 import type { ActivityType } from '~/types'
 
 interface Props {

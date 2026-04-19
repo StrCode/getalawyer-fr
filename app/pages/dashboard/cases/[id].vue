@@ -1,10 +1,10 @@
 <template>
   <div v-if="loading" class="flex justify-center py-8">
-    <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin" />
+    <PhCircleNotch class="w-8 h-8 animate-spin" />
   </div>
 
   <div v-else-if="error" class="py-8 text-center">
-    <UIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
+    <PhWarning class="mx-auto mb-4 w-12 h-12 text-red-500" />
     <h2 class="mb-2 font-semibold text-xl">Case Not Found</h2>
     <p class="mb-4 text-gray-600">{{ error }}</p>
     <UButton @click="navigateTo('/dashboard/cases')">
@@ -28,6 +28,14 @@
 
     <!-- Tabs for different sections -->
     <UTabs :items="tabs" class="w-full">
+      <template #leading="{ item }">
+        <component
+          v-if="item.iconComponent"
+          :is="item.iconComponent"
+          class="size-4 shrink-0"
+          data-slot="leadingIcon"
+        />
+      </template>
       <template #messages="{ item }">
         <CaseMessaging :case-id="currentCase.id" />
       </template>
@@ -48,8 +56,23 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { toast } from 'vue-sonner'
+import {
+  PhChatCircle,
+  PhCircleNotch,
+  PhClipboardText,
+  PhClock,
+  PhFile,
+  PhWarning
+} from '@phosphor-icons/vue'
 import type { CaseStatus } from '~/types'
+
+type CaseTabItem = {
+  label: string
+  iconComponent: Component
+  slot: string
+}
 
 definePageMeta({ layout: 'dashboard' })
 
@@ -77,25 +100,25 @@ const showUploadModal = ref(false)
 const role = computed(() => session.value?.user.userType)
 
 // Tab configuration
-const tabs = [
+const tabs: CaseTabItem[] = [
   {
     label: 'Messages',
-    icon: 'i-heroicons-chat-bubble-left',
+    iconComponent: PhChatCircle,
     slot: 'messages'
   },
   {
     label: 'Tasks',
-    icon: 'i-heroicons-clipboard-document-list',
+    iconComponent: PhClipboardText,
     slot: 'tasks'
   },
   {
     label: 'Documents',
-    icon: 'i-heroicons-document',
+    iconComponent: PhFile,
     slot: 'documents'
   },
   {
     label: 'Activity',
-    icon: 'i-heroicons-clock',
+    iconComponent: PhClock,
     slot: 'activity'
   }
 ]

@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
+import {
+    parseLawyerDashboardMe,
+    parseOnboardingStatus,
+    type LawyerDashboardMePayload,
+    type OnboardingStatusPayload
+} from '~/lib/lawyerOnboardingStatus'
 
 // --- Types ---
 
@@ -94,7 +100,30 @@ const lawyerOnboardingAPI = {
     submitOnboarding: async (): Promise<SubmitResponse> => {
         const res = await httpClient.post<any>('/api/onboarding/submit', {})
         return res.data || res
+    },
+
+    getOnboardingStatus: async (): Promise<unknown> => {
+        return httpClient.getAuth<unknown>('/api/onboarding/status')
+    },
+
+    getOnboardingSummary: async (): Promise<unknown> => {
+        return httpClient.getAuth<unknown>('/api/onboarding/summary')
+    },
+
+    getDashboardLawyer: async (): Promise<unknown> => {
+        return httpClient.getAuth<unknown>('/api/dashboard/lawyer')
     }
+}
+
+/** For middleware and guards — normalized status fields */
+export async function fetchLawyerOnboardingStatus(): Promise<OnboardingStatusPayload> {
+    const raw = await lawyerOnboardingAPI.getOnboardingStatus()
+    return parseOnboardingStatus(raw)
+}
+
+export async function fetchLawyerDashboardMe(): Promise<LawyerDashboardMePayload> {
+    const raw = await lawyerOnboardingAPI.getDashboardLawyer()
+    return parseLawyerDashboardMe(raw)
 }
 
 // --- Composable ---
@@ -144,10 +173,19 @@ export const useLawyerOnboarding = () => {
             mutationFn: lawyerOnboardingAPI.submitOnboarding,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
                 // Invalidate session/profile so application status gets refreshed
                 queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all })
             }
+        })
+    }
+
+    const useOnboardingStatus = () => {
+        return useQuery({
+            queryKey: ['lawyer', 'onboarding', 'status'],
+            queryFn: async () => fetchLawyerOnboardingStatus(),
+            staleTime: 30 * 1000
         })
     }
 
@@ -157,5 +195,6 @@ export const useLawyerOnboarding = () => {
         useDiscardDraft,
         useSaveNin,
         useSubmitOnboarding,
+        useOnboardingStatus
     }
 }

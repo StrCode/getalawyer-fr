@@ -4,31 +4,34 @@
       <!-- Header -->
       <div class="mb-8">
         <UButton
-          icon="i-hugeicons-arrow-left-01"
           label="Back to Booking"
           color="neutral"
           variant="ghost"
           :to="`/dashboard/bookings/${bookingId}`"
           class="mb-4"
-        />
+        >
+          <template #leading>
+            <PhArrowLeft class="size-5 shrink-0" />
+          </template>
+        </UButton>
         <h1 class="font-bold text-gray-900 text-3xl">Reschedule Booking</h1>
         <p class="mt-2 text-gray-600">Select a new date and time for your consultation</p>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+        <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
       <div v-else-if="isError || !booking" class="py-12 text-center">
-        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
+        <PhWarningCircle class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load booking details</p>
       </div>
 
       <!-- Cannot Reschedule -->
       <div v-else-if="!canReschedule" class="py-12 text-center">
-        <UIcon name="i-hugeicons-calendar-remove-01" class="mx-auto mb-4 w-12 h-12 text-gray-400" />
+        <PhCalendarX class="mx-auto mb-4 w-12 h-12 text-gray-400" />
         <p class="text-gray-600">This booking cannot be rescheduled</p>
         <UButton
           label="Back to Booking"
@@ -108,11 +111,11 @@
 
             <div class="space-y-2 text-sm">
               <div class="flex items-center gap-2 text-[#007AFC]">
-                <UIcon name="i-hugeicons-calendar-03" class="w-5 h-5" />
+                <PhCalendar class="w-5 h-5" />
                 <p class="font-medium">{{ formatDate(selectedSlot.date) }}</p>
               </div>
               <div class="flex items-center gap-2 text-[#007AFC]">
-                <UIcon name="i-hugeicons-clock-01" class="w-5 h-5" />
+                <PhClock class="w-5 h-5" />
                 <p class="font-medium">{{ formatTime(selectedSlot.time) }}</p>
               </div>
             </div>
@@ -127,6 +130,14 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import {
+  PhArrowLeft,
+  PhCalendar,
+  PhCalendarX,
+  PhCircleNotch,
+  PhClock,
+  PhWarningCircle
+} from '@phosphor-icons/vue'
 import { useBookings } from '~/composables/useBookings'
 import BookingCalendar from '~/components/booking/BookingCalendar.vue'
 

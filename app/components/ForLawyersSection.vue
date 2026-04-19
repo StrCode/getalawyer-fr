@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { motion } from 'motion-v'
+import {
+  PhCalendarBlank,
+  PhChatsCircle,
+  PhCurrencyDollar,
+  PhShieldCheck
+} from '@phosphor-icons/vue'
 
 interface Perk {
-  icon: string
+  icon: Component
   title: string
   description: string
 }
 
 const perks: Perk[] = [
-  { icon: 'i-lucide-shield-check',    title: 'Bar-Verified Credentials',    description: 'Your credentials are verified and prominently displayed to build client trust.' },
-  { icon: 'i-lucide-calendar',        title: 'Smart Booking Calendar',      description: 'Automated scheduling that syncs with your calendar and reduces no-shows.' },
-  { icon: 'i-lucide-message-circle',  title: 'Direct Client Messaging',     description: 'Secure messaging platform to communicate with clients before and after consultations.' },
-  { icon: 'i-lucide-dollar-sign',     title: 'Zero Commission Model',       description: 'Keep 100% of your consultation fees. We charge lawyers a flat monthly subscription.' },
+  { icon: PhShieldCheck, title: 'Bar-Verified Credentials', description: 'Your credentials are verified and prominently displayed to build client trust.' },
+  { icon: PhCalendarBlank, title: 'Smart Booking Calendar', description: 'Automated scheduling that syncs with your calendar and reduces no-shows.' },
+  { icon: PhChatsCircle, title: 'Direct Client Messaging', description: 'Secure messaging platform to communicate with clients before and after consultations.' },
+  { icon: PhCurrencyDollar, title: 'Zero Commission Model', description: 'Keep 100% of your consultation fees. We charge lawyers a flat monthly subscription.' }
 ]
 </script>
 
@@ -119,7 +126,7 @@ const perks: Perk[] = [
             class="bg-white p-5 border border-neutral-200 rounded-xl transition-shadow duration-200 cursor-default"
           >
             <div class="flex justify-center items-center bg-[#e8f3ec] mb-4 rounded-lg w-10 h-10">
-              <UIcon :name="perk.icon" class="w-5 h-5 text-[#1d6b44]" />
+              <component :is="perk.icon" class="w-5 h-5 text-[#1d6b44]" />
             </div>
             <h3 class="mb-1.5 font-semibold text-[15px] text-neutral-900">{{ perk.title }}</h3>
             <p class="text-neutral-500 text-sm leading-relaxed">{{ perk.description }}</p>

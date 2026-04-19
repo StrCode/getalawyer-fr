@@ -6,8 +6,8 @@
         class="flex justify-center items-center rounded-full w-8 h-8"
         :class="`bg-${activity.color}-100`"
       >
-        <UIcon 
-          :name="activity.icon || 'i-heroicons-information-circle'" 
+        <component
+          :is="activity.icon ?? PhInfo"
           class="w-4 h-4"
           :class="`text-${activity.color}-600`"
         />
@@ -66,6 +66,7 @@
 </template>
 
 <script setup lang="ts">
+import { PhInfo } from '@phosphor-icons/vue'
 import type { Activity } from '~/types'
 
 interface Props {

@@ -120,11 +120,4 @@ export default defineNuxtConfig({
       betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3001/api/auth',
     },
   },
-  icon: {
-    provider: 'iconify',
-    collections: ['hugeicons'],
-    serverBundle: {
-      collections: ['hugeicons']
-    }
-  },
 })

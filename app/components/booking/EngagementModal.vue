@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import * as z from 'zod'
+import {
+  PhBriefcase,
+  PhChatsCircle,
+  PhCheck,
+  PhCurrencyDollar,
+  PhInfo,
+  PhX
+} from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
 import { useBookings } from '~/composables/useBookings'
@@ -41,18 +50,23 @@ const state = reactive<Schema>({
   paymentNotes: ''
 })
 
-const outcomeOptions = [
+const outcomeOptions: {
+  value: 'consultation_only' | 'client_hired'
+  label: string
+  description: string
+  icon: Component
+}[] = [
   {
     value: 'consultation_only',
     label: 'Consultation Only',
     description: 'Client did not hire me for ongoing representation',
-    icon: 'i-heroicons-chat-bubble-left-right'
+    icon: PhChatsCircle
   },
   {
     value: 'client_hired',
     label: 'Client Hired',
     description: 'Client hired me and we will proceed with a case',
-    icon: 'i-heroicons-briefcase'
+    icon: PhBriefcase
   }
 ]
 
@@ -126,9 +140,12 @@ function close() {
           <UButton
             color="neutral"
             variant="ghost"
-            icon="i-heroicons-x-mark"
             @click="close"
-          />
+          >
+            <template #leading>
+              <PhX class="w-5 h-5" />
+            </template>
+          </UButton>
         </div>
       </template>
 
@@ -156,7 +173,7 @@ function close() {
                     : 'bg-gray-100 text-gray-400'
                 "
               >
-                <UIcon :name="option.icon" class="w-5 h-5" />
+                <component :is="option.icon" class="w-5 h-5" />
               </div>
               <div class="flex-1">
                 <div class="font-semibold text-gray-900">{{ option.label }}</div>
@@ -182,7 +199,7 @@ function close() {
         <!-- Fee Details (shown only when client hired) -->
         <div v-if="showFeeDetails" class="space-y-4 bg-blue-50 p-4 border border-blue-200 rounded-lg">
           <div class="flex items-start gap-2">
-            <UIcon name="i-heroicons-information-circle" class="mt-0.5 w-5 h-5 text-blue-600" />
+            <PhInfo class="mt-0.5 w-5 h-5 text-blue-600" />
             <div>
               <h4 class="font-semibold text-blue-900 text-sm">Case Details Required</h4>
               <p class="mt-0.5 text-blue-700 text-xs">
@@ -197,9 +214,12 @@ function close() {
               type="number"
               step="0.01"
               placeholder="0.00"
-              icon="i-heroicons-currency-dollar"
               size="lg"
-            />
+            >
+              <template #leading>
+                <PhCurrencyDollar class="w-5 h-5 shrink-0 opacity-70" />
+              </template>
+            </UInput>
             <template #hint>
               <span class="text-gray-500 text-xs">Enter the total agreed fee amount</span>
             </template>
@@ -237,7 +257,7 @@ function close() {
         <!-- Consultation Only Info -->
         <div v-else class="bg-gray-50 p-4 border border-gray-200 rounded-lg">
           <div class="flex items-start gap-2">
-            <UIcon name="i-heroicons-information-circle" class="mt-0.5 w-5 h-5 text-gray-600" />
+            <PhInfo class="mt-0.5 w-5 h-5 text-gray-600" />
             <div>
               <h4 class="font-semibold text-gray-900 text-sm">Consultation Only</h4>
               <p class="mt-0.5 text-gray-600 text-xs">
@@ -256,8 +276,11 @@ function close() {
             color="primary"
             :loading="isPending"
             @click="onSubmit"
-            icon="i-heroicons-check"
-          />
+          >
+            <template #leading>
+              <PhCheck class="w-4 h-4" />
+            </template>
+          </UButton>
         </div>
       </template>
     </UCard>

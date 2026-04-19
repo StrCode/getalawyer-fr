@@ -1,12 +1,12 @@
 <template>
   <div class="empty-state">
     <div class="empty-icon" :style="{ backgroundColor: `${color}15` }">
-      <UIcon :name="icon" class="w-12 h-12" :style="{ color }" />
+      <component :is="icon" class="w-12 h-12" :style="{ color }" />
     </div>
-    
+
     <h3 class="empty-title">{{ title }}</h3>
     <p class="empty-description">{{ description }}</p>
-    
+
     <div v-if="$slots.actions" class="empty-actions">
       <slot name="actions" />
     </div>
@@ -14,8 +14,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
+
 interface Props {
-  icon: string
+  icon: Component
   title: string
   description: string
   color?: string
@@ -75,16 +77,16 @@ withDefaults(defineProps<Props>(), {
   .empty-state {
     padding: var(--space-8) var(--space-4);
   }
-  
+
   .empty-icon {
     width: 4rem;
     height: 4rem;
   }
-  
+
   .empty-title {
     font-size: var(--text-lg);
   }
-  
+
   .empty-description {
     font-size: var(--text-sm);
   }

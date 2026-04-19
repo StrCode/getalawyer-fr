@@ -4,6 +4,8 @@ import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 import { provide } from 'vue'
 import { useRouter } from '#imports'
+import { useQueryClient } from '@tanstack/vue-query'
+import { queryKeys } from '~/lib/query-client'
 import { toast } from 'vue-sonner'
 import {
   PhScales,
@@ -41,6 +43,7 @@ export default defineComponent({
     } = useOnboardingNavigation()
 
     const router = useRouter()
+    const queryClient = useQueryClient()
 
     // Dynamic resolution of the active store interface
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
@@ -95,10 +98,21 @@ export default defineComponent({
         const success = await store.value.saveStep(currentStep.value.key)
 
         if (success) {
-          if (!isLast.value && nextStep.value) {
+          if (userType.value === 'lawyer' && isLast.value) {
+            toast.success('Application submitted', {
+              description: 'Your application is now pending review.'
+            })
+            await router.push('/onboarding/pending')
+          } else if (userType.value === 'client' && isLast.value) {
+            await queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.client.profile })
+            toast.success('You’re all set', {
+              description: 'Your preferences were saved. Opening your dashboard.'
+            })
+            await router.push('/dashboard')
+          } else if (!isLast.value && nextStep.value) {
             router.push(nextStep.value.path)
           }
-          // Last step: lawyer `review` and client `specializations` run final submit inside store.saveStep
         } else {
           console.warn('[Wizard] saveStep returned false')
         }
@@ -160,6 +174,7 @@ export default defineComponent({
       sectionProgress,
       isFirst,
       isLast,
+      userType,
       isScrolled,
       scrollContainer,
       handleBack,
@@ -255,8 +270,13 @@ export default defineComponent({
           </Button>
           
           <p class="hidden lg:block text-[11px] text-gray-400 max-w-[320px] leading-snug">
-            By clicking Continue, you agree to Getalawyer's 
-            <a href="#" class="text-primary hover:underline">Terms of Use</a> and 
+            <template v-if="userType === 'client' && isLast">
+              By saving and continuing, you agree to Getalawyer's
+            </template>
+            <template v-else>
+              By clicking Continue, you agree to Getalawyer's
+            </template>
+            <a href="#" class="text-primary hover:underline">Terms of Use</a> and
             <a href="#" class="text-primary hover:underline">Privacy Policy</a>.
           </p>
         </div>
@@ -272,7 +292,15 @@ export default defineComponent({
               class="animate-spin w-5 h-5 mr-2 shrink-0"
             />
             <span>
-              {{ isSaving ? 'Please wait...' : isLast ? 'Submit Application' : 'Next' }}
+              {{
+                isSaving
+                  ? 'Please wait...'
+                  : !isLast
+                    ? 'Next'
+                    : userType === 'client'
+                      ? 'Save and continue'
+                      : 'Submit Application'
+              }}
             </span>
           </Button>
         </div>

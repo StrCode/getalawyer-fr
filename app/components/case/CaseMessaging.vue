@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex justify-between items-center bg-gray-50 p-4 border-b rounded-t-lg">
       <div class="flex items-center space-x-3">
-        <UIcon name="i-heroicons-chat-bubble-left-right" class="w-5 h-5 text-gray-600" />
+        <PhChatsCircle class="w-5 h-5 text-gray-600" />
         <h3 class="font-semibold text-gray-900">Case Messages</h3>
         <UBadge v-if="messages?.length" variant="soft" color="blue">
           {{ messages.length }} messages
@@ -15,18 +15,18 @@
     <div class="flex-1 space-y-4 p-4 overflow-y-auto" style="max-height: 400px;">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-8">
-        <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 text-gray-400 animate-spin" />
+        <PhCircleNotch class="w-6 h-6 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="py-8 text-center">
-        <UIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-2 w-8 h-8 text-red-400" />
+        <PhWarning class="mx-auto mb-2 w-8 h-8 text-red-400" />
         <p class="text-red-600 text-sm">Failed to load messages</p>
       </div>
 
       <!-- Empty State -->
       <div v-else-if="!messages?.length" class="py-8 text-center">
-        <UIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
+        <PhChatCircleDots class="mx-auto mb-3 w-12 h-12 text-gray-300" />
         <p class="text-gray-500 text-sm">No messages yet. Start the conversation!</p>
       </div>
 
@@ -63,10 +63,8 @@
             <div class="flex justify-between items-center opacity-75 mt-1 text-xs">
               <span>{{ formatMessageTime(message.createdAt) }}</span>
               <div v-if="isMessageFromCurrentUser(message)" class="flex items-center space-x-1">
-                <UIcon
-                  :name="message.isRead ? 'i-heroicons-check-circle' : 'i-heroicons-check'"
-                  class="w-3 h-3"
-                />
+                <PhCheckCircle v-if="message.isRead" class="w-3 h-3" />
+                <PhCheck v-else class="w-3 h-3" />
                 <span>{{ message.isRead ? 'Read' : 'Sent' }}</span>
               </div>
             </div>
@@ -88,11 +86,14 @@
           />
         </div>
         <UButton
-          icon="i-heroicons-paper-airplane"
           @click="handleSendMessage"
           :disabled="!messageInput.trim() || isSending"
           :loading="isSending"
-        />
+        >
+          <template #leading>
+            <PhPaperPlaneRight class="w-5 h-5" />
+          </template>
+        </UButton>
       </div>
     </div>
 
@@ -103,7 +104,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import {
+  PhChatCircleDots,
+  PhCheck,
+  PhCheckCircle,
+  PhChatsCircle,
+  PhCircleNotch,
+  PhPaperPlaneRight,
+  PhWarning
+} from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({
@@ -123,46 +133,44 @@ const props = defineProps({
 
 const { session } = useAuth()
 
-// Use the case messaging composable
-const { 
-  messages, 
-  isLoading, 
-  error, 
+const {
+  messages,
+  isLoading,
+  error,
   sendMessage,
-  isSending 
+  isSending
 } = useCaseMessaging(props.caseId, props.conversationId)
 
 const messageInput = ref('')
 
-// Methods
 const handleSendMessage = async () => {
   if (!messageInput.value.trim() || isSending.value) return
-  
+
   try {
     await sendMessage(messageInput.value.trim())
     messageInput.value = ''
-  } catch (error) {
+  } catch {
     toast.error('Error', {
       description: 'Failed to send message'
     })
   }
 }
 
-const formatMessageTime = (timestamp) => {
+const formatMessageTime = (timestamp: Date | string) => {
   const date = new Date(timestamp)
   const now = new Date()
   const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-  
+
   if (diffInHours < 24) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  } else if (diffInHours < 168) { // 7 days
+  } else if (diffInHours < 168) {
     return date.toLocaleDateString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })
   } else {
     return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 }
 
-const isMessageFromCurrentUser = (message) => {
+const isMessageFromCurrentUser = (message: { senderId?: string }) => {
   return message.senderId === session.value?.user?.id
 }
 </script>

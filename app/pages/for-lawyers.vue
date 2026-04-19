@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { ref, onMounted } from 'vue'
+import {
+  PhCalendarDots,
+  PhCheckCircle,
+  PhChatsCircle,
+  PhCurrencyDollar,
+  PhInfo,
+  PhShieldCheck
+} from '@phosphor-icons/vue'
 
 interface Benefit {
   title: string
   description: string
-  icon: string
+  icon: Component
   features: string[]
 }
 
@@ -24,7 +33,7 @@ const benefits: Benefit[] = [
   {
     title: 'Bar-Verified Credentials',
     description: 'Build trust with verified bar credentials',
-    icon: 'i-heroicons-shield-check',
+    icon: PhShieldCheck,
     features: [
       'Automated bar verification',
       'Verified badge on profile',
@@ -34,7 +43,7 @@ const benefits: Benefit[] = [
   {
     title: 'Smart Booking Calendar',
     description: 'Manage your availability effortlessly',
-    icon: 'i-heroicons-calendar-days',
+    icon: PhCalendarDots,
     features: [
       'Sync with your calendar',
       'Automated reminders',
@@ -44,7 +53,7 @@ const benefits: Benefit[] = [
   {
     title: 'Direct Client Communication',
     description: 'Secure messaging and video consultations',
-    icon: 'i-heroicons-chat-bubble-left-right',
+    icon: PhChatsCircle,
     features: [
       'Encrypted messaging',
       'Video consultation platform',
@@ -54,7 +63,7 @@ const benefits: Benefit[] = [
   {
     title: 'Zero Commission Model',
     description: 'Keep 100% of your consultation fees',
-    icon: 'i-heroicons-currency-dollar',
+    icon: PhCurrencyDollar,
     features: [
       'No commission fees',
       'Direct payments',
@@ -196,37 +205,37 @@ onMounted(() => {
               
               <ul class="pricing-features">
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Unlimited client consultations</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Bar verification and verified badge</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Smart booking calendar integration</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Secure messaging and video consultations</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Zero commission on consultation fees</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Profile customization and analytics</span>
                 </li>
                 <li class="pricing-feature">
-                  <UIcon name="i-heroicons-check-circle" class="feature-icon" />
+                  <PhCheckCircle class="feature-icon" />
                   <span>Priority support</span>
                 </li>
               </ul>
               
               <div class="pricing-note">
-                <UIcon name="i-heroicons-information-circle" class="info-icon" />
+                <PhInfo class="info-icon" />
                 <p>Keep 100% of your consultation fees. We only charge a flat monthly subscription.</p>
               </div>
             </div>

@@ -204,8 +204,17 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
             return new Promise((resolve) => {
                 submitOnboardingMutation.mutate(undefined, {
                     onSuccess: () => resolve(true),
-                    onError: (e) => {
+                    onError: (e: unknown) => {
                         console.error('[Store] Failed to submit onboarding', e)
+                        const code =
+                            e instanceof ApiError
+                                ? e.code
+                                : (e as { code?: string })?.code
+                        /** Already in review pipeline — treat as success for navigation */
+                        if (code === 'ALREADY_SUBMITTED') {
+                            resolve(true)
+                            return
+                        }
                         resolve(false)
                     }
                 })

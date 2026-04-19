@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+import { PhCheckCircle } from '@phosphor-icons/vue'
+
 interface Benefit {
   title: string
   description: string
-  icon: string
+  icon: Component
   features: string[]
 }
 
@@ -17,7 +20,7 @@ defineProps<BenefitCardProps>()
   <UCard>
     <div class="benefit-card">
       <div class="benefit-header">
-        <UIcon :name="benefit.icon" class="benefit-icon" />
+        <component :is="benefit.icon" class="benefit-icon" />
         <h3 class="benefit-title">{{ benefit.title }}</h3>
       </div>
       
@@ -25,7 +28,7 @@ defineProps<BenefitCardProps>()
       
       <ul class="benefit-features">
         <li v-for="(feature, index) in benefit.features" :key="index" class="feature-item">
-          <UIcon name="i-heroicons-check-circle" class="feature-check" />
+          <PhCheckCircle class="feature-check" />
           <span>{{ feature }}</span>
         </li>
       </ul>

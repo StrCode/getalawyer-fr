@@ -4,11 +4,14 @@
       <!-- Header -->
       <div class="flex items-center gap-4 mb-8">
         <UButton
-          icon="i-hugeicons-arrow-left-01"
           color="neutral"
           variant="ghost"
           to="/dashboard/bookings"
-        />
+        >
+          <template #leading>
+            <PhArrowLeft class="size-5" />
+          </template>
+        </UButton>
         <div class="flex-1">
           <h1 class="font-bold text-gray-900 text-2xl">Booking Details</h1>
           <p v-if="booking" class="mt-1 text-gray-600 text-sm">
@@ -31,12 +34,12 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+        <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
       <div v-else-if="isError || !booking" class="py-12 text-center">
-        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
+        <PhWarningCircle class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load booking details</p>
       </div>
 
@@ -98,11 +101,14 @@
                     :to="booking.meetingUrl"
                     target="_blank"
                     label="Join Video Call"
-                    icon="i-hugeicons-video-01"
                     color="primary"
                     size="sm"
                     class="bg-[#007AFC]"
-                  />
+                  >
+                    <template #leading>
+                      <PhVideoCamera class="size-4 shrink-0" />
+                    </template>
+                  </UButton>
                 </dd>
               </div>
               <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
@@ -149,7 +155,7 @@
               
               <div v-if="booking.engagementOutcome === 'client_hired'" class="bg-green-50 p-4 border border-green-200 rounded-lg">
                 <div class="flex items-start gap-2">
-                  <UIcon name="i-heroicons-check-circle" class="mt-0.5 w-5 h-5 text-green-600" />
+                  <PhCheckCircle class="mt-0.5 w-5 h-5 text-green-600" />
                   <div>
                     <p class="font-semibold text-green-900 text-sm">Case Created</p>
                     <p class="mt-0.5 text-green-700 text-xs">
@@ -160,10 +166,12 @@
                       color="primary"
                       size="xs"
                       class="mt-2"
-                      icon="i-heroicons-arrow-right"
-                      trailing
                       to="/dashboard/cases"
-                    />
+                    >
+                      <template #trailing>
+                        <PhArrowRight class="size-4 shrink-0" />
+                      </template>
+                    </UButton>
                   </div>
                 </div>
               </div>
@@ -183,10 +191,13 @@
               <UButton
                 label="Open Conversation"
                 color="primary"
-                icon="i-heroicons-chat-bubble-left-right"
                 block
                 :to="`/dashboard/messages?conversation=${booking.conversationId}`"
-              />
+              >
+                <template #leading>
+                  <PhChatCircle class="size-5 shrink-0" />
+                </template>
+              </UButton>
             </div>
           </UCard>
 
@@ -222,7 +233,7 @@
 
             <div class="space-y-4">
               <div class="flex items-start gap-3">
-                <UIcon name="i-hugeicons-calendar-03" class="mt-0.5 w-5 h-5 text-gray-400" />
+                <PhCalendar class="mt-0.5 w-5 h-5 text-gray-400" />
                 <div>
                   <p class="font-medium text-gray-900 text-sm">
                     {{ formatDate(booking.scheduledDate) }}
@@ -317,6 +328,16 @@
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import {
+  PhArrowLeft,
+  PhArrowRight,
+  PhCalendar,
+  PhChatCircle,
+  PhCheckCircle,
+  PhCircleNotch,
+  PhVideoCamera,
+  PhWarningCircle
+} from '@phosphor-icons/vue'
 import { useBookings } from '~/composables/useBookings'
 
 definePageMeta({

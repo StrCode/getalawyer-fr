@@ -25,21 +25,24 @@
         
         <UInput
           v-model="searchQuery"
-          icon="i-heroicons-magnifying-glass"
           placeholder="Search tasks..."
           class="flex-1 md:max-w-xs"
-        />
+        >
+          <template #leading>
+            <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
+          </template>
+        </UInput>
       </div>
     </UCard>
 
     <!-- Tasks Display -->
     <div class="space-y-4">
       <div v-if="loading" class="flex justify-center py-8">
-        <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin" />
+        <PhCircleNotch class="w-6 h-6 animate-spin" />
       </div>
       
       <div v-else-if="error" class="py-8 text-red-500 text-center">
-        <UIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-4 w-12 h-12" />
+        <PhWarningCircle class="mx-auto mb-4 w-12 h-12" />
         <p class="mb-4">{{ error }}</p>
         <UButton variant="outline" @click="$emit('retry')">
           Try Again
@@ -47,7 +50,7 @@
       </div>
       
       <div v-else-if="filteredTasks.length === 0" class="py-12 text-gray-500 text-center">
-        <UIcon name="i-heroicons-clipboard-document-list" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-gray-300" />
         <p class="mb-2 font-medium text-lg">No tasks found</p>
         <p class="text-sm">
           {{ getEmptyMessage() }}
@@ -60,7 +63,7 @@
           <div v-for="(statusTasks, status) in groupedTasks" :key="status" class="space-y-3">
             <div v-if="statusTasks.length > 0">
               <h4 class="flex items-center gap-2 mb-3 font-medium text-gray-900">
-                <UIcon :name="getStatusIcon(status)" class="w-4 h-4" />
+                <component :is="getStatusIcon(status)" class="w-4 h-4" />
                 {{ getStatusLabel(status) }}
                 <UBadge :color="getStatusColor(status)" variant="subtle" size="sm">
                   {{ statusTasks.length }}
@@ -98,6 +101,17 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
+import {
+  PhCheckCircle,
+  PhCircleNotch,
+  PhClipboardText,
+  PhClock,
+  PhMagnifyingGlass,
+  PhPlay,
+  PhWarning,
+  PhWarningCircle
+} from '@phosphor-icons/vue'
 import type { Task, TaskStatus, Priority } from '~/types'
 
 interface Props {
@@ -214,14 +228,14 @@ const priorityFilterOptions = [
 ]
 
 // Helper functions
-const getStatusIcon = (status: TaskStatus | 'overdue') => {
-  const icons = {
-    pending: 'i-heroicons-clock',
-    in_progress: 'i-heroicons-play',
-    completed: 'i-heroicons-check-circle',
-    overdue: 'i-heroicons-exclamation-triangle'
+const getStatusIcon = (status: TaskStatus | 'overdue'): Component => {
+  const icons: Record<string, Component> = {
+    pending: PhClock,
+    in_progress: PhPlay,
+    completed: PhCheckCircle,
+    overdue: PhWarning
   }
-  return icons[status] || 'i-heroicons-clipboard-document-list'
+  return icons[status] ?? PhClipboardText
 }
 
 const getStatusLabel = (status: TaskStatus | 'overdue') => {

@@ -1,4 +1,18 @@
 <script setup lang="ts">
+import {
+  PhBriefcase,
+  PhBuildings,
+  PhCalculator,
+  PhCurrencyDollar,
+  PhFileText,
+  PhGlobe,
+  PhGlobeHemisphereWest,
+  PhHeart,
+  PhHouse,
+  PhLightbulb,
+  PhShieldCheck,
+  PhUsersThree
+} from '@phosphor-icons/vue'
 import { ref, onMounted } from 'vue'
 import type { PracticeArea } from '~/types/practice-area'
 
@@ -22,7 +36,7 @@ const practiceAreas: PracticeArea[] = [
     id: '1',
     name: 'Family Law',
     slug: 'family-law',
-    icon: 'i-heroicons-users',
+    icon: PhUsersThree,
     lawyerCount: 245,
     description: 'Divorce, custody, adoption, and family matters'
   },
@@ -30,7 +44,7 @@ const practiceAreas: PracticeArea[] = [
     id: '2',
     name: 'Criminal Defense',
     slug: 'criminal-defense',
-    icon: 'i-heroicons-shield-check',
+    icon: PhShieldCheck,
     lawyerCount: 189,
     description: 'Defense representation for criminal charges'
   },
@@ -38,7 +52,7 @@ const practiceAreas: PracticeArea[] = [
     id: '3',
     name: 'Corporate Law',
     slug: 'corporate-law',
-    icon: 'i-heroicons-building-office',
+    icon: PhBuildings,
     lawyerCount: 312,
     description: 'Business formation, contracts, and corporate matters'
   },
@@ -46,7 +60,7 @@ const practiceAreas: PracticeArea[] = [
     id: '4',
     name: 'Real Estate Law',
     slug: 'real-estate-law',
-    icon: 'i-heroicons-home',
+    icon: PhHouse,
     lawyerCount: 156,
     description: 'Property transactions, leases, and real estate disputes'
   },
@@ -54,7 +68,7 @@ const practiceAreas: PracticeArea[] = [
     id: '5',
     name: 'Personal Injury',
     slug: 'personal-injury',
-    icon: 'i-heroicons-heart',
+    icon: PhHeart,
     lawyerCount: 203,
     description: 'Accident claims, medical malpractice, and injury compensation'
   },
@@ -62,7 +76,7 @@ const practiceAreas: PracticeArea[] = [
     id: '6',
     name: 'Employment Law',
     slug: 'employment-law',
-    icon: 'i-heroicons-briefcase',
+    icon: PhBriefcase,
     lawyerCount: 178,
     description: 'Workplace disputes, discrimination, and labor rights'
   },
@@ -70,7 +84,7 @@ const practiceAreas: PracticeArea[] = [
     id: '7',
     name: 'Immigration Law',
     slug: 'immigration-law',
-    icon: 'i-heroicons-globe-alt',
+    icon: PhGlobe,
     lawyerCount: 134,
     description: 'Visas, citizenship, and immigration matters'
   },
@@ -78,7 +92,7 @@ const practiceAreas: PracticeArea[] = [
     id: '8',
     name: 'Intellectual Property',
     slug: 'intellectual-property',
-    icon: 'i-heroicons-light-bulb',
+    icon: PhLightbulb,
     lawyerCount: 167,
     description: 'Patents, trademarks, copyrights, and IP protection'
   },
@@ -86,7 +100,7 @@ const practiceAreas: PracticeArea[] = [
     id: '9',
     name: 'Estate Planning',
     slug: 'estate-planning',
-    icon: 'i-heroicons-document-text',
+    icon: PhFileText,
     lawyerCount: 142,
     description: 'Wills, trusts, and estate administration'
   },
@@ -94,7 +108,7 @@ const practiceAreas: PracticeArea[] = [
     id: '10',
     name: 'Tax Law',
     slug: 'tax-law',
-    icon: 'i-heroicons-calculator',
+    icon: PhCalculator,
     lawyerCount: 98,
     description: 'Tax planning, disputes, and compliance'
   },
@@ -102,7 +116,7 @@ const practiceAreas: PracticeArea[] = [
     id: '11',
     name: 'Bankruptcy Law',
     slug: 'bankruptcy-law',
-    icon: 'i-heroicons-currency-dollar',
+    icon: PhCurrencyDollar,
     lawyerCount: 87,
     description: 'Debt relief, bankruptcy filings, and financial restructuring'
   },
@@ -110,7 +124,7 @@ const practiceAreas: PracticeArea[] = [
     id: '12',
     name: 'Environmental Law',
     slug: 'environmental-law',
-    icon: 'i-heroicons-globe-americas',
+    icon: PhGlobeHemisphereWest,
     lawyerCount: 76,
     description: 'Environmental regulations, compliance, and litigation'
   }

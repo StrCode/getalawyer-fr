@@ -2,7 +2,7 @@
   <UCard v-if="feedback" class="mb-6 border-l-4 border-orange-500">
     <div class="flex items-start gap-3">
       <div class="flex-shrink-0">
-        <UIcon name="i-hugeicons-alert-circle" class="w-6 h-6 text-orange-600" />
+        <PhWarningCircle class="w-6 h-6 text-orange-600" />
       </div>
       <div class="flex-1">
         <h3 class="text-sm font-semibold text-gray-900 mb-2">
@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { PhWarningCircle } from '@phosphor-icons/vue'
+
 defineProps<{
   feedback?: string | null
 }>()

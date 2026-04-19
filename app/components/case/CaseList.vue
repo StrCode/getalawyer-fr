@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <div v-if="loading" class="flex justify-center py-8">
-      <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin" />
+      <PhCircleNotch class="w-6 h-6 animate-spin" />
     </div>
 
     <div v-else-if="error" class="py-8 text-red-500 text-center">
@@ -12,7 +12,7 @@
     </div>
 
     <div v-else-if="cases.length === 0" class="py-12 text-gray-500 text-center">
-      <UIcon name="i-heroicons-briefcase" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+      <PhBriefcase class="mx-auto mb-4 w-12 h-12 text-gray-300" />
       <p class="mb-2 font-medium text-lg">No cases found</p>
       <p class="text-sm">
         {{ emptyMessage }}
@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { PhBriefcase, PhCircleNotch } from '@phosphor-icons/vue'
 import type { Case } from '~/types'
 
 interface Props {

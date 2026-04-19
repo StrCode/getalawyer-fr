@@ -16,12 +16,12 @@
         <template #content="{ item }">
           <!-- Loading State -->
           <div v-if="isLoading" class="flex justify-center py-12">
-            <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+            <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
           </div>
 
           <!-- Error State -->
           <div v-else-if="isError" class="py-12 text-red-500 text-center">
-            <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12" />
+            <PhWarningCircle class="mx-auto mb-4 w-12 h-12" />
             <p>Failed to load bookings. Please try again later.</p>
           </div>
 
@@ -29,7 +29,7 @@
           <div v-else-if="item.bookings.length === 0">
             <UCard>
               <div class="py-12 text-center">
-                <UIcon name="i-hugeicons-calendar-03" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
+                <PhCalendar class="mx-auto mb-4 w-16 h-16 text-gray-300" />
                 <h3 class="mb-2 font-semibold text-gray-900 text-lg">No {{ item.label.toLowerCase() }} bookings</h3>
                 <p class="mb-6 text-gray-600">
                   {{ item.key === 'all' ? "You haven't made any bookings yet" : `No ${item.label.toLowerCase()} bookings found` }}
@@ -84,15 +84,15 @@
                   <!-- Date & Time -->
                   <div class="flex items-center gap-4 text-gray-600 text-sm">
                     <div class="flex items-center gap-1.5">
-                      <UIcon name="i-hugeicons-calendar-03" class="w-4 h-4" />
+                      <PhCalendar class="w-4 h-4" />
                       <span>{{ formatDate(booking.scheduledDate) }}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                      <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
+                      <PhClock class="w-4 h-4" />
                       <span>{{ booking.scheduledStartTime }}</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                      <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-4 h-4" />
+                      <component :is="meetingTypeIcon(booking.meetingType)" class="w-4 h-4" />
                       <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
                     </div>
                   </div>
@@ -106,7 +106,7 @@
                       size="sm"
                       class="flex items-center gap-1"
                     >
-                      <UIcon name="i-hugeicons-message-01" class="w-3 h-3" />
+                      <PhChatCircle class="w-3 h-3" />
                       Conversation
                     </UBadge>
                     <UBadge 
@@ -116,7 +116,7 @@
                       size="sm"
                       class="flex items-center gap-1"
                     >
-                      <UIcon name="i-hugeicons-briefcase-01" class="w-3 h-3" />
+                      <PhBriefcase class="w-3 h-3" />
                       Case Created
                     </UBadge>
                     <UBadge 
@@ -210,6 +210,15 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import {
+  PhBriefcase,
+  PhCalendar,
+  PhChatCircle,
+  PhCircleNotch,
+  PhClock,
+  PhWarningCircle
+} from '@phosphor-icons/vue'
+import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
 
@@ -361,16 +370,4 @@ const formatDate = (date: string) => {
   })
 }
 
-const getMeetingIcon = (type: string) => {
-  switch (type) {
-    case 'video':
-      return 'i-hugeicons-video-01'
-    case 'phone':
-      return 'i-hugeicons-call'
-    case 'in_person':
-      return 'i-hugeicons-location-01'
-    default:
-      return 'i-hugeicons-calendar-03'
-  }
-}
 </script>

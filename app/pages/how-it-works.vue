@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { ref, onMounted } from 'vue'
+import {
+  PhCalendarBlank,
+  PhMagnifyingGlass,
+  PhSealCheck,
+  PhFileText,
+  PhVideoCamera
+} from '@phosphor-icons/vue'
 
 interface WorkflowStep {
   title: string
   description: string
-  icon: string
+  icon: Component
   illustration?: string
 }
 
@@ -16,27 +24,27 @@ const workflowSteps: WorkflowStep[] = [
   {
     title: 'Search for Lawyers',
     description: 'Browse our directory of verified lawyers by practice area, location, and consultation type',
-    icon: 'i-heroicons-magnifying-glass'
+    icon: PhMagnifyingGlass
   },
   {
     title: 'Review Profiles',
     description: 'Compare qualifications, experience, ratings, and client reviews',
-    icon: 'i-heroicons-document-text'
+    icon: PhFileText
   },
   {
     title: 'Book a Consultation',
     description: 'Schedule a video, phone, or in-person consultation at your convenience',
-    icon: 'i-heroicons-calendar'
+    icon: PhCalendarBlank
   },
   {
     title: 'Meet Your Lawyer',
     description: 'Discuss your legal needs and get expert advice',
-    icon: 'i-heroicons-video-camera'
+    icon: PhVideoCamera
   },
   {
     title: 'Secure Representation',
     description: 'Hire your lawyer and manage your case through our platform',
-    icon: 'i-heroicons-check-badge'
+    icon: PhSealCheck
   }
 ]
 

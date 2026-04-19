@@ -3,7 +3,7 @@
     <!-- Back Button -->
     <NuxtLink to="/dashboard/listings"
       class="inline-flex items-center gap-1 mb-6 text-[#171717] text-sm decoration-1 decoration-transparent hover:decoration-[#171717] underline underline-offset-4 transition-colors duration-300 cursor-pointer">
-      <UIcon name="i-hugeicons-arrow-left-01" class="bg-[#171717] w-4 h-4" />
+      <PhArrowLeft class="w-4 h-4 text-[#171717]" />
       Back to Listings 
     </NuxtLink>
 
@@ -97,7 +97,7 @@
               />
               <button class="right-2.5 bottom-2.5 absolute flex justify-center items-center bg-[#F6F8FA]/90 hover:bg-[#F6F8FA] px-2 py-1.5 rounded-xl transition-colors">
                 <div class="flex items-center gap-2 text-[#3A3A3C]">
-                  <UIcon name="i-hugeicons-image-01" class="bg-[] w-5 h-5" />
+                  <PhImage class="w-5 h-5 text-[#3A3A3C]" />
                   <span class="font-medium text-xs">Show all photos</span>
                 </div>
               </button>
@@ -125,7 +125,7 @@
               <h2 class="font-semibold text-[#1C1C1E] text-xl">What this place offers</h2>
               <div class="gap-4 grid grid-cols-1 md:grid-cols-3">
                 <div v-for="amenity in amenities" :key="amenity.name" class="flex items-center gap-3">
-                  <UIcon :name="amenity.icon" class="w-5 h-5 text-[#1C1C1E]" />
+                  <component :is="amenity.icon" class="w-5 h-5 text-[#1C1C1E]" />
                   <span class="text-[#1C1C1E] text-sm">{{ amenity.name }}</span>
                 </div>
               </div>
@@ -198,31 +198,40 @@
               <!-- Calendar Header -->
               <div class="flex justify-between items-center mb-6">
                 <UButton
-                  icon="i-hugeicons-arrow-left-01"
                   color="neutral"
                   variant="ghost"
                   size="sm"
                   :ui="{ base: 'p-1' }"
-                />
+                >
+                  <template #leading>
+                    <PhArrowLeft class="w-4 h-4" />
+                  </template>
+                </UButton>
                 <p class="font-medium text-[#1C1C1E] text-sm">January 2026</p>
                 <UButton
-                  icon="i-hugeicons-arrow-right-01"
                   color="neutral"
                   variant="ghost"
                   size="sm"
                   :ui="{ base: 'p-1' }"
-                />
+                >
+                  <template #leading>
+                    <PhArrowRight class="w-4 h-4" />
+                  </template>
+                </UButton>
               </div>
 
               <!-- Calendar Days -->
               <div class="flex justify-between items-center mb-6">
                 <UButton
-                  icon="i-hugeicons-arrow-left-01"
                   color="neutral"
                   variant="ghost"
                   size="sm"
                   :ui="{ base: 'p-1' }"
-                />
+                >
+                  <template #leading>
+                    <PhArrowLeft class="w-4 h-4" />
+                  </template>
+                </UButton>
                 <div class="flex gap-4">
                   <div v-for="day in calendarDays" :key="day.date" class="text-center">
                     <p class="mb-2 text-[#8E8E93] text-xs">{{ day.dayName }}</p>
@@ -237,12 +246,15 @@
                   </div>
                 </div>
                 <UButton
-                  icon="i-hugeicons-arrow-right-01"
                   color="neutral"
                   variant="ghost"
                   size="sm"
                   :ui="{ base: 'p-1' }"
-                />
+                >
+                  <template #leading>
+                    <PhArrowRight class="w-4 h-4" />
+                  </template>
+                </UButton>
               </div>
 
               <!-- Tabs for Current/Upcoming -->
@@ -255,6 +267,13 @@
                   indicator: 'bg-[#007AFC]'
                 }"
               >
+                <template #leading="{ item }">
+                  <component
+                    v-if="item.leadingIcon"
+                    :is="item.leadingIcon"
+                    class="size-4 shrink-0 text-current mr-1"
+                  />
+                </template>
                 <template #current>
                   <div class="space-y-2 py-4">
                     <div v-for="booking in currentBookings" :key="booking.id" class="flex justify-between items-start bg-[#F7F7F7] p-4 rounded-lg">
@@ -266,7 +285,7 @@
                         </div>
                       </div>
                       <div class="flex items-center gap-1">
-                        <UIcon name="i-hugeicons-user" class="w-3 h-3 text-[#5C5C5C]" />
+                        <PhUser class="w-3 h-3 text-[#5C5C5C]" />
                         <p class="font-medium text-[#5C5C5C] text-sm">{{ booking.amount }}</p>
                       </div>
                     </div>
@@ -284,7 +303,7 @@
                         </div>
                       </div>
                       <div class="flex items-center gap-1">
-                        <UIcon name="i-hugeicons-user" class="w-3 h-3 text-[#5C5C5C]" />
+                        <PhUser class="w-3 h-3 text-[#5C5C5C]" />
                         <p class="font-medium text-[#5C5C5C] text-sm">{{ booking.amount }}</p>
                       </div>
                     </div>
@@ -349,21 +368,27 @@
                   <div class="flex gap-3">
                     <div class="flex-1">
                       <UInput
-                        icon="i-hugeicons-search-01"
                         class="w-full"
                         placeholder="Search assets..."
                         :ui="{
                           base: 'w-full placeholder:text-[#8E8E93]',
                           leading: 'pl-3'
                         }"
-                      />
+                      >
+                        <template #leading>
+                          <PhMagnifyingGlass class="w-4 h-4 shrink-0 text-[#8E8E93]" />
+                        </template>
+                      </UInput>
                     </div>
                     <UButton
-                      icon="i-hugeicons-filter"
                       label="Filter"
                       color="neutral"
                       variant="outline"
-                    />
+                    >
+                      <template #leading>
+                        <PhFunnel class="w-4 h-4 shrink-0" />
+                      </template>
+                    </UButton>
                   </div>
 
                   <!-- Asset Cards Grid -->
@@ -384,12 +409,15 @@
                             <UDropdownMenu>
                               <template #default="{ open }">
                                 <UButton
-                                  icon="i-hugeicons-more-vertical"
                                   color="neutral"
                                   variant="ghost"
                                   size="sm"
                                   :ui="{ base: 'p-1' }"
-                                />
+                                >
+                                  <template #leading>
+                                    <PhDotsThreeVertical class="w-4 h-4" />
+                                  </template>
+                                </UButton>
                               </template>
                               <template #content>
                                 <UDropdownMenuItem label="Edit" />
@@ -427,21 +455,27 @@
                   <div class="flex gap-3">
                     <div class="flex-1">
                       <UInput
-                        icon="i-hugeicons-search-01"
                         class="w-full"
                         placeholder="Search assets..."
                         :ui="{
                           base: 'w-full placeholder:text-[#8E8E93]',
                           leading: 'pl-3'
                         }"
-                      />
+                      >
+                        <template #leading>
+                          <PhMagnifyingGlass class="w-4 h-4 shrink-0 text-[#8E8E93]" />
+                        </template>
+                      </UInput>
                     </div>
                     <UButton
-                      icon="i-hugeicons-filter"
                       label="Filter"
                       color="neutral"
                       variant="outline"
-                    />
+                    >
+                      <template #leading>
+                        <PhFunnel class="w-4 h-4 shrink-0" />
+                      </template>
+                    </UButton>
                   </div>
 
                   <!-- Condition Logs List -->
@@ -490,21 +524,27 @@
                   <div class="flex gap-3">
                     <div class="flex-1">
                       <UInput
-                        icon="i-hugeicons-search-01"
                         class="w-full"
                         placeholder="Search assets..."
                         :ui="{
                           base: 'w-full placeholder:text-[#8E8E93]',
                           leading: 'pl-3'
                         }"
-                      />
+                      >
+                        <template #leading>
+                          <PhMagnifyingGlass class="w-4 h-4 shrink-0 text-[#8E8E93]" />
+                        </template>
+                      </UInput>
                     </div>
                     <UButton
-                      icon="i-hugeicons-filter"
                       label="Filter"
                       color="neutral"
                       variant="outline"
-                    />
+                    >
+                      <template #leading>
+                        <PhFunnel class="w-4 h-4 shrink-0" />
+                      </template>
+                    </UButton>
                   </div>
 
                   <!-- Incident Reports List -->
@@ -559,7 +599,6 @@
 
             <!-- Dynamic Action Button -->
             <UButton
-              :icon="actionButtonConfig.icon"
               :label="actionButtonConfig.label"
               color="secondary"
               size="md"
@@ -568,7 +607,11 @@
               }"
               class="top-5 right-4 absolute rounded-lg"
               @click="handleActionButtonClick"
-            />
+            >
+              <template #leading>
+                <PhPlus class="size-4 shrink-0" />
+              </template>
+            </UButton>
           </div>
         </div>
       </template>
@@ -586,6 +629,28 @@
 </template>
 
 <script setup lang="ts">
+import type { Component } from 'vue'
+import {
+  PhArrowLeft,
+  PhArrowRight,
+  PhBarbell,
+  PhCalendarBlank,
+  PhDotsThreeVertical,
+  PhFunnel,
+  PhHeart,
+  PhHouse,
+  PhImage,
+  PhLightning,
+  PhMagnifyingGlass,
+  PhPlus,
+  PhSun,
+  PhSwimmingPool,
+  PhUser,
+  PhVideoCamera,
+  PhWashingMachine,
+  PhWifiHigh
+} from '@phosphor-icons/vue'
+
 useHead({
   title: 'Property Details - Smart Stay Rentals',
   meta: [
@@ -637,22 +702,22 @@ const tabs = [
   }
 ]
 
-const amenities = [
-  { name: 'Garden view', icon: 'i-hugeicons-home-01' },
-  { name: 'Kitchen', icon: 'i-hugeicons-home-01' },
-  { name: 'Kitchen', icon: 'i-hugeicons-home-01' },
-  { name: 'Wifi', icon: 'i-hugeicons-wifi-01' },
-  { name: 'Pets allowed', icon: 'i-hugeicons-favourite' },
-  { name: 'Pets allowed', icon: 'i-hugeicons-favourite' },
-  { name: 'Washing machine', icon: 'i-hugeicons-settings-02' },
-  { name: 'Solar Inverter', icon: 'i-hugeicons-flash' },
-  { name: 'Solar Inverter', icon: 'i-hugeicons-flash' },
-  { name: 'Air conditioning', icon: 'i-hugeicons-sun-01' },
-  { name: 'Security cameras on property', icon: 'i-hugeicons-video-camera' },
-  { name: 'Security cameras on property', icon: 'i-hugeicons-video-camera' },
-  { name: 'Swimming pool', icon: 'i-hugeicons-home-03' },
-  { name: 'Gym / Fitness center', icon: 'i-hugeicons-favourite' },
-  { name: 'Gym / Fitness center', icon: 'i-hugeicons-favourite' }
+const amenities: { name: string, icon: Component }[] = [
+  { name: 'Garden view', icon: PhHouse },
+  { name: 'Kitchen', icon: PhHouse },
+  { name: 'Kitchen', icon: PhHouse },
+  { name: 'Wifi', icon: PhWifiHigh },
+  { name: 'Pets allowed', icon: PhHeart },
+  { name: 'Pets allowed', icon: PhHeart },
+  { name: 'Washing machine', icon: PhWashingMachine },
+  { name: 'Solar Inverter', icon: PhLightning },
+  { name: 'Solar Inverter', icon: PhLightning },
+  { name: 'Air conditioning', icon: PhSun },
+  { name: 'Security cameras on property', icon: PhVideoCamera },
+  { name: 'Security cameras on property', icon: PhVideoCamera },
+  { name: 'Swimming pool', icon: PhSwimmingPool },
+  { name: 'Gym / Fitness center', icon: PhBarbell },
+  { name: 'Gym / Fitness center', icon: PhBarbell }
 ]
 
 const photos = [
@@ -679,8 +744,8 @@ const calendarDays = [
 ]
 
 const scheduleTabs = [
-  { label: 'Current', slot: 'current', icon: 'i-hugeicons-calendar-03' },
-  { label: 'Upcoming', slot: 'upcoming', icon: 'i-hugeicons-calendar-03' }
+  { label: 'Current', slot: 'current', leadingIcon: PhCalendarBlank },
+  { label: 'Upcoming', slot: 'upcoming', leadingIcon: PhCalendarBlank }
 ]
 
 const currentBookings = [
@@ -813,17 +878,14 @@ const actionButtonConfig = computed(() => {
   switch (activeAssetTab.value) {
     case 'condition-logs':
       return {
-        icon: 'i-hugeicons-add-01',
         label: 'Log Condition'
       }
     case 'incident-reports':
       return {
-        icon: 'i-hugeicons-add-01',
         label: 'Report Incident'
       }
     default:
       return {
-        icon: 'i-hugeicons-add-01',
         label: 'Add Assets'
       }
   }
