@@ -88,7 +88,33 @@ export default defineNuxtConfig({
         weights: [400, 500, 700],
         styles: ['normal'],
         subsets: ['latin'],
-      }
+      },
+
+      {
+        name: 'SuisseIntl',
+        src: '/fonts/SuisseIntl-Regular.woff2',
+        weight: '400',
+        style: 'normal',
+      },
+
+      {
+        name: 'SuisseIntl',
+        src: '/fonts/SuisseIntl-Medium.woff2',
+        weight: '500',
+        style: 'normal',
+      },
+      {
+        name: 'SuisseIntl',
+        src: '/fonts/SuisseIntl-SemiBold.woff2',
+        weight: '600',
+        style: 'normal',
+      },
+      {
+        name: 'SuisseIntl',
+        src: '/fonts/SuisseIntl-Bold.woff2',
+        weight: '700',
+        style: 'normal',
+      },
     ]
   },
   runtimeConfig: {

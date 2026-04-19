@@ -15,23 +15,10 @@ export type OnboardingState =
     | 'approved'
     | 'rejected'
 
-export interface OnboardingStatus {
-    currentState: OnboardingState
-    completedSteps: OnboardingState[]
-    stepNumber: number
-    startedAt: string
-    lastActivityAt: string
-}
-
-export interface OnboardingSummary {
-    status: OnboardingStatus
-    personal?: any
-    professional?: any
-    practice?: any
-    ninVerification?: {
-        verified: boolean
-        verifiedAt: string
-    }
+export interface PropertyDraftResponse {
+    data: any // the raw JSON propertyForm
+    last_step: string | null
+    last_saved_at: string
 }
 
 export interface PersonalInfoData {
@@ -82,36 +69,24 @@ export interface SubmitResponse {
 // --- API Client Methods ---
 
 const lawyerOnboardingAPI = {
-    getStatus: async (): Promise<OnboardingStatus> => {
-        const res = await httpClient.get<any>('/api/onboarding/status')
+    getDraft: async (): Promise<PropertyDraftResponse> => {
+        const res = await httpClient.get<any>('/api/onboarding/draft')
         return res.data || res
     },
 
-    getSummary: async (): Promise<OnboardingSummary> => {
-        const res = await httpClient.get<any>('/api/onboarding/summary')
+    saveDraft: async (payload: { data: any; lastStep: string }) => {
+        const res = await httpClient.post<any>('/api/onboarding/draft', payload)
         return res.data || res
     },
 
-    startOnboarding: async (): Promise<any> => {
-        const res = await httpClient.post<any>('/api/onboarding/start')
+    discardDraft: async () => {
+        const res = await httpClient.delete<any>('/api/onboarding')
         return res.data || res
-    },
-
-    savePersonalInfo: async (data: PersonalInfoData) => {
-        return await httpClient.put('/api/onboarding/steps/personal-info', data)
     },
 
     saveNin: async (data: NinSubmitData): Promise<NinSubmitResponse> => {
         const res = await httpClient.put<any>('/api/onboarding/steps/nin', data)
         return res.data || res
-    },
-
-    saveProfessionalInfo: async (data: ProfessionalInfoData) => {
-        return await httpClient.put('/api/onboarding/steps/professional-info', data)
-    },
-
-    savePracticeInfo: async (data: PracticeInfoData) => {
-        return await httpClient.put('/api/onboarding/steps/practice-info', data)
     },
 
     submitOnboarding: async (): Promise<SubmitResponse> => {
@@ -126,38 +101,29 @@ export const useLawyerOnboarding = () => {
     const queryClient = useQueryClient()
 
     // Queries
-    const useStatus = (options?: { enabled?: any }) => {
+    const useDraft = (options?: { enabled?: any }) => {
         return useQuery({
-            queryKey: ['lawyer', 'onboarding', 'status'],
-            queryFn: lawyerOnboardingAPI.getStatus,
+            queryKey: ['lawyer', 'onboarding', 'draft'],
+            queryFn: lawyerOnboardingAPI.getDraft,
             enabled: options?.enabled !== undefined ? options.enabled : process.client, // Only fetch on client
         })
     }
 
-    const useSummary = (options?: { enabled?: any }) => {
-        return useQuery({
-            queryKey: ['lawyer', 'onboarding', 'summary'],
-            queryFn: lawyerOnboardingAPI.getSummary,
-            enabled: options?.enabled !== undefined ? options.enabled : process.client,
-        })
-    }
-
     // Mutations
-    const useStartOnboarding = () => {
+    const useSaveDraft = () => {
         return useMutation({
-            mutationFn: lawyerOnboardingAPI.startOnboarding,
+            mutationFn: lawyerOnboardingAPI.saveDraft,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
             }
         })
     }
 
-    const useSavePersonalInfo = () => {
+    const useDiscardDraft = () => {
         return useMutation({
-            mutationFn: lawyerOnboardingAPI.savePersonalInfo,
+            mutationFn: lawyerOnboardingAPI.discardDraft,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
             }
         })
     }
@@ -166,28 +132,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
-            }
-        })
-    }
-
-    const useSaveProfessionalInfo = () => {
-        return useMutation({
-            mutationFn: lawyerOnboardingAPI.saveProfessionalInfo,
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
-            }
-        })
-    }
-
-    const useSavePracticeInfo = () => {
-        return useMutation({
-            mutationFn: lawyerOnboardingAPI.savePracticeInfo,
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
+                // You could invalidate specific queries if NIN affects them
             }
         })
     }
@@ -196,8 +141,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.submitOnboarding,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'summary'] })
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
                 // Invalidate session/profile so application status gets refreshed
                 queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all })
@@ -206,13 +150,10 @@ export const useLawyerOnboarding = () => {
     }
 
     return {
-        useStatus,
-        useSummary,
-        useStartOnboarding,
-        useSavePersonalInfo,
+        useDraft,
+        useSaveDraft,
+        useDiscardDraft,
         useSaveNin,
-        useSaveProfessionalInfo,
-        useSavePracticeInfo,
         useSubmitOnboarding,
     }
 }

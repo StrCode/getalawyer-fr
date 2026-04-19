@@ -25,8 +25,8 @@ export default defineComponent({
     PhSignOut
   },
   setup() {
-    const { useStatus } = useLawyerOnboarding()
-    const { data: lawyerStatus, isPending: isLawyerPending, isFetching: isLawyerFetching } = useStatus()
+    const { useDraft } = useLawyerOnboarding()
+    const { isPending: isLawyerPending, isFetching: isLawyerFetching } = useDraft()
 
     const lawyerStore = useLawyerOnboardingStore()
     const clientStore = useClientOnboardingStore()
@@ -187,16 +187,16 @@ onMounted(() => {
 
     <!-- Footer (Etsy Pattern) -->
     <footer class="border-t border-gray-100 shrink-0 bg-white z-40 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)] pb-safe">
-      <!-- Segmented Progress Bar -->
-      <div class="flex h-1 gap-1 px-1">
-        <div 
-          v-for="(seg, i) in sectionProgress" 
+      <!-- Progress bar: 3 segments sized proportionally to step count, with gaps -->
+      <div class="flex h-1 gap-1">
+        <div
+          v-for="(seg, i) in sectionProgress"
           :key="i"
-          class="relative overflow-hidden flex-1 rounded-full bg-gray-100"
+          class="relative overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
           :style="{ flex: seg.size }"
         >
-          <div 
-            class="absolute inset-y-0 left-0 bg-primary transition-all duration-700 ease-out"
+          <div
+            class="absolute inset-y-0 left-0 bg-black dark:bg-white transition-all duration-300 ease-out"
             :style="{ width: seg.pct + '%' }"
           />
         </div>
@@ -206,7 +206,7 @@ onMounted(() => {
         <div class="flex items-center gap-6 order-2 sm:order-1">
           <Button
             variant="ghost"
-            class="font-semibold text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline transition-all"
+            class="min-h-12 text-base underline underline-offset-4 font-normal"
             :disabled="isFirst || isSaving"
             @click="handleBack"
           >
@@ -222,19 +222,17 @@ onMounted(() => {
         
         <div class="flex items-center gap-4 order-1 sm:order-2 w-full sm:w-auto">
           <Button
-            variant="default"
-            class="w-full sm:w-auto px-12 h-12 font-bold bg-gray-900 hover:bg-black text-white rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+            class="min-h-10 px-8 bg-black text-white hover:bg-gray-800 disabled:opacity-50 font-medium w-full sm:w-auto"
             :disabled="isSaving"
             @click="handleNext"
           >
-            <template v-if="isSaving">
-               <PhCircleNotch class="w-4 h-4 animate-spin mr-2" />
-              Saving...
-            </template>
-            <template v-else>
-               {{ isLast ? 'Submit Application' : 'Continue' }}
-               <component :is="isLast ? 'PhCheckCircle' : 'PhCaretRight'" class="ml-2 w-5 h-5" />
-            </template>
+            <PhCircleNotch
+              v-if="isSaving"
+              class="animate-spin w-5 h-5 mr-2 shrink-0"
+            />
+            <span>
+              {{ isSaving ? 'Please wait...' : isLast ? 'Submit Application' : 'Next' }}
+            </span>
           </Button>
         </div>
       </div>

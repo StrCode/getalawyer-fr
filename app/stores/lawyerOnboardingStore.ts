@@ -4,15 +4,13 @@ import { useLawyerOnboarding, type PersonalInfoData, type ProfessionalInfoData, 
 
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
-    const { useSummary, useSavePersonalInfo, useSaveProfessionalInfo, useSavePracticeInfo, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
+    const { useDraft, useSaveDraft, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
     
     // We can fetch data here and populate the state
-    const { data: summary } = useSummary()
+    const { data: draftDataResponse } = useDraft()
 
     // Initialize mutations here (in the setup context) to avoid injection errors in async actions
-    const savePersonalInfoMutation = useSavePersonalInfo()
-    const saveProfessionalInfoMutation = useSaveProfessionalInfo()
-    const savePracticeInfoMutation = useSavePracticeInfo()
+    const saveDraftMutation = useSaveDraft()
     const saveNinMutation = useSaveNin()
     const submitOnboardingMutation = useSubmitOnboarding()
 
@@ -27,9 +25,10 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         lga: ''
     })
 
-    const ninVerification = reactive<NinSubmitData>({
+    const ninVerification = reactive<NinSubmitData & { verified?: boolean }>({
         nin: '',
-        consent: false
+        consent: false,
+        verified: false
     })
 
     const professionalInfo = reactive<ProfessionalInfoData>({
@@ -52,15 +51,15 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
     })
 
-    // Sync summary data with the reactive store state
-    // Sync summary data with the reactive store state
-    watch(summary, (newSummary) => {
-        if (newSummary) {
-            if (newSummary.personal) Object.assign(personalInfo, newSummary.personal)
-            // Note: nin is not returned for security, but verified status is inside summary.ninVerification
-            if (newSummary.professional) Object.assign(professionalInfo, newSummary.professional)
-            if (newSummary.practice) {
-                const { officeAddress, ...otherPractice } = newSummary.practice
+    // Sync draft data with the reactive store state
+    watch(draftDataResponse, (newResponse) => {
+        const payload = newResponse?.data
+        if (payload) {
+            if (payload.personal) Object.assign(personalInfo, payload.personal)
+            if (payload.professional) Object.assign(professionalInfo, payload.professional)
+            if (payload.ninVerified) ninVerification.verified = true
+            if (payload.practice) {
+                const { officeAddress, ...otherPractice } = payload.practice
                 Object.assign(practiceInfo, otherPractice)
                 if (officeAddress) {
                     Object.assign(practiceInfo.officeAddress, officeAddress)
@@ -69,60 +68,68 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
     }, { immediate: true })
 
+    const saveDraftState = async (stepKey: string) => {
+        return new Promise<boolean>((resolve) => {
+            saveDraftMutation.mutate({
+                data: {
+                    personal: toRaw(personalInfo),
+                    professional: toRaw(professionalInfo),
+                    practice: toRaw(practiceInfo),
+                    ninVerified: ninVerification.verified
+                },
+                lastStep: stepKey
+            }, {
+                onSuccess: () => resolve(true),
+                onError: (e) => {
+                    console.error('[Store] Failed to save draft', e)
+                    resolve(false)
+                }
+            })
+        })
+    }
+
     // Generic save function to be called by the layout
     const saveStep = async (stepKey: string): Promise<boolean> => {
-        return new Promise((resolve) => {
-            switch (stepKey) {
-                case 'personal_info':
-                    savePersonalInfoMutation.mutate(toRaw(personalInfo), {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to save personal info', e)
-                            resolve(false)
-                        }
-                    })
-                    break
-                case 'nin_verification':
-                    // Just return true if they already verified, otherwise save it
-                    if (summary.value?.ninVerification?.verified) return resolve(true)
-                    
-                    saveNinMutation.mutate(toRaw(ninVerification), {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to save NIN', e)
-                            resolve(false)
-                        }
-                    })
-                    break
-                case 'professional_info':
-                    saveProfessionalInfoMutation.mutate(toRaw(professionalInfo), {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to save professional info', e)
-                            resolve(false)
-                        }
-                    })
-                    break
-                case 'practice_info':
-                    savePracticeInfoMutation.mutate(toRaw(practiceInfo), {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to save practice info', e)
-                            resolve(false)
-                        }
-                    })
-                    break
-                case 'review':
-                    submitOnboardingMutation.mutate(undefined, {
-                        onSuccess: () => resolve(true),
-                        onError: (e) => {
-                            console.error('[Store] Failed to submit onboarding', e)
-                            resolve(false)
-                        }
-                    })
-                    break
+        if (stepKey === 'nin_verification') {
+            if (ninVerification.verified) {
+                return saveDraftState(stepKey)
             }
-        })
+            return new Promise((resolve) => {
+                saveNinMutation.mutate(toRaw(ninVerification), {
+                    onSuccess: async () => {
+                        ninVerification.verified = true
+                        const success = await saveDraftState(stepKey)
+                        resolve(success)
+                    },
+                    onError: (e) => {
+                        console.error('[Store] Failed to save NIN', e)
+                        resolve(false)
+                    }
+                })
+            })
+        }
+        
+        if (stepKey === 'review') {
+            return new Promise((resolve) => {
+                submitOnboardingMutation.mutate(undefined, {
+                    onSuccess: () => resolve(true),
+                    onError: (e) => {
+                        console.error('[Store] Failed to submit onboarding', e)
+                        resolve(false)
+                    }
+                })
+            })
+        }
+
+        // For personal_info, professional_info, practice_info
+        return saveDraftState(stepKey)
+    }
+
+    const resetStore = () => {
+        Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: 'other', state: '', lga: '' })
+        Object.assign(ninVerification, { nin: '', consent: false, verified: false })
+        Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: new Date().getFullYear(), university: '', llbYear: new Date().getFullYear() })
+        Object.assign(practiceInfo, { firmName: '', practiceAreas: [], statesOfPractice: [], officeAddress: { street: '', city: '', state: '', postalCode: '' } })
     }
 
     return {
@@ -130,7 +137,8 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         ninVerification,
         professionalInfo,
         practiceInfo,
-        summary: computed(() => summary.value),
-        saveStep
+        draft: computed(() => draftDataResponse.value),
+        saveStep,
+        resetStore
     }
 })
