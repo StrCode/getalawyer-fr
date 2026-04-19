@@ -60,6 +60,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     const practiceInfo = reactive<PracticeInfoData>({
+        soloPractitioner: true,
         firmName: '',
         practiceAreas: [],
         statesOfPractice: [],
@@ -92,6 +93,18 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 Object.assign(practiceInfo, otherPractice)
                 if (officeAddress) {
                     Object.assign(practiceInfo.officeAddress, officeAddress)
+                }
+                const hasFirm = String(practiceInfo.firmName ?? '').trim().length > 0
+                const rawSolo = (payload.practice as { soloPractitioner?: boolean }).soloPractitioner
+                if (hasFirm) {
+                    practiceInfo.soloPractitioner = false
+                } else if (typeof rawSolo === 'boolean') {
+                    practiceInfo.soloPractitioner = rawSolo
+                } else {
+                    practiceInfo.soloPractitioner = true
+                }
+                if (practiceInfo.soloPractitioner) {
+                    practiceInfo.firmName = ''
                 }
             }
         }
@@ -217,7 +230,13 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: 'other', state: '', lga: '' })
         Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
         Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: new Date().getFullYear(), university: '', llbYear: new Date().getFullYear() })
-        Object.assign(practiceInfo, { firmName: '', practiceAreas: [], statesOfPractice: [], officeAddress: { street: '', city: '', state: '', postalCode: '' } })
+        Object.assign(practiceInfo, {
+            soloPractitioner: true,
+            firmName: '',
+            practiceAreas: [],
+            statesOfPractice: [],
+            officeAddress: { street: '', city: '', state: '', postalCode: '' }
+        })
     }
 
     /** Reveal the NIN form again so the user can correct or replace their NIN (backend overwrites until verified). */

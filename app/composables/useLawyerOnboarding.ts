@@ -50,6 +50,8 @@ export interface ProfessionalInfoData {
 }
 
 export interface PracticeInfoData {
+    /** When true, the lawyer practises alone — firm name is hidden and cleared for save. */
+    soloPractitioner: boolean
     firmName: string
     officeAddress: {
         street: string

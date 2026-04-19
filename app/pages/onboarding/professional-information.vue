@@ -113,12 +113,14 @@ function onScnModelUpdate(v: unknown) {
 
         <FormField v-slot="{ componentField }" name="barNumber">
           <FormItem
-            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
+            class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
-            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+            <FormLabel
+              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+            >
               Supreme Court enrolment number (SCN) <span class="text-primary">*</span>
             </FormLabel>
-            <div class="w-full max-w-md space-y-2">
+            <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
               <FormControl>
                 <InputGroup
                   class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
@@ -167,12 +169,14 @@ function onScnModelUpdate(v: unknown) {
 
         <FormField v-slot="{ componentField }" name="yearOfCall">
           <FormItem
-            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
+            class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
-            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+            <FormLabel
+              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+            >
               Year called to the Nigerian Bar <span class="text-primary">*</span>
             </FormLabel>
-            <div class="w-full max-w-md space-y-2">
+            <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
               <FormControl>
                 <InputGroup
                   class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
@@ -215,12 +219,14 @@ function onScnModelUpdate(v: unknown) {
 
         <FormField v-slot="{ componentField }" name="university">
           <FormItem
-            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
+            class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
-            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+            <FormLabel
+              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+            >
               University (LLB) <span class="text-primary">*</span>
             </FormLabel>
-            <div class="w-full max-w-md space-y-2">
+            <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
               <FormControl>
                 <InputGroup
                   class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
@@ -249,12 +255,14 @@ function onScnModelUpdate(v: unknown) {
 
         <FormField v-slot="{ componentField }" name="llbYear">
           <FormItem
-            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
+            class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
-            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+            <FormLabel
+              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+            >
               Year of LLB graduation <span class="text-primary">*</span>
             </FormLabel>
-            <div class="w-full max-w-md space-y-2">
+            <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
               <FormControl>
                 <InputGroup
                   class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
@@ -297,12 +305,14 @@ function onScnModelUpdate(v: unknown) {
 
         <FormField v-slot="{ componentField }" name="lawSchool">
           <FormItem
-            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
+            class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
-            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+            <FormLabel
+              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+            >
               NLS campus <span class="text-primary">*</span>
             </FormLabel>
-            <div class="w-full max-w-md space-y-2">
+            <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
               <FormControl>
                 <InputGroup
                   class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
