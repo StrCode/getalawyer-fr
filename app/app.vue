@@ -1,7 +1,18 @@
+<script setup lang="ts">
+/**
+ * Sonner host — import `toast` from `vue-sonner` anywhere. @see https://shadcn-vue.com/docs/components/sonner
+ * Styles: `vue-sonner/style.css` in `assets/css/main.css`
+ */
+import { Toaster } from '~/components/ui/sonner'
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <ClientOnly>
+    <Toaster position="top-right" />
+  </ClientOnly>
 </template>
 
 <style>

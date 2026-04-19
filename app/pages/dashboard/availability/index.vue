@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability';
 
 definePageMeta({
@@ -30,8 +31,6 @@ watch([schedules, isPending, isError, isSuccess], ([data, pending, err, success]
 const setScheduleMutation = useSetSchedule();
 const bulkSetMutation = useBulkSetSchedule();
 const deleteMutation = useDeleteSchedule();
-
-const toast = useToast();
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -160,16 +159,12 @@ const handleQuickSetup = async (preset: 'weekdays' | 'weekdays-sat') => {
 
   try {
     await bulkSetMutation.mutateAsync({ schedules: schedulesToSet });
-    toast.add({
-      title: 'Success',
-      description: 'Quick setup applied successfully',
-      color: 'success'
+    toast.success('Success', {
+      description: 'Quick setup applied successfully'
     });
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to apply quick setup',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to apply quick setup'
     });
   }
 };
@@ -177,10 +172,8 @@ const handleQuickSetup = async (preset: 'weekdays' | 'weekdays-sat') => {
 const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
   // Validate before saving
   if (!validateDay(dayOfWeek)) {
-    toast.add({
-      title: 'Validation Error',
-      description: validationErrors.value[dayOfWeek] || 'Invalid time range',
-      color: 'error'
+    toast.error('Validation Error', {
+      description: validationErrors.value[dayOfWeek] || 'Invalid time range'
     });
     return;
   }
@@ -194,16 +187,12 @@ const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
     if (existing) {
       try {
         await deleteMutation.mutateAsync(existing.id);
-        toast.add({
-          title: 'Success',
-          description: `${dayNames[parseInt(dayOfWeek)]} schedule removed`,
-          color: 'success'
+        toast.success('Success', {
+          description: `${dayNames[parseInt(dayOfWeek)]} schedule removed`
         });
       } catch (error: any) {
-        toast.add({
-          title: 'Error',
-          description: error.message || 'Failed to remove schedule',
-          color: 'error'
+        toast.error('Error', {
+          description: error.message || 'Failed to remove schedule'
         });
       }
     }
@@ -218,16 +207,12 @@ const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
       endTime: config.endTime + ':00',
       isAvailable: true
     });
-    toast.add({
-      title: 'Success',
-      description: `${dayNames[parseInt(dayOfWeek)]} schedule updated`,
-      color: 'success'
+    toast.success('Success', {
+      description: `${dayNames[parseInt(dayOfWeek)]} schedule updated`
     });
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to update schedule',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to update schedule'
     });
   } finally {
     savingDay.value = null;
@@ -255,35 +240,27 @@ const handleSaveAll = async () => {
   }
 
   if (hasErrors) {
-    toast.add({
-      title: 'Validation Error',
-      description: 'Please fix the time range errors before saving',
-      color: 'error'
+    toast.error('Validation Error', {
+      description: 'Please fix the time range errors before saving'
     });
     return;
   }
 
   if (schedulesToSet.length === 0) {
-    toast.add({
-      title: 'Warning',
-      description: 'Please enable at least one day',
-      color: 'warning'
+    toast.warning('Warning', {
+      description: 'Please enable at least one day'
     });
     return;
   }
 
   try {
     await bulkSetMutation.mutateAsync({ schedules: schedulesToSet });
-    toast.add({
-      title: 'Success',
-      description: 'Weekly schedule saved successfully',
-      color: 'success'
+    toast.success('Success', {
+      description: 'Weekly schedule saved successfully'
     });
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to save schedule',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to save schedule'
     });
   }
 };

@@ -363,13 +363,13 @@ j<template>
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import { useBookings } from '~/composables/useBookings'
 
 definePageMeta({ layout: 'dashboard' })
 
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 
 const bookingId = ref(route.params.id as string)
 
@@ -436,10 +436,10 @@ const saveNotes = () => {
     { id: bookingId.value, data: { lawyerNotes: lawyerNotes.value } },
     {
       onSuccess: () => {
-        toast.add({ title: 'Success', description: 'Notes saved', color: 'success' })
+        toast.success('Success', { description: 'Notes saved' })
       },
       onError: (error: any) => {
-        toast.add({ title: 'Error', description: error.message || 'Failed to save notes', color: 'error' })
+        toast.error('Error', { description: error.message || 'Failed to save notes' })
       }
     }
   )
@@ -454,10 +454,10 @@ const { mutate: cancelBooking, isPending: isCanceling } = useCancelLawyerBooking
 const handleConfirm = () => {
   confirmBooking(bookingId.value, {
     onSuccess: () => {
-      toast.add({ title: 'Success', description: 'Appointment confirmed', color: 'success' })
+      toast.success('Success', { description: 'Appointment confirmed' })
     },
     onError: (error: any) => {
-      toast.add({ title: 'Error', description: error.message || 'Failed to confirm', color: 'error' })
+      toast.error('Error', { description: error.message || 'Failed to confirm' })
     }
   })
 }
@@ -465,10 +465,10 @@ const handleConfirm = () => {
 const handleComplete = () => {
   completeBooking(bookingId.value, {
     onSuccess: () => {
-      toast.add({ title: 'Success', description: 'Appointment marked as completed', color: 'success' })
+      toast.success('Success', { description: 'Appointment marked as completed' })
     },
     onError: (error: any) => {
-      toast.add({ title: 'Error', description: error.message || 'Failed to complete', color: 'error' })
+      toast.error('Error', { description: error.message || 'Failed to complete' })
     }
   })
 }
@@ -476,10 +476,10 @@ const handleComplete = () => {
 const handleNoShow = () => {
   markAsNoShow(bookingId.value, {
     onSuccess: () => {
-      toast.add({ title: 'Success', description: 'Appointment marked as no-show', color: 'success' })
+      toast.success('Success', { description: 'Appointment marked as no-show' })
     },
     onError: (error: any) => {
-      toast.add({ title: 'Error', description: error.message || 'Failed to mark as no-show', color: 'error' })
+      toast.error('Error', { description: error.message || 'Failed to mark as no-show' })
     }
   })
 }
@@ -495,12 +495,12 @@ const confirmCancel = () => {
     { id: bookingId.value, data: { reason: cancelReason.value } },
     {
       onSuccess: () => {
-        toast.add({ title: 'Success', description: 'Appointment cancelled', color: 'success' })
+        toast.success('Success', { description: 'Appointment cancelled' })
         isCancelModalOpen.value = false
         router.push('/dashboard/appointments')
       },
       onError: (error: any) => {
-        toast.add({ title: 'Error', description: error.message || 'Failed to cancel', color: 'error' })
+        toast.error('Error', { description: error.message || 'Failed to cancel' })
       }
     }
   )

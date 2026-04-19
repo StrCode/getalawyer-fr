@@ -126,6 +126,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import { useBookings } from '~/composables/useBookings'
 import BookingCalendar from '~/components/booking/BookingCalendar.vue'
 
@@ -136,7 +137,6 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 
 const bookingId = ref(route.params.id as string)
 
@@ -173,10 +173,8 @@ const handleReschedule = () => {
     },
     {
       onSuccess: () => {
-        toast.add({
-          title: 'Success',
-          description: 'Booking rescheduled successfully',
-          color: 'success'
+        toast.success('Success', {
+          description: 'Booking rescheduled successfully'
         })
         router.push(`/dashboard/bookings/${bookingId.value}`)
       },
@@ -184,16 +182,12 @@ const handleReschedule = () => {
         const errorMessage = error.message || 'Failed to reschedule booking'
 
         if (error.status === 400 && errorMessage.includes('not available')) {
-          toast.add({
-            title: 'Slot Unavailable',
-            description: 'This time slot is no longer available. Please select another time.',
-            color: 'error'
+          toast.error('Slot Unavailable', {
+            description: 'This time slot is no longer available. Please select another time.'
           })
         } else {
-          toast.add({
-            title: 'Error',
-            description: errorMessage,
-            color: 'error'
+          toast.error('Error', {
+            description: errorMessage
           })
         }
       }

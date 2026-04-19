@@ -3,17 +3,17 @@
  * Feature: case-management-system
  */
 
-import type { 
-  Case, 
-  Task, 
-  Document, 
-  Activity, 
-  CaseStatus 
+import { toast } from 'vue-sonner'
+import type {
+  Case,
+  Task,
+  Document,
+  Activity,
+  CaseStatus
 } from '~/types'
 
 export const useCaseRealTime = (caseId?: string) => {
   const { $socket } = useNuxtApp()
-  const toast = useToast()
   
   // Get store composables
   const { updateCaseInList } = useCases()
@@ -40,10 +40,8 @@ export const useCaseRealTime = (caseId?: string) => {
     // Show notification if not the current user
     const { session } = useAuth()
     if (data.changedBy !== session.value?.user?.id) {
-      toast.add({
-        title: 'Case Status Updated',
-        description: `Case status changed to ${data.status}`,
-        color: 'info'
+      toast.info('Case Status Updated', {
+        description: `Case status changed to ${data.status}`
       })
     }
   }
@@ -58,10 +56,8 @@ export const useCaseRealTime = (caseId?: string) => {
     // Show notification if task is assigned to current user
     const { session } = useAuth()
     if (data.task.assignedTo === session.value?.user?.id && data.createdBy !== session.value?.user?.id) {
-      toast.add({
-        title: 'New Task Assigned',
-        description: `You have been assigned: ${data.task.title}`,
-        color: 'success'
+      toast.success('New Task Assigned', {
+        description: `You have been assigned: ${data.task.title}`
       })
     }
   }
@@ -76,10 +72,8 @@ export const useCaseRealTime = (caseId?: string) => {
     // Show notification for task completion
     const { session } = useAuth()
     if (data.task.status === 'completed' && data.updatedBy !== session.value?.user?.id) {
-      toast.add({
-        title: 'Task Completed',
-        description: `Task "${data.task.title}" has been completed`,
-        color: 'success'
+      toast.success('Task Completed', {
+        description: `Task "${data.task.title}" has been completed`
       })
     }
   }
@@ -94,10 +88,8 @@ export const useCaseRealTime = (caseId?: string) => {
     // Show notification if uploaded by someone else
     const { session } = useAuth()
     if (data.uploadedBy !== session.value?.user?.id) {
-      toast.add({
-        title: 'New Document',
-        description: `${data.document.fileName} has been uploaded`,
-        color: 'info'
+      toast.info('New Document', {
+        description: `${data.document.fileName} has been uploaded`
       })
     }
   }
@@ -118,10 +110,8 @@ export const useCaseRealTime = (caseId?: string) => {
     // Show notification if message is from someone else
     const { session } = useAuth()
     if (data.senderId !== session.value?.user?.id) {
-      toast.add({
-        title: 'New Message',
-        description: 'You have received a new message',
-        color: 'info'
+      toast.info('New Message', {
+        description: 'You have received a new message'
       })
     }
   }

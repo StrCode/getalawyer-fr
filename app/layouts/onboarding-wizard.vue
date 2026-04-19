@@ -9,7 +9,8 @@ import {
   PhCaretLeft, 
   PhCircleNotch, 
   PhCheckCircle,
-  PhSignOut
+  PhSignOut,
+  PhWarningCircle
 } from '@phosphor-icons/vue'
 
 // We still need useStatus to show the initial loading state while syncing (Lawyers ONLY)
@@ -22,7 +23,8 @@ export default defineComponent({
     PhCaretLeft,
     PhCircleNotch,
     PhCheckCircle,
-    PhSignOut
+    PhSignOut,
+    PhWarningCircle
   },
   setup() {
     const { useDraft } = useLawyerOnboarding()
@@ -37,24 +39,27 @@ export default defineComponent({
     } = useOnboardingNavigation()
 
     const router = useRouter()
-    
-    // Fallback for notifications until we fully switch to sonner
-    const { $ui } = useNuxtApp() as any
-    const toast = {
-      add: (params: any) => {
-        // Nuxt UI fallback
-        if (process.client) {
-          (window as any).$nuxt?.$ui?.toast?.add(params)
-        }
-      }
-    }
 
     // Dynamic resolution of the active store interface
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
 
+    // Lawyer draft only runs on client; without this gate SSR renders the slot while the first
+    // client paint would show "Syncing...", causing hydration mismatches.
+    const wizardMounted = ref(false)
+
     // Layout loading indicators (clients have instantaneous local renders, lawyers fetch remote status)
-    const isPending = computed(() => userType.value === 'lawyer' ? isLawyerPending.value : false)
-    const isFetching = computed(() => userType.value === 'lawyer' ? isLawyerFetching.value : false)
+    const isPending = computed(
+      () => userType.value === 'lawyer' && wizardMounted.value && isLawyerPending.value
+    )
+    const isFetching = computed(
+      () => userType.value === 'lawyer' && wizardMounted.value && isLawyerFetching.value
+    )
+
+    const validationErrorBanner = computed(() => {
+      if (!wizardMounted.value) return null
+      const s = store.value as { validationError?: string | null }
+      return s.validationError ?? null
+    })
 
     const isSaving = ref(false)
 
@@ -117,10 +122,12 @@ const handleScroll = (e: Event) => {
 }
 
 onMounted(() => {
+  wizardMounted.value = true
   scrollContainer.value?.addEventListener('scroll', handleScroll)
 })
 
     return {
+      validationErrorBanner,
       isPending,
       isFetching,
       isSaving,
@@ -202,7 +209,15 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="relative max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
+        <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
+          <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+             <PhWarningCircle class="w-4 h-4" />
+             {{ validationErrorBanner }}
+          </div>
+        </div>
+
         <div class="flex items-center gap-6 order-2 sm:order-1">
           <Button
             variant="ghost"
@@ -237,17 +252,9 @@ onMounted(() => {
         </div>
       </div>
     </footer>
+    <Toaster position="top-right" />
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-</style>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {

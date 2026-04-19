@@ -209,6 +209,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
 
@@ -225,7 +226,6 @@ useHead({
 })
 
 const router = useRouter()
-const toast = useToast()
 
 const { useClientBookings, useCancelBooking } = useBookings()
 
@@ -305,20 +305,16 @@ const confirmCancel = () => {
     { id: bookingToCancel.value, data: { reason: cancelReason.value } },
     {
       onSuccess: () => {
-        toast.add({
-          title: 'Success',
-          description: 'Booking cancelled successfully',
-          color: 'success'
+        toast.success('Success', {
+          description: 'Booking cancelled successfully'
         })
         isCancelModalOpen.value = false
         bookingToCancel.value = null
         cancelReason.value = ''
       },
       onError: (error: Error) => {
-        toast.add({
-          title: 'Error',
-          description: error.message || 'Failed to cancel booking',
-          color: 'error'
+        toast.error('Error', {
+          description: error.message || 'Failed to cancel booking'
         })
       }
     }

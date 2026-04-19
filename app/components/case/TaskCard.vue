@@ -99,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { Task, TaskStatus, Priority } from '~/types'
 
 interface Props {
@@ -115,7 +116,6 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { session } = useAuth()
-const toast = useToast()
 const { updateTask, deleteTask } = useTasks()
 
 // Reactive data
@@ -198,10 +198,8 @@ const saveTaskEdit = async () => {
     emit('taskUpdated', updatedTask)
     showEditModal.value = false
     
-    toast.add({
-      title: 'Success',
-      description: 'Task updated successfully',
-      color: 'green'
+    toast.success('Success', {
+      description: 'Task updated successfully'
     })
   } catch (error) {
     console.error('Failed to update task:', error)
@@ -214,10 +212,8 @@ const confirmDelete = async () => {
     emit('taskDeleted', props.task.id)
     showDeleteConfirm.value = false
     
-    toast.add({
-      title: 'Success',
-      description: 'Task deleted successfully',
-      color: 'green'
+    toast.success('Success', {
+      description: 'Task deleted successfully'
     })
   } catch (error) {
     console.error('Failed to delete task:', error)

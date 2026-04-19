@@ -23,8 +23,14 @@ export const useApiErrorHandler = () => ({
   handleApiError: vi.fn()
 })
 
-export const useToast = () => ({
-  add: vi.fn()
+const toastFn = vi.fn()
+export const toast = Object.assign(toastFn, {
+  success: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn(),
+  promise: vi.fn(),
+  dismiss: vi.fn()
 })
 
 export const useRouter = () => ({

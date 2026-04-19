@@ -48,12 +48,12 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { CaseStatus } from '~/types'
 
 definePageMeta({ layout: 'dashboard' })
 
 const route = useRoute()
-const toast = useToast()
 const { session } = useAuth()
 const { useCase, useUpdateCase, useUpdateCaseStatus } = useCases()
 const { documents, totalSize } = useDocuments()
@@ -109,16 +109,12 @@ const handleStatusUpdate = async (status: CaseStatus, reason?: string) => {
       reason
     })
     
-    toast.add({
-      title: 'Success',
-      description: 'Case status updated successfully',
-      color: 'green'
+    toast.success('Success', {
+      description: 'Case status updated successfully'
     })
   } catch (error) {
-    toast.add({
-      title: 'Error',
-      description: 'Failed to update case status',
-      color: 'red'
+    toast.error('Error', {
+      description: 'Failed to update case status'
     })
   }
 }
@@ -130,16 +126,12 @@ const handleDescriptionUpdate = async (description: string) => {
       updates: { description }
     })
     
-    toast.add({
-      title: 'Success',
-      description: 'Case description updated successfully',
-      color: 'green'
+    toast.success('Success', {
+      description: 'Case description updated successfully'
     })
   } catch (error) {
-    toast.add({
-      title: 'Error',
-      description: 'Failed to update case description',
-      color: 'red'
+    toast.error('Error', {
+      description: 'Failed to update case description'
     })
   }
 }

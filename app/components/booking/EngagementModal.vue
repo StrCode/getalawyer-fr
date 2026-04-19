@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
+import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
@@ -13,7 +14,6 @@ const isOpen = defineModel<boolean>('open', { default: false })
 const { useRecordEngagement } = useBookings()
 const { mutate: recordEngagement, isPending } = useRecordEngagement()
 const router = useRouter()
-const toast = useToast()
 
 const schema = z.object({
   outcome: z.enum(['consultation_only', 'client_hired'], {
@@ -86,27 +86,21 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
     {
       onSuccess: (result) => {
         if (result.case) {
-          toast.add({
-            title: 'Success',
-            description: `Engagement recorded and case ${result.case.caseNumber} created`,
-            color: 'success'
+          toast.success('Success', {
+            description: `Engagement recorded and case ${result.case.caseNumber} created`
           })
           // Navigate to the new case
           router.push(`/dashboard/cases/${result.case.id}`)
         } else {
-          toast.add({
-            title: 'Success',
-            description: 'Engagement outcome recorded successfully',
-            color: 'success'
+          toast.success('Success', {
+            description: 'Engagement outcome recorded successfully'
           })
         }
         isOpen.value = false
       },
       onError: (error: any) => {
-        toast.add({
-          title: 'Error',
-          description: error.message || 'Failed to record engagement',
-          color: 'error'
+        toast.error('Error', {
+          description: error.message || 'Failed to record engagement'
         })
       }
     }

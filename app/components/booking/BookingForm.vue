@@ -155,6 +155,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
+import { toast } from 'vue-sonner'
 import { useClientBooking } from '~/composables/useClientBooking'
 import type { CreateBookingInput } from '~/types'
 
@@ -184,7 +185,6 @@ const emit = defineEmits<{
   success: [booking: any]
 }>()
 
-const toast = useToast()
 const { useCreateClientBooking } = useClientBooking()
 
 // Form data
@@ -241,10 +241,8 @@ const handleSubmit = () => {
 
   createBooking(bookingData, {
     onSuccess: (booking) => {
-      toast.add({
-        title: 'Success',
-        description: `Booking created! Reference: ${booking.bookingReference}`,
-        color: 'success'
+      toast.success('Success', {
+        description: `Booking created! Reference: ${booking.bookingReference}`
       })
       emit('success', booking)
     },
@@ -252,22 +250,16 @@ const handleSubmit = () => {
       const errorMessage = error.message || 'Failed to create booking'
       
       if (error.status === 409) {
-        toast.add({
-          title: 'Slot Unavailable',
-          description: 'This time slot is no longer available. Please select another time.',
-          color: 'error'
+        toast.error('Slot Unavailable', {
+          description: 'This time slot is no longer available. Please select another time.'
         })
       } else if (error.status === 429) {
-        toast.add({
-          title: 'Too Many Bookings',
-          description: 'You have too many pending bookings. Please wait for confirmation or cancel existing bookings.',
-          color: 'error'
+        toast.error('Too Many Bookings', {
+          description: 'You have too many pending bookings. Please wait for confirmation or cancel existing bookings.'
         })
       } else {
-        toast.add({
-          title: 'Error',
-          description: errorMessage,
-          color: 'error'
+        toast.error('Error', {
+          description: errorMessage
         })
       }
     }

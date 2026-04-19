@@ -316,6 +316,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import { useBookings } from '~/composables/useBookings'
 
 definePageMeta({
@@ -325,7 +326,6 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 
 const bookingId = ref(route.params.id as string)
 
@@ -350,19 +350,15 @@ const confirmCancel = () => {
     { id: bookingId.value, data: { reason: cancelReason.value } },
     {
       onSuccess: () => {
-        toast.add({
-          title: 'Success',
-          description: 'Booking cancelled successfully',
-          color: 'success'
+        toast.success('Success', {
+          description: 'Booking cancelled successfully'
         })
         isCancelModalOpen.value = false
         router.push('/dashboard/bookings')
       },
       onError: (error: any) => {
-        toast.add({
-          title: 'Error',
-          description: error.message || 'Failed to cancel booking',
-          color: 'error'
+        toast.error('Error', {
+          description: error.message || 'Failed to cancel booking'
         })
       }
     }

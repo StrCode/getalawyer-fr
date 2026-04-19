@@ -132,7 +132,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
-                // You could invalidate specific queries if NIN affects them
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
             }
         })
     }

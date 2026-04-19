@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 import type { ToasterProps } from "vue-sonner"
-import { CircleCheckIcon, InfoIcon, PhCircleNotch, OctagonXIcon, TriangleAlertIcon, PhX } from '@phosphor-icons/vue'
+import {
+  PhCheckCircle,
+  PhInfo,
+  PhWarning,
+  PhXCircle,
+  PhCircleNotch,
+  PhX
+} from '@phosphor-icons/vue'
 import { Toaster as Sonner } from "vue-sonner"
 import { cn } from "@/lib/utils"
 
@@ -19,16 +26,16 @@ const props = defineProps<ToasterProps>()
     v-bind="props"
   >
     <template #success-icon>
-      <CircleCheckIcon class="size-4" />
+      <PhCheckCircle class="size-4" />
     </template>
     <template #info-icon>
-      <InfoIcon class="size-4" />
+      <PhInfo class="size-4" />
     </template>
     <template #warning-icon>
-      <TriangleAlertIcon class="size-4" />
+      <PhWarning class="size-4" />
     </template>
     <template #error-icon>
-      <OctagonXIcon class="size-4" />
+      <PhXCircle class="size-4" />
     </template>
     <template #loading-icon>
       <div>

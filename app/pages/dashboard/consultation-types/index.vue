@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { ConsultationType } from '~/types/booking';
 
 definePageMeta({
@@ -18,8 +19,6 @@ const deleteMutation = useDeleteConsultationType();
 const activateMutation = useActivateConsultationType();
 const deactivateMutation = useDeactivateConsultationType();
 
-const toast = useToast();
-
 const handleCreate = () => {
   isCreateModalOpen.value = true;
 };
@@ -33,24 +32,18 @@ const handleToggleActive = async (type: ConsultationType) => {
   try {
     if (type.isActive) {
       await deactivateMutation.mutateAsync(type.id);
-      toast.add({
-        title: 'Success',
-        description: 'Consultation type deactivated',
-        color: 'success'
+      toast.success('Success', {
+        description: 'Consultation type deactivated'
       });
     } else {
       await activateMutation.mutateAsync(type.id);
-      toast.add({
-        title: 'Success',
-        description: 'Consultation type activated',
-        color: 'success'
+      toast.success('Success', {
+        description: 'Consultation type activated'
       });
     }
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to update status',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to update status'
     });
   }
 };
@@ -62,10 +55,8 @@ const handleDelete = async (type: ConsultationType) => {
 
   try {
     await deleteMutation.mutateAsync(type.id);
-    toast.add({
-      title: 'Success',
-      description: 'Consultation type deleted',
-      color: 'success'
+    toast.success('Success', {
+      description: 'Consultation type deleted'
     });
   } catch (error: any) {
     if (error.statusCode === 409) {
@@ -76,10 +67,8 @@ const handleDelete = async (type: ConsultationType) => {
         await handleToggleActive(type);
       }
     } else {
-      toast.add({
-        title: 'Error',
-        description: error.message || 'Failed to delete consultation type',
-        color: 'error'
+      toast.error('Error', {
+        description: error.message || 'Failed to delete consultation type'
       });
     }
   }

@@ -4,12 +4,12 @@
  * Provides WebSocket integration for live task updates
  */
 
+import { toast } from 'vue-sonner'
 import type { Task, TaskStatus } from '~/types'
 
 export const useRealTimeTasks = (caseId: string) => {
   const { $socket } = useNuxtApp()
   const { addTask, updateTaskInList } = useTasks()
-  const toast = useToast()
   const { session } = useAuth()
 
   // Reactive state
@@ -69,10 +69,8 @@ export const useRealTimeTasks = (caseId: string) => {
         // Show notification if task is assigned to current user
         const currentUserId = session.value?.user?.id
         if (data.task.assignedTo === currentUserId) {
-          toast.add({
-            title: 'New Task Assigned',
-            description: `You have been assigned: ${data.task.title}`,
-            color: 'blue'
+          toast.info('New Task Assigned', {
+            description: `You have been assigned: ${data.task.title}`
           })
         }
       }
@@ -95,10 +93,8 @@ export const useRealTimeTasks = (caseId: string) => {
         // This is just for additional notifications
         const currentUserId = session.value?.user?.id
         if (data.changedBy !== currentUserId) {
-          toast.add({
-            title: 'Task Status Updated',
-            description: `A task status was changed to ${data.status.replace('_', ' ')}`,
-            color: 'blue'
+          toast.info('Task Status Updated', {
+            description: `A task status was changed to ${data.status.replace('_', ' ')}`
           })
         }
       }
@@ -107,10 +103,8 @@ export const useRealTimeTasks = (caseId: string) => {
     $socket.on('task:deleted', (data: { taskId: string; caseId: string }) => {
       if (data.caseId === caseId) {
         // Task deletion will be handled by the component
-        toast.add({
-          title: 'Task Deleted',
-          description: 'A task has been removed from this case',
-          color: 'orange'
+        toast.warning('Task Deleted', {
+          description: 'A task has been removed from this case'
         })
       }
     })

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
+import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
 import { useBookings } from '~/composables/useBookings'
 import type { LawyerProfile, ConsultationType } from '~/types/lawyer'
@@ -109,7 +110,7 @@ const meetingTypeOptions = computed(() => {
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   if (!props.initialLawyerId) {
-    useToast().add({ title: 'Error', description: 'Lawyer information is missing', color: 'error' })
+    toast.error('Error', { description: 'Lawyer information is missing' })
     return
   }
 
@@ -120,12 +121,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
   createBooking(bookingData as any, {
     onSuccess: () => {
-      useToast().add({ title: 'Success', description: 'Booking created successfully', color: 'success' })
+      toast.success('Success', { description: 'Booking created successfully' })
       isOpen.value = false
       router.push('/dashboard/bookings')
     },
     onError: (error) => {
-      useToast().add({ title: 'Error', description: error.message || 'Failed to create booking', color: 'error' })
+      toast.error('Error', { description: error.message || 'Failed to create booking' })
     }
   })
 }

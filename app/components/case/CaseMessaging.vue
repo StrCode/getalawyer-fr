@@ -104,6 +104,8 @@
 </template>
 
 <script setup>
+import { toast } from 'vue-sonner'
+
 const props = defineProps({
   caseId: {
     type: String,
@@ -120,7 +122,6 @@ const props = defineProps({
 })
 
 const { session } = useAuth()
-const toast = useToast()
 
 // Use the case messaging composable
 const { 
@@ -141,10 +142,8 @@ const handleSendMessage = async () => {
     await sendMessage(messageInput.value.trim())
     messageInput.value = ''
   } catch (error) {
-    toast.add({
-      title: 'Error',
-      description: 'Failed to send message',
-      color: 'red'
+    toast.error('Error', {
+      description: 'Failed to send message'
     })
   }
 }

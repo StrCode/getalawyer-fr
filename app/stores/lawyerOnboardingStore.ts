@@ -1,6 +1,16 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
+import { ApiError } from '~/lib/api/client'
 import { useLawyerOnboarding, type PersonalInfoData, type ProfessionalInfoData, type PracticeInfoData, type NinSubmitData } from '~/composables/useLawyerOnboarding'
+
+/** Draft last_step values that imply NIN was already saved server-side */
+const STEPS_AFTER_NIN_VERIFICATION = new Set([
+    'professional_info',
+    'practice_info',
+    'review',
+    'submitted',
+    'approved'
+])
 
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
@@ -14,6 +24,8 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     const saveNinMutation = useSaveNin()
     const submitOnboardingMutation = useSubmitOnboarding()
 
+    const validationError = ref<string | null>(null)
+
     // Form State
     const personalInfo = reactive<PersonalInfoData>({
         firstName: '',
@@ -25,11 +37,17 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         lga: ''
     })
 
-    const ninVerification = reactive<NinSubmitData & { verified?: boolean }>({
+    const ninVerification = reactive<
+        NinSubmitData & { verified?: boolean; isSubmitted?: boolean }
+    >({
         nin: '',
         consent: false,
-        verified: false
+        verified: false,
+        isSubmitted: false
     })
+
+    /** User clicked "Change NIN" — do not re-apply draft `last_step` until they save or leave */
+    const ninResubmitMode = ref(false)
 
     const professionalInfo = reactive<ProfessionalInfoData>({
         barNumber: '',
@@ -52,12 +70,15 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     // Sync draft data with the reactive store state
-    watch(draftDataResponse, (newResponse) => {
-        const payload = newResponse?.data
+    watch(draftDataResponse, (draftRoot) => {
+        const payload = draftRoot?.data
         if (payload) {
             if (payload.personal) Object.assign(personalInfo, payload.personal)
             if (payload.professional) Object.assign(professionalInfo, payload.professional)
-            if (payload.ninVerified) ninVerification.verified = true
+            if (payload.ninVerified) {
+                ninVerification.verified = true
+                ninVerification.isSubmitted = true
+            }
             if (payload.practice) {
                 const { officeAddress, ...otherPractice } = payload.practice
                 Object.assign(practiceInfo, otherPractice)
@@ -65,6 +86,16 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                     Object.assign(practiceInfo.officeAddress, officeAddress)
                 }
             }
+        }
+
+        if (ninResubmitMode.value || ninVerification.verified) return
+
+        const lastStep = draftRoot?.last_step
+        if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) {
+            ninVerification.isSubmitted = true
+        }
+        if (payload?.ninSubmitted === true) {
+            ninVerification.isSubmitted = true
         }
     }, { immediate: true })
 
@@ -90,19 +121,55 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
     // Generic save function to be called by the layout
     const saveStep = async (stepKey: string): Promise<boolean> => {
+        validationError.value = null
+
         if (stepKey === 'nin_verification') {
             if (ninVerification.verified) {
                 return saveDraftState(stepKey)
             }
+
+            // NIN already stored; user is only advancing (or came back and did not click "Change NIN")
+            if (ninVerification.isSubmitted) {
+                return saveDraftState(stepKey)
+            }
+
+            // Client-side validation
+            if (!ninVerification.nin || ninVerification.nin.length !== 11 || !/^\d+$/.test(ninVerification.nin)) {
+                validationError.value = 'NIN must be exactly 11 digits'
+                return false
+            }
+
+            if (!ninVerification.consent) {
+                validationError.value = 'You must provide consent to verify your NIN'
+                return false
+            }
+
+            const payload = { nin: ninVerification.nin, consent: ninVerification.consent }
+
             return new Promise((resolve) => {
-                saveNinMutation.mutate(toRaw(ninVerification), {
+                saveNinMutation.mutate(payload, {
                     onSuccess: async () => {
-                        ninVerification.verified = true
+                        ninResubmitMode.value = false
+                        ninVerification.isSubmitted = true
                         const success = await saveDraftState(stepKey)
                         resolve(success)
                     },
-                    onError: (e) => {
+                    onError: (e: unknown) => {
                         console.error('[Store] Failed to save NIN', e)
+                        const code = e instanceof ApiError ? e.code : undefined
+                        if (code === 'NIN_ALREADY_VERIFIED') {
+                            ninVerification.verified = true
+                            ninVerification.isSubmitted = true
+                            validationError.value = null
+                        } else {
+                            const errorMsg =
+                                e instanceof ApiError
+                                    ? e.message
+                                    : (e as any)?.response?.data?.details?.[0]?.message ||
+                                      (e as any)?.response?.data?.error ||
+                                      'Failed to verify NIN'
+                            validationError.value = errorMsg
+                        }
                         resolve(false)
                     }
                 })
@@ -126,11 +193,31 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     }
 
     const resetStore = () => {
+        ninResubmitMode.value = false
         Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: 'other', state: '', lga: '' })
-        Object.assign(ninVerification, { nin: '', consent: false, verified: false })
+        Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
         Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: new Date().getFullYear(), university: '', llbYear: new Date().getFullYear() })
         Object.assign(practiceInfo, { firmName: '', practiceAreas: [], statesOfPractice: [], officeAddress: { street: '', city: '', state: '', postalCode: '' } })
     }
+
+    /** Reveal the NIN form again so the user can correct or replace their NIN (backend overwrites until verified). */
+    const beginChangeNin = () => {
+        ninResubmitMode.value = true
+        ninVerification.isSubmitted = false
+        ninVerification.nin = ''
+        ninVerification.consent = false
+    }
+
+    const clearNinResubmitMode = () => {
+        ninResubmitMode.value = false
+    }
+
+    const summary = computed(() => ({
+        personal: personalInfo,
+        professional: professionalInfo,
+        practice: practiceInfo,
+        ninVerification: { verified: !!ninVerification.verified }
+    }))
 
     return {
         personalInfo,
@@ -138,7 +225,11 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         professionalInfo,
         practiceInfo,
         draft: computed(() => draftDataResponse.value),
+        summary,
+        validationError,
         saveStep,
-        resetStore
+        resetStore,
+        beginChangeNin,
+        clearNinResubmitMode
     }
 })

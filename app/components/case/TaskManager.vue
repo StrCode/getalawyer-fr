@@ -129,6 +129,7 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { CreateTaskRequest, Task, Priority } from '~/types'
 
 interface Props {
@@ -139,7 +140,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const { session } = useAuth()
-const toast = useToast()
 const { 
   tasks, 
   loading, 
@@ -223,10 +223,8 @@ const createTask = async () => {
     
     await createCaseTask(props.caseId, taskData)
     
-    toast.add({
-      title: 'Success',
-      description: 'Task created successfully',
-      color: 'green'
+    toast.success('Success', {
+      description: 'Task created successfully'
     })
     
     // Reset form
@@ -256,18 +254,14 @@ const resetForm = () => {
 
 const handleTaskUpdated = (updatedTask: Task) => {
   // Task list will handle the update
-  toast.add({
-    title: 'Success',
-    description: 'Task updated successfully',
-    color: 'green'
+  toast.success('Success', {
+    description: 'Task updated successfully'
   })
 }
 
 const handleTaskDeleted = (taskId: string) => {
-  toast.add({
-    title: 'Success',
-    description: 'Task deleted successfully',
-    color: 'green'
+  toast.success('Success', {
+    description: 'Task deleted successfully'
   })
 }
 

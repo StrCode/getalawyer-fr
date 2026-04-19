@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import { useBookings } from '~/composables/useBookings'
 import type { LawyerProfile } from '~/types/lawyer'
 
@@ -134,12 +135,12 @@ function prevStep() {
 
 function submitBooking() {
   if (!props.initialLawyerId) {
-    useToast().add({ title: 'Error', description: 'Lawyer information is missing', color: 'error' })
+    toast.error('Error', { description: 'Lawyer information is missing' })
     return
   }
 
   if (!props.lawyerInfo) {
-    useToast().add({ title: 'Error', description: 'Lawyer information is missing', color: 'error' })
+    toast.error('Error', { description: 'Lawyer information is missing' })
     return
   }
 
@@ -150,12 +151,12 @@ function submitBooking() {
 
   createBooking(bookingData as any, {
     onSuccess: () => {
-      useToast().add({ title: 'Success', description: 'Booking created successfully', color: 'success' })
+      toast.success('Success', { description: 'Booking created successfully' })
       isOpen.value = false
       router.push('/dashboard/bookings')
     },
     onError: (error) => {
-      useToast().add({ title: 'Error', description: error.message || 'Failed to create booking', color: 'error' })
+      toast.error('Error', { description: error.message || 'Failed to create booking' })
     }
   })
 }

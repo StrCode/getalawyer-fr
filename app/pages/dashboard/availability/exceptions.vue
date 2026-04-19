@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { AvailabilityException } from '~/types/availability';
 
 definePageMeta({
@@ -21,8 +22,6 @@ const { data: exceptions, isPending, refetch } = useAvailabilityExceptions(
 const createMutation = useCreateAvailabilityException();
 const bulkCreateMutation = useBulkCreateExceptions();
 const deleteMutation = useDeleteAvailabilityException();
-
-const toast = useToast();
 
 // Modals
 const isAddModalOpen = ref(false);
@@ -68,10 +67,8 @@ const handleAddException = async () => {
   const form = exceptionForm.value;
   
   if (!form.date) {
-    toast.add({
-      title: 'Error',
-      description: 'Please select a date',
-      color: 'error'
+    toast.error('Error', {
+      description: 'Please select a date'
     });
     return;
   }
@@ -85,20 +82,16 @@ const handleAddException = async () => {
       reason: form.reason || undefined
     });
     
-    toast.add({
-      title: 'Success',
-      description: 'Exception added successfully',
-      color: 'success'
+    toast.success('Success', {
+      description: 'Exception added successfully'
     });
     
     isAddModalOpen.value = false;
     resetExceptionForm();
     refetch();
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to add exception',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to add exception'
     });
   }
 };
@@ -123,10 +116,8 @@ const handleBlockVacation = async () => {
   const form = vacationForm.value;
   
   if (!form.startDate || !form.endDate) {
-    toast.add({
-      title: 'Error',
-      description: 'Please select start and end dates',
-      color: 'error'
+    toast.error('Error', {
+      description: 'Please select start and end dates'
     });
     return;
   }
@@ -134,10 +125,8 @@ const handleBlockVacation = async () => {
   const dates = generateDateRange(form.startDate, form.endDate);
   
   if (dates.length === 0) {
-    toast.add({
-      title: 'Error',
-      description: 'Invalid date range',
-      color: 'error'
+    toast.error('Error', {
+      description: 'Invalid date range'
     });
     return;
   }
@@ -149,20 +138,16 @@ const handleBlockVacation = async () => {
       reason: form.reason || 'Vacation'
     });
     
-    toast.add({
-      title: 'Success',
-      description: `${dates.length} day(s) blocked successfully`,
-      color: 'success'
+    toast.success('Success', {
+      description: `${dates.length} day(s) blocked successfully`
     });
     
     isVacationModalOpen.value = false;
     resetVacationForm();
     refetch();
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to block vacation',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to block vacation'
     });
   }
 };
@@ -174,17 +159,13 @@ const handleDelete = async (exception: AvailabilityException) => {
 
   try {
     await deleteMutation.mutateAsync(exception.id);
-    toast.add({
-      title: 'Success',
-      description: 'Exception deleted successfully',
-      color: 'success'
+    toast.success('Success', {
+      description: 'Exception deleted successfully'
     });
     refetch();
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to delete exception',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to delete exception'
     });
   }
 };

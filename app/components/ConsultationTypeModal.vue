@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toast } from 'vue-sonner'
 import type { ConsultationType, CreateConsultationTypeInput, MeetingType } from '~/types/booking';
 
 const props = defineProps<{
@@ -14,7 +15,6 @@ const emit = defineEmits<{
 const { useCreateConsultationType, useUpdateConsultationType } = useConsultationTypes();
 const createMutation = useCreateConsultationType();
 const updateMutation = useUpdateConsultationType();
-const toast = useToast();
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -123,27 +123,21 @@ const handleSubmit = async () => {
         id: props.consultationType.id,
         data: submitData,
       });
-      toast.add({
-        title: 'Success',
-        description: 'Consultation type updated successfully',
-        color: 'success'
+      toast.success('Success', {
+        description: 'Consultation type updated successfully'
       });
     } else {
       await createMutation.mutateAsync(submitData);
-      toast.add({
-        title: 'Success',
-        description: 'Consultation type created successfully',
-        color: 'success'
+      toast.success('Success', {
+        description: 'Consultation type created successfully'
       });
     }
 
     isOpen.value = false;
     emit('success');
   } catch (error: any) {
-    toast.add({
-      title: 'Error',
-      description: error.message || 'Failed to save consultation type',
-      color: 'error'
+    toast.error('Error', {
+      description: error.message || 'Failed to save consultation type'
     });
   }
 };

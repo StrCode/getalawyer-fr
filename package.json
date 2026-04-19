@@ -18,7 +18,6 @@
     "@hugeicons/vue": "^1.0.5",
     "@iconify-json/hugeicons": "^1.2.23",
     "@nuxt/image": "2.0.0",
-    "@nuxt/ui": "4.5.1",
     "@nuxtjs/leaflet": "1.3.2",
     "@nuxtjs/seo": "3.4.0",
     "@peterbud/nuxt-query": "1.5.2",
