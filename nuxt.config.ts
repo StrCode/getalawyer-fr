@@ -15,14 +15,7 @@ export default defineNuxtConfig({
       'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'https://api.getalawyer.ng'),
     },
   },
-  modules: [
-    '@nuxt/image',
-    '@nuxtjs/seo',
-    '@peterbud/nuxt-query',
-    '@pinia/nuxt',
-    'nuxt-viewport',
-    'shadcn-nuxt',
-  ],
+  modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
   shadcn: {
     /**
      * Prefix for all the imported component.
