@@ -69,154 +69,154 @@ const ninDisplay = computed(() => {
   }
   return { variant: 'action' as const, label: 'Action required' }
 })
+
+const minimalRow =
+  'flex flex-col gap-1 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-8'
+const minimalLabel = 'text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:w-[200px] sm:shrink-0'
+const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
 </script>
 
 <template>
   <div v-if="summary" class="space-y-12 pb-20">
-    <!-- Header Section -->
     <div class="mb-10 text-center">
-      <div class="mx-auto w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-8 relative border-4 border-white shadow-sm">
-         <PhNotePencil class="w-10 h-10" />
+      <div
+        class="relative mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-primary/10 text-primary shadow-sm"
+      >
+        <PhNotePencil class="h-10 w-10" />
       </div>
-      <h1 class="text-2xl font-bold text-gray-900 mb-2">Review your application</h1>
-      <p class="text-sm text-gray-600 max-w-md mx-auto font-medium">Please take a moment to double-check your information before submitting your application for professional review.</p>
+      <h1 class="mb-2 text-2xl font-bold text-gray-900">Review your application</h1>
+      <p class="mx-auto max-w-md text-sm font-medium text-gray-600">
+        Please take a moment to double-check your information before submitting your application for professional review.
+      </p>
     </div>
 
     <div class="space-y-10">
-      <!-- Summary Section: Personal Info -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary pb-2 font-bold uppercase tracking-wider text-xs">Basic Information</h3>
-           <Button variant="link" class="text-primary font-bold underline px-0 h-auto" as-child>
-             <NuxtLink to="/onboarding/personal-info">Edit</NuxtLink>
-           </Button>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Full Name</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gender</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug capitalize">{{ summary.personal?.gender || 'N/A' }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date of Birth</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ formatDate(summary.personal?.dateOfBirth) }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Identity Status</p>
-              <div class="flex items-center gap-1.5 pt-0.5">
-                  <PhCheckCircle
-                    v-if="ninDisplay.variant === 'verified'"
-                    class="h-4 w-4 shrink-0 text-primary"
-                    weight="fill"
-                  />
-                  <PhClock
-                    v-else-if="ninDisplay.variant === 'pending'"
-                    class="h-4 w-4 shrink-0 text-emerald-600"
-                    weight="fill"
-                  />
-                  <PhXCircle v-else class="h-4 w-4 shrink-0 text-red-500" weight="fill" />
-                  <span
-                    class="text-[11px] font-bold"
-                    :class="{
-                      'text-primary': ninDisplay.variant === 'verified',
-                      'text-emerald-700': ninDisplay.variant === 'pending',
-                      'text-red-600': ninDisplay.variant === 'action'
-                    }"
-                  >
-                    {{ ninDisplay.label }}
-                  </span>
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Basic information</p>
+            <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
+              <NuxtLink to="/onboarding/personal-info">Edit</NuxtLink>
+            </Button>
+          </div>
+          <div class="divide-y divide-gray-100 rounded-lg border border-gray-100 px-4 sm:px-5">
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Full name</span>
+              <span :class="minimalValue">
+                {{ summary.personal?.firstName }} {{ summary.personal?.lastName }}
+              </span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Gender</span>
+              <span :class="[minimalValue, 'capitalize']">{{ summary.personal?.gender || 'N/A' }}</span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Date of birth</span>
+              <span :class="minimalValue">{{ formatDate(summary.personal?.dateOfBirth) }}</span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Identity status</span>
+              <div class="flex min-w-0 flex-1 items-center gap-1.5">
+                <PhCheckCircle
+                  v-if="ninDisplay.variant === 'verified'"
+                  class="h-4 w-4 shrink-0 text-primary"
+                  weight="fill"
+                />
+                <PhClock
+                  v-else-if="ninDisplay.variant === 'pending'"
+                  class="h-4 w-4 shrink-0 text-emerald-600"
+                  weight="fill"
+                />
+                <PhXCircle v-else class="h-4 w-4 shrink-0 text-red-500" weight="fill" />
+                <span
+                  class="text-sm font-semibold"
+                  :class="{
+                    'text-primary': ninDisplay.variant === 'verified',
+                    'text-emerald-700': ninDisplay.variant === 'pending',
+                    'text-red-600': ninDisplay.variant === 'action'
+                  }"
+                >
+                  {{ ninDisplay.label }}
+                </span>
               </div>
-           </div>
-        </div>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Current state</span>
+              <span :class="minimalValue">{{ summary.personal?.state || 'N/A' }}</span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">LGA</span>
+              <span :class="minimalValue">{{ summary.personal?.lga || 'N/A' }}</span>
+            </div>
+          </div>
+        </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Current State</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.state || 'N/A' }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">LGA</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.lga || 'N/A' }}</p>
-           </div>
-        </div>
-      </section>
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Professional background</p>
+            <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
+              <NuxtLink to="/onboarding/professional-information">Edit</NuxtLink>
+            </Button>
+          </div>
+          <div class="divide-y divide-gray-100 rounded-lg border border-gray-100 px-4 sm:px-5">
+            <div :class="minimalRow">
+              <span :class="minimalLabel">SCN</span>
+              <span :class="[minimalValue, 'font-mono']">{{ formatScn(summary.professional?.barNumber) }}</span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Year of call</span>
+              <span :class="minimalValue">{{ summary.professional?.yearOfCall || 'Not provided' }}</span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">University & LLB</span>
+              <span :class="minimalValue">
+                {{ summary.professional?.university }} ({{ summary.professional?.llbYear }})
+              </span>
+            </div>
+            <div :class="minimalRow">
+              <span :class="minimalLabel">Law school</span>
+              <span :class="minimalValue">{{ summary.professional?.lawSchool }}</span>
+            </div>
+          </div>
+        </section>
 
-      <!-- Summary Section: Professional Info -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary pb-2 font-bold uppercase tracking-wider text-xs">Professional Background</h3>
-           <Button variant="link" class="text-primary font-bold underline px-0 h-auto" as-child>
-             <NuxtLink to="/onboarding/professional-information">Edit</NuxtLink>
-           </Button>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Supreme Court enrolment (SCN)</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug font-mono">{{ formatScn(summary.professional?.barNumber) }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Year of Call</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.yearOfCall || 'Not provided' }}</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">University & LLB Year</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.university }} ({{ summary.professional?.llbYear }})</p>
-           </div>
-           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Law School</p>
-              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.lawSchool }}</p>
-           </div>
-        </div>
-      </section>
-
-      <!-- Summary Section: Practice Details -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-           <h3 class="etsy-label border-b-2 border-primary pb-2 font-bold uppercase tracking-wider text-xs">Practice Details</h3>
-           <Button variant="link" class="text-primary font-bold underline px-0 h-auto" as-child>
-             <NuxtLink to="/onboarding/practice-information">Edit</NuxtLink>
-           </Button>
-        </div>
-        
-        <div class="space-y-4">
-           <div class="bg-gray-50/50 p-5 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2 font-bold">Practice Areas</p>
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Practice details</p>
+            <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
+              <NuxtLink to="/onboarding/practice-information">Edit</NuxtLink>
+            </Button>
+          </div>
+          <div class="space-y-4">
+            <div class="rounded-lg border border-gray-100 px-4 py-4 sm:px-5">
+              <p class="mb-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">Practice areas</p>
               <div class="flex flex-wrap gap-2">
-                 <span
-                   v-for="row in practiceAreaRows"
-                   :key="row.id"
-                   class="px-2 py-0.5 bg-white border border-gray-100 rounded-md text-[10px] font-bold text-gray-700 shadow-sm ring-1 ring-black/5"
-                 >
-                    {{ row.name }}
-                 </span>
+                <span
+                  v-for="row in practiceAreaRows"
+                  :key="row.id"
+                  class="rounded-md border border-gray-200/80 bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-800"
+                >
+                  {{ row.name }}
+                </span>
               </div>
-           </div>
-           
-           <div class="grid grid-cols-1 gap-6">
-              <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50 md:max-w-xl">
-                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Firm Name</p>
-                 <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.practice?.firmName || 'Solo Practitioner' }}</p>
+            </div>
+            <div class="divide-y divide-gray-100 rounded-lg border border-gray-100 px-4 sm:px-5">
+              <div :class="minimalRow">
+                <span :class="minimalLabel">Firm name</span>
+                <span :class="minimalValue">{{ summary.practice?.firmName || 'Solo Practitioner' }}</span>
               </div>
-              <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Office address</p>
-                 <p class="text-[13px] font-bold leading-snug text-gray-900">
-                   {{ officeAddressFull }}
-                 </p>
+              <div :class="minimalRow">
+                <span :class="minimalLabel">Office address</span>
+                <span :class="minimalValue">{{ officeAddressFull }}</span>
               </div>
-           </div>
-        </div>
-      </section>
+            </div>
+          </div>
+        </section>
+    </div>
 
-      <div class="pt-10 border-t border-gray-100 text-center">
-         <p class="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed italic font-medium">
-            Once submitted, your application will enter a pending state for manual administrative review. This usually takes 1-2 business days.
-         </p>
-      </div>
+    <div class="border-t border-gray-100 pt-10 text-center">
+      <p class="mx-auto max-w-sm text-xs font-medium italic leading-relaxed text-gray-400">
+        Once submitted, your application will enter a pending state for manual administrative review. This usually takes 1-2 business days.
+      </p>
     </div>
   </div>
 </template>
