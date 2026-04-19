@@ -40,12 +40,8 @@ export interface PersonalInfoData {
     middleName?: string
     dateOfBirth: string // ISO 8601 datetime format with timezone
     gender: 'male' | 'female' | 'other'
-    country: string
     state: string
     lga: string
-    city: string
-    address: string
-    phoneNumber: string
 }
 
 export interface NinSubmitData {
@@ -62,7 +58,6 @@ export interface ProfessionalInfoData {
     barNumber: string
     yearOfCall: number
     lawSchool: string
-    graduationYear: number
     university: string
     llbYear: number
 }
@@ -120,7 +115,7 @@ const lawyerOnboardingAPI = {
     },
 
     submitOnboarding: async (): Promise<SubmitResponse> => {
-        const res = await httpClient.post<any>('/api/onboarding/submit', { confirmSubmission: true })
+        const res = await httpClient.post<any>('/api/onboarding/submit', {})
         return res.data || res
     }
 }

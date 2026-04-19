@@ -71,12 +71,7 @@ const currentYear = new Date().getFullYear()
 
         <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
           <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight text-gray-500 font-medium">Law School Campus <span class="text-primary">*</span></label>
-          <Input v-model="state.lawSchool" placeholder="e.g. Lagos Campus" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full max-w-md" />
-        </div>
-
-        <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-          <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight text-gray-500 font-medium">Year of Graduation <span class="text-primary">*</span></label>
-          <Input v-model.number="state.graduationYear" type="number" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-32" />
+          <Input v-model="state.lawSchool" placeholder="e.g. Lagos Campus" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
         </div>
       </div>
     </div>

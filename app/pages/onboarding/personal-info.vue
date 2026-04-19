@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date'
+import { ChevronDownIcon } from 'lucide-vue-next'
+import { Button } from '~/components/ui/button'
+import { Calendar } from '~/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
 
 definePageMeta({
   layout: 'onboarding-wizard',
@@ -11,39 +20,37 @@ const store = useLawyerOnboardingStore()
 // We don't actually need to re-declare reactive state; we just bind to store.personalInfo.
 const state = store.personalInfo
 
-// Options for dropdowns
-const days = Array.from({ length: 31 }, (_, i) => String(i + 1))
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+const genders = [
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+    { label: 'Other', value: 'other' }
 ]
-const currentYear = new Date().getFullYear()
-const years = Array.from({ length: 100 }, (_, i) => String(currentYear - 18 - i))
 
-const countries = ['Nigeria', 'United Kingdom', 'United States', 'Singapore']
+// Date of Birth handling
+const dobDate = ref<DateValue | undefined>()
 
-// We reconstruct the ISO date string locally with a watcher, because the store
-// needs the exact `dateOfBirth` ISO string for the backend API,
-const dobDay = ref<string | undefined>(undefined)
-const dobMonth = ref<string | undefined>(undefined)
-const dobYear = ref<string | undefined>(undefined)
-
+// Sync from store to local picker
 watch(() => state.dateOfBirth, (newDob) => {
-  if (newDob) {
-    const dob = new Date(newDob)
-    dobDay.value = String(dob.getDate())
-    dobMonth.value = dob.toLocaleString('default', { month: 'long' })
-    dobYear.value = String(dob.getFullYear())
+  if (newDob && !dobDate.value) {
+    try {
+      // Extract YYYY-MM-DD from ISO string
+      const datePart = newDob.split('T')[0]
+      dobDate.value = parseDate(datePart)
+    } catch (e) {
+      console.warn('[Personal Info] Failed to parse dateOfBirth:', e)
+    }
   }
 }, { immediate: true })
 
-watch([dobDay, dobMonth, dobYear], () => {
-  if (dobDay.value && dobMonth.value && dobYear.value) {
-    const monthIdx = months.indexOf(dobMonth.value)
-    const dateObj = new Date(Number(dobYear.value), monthIdx, Number(dobDay.value))
-    state.dateOfBirth = dateObj.toISOString()
+// Sync from local picker to store
+watch(dobDate, (newVal) => {
+  if (newVal) {
+    state.dateOfBirth = newVal.toDate(getLocalTimeZone()).toISOString()
   }
 })
+
+// Max date: Today minus 18 years (standard legal age)
+const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
 </script>
 
@@ -59,117 +66,92 @@ watch([dobDay, dobMonth, dobYear], () => {
     </div>
 
     <div class="space-y-8">
-      <!-- Country of Residence -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Country of residence <span class="text-primary">*</span></label>
-        <div class="w-full max-w-md">
-          <Select v-model="state.country">
+      <!-- Names Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+        <!-- First Name -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">First name <span class="text-primary">*</span></label>
+          <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
+        </div>
+
+        <!-- Last Name -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
+          <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
+        </div>
+
+        <!-- Middle Name -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
+          <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
+        </div>
+
+        <!-- Gender -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Gender <span class="text-primary">*</span></label>
+          <Select v-model="state.gender">
             <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">
-              <SelectValue placeholder="Select country" />
+              <SelectValue placeholder="Select gender" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="c in countries" :key="c" :value="c">
-                {{ c }}
+              <SelectItem v-for="g in genders" :key="g.value" :value="g.value">
+                {{ g.label }}
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <!-- First Name -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">First name <span class="text-primary">*</span></label>
-        <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
-      </div>
-
-      <!-- Middle Name -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
-        <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
-      </div>
-
-      <!-- Last Name -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Last name <span class="text-primary">*</span></label>
-        <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
-      </div>
-
       <!-- Date of Birth -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 border-t border-gray-50 pt-8">
         <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Your date of birth <span class="text-primary">*</span></label>
-        <div class="flex gap-4">
-          <div class="w-24">
-            <Select v-model="dobDay">
-              <SelectTrigger class="h-12 rounded-lg border-gray-200">
-                <SelectValue placeholder="Day" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="d in days" :key="d" :value="d">{{ d }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="w-40">
-            <Select v-model="dobMonth">
-              <SelectTrigger class="h-12 rounded-lg border-gray-200">
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="m in months" :key="m" :value="m">{{ m }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div class="w-32">
-            <Select v-model="dobYear">
-              <SelectTrigger class="h-12 rounded-lg border-gray-200">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="y in years" :key="y" :value="y">{{ y }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        
+        <div class="w-full max-w-md">
+           <Popover v-slot="{ close }">
+            <PopoverTrigger as-child>
+              <Button
+                variant="outline"
+                class="w-full md:w-64 h-12 justify-between font-normal rounded-lg border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {{ dobDate ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Select your date of birth" }}
+                <ChevronDownIcon class="w-4 h-4 text-gray-400" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto overflow-hidden p-0" align="start">
+              <Calendar
+                v-model="dobDate"
+                :max-value="maxDate"
+                initial-focus
+                layout="month-and-year"
+                @update:model-value="() => close()"
+              />
+            </PopoverContent>
+          </Popover>
+          <p class="mt-2 text-[11px] text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
         </div>
       </div>
 
-      <div class="pt-8 border-t border-gray-100 italic text-[10px] text-gray-400 font-medium">
-         * Required fields for verification
-      </div>
-
-      <!-- Taxpayer Address Section -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+      <!-- Location Section -->
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 border-t border-gray-50 pt-8">
         <div>
-          <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Professional address <span class="text-primary">*</span></label>
-          <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">This should be the same address used for professional records or bar registration.</p>
+          <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Location <span class="text-primary">*</span></label>
+          <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">Provide your current state and local government area of residence.</p>
         </div>
         
-        <div class="space-y-6 max-w-xl">
-          <div class="grid grid-cols-[120px_1fr] gap-4">
-            <div>
-              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Number</label>
-              <Input v-model="state.city" placeholder="75" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Street Name</label>
-              <Input v-model="state.address" placeholder="Ayer Rajah Crescent" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-            </div>
-          </div>
-          
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-xl">
           <div>
-            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Flat/Other <span class="text-gray-400 font-normal">(optional)</span></label>
-            <Input placeholder="#02-02" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
+            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
+            <Input v-model="state.state" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
-              <Input v-model="state.state" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">Phone number</label>
-              <Input v-model="state.phoneNumber" placeholder="+234..." class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-            </div>
+          <div>
+            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">LGA</label>
+            <Input v-model="state.lga" placeholder="Ikeja" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
         </div>
+      </div>
+
+      <div class="pt-8 italic text-[10px] text-gray-400 font-medium">
+         * Required fields for verification
       </div>
     </div>
   </div>

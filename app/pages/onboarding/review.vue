@@ -47,10 +47,14 @@ const formatDate = (dateStr: string) => {
            </Button>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Full Name</p>
               <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.firstName }} {{ summary.personal?.lastName }}</p>
+           </div>
+           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gender</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug capitalize">{{ summary.personal?.gender || 'N/A' }}</p>
            </div>
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date of Birth</p>
@@ -65,6 +69,17 @@ const formatDate = (dateStr: string) => {
                      {{ summary.ninVerification?.verified ? 'Verified' : 'Action Required' }}
                   </span>
               </div>
+           </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Current State</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.state || 'N/A' }}</p>
+           </div>
+           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">LGA</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.personal?.lga || 'N/A' }}</p>
            </div>
         </div>
       </section>
@@ -86,6 +101,14 @@ const formatDate = (dateStr: string) => {
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Year of Call</p>
               <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.yearOfCall || 'Not provided' }}</p>
+           </div>
+           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">University & LLB Year</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.university }} ({{ summary.professional?.llbYear }})</p>
+           </div>
+           <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+              <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Law School</p>
+              <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.professional?.lawSchool }}</p>
            </div>
         </div>
       </section>
@@ -116,7 +139,9 @@ const formatDate = (dateStr: string) => {
               </div>
               <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
                  <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Office Location</p>
-                 <p class="text-[13px] font-bold text-gray-900 leading-snug truncate">{{ summary.practice?.officeCity }}, {{ summary.practice?.officeState }}</p>
+                 <p class="text-[13px] font-bold text-gray-900 leading-snug truncate">
+                   {{ summary.practice?.officeAddress?.city || 'N/A' }}, {{ summary.practice?.officeAddress?.state || 'N/A' }}
+                 </p>
               </div>
            </div>
         </div>
