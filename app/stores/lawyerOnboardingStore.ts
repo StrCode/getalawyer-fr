@@ -255,7 +255,11 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         personal: personalInfo,
         professional: professionalInfo,
         practice: practiceInfo,
-        ninVerification: { verified: !!ninVerification.verified }
+        ninVerification: {
+            verified: !!ninVerification.verified,
+            /** Saved server-side but admin has not verified yet — same idea as `nin-verification.vue` `isSubmittedPending`. */
+            isSubmitted: !!ninVerification.isSubmitted
+        }
     }))
 
     return {

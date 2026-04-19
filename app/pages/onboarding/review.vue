@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { formatScnForDisplay } from '~/lib/scn'
-import { 
-  PhNotePencil, 
-  PhCheckCircle, 
-  PhXCircle
+import {
+  PhNotePencil,
+  PhCheckCircle,
+  PhXCircle,
+  PhClock
 } from '@phosphor-icons/vue'
 
 definePageMeta({
@@ -15,6 +16,19 @@ definePageMeta({
 const store = useLawyerOnboardingStore()
 // Use computed to ensure reactivity to summary changes
 const summary = computed(() => store.summary)
+
+const { data: specData } = useSpecializations()
+const specializations = computed(() => specData.value || [])
+
+/** `practiceAreas` in the draft are specialization ids — resolve to labels for display */
+const practiceAreaRows = computed(() => {
+  const ids = summary.value?.practice?.practiceAreas ?? []
+  const list = specializations.value
+  return ids.map((id: string) => ({
+    id,
+    name: list.find((s: { id: string; name: string }) => s.id === id)?.name ?? id
+  }))
+})
 
 // Format helpers
 const formatDate = (dateStr: string) => {
@@ -30,6 +44,31 @@ const formatScn = (raw: string | undefined) => {
   const s = formatScnForDisplay(raw)
   return s || 'Not provided'
 }
+
+/** Street, city, state, postal — comma-separated; omits empty parts */
+const officeAddressFull = computed(() => {
+  const a = summary.value?.practice?.officeAddress
+  if (!a) return 'N/A'
+  const parts = [a.street, a.city, a.state, a.postalCode]
+    .map((p) => (typeof p === 'string' ? p.trim() : ''))
+    .filter(Boolean)
+  return parts.length ? parts.join(', ') : 'N/A'
+})
+
+/** Mirrors `nin-verification.vue`: verified | submitted & pending | needs action */
+const ninDisplay = computed(() => {
+  const n = summary.value?.ninVerification
+  if (!n) {
+    return { variant: 'action' as const, label: 'Action required' }
+  }
+  if (n.verified) {
+    return { variant: 'verified' as const, label: 'Verified' }
+  }
+  if (n.isSubmitted) {
+    return { variant: 'pending' as const, label: 'Awaiting verification' }
+  }
+  return { variant: 'action' as const, label: 'Action required' }
+})
 </script>
 
 <template>
@@ -69,10 +108,26 @@ const formatScn = (raw: string | undefined) => {
            <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Identity Status</p>
               <div class="flex items-center gap-1.5 pt-0.5">
-                  <PhCheckCircle v-if="summary.ninVerification?.verified" class="text-primary w-4 h-4" />
-                  <PhXCircle v-else class="text-red-500 w-4 h-4" />
-                  <span class="text-[11px] font-bold" :class="summary.ninVerification?.verified ? 'text-primary' : 'text-red-600'">
-                     {{ summary.ninVerification?.verified ? 'Verified' : 'Action Required' }}
+                  <PhCheckCircle
+                    v-if="ninDisplay.variant === 'verified'"
+                    class="h-4 w-4 shrink-0 text-primary"
+                    weight="fill"
+                  />
+                  <PhClock
+                    v-else-if="ninDisplay.variant === 'pending'"
+                    class="h-4 w-4 shrink-0 text-emerald-600"
+                    weight="fill"
+                  />
+                  <PhXCircle v-else class="h-4 w-4 shrink-0 text-red-500" weight="fill" />
+                  <span
+                    class="text-[11px] font-bold"
+                    :class="{
+                      'text-primary': ninDisplay.variant === 'verified',
+                      'text-emerald-700': ninDisplay.variant === 'pending',
+                      'text-red-600': ninDisplay.variant === 'action'
+                    }"
+                  >
+                    {{ ninDisplay.label }}
                   </span>
               </div>
            </div>
@@ -132,21 +187,25 @@ const formatScn = (raw: string | undefined) => {
            <div class="bg-gray-50/50 p-5 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
               <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2 font-bold">Practice Areas</p>
               <div class="flex flex-wrap gap-2">
-                 <span v-for="area in summary.practice?.practiceAreas" :key="area" class="px-2 py-0.5 bg-white border border-gray-100 rounded-md text-[10px] font-bold text-gray-700 shadow-sm ring-1 ring-black/5">
-                    {{ area }}
+                 <span
+                   v-for="row in practiceAreaRows"
+                   :key="row.id"
+                   class="px-2 py-0.5 bg-white border border-gray-100 rounded-md text-[10px] font-bold text-gray-700 shadow-sm ring-1 ring-black/5"
+                 >
+                    {{ row.name }}
                  </span>
               </div>
            </div>
            
-           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
+           <div class="grid grid-cols-1 gap-6">
+              <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50 md:max-w-xl">
                  <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Firm Name</p>
                  <p class="text-[13px] font-bold text-gray-900 leading-snug">{{ summary.practice?.firmName || 'Solo Practitioner' }}</p>
               </div>
               <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 transition-colors hover:bg-gray-50">
-                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Office Location</p>
-                 <p class="text-[13px] font-bold text-gray-900 leading-snug truncate">
-                   {{ summary.practice?.officeAddress?.city || 'N/A' }}, {{ summary.practice?.officeAddress?.state || 'N/A' }}
+                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Office address</p>
+                 <p class="text-[13px] font-bold leading-snug text-gray-900">
+                   {{ officeAddressFull }}
                  </p>
               </div>
            </div>
