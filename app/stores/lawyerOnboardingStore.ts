@@ -90,11 +90,14 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
         if (ninResubmitMode.value || ninVerification.verified) return
 
-        const lastStep = draftRoot?.last_step
+        const lastStep = draftRoot?.last_step ?? (draftRoot as { lastStep?: string | null })?.lastStep
         if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) {
             ninVerification.isSubmitted = true
         }
-        if (payload?.ninSubmitted === true) {
+        const ninSubmittedFlag =
+            payload?.ninSubmitted === true ||
+            (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted === true
+        if (ninSubmittedFlag) {
             ninVerification.isSubmitted = true
         }
     }, { immediate: true })

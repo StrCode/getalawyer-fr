@@ -82,7 +82,8 @@ async function startNewListing() {
 
 function restoreDraft() {
   isRestoring.value = true
-  const stepPathRaw = existingDraft.value.last_step || 'personal_info'
+  const stepPathRaw =
+    existingDraft.value.last_step || existingDraft.value.lastStep || 'personal_info'
   const destination = getPathByState(stepPathRaw)
   navigateTo(destination, { replace: true })
 }
@@ -146,7 +147,7 @@ const refresh = () => {
                   Lawyer Onboarding
                 </p>
                 <p class="text-sm text-gray-500">
-                  Started {{ existingDraft?.last_saved_at ? formatDate(existingDraft.last_saved_at) : 'recently' }}
+                  Started {{ (existingDraft?.last_saved_at || existingDraft?.lastSavedAt) ? formatDate(existingDraft.last_saved_at || existingDraft.lastSavedAt) : 'recently' }}
                 </p>
               </div>
             </div>
