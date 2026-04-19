@@ -9,7 +9,7 @@ definePageMeta({
 
 const store = useLawyerOnboardingStore()
 const state = store.ninVerification
-const isVerified = computed(() => store.summary?.ninVerification?.verified || false)
+const isVerified = computed(() => store.ninVerification.verified || false)
 
 // We rely on the layout's "Next" button to trigger the store's saveStep('nin-verification')
 </script>

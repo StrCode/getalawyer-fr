@@ -67,17 +67,11 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
     <div class="space-y-8">
       <!-- Names Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
         <!-- First Name -->
         <div class="flex flex-col gap-3 py-1">
           <label class="text-[14px] font-bold text-gray-900 tracking-tight">First name <span class="text-primary">*</span></label>
           <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
-        </div>
-
-        <!-- Last Name -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
-          <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
         </div>
 
         <!-- Middle Name -->
@@ -86,11 +80,48 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
           <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
         </div>
 
+        <!-- Last Name -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
+          <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
+        </div>
+      </div>
+
+      <!-- General Info Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 pt-6 border-t border-gray-50">
+        <!-- Date of Birth -->
+        <div class="flex flex-col gap-3 py-1">
+          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Date of birth <span class="text-primary">*</span></label>
+          <div class="w-full">
+             <Popover v-slot="{ close }">
+              <PopoverTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="w-full h-12 justify-between font-normal rounded-lg border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  {{ dobDate ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Select your date of birth" }}
+                  <ChevronDownIcon class="w-4 h-4 text-gray-400" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto overflow-hidden p-0" align="start">
+                <Calendar
+                  v-model="dobDate"
+                  :max-value="maxDate"
+                  initial-focus
+                  layout="month-and-year"
+                  @update:model-value="() => close()"
+                />
+              </PopoverContent>
+            </Popover>
+            <p class="mt-2 text-[11px] text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
+          </div>
+        </div>
+
         <!-- Gender -->
         <div class="flex flex-col gap-3 py-1">
           <label class="text-[14px] font-bold text-gray-900 tracking-tight">Gender <span class="text-primary">*</span></label>
           <Select v-model="state.gender">
-            <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">
+            <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20 w-full">
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
             <SelectContent>
@@ -99,35 +130,6 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
-      </div>
-
-      <!-- Date of Birth -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 border-t border-gray-50 pt-8">
-        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Your date of birth <span class="text-primary">*</span></label>
-        
-        <div class="w-full max-w-md">
-           <Popover v-slot="{ close }">
-            <PopoverTrigger as-child>
-              <Button
-                variant="outline"
-                class="w-full md:w-64 h-12 justify-between font-normal rounded-lg border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                {{ dobDate ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Select your date of birth" }}
-                <ChevronDownIcon class="w-4 h-4 text-gray-400" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto overflow-hidden p-0" align="start">
-              <Calendar
-                v-model="dobDate"
-                :max-value="maxDate"
-                initial-focus
-                layout="month-and-year"
-                @update:model-value="() => close()"
-              />
-            </PopoverContent>
-          </Popover>
-          <p class="mt-2 text-[11px] text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
         </div>
       </div>
 
