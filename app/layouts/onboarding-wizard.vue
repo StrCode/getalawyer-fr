@@ -3,17 +3,18 @@ import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 import { useRouter } from '#imports'
-import { 
-  PhScales, 
-  PhCaretRight, 
-  PhCaretLeft, 
-  PhCircleNotch, 
+import { toast } from 'vue-sonner'
+import {
+  PhScales,
+  PhCaretRight,
+  PhCaretLeft,
+  PhCircleNotch,
   PhCheckCircle,
   PhSignOut,
   PhWarningCircle
 } from '@phosphor-icons/vue'
 
-// We still need useStatus to show the initial loading state while syncing (Lawyers ONLY)
+// Draft query: initial loading while syncing (lawyers only)
 import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 
 export default defineComponent({
@@ -63,68 +64,95 @@ export default defineComponent({
 
     const isSaving = ref(false)
 
-const handleBack = async () => {
-  if (isFirst.value || !currentStep.value) return
-  
-  isSaving.value = true
-  try {
-      // Save draft of current page before going back
-      await store.value.saveStep(currentStep.value.key)
-    } catch (e) {
-       console.error('[Wizard] Auto-save failed on Back:', e)
-  } finally {
-    isSaving.value = false
-  }
-  
-  if (prevStep.value) {
-    router.push(prevStep.value.path)
-  }
-}
+    const handleBack = async () => {
+      if (isFirst.value || !currentStep.value) return
 
-const handleNext = async () => {
-  if (!currentStep.value) return
-
-  isSaving.value = true
-  try {
-    const success = await store.value.saveStep(currentStep.value.key)
-    
-    if (success) {
-      if (!isLast.value && nextStep.value) {
-         router.push(nextStep.value.path)
-      } else if (isLast.value) {
-         // Final submit logic handled by pages
+      isSaving.value = true
+      try {
+        const saved = await store.value.saveStep(currentStep.value.key)
+        if (!saved) {
+          toast.error('Could not save', {
+            description: 'Fix any issues above, then try Back again.'
+          })
+          return
+        }
+        if (prevStep.value) {
+          router.push(prevStep.value.path)
+        }
+      } catch (e) {
+        console.error('[Wizard] Save failed on Back:', e)
+        toast.error('Could not save', {
+          description: 'Your changes could not be saved. Try again before going back.'
+        })
+      } finally {
+        isSaving.value = false
       }
-    } else {
-      console.warn('Save failed')
     }
-  } catch (e) {
-    console.error('[Wizard] Save failed on Next:', e)
-  } finally {
-    isSaving.value = false
-  }
-}
 
-const handleExit = async () => {
-  if (currentStep.value) {
-     isSaving.value = true
-     await store.value.saveStep(currentStep.value.key).catch(() => {})
-     isSaving.value = false
-  }
-  await router.push('/dashboard')
-}
+    const handleNext = async () => {
+      if (!currentStep.value) return
 
-const isScrolled = ref(false)
-const scrollContainer = ref<HTMLElement | null>(null)
+      isSaving.value = true
+      try {
+        const success = await store.value.saveStep(currentStep.value.key)
 
-const handleScroll = (e: Event) => {
-  const target = e.target as HTMLElement
-  isScrolled.value = target.scrollTop > 5
-}
+        if (success) {
+          if (!isLast.value && nextStep.value) {
+            router.push(nextStep.value.path)
+          }
+          // Last step: lawyer `review` and client `specializations` run final submit inside store.saveStep
+        } else {
+          console.warn('[Wizard] saveStep returned false')
+        }
+      } catch (e) {
+        console.error('[Wizard] Save failed on Next:', e)
+      } finally {
+        isSaving.value = false
+      }
+    }
 
-onMounted(() => {
-  wizardMounted.value = true
-  scrollContainer.value?.addEventListener('scroll', handleScroll)
-})
+    const handleExit = async () => {
+      if (currentStep.value) {
+        isSaving.value = true
+        try {
+          const saved = await store.value.saveStep(currentStep.value.key)
+          if (!saved) {
+            toast.warning('Changes may not be saved', {
+              description:
+                'We could not sync your latest edits. You can return to onboarding from the dashboard.'
+            })
+          }
+        } catch (e) {
+          console.error('[Wizard] Save failed on exit:', e)
+          toast.warning('Changes may not be saved', {
+            description:
+              'We could not sync your latest edits. You can return to onboarding from the dashboard.'
+          })
+        } finally {
+          isSaving.value = false
+        }
+      }
+      await router.push('/dashboard')
+    }
+
+    const isScrolled = ref(false)
+    const scrollContainer = ref<HTMLElement | null>(null)
+
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement
+      isScrolled.value = target.scrollTop > 5
+    }
+
+    const scrollListenerOpts: AddEventListenerOptions = { passive: true }
+
+    onMounted(() => {
+      wizardMounted.value = true
+      scrollContainer.value?.addEventListener('scroll', handleScroll, scrollListenerOpts)
+    })
+
+    onUnmounted(() => {
+      scrollContainer.value?.removeEventListener('scroll', handleScroll, scrollListenerOpts)
+    })
 
     return {
       validationErrorBanner,
@@ -182,7 +210,7 @@ onMounted(() => {
             <!-- Subtle fetch indicator -->
             <transition name="fade">
               <div v-if="isFetching && !isPending" class="absolute -top-10 right-0 flex items-center gap-2">
-                 <span class="text-[11px] font-bold text-primary/40 uppercase tracking-widest">Auto-saving</span>
+                 <span class="text-[11px] font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
                  <PhCircleNotch class="w-4 h-4 text-primary/40 animate-spin" />
               </div>
             </transition>
