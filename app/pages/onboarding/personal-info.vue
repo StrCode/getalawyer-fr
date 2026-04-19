@@ -24,9 +24,9 @@ const countries = ['Nigeria', 'United Kingdom', 'United States', 'Singapore']
 
 // We reconstruct the ISO date string locally with a watcher, because the store
 // needs the exact `dateOfBirth` ISO string for the backend API,
-const dobDay = ref('')
-const dobMonth = ref('')
-const dobYear = ref('')
+const dobDay = ref<string | undefined>(undefined)
+const dobMonth = ref<string | undefined>(undefined)
+const dobYear = ref<string | undefined>(undefined)
 
 watch(() => state.dateOfBirth, (newDob) => {
   if (newDob) {
@@ -60,8 +60,8 @@ watch([dobDay, dobMonth, dobYear], () => {
 
     <div class="space-y-8">
       <!-- Country of Residence -->
-      <div class="form-row">
-        <label class="etsy-label">Country of residence <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Country of residence <span class="text-primary">*</span></label>
         <div class="w-full max-w-md">
           <Select v-model="state.country">
             <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">
@@ -77,26 +77,26 @@ watch([dobDay, dobMonth, dobYear], () => {
       </div>
 
       <!-- First Name -->
-      <div class="form-row">
-        <label class="etsy-label">First name <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">First name <span class="text-primary">*</span></label>
         <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Middle Name -->
-      <div class="form-row">
-        <label class="etsy-label">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
         <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Last Name -->
-      <div class="form-row">
-        <label class="etsy-label">Last name <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Last name <span class="text-primary">*</span></label>
         <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full max-w-md focus-visible:ring-primary/20" />
       </div>
 
       <!-- Date of Birth -->
-      <div class="form-row">
-        <label class="etsy-label">Your date of birth <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Your date of birth <span class="text-primary">*</span></label>
         <div class="flex gap-4">
           <div class="w-24">
             <Select v-model="dobDay">
@@ -136,10 +136,10 @@ watch([dobDay, dobMonth, dobYear], () => {
       </div>
 
       <!-- Taxpayer Address Section -->
-      <div class="form-row pt-4">
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
         <div>
-          <label class="etsy-label block">Professional address <span class="text-primary">*</span></label>
-          <p class="etsy-description max-w-[180px]">This should be the same address used for professional records or bar registration.</p>
+          <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Professional address <span class="text-primary">*</span></label>
+          <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">This should be the same address used for professional records or bar registration.</p>
         </div>
         
         <div class="space-y-6 max-w-xl">

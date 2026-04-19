@@ -37,22 +37,22 @@
     <!-- Form -->
     <div v-else class="space-y-8">
       <!-- Country -->
-      <div class="form-row">
-        <label class="etsy-label">Country <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Country <span class="text-primary">*</span></label>
         <div class="w-full max-w-md">
            <div class="relative">
-             <div class="etsy-input-base w-full bg-gray-50 text-gray-400 flex items-center justify-between h-12 px-4 rounded-lg border border-gray-100 cursor-not-allowed font-medium">
+             <div class="w-full bg-gray-50 text-gray-400 flex items-center justify-between h-12 px-4 rounded-lg border border-gray-100 cursor-not-allowed font-medium transition-all duration-200">
                <span>Nigeria</span>
                <PhLock class="w-4 h-4" />
              </div>
            </div>
-           <p class="etsy-description">Currently available in Nigeria only</p>
+           <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed">Currently available in Nigeria only</p>
         </div>
       </div>
 
       <!-- State -->
-      <div class="form-row">
-        <label class="etsy-label">State / Region <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">State / Region <span class="text-primary">*</span></label>
         <div class="w-full max-w-md">
            <Select :model-value="storeState.state" @update:model-value="handleStateIdChange">
              <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20">

@@ -75,19 +75,19 @@ const toggleState = (s: string) => {
 
     <div class="space-y-12">
       <!-- Law Firm Details -->
-      <div class="form-row">
-        <label class="etsy-label">Law Firm Name <span class="text-gray-400 font-normal">(Optional)</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Law Firm Name <span class="text-gray-400 font-normal">(Optional)</span></label>
         <div class="w-full max-w-md">
            <Input v-model="state.firmName" placeholder="e.g. Adeyemi & Partners" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-           <p class="etsy-description">Leave empty if you are a Solo Practitioner.</p>
+           <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed">Leave empty if you are a Solo Practitioner.</p>
         </div>
       </div>
 
       <!-- Practice Areas -->
-      <div class="form-row pt-4">
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 pt-4">
         <div>
-           <label class="etsy-label block">Practice Areas <span class="text-primary">*</span></label>
-           <p class="etsy-description max-w-[180px]">Select up to 5 areas that match your legal specializations.</p>
+           <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Practice Areas <span class="text-primary">*</span></label>
+           <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">Select up to 5 areas that match your legal specializations.</p>
         </div>
         
         <div class="space-y-4 w-full">
@@ -140,8 +140,8 @@ const toggleState = (s: string) => {
       </div>
 
       <!-- States of Practice -->
-      <div class="form-row">
-        <label class="etsy-label">States of Practice <span class="text-primary">*</span></label>
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
+        <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">States of Practice <span class="text-primary">*</span></label>
         <div class="w-full max-w-xl">
            <Popover>
              <PopoverTrigger as-child>
@@ -186,15 +186,15 @@ const toggleState = (s: string) => {
                </Command>
              </PopoverContent>
            </Popover>
-           <p class="etsy-description">List all states where you are currently licensed or actively practicing.</p>
+            <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed">List all states where you are currently licensed or actively practicing.</p>
         </div>
       </div>
 
       <!-- Office Address Section -->
-      <div class="form-row pt-4">
+      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 pt-4">
         <div>
-          <label class="etsy-label block">Primary office address <span class="text-primary">*</span></label>
-          <p class="etsy-description max-w-[180px]">The physical location of your principal law office.</p>
+          <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Primary office address <span class="text-primary">*</span></label>
+          <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">The physical location of your principal law office.</p>
         </div>
         
         <div class="space-y-6 max-w-xl">
