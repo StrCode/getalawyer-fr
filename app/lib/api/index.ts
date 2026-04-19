@@ -194,8 +194,6 @@ export const api = {
       ),
     getProfile: () =>
       httpClient.getAuth<ApiResponse<LawyerProfile>>("/api/lawyers/profile"),
-    getOnboardingStatus: () =>
-      httpClient.getAuth<ApiResponse>("/api/lawyers/onboarding/status"),
     savePracticeInfo: (data: {
       phoneNumber: string;
       country: string;

@@ -312,8 +312,7 @@ const handleSubmit = async () => {
       password: formData.password,
       userType: role.value || 'client',
       onboarding_completed: false,
-      callbackURL:
-        role.value === 'lawyer' ? '/onboarding/lawyer' : '/onboarding/client/location',
+      callbackURL: '/onboarding',
     })
 
     if (signUpError) {
@@ -322,7 +321,7 @@ const handleSubmit = async () => {
     }
 
     await navigateTo(
-      role.value === 'lawyer' ? '/onboarding/lawyer' : '/onboarding/client/location',
+      '/onboarding',
     )
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'An unexpected error occurred.'

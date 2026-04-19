@@ -115,15 +115,15 @@ const lawyerOnboardingAPI = {
     }
 }
 
-/** For middleware and guards — normalized status fields */
-export async function fetchLawyerOnboardingStatus(): Promise<OnboardingStatusPayload> {
-    const raw = await lawyerOnboardingAPI.getOnboardingStatus()
-    return parseOnboardingStatus(raw)
-}
-
 export async function fetchLawyerDashboardMe(): Promise<LawyerDashboardMePayload> {
     const raw = await lawyerOnboardingAPI.getDashboardLawyer()
     return parseLawyerDashboardMe(raw)
+}
+
+/** Used on `/onboarding/pending` only — GET /api/onboarding/status */
+export async function fetchLawyerOnboardingStatus(): Promise<OnboardingStatusPayload> {
+    const raw = await lawyerOnboardingAPI.getOnboardingStatus()
+    return parseOnboardingStatus(raw)
 }
 
 // --- Composable ---
@@ -174,18 +174,11 @@ export const useLawyerOnboarding = () => {
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
+                queryClient.invalidateQueries({ queryKey: ['lawyer', 'dashboard', 'me'] })
                 // Invalidate session/profile so application status gets refreshed
                 queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all })
             }
-        })
-    }
-
-    const useOnboardingStatus = () => {
-        return useQuery({
-            queryKey: ['lawyer', 'onboarding', 'status'],
-            queryFn: async () => fetchLawyerOnboardingStatus(),
-            staleTime: 30 * 1000
         })
     }
 
@@ -194,7 +187,6 @@ export const useLawyerOnboarding = () => {
         useSaveDraft,
         useDiscardDraft,
         useSaveNin,
-        useSubmitOnboarding,
-        useOnboardingStatus
+        useSubmitOnboarding
     }
 }

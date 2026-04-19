@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
 import {
   fetchLawyerDashboardMe,
-  useLawyerOnboarding
+  fetchLawyerOnboardingStatus
 } from '~/composables/useLawyerOnboarding'
 import {
   isLawyerAwaitingApproval,
-  isPendingApprovalDashboard
+  isPendingApprovalDashboard,
+  type LawyerDashboardMePayload,
+  type OnboardingStatusPayload
 } from '~/lib/lawyerOnboardingStatus'
 import {
   PhCircleNotch,
@@ -25,26 +28,26 @@ definePageMeta({
 const router = useRouter()
 const { session, signOut } = useAuth()
 
-const { useOnboardingStatus } = useLawyerOnboarding()
 const {
   data: statusPayload,
   isPending: statusPending,
   isError: statusError,
   refetch: refetchStatus
-} = useOnboardingStatus()
+} = useQuery<OnboardingStatusPayload>({
+  queryKey: ['lawyer', 'onboarding', 'status'],
+  queryFn: fetchLawyerOnboardingStatus,
+  staleTime: 30 * 1000
+})
 
-const dashboardPending = ref(true)
-const dashboardPayload = ref<Awaited<ReturnType<typeof fetchLawyerDashboardMe>> | null>(null)
-const dashboardError = ref(false)
-
-onMounted(async () => {
-  try {
-    dashboardPayload.value = await fetchLawyerDashboardMe()
-  } catch {
-    dashboardError.value = true
-  } finally {
-    dashboardPending.value = false
-  }
+const {
+  data: dashboardPayload,
+  isPending: dashboardPending,
+  isError: dashboardError,
+  refetch: refetchDashboard
+} = useQuery<LawyerDashboardMePayload>({
+  queryKey: ['lawyer', 'dashboard', 'me'],
+  queryFn: fetchLawyerDashboardMe,
+  staleTime: 30 * 1000
 })
 
 const loading = computed(() => statusPending.value || dashboardPending.value)
@@ -52,8 +55,17 @@ const loading = computed(() => statusPending.value || dashboardPending.value)
 const showSpinner = computed(() => {
   const st = statusPayload.value
   const dash = dashboardPayload.value
-  if (st != null && isLawyerAwaitingApproval(st)) return false
-  if (dash != null && isPendingApprovalDashboard(dash)) return false
+  if (st != null && (isLawyerAwaitingApproval(st) || st.application_status === 'rejected')) {
+    return false
+  }
+  if (
+    dash != null &&
+    (isPendingApprovalDashboard(dash) ||
+      dash.application_status === 'rejected' ||
+      dash.status === 'rejected')
+  ) {
+    return false
+  }
   return loading.value
 })
 
@@ -70,12 +82,21 @@ const isAwaiting = computed(() => {
   )
 })
 
-const isRejected = computed(() => statusPayload.value?.application_status === 'rejected')
+const isRejected = computed(() => {
+  const st = statusPayload.value
+  const dash = dashboardPayload.value
+  return (
+    st?.application_status === 'rejected' ||
+    dash?.application_status === 'rejected' ||
+    dash?.status === 'rejected'
+  )
+})
 
 const submittedAt = computed(() => {
+  const st = statusPayload.value
   const dash = dashboardPayload.value
-  if (dash?.submittedAt) return dash.submittedAt
-  return statusPayload.value?.submitted_at ?? null
+  if (st?.submitted_at) return st.submitted_at
+  return dash?.submittedAt ?? null
 })
 
 const formatSubmitted = (iso: string | null) => {
@@ -116,16 +137,7 @@ watchEffect(() => {
 })
 
 async function retryStatus() {
-  dashboardPending.value = true
-  dashboardError.value = false
-  try {
-    dashboardPayload.value = await fetchLawyerDashboardMe()
-  } catch {
-    dashboardError.value = true
-  } finally {
-    dashboardPending.value = false
-  }
-  await refetchStatus()
+  await Promise.all([refetchStatus(), refetchDashboard()])
 }
 </script>
 
@@ -238,10 +250,10 @@ async function retryStatus() {
           Sign out
         </button>
         <button
-          v-if="statusError"
+          v-if="statusError || dashboardError"
           type="button"
           class="text-xs font-medium text-primary underline"
-          @click="() => refetchStatus()"
+          @click="retryStatus"
         >
           Refresh status
         </button>
