@@ -7,6 +7,10 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
   vite: {
+    ssr: {
+      /** Zod 4 ESM + Vite SSR: avoid broken named export interop (`z` undefined). */
+      noExternal: ['zod'],
+    },
     plugins: [
       tailwindcss(),
     ],

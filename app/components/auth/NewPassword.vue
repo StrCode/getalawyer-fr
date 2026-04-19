@@ -1,16 +1,16 @@
 <!-- components/auth/AuthNewPassword.vue -->
 <script setup lang="ts">
-import { z } from 'zod'
+import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const emit = defineEmits<{ push: [view: string] }>()
 const { identifier, resetToken, close } = useAuthModal()
 
 const schema = z.object({
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your password')
+  password: z.string().min(8, { error: 'Password must be at least 8 characters' }),
+  confirmPassword: z.string().min(1, { error: 'Please confirm your password' })
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  error: "Passwords don't match",
   path: ['confirmPassword']
 })
 

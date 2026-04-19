@@ -1,13 +1,16 @@
 <!-- components/auth/AuthForgot.vue -->
 <script setup lang="ts">
-import { z } from 'zod'
+import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const emit = defineEmits<{ push: [view: string] }>()
 const { identifier, otpType } = useAuthModal()
 
 const schema = z.object({
-  email: z.string().email('Invalid email address').min(1, 'Email is required')
+  email: z
+    .string()
+    .min(1, { error: 'Email is required' })
+    .email({ error: 'Invalid email address' })
 })
 
 type Schema = z.output<typeof schema>

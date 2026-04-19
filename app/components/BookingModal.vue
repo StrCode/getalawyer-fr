@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { z } from 'zod'
+import * as z from 'zod'
 import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
 import { useBookings } from '~/composables/useBookings'
@@ -39,14 +39,14 @@ const consultationTypes = computed(() => {
 })
 
 const schema = z.object({
-  consultationTypeId: z.string().min(1, 'Consultation type is required'),
-  scheduledDate: z.string().min(1, 'Date is required'),
-  scheduledStartTime: z.string().min(1, 'Time is required'),
+  consultationTypeId: z.string().min(1, { error: 'Consultation type is required' }),
+  scheduledDate: z.string().min(1, { error: 'Date is required' }),
+  scheduledStartTime: z.string().min(1, { error: 'Time is required' }),
   meetingType: z.enum(['video', 'phone', 'in_person']),
   meetingUrl: z.string().optional(),
   meetingLocation: z.string().optional(),
   meetingPhone: z.string().optional(),
-  timezone: z.string().min(1, 'Timezone is required'),
+  timezone: z.string().min(1, { error: 'Timezone is required' }),
   clientNotes: z.string().optional()
 })
 

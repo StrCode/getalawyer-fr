@@ -2,6 +2,7 @@
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
+import { provide } from 'vue'
 import { useRouter } from '#imports'
 import { toast } from 'vue-sonner'
 import {
@@ -64,6 +65,12 @@ export default defineComponent({
 
     const isSaving = ref(false)
 
+    /** Lawyer step pages (e.g. professional info) can register async validation before save. */
+    const lawyerStepValidate = ref<(() => Promise<boolean>) | null>(null)
+    provide('registerLawyerOnboardingStepValidate', (fn: (() => Promise<boolean>) | null) => {
+      lawyerStepValidate.value = fn
+    })
+
     /** Navigate only — form state lives in Pinia and survives route changes. Persisting is Next / Exit. */
     const handleBack = () => {
       if (isFirst.value || !prevStep.value) return
@@ -78,6 +85,13 @@ export default defineComponent({
 
       isSaving.value = true
       try {
+        if (userType.value === 'lawyer' && lawyerStepValidate.value) {
+          const stepOk = await lawyerStepValidate.value()
+          if (!stepOk) {
+            return
+          }
+        }
+
         const success = await store.value.saveStep(currentStep.value.key)
 
         if (success) {

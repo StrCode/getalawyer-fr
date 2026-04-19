@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { z } from 'zod'
+import * as z from 'zod'
 import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
 import { useBookings } from '~/composables/useBookings'
@@ -17,7 +17,7 @@ const router = useRouter()
 
 const schema = z.object({
   outcome: z.enum(['consultation_only', 'client_hired'], {
-    required_error: 'Please select an outcome'
+    error: 'Please select an outcome'
   }),
   agreedFee: z.string().optional(),
   feeStructure: z.enum(['flat_fee', 'hourly', 'contingency', 'retainer', 'hybrid']).optional(),
@@ -28,7 +28,7 @@ const schema = z.object({
   }
   return true
 }, {
-  message: 'Fee details are required when client is hired',
+  error: 'Fee details are required when client is hired',
   path: ['agreedFee']
 })
 

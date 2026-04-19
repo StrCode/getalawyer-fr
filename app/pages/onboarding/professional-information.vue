@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, useId } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, useId, watch } from 'vue'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
 import { PhCalendarBlank, PhStudent, PhBuildings } from '@phosphor-icons/vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import {
@@ -7,6 +9,15 @@ import {
   normalizeScnDigitsOnly,
   SCN_MAX_DIGITS
 } from '~/lib/scn'
+import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '~/components/ui/form'
 import {
   InputGroup,
   InputGroupAddon,
@@ -20,26 +31,68 @@ definePageMeta({
 })
 
 const store = useLawyerOnboardingStore()
-const state = store.professionalInfo
+
+const registerValidate = inject<
+  ((fn: (() => Promise<boolean>) | null) => void) | undefined
+>('registerLawyerOnboardingStepValidate', undefined)
+
+function snapshotFromStore() {
+  const p = store.professionalInfo
+  return {
+    barNumber: p.barNumber,
+    yearOfCall: p.yearOfCall,
+    university: p.university,
+    llbYear: p.llbYear,
+    lawSchool: p.lawSchool
+  }
+}
+
+const { validate, values, resetForm, setFieldValue } = useForm({
+  validationSchema: toTypedSchema(lawyerProfessionalInfoSchema),
+  initialValues: snapshotFromStore()
+})
+
+watch(
+  values,
+  (v) => {
+    Object.assign(store.professionalInfo, v)
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  resetForm({ values: snapshotFromStore() })
+  registerValidate?.(async () => {
+    const { valid } = await validate()
+    if (!valid) {
+      store.validationError = null
+      return false
+    }
+    store.validationError = null
+    return true
+  })
+})
+
+onBeforeUnmount(() => {
+  registerValidate?.(null)
+})
 
 const currentYear = new Date().getFullYear()
 const yearMin = 1970
-
 const formId = useId()
 
-function onScnInput(e: Event) {
-  const el = e.target as HTMLInputElement
-  state.barNumber = normalizeScnDigitsOnly(el.value)
-}
+const barNumberStr = computed(() => String(values.barNumber ?? ''))
 
 const scnCounterClass = computed(() => {
-  const n = state.barNumber.length
+  const n = barNumberStr.value.length
   if (n === 0) return 'text-muted-foreground/60'
-  if (isValidScnDigits(state.barNumber)) return 'text-primary'
+  if (isValidScnDigits(barNumberStr.value)) return 'text-primary'
   return 'text-amber-700'
 })
 
-// We rely on the layout's "Next" button to trigger the store's saveStep('professional_info')
+function onScnModelUpdate(v: unknown) {
+  setFieldValue('barNumber', normalizeScnDigitsOnly(String(v ?? '')))
+}
 </script>
 
 <template>
@@ -58,90 +111,100 @@ const scnCounterClass = computed(() => {
           Bar admission
         </p>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-10 gap-y-4 md:items-start"
-        >
-          <label
-            class="text-[14px] font-bold text-gray-900 pt-1 md:pt-3 leading-snug"
-            :for="`${formId}-bar`"
+        <FormField v-slot="{ componentField }" name="barNumber">
+          <FormItem
+            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
           >
-            Supreme Court enrolment number (SCN) <span class="text-primary">*</span>
-          </label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupAddon>
-                <InputGroupText class="font-mono text-sm font-semibold text-foreground tabular-nums">
-                  SCN
-                </InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput
-                :id="`${formId}-bar`"
-                :model-value="state.barNumber"
-                placeholder="1234"
-                autocomplete="off"
-                inputmode="numeric"
-                :maxlength="SCN_MAX_DIGITS"
-                class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-                @input="onScnInput"
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupText
-                  class="text-[10px] font-bold uppercase tracking-widest tabular-nums"
-                  :class="scnCounterClass"
+            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+              Supreme Court enrolment number (SCN) <span class="text-primary">*</span>
+            </FormLabel>
+            <div class="w-full max-w-md space-y-2">
+              <FormControl>
+                <InputGroup
+                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
                 >
-                  {{ state.barNumber.length }}/{{ SCN_MAX_DIGITS }}
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              Your NBA Supreme Court number — also called a Supreme Court Enrolment Number — is issued when you are enrolled at the Supreme Court of Nigeria. Type
-              <span class="font-semibold text-foreground/90">only the numeric part</span>
-              (4–6 digits), e.g.
-              <span class="font-mono font-semibold text-foreground/90">SCN1234</span>
-              → enter
-              <span class="font-mono font-semibold text-foreground/90">1234</span>.
-            </p>
-          </div>
-        </div>
+                  <InputGroupAddon>
+                    <InputGroupText class="font-mono text-sm font-semibold text-foreground tabular-nums">
+                      SCN
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    :id="`${formId}-bar`"
+                    :name="componentField.name"
+                    :model-value="values.barNumber"
+                    placeholder="1234"
+                    autocomplete="off"
+                    inputmode="numeric"
+                    :maxlength="SCN_MAX_DIGITS"
+                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                    @blur="componentField.onBlur"
+                    @update:model-value="onScnModelUpdate"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText
+                      class="text-[10px] font-bold uppercase tracking-widest tabular-nums"
+                      :class="scnCounterClass"
+                    >
+                      {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </FormControl>
+              <FormDescription
+                class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
+              >
+                Your NBA Supreme Court number — also called a Supreme Court Enrolment Number — is issued when you are enrolled at the Supreme Court of Nigeria. Type
+                <span class="font-semibold text-foreground/90">only the numeric part</span>
+                (4–6 digits), e.g.
+                <span class="font-mono font-semibold text-foreground/90">SCN1234</span>
+                → enter
+                <span class="font-mono font-semibold text-foreground/90">1234</span>.
+              </FormDescription>
+              <FormMessage />
+            </div>
+          </FormItem>
+        </FormField>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-10 gap-y-4 md:items-start"
-        >
-          <label
-            class="text-[14px] font-bold text-gray-900 pt-1 md:pt-3 leading-snug"
-            :for="`${formId}-call`"
+        <FormField v-slot="{ componentField }" name="yearOfCall">
+          <FormItem
+            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
           >
-            Year called to the Nigerian Bar <span class="text-primary">*</span>
-          </label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupAddon>
-                <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
-              </InputGroupAddon>
-              <InputGroupInput
-                :id="`${formId}-call`"
-                v-model.number="state.yearOfCall"
-                type="number"
-                :min="yearMin"
-                :max="currentYear"
-                placeholder="Year"
-                class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {{ yearMin }}–{{ currentYear }}
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              Calendar year you were admitted to the bar in Nigeria (after completing the Nigerian Law School Bar Part II programme).
-            </p>
-          </div>
-        </div>
+            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+              Year called to the Nigerian Bar <span class="text-primary">*</span>
+            </FormLabel>
+            <div class="w-full max-w-md space-y-2">
+              <FormControl>
+                <InputGroup
+                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+                >
+                  <InputGroupAddon>
+                    <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    :id="`${formId}-call`"
+                    type="number"
+                    :min="yearMin"
+                    :max="currentYear"
+                    placeholder="Year"
+                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                    v-bind="componentField"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {{ yearMin }}–{{ currentYear }}
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </FormControl>
+              <FormDescription
+                class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
+              >
+                Calendar year you were admitted to the bar in Nigeria (after completing the Nigerian Law School Bar Part II programme).
+              </FormDescription>
+              <FormMessage />
+            </div>
+          </FormItem>
+        </FormField>
       </div>
 
       <!-- University -->
@@ -150,72 +213,80 @@ const scnCounterClass = computed(() => {
           University education
         </p>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-10 gap-y-4 md:items-start"
-        >
-          <label
-            class="text-[14px] font-bold text-gray-900 pt-1 md:pt-3 leading-snug"
-            :for="`${formId}-uni`"
+        <FormField v-slot="{ componentField }" name="university">
+          <FormItem
+            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
           >
-            University (LLB) <span class="text-primary">*</span>
-          </label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupAddon>
-                <PhStudent class="size-5 text-muted-foreground" weight="duotone" />
-              </InputGroupAddon>
-              <InputGroupInput
-                :id="`${formId}-uni`"
-                v-model="state.university"
-                placeholder="e.g. University of Lagos"
-                autocomplete="organization"
-                class="h-12 min-h-12 text-base md:text-sm"
-              />
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              The institution where you completed your Bachelor of Laws (LLB) degree.
-            </p>
-          </div>
-        </div>
+            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+              University (LLB) <span class="text-primary">*</span>
+            </FormLabel>
+            <div class="w-full max-w-md space-y-2">
+              <FormControl>
+                <InputGroup
+                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+                >
+                  <InputGroupAddon>
+                    <PhStudent class="size-5 text-muted-foreground" weight="duotone" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    :id="`${formId}-uni`"
+                    placeholder="e.g. University of Lagos"
+                    autocomplete="organization"
+                    class="h-12 min-h-12 text-base md:text-sm"
+                    v-bind="componentField"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormDescription
+                class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
+              >
+                The institution where you completed your Bachelor of Laws (LLB) degree.
+              </FormDescription>
+              <FormMessage />
+            </div>
+          </FormItem>
+        </FormField>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-10 gap-y-4 md:items-start"
-        >
-          <label
-            class="text-[14px] font-bold text-gray-900 pt-1 md:pt-3 leading-snug"
-            :for="`${formId}-llb`"
+        <FormField v-slot="{ componentField }" name="llbYear">
+          <FormItem
+            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
           >
-            Year of LLB graduation <span class="text-primary">*</span>
-          </label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupAddon>
-                <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
-              </InputGroupAddon>
-              <InputGroupInput
-                :id="`${formId}-llb`"
-                v-model.number="state.llbYear"
-                type="number"
-                :min="yearMin"
-                :max="currentYear"
-                placeholder="Year"
-                class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-              />
-              <InputGroupAddon align="inline-end">
-                <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {{ yearMin }}–{{ currentYear }}
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              Year you finished your LLB. It must not be after your year of call to the bar.
-            </p>
-          </div>
-        </div>
+            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+              Year of LLB graduation <span class="text-primary">*</span>
+            </FormLabel>
+            <div class="w-full max-w-md space-y-2">
+              <FormControl>
+                <InputGroup
+                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+                >
+                  <InputGroupAddon>
+                    <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    :id="`${formId}-llb`"
+                    type="number"
+                    :min="yearMin"
+                    :max="currentYear"
+                    placeholder="Year"
+                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                    v-bind="componentField"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {{ yearMin }}–{{ currentYear }}
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </FormControl>
+              <FormDescription
+                class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
+              >
+                Year you finished your LLB. It must not be after your year of call to the bar.
+              </FormDescription>
+              <FormMessage />
+            </div>
+          </FormItem>
+        </FormField>
       </div>
 
       <!-- Law school -->
@@ -224,35 +295,39 @@ const scnCounterClass = computed(() => {
           Nigerian Law School
         </p>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-10 gap-y-4 md:items-start"
-        >
-          <label
-            class="text-[14px] font-bold text-gray-900 pt-1 md:pt-3 leading-snug"
-            :for="`${formId}-ls`"
+        <FormField v-slot="{ componentField }" name="lawSchool">
+          <FormItem
+            class="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,200px)_minmax(0,1fr)] md:items-start md:gap-x-10 md:gap-y-2"
           >
-            NLS campus <span class="text-primary">*</span>
-          </label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupAddon>
-                <PhBuildings class="size-5 text-muted-foreground" weight="duotone" />
-              </InputGroupAddon>
-              <InputGroupInput
-                :id="`${formId}-ls`"
-                v-model="state.lawSchool"
-                placeholder="e.g. Lagos Campus"
-                autocomplete="off"
-                class="h-12 min-h-12 text-base md:text-sm"
-              />
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              Nigerian Law School campus where you attended the Bar Part II programme (often named after the city or region).
-            </p>
-          </div>
-        </div>
+            <FormLabel class="text-[14px] font-bold text-gray-900 leading-snug md:pt-0">
+              NLS campus <span class="text-primary">*</span>
+            </FormLabel>
+            <div class="w-full max-w-md space-y-2">
+              <FormControl>
+                <InputGroup
+                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+                >
+                  <InputGroupAddon>
+                    <PhBuildings class="size-5 text-muted-foreground" weight="duotone" />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    :id="`${formId}-ls`"
+                    placeholder="e.g. Lagos Campus"
+                    autocomplete="off"
+                    class="h-12 min-h-12 text-base md:text-sm"
+                    v-bind="componentField"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormDescription
+                class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
+              >
+                Nigerian Law School campus where you attended the Bar Part II programme (often named after the city or region).
+              </FormDescription>
+              <FormMessage />
+            </div>
+          </FormItem>
+        </FormField>
       </div>
     </div>
   </div>

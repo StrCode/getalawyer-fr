@@ -1,6 +1,6 @@
 <!-- components/auth/AuthPassword.vue -->
 <script setup lang="ts">
-import { z } from 'zod'
+import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const emit = defineEmits<{ push: [view: string] }>()
@@ -8,7 +8,7 @@ const { identifier, otpType, close } = useAuthModal()
 const { signIn } = useAuth()
 
 const schema = z.object({
-  password: z.string().min(1, 'Password is required')
+  password: z.string().min(1, { error: 'Password is required' })
 })
 
 type Schema = z.output<typeof schema>

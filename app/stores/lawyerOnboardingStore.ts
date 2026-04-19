@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
-import { isValidScnDigits, normalizeScnDigitsOnly } from '~/lib/scn'
+import { normalizeScnDigitsOnly } from '~/lib/scn'
+import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
 import { useLawyerOnboarding, type PersonalInfoData, type ProfessionalInfoData, type PracticeInfoData, type NinSubmitData } from '~/composables/useLawyerOnboarding'
 
 /** Draft last_step values that imply NIN was already saved server-side */
@@ -199,34 +200,10 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
 
         if (stepKey === 'professional_info') {
-            const p = professionalInfo
-            const bn = normalizeScnDigitsOnly(p.barNumber)
-            if (!isValidScnDigits(bn)) {
-                validationError.value =
-                    'Supreme Court enrolment number must be 4–6 digits (the numbers after SCN only).'
-                return false
-            }
-            if (!p.university?.trim()) {
-                validationError.value = 'Please enter the university where you obtained your LLB.'
-                return false
-            }
-            if (!p.lawSchool?.trim()) {
-                validationError.value = 'Please enter your Nigerian Law School campus.'
-                return false
-            }
-            const yNow = new Date().getFullYear()
-            const yMin = 1970
-            if (typeof p.yearOfCall !== 'number' || p.yearOfCall < yMin || p.yearOfCall > yNow) {
-                validationError.value = `Year of call must be between ${yMin} and ${yNow}.`
-                return false
-            }
-            if (typeof p.llbYear !== 'number' || p.llbYear < yMin || p.llbYear > yNow) {
-                validationError.value = `LLB graduation year must be between ${yMin} and ${yNow}.`
-                return false
-            }
-            if (p.llbYear > p.yearOfCall) {
-                validationError.value =
-                    'LLB graduation year cannot be after your year of call to the bar.'
+            const parsed = lawyerProfessionalInfoSchema.safeParse(toRaw(professionalInfo))
+            if (!parsed.success) {
+                const first = parsed.error.issues[0]
+                validationError.value = first?.message ?? 'Please check your professional details.'
                 return false
             }
         }
