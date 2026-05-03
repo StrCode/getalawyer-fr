@@ -39,7 +39,7 @@
                   label="Find a Lawyer"
                   color="primary"
                   class="bg-[#007AFC]"
-                  to="/lawyers"
+                  to="/find-lawyers"
                 />
               </div>
             </UCard>

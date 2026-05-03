@@ -56,12 +56,12 @@ function goLawyers(
       practiceAreas: partial.practiceAreas ?? [],
     })
   }
-  navigateTo({ path: '/lawyers', query: q })
+  navigateTo({ path: '/find-lawyers', query: q })
 }
 
 function navLawyersAll() {
   close()
-  navigateTo({ path: '/lawyers' })
+  navigateTo({ path: '/find-lawyers' })
 }
 
 function navPracticeAreas() {

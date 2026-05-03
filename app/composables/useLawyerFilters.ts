@@ -14,6 +14,11 @@ export interface UseLawyerFiltersReturn {
   filtersToQuery: (filters: FilterState) => LocationQuery
 }
 
+export interface UseLawyerFiltersOptions {
+  /** Extend or override serialized query keys (e.g. `view`, `page`) after filter mapping. */
+  mergeQuery?: (query: LocationQuery) => LocationQuery
+}
+
 const defaultFilters = (): FilterState => ({
   practiceAreas: [],
   location: '',
@@ -80,7 +85,7 @@ export function filtersToQuery(filters: FilterState): LocationQuery {
   return query
 }
 
-/** Builds a `/lawyers` URL query object from explicit parts (homepage hero & command palette). */
+/** Builds a `/find-lawyers` URL query object from explicit parts (homepage hero & command palette). */
 export function lawyersListingQueryFromParts(parts: Partial<Pick<FilterState, 'keywords' | 'location' | 'consultationTypes' | 'practiceAreas'>>): LocationQuery {
   const base = defaultFilters()
   const merged: FilterState = {
@@ -168,15 +173,17 @@ export function filtersFromQuery(query: LocationQuery): FilterState {
   }
 }
 
-export function useLawyerFilters(): UseLawyerFiltersReturn {
+export function useLawyerFilters(options?: UseLawyerFiltersOptions): UseLawyerFiltersReturn {
   const router = useRouter()
   const route = useRoute()
   
   const filters = ref<FilterState>(filtersFromQuery(route.query))
   
   const updateURL = useDebounceFn((filterState: FilterState) => {
-    const query = filtersToQuery(filterState)
-    router.push({ query })
+    let query = filtersToQuery(filterState)
+    if (options?.mergeQuery)
+      query = options.mergeQuery({ ...query })
+    router.replace({ query })
   }, 500)
   
   const updateFilter = (key: keyof FilterState, value: any) => {

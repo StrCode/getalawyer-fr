@@ -38,7 +38,7 @@ const runSearch = () => {
   })
 
   navigateTo({
-    path: '/lawyers',
+    path: '/find-lawyers',
     query,
   })
 }
@@ -107,7 +107,7 @@ const runSearch = () => {
               class="grid w-full max-w-4xl grid-cols-1 gap-y-3 gap-x-2 md:grid-cols-[auto_auto_minmax(0,1fr)] md:items-center md:gap-y-1.5 sm:gap-x-3 md:gap-x-4"
             >
               <HomeStackLink
-                to="/lawyers"
+                to="/find-lawyers"
                 variant="primary"
                 outer-class="col-start-1 row-start-1 inline-flex w-full shrink-0 justify-center md:w-auto md:justify-start"
                 inner-class="h-12 w-full px-4 text-sm sm:h-14 sm:px-7 sm:text-base lg:px-9 lg:text-lg"

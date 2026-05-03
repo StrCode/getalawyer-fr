@@ -328,7 +328,7 @@ const closeMobile = () => {
             <span class="group/header-cta relative isolate inline-flex rounded-xl">
               <span :class="headerCtaStackShadow" aria-hidden="true" />
               <NuxtLink
-                to="/lawyers"
+                to="/find-lawyers"
                 :class="cn(
                   'relative z-10 inline-flex min-h-[52px] items-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-6 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
                   headerCtaStackMotion,
@@ -481,7 +481,7 @@ const closeMobile = () => {
               <span class="group/header-cta relative isolate flex w-full justify-center rounded-xl">
                 <span :class="headerCtaStackShadow" aria-hidden="true" />
                 <NuxtLink
-                  to="/lawyers"
+                  to="/find-lawyers"
                   :class="cn(
                     'relative z-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-4 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
                     headerCtaStackMotion,

@@ -1,8 +1,9 @@
+import { getSessionFromBackend } from '../../utils/getSession'
+
 /**
  * GET /api/lawyers/:id
- * Get lawyer profile by ID
- * Supports optional authentication for full vs public profile
- * 
+ * Lawyer profile — requires authentication (same policy as `/lawyers/:id`).
+ *
  * TODO: Connect to real database
  * - Import your database client (Prisma, Drizzle, etc.)
  * - Query lawyer data with all relations:
@@ -14,8 +15,7 @@
  *   - consultationTypes
  *   - availabilitySchedule
  *   - availabilityExceptions
- * - Filter sensitive data based on authentication status
- * 
+ *
  * Currently returns MOCK DATA for testing
  */
 
@@ -29,14 +29,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Check if user is authenticated (optional)
-  let isAuthenticated = false
-  try {
-    const session = await getSession(event)
-    isAuthenticated = !!session?.user
-  } catch {
-    // Not authenticated, continue with public view
-    isAuthenticated = false
+  const session = await getSessionFromBackend(event)
+  if (!session?.user) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized',
+      message: 'You must be logged in to view lawyer profiles',
+    })
   }
 
   try {
@@ -49,12 +48,12 @@ export default defineEventHandler(async (event) => {
       id: lawyerId,
       userId: 'user-uuid-here',
       name: 'Adebayo Johnson',
-      email: isAuthenticated ? 'adebayo.johnson@example.com' : null,
+      email: 'adebayo.johnson@example.com',
       image: 'https://ui-avatars.com/api/?name=Adebayo+Johnson&size=200',
       applicationStatus: 'approved' as const,
       ninVerified: true,
       ninVerifiedAt: '2024-01-15T10:30:00.000Z',
-      personalInfo: isAuthenticated ? {
+      personalInfo: {
         firstName: 'Adebayo',
         lastName: 'Johnson',
         middleName: 'Oluwaseun',
@@ -62,7 +61,7 @@ export default defineEventHandler(async (event) => {
         gender: 'male',
         state: 'Lagos',
         lga: 'Ikeja',
-      } : null,
+      },
       professionalInfo: {
         barNumber: 'SCN/123456/2010',
         yearOfCall: 2010,
@@ -73,10 +72,10 @@ export default defineEventHandler(async (event) => {
       practiceInfo: {
         firmName: 'Johnson & Associates Legal Practitioners',
         statesOfPractice: ['Lagos', 'Abuja', 'Rivers'],
-        officeStreet: isAuthenticated ? '15 Adeola Odeku Street' : null,
+        officeStreet: '15 Adeola Odeku Street',
         officeCity: 'Victoria Island',
         officeState: 'Lagos',
-        officePostalCode: isAuthenticated ? '101241' : null,
+        officePostalCode: '101241',
       },
       specializations: [
         {
@@ -92,14 +91,14 @@ export default defineEventHandler(async (event) => {
           yearsOfExperience: 5,
         },
       ],
-      documents: isAuthenticated ? [
+      documents: [
         {
           id: 'doc-uuid-1',
           type: 'bar_license' as const,
           url: 'https://example.com/bar_license.pdf',
           originalName: 'bar_license_scn_123456.pdf',
         },
-      ] : [],
+      ],
       consultationTypes: [
         {
           id: 'consult-uuid-1',
@@ -127,7 +126,7 @@ export default defineEventHandler(async (event) => {
           isActive: true,
           bufferMinutes: 15,
         },
-      ].filter(ct => isAuthenticated || ct.isActive),
+      ],
       availability: {
         schedule: [
           {
@@ -178,7 +177,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       success: true,
-      authenticated: isAuthenticated,
+      authenticated: true,
       data: mockLawyer,
     }
   } catch (error) {

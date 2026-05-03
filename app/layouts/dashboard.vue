@@ -92,7 +92,7 @@ const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
   {
     label: 'Find Lawyers',
     iconComponent: PhMagnifyingGlass,
-    to: '/lawyers',
+    to: '/find-lawyers',
   },
   {
     label: 'My Bookings',

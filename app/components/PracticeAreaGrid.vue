@@ -20,7 +20,7 @@ const gridCols = computed(() => {
 })
 
 const handleAreaClick = (slug: string) => {
-  navigateTo(`/lawyers?area=${slug}`)
+  navigateTo(`/find-lawyers?area=${slug}`)
 }
 </script>
 

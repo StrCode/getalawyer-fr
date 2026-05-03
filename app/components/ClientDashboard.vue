@@ -81,7 +81,7 @@ const formatDate = (date: string) => {
         <p class="text-neutral-600 text-sm">Here's what's happening with your legal consultations</p>
       </div>
       <Button as-child class="shadow-sm" size="default">
-        <NuxtLink to="/lawyers">
+        <NuxtLink to="/find-lawyers">
           <PhMagnifyingGlass class="size-5" />
           Find a Lawyer
         </NuxtLink>
@@ -153,7 +153,7 @@ const formatDate = (date: string) => {
 
       <div class="empty-actions">
         <Button as-child class="shadow-sm" size="default">
-          <NuxtLink to="/lawyers">
+          <NuxtLink to="/find-lawyers">
             <PhMagnifyingGlass class="size-5" />
             Browse Lawyers
           </NuxtLink>
@@ -226,7 +226,7 @@ const formatDate = (date: string) => {
       <div class="gap-3 grid grid-cols-1 md:grid-cols-3">
         <button 
           class="quick-action"
-          @click="navigateTo('/lawyers')"
+          @click="navigateTo('/find-lawyers')"
         >
           <div class="quick-action-icon" style="background-color: #f0fdf4;">
             <PhMagnifyingGlass class="w-5 h-5" style="color: #16a34a;" />

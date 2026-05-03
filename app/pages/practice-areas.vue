@@ -19,7 +19,7 @@ useHead({
 
 const onSelectArea = (name: string) => {
   navigateTo({
-    path: '/lawyers',
+    path: '/find-lawyers',
     ...(name ? { query: { q: name } } : {}),
   })
 }

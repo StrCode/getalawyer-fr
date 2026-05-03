@@ -38,8 +38,15 @@ export interface LawyerSearchResult {
   yearsOfExperience: number;
   country: string;
   state: string;
-  barAssociation: string;
-  experienceDescription: string;
+  /** Optional; omit from listing cards unless product needs it. */
+  barAssociation?: string;
+  experienceDescription?: string;
+  bio?: string | null;
+  /** Profile photo URL when search API returns it */
+  image?: string | null;
+  gender?: string | null;
+  reviewCount?: number;
+  rating?: number | null;
   specializations: LawyerSpecialization[];
   relevanceScore?: number;
 }

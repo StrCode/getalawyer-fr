@@ -112,6 +112,16 @@ definePageMeta({
   middleware: 'guest',
 })
 
+/** Internal path after login — ignore open redirects. */
+function sanitizeRedirect(raw: unknown): string {
+  if (typeof raw !== 'string') return '/dashboard'
+  if (!raw.startsWith('/') || raw.startsWith('//')) return '/dashboard'
+  return raw
+}
+
+const route = useRoute()
+const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect))
+
 const formData = reactive({
   email: '',
   password: '',
@@ -129,7 +139,7 @@ const handleSocialLogin = async (provider: 'google' | 'facebook') => {
   try {
     await authClient.signIn.social({
       provider,
-      callbackURL: '/dashboard',
+      callbackURL: redirectAfterLogin.value,
     })
   } catch (err: unknown) {
     error.value =
@@ -166,7 +176,7 @@ const handleSubmit = async () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100))
 
-    await navigateTo('/dashboard')
+    await navigateTo(redirectAfterLogin.value)
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
   } finally {

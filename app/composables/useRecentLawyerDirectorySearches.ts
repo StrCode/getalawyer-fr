@@ -174,7 +174,7 @@ export function useRecentLawyerDirectorySearches() {
 }
 
 /**
- * Persist last meaningful filter combinations while browsing `/lawyers` (debounced).
+ * Persist last meaningful filter combinations while browsing `/find-lawyers` (debounced).
  */
 export function watchPersistRecentLawyerDirectorySearch(filters: Ref<FilterState>) {
   if (!import.meta.client)
