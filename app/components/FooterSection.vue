@@ -3,60 +3,96 @@ import { PhInstagramLogo, PhLinkedinLogo, PhTwitterLogo } from '@phosphor-icons/
 
 const year = new Date().getFullYear()
 
-const socialIcons = [
-  { network: 'twitter', icon: PhTwitterLogo },
-  { network: 'linkedin', icon: PhLinkedinLogo },
-  { network: 'instagram', icon: PhInstagramLogo }
-] as const
+/** Same destinations as primary + “For lawyers” nav in `app/components/app/Header.vue`. */
+const footerLinkGroups: { title: string; links: { label: string; to: string }[] }[] = [
+  {
+    title: 'Product',
+    links: [
+      { label: 'How It Works', to: '/#how-it-works' },
+      { label: 'Find Lawyers', to: '/find-lawyers' },
+      { label: 'Practice Areas', to: '/practice-areas' },
+      { label: 'Pricing', to: '/for-lawyers#pricing' },
+    ],
+  },
+  {
+    title: 'For Lawyers',
+    links: [
+      { label: 'Overview', to: '/for-lawyers' },
+      { label: 'Register as a lawyer', to: '/register?role=lawyer' },
+      { label: 'Lawyer dashboard', to: '/dashboard' },
+      { label: 'Verification & credibility', to: '/for-lawyers#how-you-join' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [{ label: 'Contact', to: '/contact' }],
+  },
+  {
+    title: 'Legal',
+    links: [
+      /** Same paths as `(auth)/login.vue` / `register.vue` footnotes. */
+      { label: 'Privacy Policy', to: '/privacy' },
+      { label: 'Terms of Service', to: '/terms' },
+      { label: 'Cookie Policy', to: '/privacy#cookies' },
+    ],
+  },
+]
 
-const links = {
-  'Product': ['How It Works', 'Find Lawyers', 'Practice Areas', 'Pricing'],
-  'For Lawyers': ['Join as a Lawyer', 'Lawyer Dashboard', 'Subscription Plans', 'Verification Process'],
-  'Company': ['About Us', 'Blog', 'Careers', 'Press'],
-  'Legal': ['Privacy Policy', 'Terms of Service', 'Cookie Policy'],
-}
+const socialIcons = [
+  { network: 'twitter', icon: PhTwitterLogo, href: '#' },
+  { network: 'linkedin', icon: PhLinkedinLogo, href: '#' },
+  { network: 'instagram', icon: PhInstagramLogo, href: '#' },
+] as const
 </script>
 
 <template>
-  <footer class="bg-[#fafafa] pt-16 pb-8 border-neutral-200 border-t">
-    <div class="mx-auto px-6 lg:px-8 max-w-7xl">
+  <footer class="border-neutral-200 border-t bg-[#fafafa] pt-16 pb-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
       <!-- Top grid -->
-      <div class="gap-8 grid grid-cols-2 md:grid-cols-5 mb-14">
+      <div class="mb-14 grid grid-cols-2 gap-8 md:grid-cols-5">
         <!-- Brand -->
         <div class="col-span-2 md:col-span-1">
-          <div class="mb-3 font-serif font-bold text-neutral-900 text-2xl tracking-tight">
-            Get<span class="text-[#1d6b44]">alawyer</span>
-          </div>
+          <NuxtLink to="/" class="mb-3 inline-block font-serif font-bold text-2xl text-neutral-900 tracking-tight no-underline">
+            Get<span class="text-brand">alawyer</span>
+          </NuxtLink>
           <p class="max-w-[180px] text-neutral-500 text-sm leading-relaxed">
             Connecting people with verified legal professionals.
           </p>
-          <div class="flex gap-3 mt-5">
-            <a v-for="{ network, icon } in socialIcons" :key="network"
-              href="#"
-              class="flex justify-center items-center bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 rounded-full w-8 h-8 transition-colors duration-150"
+          <div class="mt-5 flex gap-3">
+            <a
+              v-for="{ network, icon, href } in socialIcons"
+              :key="network"
+              :href="href"
+              class="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white transition-colors duration-150 hover:border-neutral-300 hover:bg-neutral-50"
+              :aria-label="`${network}`"
             >
-              <component :is="icon" class="w-4 h-4 text-neutral-500 hover:text-neutral-700" />
+              <component :is="icon" class="h-4 w-4 text-neutral-500 hover:text-neutral-700" />
             </a>
           </div>
         </div>
 
         <!-- Links -->
-        <div v-for="(items, group) in links" :key="group">
-          <h4 class="mb-4 font-semibold text-neutral-400 text-xs uppercase tracking-widest">{{ group }}</h4>
+        <div v-for="group in footerLinkGroups" :key="group.title">
+          <h4 class="mb-4 text-xs font-semibold text-neutral-400 uppercase tracking-widest">{{ group.title }}</h4>
           <ul class="space-y-2.5">
-            <li v-for="item in items" :key="item">
-              <a href="#" class="text-neutral-600 hover:text-neutral-900 text-sm no-underline transition-colors duration-150">{{ item }}</a>
+            <li v-for="item in group.links" :key="item.to">
+              <NuxtLink
+                :to="item.to"
+                class="text-sm text-neutral-600 no-underline transition-colors duration-150 hover:text-neutral-900"
+              >
+                {{ item.label }}
+              </NuxtLink>
             </li>
           </ul>
         </div>
       </div>
 
       <!-- Bottom bar -->
-      <div class="flex md:flex-row flex-col justify-between items-center gap-3 mt-14 pt-7 border-neutral-200 border-t">
-        <p class="text-neutral-500 text-xs">© {{ year }} GetaLawyer. All rights reserved.</p>
-        <div class="flex items-center gap-1.5 font-medium text-neutral-500 text-xs">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1d6b44" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="mt-14 flex flex-col items-center justify-between gap-3 border-neutral-200 border-t pt-7 md:flex-row">
+        <p class="text-xs text-neutral-500">© {{ year }} GetaLawyer. All rights reserved.</p>
+        <div class="flex items-center gap-1.5 text-xs font-medium text-neutral-500">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-brand" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
           All lawyers bar-verified &amp; background checked
         </div>
       </div>
