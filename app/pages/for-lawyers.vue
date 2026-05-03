@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { ref, onMounted } from 'vue'
+import { motion } from 'motion-v'
 import {
   PhCalendarDots,
-  PhCheckCircle,
   PhChatsCircle,
+  PhCheckCircle,
   PhCurrencyDollar,
+  PhIdentificationCard,
   PhInfo,
-  PhShieldCheck
+  PhSealCheck,
+  PhShieldCheck,
 } from '@phosphor-icons/vue'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 interface Benefit {
   title: string
@@ -17,729 +22,369 @@ interface Benefit {
   features: string[]
 }
 
+interface JoinStep {
+  step: number
+  title: string
+  description: string
+  icon: Component
+}
+
 interface Testimonial {
   name: string
   title: string
   location: string
   quote: string
-  avatar?: string
 }
 
-// Loading state
-const loading = ref(true)
-
-// Define the 4 benefits as specified in the design document
-const benefits: Benefit[] = [
-  {
-    title: 'Bar-Verified Credentials',
-    description: 'Build trust with verified bar credentials',
-    icon: PhShieldCheck,
-    features: [
-      'Automated bar verification',
-      'Verified badge on profile',
-      'Increased client confidence'
-    ]
-  },
-  {
-    title: 'Smart Booking Calendar',
-    description: 'Manage your availability effortlessly',
-    icon: PhCalendarDots,
-    features: [
-      'Sync with your calendar',
-      'Automated reminders',
-      'Flexible scheduling'
-    ]
-  },
-  {
-    title: 'Direct Client Communication',
-    description: 'Secure messaging and video consultations',
-    icon: PhChatsCircle,
-    features: [
-      'Encrypted messaging',
-      'Video consultation platform',
-      'Document sharing'
-    ]
-  },
-  {
-    title: 'Zero Commission Model',
-    description: 'Keep 100% of your consultation fees',
-    icon: PhCurrencyDollar,
-    features: [
-      'No commission fees',
-      'Direct payments',
-      'Transparent pricing'
-    ]
-  }
-]
-
-// Define testimonials from lawyers
-const testimonials: Testimonial[] = [
-  {
-    name: 'Sarah Mitchell',
-    title: 'Family Law Attorney',
-    location: 'New York, NY',
-    quote: 'GetaLawyer has transformed my practice. The verified credentials give clients confidence, and the zero commission model means I keep what I earn.'
-  },
-  {
-    name: 'Michael Chen',
-    title: 'Corporate Law Specialist',
-    location: 'San Francisco, CA',
-    quote: 'The smart booking calendar syncs perfectly with my schedule. I\'ve connected with more clients in 3 months than I did all last year.'
-  },
-  {
-    name: 'Jennifer Rodriguez',
-    title: 'Criminal Defense Attorney',
-    location: 'Chicago, IL',
-    quote: 'Direct client communication through secure messaging has streamlined my consultation process. Highly recommend to any lawyer looking to grow their practice.'
-  }
-]
-
-/** Same chrome as the homepage (`AppHeader` + wordmark + marketing nav). */
 definePageMeta({
   layout: 'home',
 })
 
-// SEO metadata
 useHead({
-  title: 'For Lawyers - Join GetaLawyer',
+  title: 'For lawyers — Join GetaLawyer',
   meta: [
     {
       name: 'description',
-      content: 'Grow your legal practice with GetaLawyer. Bar-verified credentials, smart booking calendar, direct client communication, and zero commission fees. Join thousands of lawyers connecting with clients.'
-    }
-  ]
+      content:
+        'Bar-verified presence, bookings, messaging, and a flat subscription—keep your consultation revenue. Learn how lawyers join GetaLawyer.',
+    },
+  ],
 })
 
-// Simulate loading (in real app, this would be data fetching)
-onMounted(() => {
-  setTimeout(() => {
-    loading.value = false
-  }, 300)
-})
+/** Deep links from the header mega menu. */
+const registerLawyerTo = '/register?role=lawyer'
+
+const joinSteps: JoinStep[] = [
+  {
+    step: 1,
+    title: 'Create your lawyer account',
+    description:
+      'Sign up with your professional details and choose the lawyer path. You will set up profile basics before verification.',
+    icon: PhIdentificationCard,
+  },
+  {
+    step: 2,
+    title: 'Complete bar verification',
+    description:
+      'Submit the information we need to confirm you are in good standing. Your profile can show a verified badge once approved.',
+    icon: PhSealCheck,
+  },
+  {
+    step: 3,
+    title: 'Go live with bookings',
+    description:
+      'Publish availability, clarify how clients meet you, and respond through secure messaging—all under one subscription.',
+    icon: PhCalendarDots,
+  },
+]
+
+const benefits: Benefit[] = [
+  {
+    title: 'Bar-verified credibility',
+    description: 'Differentiate from generic listings with verification clients can rely on.',
+    icon: PhShieldCheck,
+    features: [
+      'Structured bar verification workflow',
+      'Verified badge surfaced on profile',
+      'Signals trust before the first message',
+    ],
+  },
+  {
+    title: 'Booking on your calendar',
+    description: 'Offer slots that reflect how you actually work—without a separate scheduler stack.',
+    icon: PhCalendarDots,
+    features: [
+      'Configurable availability windows',
+      'Reminders and confirmations for bookings',
+      'Less back-and-forth to find a time',
+    ],
+  },
+  {
+    title: 'Conversation in one place',
+    description: 'Keep inquiries and consultation context together instead of scattering across inbox apps.',
+    icon: PhChatsCircle,
+    features: [
+      'Secure messaging with clients',
+      'Video-ready consultations where offered',
+      'Room to attach and refer to documents',
+    ],
+  },
+  {
+    title: 'Keep what you bill',
+    description: 'Consultation economics stay between you and the client; the platform stays out of commission.',
+    icon: PhCurrencyDollar,
+    features: [
+      'No percentage taken from consultation fees',
+      'Straightforward payouts per your arrangement',
+      'Predictable infra cost via subscription',
+    ],
+  },
+]
+
+const pricingFeatures = [
+  'Included client-facing consultations tracked on the platform',
+  'Bar verification and verified-badge eligibility',
+  'Booking flow tied to your published availability',
+  'Secure messaging and video sessions where configured',
+  'No commission line item on consultation fees',
+  'Profile controls and essentials for presenting your practice',
+  'Higher-touch support tier for practitioner accounts',
+] as const
+
+const testimonials: Testimonial[] = [
+  {
+    name: 'Sarah M.',
+    title: 'Family law',
+    location: 'New York',
+    quote:
+      'Verification is visible up front—that shortens the trust conversation. The flat subscription is simpler than commission math on every consultation.',
+  },
+  {
+    name: 'Michael C.',
+    title: 'Corporate',
+    location: 'San Francisco',
+    quote:
+      'Having booking and messaging in one place replaced a messy mix of calendar invites and scattered email threads.',
+  },
+  {
+    name: 'Jennifer R.',
+    title: 'Criminal defense',
+    location: 'Chicago',
+    quote:
+      'Clients already expect to compare lawyers online; this ties profile, credibility, and scheduling together without reinventing ops.',
+  },
+]
+
+function initials(name: string) {
+  const parts = name.replace(/\.$/, '').split(/[\s.]+/).filter(Boolean)
+  return (parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')
+}
 </script>
 
 <template>
-  <div class="for-lawyers-page">
-    
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <UContainer>
-        <div class="hero-content">
-          <h1 class="hero-title">
-            Grow Your Practice with GetaLawyer
+  <div class="min-h-screen bg-background">
+    <!-- Hero -->
+    <section class="relative scroll-mt-24 overflow-hidden border-border border-b bg-linear-to-b from-muted/50 to-background pt-24 pb-20 md:pt-28 md:pb-28 dark:from-muted/15">
+      <div
+        class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-linear-to-b from-brand/8 to-transparent opacity-70 dark:from-brand/12"
+        aria-hidden="true"
+      />
+      <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <Badge
+            variant="secondary"
+            class="mb-6 border border-border bg-muted/80 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground shadow-none"
+          >
+            For legal professionals
+          </Badge>
+
+          <h1 class="text-balance font-bold text-4xl text-foreground tracking-tight md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
+            A verified presence, bookings, and messaging—without giving up consultation revenue
           </h1>
-          <p class="hero-description">
-            Join thousands of lawyers connecting with clients who need your expertise
+
+          <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed md:text-xl">
+            GetaLawyer is built for practitioners who want a credible directory profile, clearer scheduling, and client
+            conversations in one workflow. You subscribe once; consultation fees remain between you and the client.
           </p>
-          <Button
-            size="xl"
-            to="/auth/register?role=lawyer"
-            class="hero-cta-button"
-          >
-            Register as a Lawyer
-          </Button>
-        </div>
-      </UContainer>
-    </section>
-    
-    <!-- Benefits Section -->
-    <section id="benefits" class="benefits-section scroll-mt-24">
-      <UContainer>
-        <div class="section-header">
-          <h2 class="section-title">
-            Why Join GetaLawyer?
-          </h2>
-          <p class="section-description">
-            Everything you need to grow your practice and connect with clients
-          </p>
-        </div>
-        
-        <!-- Loading State -->
-        <div v-if="loading" class="benefits-grid">
-          <div
-            v-for="i in 4"
-            :key="i"
-            class="bg-white dark:bg-gray-800 p-6 rounded-lg animate-pulse"
-          >
-            <div class="space-y-4">
-              <div class="bg-gray-200 dark:bg-gray-700 rounded-full w-12 h-12" />
-              <div class="bg-gray-200 dark:bg-gray-700 rounded w-3/4 h-6" />
-              <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
-              <div class="space-y-2">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-5/6 h-4" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-4/5 h-4" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
-              </div>
-            </div>
+
+          <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <HomeStackLink :to="registerLawyerTo" variant="primary" inner-class="min-h-[52px] px-8 text-sm">
+              Register as a lawyer
+            </HomeStackLink>
+            <HomeStackLink
+              to="/for-lawyers#how-you-join"
+              variant="muted"
+              inner-class="min-h-[52px] px-8 text-sm"
+            >
+              How joining works
+            </HomeStackLink>
           </div>
         </div>
-        
-        <!-- Actual Content -->
-        <div v-else class="benefits-grid">
-          <BenefitCard
-            v-for="benefit in benefits"
-            :key="benefit.title"
-            :benefit="benefit"
-          />
-        </div>
-      </UContainer>
+      </div>
     </section>
-    
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing-section scroll-mt-24">
-      <UContainer>
-        <div class="pricing-content">
-          <h2 class="pricing-title">
-            Transparent Pricing
+
+    <!-- How joining works -->
+    <section id="how-you-join" class="scroll-mt-24 border-border border-b bg-background py-20 md:py-24 dark:bg-background">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="font-bold text-3xl text-foreground tracking-tight md:text-4xl">
+            How joining works
           </h2>
-          <p class="pricing-subtitle">
-            Simple, straightforward pricing with no hidden fees
-          </p>
-          
-          <UCard class="pricing-card">
-            <div class="pricing-details">
-              <div class="pricing-header">
-                <h3 class="pricing-plan-name">
-                  Professional Plan
-                </h3>
-                <div class="pricing-amount">
-                  <span class="price">$99</span>
-                  <span class="period">/month</span>
-                </div>
-              </div>
-              
-              <ul class="pricing-features">
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Unlimited client consultations</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Bar verification and verified badge</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Smart booking calendar integration</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Secure messaging and video consultations</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Zero commission on consultation fees</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Profile customization and analytics</span>
-                </li>
-                <li class="pricing-feature">
-                  <PhCheckCircle class="feature-icon" />
-                  <span>Priority support</span>
-                </li>
-              </ul>
-              
-              <div class="pricing-note">
-                <PhInfo class="info-icon" />
-                <p>Keep 100% of your consultation fees. We only charge a flat monthly subscription.</p>
-              </div>
-            </div>
-          </UCard>
-        </div>
-      </UContainer>
-    </section>
-    
-    <!-- Testimonials Section -->
-    <section class="testimonials-section">
-      <UContainer>
-        <div class="section-header">
-          <h2 class="section-title">
-            What Lawyers Say
-          </h2>
-          <p class="section-description">
-            Hear from lawyers who have grown their practice with GetaLawyer
+          <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Three milestones from signup to a live practitioner profile—the same anchors your dashboard checklist will track.
           </p>
         </div>
-        
-        <!-- Loading State -->
-        <div v-if="loading" class="testimonials-grid">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="bg-white dark:bg-gray-800 p-6 rounded-lg animate-pulse"
+
+        <ol class="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3">
+          <motion.li
+            v-for="(item, i) in joinSteps"
+            :key="item.title"
+            :initial="{ opacity: 0, y: 16 }"
+            :whileInView="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true }"
+            :transition="{ duration: 0.45, delay: 0.08 * i }"
+            class="relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm"
           >
-            <div class="space-y-4">
-              <div class="space-y-2">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-full h-4" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-5/6 h-4" />
-                <div class="bg-gray-200 dark:bg-gray-700 rounded w-4/5 h-4" />
-              </div>
-              <div class="flex items-center gap-4 pt-4 border-gray-200 dark:border-gray-700 border-t">
-                <div class="bg-gray-200 dark:bg-gray-700 rounded-full w-12 h-12 shrink-0" />
-                <div class="flex-1 space-y-2">
-                  <div class="bg-gray-200 dark:bg-gray-700 rounded w-2/3 h-4" />
-                  <div class="bg-gray-200 dark:bg-gray-700 rounded w-1/2 h-3" />
-                </div>
-              </div>
+            <span
+              class="mb-4 inline-flex size-9 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground"
+            >
+              {{ item.step }}
+            </span>
+            <div class="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand/10 text-brand" aria-hidden="true">
+              <component :is="item.icon" class="size-6" weight="duotone" />
             </div>
-          </div>
+            <h3 class="font-semibold text-lg text-foreground tracking-tight">
+              {{ item.title }}
+            </h3>
+            <p class="mt-2 text-sm text-muted-foreground leading-relaxed">
+              {{ item.description }}
+            </p>
+          </motion.li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Platform value / benefits (header deep link) -->
+    <section id="benefits" class="scroll-mt-24 bg-muted/25 py-20 md:py-24 dark:bg-muted/10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="font-bold text-3xl text-foreground tracking-tight md:text-4xl">
+            What is included for lawyers
+          </h2>
+          <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
+            These capabilities map directly to the subscription—so what you read here is what you are paying to operate on the platform.
+          </p>
         </div>
-        
-        <!-- Actual Content -->
-        <div v-else class="testimonials-grid">
-          <UCard
-            v-for="testimonial in testimonials"
-            :key="testimonial.name"
-            class="testimonial-card"
-          >
-            <div class="testimonial-content">
-              <p class="testimonial-quote">
-                "{{ testimonial.quote }}"
+
+        <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <BenefitCard v-for="benefit in benefits" :key="benefit.title" :benefit="benefit" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing (header deep link) -->
+    <section id="pricing" class="scroll-mt-24 border-border border-b bg-background py-20 md:py-24">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="font-bold text-3xl text-foreground tracking-tight md:text-4xl">
+            One transparent subscription
+          </h2>
+          <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Replace commission surprises with a flat monthly fee. Consultation revenue stays with your practice.
+          </p>
+        </div>
+
+        <Card class="mx-auto mt-12 max-w-lg border-border shadow-md">
+          <CardHeader class="flex flex-col gap-1 border-border border-b pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <CardTitle class="text-xl">
+                Professional
+              </CardTitle>
+              <CardDescription class="text-base">
+                Full practitioner toolkit on GetaLawyer
+              </CardDescription>
+            </div>
+            <div class="flex items-baseline gap-1 pt-2 sm:pt-0">
+              <span class="font-bold text-4xl text-foreground tracking-tight">$99</span>
+              <span class="text-muted-foreground">/month</span>
+            </div>
+          </CardHeader>
+          <CardContent class="space-y-6 pt-6">
+            <ul class="flex flex-col gap-3">
+              <li
+                v-for="feature in pricingFeatures"
+                :key="feature"
+                class="flex gap-3 text-sm text-foreground"
+              >
+                <PhCheckCircle class="mt-0.5 size-4 shrink-0 text-brand" weight="fill" aria-hidden="true" />
+                <span>{{ feature }}</span>
+              </li>
+            </ul>
+
+            <div class="flex gap-3 rounded-xl border border-brand/20 bg-brand/5 p-4 dark:bg-brand/10">
+              <PhInfo class="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+              <p class="text-sm text-foreground leading-relaxed">
+                We do not take a percentage of what you charge for consultations. Your subscription covers platform access;
+                fees you negotiate with clients are yours to keep.
               </p>
-              
-              <div class="testimonial-author">
-                <div class="author-avatar">
-                  <UAvatar
-                    v-if="testimonial.avatar"
-                    :src="testimonial.avatar"
-                    :alt="testimonial.name"
-                    size="lg"
-                  />
-                  <UAvatar
-                    v-else
-                    :alt="testimonial.name"
-                    size="lg"
-                  />
-                </div>
-                
-                <div class="author-info">
-                  <p class="author-name">{{ testimonial.name }}</p>
-                  <p class="author-title">{{ testimonial.title }}</p>
-                  <p class="author-location">{{ testimonial.location }}</p>
+            </div>
+
+            <HomeStackLink :to="registerLawyerTo" variant="primary" outer-class="w-full" inner-class="min-h-[52px] w-full justify-center text-sm">
+              Start registration
+            </HomeStackLink>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+
+    <!-- Social proof -->
+    <section class="bg-muted/25 py-20 md:py-24 dark:bg-muted/10">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 class="font-bold text-3xl text-foreground tracking-tight md:text-4xl">
+            What lawyers focus on first
+          </h2>
+          <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Examples of what practitioners say matters when they move intake and discovery online—quoted here for tone, not as live endorsements.
+          </p>
+        </div>
+
+        <div class="mt-14 grid gap-6 md:grid-cols-3">
+          <Card
+            v-for="t in testimonials"
+            :key="t.name"
+            class="h-full border-border bg-card shadow-sm"
+          >
+            <CardContent class="flex h-full flex-col gap-6 pt-6">
+              <blockquote class="flex-1 border-brand/25 border-l-2 pl-4 text-foreground/90 text-sm leading-relaxed">
+                “{{ t.quote }}”
+              </blockquote>
+              <div class="flex items-center gap-3 border-border border-t pt-4">
+                <Avatar class="size-11 border border-border">
+                  <AvatarFallback class="bg-muted text-muted-foreground text-xs font-semibold">
+                    {{ initials(t.name) }}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p class="font-semibold text-foreground text-sm">
+                    {{ t.name }}
+                  </p>
+                  <p class="text-muted-foreground text-xs">
+                    {{ t.title }} · {{ t.location }}
+                  </p>
                 </div>
               </div>
-            </div>
-          </UCard>
+            </CardContent>
+          </Card>
         </div>
-      </UContainer>
+      </div>
     </section>
-    
-    <!-- Final CTA Section -->
-    <section class="final-cta-section">
-      <UContainer>
-        <div class="final-cta-content">
-          <h2 class="final-cta-title">
-            Ready to Get Started?
-          </h2>
-          <p class="final-cta-description">
-            Join GetaLawyer today and start connecting with clients who need your expertise
-          </p>
-          <Button
-            size="xl"
-            to="/auth/register?role=lawyer"
-            class="final-cta-button"
+
+    <!-- Final CTA -->
+    <section class="relative overflow-hidden bg-marketing-band py-20 text-white md:py-24">
+      <div
+        class="pointer-events-none absolute inset-0 bg-linear-to-br from-brand/25 via-transparent to-transparent opacity-80"
+        aria-hidden="true"
+      />
+      <div class="relative z-10 mx-auto max-w-7xl px-6 text-center lg:px-8">
+        <h2 class="text-balance font-bold text-3xl tracking-tight md:text-4xl">
+          Ready to put verification, scheduling, and messaging in one stack?
+        </h2>
+        <p class="mx-auto mt-5 max-w-xl text-base text-white/85 leading-relaxed md:text-lg">
+          Create your lawyer account, complete verification, and publish the profile clients see when they compare practitioners.
+        </p>
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <HomeStackLink
+            :to="registerLawyerTo"
+            variant="primary"
+            inner-class="min-h-[52px] px-8 text-sm"
           >
-            Register as a Lawyer
-          </Button>
+            Register as a lawyer
+          </HomeStackLink>
         </div>
-      </UContainer>
+      </div>
     </section>
-    
+
     <FooterSection />
   </div>
 </template>
-
-<style scoped>
-.for-lawyers-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(135deg, rgb(var(--color-primary-50)) 0%, rgb(var(--color-primary-100)) 100%);
-  padding: 5rem 0;
-  text-align: center;
-}
-
-.hero-content {
-  max-width: 48rem;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: rgb(var(--color-gray-900));
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-}
-
-.hero-description {
-  font-size: 1.5rem;
-  color: rgb(var(--color-gray-600));
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-}
-
-.hero-cta-button {
-  font-size: 1.125rem;
-  padding: 0.875rem 2.5rem;
-}
-
-/* Section Headers */
-.section-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgb(var(--color-gray-900));
-  margin-bottom: 1rem;
-}
-
-.section-description {
-  font-size: 1.25rem;
-  color: rgb(var(--color-gray-600));
-  max-width: 40rem;
-  margin: 0 auto;
-}
-
-/* Benefits Section */
-.benefits-section {
-  padding: 5rem 0;
-  background-color: white;
-}
-
-.benefits-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-/* Pricing Section */
-.pricing-section {
-  padding: 5rem 0;
-  background-color: rgb(var(--color-gray-50));
-}
-
-.pricing-content {
-  max-width: 48rem;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.pricing-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgb(var(--color-gray-900));
-  margin-bottom: 0.5rem;
-}
-
-.pricing-subtitle {
-  font-size: 1.25rem;
-  color: rgb(var(--color-gray-600));
-  margin-bottom: 3rem;
-}
-
-.pricing-card {
-  text-align: left;
-}
-
-.pricing-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.pricing-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgb(var(--color-gray-200));
-}
-
-.pricing-plan-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgb(var(--color-gray-900));
-  margin: 0;
-}
-
-.pricing-amount {
-  display: flex;
-  align-items: baseline;
-  gap: 0.25rem;
-}
-
-.price {
-  font-size: 3rem;
-  font-weight: 700;
-  color: rgb(var(--color-primary-600));
-}
-
-.period {
-  font-size: 1.25rem;
-  color: rgb(var(--color-gray-600));
-}
-
-.pricing-features {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.pricing-feature {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1rem;
-  color: rgb(var(--color-gray-700));
-}
-
-.feature-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  color: rgb(var(--color-primary-500));
-  flex-shrink: 0;
-}
-
-.pricing-note {
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem;
-  background-color: rgb(var(--color-primary-50));
-  border-radius: 0.5rem;
-  align-items: flex-start;
-}
-
-.info-icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  color: rgb(var(--color-primary-600));
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-.pricing-note p {
-  margin: 0;
-  font-size: 0.875rem;
-  color: rgb(var(--color-primary-900));
-  line-height: 1.5;
-}
-
-/* Testimonials Section */
-.testimonials-section {
-  padding: 5rem 0;
-  background-color: white;
-}
-
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-}
-
-.testimonial-card {
-  height: 100%;
-}
-
-.testimonial-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  height: 100%;
-}
-
-.testimonial-quote {
-  font-size: 1.125rem;
-  line-height: 1.6;
-  color: rgb(var(--color-gray-700));
-  font-style: italic;
-  margin: 0;
-  flex-grow: 1;
-}
-
-.testimonial-author {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid rgb(var(--color-gray-200));
-}
-
-.author-avatar {
-  flex-shrink: 0;
-}
-
-.author-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.author-name {
-  font-weight: 600;
-  color: rgb(var(--color-gray-900));
-  margin: 0;
-}
-
-.author-title {
-  font-size: 0.875rem;
-  color: rgb(var(--color-gray-600));
-  margin: 0;
-}
-
-.author-location {
-  font-size: 0.875rem;
-  color: rgb(var(--color-gray-500));
-  margin: 0;
-}
-
-/* Final CTA Section */
-.final-cta-section {
-  padding: 5rem 0;
-  background: linear-gradient(135deg, rgb(var(--color-primary-500)) 0%, rgb(var(--color-primary-600)) 100%);
-  text-align: center;
-}
-
-.final-cta-content {
-  max-width: 48rem;
-  margin: 0 auto;
-}
-
-.final-cta-title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 1rem;
-}
-
-.final-cta-description {
-  font-size: 1.25rem;
-  color: rgb(var(--color-primary-50));
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-}
-
-.final-cta-button {
-  font-size: 1.125rem;
-  padding: 0.875rem 2.5rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-section {
-    padding: 3rem 0;
-  }
-  
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .hero-description {
-    font-size: 1.125rem;
-  }
-  
-  .benefits-section,
-  .pricing-section,
-  .testimonials-section,
-  .final-cta-section {
-    padding: 3rem 0;
-  }
-  
-  .section-title,
-  .pricing-title {
-    font-size: 1.75rem;
-  }
-  
-  .section-description,
-  .pricing-subtitle {
-    font-size: 1rem;
-  }
-  
-  .benefits-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .pricing-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .final-cta-title {
-    font-size: 2rem;
-  }
-  
-  .final-cta-description {
-    font-size: 1rem;
-  }
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .hero-section {
-    background: linear-gradient(135deg, rgb(var(--color-primary-900)) 0%, rgb(var(--color-primary-800)) 100%);
-  }
-  
-  .hero-title,
-  .section-title,
-  .pricing-title {
-    color: rgb(var(--color-gray-100));
-  }
-  
-  .hero-description,
-  .section-description,
-  .pricing-subtitle {
-    color: rgb(var(--color-gray-300));
-  }
-  
-  .benefits-section {
-    background-color: rgb(var(--color-gray-900));
-  }
-  
-  .pricing-section {
-    background-color: rgb(var(--color-gray-800));
-  }
-  
-  .testimonials-section {
-    background-color: rgb(var(--color-gray-900));
-  }
-  
-  .pricing-plan-name {
-    color: rgb(var(--color-gray-100));
-  }
-  
-  .pricing-feature {
-    color: rgb(var(--color-gray-300));
-  }
-  
-  .testimonial-quote {
-    color: rgb(var(--color-gray-300));
-  }
-  
-  .author-name {
-    color: rgb(var(--color-gray-100));
-  }
-  
-  .author-title {
-    color: rgb(var(--color-gray-400));
-  }
-  
-  .author-location {
-    color: rgb(var(--color-gray-500));
-  }
-}
-</style>

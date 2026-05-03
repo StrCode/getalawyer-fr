@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { PhCheckCircle } from '@phosphor-icons/vue'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface Benefit {
   title: string
@@ -9,83 +10,42 @@ interface Benefit {
   features: string[]
 }
 
-interface BenefitCardProps {
+defineProps<{
   benefit: Benefit
-}
-
-defineProps<BenefitCardProps>()
+}>()
 </script>
 
 <template>
-  <UCard>
-    <div class="benefit-card">
-      <div class="benefit-header">
-        <component :is="benefit.icon" class="benefit-icon" />
-        <h3 class="benefit-title">{{ benefit.title }}</h3>
+  <Card
+    class="h-full border-border bg-card shadow-sm transition-[box-shadow,border-color] hover:border-border hover:shadow-md"
+  >
+    <CardContent class="flex flex-col gap-4 pt-6">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand"
+          aria-hidden="true"
+        >
+          <component :is="benefit.icon" class="size-6" weight="duotone" />
+        </div>
+        <h3 class="text-lg font-semibold tracking-tight text-foreground">
+          {{ benefit.title }}
+        </h3>
       </div>
-      
-      <p class="benefit-description">{{ benefit.description }}</p>
-      
-      <ul class="benefit-features">
-        <li v-for="(feature, index) in benefit.features" :key="index" class="feature-item">
-          <PhCheckCircle class="feature-check" />
+
+      <p class="text-sm leading-relaxed text-muted-foreground">
+        {{ benefit.description }}
+      </p>
+
+      <ul class="flex flex-col gap-2 border-border border-t pt-2">
+        <li
+          v-for="(feature, index) in benefit.features"
+          :key="index"
+          class="flex items-start gap-2 text-sm text-foreground"
+        >
+          <PhCheckCircle class="mt-0.5 size-4 shrink-0 text-brand" weight="fill" aria-hidden="true" />
           <span>{{ feature }}</span>
         </li>
       </ul>
-    </div>
-  </UCard>
+    </CardContent>
+  </Card>
 </template>
-
-<style scoped>
-.benefit-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.benefit-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.benefit-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  color: rgb(var(--color-primary-500));
-}
-
-.benefit-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.benefit-description {
-  color: rgb(var(--color-gray-600));
-  line-height: 1.5;
-  margin: 0;
-}
-
-.benefit-features {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.feature-check {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: rgb(var(--color-primary-500));
-  flex-shrink: 0;
-}
-</style>
