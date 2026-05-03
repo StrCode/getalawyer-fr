@@ -40,16 +40,16 @@ const runSearch = () => {
 <template>
   <section
     id="hero"
-    class="relative scroll-mt-18 overflow-hidden bg-white sm:scroll-mt-20 dark:bg-background"
+    class="relative scroll-mt-23 overflow-hidden bg-white dark:bg-background"
   >
     <div
       aria-hidden="true"
       class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_70%_at_0%_0%,rgba(60,132,105,0.05),transparent_50%)] dark:bg-[radial-gradient(ellipse_100%_70%_at_0%_0%,rgba(60,132,105,0.1),transparent_50%)]"
     />
 
-    <!-- 55 / 45 split; desktop: fills viewport below fixed header (h-18 ≈ 4.5rem + layout spacer). -->
+    <!-- 55 / 45 split; desktop: fills viewport below fixed AppHeader (`h-23` / 5.75rem + layout spacer). -->
     <div
-      class="relative z-10 grid min-h-0 w-full grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:items-stretch lg:min-h-[calc(100dvh-4.5rem)]"
+      class="relative z-10 grid min-h-0 w-full grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:items-stretch lg:min-h-[calc(100dvh-5.75rem)]"
     >
       <!-- Same horizontal gutters as AppHeader (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`): left inset tracks centered shell on xl+ -->
       <div
@@ -99,12 +99,14 @@ const runSearch = () => {
             <div
               class="grid w-full max-w-4xl grid-cols-1 gap-y-3 gap-x-2 md:grid-cols-[auto_auto_minmax(0,1fr)] md:items-center md:gap-y-1.5 sm:gap-x-3 md:gap-x-4"
             >
-              <NuxtLink
+              <HomeStackLink
                 to="/lawyers"
-                class="col-start-1 row-start-1 inline-flex h-12 w-full shrink-0 items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white shadow-md shadow-brand/25 outline-none transition-[colors,box-shadow,transform] hover:bg-brand-hover hover:shadow-lg hover:shadow-brand/30 active:translate-y-px focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background sm:h-14 sm:px-7 sm:text-base md:w-auto md:justify-center lg:px-9 lg:text-lg"
+                variant="primary"
+                outer-class="col-start-1 row-start-1 inline-flex w-full shrink-0 justify-center md:w-auto md:justify-start"
+                inner-class="h-12 w-full px-4 text-sm sm:h-14 sm:px-7 sm:text-base lg:px-9 lg:text-lg"
               >
                 Find a lawyer
-              </NuxtLink>
+              </HomeStackLink>
 
               <span
                 class="col-start-1 row-start-2 shrink-0 select-none font-semibold text-[12px] text-neutral-400 uppercase tracking-[0.18em] sm:text-[13px] sm:tracking-[0.2em] md:col-start-2 md:row-start-1 dark:text-muted-foreground"

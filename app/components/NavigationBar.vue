@@ -56,7 +56,7 @@ function isRouteLink(link: NavLink): link is { label: string; to: string } {
       :class="transparent ? 'border-transparent' : 'border-neutral-200/50'"
       class="border-b transition-colors duration-300"
     >
-      <div class="mx-auto h-18 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto h-23 max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-full items-center justify-between">
           <div class="shrink-0">
             <NuxtLink to="/" class="flex items-center">

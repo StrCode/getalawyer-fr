@@ -31,11 +31,11 @@
         variant="ghost"
         size="icon"
         aria-label="Open account menu"
-        class="size-11 shrink-0 rounded-full hover:bg-black/4 dark:hover:bg-white/8"
+        class="size-[52px] shrink-0 rounded-full border border-neutral-300/95 bg-transparent shadow-md transition-[background-color,border-color,box-shadow] hover:border-primary hover:bg-black/4 hover:shadow-lg focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 data-[state=open]:border-primary data-[state=open]:shadow-lg dark:border-neutral-600 dark:shadow-[0_3px_14px_rgba(0,0,0,0.45)] dark:hover:bg-white/8 dark:hover:shadow-[0_4px_18px_rgba(0,0,0,0.55)] dark:data-[state=open]:shadow-[0_4px_18px_rgba(0,0,0,0.55)] dark:focus-visible:border-primary"
       >
-        <Avatar class="size-9 shrink-0">
+        <Avatar class="size-[42px] shrink-0">
           <AvatarImage :src="userData.avatar" :alt="userData.name" />
-          <AvatarFallback class="size-9 text-xs">{{ userInitials }}</AvatarFallback>
+          <AvatarFallback class="size-[42px] text-xs">{{ userInitials }}</AvatarFallback>
         </Avatar>
       </Button>
     </DropdownMenuTrigger>

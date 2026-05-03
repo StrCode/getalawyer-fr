@@ -112,7 +112,7 @@ const refresh = () => {
 </script>
 
 <template>
-  <div class="min-h-[calc(100dvh-4.5rem)] flex flex-col items-center justify-center bg-gray-50 py-12 px-6">
+  <div class="min-h-[calc(100dvh-5.75rem)] flex flex-col items-center justify-center bg-gray-50 py-12 px-6">
     <!-- Initial Loading State -->
     <div v-if="isVerifyingDraft" class="flex flex-col items-center justify-center space-y-4">
       <PhCircleNotch class="w-8 h-8 text-primary animate-spin mx-auto mb-4" />

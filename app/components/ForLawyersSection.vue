@@ -76,22 +76,20 @@ const perks: Perk[] = [
             :transition="{ duration: 0.45, delay: 0.18 }"
             class="flex flex-wrap gap-3"
           >
-            <motion.button
-              :whileHover="{ scale: 1.03 }"
-              :whileTap="{ scale: 0.97 }"
-              :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-[#1d6b44] text-white font-semibold text-sm border-none cursor-pointer font-dm shadow-sm"
+            <HomeStackLink
+              to="/register?role=lawyer"
+              variant="primary"
+              inner-class="min-h-[52px] px-7 text-sm"
             >
               Register as a Lawyer
-            </motion.button>
-            <motion.button
-              :whileHover="{ backgroundColor: '#f9f9f9', borderColor: '#e5e5e5' }"
-              :whileTap="{ scale: 0.97 }"
-              :transition="{ duration: 0.15 }"
-              class="px-7 py-3.5 rounded-full bg-white border border-neutral-200 text-neutral-700 font-semibold text-sm cursor-pointer font-dm shadow-sm"
+            </HomeStackLink>
+            <HomeStackLink
+              to="/for-lawyers"
+              variant="muted"
+              inner-class="min-h-[52px] px-7 text-sm"
             >
               Learn More
-            </motion.button>
+            </HomeStackLink>
           </motion.div>
 
           <!-- Trust strip -->

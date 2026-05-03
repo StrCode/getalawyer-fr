@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { PhArrowRight, PhBriefcase, PhList, PhX } from '@phosphor-icons/vue'
-import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -71,7 +70,7 @@ watch(
 )
 
 const navItemBaseClass =
-  'min-h-[44px] inline-flex items-center justify-center rounded-lg bg-transparent px-3.5 py-2 text-sm font-medium text-neutral-700 shadow-none outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 data-[active]:bg-black/6 data-[active]:text-neutral-950 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white dark:data-[active]:bg-white/8 dark:data-[active]:text-white'
+  'min-h-[52px] inline-flex items-center justify-center rounded-lg bg-transparent px-3.5 py-2 text-sm font-medium text-neutral-700 shadow-none outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 data-[active]:bg-black/6 data-[active]:text-neutral-950 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white dark:data-[active]:bg-white/8 dark:data-[active]:text-white'
 
 /** Extra styles when route matches nav target (see `isPrimaryNavActive`). */
 const navItemActiveClass =
@@ -136,6 +135,13 @@ const lawyerMegaSections: { heading: string; items: LawyerMegaItem[] }[] = [
 const megaRowClass =
   'block rounded-md p-3 no-underline outline-none transition-colors hover:bg-black/4 focus-visible:bg-black/4 dark:hover:bg-white/6 dark:focus-visible:bg-white/6'
 
+/** Stacked “double button” backdrop (offset plate behind primary actions). */
+const headerCtaStackShadow =
+  'pointer-events-none absolute inset-0 z-0 rounded-xl bg-neutral-950 translate-x-[5px] translate-y-[5px] dark:bg-neutral-200'
+
+const headerCtaStackMotion =
+  'transition-[transform] duration-200 ease-out group-hover/header-cta:-translate-x-0.5 group-hover/header-cta:-translate-y-0.5 group-active/header-cta:translate-x-px group-active/header-cta:translate-y-px motion-reduce:transition-none motion-reduce:hover:translate-x-0 motion-reduce:hover:translate-y-0 motion-reduce:active:translate-x-0 motion-reduce:active:translate-y-0'
+
 const closeMobile = () => {
   isMenuOpen.value = false
 }
@@ -152,7 +158,7 @@ const closeMobile = () => {
   >
     <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
       <div
-        class="flex items-center gap-4 h-18"
+        class="flex h-23 items-center gap-4 px-px"
         :class="props.hideHeaderActions ? 'justify-start' : 'justify-between'"
       >
 
@@ -259,7 +265,7 @@ const closeMobile = () => {
         <!-- Right CTAs -->
         <div
           v-if="!props.hideHeaderActions"
-          class="items-center gap-2"
+          class="items-center gap-3"
           :class="props.hideNavigation ? 'flex' : 'hidden lg:flex'"
         >
           <template v-if="session">
@@ -268,20 +274,31 @@ const closeMobile = () => {
           <template v-else>
             <NuxtLink
               to="/login"
-              class="min-h-[44px] inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white"
+              class="group/header-cta relative isolate inline-flex rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/35 focus-visible:ring-offset-2 dark:focus-visible:ring-white/30"
             >
-              Sign in
+              <span :class="headerCtaStackShadow" aria-hidden="true" />
+              <span
+                :class="cn(
+                  'relative z-10 inline-flex min-h-[52px] items-center justify-center rounded-xl border-2 border-neutral-950 bg-background px-6 text-sm font-semibold text-neutral-900 dark:border-neutral-100 dark:bg-background dark:text-neutral-50',
+                  headerCtaStackMotion,
+                )"
+              >
+                Sign in
+              </span>
             </NuxtLink>
-            <Button
-              size="sm"
-              as-child
-              class="rounded-xl bg-brand-soft px-4 font-semibold text-brand shadow-none hover:bg-brand-soft-hover"
-            >
-              <NuxtLink to="/lawyers" class="inline-flex items-center gap-2">
+            <span class="group/header-cta relative isolate inline-flex rounded-xl">
+              <span :class="headerCtaStackShadow" aria-hidden="true" />
+              <NuxtLink
+                to="/lawyers"
+                :class="cn(
+                  'relative z-10 inline-flex min-h-[52px] items-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-6 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
+                  headerCtaStackMotion,
+                )"
+              >
                 Find a Lawyer
                 <PhArrowRight class="size-4 shrink-0" weight="bold" aria-hidden="true" />
               </NuxtLink>
-            </Button>
+            </span>
           </template>
         </div>
 
@@ -289,13 +306,13 @@ const closeMobile = () => {
         <button
           v-if="!props.hideNavigation"
           type="button"
-          class="flex size-11 items-center justify-center rounded-lg outline-none transition-colors hover:bg-black/6 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 lg:hidden dark:hover:bg-white/8"
+          class="flex size-12 items-center justify-center rounded-lg outline-none transition-colors hover:bg-black/6 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 lg:hidden dark:hover:bg-white/8"
           @click="isMenuOpen = !isMenuOpen"
           :aria-expanded="isMenuOpen"
           aria-label="Toggle menu"
         >
-          <PhX v-if="isMenuOpen" class="size-5 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
-          <PhList v-else class="size-5 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
+          <PhX v-if="isMenuOpen" class="size-6 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
+          <PhList v-else class="size-6 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -358,32 +375,55 @@ const closeMobile = () => {
 
           <div class="mt-2 flex flex-col gap-2 border-t border-border pt-4 pb-2">
             <template v-if="session">
-              <div class="flex items-center gap-2">
-                <Button variant="outline" as-child class="min-h-11 flex-1 rounded-xl font-semibold shadow-xs">
-                  <NuxtLink to="/dashboard" @click="closeMobile">
+              <div class="flex items-center gap-3">
+                <NuxtLink
+                  to="/dashboard"
+                  class="group/header-cta relative isolate inline-flex min-w-0 flex-1 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/35 focus-visible:ring-offset-2 dark:focus-visible:ring-white/30"
+                  @click="closeMobile"
+                >
+                  <span :class="headerCtaStackShadow" aria-hidden="true" />
+                  <span
+                    :class="cn(
+                      'relative z-10 inline-flex min-h-[52px] w-full min-w-0 items-center justify-center rounded-xl border-2 border-neutral-950 bg-background px-4 text-sm font-semibold text-neutral-900 dark:border-neutral-100 dark:bg-background dark:text-neutral-50',
+                      headerCtaStackMotion,
+                    )"
+                  >
                     Dashboard
-                  </NuxtLink>
-                </Button>
+                  </span>
+                </NuxtLink>
                 <UserDropdown variant="header" />
               </div>
             </template>
             <template v-else>
               <NuxtLink
                 to="/login"
-                class="block rounded-xl border border-neutral-200 px-4 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+                class="group/header-cta relative isolate flex w-full justify-center rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/35 focus-visible:ring-offset-2 dark:focus-visible:ring-white/30"
                 @click="closeMobile"
               >
-                Sign in
+                <span :class="headerCtaStackShadow" aria-hidden="true" />
+                <span
+                  :class="cn(
+                    'relative z-10 inline-flex min-h-[52px] w-full items-center justify-center rounded-xl border-2 border-neutral-950 bg-background px-4 text-sm font-semibold text-neutral-900 dark:border-neutral-100 dark:bg-background dark:text-neutral-50',
+                    headerCtaStackMotion,
+                  )"
+                >
+                  Sign in
+                </span>
               </NuxtLink>
-              <Button
-                as-child
-                class="w-full rounded-xl bg-brand-soft font-semibold text-brand shadow-none hover:bg-brand-soft-hover"
-              >
-                <NuxtLink to="/lawyers" class="inline-flex w-full items-center justify-center gap-2" @click="closeMobile">
+              <span class="group/header-cta relative isolate flex w-full justify-center rounded-xl">
+                <span :class="headerCtaStackShadow" aria-hidden="true" />
+                <NuxtLink
+                  to="/lawyers"
+                  :class="cn(
+                    'relative z-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-4 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
+                    headerCtaStackMotion,
+                  )"
+                  @click="closeMobile"
+                >
                   Find a Lawyer
                   <PhArrowRight class="size-4 shrink-0" weight="bold" aria-hidden="true" />
                 </NuxtLink>
-              </Button>
+              </span>
             </template>
           </div>
         </div>
@@ -392,5 +432,5 @@ const closeMobile = () => {
   </header>
 
   <!-- Spacer: home overlays hero; other pages reserve bar height -->
-  <div :class="props.transparent ? 'h-0' : 'h-18'" aria-hidden="true" />
+  <div :class="props.transparent ? 'h-0' : 'h-23'" aria-hidden="true" />
 </template>

@@ -62,7 +62,7 @@ const steps: Step[] = [
   <!-- No overflow-x clip here: overflow-x + visible y often forces y=auto and breaks page-sticky. -->
   <section
     id="how-it-works"
-    class="scroll-mt-18 relative border-border border-y bg-white py-20 md:py-28 sm:scroll-mt-20 dark:bg-background"
+    class="scroll-mt-23 relative border-border border-y bg-white py-20 md:py-28 dark:bg-background"
   >
     <div
       class="pointer-events-none absolute inset-x-0 top-0 h-48 bg-linear-to-b from-muted/25 to-transparent dark:from-muted/20"

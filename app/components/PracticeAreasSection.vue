@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
 import { MARKETING_PRACTICE_AREAS } from '~/data/marketing-practice-areas'
 import { motion } from 'motion-v'
 import { PhArrowRight, PhSquaresFour } from '@phosphor-icons/vue'
@@ -57,18 +56,15 @@ const emit = defineEmits<{ selectArea: [areaName: string] }>()
         :viewport="{ once: true }"
         :transition="{ duration: 0.4, delay: 0.08 }"
       >
-        <Button
-          variant="outline"
-          size="lg"
-          as-child
-          class="rounded-xl border-brand/25 bg-background/90 px-5 font-semibold text-foreground shadow-sm hover:bg-brand-soft/40 dark:bg-background dark:hover:bg-brand-soft/20"
+        <HomeStackLink
+          to="/practice-areas"
+          variant="primary"
+          inner-class="min-h-12 px-6 py-3 text-base sm:min-h-14 sm:px-7 sm:text-[1.0625rem]"
         >
-          <NuxtLink to="/practice-areas" class="inline-flex items-center gap-2">
-            <PhSquaresFour class="size-5 text-brand" weight="duotone" aria-hidden="true" />
-            View all practice areas
-            <PhArrowRight class="size-4 shrink-0 text-brand" weight="bold" aria-hidden="true" />
-          </NuxtLink>
-        </Button>
+          <PhSquaresFour class="size-5 shrink-0 text-brand" weight="duotone" aria-hidden="true" />
+          View all practice areas
+          <PhArrowRight class="size-4 shrink-0 text-brand" weight="bold" aria-hidden="true" />
+        </HomeStackLink>
       </motion.div>
     </div>
   </section>

@@ -8,7 +8,6 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { queryKeys } from '~/lib/query-client'
 import { toast } from 'vue-sonner'
 import {
-  PhScales,
   PhCaretRight,
   PhCaretLeft,
   PhCircleNotch,
@@ -22,7 +21,6 @@ import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 
 export default defineComponent({
   components: {
-    PhScales,
     PhCaretRight,
     PhCaretLeft,
     PhCircleNotch,
@@ -192,12 +190,7 @@ export default defineComponent({
       class="px-8 md:px-12 py-5 flex items-center justify-between shrink-0 transition-all duration-200 z-30"
       :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
     >
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-           <PhScales class="w-6 h-6 text-white" />
-        </div>
-        <span class="text-xl font-bold tracking-tight text-gray-900">Getalawyer</span>
-      </div>
+      <AppHeaderBrand variant="wordmark" />
 
       <div class="flex items-center gap-3">
         <Button 

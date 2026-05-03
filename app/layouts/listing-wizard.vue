@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { PhScales } from '@phosphor-icons/vue'
-
 const scrollContainer = ref<HTMLElement | null>(null)
 const isScrolled = ref(false)
 
@@ -28,12 +26,7 @@ onUnmounted(() => {
       class="z-30 flex shrink-0 items-center justify-between px-8 py-5 transition-all duration-200 md:px-12"
       :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
     >
-      <NuxtLink to="/" class="flex items-center gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
-          <PhScales class="h-6 w-6 text-white" />
-        </div>
-        <span class="text-xl font-bold tracking-tight text-gray-900">Getalawyer</span>
-      </NuxtLink>
+      <AppHeaderBrand variant="wordmark" />
 
       <div class="flex items-center gap-2">
         <Button variant="ghost" class="font-medium text-gray-600 hover:text-gray-900" as-child>
