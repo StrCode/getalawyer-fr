@@ -174,18 +174,18 @@ function close() {
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1">
                 <h3 class="text-lg font-bold text-gray-900 truncate">{{ lawyerInfo.name }}</h3>
-                <UIcon v-if="lawyerInfo.ninVerified" name="i-heroicons-check-badge-solid" class="w-5 h-5 text-blue-500 shrink-0" />
+                <PhIcon v-if="lawyerInfo.ninVerified" name="i-heroicons-check-badge-solid" class="w-5 h-5 text-blue-500 shrink-0" />
               </div>
               <p v-if="lawyerInfo.specializations?.length" class="text-sm text-gray-600 mb-2">
                 {{ lawyerInfo.specializations[0].name }}
               </p>
               <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                 <span v-if="lawyerInfo.practiceInfo" class="flex items-center gap-1">
-                  <UIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
+                  <PhIcon name="i-heroicons-map-pin" class="w-3.5 h-3.5" />
                   {{ lawyerInfo.practiceInfo.officeCity }}, {{ lawyerInfo.practiceInfo.officeState }}
                 </span>
                 <span v-if="lawyerInfo.professionalInfo" class="flex items-center gap-1">
-                  <UIcon name="i-heroicons-briefcase" class="w-3.5 h-3.5" />
+                  <PhIcon name="i-heroicons-briefcase" class="w-3.5 h-3.5" />
                   {{ new Date().getFullYear() - lawyerInfo.professionalInfo.yearOfCall }} years experience
                 </span>
               </div>
@@ -243,11 +243,11 @@ function close() {
                   </p>
                   <div class="flex items-center gap-4 text-xs text-gray-500">
                     <span class="flex items-center gap-1">
-                      <UIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
+                      <PhIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
                       {{ selectedConsultationType.durationMinutes }} minutes
                     </span>
                     <span class="flex items-center gap-1">
-                      <UIcon 
+                      <PhIcon 
                         :name="selectedConsultationType.meetingType === 'video' ? 'i-heroicons-video-camera' : selectedConsultationType.meetingType === 'phone' ? 'i-heroicons-phone' : selectedConsultationType.meetingType === 'in_person' ? 'i-heroicons-building-office' : 'i-heroicons-check-circle'" 
                         class="w-3.5 h-3.5" 
                       />
@@ -336,7 +336,7 @@ function close() {
                       selectedConsultationType.meetingType !== 'any' ? 'opacity-75' : ''
                     ]"
                   >
-                    <UIcon 
+                    <PhIcon 
                       :name="item.value === 'video' ? 'heroicons:video-camera' : item.value === 'phone' ? 'heroicons:phone' : 'heroicons:building-office'"
                       class="w-5 h-5 mr-2"
                       :class="checked ? 'text-primary-600' : 'text-gray-400'"
@@ -422,7 +422,7 @@ function close() {
 
           <!-- Submit Buttons -->
           <div class="pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row gap-3">
-            <UButton 
+            <Button 
               label="Cancel" 
               color="neutral" 
               variant="outline" 
@@ -430,7 +430,7 @@ function close() {
               block
               @click="close" 
             />
-            <UButton 
+            <ButtonBusy 
               type="submit" 
               label="Book Consultation" 
               color="primary" 

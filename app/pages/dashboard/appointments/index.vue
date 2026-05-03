@@ -131,15 +131,18 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton label="Nevermind" color="neutral" variant="ghost" size="lg" @click="isCancelModalOpen = false" />
-          <UButton 
-            label="Cancel Appointment" 
-            color="error" 
+          <Button variant="ghost" size="lg" @click="isCancelModalOpen = false">
+            Nevermind
+          </Button>
+          <ButtonBusy
+            variant="destructive"
             size="lg"
-            :loading="isCanceling" 
+            :loading="isCanceling"
             :disabled="!cancelReason"
-            @click="confirmCancel" 
-          />
+            @click="confirmCancel"
+          >
+            Cancel Appointment
+          </ButtonBusy>
         </div>
       </template>
     </UModal>

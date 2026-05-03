@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { httpClient } from '~/lib/api/client'
@@ -96,7 +97,7 @@ const isBookingModalOpen = ref(false)
     <!-- Loading State -->
     <div v-if="pending" class="flex justify-center items-center min-h-screen">
       <div class="text-center">
-        <UIcon name="i-heroicons-arrow-path" class="mx-auto mb-4 w-8 h-8 text-primary-500 animate-spin" />
+        <PhIcon name="i-heroicons-arrow-path" class="mx-auto mb-4 w-8 h-8 text-primary-500 animate-spin" />
         <p class="text-gray-600">Loading lawyer profile...</p>
       </div>
     </div>
@@ -104,10 +105,12 @@ const isBookingModalOpen = ref(false)
     <!-- Error State -->
     <div v-else-if="error || !lawyer" class="flex justify-center items-center min-h-screen">
       <div class="mx-auto px-4 max-w-md text-center">
-        <UIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-4 w-16 h-16 text-red-500" />
+        <PhIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-4 w-16 h-16 text-red-500" />
         <h2 class="mb-2 font-bold text-gray-900 text-2xl">Lawyer Not Found</h2>
         <p class="mb-6 text-gray-600">The lawyer profile you're looking for doesn't exist or has been removed.</p>
-        <UButton to="/lawyers" color="primary">Browse Lawyers</UButton>
+        <Button as-child>
+          <NuxtLink to="/lawyers">Browse Lawyers</NuxtLink>
+        </Button>
       </div>
     </div>
 
@@ -134,21 +137,21 @@ const isBookingModalOpen = ref(false)
                <div class="flex-1 mt-2">
                   <div class="flex flex-wrap items-center gap-3 mb-2">
                      <h1 class="font-bold text-gray-900 text-3xl md:text-5xl tracking-tight">{{ lawyer.name }}</h1>
-                     <UIcon v-if="lawyer.ninVerified" name="i-heroicons-check-badge-solid" class="mt-1 w-8 h-8 text-blue-500" />
+                     <PhIcon v-if="lawyer.ninVerified" name="i-heroicons-check-badge-solid" class="mt-1 w-8 h-8 text-blue-500" />
                   </div>
                   <p class="mb-5 font-medium text-gray-600 text-xl">{{ primarySpecialty }}</p>
                   
                   <div class="flex flex-wrap items-center gap-5 mb-6 text-gray-500 text-sm md:text-base">
                      <div class="flex items-center gap-1.5">
-                       <UIcon name="i-heroicons-map-pin" class="w-5 h-5"/> 
+                       <PhIcon name="i-heroicons-map-pin" class="w-5 h-5"/> 
                        {{ displayLocation }}
                      </div>
                      <div v-if="yearsExperience > 0" class="flex items-center gap-1.5">
-                       <UIcon name="i-heroicons-briefcase" class="w-5 h-5"/> 
+                       <PhIcon name="i-heroicons-briefcase" class="w-5 h-5"/> 
                        {{ yearsExperience }} Years Experience
                      </div>
                      <div v-if="lawyer.professionalInfo" class="flex items-center gap-1.5">
-                       <UIcon name="i-heroicons-identification" class="w-5 h-5"/> 
+                       <PhIcon name="i-heroicons-identification" class="w-5 h-5"/> 
                        Called {{ lawyer.professionalInfo.yearOfCall }}
                      </div>
                   </div>
@@ -167,7 +170,7 @@ const isBookingModalOpen = ref(false)
                </div>
                
                <div class="flex flex-col gap-3 mt-4 md:mt-2 w-full md:w-auto shrink-0">
-                 <UButton 
+                 <Button 
                    size="xl" 
                    color="primary" 
                    class="md:justify-center shadow-sm px-8 w-full font-semibold" 
@@ -176,8 +179,8 @@ const isBookingModalOpen = ref(false)
                    :disabled="!lawyer.consultationTypes.some(ct => ct.isActive)"
                  >
                     Book Consultation
-                 </UButton>
-                 <UButton 
+                 </Button>
+                 <Button 
                    v-if="isAuthenticated && lawyer.email" 
                    size="xl" 
                    color="neutral" 
@@ -188,7 +191,7 @@ const isBookingModalOpen = ref(false)
                    external
                  >
                     Send Email
-                 </UButton>
+                 </Button>
                </div>
             </div>
          </div>
@@ -203,7 +206,7 @@ const isBookingModalOpen = ref(false)
           <!-- About / Bio Section -->
           <section v-if="lawyer.practiceInfo?.firmName || lawyer.specializations.length">
              <h2 class="flex items-center gap-2 mb-5 font-bold text-gray-900 text-2xl">
-                <UIcon name="i-heroicons-user" class="w-6 h-6 text-gray-400" />
+                <PhIcon name="i-heroicons-user" class="w-6 h-6 text-gray-400" />
                 About {{ lawyer.personalInfo?.firstName || lawyer.name.split(' ')[0] }}
              </h2>
              <div class="max-w-none text-gray-600 text-lg leading-relaxed prose prose-gray">
@@ -228,7 +231,7 @@ const isBookingModalOpen = ref(false)
           <!-- Specializations Detail -->
           <section v-if="lawyer.specializations.length">
              <h2 class="flex items-center gap-2 mb-6 font-bold text-gray-900 text-2xl">
-                <UIcon name="i-heroicons-scale" class="w-6 h-6 text-gray-400" />
+                <PhIcon name="i-heroicons-scale" class="w-6 h-6 text-gray-400" />
                 Practice Areas & Expertise
              </h2>
              <div class="gap-4 grid grid-cols-1">
@@ -255,14 +258,14 @@ const isBookingModalOpen = ref(false)
           <!-- Education & Credentials -->
           <section v-if="lawyer.professionalInfo">
              <h2 class="flex items-center gap-2 mb-6 font-bold text-gray-900 text-2xl">
-                <UIcon name="i-heroicons-academic-cap" class="w-6 h-6 text-gray-400" />
+                <PhIcon name="i-heroicons-academic-cap" class="w-6 h-6 text-gray-400" />
                 Education & Admissions
              </h2>
              <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
                  <!-- University -->
                 <div class="flex items-start gap-4 bg-white shadow-sm hover:shadow-md p-6 border border-gray-200 rounded-2xl transition-shadow">
                    <div class="flex justify-center items-center bg-blue-50 border border-blue-100 rounded-xl w-12 h-12 shrink-0">
-                      <UIcon name="i-heroicons-building-library" class="w-6 h-6 text-blue-600" />
+                      <PhIcon name="i-heroicons-building-library" class="w-6 h-6 text-blue-600" />
                    </div>
                    <div>
                       <h3 class="font-bold text-gray-900 text-base leading-tight">{{ lawyer.professionalInfo.university }}</h3>
@@ -276,7 +279,7 @@ const isBookingModalOpen = ref(false)
                 <!-- Law School -->
                 <div class="flex items-start gap-4 bg-white shadow-sm hover:shadow-md p-6 border border-gray-200 rounded-2xl transition-shadow">
                    <div class="flex justify-center items-center bg-purple-50 border border-purple-100 rounded-xl w-12 h-12 shrink-0">
-                      <UIcon name="i-heroicons-academic-cap" class="w-6 h-6 text-purple-600" />
+                      <PhIcon name="i-heroicons-academic-cap" class="w-6 h-6 text-purple-600" />
                    </div>
                    <div>
                       <h3 class="font-bold text-gray-900 text-base leading-tight">{{ lawyer.professionalInfo.lawSchool }}</h3>
@@ -290,13 +293,13 @@ const isBookingModalOpen = ref(false)
                 <!-- Bar Admission -->
                 <div class="flex items-start gap-4 md:col-span-2 bg-white shadow-sm hover:shadow-md p-6 border border-gray-200 rounded-2xl transition-shadow">
                    <div class="flex justify-center items-center bg-green-50 border border-green-100 rounded-xl w-12 h-12 shrink-0">
-                      <UIcon name="i-heroicons-identification" class="w-6 h-6 text-green-600" />
+                      <PhIcon name="i-heroicons-identification" class="w-6 h-6 text-green-600" />
                    </div>
                    <div>
                       <h3 class="font-bold text-gray-900 text-base leading-tight">Nigerian Bar Association</h3>
                       <p class="mt-1 text-gray-500 text-sm">Supreme Court No. {{ lawyer.professionalInfo.barNumber }}</p>
                       <p class="flex items-center gap-1 mt-1 font-semibold text-green-600 text-xs uppercase tracking-wide">
-                          <UIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />
+                          <PhIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />
                           {{ lawyer.ninVerified ? 'Verified' : 'Active' }}
                       </p>
                    </div>
@@ -309,7 +312,7 @@ const isBookingModalOpen = ref(false)
           <!-- Consultation Types -->
           <section v-if="lawyer.consultationTypes.filter(ct => ct.isActive).length">
              <h2 class="flex items-center gap-2 mb-6 font-bold text-gray-900 text-2xl">
-                <UIcon name="i-heroicons-calendar-days" class="w-6 h-6 text-gray-400" />
+                <PhIcon name="i-heroicons-calendar-days" class="w-6 h-6 text-gray-400" />
                 Consultation Options
              </h2>
              <div class="gap-4 grid grid-cols-1">
@@ -337,7 +340,7 @@ const isBookingModalOpen = ref(false)
                         variant="soft"
                         class="text-xs"
                       >
-                        <UIcon name="i-heroicons-video-camera" class="mr-1 w-3 h-3" />
+                        <PhIcon name="i-heroicons-video-camera" class="mr-1 w-3 h-3" />
                         Video Call
                       </UBadge>
                       <UBadge 
@@ -346,7 +349,7 @@ const isBookingModalOpen = ref(false)
                         variant="soft"
                         class="text-xs"
                       >
-                        <UIcon name="i-heroicons-phone" class="mr-1 w-3 h-3" />
+                        <PhIcon name="i-heroicons-phone" class="mr-1 w-3 h-3" />
                         Phone Call
                       </UBadge>
                       <UBadge 
@@ -355,7 +358,7 @@ const isBookingModalOpen = ref(false)
                         variant="soft"
                         class="text-xs"
                       >
-                        <UIcon name="i-heroicons-building-office" class="mr-1 w-3 h-3" />
+                        <PhIcon name="i-heroicons-building-office" class="mr-1 w-3 h-3" />
                         In-Person
                       </UBadge>
                    </div>
@@ -368,7 +371,7 @@ const isBookingModalOpen = ref(false)
           <!-- Availability Schedule -->
           <section v-if="workingDays.length">
              <h2 class="flex items-center gap-2 mb-6 font-bold text-gray-900 text-2xl">
-                <UIcon name="i-heroicons-clock" class="w-6 h-6 text-gray-400" />
+                <PhIcon name="i-heroicons-clock" class="w-6 h-6 text-gray-400" />
                 Availability Schedule
              </h2>
              <div class="bg-white shadow-sm p-6 border border-gray-200 rounded-2xl">
@@ -383,7 +386,7 @@ const isBookingModalOpen = ref(false)
                    </div>
                 </div>
                 <p class="flex items-center gap-1 mt-4 text-gray-500 text-xs">
-                  <UIcon name="i-heroicons-information-circle" class="w-4 h-4" />
+                  <PhIcon name="i-heroicons-information-circle" class="w-4 h-4" />
                   Times shown are in your local timezone
                 </p>
              </div>
@@ -419,11 +422,11 @@ const isBookingModalOpen = ref(false)
                       >
                          <div class="flex items-center gap-3">
                             <div class="flex justify-center items-center bg-blue-100 rounded-full w-8 h-8 shrink-0">
-                               <UIcon name="i-heroicons-video-camera" class="w-4 h-4 text-blue-700" />
+                               <PhIcon name="i-heroicons-video-camera" class="w-4 h-4 text-blue-700" />
                             </div>
                             <span class="font-semibold text-gray-900 text-sm">Video Call</span>
                          </div>
-                         <UIcon name="i-heroicons-check" class="w-5 h-5 text-blue-600" />
+                         <PhIcon name="i-heroicons-check" class="w-5 h-5 text-blue-600" />
                       </div>
                       <div 
                         v-if="availableMeetingTypes.includes('phone')"
@@ -431,11 +434,11 @@ const isBookingModalOpen = ref(false)
                       >
                          <div class="flex items-center gap-3">
                             <div class="flex justify-center items-center bg-green-100 rounded-full w-8 h-8 shrink-0">
-                               <UIcon name="i-heroicons-phone" class="w-4 h-4 text-green-700" />
+                               <PhIcon name="i-heroicons-phone" class="w-4 h-4 text-green-700" />
                             </div>
                             <span class="font-semibold text-gray-900 text-sm">Phone Call</span>
                          </div>
-                         <UIcon name="i-heroicons-check" class="w-5 h-5 text-green-600" />
+                         <PhIcon name="i-heroicons-check" class="w-5 h-5 text-green-600" />
                       </div>
                       <div 
                         v-if="availableMeetingTypes.includes('in_person')"
@@ -443,11 +446,11 @@ const isBookingModalOpen = ref(false)
                       >
                          <div class="flex items-center gap-3">
                             <div class="flex justify-center items-center bg-purple-100 rounded-full w-8 h-8 shrink-0">
-                               <UIcon name="i-heroicons-building-office" class="w-4 h-4 text-purple-700" />
+                               <PhIcon name="i-heroicons-building-office" class="w-4 h-4 text-purple-700" />
                             </div>
                             <span class="font-semibold text-gray-900 text-sm">In-Person</span>
                          </div>
-                         <UIcon name="i-heroicons-check" class="w-5 h-5 text-purple-600" />
+                         <PhIcon name="i-heroicons-check" class="w-5 h-5 text-purple-600" />
                       </div>
                    </div>
                 </div>
@@ -457,7 +460,7 @@ const isBookingModalOpen = ref(false)
                    <h3 class="mb-3 font-bold text-gray-400 text-xs uppercase tracking-wider">Office Location</h3>
                    <div class="bg-gray-50 p-4 border border-gray-200 rounded-xl">
                       <div class="flex items-start gap-3">
-                         <UIcon name="i-heroicons-map-pin" class="mt-0.5 w-5 h-5 text-gray-500 shrink-0" />
+                         <PhIcon name="i-heroicons-map-pin" class="mt-0.5 w-5 h-5 text-gray-500 shrink-0" />
                          <div class="text-gray-700 text-sm">
                             <p v-if="isAuthenticated && lawyer.practiceInfo.officeStreet" class="font-medium">
                               {{ lawyer.practiceInfo.officeStreet }}
@@ -487,7 +490,7 @@ const isBookingModalOpen = ref(false)
 
                 <!-- Call to Action -->
                 <div class="pt-2">
-                   <UButton 
+                   <Button 
                      size="xl" 
                      block 
                      color="neutral" 
@@ -496,9 +499,9 @@ const isBookingModalOpen = ref(false)
                      :disabled="!lawyer.consultationTypes.some(ct => ct.isActive)"
                    >
                       Book Consultation
-                   </UButton>
+                   </Button>
                    <p class="flex justify-center items-center gap-1.5 mt-4 text-gray-500 text-xs text-center">
-                      <UIcon name="i-heroicons-shield-check" class="w-4 h-4 text-green-600" />
+                      <PhIcon name="i-heroicons-shield-check" class="w-4 h-4 text-green-600" />
                       Secure booking process
                    </p>
                 </div>

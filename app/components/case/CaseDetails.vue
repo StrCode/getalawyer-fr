@@ -4,12 +4,15 @@
     <div class="flex justify-between items-start">
       <div>
         <div class="flex items-center gap-2 mb-2">
-          <UButton
-            icon="i-heroicons-arrow-left"
+          <Button
             variant="ghost"
             size="sm"
+            aria-label="Back"
+            class="shrink-0 gap-2"
             @click="$emit('back')"
-          />
+          >
+            <PhArrowLeft class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+          </Button>
           <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
         </div>
         
@@ -40,7 +43,9 @@
         </UBadge>
         
         <UDropdown v-if="role === 'lawyer'" :items="caseActions">
-          <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" />
+          <Button variant="ghost" size="icon-sm" aria-label="Case actions">
+            <PhDotsThreeVertical class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+          </Button>
         </UDropdown>
       </div>
     </div>
@@ -81,14 +86,15 @@
         <template #header>
           <div class="flex justify-between items-center">
             <h3 class="font-semibold">Tasks</h3>
-            <UButton
+            <Button
               v-if="role === 'lawyer'"
-              icon="i-heroicons-plus"
-              size="xs"
+              size="sm"
+              class="gap-2"
               @click="$emit('create-task')"
             >
+              <PhPlus class="size-4 shrink-0" weight="bold" aria-hidden="true" />
               Add Task
-            </UButton>
+            </Button>
           </div>
         </template>
         
@@ -137,15 +143,16 @@
       <template #header>
         <div class="flex justify-between items-center">
           <h3 class="font-semibold">Description</h3>
-          <UButton
+          <Button
             v-if="role === 'lawyer'"
-            icon="i-heroicons-pencil"
             variant="ghost"
-            size="xs"
+            size="sm"
+            class="gap-2"
             @click="showEditDescription = true"
           >
+            <PhPencilSimple class="size-4 shrink-0" aria-hidden="true" />
             Edit
-          </UButton>
+          </Button>
         </div>
       </template>
       
@@ -180,16 +187,16 @@
       
       <template #footer>
         <div class="flex justify-end gap-2">
-          <UButton variant="ghost" @click="showStatusModal = false">
+          <Button variant="ghost" @click="showStatusModal = false">
             Cancel
-          </UButton>
-          <UButton
+          </Button>
+          <ButtonBusy
             :disabled="!newStatus || updating"
             :loading="updating"
             @click="updateStatus"
           >
             Update Status
-          </UButton>
+          </ButtonBusy>
         </div>
       </template>
     </UModal>
@@ -209,16 +216,16 @@
       
       <template #footer>
         <div class="flex justify-end gap-2">
-          <UButton variant="ghost" @click="showEditDescription = false">
+          <Button variant="ghost" @click="showEditDescription = false">
             Cancel
-          </UButton>
-          <UButton
+          </Button>
+          <ButtonBusy
             :disabled="updating"
             :loading="updating"
             @click="updateDescription"
           >
             Save Changes
-          </UButton>
+          </ButtonBusy>
         </div>
       </template>
     </UModal>
@@ -226,6 +233,13 @@
 </template>
 
 <script setup lang="ts">
+import {
+  PhArrowLeft,
+  PhDotsThreeVertical,
+  PhPencilSimple,
+  PhPlus,
+} from '@phosphor-icons/vue'
+import { Button } from '@/components/ui/button'
 import type { Case, CaseStatus, Priority } from '~/types'
 
 interface Props {

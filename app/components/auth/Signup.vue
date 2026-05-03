@@ -142,7 +142,7 @@ async function onSubmit() {
             size="lg"
           />
           <div class="flex items-start gap-1 text-xs text-gray-500">
-            <UIcon name="i-lucide-info" class="w-3 h-3 mt-0.5 shrink-0" />
+            <PhIcon name="i-lucide-info" class="w-3 h-3 mt-0.5 shrink-0" />
             <span>Make sure this matches the name on your government ID.</span>
           </div>
         </div>
@@ -158,7 +158,7 @@ async function onSubmit() {
         />
         <template #help>
           <div class="flex items-start gap-1 text-xs">
-            <UIcon name="i-lucide-info" class="w-3 h-3 mt-0.5 shrink-0" />
+            <PhIcon name="i-lucide-info" class="w-3 h-3 mt-0.5 shrink-0" />
             <span>To sign up, you need to be at least 18.</span>
           </div>
         </template>
@@ -184,7 +184,7 @@ async function onSubmit() {
           size="lg"
         >
           <template #trailing>
-            <UButton
+            <Button
               :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
               variant="ghost"
               color="gray"
@@ -239,7 +239,7 @@ async function onSubmit() {
         <a href="/terms-and-conditions" class="underline text-gray-700">Terms and Conditions</a>
       </p>
 
-      <UButton
+      <ButtonBusy
         type="submit"
         :loading="loading"
         block
@@ -247,7 +247,7 @@ async function onSubmit() {
         class="bg-[#007AFC] hover:bg-[#0066D6] rounded-xl"
       >
         {{ loading ? 'Creating account...' : 'Agree and continue' }}
-      </UButton>
+      </ButtonBusy>
     </form>
   </div>
 </template>

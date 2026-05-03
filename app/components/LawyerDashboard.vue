@@ -90,7 +90,7 @@ const handleDecline = (bookingId: string) => {
         </h1>
         <p class="text-neutral-600 text-sm">Manage your consultations and grow your practice</p>
       </div>
-      <UButton 
+      <Button 
         to="/dashboard/profile" 
         color="neutral"
         variant="outline"
@@ -99,7 +99,7 @@ const handleDecline = (bookingId: string) => {
         class="shadow-sm"
       >
         View Profile
-      </UButton>
+      </Button>
     </div>
 
     <!-- Stats Grid -->
@@ -107,7 +107,7 @@ const handleDecline = (bookingId: string) => {
       <!-- Active Bookings -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #f0fdf4;">
-          <UIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #16a34a;" />
+          <PhIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #16a34a;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ isLoadingBookings ? '...' : stats.active }}</div>
@@ -119,7 +119,7 @@ const handleDecline = (bookingId: string) => {
       <!-- Pending Requests -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #fef3c7;">
-          <UIcon name="i-heroicons-clock" class="w-5 h-5" style="color: #f59e0b;" />
+          <PhIcon name="i-heroicons-clock" class="w-5 h-5" style="color: #f59e0b;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ isLoadingBookings ? '...' : stats.pending }}</div>
@@ -131,7 +131,7 @@ const handleDecline = (bookingId: string) => {
       <!-- Completed -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #f0fdf4;">
-          <UIcon name="i-heroicons-check-circle" class="w-5 h-5" style="color: #10b981;" />
+          <PhIcon name="i-heroicons-check-circle" class="w-5 h-5" style="color: #10b981;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ isLoadingBookings ? '...' : stats.completed }}</div>
@@ -143,7 +143,7 @@ const handleDecline = (bookingId: string) => {
       <!-- Revenue -->
       <div class="stat-card">
         <div class="stat-icon" style="background-color: #eff6ff;">
-          <UIcon name="i-heroicons-banknotes" class="w-5 h-5" style="color: #3b82f6;" />
+          <PhIcon name="i-heroicons-banknotes" class="w-5 h-5" style="color: #3b82f6;" />
         </div>
         <div class="stat-content">
           <div class="stat-value">₦0</div>
@@ -156,7 +156,7 @@ const handleDecline = (bookingId: string) => {
     <!-- Empty State -->
     <div v-if="!isLoadingBookings && bookings && bookings.length === 0" class="empty-state">
       <div class="empty-icon">
-        <UIcon name="i-heroicons-calendar-days" class="w-12 h-12 text-neutral-400" />
+        <PhIcon name="i-heroicons-calendar-days" class="w-12 h-12 text-neutral-400" />
       </div>
       
       <h3 class="empty-title">No consultations yet</h3>
@@ -166,7 +166,7 @@ const handleDecline = (bookingId: string) => {
       </p>
 
       <div class="empty-actions">
-        <UButton 
+        <Button 
           to="/dashboard/profile" 
           color="primary" 
           size="md" 
@@ -174,8 +174,8 @@ const handleDecline = (bookingId: string) => {
           class="shadow-sm"
         >
           Complete Profile
-        </UButton>
-        <UButton 
+        </Button>
+        <Button 
           to="/dashboard/availability" 
           color="neutral"
           variant="outline"
@@ -183,7 +183,7 @@ const handleDecline = (bookingId: string) => {
           icon="i-heroicons-clock"
         >
           Set Availability
-        </UButton>
+        </Button>
       </div>
     </div>
 
@@ -191,7 +191,7 @@ const handleDecline = (bookingId: string) => {
     <div v-else-if="recentBookings.length > 0" class="space-y-4">
       <div class="flex justify-between items-center">
         <h2 class="font-bold text-neutral-900 text-xl">Recent Consultations</h2>
-        <UButton 
+        <Button 
           to="/dashboard/appointments" 
           color="neutral"
           variant="ghost" 
@@ -199,7 +199,7 @@ const handleDecline = (bookingId: string) => {
           size="sm"
         >
           View All
-        </UButton>
+        </Button>
       </div>
       
       <div class="space-y-3">
@@ -223,15 +223,15 @@ const handleDecline = (bookingId: string) => {
               
               <div class="flex flex-wrap items-center gap-3 text-neutral-600 text-xs">
                 <div class="flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-calendar" class="w-3.5 h-3.5" />
+                  <PhIcon name="i-heroicons-calendar" class="w-3.5 h-3.5" />
                   <span>{{ formatDate(booking.scheduledDate) }}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <UIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
+                  <PhIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
                   <span>{{ booking.scheduledStartTime }}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <UIcon :name="getMeetingIcon(booking.meetingType)" class="w-3.5 h-3.5" />
+                  <PhIcon :name="getMeetingIcon(booking.meetingType)" class="w-3.5 h-3.5" />
                   <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
                 </div>
               </div>
@@ -244,23 +244,23 @@ const handleDecline = (bookingId: string) => {
             </div>
             
             <div v-if="booking.status === 'pending'" class="flex flex-col gap-2 shrink-0">
-              <UButton 
+              <Button 
                 color="primary" 
                 size="sm"
                 @click.stop="handleConfirm(booking.id)"
               >
                 Confirm
-              </UButton>
-              <UButton 
+              </Button>
+              <Button 
                 color="neutral"
                 variant="ghost" 
                 size="sm"
                 @click.stop="handleDecline(booking.id)"
               >
                 Decline
-              </UButton>
+              </Button>
             </div>
-            <UIcon v-else name="i-heroicons-chevron-right" class="w-5 h-5 text-neutral-300 shrink-0" />
+            <PhIcon v-else name="i-heroicons-chevron-right" class="w-5 h-5 text-neutral-300 shrink-0" />
           </div>
         </div>
       </div>
@@ -272,7 +272,7 @@ const handleDecline = (bookingId: string) => {
       <div class="info-card">
         <div class="flex justify-between items-center mb-4">
           <h2 class="font-bold text-neutral-900 text-lg">Consultation Types</h2>
-          <UButton 
+          <Button 
             to="/dashboard/consultation-types" 
             color="neutral"
             variant="ghost" 
@@ -280,7 +280,7 @@ const handleDecline = (bookingId: string) => {
             trailing-icon="i-heroicons-arrow-right"
           >
             Manage
-          </UButton>
+          </Button>
         </div>
         <DashboardConsultationTypesCard />
       </div>
@@ -289,7 +289,7 @@ const handleDecline = (bookingId: string) => {
       <div class="info-card">
         <div class="flex justify-between items-center mb-4">
           <h2 class="font-bold text-neutral-900 text-lg">Availability</h2>
-          <UButton 
+          <Button 
             to="/dashboard/availability" 
             color="neutral"
             variant="ghost" 
@@ -297,7 +297,7 @@ const handleDecline = (bookingId: string) => {
             trailing-icon="i-heroicons-arrow-right"
           >
             Update
-          </UButton>
+          </Button>
         </div>
         <DashboardAvailabilityCard />
       </div>
@@ -312,7 +312,7 @@ const handleDecline = (bookingId: string) => {
           @click="navigateTo('/dashboard/appointments')"
         >
           <div class="quick-action-icon" style="background-color: #f0fdf4;">
-            <UIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #16a34a;" />
+            <PhIcon name="i-heroicons-calendar-days" class="w-5 h-5" style="color: #16a34a;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">Appointments</div>
@@ -325,7 +325,7 @@ const handleDecline = (bookingId: string) => {
           @click="navigateTo('/dashboard/consultation-types')"
         >
           <div class="quick-action-icon" style="background-color: #eff6ff;">
-            <UIcon name="i-heroicons-document-text" class="w-5 h-5" style="color: #3b82f6;" />
+            <PhIcon name="i-heroicons-document-text" class="w-5 h-5" style="color: #3b82f6;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">Consultation Types</div>
@@ -338,7 +338,7 @@ const handleDecline = (bookingId: string) => {
           @click="navigateTo('/dashboard/availability')"
         >
           <div class="quick-action-icon" style="background-color: #f5f3ff;">
-            <UIcon name="i-heroicons-clock" class="w-5 h-5" style="color: #8b5cf6;" />
+            <PhIcon name="i-heroicons-clock" class="w-5 h-5" style="color: #8b5cf6;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">Availability</div>
@@ -351,7 +351,7 @@ const handleDecline = (bookingId: string) => {
           @click="navigateTo('/dashboard/profile')"
         >
           <div class="quick-action-icon" style="background-color: #fef3c7;">
-            <UIcon name="i-heroicons-user-circle" class="w-5 h-5" style="color: #f59e0b;" />
+            <PhIcon name="i-heroicons-user-circle" class="w-5 h-5" style="color: #f59e0b;" />
           </div>
           <div class="quick-action-content">
             <div class="quick-action-title">Profile</div>

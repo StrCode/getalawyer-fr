@@ -102,13 +102,13 @@ const getMeetingTypeLabel = (type: string) => {
         <h1 class="text-3xl font-bold text-gray-900">Consultation Types</h1>
         <p class="mt-2 text-gray-600">Manage the services you offer to clients</p>
       </div>
-      <UButton
+      <Button
         icon="i-hugeicons-add-01"
         size="lg"
         @click="handleCreate"
       >
         Create New
-      </UButton>
+      </Button>
     </div>
 
     <!-- Filter Toggle -->
@@ -128,7 +128,7 @@ const getMeetingTypeLabel = (type: string) => {
         <Icon name="i-hugeicons-file-02" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-semibold text-gray-900 mb-2">No consultation types yet</h3>
         <p class="text-gray-600 mb-6">Create your first consultation type to start accepting bookings</p>
-        <UButton @click="handleCreate">Create Consultation Type</UButton>
+        <Button @click="handleCreate">Create Consultation Type</Button>
       </div>
     </UCard>
 
@@ -177,23 +177,23 @@ const getMeetingTypeLabel = (type: string) => {
 
           <!-- Actions -->
           <div class="flex gap-2 pt-4 border-t">
-            <UButton
+            <Button
               variant="outline"
               size="sm"
               icon="i-hugeicons-edit-02"
               @click="handleEdit(type)"
             >
               Edit
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               :icon="type.isActive ? 'i-hugeicons-eye-off' : 'i-hugeicons-eye'"
               @click="handleToggleActive(type)"
             >
               {{ type.isActive ? 'Deactivate' : 'Activate' }}
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               color="error"
@@ -201,7 +201,7 @@ const getMeetingTypeLabel = (type: string) => {
               @click="handleDelete(type)"
             >
               Delete
-            </UButton>
+            </Button>
           </div>
         </div>
       </UCard>

@@ -46,13 +46,13 @@
           </UFormField>
           
           <div class="flex items-end">
-            <UButton
+            <Button
               :disabled="!newTask.title.trim()"
               @click="createTask"
               class="w-full"
             >
               Create Task
-            </UButton>
+            </Button>
           </div>
         </div>
       </div>

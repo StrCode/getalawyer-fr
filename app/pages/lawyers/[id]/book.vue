@@ -3,7 +3,7 @@
     <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="mb-8">
-        <UButton
+        <Button
           icon="i-hugeicons-arrow-left-01"
           label="Back to Profile"
           color="neutral"
@@ -17,12 +17,12 @@
 
       <!-- Loading State -->
       <div v-if="isLoadingLawyer" class="flex justify-center py-12">
-        <UIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
+        <PhIcon name="i-hugeicons-loading-03" class="w-8 h-8 text-gray-400 animate-spin" />
       </div>
 
       <!-- Error State -->
       <div v-else-if="isErrorLawyer || !lawyer" class="py-12 text-center">
-        <UIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
+        <PhIcon name="i-hugeicons-alert-circle" class="mx-auto mb-4 w-12 h-12 text-red-500" />
         <p class="text-red-600">Failed to load lawyer information</p>
       </div>
 
@@ -39,11 +39,11 @@
               </div>
 
               <div v-if="isLoadingTypes" class="flex justify-center py-8">
-                <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 text-gray-400 animate-spin" />
+                <PhIcon name="i-hugeicons-loading-03" class="w-6 h-6 text-gray-400 animate-spin" />
               </div>
 
               <div v-else-if="consultationTypes.length === 0" class="py-8 text-gray-500 text-center">
-                <UIcon name="i-hugeicons-file-not-found" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
+                <PhIcon name="i-hugeicons-file-not-found" class="mx-auto mb-3 w-12 h-12 text-gray-300" />
                 <p>No consultation types available</p>
               </div>
 
@@ -67,7 +67,7 @@
                       </p>
                       <div class="flex items-center gap-4 mt-2 text-gray-500 text-sm">
                         <span class="flex items-center gap-1">
-                          <UIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
+                          <PhIcon name="i-hugeicons-clock-01" class="w-4 h-4" />
                           {{ type.durationMinutes }} min
                         </span>
                         <span class="capitalize">{{ type.meetingType.replace('_', ' ') }}</span>
@@ -83,7 +83,7 @@
               </div>
 
               <div class="flex justify-end mt-6">
-                <UButton
+                <Button
                   label="Continue"
                   color="primary"
                   class="bg-[#007AFC]"
@@ -109,13 +109,13 @@
               />
 
               <div class="flex gap-3 mt-6">
-                <UButton
+                <Button
                   label="Back"
                   color="neutral"
                   variant="ghost"
                   @click="currentStep = 1"
                 />
-                <UButton
+                <Button
                   label="Continue"
                   color="primary"
                   class="bg-[#007AFC] ml-auto"

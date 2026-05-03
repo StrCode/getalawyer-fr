@@ -197,7 +197,7 @@
             <UCard>
               <!-- Calendar Header -->
               <div class="flex justify-between items-center mb-6">
-                <UButton
+                <Button
                   color="neutral"
                   variant="ghost"
                   size="sm"
@@ -206,9 +206,9 @@
                   <template #leading>
                     <PhArrowLeft class="w-4 h-4" />
                   </template>
-                </UButton>
+                </Button>
                 <p class="font-medium text-[#1C1C1E] text-sm">January 2026</p>
-                <UButton
+                <Button
                   color="neutral"
                   variant="ghost"
                   size="sm"
@@ -217,12 +217,12 @@
                   <template #leading>
                     <PhArrowRight class="w-4 h-4" />
                   </template>
-                </UButton>
+                </Button>
               </div>
 
               <!-- Calendar Days -->
               <div class="flex justify-between items-center mb-6">
-                <UButton
+                <Button
                   color="neutral"
                   variant="ghost"
                   size="sm"
@@ -231,7 +231,7 @@
                   <template #leading>
                     <PhArrowLeft class="w-4 h-4" />
                   </template>
-                </UButton>
+                </Button>
                 <div class="flex gap-4">
                   <div v-for="day in calendarDays" :key="day.date" class="text-center">
                     <p class="mb-2 text-[#8E8E93] text-xs">{{ day.dayName }}</p>
@@ -245,7 +245,7 @@
                     </div>
                   </div>
                 </div>
-                <UButton
+                <Button
                   color="neutral"
                   variant="ghost"
                   size="sm"
@@ -254,7 +254,7 @@
                   <template #leading>
                     <PhArrowRight class="w-4 h-4" />
                   </template>
-                </UButton>
+                </Button>
               </div>
 
               <!-- Tabs for Current/Upcoming -->
@@ -380,7 +380,7 @@
                         </template>
                       </UInput>
                     </div>
-                    <UButton
+                    <Button
                       label="Filter"
                       color="neutral"
                       variant="outline"
@@ -388,7 +388,7 @@
                       <template #leading>
                         <PhFunnel class="w-4 h-4 shrink-0" />
                       </template>
-                    </UButton>
+                    </Button>
                   </div>
 
                   <!-- Asset Cards Grid -->
@@ -408,7 +408,7 @@
                             </div>
                             <UDropdownMenu>
                               <template #default="{ open }">
-                                <UButton
+                                <Button
                                   color="neutral"
                                   variant="ghost"
                                   size="sm"
@@ -417,7 +417,7 @@
                                   <template #leading>
                                     <PhDotsThreeVertical class="w-4 h-4" />
                                   </template>
-                                </UButton>
+                                </Button>
                               </template>
                               <template #content>
                                 <UDropdownMenuItem label="Edit" />
@@ -467,7 +467,7 @@
                         </template>
                       </UInput>
                     </div>
-                    <UButton
+                    <Button
                       label="Filter"
                       color="neutral"
                       variant="outline"
@@ -475,7 +475,7 @@
                       <template #leading>
                         <PhFunnel class="w-4 h-4 shrink-0" />
                       </template>
-                    </UButton>
+                    </Button>
                   </div>
 
                   <!-- Condition Logs List -->
@@ -536,7 +536,7 @@
                         </template>
                       </UInput>
                     </div>
-                    <UButton
+                    <Button
                       label="Filter"
                       color="neutral"
                       variant="outline"
@@ -544,7 +544,7 @@
                       <template #leading>
                         <PhFunnel class="w-4 h-4 shrink-0" />
                       </template>
-                    </UButton>
+                    </Button>
                   </div>
 
                   <!-- Incident Reports List -->
@@ -598,7 +598,7 @@
             </UTabs>
 
             <!-- Dynamic Action Button -->
-            <UButton
+            <Button
               :label="actionButtonConfig.label"
               color="secondary"
               size="md"
@@ -611,7 +611,7 @@
               <template #leading>
                 <PhPlus class="size-4 shrink-0" />
               </template>
-            </UButton>
+            </Button>
           </div>
         </div>
       </template>

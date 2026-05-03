@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  PhArrowDownTray,
+  PhTrayArrowDown,
   PhArrowUUpLeft,
   PhChatCircleDots,
   PhCheck,
@@ -151,7 +151,7 @@ const toggleSenderFilter = (senderId: string) => {
             <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
           </template>
         </UInput>
-        <UButton
+        <Button
           variant="ghost"
           size="sm"
           @click="showAdvancedFilters = !showAdvancedFilters"
@@ -160,8 +160,8 @@ const toggleSenderFilter = (senderId: string) => {
           <template #leading>
             <PhSlidersHorizontal class="w-4 h-4" />
           </template>
-        </UButton>
-        <UButton
+        </Button>
+        <Button
           v-if="hasActiveFilters"
           variant="ghost"
           size="sm"
@@ -170,7 +170,7 @@ const toggleSenderFilter = (senderId: string) => {
           <template #leading>
             <PhX class="w-4 h-4" />
           </template>
-        </UButton>
+        </Button>
       </div>
 
       <!-- Advanced Filters -->
@@ -199,7 +199,7 @@ const toggleSenderFilter = (senderId: string) => {
         <div v-if="messageSenders.length > 1">
           <label class="block mb-1 font-medium text-gray-700 text-sm">Senders</label>
           <div class="flex flex-wrap gap-2">
-            <UButton
+            <Button
               v-for="sender in messageSenders"
               :key="sender.id"
               variant="outline"
@@ -208,7 +208,7 @@ const toggleSenderFilter = (senderId: string) => {
               :color="senderFilter.includes(sender.id) ? 'primary' : 'gray'"
             >
               {{ sender.name }}
-            </UButton>
+            </Button>
           </div>
         </div>
 
@@ -216,22 +216,22 @@ const toggleSenderFilter = (senderId: string) => {
         <div>
           <label class="block mb-1 font-medium text-gray-700 text-sm">Message Type</label>
           <div class="flex space-x-2">
-            <UButton
+            <Button
               variant="outline"
               size="xs"
               @click="fileFilter = fileFilter === true ? null : true"
               :color="fileFilter === true ? 'primary' : 'gray'"
             >
               With Files
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               variant="outline"
               size="xs"
               @click="fileFilter = fileFilter === false ? null : false"
               :color="fileFilter === false ? 'primary' : 'gray'"
             >
               Text Only
-            </UButton>
+            </Button>
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@ const toggleSenderFilter = (senderId: string) => {
         <p class="text-center text-gray-500">
           {{ hasActiveFilters ? 'No messages match your filters' : 'No messages yet' }}
         </p>
-        <UButton
+        <Button
           v-if="hasActiveFilters"
           variant="ghost"
           size="sm"
@@ -256,7 +256,7 @@ const toggleSenderFilter = (senderId: string) => {
           @click="clearFilters"
         >
           Clear filters
-        </UButton>
+        </Button>
       </div>
 
       <!-- Messages by Date -->
@@ -316,16 +316,16 @@ const toggleSenderFilter = (senderId: string) => {
                       <PhPaperclip class="flex-shrink-0 w-4 h-4" />
                       <span class="text-sm truncate">{{ message.fileName }}</span>
                     </div>
-                    <UButton
+                    <Button
                       v-if="message.fileUrl"
                       variant="ghost"
                       size="xs"
                       @click.stop="downloadFile(message)"
                     >
                       <template #leading>
-                        <PhArrowDownTray class="w-4 h-4" />
+                        <PhTrayArrowDown class="w-4 h-4" />
                       </template>
-                    </UButton>
+                    </Button>
                   </div>
                   <div class="opacity-75 mt-1 text-xs">
                     {{ message.fileSize ? `${(message.fileSize / 1024).toFixed(1)} KB` : '' }}
@@ -347,7 +347,7 @@ const toggleSenderFilter = (senderId: string) => {
                   v-if="!readonly"
                   class="top-2 -right-2 absolute opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <UButton
+                  <Button
                     variant="ghost"
                     size="xs"
                     class="bg-white shadow-sm"
@@ -356,7 +356,7 @@ const toggleSenderFilter = (senderId: string) => {
                     <template #leading>
                       <PhArrowUUpLeft class="w-4 h-4" />
                     </template>
-                  </UButton>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -367,17 +367,17 @@ const toggleSenderFilter = (senderId: string) => {
 
     <!-- Export Button -->
     <div v-if="exportable && messages.length > 0" class="bg-gray-50 p-4 border-t">
-      <UButton
+      <Button
         variant="outline"
         size="sm"
         class="w-full"
         @click="emit('export')"
       >
         <template #leading>
-          <PhArrowDownTray class="w-4 h-4" />
+          <PhTrayArrowDown class="w-4 h-4" />
         </template>
         Export Messages
-      </UButton>
+      </Button>
     </div>
 
     <!-- Message Detail Modal -->
@@ -386,7 +386,7 @@ const toggleSenderFilter = (senderId: string) => {
         <template #header>
           <div class="flex justify-between items-center">
             <h3 class="font-semibold text-lg">Message Details</h3>
-            <UButton
+            <Button
               variant="ghost"
               size="sm"
               @click="selectedMessage = null"
@@ -394,7 +394,7 @@ const toggleSenderFilter = (senderId: string) => {
               <template #leading>
                 <PhX class="w-5 h-5" />
               </template>
-            </UButton>
+            </Button>
           </div>
         </template>
 
@@ -433,31 +433,31 @@ const toggleSenderFilter = (senderId: string) => {
                 <PhPaperclip class="w-4 h-4 text-gray-500" />
                 <span class="text-sm">{{ selectedMessage.fileName }}</span>
               </div>
-              <UButton
+              <Button
                 v-if="selectedMessage.fileUrl"
                 variant="ghost"
                 size="xs"
                 @click="downloadFile(selectedMessage)"
               >
                 <template #leading>
-                  <PhArrowDownTray class="w-4 h-4" />
+                  <PhTrayArrowDown class="w-4 h-4" />
                 </template>
-              </UButton>
+              </Button>
             </div>
           </div>
         </div>
 
         <template #footer>
           <div class="flex justify-end space-x-3">
-            <UButton variant="ghost" @click="selectedMessage = null">
+            <Button variant="ghost" @click="selectedMessage = null">
               Close
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               v-if="!readonly"
               @click="handleReply(selectedMessage!); selectedMessage = null"
             >
               Reply
-            </UButton>
+            </Button>
           </div>
         </template>
       </UCard>

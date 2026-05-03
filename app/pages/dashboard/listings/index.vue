@@ -10,7 +10,7 @@
       }"
     >
       <template #links>
-        <UButton
+        <Button
           to="/dashboard/listings/new"
           color="secondary"
           class="font-medium py-2.5 px-3 rounded-lg text-white text-sm leading-5 tracking-tight bg-[#007AFC] shadow-xs"
@@ -19,7 +19,7 @@
             <PhPlus class="size-4 shrink-0" />
           </template>
           Add Property
-        </UButton>
+        </Button>
       </template>
     </UPageHeader>
     
@@ -302,11 +302,12 @@ import { h, resolveComponent } from 'vue'
 import {
   PhClock,
   PhDotsThreeOutline,
+  PhDotsThreeVertical,
   PhMagnifyingGlass,
   PhPlus
 } from '@phosphor-icons/vue'
-import type { TableColumn } from '@nuxt/ui'
-import type { Row } from '@tanstack/vue-table'
+import { Button } from '@/components/ui/button'
+import type { ColumnDef, Row } from '@tanstack/vue-table'
 import { getPaginationRowModel } from '@tanstack/vue-table'
 
 useHead({
@@ -316,7 +317,6 @@ useHead({
   ]
 })
 
-const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
@@ -484,7 +484,7 @@ const pendingPagination = ref({
   pageSize: 7
 })
 
-const columns: TableColumn<Property>[] = [
+const columns: ColumnDef<Property>[] = [
   {
     accessorKey: 'name',
     header: 'Property',
@@ -556,12 +556,15 @@ const columns: TableColumn<Property>[] = [
             item: 'p-2',
           }
         }, {
-          default: () => h(UButton, {
-            icon: 'i-hugeicons-more-vertical',
-            color: 'neutral',
-            variant: 'ghost',
-            size: 'lg'
-          })
+          default: () => h(
+            Button,
+            {
+              variant: 'ghost',
+              size: 'icon-lg',
+              class: 'text-[#525866]',
+            },
+            () => [h(PhDotsThreeVertical, { class: 'size-5 opacity-80' })],
+          )
         })
       ])
     }
@@ -569,7 +572,7 @@ const columns: TableColumn<Property>[] = [
 ]
 
 // Pending approvals columns
-const pendingColumns: TableColumn<PendingApproval>[] = [
+const pendingColumns: ColumnDef<PendingApproval>[] = [
   {
     accessorKey: 'name',
     header: 'Property',
@@ -629,12 +632,15 @@ const pendingColumns: TableColumn<PendingApproval>[] = [
             item: 'p-2',
           }
         }, {
-          default: () => h(UButton, {
-            icon: 'i-hugeicons-more-vertical',
-            color: 'neutral',
-            variant: 'ghost',
-            size: 'lg'
-          })
+          default: () => h(
+            Button,
+            {
+              variant: 'ghost',
+              size: 'icon-lg',
+              class: 'text-[#525866]',
+            },
+            () => [h(PhDotsThreeVertical, { class: 'size-5 opacity-80' })],
+          )
         })
       ])
     }

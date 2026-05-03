@@ -7,9 +7,9 @@
     <PhWarning class="mx-auto mb-4 w-12 h-12 text-red-500" />
     <h2 class="mb-2 font-semibold text-xl">Case Not Found</h2>
     <p class="mb-4 text-gray-600">{{ error }}</p>
-    <UButton @click="navigateTo('/dashboard/cases')">
+    <Button @click="navigateTo('/dashboard/cases')">
       Back to Cases
-    </UButton>
+    </Button>
   </div>
 
   <div v-else-if="currentCase" class="space-y-6">

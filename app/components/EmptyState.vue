@@ -30,7 +30,7 @@ const handleAction = () => {
         <p class="empty-state-description">
           {{ description }}
         </p>
-        <UButton
+        <Button
           v-if="actionText"
           :to="actionHref"
           size="lg"
@@ -38,7 +38,7 @@ const handleAction = () => {
           @click="handleAction"
         >
           {{ actionText }}
-        </UButton>
+        </Button>
       </div>
     </UCard>
   </div>

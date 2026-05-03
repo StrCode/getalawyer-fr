@@ -90,7 +90,7 @@
                 {{ selectedConversation?.type === 'booking' ? 'Pre-consultation messaging' : 'Case conversation' }}
               </p>
             </div>
-            <UButton
+            <Button
               v-if="selectedConversation?.relatedId"
               :to="selectedConversation.type === 'booking' 
                 ? `/dashboard/${userRole === 'lawyer' ? 'appointments' : 'bookings'}/${selectedConversation.relatedId}`
@@ -103,7 +103,7 @@
               <template #trailing>
                 <PhArrowRight class="size-4 shrink-0" />
               </template>
-            </UButton>
+            </Button>
           </div>
         </div>
 

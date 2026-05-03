@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6 mx-auto p-6 max-w-5xl">
     <div class="flex items-center gap-4">
-      <UButton 
+      <Button 
         color="neutral" 
         variant="ghost" 
         to="/dashboard/appointments" 
@@ -9,7 +9,7 @@
         <template #leading>
           <PhArrowLeft class="size-5 shrink-0" />
         </template>
-      </UButton>
+      </Button>
       <UPageHeader 
         title="Appointment Details"
         :description="booking ? `Reference: ${booking.bookingReference}` : 'Loading...'"
@@ -97,7 +97,7 @@
             <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
               <dt class="font-medium text-gray-900 text-sm">Meeting Link</dt>
               <dd class="sm:col-span-2 mt-1 sm:mt-0 text-sm">
-                <UButton 
+                <Button 
                   :to="booking.meetingUrl"
                   target="_blank"
                   label="Join Video Call"
@@ -108,7 +108,7 @@
                   <template #leading>
                     <PhVideoCamera class="size-4 shrink-0" />
                   </template>
-                </UButton>
+                </Button>
               </dd>
             </div>
             <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
@@ -155,7 +155,7 @@
                   <p class="mt-0.5 text-green-700 text-xs">
                     A case has been created for this engagement
                   </p>
-                  <UButton
+                  <Button
                     label="View Case"
                     color="primary"
                     size="xs"
@@ -165,7 +165,7 @@
                     <template #trailing>
                       <PhArrowRight class="size-4 shrink-0" />
                     </template>
-                  </UButton>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -182,7 +182,7 @@
             <p class="text-gray-600 text-sm">
               Message with {{ booking.client?.name }} about this consultation
             </p>
-            <UButton
+            <Button
               label="Open Conversation"
               color="primary"
               block
@@ -191,7 +191,7 @@
               <template #leading>
                 <PhChatCircle class="size-5 shrink-0" />
               </template>
-            </UButton>
+            </Button>
           </div>
         </UCard>
 
@@ -209,7 +209,7 @@
           
           <template #footer>
             <div class="flex justify-end">
-              <UButton 
+              <ButtonBusy 
                 label="Save Notes" 
                 color="primary"
                 class="bg-[#007AFC]"
@@ -252,7 +252,7 @@
           </template>
           
           <div class="space-y-2">
-            <UButton 
+            <ButtonBusy 
               v-if="booking.status === 'pending'"
               label="Confirm Appointment" 
               color="primary"
@@ -261,7 +261,7 @@
               @click="handleConfirm"
             />
             
-            <UButton 
+            <ButtonBusy 
               v-if="booking.status === 'confirmed' && isPastAppointment"
               label="Mark as Completed" 
               color="primary"
@@ -270,7 +270,7 @@
               @click="handleComplete"
             />
             
-            <UButton 
+            <Button 
               v-if="canRecordEngagement"
               label="Record Engagement Outcome" 
               color="primary"
@@ -280,9 +280,9 @@
               <template #leading>
                 <PhClipboard class="size-5 shrink-0" />
               </template>
-            </UButton>
+            </Button>
             
-            <UButton 
+            <ButtonBusy 
               v-if="booking.status === 'confirmed' && isPastAppointment"
               label="Mark as No-Show" 
               color="neutral"
@@ -292,7 +292,7 @@
               @click="handleNoShow"
             />
             
-            <UButton 
+            <Button 
               v-if="booking.status === 'pending' || booking.status === 'confirmed'"
               label="Cancel Appointment" 
               color="error"
@@ -346,14 +346,14 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton 
+          <Button 
             label="Nevermind" 
             color="neutral" 
             variant="ghost" 
             size="lg"
             @click="isCancelModalOpen = false" 
           />
-          <UButton 
+          <ButtonBusy 
             label="Cancel Appointment" 
             color="error" 
             size="lg"

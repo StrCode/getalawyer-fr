@@ -4,7 +4,7 @@
       <template #header>
         <div class="flex justify-between items-center">
           <div class="flex items-center gap-3">
-            <UIcon 
+            <PhIcon 
               :name="getFileIcon(document.fileType)" 
               class="w-6 h-6"
               :class="getFileIconColor(document.fileType)"
@@ -20,23 +20,29 @@
           </div>
           
           <div class="flex items-center gap-2">
-            <UButton
-              icon="i-heroicons-arrow-down-tray"
+            <Button
               variant="outline"
               @click="$emit('download', document.id)"
             >
+              <PhTrayArrowDown class="size-4 shrink-0" aria-hidden="true" weight="bold" />
               Download
-            </UButton>
-            
+            </Button>
+
             <UDropdown v-if="canDelete" :items="documentActions">
-              <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" />
+              <Button variant="ghost" size="icon-sm" class="shrink-0" aria-label="Document actions">
+                <PhDotsThreeVertical class="size-4 shrink-0" aria-hidden="true" weight="bold" />
+              </Button>
             </UDropdown>
-            
-            <UButton
-              icon="i-heroicons-x-mark"
+
+            <Button
               variant="ghost"
+              size="icon-sm"
+              class="shrink-0"
+              aria-label="Close"
               @click="$emit('close')"
-            />
+            >
+              <PhX class="size-5 shrink-0" aria-hidden="true" weight="bold" />
+            </Button>
           </div>
         </div>
       </template>
@@ -54,11 +60,11 @@
               title="Document Preview"
             />
             <div v-else class="flex flex-col justify-center items-center py-12 h-full">
-              <UIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
+              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
               <p class="mb-4 text-gray-600">PDF preview not available</p>
-              <UButton @click="$emit('download', document.id)">
+              <Button @click="$emit('download', document.id)">
                 Download to View
-              </UButton>
+              </Button>
             </div>
           </div>
 
@@ -72,11 +78,11 @@
               @error="handleImageError"
             />
             <div v-else class="flex flex-col justify-center items-center py-12">
-              <UIcon name="i-heroicons-photo" class="mb-4 w-16 h-16 text-gray-400" />
+              <PhIcon name="i-heroicons-photo" class="mb-4 w-16 h-16 text-gray-400" />
               <p class="mb-4 text-gray-600">Image preview not available</p>
-              <UButton @click="$emit('download', document.id)">
+              <Button @click="$emit('download', document.id)">
                 Download to View
-              </UButton>
+              </Button>
             </div>
           </div>
 
@@ -86,17 +92,17 @@
               {{ textContent }}
             </div>
             <div v-else class="flex flex-col justify-center items-center py-12">
-              <UIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
+              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
               <p class="mb-4 text-gray-600">Text preview not available</p>
-              <UButton @click="loadTextContent">
+              <Button @click="loadTextContent">
                 Load Preview
-              </UButton>
+              </Button>
             </div>
           </div>
 
           <!-- Other File Types -->
           <div v-else class="flex flex-col justify-center items-center py-12">
-            <UIcon 
+            <PhIcon 
               :name="getFileIcon(document.fileType)" 
               class="mb-4 w-16 h-16 text-gray-400"
             />
@@ -105,10 +111,10 @@
               Preview not available for this file type.<br>
               Download the file to view its contents.
             </p>
-            <UButton @click="$emit('download', document.id)" size="lg">
-              <UIcon name="i-heroicons-arrow-down-tray" class="mr-2 w-4 h-4" />
+            <Button size="lg" @click="$emit('download', document.id)">
+              <PhTrayArrowDown class="size-4 shrink-0" aria-hidden="true" weight="bold" />
               Download File
-            </UButton>
+            </Button>
           </div>
         </div>
 
@@ -137,7 +143,14 @@
               <dd class="font-medium text-gray-900">{{ document.uploader.name }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">Downloads<lientAccessible ? 'green' : 'orange'" 
+              <dt class="text-gray-500 text-sm">Downloads</dt>
+              <dd class="font-medium text-gray-900">{{ document.downloadCount }}</dd>
+            </div>
+            <div>
+              <dt class="text-gray-500 text-sm">Visibility</dt>
+              <dd>
+                <UBadge
+                  :color="document.isClientAccessible ? 'green' : 'orange'"
                   variant="subtle"
                 >
                   {{ document.isClientAccessible ? 'Client Accessible' : 'Lawyer Only' }}
@@ -171,6 +184,7 @@
 </template>
 
 <script setup lang="ts">
+import { PhDotsThreeVertical, PhTrayArrowDown, PhX } from '@phosphor-icons/vue'
 import type { Document } from '~/types'
 
 interface Props {

@@ -285,21 +285,21 @@ const isSubmitting = computed(() => createMutation.isPending.value || updateMuta
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <UButton
+        <Button
           variant="outline"
           size="lg"
           @click="isOpen = false"
           :disabled="isSubmitting"
         >
           Cancel
-        </UButton>
-        <UButton
+        </Button>
+        <ButtonBusy
           size="lg"
           @click="handleSubmit"
           :loading="isSubmitting"
         >
           {{ isEdit ? 'Update' : 'Create' }}
-        </UButton>
+        </ButtonBusy>
       </div>
     </template>
   </UModal>

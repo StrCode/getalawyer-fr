@@ -1,7 +1,7 @@
 <!-- components/auth/AuthForgot.vue -->
 <script setup lang="ts">
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent } from '~/types/form-submit-event'
 
 const emit = defineEmits<{ push: [view: string] }>()
 const { identifier, otpType } = useAuthModal()
@@ -102,7 +102,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         />
       </UFormField>
 
-      <UButton
+      <ButtonBusy
         type="submit"
         :loading="loading"
         block
@@ -110,7 +110,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl"
       >
         {{ loading ? 'Sending...' : 'Send reset link' }}
-      </UButton>
+      </ButtonBusy>
     </UForm>
   </div>
 </template>

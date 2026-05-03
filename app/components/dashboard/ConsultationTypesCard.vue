@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-lg text-gray-900">Consultation Types</h3>
-        <UButton
+        <Button
           icon="i-hugeicons-add-01"
           size="sm"
           color="primary"
@@ -11,27 +11,27 @@
           to="/dashboard/consultation-types"
         >
           Add New
-        </UButton>
+        </Button>
       </div>
     </template>
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center py-8">
-      <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
+      <PhIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
     </div>
 
     <!-- Error State -->
     <div v-else-if="isError" class="text-center py-8 text-red-500">
-      <UIcon name="i-hugeicons-alert-circle" class="w-8 h-8 mx-auto mb-2" />
+      <PhIcon name="i-hugeicons-alert-circle" class="w-8 h-8 mx-auto mb-2" />
       <p class="text-sm">Failed to load consultation types</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="!consultationTypes || consultationTypes.length === 0" class="text-center py-8">
-      <UIcon name="i-hugeicons-notebook" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
+      <PhIcon name="i-hugeicons-notebook" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
       <h4 class="font-semibold text-gray-900 mb-2">No consultation types yet</h4>
       <p class="text-sm text-gray-600 mb-4">Create your first consultation type to start accepting bookings</p>
-      <UButton
+      <Button
         label="Create Consultation Type"
         color="primary"
         class="bg-[#007AFC]"
@@ -59,16 +59,16 @@
           </div>
           <div class="flex items-center gap-4 mt-1 text-xs text-gray-600">
             <span class="flex items-center gap-1">
-              <UIcon name="i-hugeicons-clock-01" class="w-3 h-3" />
+              <PhIcon name="i-hugeicons-clock-01" class="w-3 h-3" />
               {{ type.durationMinutes }}min
             </span>
             <span class="flex items-center gap-1">
-              <UIcon name="i-hugeicons-money-01" class="w-3 h-3" />
+              <PhIcon name="i-hugeicons-money-01" class="w-3 h-3" />
               {{ formatPrice(type.price, type.currency) }}
             </span>
           </div>
         </div>
-        <UButton
+        <Button
           icon="i-hugeicons-arrow-right-01"
           color="neutral"
           variant="ghost"
@@ -79,7 +79,7 @@
 
       <!-- Show More Link -->
       <div v-if="consultationTypes.length > 3" class="text-center pt-2">
-        <UButton
+        <Button
           label="View All Consultation Types"
           color="neutral"
           variant="ghost"

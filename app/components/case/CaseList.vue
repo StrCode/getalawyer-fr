@@ -6,9 +6,9 @@
 
     <div v-else-if="error" class="py-8 text-red-500 text-center">
       <p>{{ error.message || 'Failed to load cases' }}</p>
-      <UButton variant="outline" @click="$emit('retry')" class="mt-4">
+      <Button variant="outline" @click="$emit('retry')" class="mt-4">
         Try Again
-      </UButton>
+      </Button>
     </div>
 
     <div v-else-if="cases.length === 0" class="py-12 text-gray-500 text-center">

@@ -26,37 +26,46 @@ const steps: Step[] = [
 </script>
 
 <template>
-  <section id="how-it-works" class="bg-[#f9f9f6] py-20 md:py-28">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+  <section id="how-it-works" class="relative overflow-hidden bg-marketing-canvas py-20 md:py-28">
+    <div
+      class="pointer-events-none absolute left-1/2 top-0 h-[min(420px,55vw)] w-[min(720px,120%)] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.35] blur-[100px] dark:opacity-[0.22]"
+      style="background: radial-gradient(ellipse at center, var(--brand-soft-hover), transparent 70%)"
+      aria-hidden="true"
+    />
+    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
 
       <!-- Header -->
-      <div class="text-center mb-14">
-        <motion.p
+      <header class="mx-auto mb-16 max-w-2xl text-center">
+        <motion.span
           :initial="{ opacity: 0, y: 10 }"
           :whileInView="{ opacity: 1, y: 0 }"
           :viewport="{ once: true }"
           :transition="{ duration: 0.45 }"
-          class="text-xs font-semibold uppercase tracking-widest text-[#1d6b44] mb-3"
-        >How It Works</motion.p>
+          class="mb-5 inline-flex w-fit items-center rounded-full border border-brand/20 bg-brand-soft/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand shadow-sm backdrop-blur-sm dark:bg-brand-soft/30"
+        >How It Works</motion.span>
         <motion.h2
           :initial="{ opacity: 0, y: 16 }"
           :whileInView="{ opacity: 1, y: 0 }"
           :viewport="{ once: true }"
           :transition="{ duration: 0.5, delay: 0.06 }"
-          class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 tracking-tight"
+          class="text-3xl font-bold tracking-tight text-balance text-foreground md:text-[2.35rem] md:leading-[1.15]"
         >
-          Find Your Lawyer in 5 Steps
+          Find Your Lawyer in <span class="text-brand">5 Steps</span>
         </motion.h2>
+        <div
+          class="mx-auto my-5 h-px w-14 bg-linear-to-r from-transparent via-brand/45 to-transparent"
+          aria-hidden="true"
+        />
         <motion.p
           :initial="{ opacity: 0, y: 12 }"
           :whileInView="{ opacity: 1, y: 0 }"
           :viewport="{ once: true }"
           :transition="{ duration: 0.5, delay: 0.1 }"
-          class="text-neutral-500 text-lg max-w-xl mx-auto"
+          class="text-pretty text-lg leading-relaxed text-muted-foreground"
         >
           Our streamlined process makes it easy to connect with qualified legal professionals.
         </motion.p>
-      </div>
+      </header>
 
       <!-- Step cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
@@ -68,24 +77,24 @@ const steps: Step[] = [
           :viewport="{ once: true, margin: '-40px' }"
           :transition="{ duration: 0.45, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }"
           :whileHover="{ y: -4, boxShadow: '0 10px 32px rgba(0,0,0,0.09)' }"
-          class="group bg-white border border-neutral-200 rounded-xl p-6 cursor-default transition-shadow duration-200"
+          class="group cursor-default rounded-xl border border-border bg-card p-6 shadow-sm shadow-black/5 transition-shadow duration-200 dark:shadow-black/20"
         >
           <!-- Step number + connector line -->
           <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-full bg-[#e8f3ec] flex items-center justify-center text-[#1d6b44] text-sm font-bold flex-shrink-0">
+            <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-sm font-bold text-brand tabular-nums dark:bg-brand-soft/40">
               {{ step.number }}
             </div>
-            <div v-if="i < steps.length - 1" class="flex-1 h-px bg-neutral-200 xl:block hidden" />
+            <div v-if="i < steps.length - 1" class="hidden h-px flex-1 bg-border xl:block" />
           </div>
 
           <!-- Icon -->
-          <div class="w-10 h-10 rounded-lg bg-[#f2faf4] flex items-center justify-center mb-4 group-hover:bg-[#e8f3ec] transition-colors duration-200">
-            <component :is="step.icon" class="w-5 h-5 text-[#1d6b44]" />
+          <div class="mb-4 flex size-10 items-center justify-center rounded-lg bg-brand-soft/60 transition-colors duration-200 group-hover:bg-brand-soft dark:bg-brand-soft/25 dark:group-hover:bg-brand-soft/40">
+            <component :is="step.icon" class="size-5 text-brand" />
           </div>
 
           <!-- Text -->
-          <h3 class="font-semibold text-neutral-900 mb-1.5 text-[15px]">{{ step.title }}</h3>
-          <p class="text-neutral-500 text-sm leading-relaxed">{{ step.description }}</p>
+          <h3 class="mb-1.5 text-[15px] font-semibold text-foreground">{{ step.title }}</h3>
+          <p class="text-sm leading-relaxed text-muted-foreground">{{ step.description }}</p>
         </motion.div>
       </div>
     </div>

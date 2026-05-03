@@ -85,7 +85,7 @@
             @keydown.enter.prevent="handleSendMessage"
           />
         </div>
-        <UButton
+        <ButtonBusy
           @click="handleSendMessage"
           :disabled="!messageInput.trim() || isSending"
           :loading="isSending"
@@ -93,7 +93,7 @@
           <template #leading>
             <PhPaperPlaneRight class="w-5 h-5" />
           </template>
-        </UButton>
+        </ButtonBusy>
       </div>
     </div>
 

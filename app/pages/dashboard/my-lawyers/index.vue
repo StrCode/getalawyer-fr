@@ -13,13 +13,13 @@
     <UCard>
       <div class="text-center py-12 text-gray-500">
         <p>You haven't connected with any lawyers yet.</p>
-        <UButton 
+        <Button 
           to="/dashboard/listings" 
           color="primary" 
           class="mt-4 bg-[#007AFC] hover:bg-blue-600"
         >
           Browse Lawyers
-        </UButton>
+        </Button>
       </div>
     </UCard>
   </div>

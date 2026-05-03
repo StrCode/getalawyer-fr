@@ -175,7 +175,7 @@ async function handleAppleLogin() {
         <a href="#" class="text-gray-700 underline hover:text-gray-900">Privacy Policy</a>
       </p>
 
-      <UButton
+      <ButtonBusy
         type="submit"
         :loading="loading"
         block
@@ -184,7 +184,7 @@ async function handleAppleLogin() {
         class="mb-5 rounded-xl font-semibold"
       >
         {{ loading ? 'Checking...' : 'Continue' }}
-      </UButton>
+      </ButtonBusy>
     </form>
 
     <!-- Divider -->
@@ -200,7 +200,7 @@ async function handleAppleLogin() {
         class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="emit('push', 'email')"
       >
-        <UIcon name="i-heroicons-envelope" class="w-5 h-5 shrink-0 text-gray-600" />
+        <PhIcon name="i-heroicons-envelope" class="w-5 h-5 shrink-0 text-gray-600" />
         <span class="flex-1 text-center">Continue with email</span>
         <span class="w-5" />
       </button>
@@ -225,7 +225,7 @@ async function handleAppleLogin() {
         class="flex items-center gap-3 hover:bg-gray-50 px-4 py-3.5 border border-gray-300 hover:border-gray-400 rounded-xl w-full font-semibold text-gray-900 text-sm transition-all"
         @click="handleAppleLogin"
       >
-        <UIcon name="i-lucide-apple" class="w-5 h-5 shrink-0 text-gray-900" />
+        <PhIcon name="i-lucide-apple" class="w-5 h-5 shrink-0 text-gray-900" />
         <span class="flex-1 text-center">Continue with Apple</span>
         <span class="w-5" />
       </button>

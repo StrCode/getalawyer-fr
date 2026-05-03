@@ -1,7 +1,7 @@
 <!-- components/auth/AuthEmail.vue -->
 <script setup lang="ts">
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent } from '~/types/form-submit-event'
 
 const emit = defineEmits<{ push: [view: string] }>()
 const { identifier } = useAuthModal()
@@ -101,7 +101,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         />
       </UFormField>
 
-      <UButton
+      <ButtonBusy
         type="submit"
         :loading="loading"
         block
@@ -110,7 +110,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="rounded-xl font-semibold"
       >
         {{ loading ? 'Checking...' : 'Continue' }}
-      </UButton>
+      </ButtonBusy>
     </UForm>
   </div>
 </template>

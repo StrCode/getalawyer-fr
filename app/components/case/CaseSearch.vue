@@ -12,20 +12,20 @@
           @keyup.enter="performSearch"
         />
         
-        <UButton
+        <Button
           icon="i-heroicons-funnel"
           variant="outline"
           @click="showAdvancedFilters = !showAdvancedFilters"
         >
           {{ showAdvancedFilters ? 'Hide' : 'Show' }} Filters
-        </UButton>
+        </Button>
         
-        <UButton
+        <ButtonBusy
           @click="performSearch"
           :loading="searching"
         >
           Search
-        </UButton>
+        </ButtonBusy>
       </div>
     </UCard>
 
@@ -34,13 +34,13 @@
       <template #header>
         <div class="flex justify-between items-center">
           <h3 class="font-semibold">Advanced Filters</h3>
-          <UButton
+          <Button
             variant="ghost"
             size="xs"
             @click="clearAllFilters"
           >
             Clear All
-          </UButton>
+          </Button>
         </div>
       </template>
       
@@ -92,12 +92,12 @@
       </div>
       
       <div class="flex justify-end gap-2 mt-4">
-        <UButton variant="ghost" @click="clearAllFilters">
+        <Button variant="ghost" @click="clearAllFilters">
           Clear Filters
-        </UButton>
-        <UButton @click="applyFilters">
+        </Button>
+        <Button @click="applyFilters">
           Apply Filters
-        </UButton>
+        </Button>
       </div>
     </UCard>
 
@@ -108,7 +108,7 @@
       </template>
       
       <div class="flex flex-wrap gap-2">
-        <UButton
+        <Button
           v-for="search in savedSearches"
           :key="search.id"
           variant="outline"
@@ -117,15 +117,15 @@
         >
           {{ search.name }}
           <template #trailing>
-            <UIcon
+            <PhIcon
               name="i-heroicons-x-mark"
               class="w-4 h-4"
               @click.stop="removeSavedSearch(search.id)"
             />
           </template>
-        </UButton>
+        </Button>
         
-        <UButton
+        <Button
           v-if="canSaveCurrentSearch"
           icon="i-heroicons-bookmark"
           variant="ghost"
@@ -133,7 +133,7 @@
           @click="showSaveSearchModal = true"
         >
           Save Current Search
-        </UButton>
+        </Button>
       </div>
     </UCard>
 
@@ -144,13 +144,13 @@
         <span v-if="searchQuery"> matching "{{ searchQuery }}"</span>
       </span>
       
-      <UButton
+      <Button
         variant="ghost"
         size="xs"
         @click="clearSearch"
       >
         Clear Search
-      </UButton>
+      </Button>
     </div>
 
     <!-- Save Search Modal -->
@@ -168,15 +168,15 @@
         
         <template #footer>
           <div class="flex justify-end gap-2">
-            <UButton variant="ghost" @click="showSaveSearchModal = false">
+            <Button variant="ghost" @click="showSaveSearchModal = false">
               Cancel
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               :disabled="!newSearchName.trim()"
               @click="saveCurrentSearch"
             >
               Save
-            </UButton>
+            </Button>
           </div>
         </template>
       </UCard>

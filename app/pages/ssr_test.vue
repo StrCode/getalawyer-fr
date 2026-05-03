@@ -11,7 +11,7 @@
         <UCard>
           <template #header>
             <h2 class="flex items-center gap-2 font-semibold text-xl">
-              <UIcon name="i-heroicons-arrow-path" class="w-6 h-6" />
+              <PhIcon name="i-heroicons-arrow-path" class="w-6 h-6" />
               Direct Backend Fetch Test (Better Auth + useFetch)
             </h2>
           </template>
@@ -73,7 +73,7 @@
         <UCard>
           <template #header>
             <h2 class="flex items-center gap-2 font-semibold text-xl">
-              <UIcon name="i-heroicons-user-circle" class="w-6 h-6" />
+              <PhIcon name="i-heroicons-user-circle" class="w-6 h-6" />
               Session Test
             </h2>
           </template>
@@ -186,7 +186,7 @@
               <div class="mb-2 font-semibold text-sm">Session Consistency Check:</div>
               <div class="space-y-1 text-xs">
                 <div class="flex items-center gap-2">
-                  <UIcon 
+                  <PhIcon 
                     :name="serverSession && clientSession ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'" 
                     :class="serverSession && clientSession ? 'text-green-600' : 'text-red-600'"
                     class="w-4 h-4"
@@ -194,7 +194,7 @@
                   <span>Both server and client sessions {{ serverSession && clientSession ? 'exist' : 'missing' }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <UIcon 
+                  <PhIcon 
                     :name="serverSession?.user?.id === clientSession?.user?.id ? 'i-heroicons-check-circle' : 'i-heroicons-x-circle'" 
                     :class="serverSession?.user?.id === clientSession?.user?.id ? 'text-green-600' : 'text-red-600'"
                     class="w-4 h-4"
@@ -202,7 +202,7 @@
                   <span>User IDs {{ serverSession?.user?.id === clientSession?.user?.id ? 'match' : 'do not match' }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <UIcon 
+                  <PhIcon 
                     :name="!sessionFlash ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'" 
                     :class="!sessionFlash ? 'text-green-600' : 'text-yellow-600'"
                     class="w-4 h-4"
@@ -268,9 +268,13 @@
             <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
               <span class="font-medium">Counter:</span>
               <div class="flex items-center gap-3">
-                <UButton @click="counter--" icon="i-heroicons-minus" size="sm" />
+                <Button size="sm" class="gap-2" aria-label="Decrease counter" @click="counter--">
+                  <PhMinus class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+                </Button>
                 <span class="w-12 font-bold text-2xl text-center">{{ counter }}</span>
-                <UButton @click="counter++" icon="i-heroicons-plus" size="sm" />
+                <Button size="sm" class="gap-2" aria-label="Increase counter" @click="counter++">
+                  <PhPlus class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+                </Button>
               </div>
             </div>
 
@@ -317,6 +321,8 @@
 </template>
 
 <script setup lang="ts">
+import { PhMinus, PhPlus } from '@phosphor-icons/vue'
+import { Button } from '@/components/ui/button'
 import { authClient } from '~/lib/auth-client'
 
 const config = useRuntimeConfig()

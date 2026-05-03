@@ -44,7 +44,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <UButton
+        <Button
           color="neutral"
           variant="ghost"
           size="sm"
@@ -52,7 +52,7 @@
           <template #leading>
             <PhArrowRight class="w-4 h-4" />
           </template>
-        </UButton>
+        </Button>
       </div>
     </div>
   </NuxtLink>

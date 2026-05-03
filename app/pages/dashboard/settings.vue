@@ -7,14 +7,14 @@
         <p class="text-[#525866] text-sm mt-1">Manage and collaborate on your account settings</p>
       </div>
       <div class="flex gap-3">
-        <UButton
+        <Button
           label="Discard"
           color="neutral"
           variant="outline"
           size="md"
           @click="handleDiscard"
         />
-        <UButton
+        <Button
           label="Save changes"
           color="primary"
           size="md"
@@ -56,10 +56,10 @@
                   class="absolute size-7.5 top-3 -right-2 bg-red-500 hover:bg-red-600 rounded-full p-1.5 transition-colors border-2 border-white flex items-center justify-center"
                   @click="removePhoto"
                 >
-                  <UIcon name="i-hugeicons-cancel-01" class="w-3 h-3 text-white" />
+                  <PhIcon name="i-hugeicons-cancel-01" class="w-3 h-3 text-white" />
                 </button>
               </div>
-              <UButton
+              <Button
                 label="Change"
                 color="neutral"
                 variant="outline"
@@ -86,7 +86,7 @@
               >
                 <template #trailing>
                   <div v-if="!isEditingField.fullName">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-pencil-edit-02"
                       color="neutral"
                       variant="ghost"
@@ -95,14 +95,14 @@
                     />
                   </div>
                   <div v-else class="flex gap-1">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-cancel-01"
                       color="neutral"
                       variant="ghost"
                       size="xs"
                       @click="cancelEdit('fullName')"
                     />
-                    <UButton
+                    <Button
                       icon="i-hugeicons-tick-02"
                       color="primary"
                       variant="ghost"
@@ -133,7 +133,7 @@
               >
                 <template #trailing>
                   <div v-if="!isEditingField.email">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-pencil-edit-02"
                       color="neutral"
                       variant="ghost"
@@ -142,14 +142,14 @@
                     />
                   </div>
                   <div v-else class="flex gap-1">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-cancel-01"
                       color="neutral"
                       variant="ghost"
                       size="xs"
                       @click="cancelEdit('email')"
                     />
-                    <UButton
+                    <Button
                       icon="i-hugeicons-tick-02"
                       color="primary"
                       variant="ghost"
@@ -180,7 +180,7 @@
               >
                 <template #trailing>
                   <div v-if="!isEditingField.phone">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-pencil-edit-02"
                       color="neutral"
                       variant="ghost"
@@ -189,14 +189,14 @@
                     />
                   </div>
                   <div v-else class="flex gap-1">
-                    <UButton
+                    <Button
                       icon="i-hugeicons-cancel-01"
                       color="neutral"
                       variant="ghost"
                       size="xs"
                       @click="cancelEdit('phone')"
                     />
-                    <UButton
+                    <Button
                       icon="i-hugeicons-tick-02"
                       color="primary"
                       variant="ghost"
@@ -424,7 +424,7 @@
                   <p class="font-medium text-[#1C1C1E] text-sm">Change Password</p>
                   <p class="text-[#8E8E93] text-xs mt-0.5">Last changed 45 days ago</p>
                 </div>
-                <UButton
+                <Button
                   label="Change Password"
                   color="neutral"
                   variant="outline"
@@ -469,7 +469,7 @@
                 <h3 class="font-medium text-[#1C1C1E] text-sm">2FA-Authentication</h3>
                 <p class="text-[#8E8E93] text-xs mt-0.5">Add an extra layer of protection to your account.</p>
               </div>
-              <UButton
+              <Button
                 label="Manage Authentication"
                 color="neutral"
                 variant="outline"
@@ -489,7 +489,7 @@
                 <div class="flex-1">
                   <p class="font-medium text-[#1C1C1E] text-sm mb-1">2FA is enabled</p>
                   <p class="text-[#525866] text-sm">Your account is protected with authenticator app</p>
-                  <UButton
+                  <Button
                     label="Manage 2FA Settings"
                     color="neutral"
                     variant="outline"
@@ -542,14 +542,14 @@
                 icon="i-heroicons-magnifying-glass"
               />
             </div>
-            <UButton
+            <Button
               label="All Activities"
               color="neutral"
               variant="outline"
               size="lg"
               trailing-icon="i-heroicons-adjustments-horizontal"
             />
-            <UButton
+            <Button
               label="Export"
               color="neutral"
               variant="outline"
@@ -681,7 +681,7 @@
                 icon="i-heroicons-magnifying-glass"
               />
             </div>
-            <UButton
+            <Button
               label="All Activities"
               color="neutral"
               variant="outline"
@@ -689,7 +689,7 @@
               trailing-icon="i-heroicons-adjustments-horizontal"
               @click="openFilterMenu"
             />
-            <UButton
+            <Button
               label="Export"
               color="neutral"
               variant="outline"
@@ -709,7 +709,7 @@
               <!-- Icon -->
               <div class="shrink-0 mt-1">
                 <div class="size-10 rounded-full bg-gray-100 flex items-center justify-center">
-                  <UIcon name="i-heroicons-information-circle" class="size-5 text-gray-600" />
+                  <PhIcon name="i-heroicons-information-circle" class="size-5 text-gray-600" />
                 </div>
               </div>
 
@@ -738,13 +738,13 @@
 
           <!-- Empty State -->
           <div v-if="filteredAuditLogs.length === 0" class="text-center py-12">
-            <UIcon name="i-heroicons-document-text" class="size-12 text-gray-400 mx-auto mb-3" />
+            <PhIcon name="i-heroicons-document-text" class="size-12 text-gray-400 mx-auto mb-3" />
             <p class="text-[#525866] text-sm">No activities found</p>
           </div>
 
           <!-- Load More Button -->
           <div v-if="filteredAuditLogs.length > 0" class="flex justify-end">
-            <UButton
+            <Button
               label="Load More Entries"
               color="neutral"
               variant="ghost"
@@ -773,7 +773,7 @@
                   <p class="text-[#007AFC] text-sm">
                     All activities are logged and stored for 90 days. You can export logs at any time for longer-term storage.
                   </p>
-                  <UButton
+                  <Button
                     label="Export Full History"
                     color="neutral"
                     variant="outline"

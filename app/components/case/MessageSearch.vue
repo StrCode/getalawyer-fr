@@ -132,14 +132,14 @@ watch(filteredMessages, (newResults) => {
         icon="i-heroicons-magnifying-glass"
         class="flex-1"
       />
-      <UButton
+      <Button
         variant="ghost"
         size="sm"
         icon="i-heroicons-adjustments-horizontal"
         @click="showAdvancedFilters = !showAdvancedFilters"
         :color="showAdvancedFilters ? 'primary' : 'gray'"
       />
-      <UButton
+      <Button
         v-if="hasActiveFilters"
         variant="ghost"
         size="sm"
@@ -154,7 +154,7 @@ watch(filteredMessages, (newResults) => {
         <span>{{ searchStats.filtered }} of {{ searchStats.total }} messages</span>
         <span v-if="searchStats.withFiles > 0">{{ searchStats.withFiles }} with files</span>
       </div>
-      <UButton
+      <Button
         v-if="searchStats.filtered > 0"
         variant="ghost"
         size="xs"
@@ -162,7 +162,7 @@ watch(filteredMessages, (newResults) => {
         @click="showExportModal = true"
       >
         Export Results
-      </UButton>
+      </Button>
     </div>
 
     <!-- Advanced Filters -->
@@ -171,34 +171,34 @@ watch(filteredMessages, (newResults) => {
       <div>
         <label class="block mb-2 font-medium text-gray-700 text-sm">Quick Filters</label>
         <div class="flex flex-wrap gap-2">
-          <UButton
+          <Button
             variant="outline"
             size="xs"
             @click="setDateRange('today')"
           >
             Today
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             variant="outline"
             size="xs"
             @click="setDateRange('week')"
           >
             Last Week
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             variant="outline"
             size="xs"
             @click="setDateRange('month')"
           >
             Last Month
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             variant="outline"
             size="xs"
             @click="setDateRange('all')"
           >
             All Time
-          </UButton>
+          </Button>
         </div>
       </div>
 
@@ -225,7 +225,7 @@ watch(filteredMessages, (newResults) => {
       <div v-if="messageSenders.length > 1">
         <label class="block mb-2 font-medium text-gray-700 text-sm">Filter by Sender</label>
         <div class="flex flex-wrap gap-2">
-          <UButton
+          <Button
             v-for="sender in messageSenders"
             :key="sender.id"
             variant="outline"
@@ -242,7 +242,7 @@ watch(filteredMessages, (newResults) => {
               />
               <span>{{ sender.name }}</span>
             </div>
-          </UButton>
+          </Button>
         </div>
       </div>
 
@@ -250,30 +250,30 @@ watch(filteredMessages, (newResults) => {
       <div>
         <label class="block mb-2 font-medium text-gray-700 text-sm">Message Type</label>
         <div class="flex space-x-2">
-          <UButton
+          <Button
             variant="outline"
             size="xs"
             @click="fileFilter = fileFilter === null ? null : null"
             :color="fileFilter === null ? 'primary' : 'gray'"
           >
             All Messages
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             variant="outline"
             size="xs"
             @click="fileFilter = fileFilter === true ? null : true"
             :color="fileFilter === true ? 'primary' : 'gray'"
           >
             With Files
-          </UButton>
-          <UButton
+          </Button>
+          <Button
             variant="outline"
             size="xs"
             @click="fileFilter = fileFilter === false ? null : false"
             :color="fileFilter === false ? 'primary' : 'gray'"
           >
             Text Only
-          </UButton>
+          </Button>
         </div>
       </div>
 
@@ -341,12 +341,12 @@ watch(filteredMessages, (newResults) => {
         
         <template #footer>
           <div class="flex justify-end space-x-3">
-            <UButton variant="ghost" @click="showExportModal = false">
+            <Button variant="ghost" @click="showExportModal = false">
               Cancel
-            </UButton>
-            <UButton @click="exportResults">
+            </Button>
+            <Button @click="exportResults">
               Export {{ exportFormat.toUpperCase() }}
-            </UButton>
+            </Button>
           </div>
         </template>
       </UCard>

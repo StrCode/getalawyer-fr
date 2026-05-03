@@ -4,7 +4,7 @@
       <!-- Document Icon and Name -->
       <div class="flex items-start gap-3">
         <div class="flex-shrink-0">
-          <UIcon 
+          <PhIcon 
             :name="getFileIcon(document.fileType)" 
             class="w-8 h-8"
             :class="getFileIconColor(document.fileType)"
@@ -24,44 +24,48 @@
       <!-- Document Metadata -->
       <div class="space-y-2">
         <div class="flex items-center gap-2 text-gray-600 text-sm">
-          <UIcon name="i-heroicons-user" class="w-4 h-4" />
+          <PhIcon name="i-heroicons-user" class="w-4 h-4" />
           <span>{{ document.uploader?.name || 'Unknown' }}</span>
         </div>
         
         <div v-if="document.downloadCount > 0" class="flex items-center gap-2 text-gray-600 text-sm">
-          <UIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
+          <PhIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
           <span>{{ document.downloadCount }} downloads</span>
         </div>
         
         <div v-if="!document.isClientAccessible && role === 'lawyer'" class="flex items-center gap-2 text-orange-600 text-sm">
-          <UIcon name="i-heroicons-eye-slash" class="w-4 h-4" />
+          <PhIcon name="i-heroicons-eye-slash" class="w-4 h-4" />
           <span>Lawyer only</span>
         </div>
       </div>
       
       <!-- Actions -->
       <div class="flex justify-between items-center pt-2 border-gray-100 border-t">
-        <UButton
-          icon="i-heroicons-eye"
+        <Button
           variant="ghost"
           size="sm"
+          class="gap-2"
           @click="previewDocument"
         >
+          <PhEye class="size-4 shrink-0 text-neutral-600" aria-hidden="true" />
           Preview
-        </UButton>
-        
+        </Button>
+
         <div class="flex gap-1">
-          <UButton
-            icon="i-heroicons-arrow-down-tray"
+          <Button
             variant="outline"
             size="sm"
+            class="gap-2"
             @click="$emit('download', document.id)"
           >
+            <PhTrayArrowDown class="size-4 shrink-0" weight="bold" aria-hidden="true" />
             Download
-          </UButton>
-          
+          </Button>
+
           <UDropdown v-if="canDelete" :items="documentActions">
-            <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" size="sm" />
+            <Button variant="ghost" size="icon-sm" class="size-8 shrink-0" aria-label="Document actions">
+              <PhDotsThreeVertical class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+            </Button>
           </UDropdown>
         </div>
       </div>
@@ -70,6 +74,12 @@
 </template>
 
 <script setup lang="ts">
+import {
+  PhDotsThreeVertical,
+  PhEye,
+  PhTrayArrowDown,
+} from '@phosphor-icons/vue'
+import { Button } from '@/components/ui/button'
 import type { Document } from '~/types'
 
 interface Props {

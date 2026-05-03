@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
 import { useLawyerSearch } from '~/composables/useLawyerSearch'
 
-const isScrolled = ref(false)
-const searchExpanded = ref(false)
-const { updatePracticeArea } = useLawyerSearch()
+definePageMeta({
+  layout: 'home',
+})
 
-// Throttled scroll handler
-let ticking = false
-const handleScroll = () => {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      isScrolled.value = window.scrollY > 80
-      ticking = false
-    })
-    ticking = true
-  }
-}
+const { updatePracticeArea } = useLawyerSearch()
 
 const handlePracticeAreaSelect = (areaName: string) => {
   updatePracticeArea(areaName)
@@ -28,28 +17,18 @@ const handleSearch = (data: {
   location: string | null
   consultationType: string | null
 }) => {
-  // Future: navigate to /search?area=...&location=...
-  console.log('Search:', data)
+  if (import.meta.dev) {
+    console.info('Search:', data)
+  }
+  // Future: navigate to /lawyers?q=…&area=…
 }
-
-onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <template>
-  <div class="">
-
-    <HeroSection
-      id="hero"
-      :is-scrolled="isScrolled"
-      :search-expanded="searchExpanded"
-      @toggle-expanded="searchExpanded = !searchExpanded"
-      @search="handleSearch"
-    />
+  <div>
+    <HeroPreviewSplit id="hero" @search="handleSearch" />
 
     <HowItWorksSection id="how-it-works" />
-
-    <FeaturedLawyersSection id="find-lawyers" />
 
     <PracticeAreasSection
       id="practice-areas"

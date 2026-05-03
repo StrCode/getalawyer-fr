@@ -208,7 +208,7 @@ watch(organizedMessages, (newGroups) => {
             size="sm"
             @change="updateSort"
           />
-          <UButton
+          <Button
             variant="ghost"
             size="xs"
             :icon="selectedSortOrder === 'asc' ? 'i-heroicons-arrow-up' : 'i-heroicons-arrow-down'"
@@ -219,20 +219,20 @@ watch(organizedMessages, (newGroups) => {
 
       <!-- Group Controls -->
       <div v-if="selectedGroupBy !== 'none'" class="flex items-center space-x-2">
-        <UButton
+        <Button
           variant="ghost"
           size="xs"
           @click="expandAllGroups"
         >
           Expand All
-        </UButton>
-        <UButton
+        </Button>
+        <Button
           variant="ghost"
           size="xs"
           @click="collapseAllGroups"
         >
           Collapse All
-        </UButton>
+        </Button>
       </div>
     </div>
 
@@ -258,7 +258,7 @@ watch(organizedMessages, (newGroups) => {
           @click="toggleGroup(group.key)"
         >
           <div class="flex items-center space-x-3">
-            <UIcon
+            <PhIcon
               :name="expandedGroups.has(group.key) ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
               class="w-4 h-4 text-gray-500"
             />
@@ -270,7 +270,7 @@ watch(organizedMessages, (newGroups) => {
           
           <!-- Group Actions -->
           <div class="flex items-center space-x-2">
-            <UButton
+            <Button
               variant="ghost"
               size="xs"
               icon="i-heroicons-arrow-down-tray"
@@ -302,7 +302,7 @@ watch(organizedMessages, (newGroups) => {
                   v-else
                   class="flex justify-center items-center bg-gray-300 rounded-full w-8 h-8"
                 >
-                  <UIcon name="i-heroicons-user" class="w-4 h-4 text-gray-600" />
+                  <PhIcon name="i-heroicons-user" class="w-4 h-4 text-gray-600" />
                 </div>
               </div>
 
@@ -328,7 +328,7 @@ watch(organizedMessages, (newGroups) => {
                     >
                       {{ message.status }}
                     </UBadge>
-                    <UIcon
+                    <PhIcon
                       v-if="message.fileName"
                       name="i-heroicons-paper-clip"
                       class="w-3 h-3 text-gray-400"
@@ -344,9 +344,9 @@ watch(organizedMessages, (newGroups) => {
                 <!-- File Attachment -->
                 <div v-if="message.fileName" class="bg-gray-100 mt-2 p-2 rounded text-xs">
                   <div class="flex items-center space-x-2">
-                    <UIcon name="i-heroicons-paper-clip" class="w-3 h-3 text-gray-500" />
+                    <PhIcon name="i-heroicons-paper-clip" class="w-3 h-3 text-gray-500" />
                     <span class="truncate">{{ message.fileName }}</span>
-                    <UButton
+                    <Button
                       v-if="message.fileUrl"
                       variant="ghost"
                       size="xs"
@@ -365,7 +365,7 @@ watch(organizedMessages, (newGroups) => {
           v-if="selectedGroupBy !== 'none' && expandedGroups.has(group.key) && group.messages.length === 0"
           class="p-8 text-gray-500 text-center"
         >
-          <UIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-2 w-8 h-8 text-gray-300" />
+          <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-2 w-8 h-8 text-gray-300" />
           <p class="text-sm">No messages in this group</p>
         </div>
       </div>
@@ -373,7 +373,7 @@ watch(organizedMessages, (newGroups) => {
 
     <!-- Empty State -->
     <div v-if="organizedMessages.length === 0" class="py-12 text-center">
-      <UIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+      <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
       <h3 class="mb-2 font-medium text-gray-900 text-lg">No messages to organize</h3>
       <p class="text-gray-500">Messages will appear here once they are available.</p>
     </div>

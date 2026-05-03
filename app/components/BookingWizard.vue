@@ -211,7 +211,7 @@ function close() {
                     : 'bg-gray-200 text-gray-500'
                 ]"
               >
-                <UIcon 
+                <PhIcon 
                   v-if="currentStep > step.number"
                   name="i-heroicons-check"
                   class="w-5 h-5"
@@ -260,11 +260,11 @@ function close() {
                     <p v-if="type.description" class="mb-2 text-gray-600 text-sm">{{ type.description }}</p>
                     <div class="flex items-center gap-3 text-gray-500 text-xs">
                       <span class="flex items-center gap-1">
-                        <UIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
+                        <PhIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
                         {{ type.durationMinutes }} min
                       </span>
                       <span class="flex items-center gap-1">
-                        <UIcon 
+                        <PhIcon 
                           :name="type.meetingType === 'video' ? 'i-heroicons-video-camera' : type.meetingType === 'phone' ? 'i-heroicons-phone' : type.meetingType === 'in_person' ? 'i-heroicons-building-office' : 'i-heroicons-check-circle'" 
                           class="w-3.5 h-3.5" 
                         />
@@ -345,7 +345,7 @@ function close() {
                   :class="state.meetingType === option.value ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'"
                   :disabled="selectedConsultationType?.meetingType !== 'any'"
                 >
-                  <UIcon 
+                  <PhIcon 
                     :name="option.icon"
                     class="mb-2 w-8 h-8"
                     :class="state.meetingType === option.value ? 'text-primary-600' : 'text-gray-400'"
@@ -495,7 +495,7 @@ function close() {
         <!-- Footer Actions -->
         <div class="p-6 border-gray-200 border-t shrink-0">
           <div class="flex gap-3">
-            <UButton 
+            <Button 
               v-if="currentStep > 1"
               label="Back" 
               color="neutral" 
@@ -504,7 +504,7 @@ function close() {
               @click="prevStep"
               class="flex-1"
             />
-            <UButton 
+            <Button 
               v-if="currentStep === 1"
               label="Cancel" 
               color="neutral" 
@@ -513,7 +513,7 @@ function close() {
               @click="close"
               class="flex-1"
             />
-            <UButton 
+            <Button 
               v-if="currentStep < totalSteps"
               label="Continue" 
               color="primary" 
@@ -527,7 +527,7 @@ function close() {
               trailing-icon="i-heroicons-arrow-right"
               class="flex-1"
             />
-            <UButton 
+            <ButtonBusy 
               v-if="currentStep === totalSteps"
               label="Confirm Booking" 
               color="primary" 

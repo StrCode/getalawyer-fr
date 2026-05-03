@@ -131,23 +131,24 @@
 
       <!-- Actions -->
       <div class="flex gap-3">
-        <UButton
-          label="Back"
-          color="neutral"
+        <Button
           variant="ghost"
           size="lg"
           class="flex-1"
           @click="$emit('back')"
-        />
-        <UButton
-          label="Confirm Booking"
-          color="primary"
+        >
+          Back
+        </Button>
+        <ButtonBusy
+          variant="default"
           size="lg"
-          class="flex-1 bg-[#007AFC]"
+          class="flex-1 bg-[#007AFC] text-white hover:bg-[#0070e8] dark:bg-[#007AFC]"
           :loading="isSubmitting"
           :disabled="!isFormValid"
           @click="handleSubmit"
-        />
+        >
+          Confirm Booking
+        </ButtonBusy>
       </div>
     </div>
   </div>

@@ -37,7 +37,7 @@
         </div>
 
         <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="flex items-center gap-2">
-          <UButton
+          <Button
             :to="booking.meetingUrl"
             target="_blank"
             label="Join Meeting"
@@ -48,7 +48,7 @@
             <template #leading>
               <PhVideoCamera class="w-4 h-4" />
             </template>
-          </UButton>
+          </Button>
         </div>
 
         <div v-if="booking.clientNotes" class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
@@ -58,14 +58,14 @@
       </div>
 
       <div v-if="booking.status === 'confirmed' && isPast" class="flex flex-col gap-2">
-        <UButton
+        <Button
           label="Mark Completed"
           color="primary"
           size="sm"
           class="bg-green-600 hover:bg-green-700"
           @click="$emit('complete', booking.id)"
         />
-        <UButton
+        <Button
           label="Mark No-Show"
           color="neutral"
           variant="ghost"
@@ -75,7 +75,7 @@
       </div>
 
       <div v-else-if="booking.status === 'pending'" class="flex flex-col gap-2">
-        <UButton
+        <Button
           label="Cancel"
           color="neutral"
           variant="ghost"

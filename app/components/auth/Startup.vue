@@ -75,14 +75,14 @@ function goToLogin() {
       </URadio>
     </URadioGroup>
 
-    <UButton
+    <Button
       block
       size="lg"
       class="bg-gradient-to-r from-[#E31C5F] to-[#FF385C] hover:from-[#d01856] hover:to-[#e8304f] rounded-xl mb-4"
       @click="next"
     >
       Continue
-    </UButton>
+    </Button>
 
     <p class="mt-4 text-gray-600 text-sm text-center">
       Already have an account?

@@ -232,7 +232,7 @@ const activeFilterCount = computed(() => {
           
           <!-- Pagination -->
           <div v-if="pagination && pagination.totalPages > 1" class="pagination">
-            <UButton
+            <Button
               color="neutral"
               variant="outline"
               icon="i-heroicons-chevron-left"
@@ -240,7 +240,7 @@ const activeFilterCount = computed(() => {
               @click="currentPage--"
             >
               Previous
-            </UButton>
+            </Button>
             
             <div class="page-numbers">
               <button
@@ -255,7 +255,7 @@ const activeFilterCount = computed(() => {
               <span v-if="pagination.totalPages > 5" class="page-ellipsis">...</span>
             </div>
             
-            <UButton
+            <Button
               color="neutral"
               variant="outline"
               trailing-icon="i-heroicons-chevron-right"
@@ -263,7 +263,7 @@ const activeFilterCount = computed(() => {
               @click="currentPage++"
             >
               Next
-            </UButton>
+            </Button>
           </div>
         </main>
       </div>

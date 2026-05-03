@@ -171,6 +171,8 @@ const getAvatarGradient = (name: string) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  outline: 1px solid rgb(0 0 0 / 0.1);
+  outline-offset: -1px;
 }
 
 .card-avatar-placeholder {
@@ -284,6 +286,7 @@ const getAvatarGradient = (name: string) => {
   font-size: 22px;
   font-weight: 700;
   color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 480px) {
@@ -414,9 +417,19 @@ const getAvatarGradient = (name: string) => {
   cursor: pointer;
   font-size: 20px;
   color: #bbb;
-  transition: color 0.2s;
+  transition: color 0.2s ease-out;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-heart:focus-visible {
+  outline: 2px solid #1d6b44;
+  outline-offset: 2px;
 }
 
 .btn-heart:hover {
@@ -437,7 +450,9 @@ const getAvatarGradient = (name: string) => {
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.2s;
+  transition:
+    background 0.2s ease-out,
+    transform 0.16s ease-out;
 }
 
 @media (max-width: 640px) {
@@ -449,5 +464,16 @@ const getAvatarGradient = (name: string) => {
 
 .btn-contact:hover {
   background: #154a2f;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-contact:active {
+    transform: scale(0.96);
+  }
+}
+
+.btn-contact:focus-visible {
+  outline: 2px solid #1d6b44;
+  outline-offset: 2px;
 }
 </style>

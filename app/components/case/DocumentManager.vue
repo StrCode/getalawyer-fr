@@ -20,7 +20,7 @@
           @dragleave.prevent="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <UIcon name="i-heroicons-cloud-arrow-up" class="mx-auto mb-4 w-12 h-12 text-gray-400" />
+          <PhIcon name="i-heroicons-cloud-arrow-up" class="mx-auto mb-4 w-12 h-12 text-gray-400" />
           <h4 class="mb-2 font-medium text-gray-900 text-lg">
             Drop files here or click to browse
           </h4>
@@ -28,10 +28,10 @@
             Supports PDF, DOC, DOCX, JPG, PNG, TXT, XLS up to 25MB each
           </p>
           
-          <UButton @click="triggerFileInput" size="lg">
-            <UIcon name="i-heroicons-folder-plus" class="mr-2 w-4 h-4" />
+          <Button @click="triggerFileInput" size="lg">
+            <PhIcon name="i-heroicons-folder-plus" class="mr-2 w-4 h-4" />
             Choose Files
-          </UButton>
+          </Button>
           
           <input
             ref="fileInput"
@@ -51,7 +51,7 @@
             :key="doc.id"
             class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg"
           >
-            <UIcon name="i-heroicons-document" class="w-5 h-5 text-gray-400" />
+            <PhIcon name="i-heroicons-document" class="w-5 h-5 text-gray-400" />
             <div class="flex-1 min-w-0">
               <p class="font-medium text-gray-900 text-sm truncate">{{ doc.fileName }}</p>
               <div class="bg-gray-200 mt-2 rounded-full w-full h-2">
@@ -118,23 +118,23 @@
         <div v-if="folders.length > 0" class="space-y-2">
           <h4 class="font-medium text-gray-900 text-sm">Folders</h4>
           <div class="flex flex-wrap gap-2">
-            <UButton
+            <Button
               v-for="folder in folders"
               :key="folder"
               :variant="selectedFolder === folder ? 'solid' : 'outline'"
               size="sm"
               @click="selectFolder(folder)"
             >
-              <UIcon name="i-heroicons-folder" class="mr-1 w-4 h-4" />
+              <PhIcon name="i-heroicons-folder" class="mr-1 w-4 h-4" />
               {{ folder }}
-            </UButton>
-            <UButton
+            </Button>
+            <Button
               :variant="selectedFolder === null ? 'solid' : 'outline'"
               size="sm"
               @click="selectFolder(null)"
             >
               All Documents
-            </UButton>
+            </Button>
           </div>
         </div>
       </div>

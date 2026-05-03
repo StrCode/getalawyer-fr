@@ -34,7 +34,7 @@
                 <p class="mb-6 text-gray-600">
                   {{ item.key === 'all' ? "You haven't made any bookings yet" : `No ${item.label.toLowerCase()} bookings found` }}
                 </p>
-                <UButton
+                <Button
                   v-if="item.key === 'all'"
                   label="Find a Lawyer"
                   color="primary"
@@ -132,7 +132,7 @@
 
                 <!-- Actions -->
                 <div v-if="canTakeAction(booking)" class="flex flex-col gap-2">
-                  <UButton
+                  <Button
                     v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
                     label="Join"
                     color="primary"
@@ -142,7 +142,7 @@
                     target="_blank"
                     @click.stop
                   />
-                  <UButton
+                  <Button
                     v-if="booking.status === 'pending' || booking.status === 'confirmed'"
                     label="Reschedule"
                     color="neutral"
@@ -150,7 +150,7 @@
                     size="sm"
                     @click.stop="handleReschedule(booking.id)"
                   />
-                  <UButton
+                  <Button
                     v-if="booking.status === 'pending' || booking.status === 'confirmed'"
                     label="Cancel"
                     color="error"
@@ -186,14 +186,14 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
+          <Button
             label="Nevermind"
             color="neutral"
             variant="ghost"
             size="lg"
             @click="isCancelModalOpen = false"
           />
-          <UButton
+          <ButtonBusy
             label="Cancel Booking"
             color="error"
             size="lg"

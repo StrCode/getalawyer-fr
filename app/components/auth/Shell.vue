@@ -8,7 +8,7 @@ defineEmits<{ pop: []; close: [] }>()
   <div class="flex flex-col overflow-hidden">
     <!-- Header -->
     <div class="relative flex justify-between items-center px-6 py-4 border-b border-gray-100 min-h-[64px] shrink-0">
-      <UButton
+      <Button
         icon="i-lucide-arrow-left"
         variant="ghost"
         size="sm"
@@ -22,7 +22,7 @@ defineEmits<{ pop: []; close: [] }>()
         {{ title }}
       </span>
 
-      <UButton
+      <Button
         icon="i-lucide-x"
         variant="ghost"
         size="sm"

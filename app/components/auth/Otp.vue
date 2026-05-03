@@ -214,7 +214,7 @@ async function resendCode() {
       />
     </div>
 
-    <UButton
+    <ButtonBusy
       type="button"
       :loading="loading"
       :disabled="!isComplete"
@@ -224,9 +224,9 @@ async function resendCode() {
       @click="verify"
     >
       {{ loading ? 'Verifying...' : 'Verify' }}
-    </UButton>
+    </ButtonBusy>
 
-    <UButton
+    <Button
       variant="ghost"
       color="gray"
       :disabled="resending"
@@ -235,6 +235,6 @@ async function resendCode() {
       @click="resendCode"
     >
       {{ resending ? 'Sending...' : 'Resend code' }}
-    </UButton>
+    </Button>
   </div>
 </template>

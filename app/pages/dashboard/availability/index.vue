@@ -274,14 +274,14 @@ const handleSaveAll = async () => {
         <h1 class="text-3xl font-bold text-gray-900">Weekly Availability</h1>
         <p class="mt-2 text-gray-600">Set your recurring weekly schedule for client bookings</p>
       </div>
-      <UButton
+      <Button
         icon="i-hugeicons-calendar-03"
         size="lg"
         to="/dashboard/availability/exceptions"
         variant="outline"
       >
         Manage Exceptions
-      </UButton>
+      </Button>
     </div>
 
     <!-- Quick Setup -->
@@ -290,21 +290,21 @@ const handleSaveAll = async () => {
         <h3 class="font-semibold text-lg">Quick Setup</h3>
         <p class="text-sm text-gray-600">Apply common schedule templates</p>
         <div class="flex gap-3">
-          <UButton
+          <ButtonBusy
             icon="i-hugeicons-clock-01"
             @click="handleQuickSetup('weekdays')"
             :loading="bulkSetMutation.isPending.value"
           >
             Mon-Fri 9am-5pm
-          </UButton>
-          <UButton
+          </ButtonBusy>
+          <ButtonBusy
             icon="i-hugeicons-clock-01"
             @click="handleQuickSetup('weekdays-sat')"
             variant="outline"
             :loading="bulkSetMutation.isPending.value"
           >
             Mon-Fri 9am-5pm, Sat 9am-2pm
-          </UButton>
+          </ButtonBusy>
         </div>
       </div>
     </UCard>
@@ -319,13 +319,13 @@ const handleSaveAll = async () => {
       <div class="space-y-6">
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-lg">Custom Schedule</h3>
-          <UButton
+          <ButtonBusy
             icon="i-hugeicons-tick-02"
             @click="handleSaveAll"
             :loading="bulkSetMutation.isPending.value"
           >
             Save All Changes
-          </UButton>
+          </ButtonBusy>
         </div>
 
         <div class="space-y-4">
@@ -365,7 +365,7 @@ const handleSaveAll = async () => {
                     :color="validationErrors[day as DayOfWeek] ? 'error' : undefined"
                   />
                 </div>
-                <UButton
+                <ButtonBusy
                   icon="i-hugeicons-tick-02"
                   size="sm"
                   variant="outline"
@@ -374,7 +374,7 @@ const handleSaveAll = async () => {
                   :disabled="!!validationErrors[day as DayOfWeek]"
                 >
                   Save
-                </UButton>
+                </ButtonBusy>
               </div>
 
               <div v-else class="flex-1 text-gray-400 italic">
@@ -384,7 +384,7 @@ const handleSaveAll = async () => {
             
             <!-- Error Message -->
             <div v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled" class="mt-2 text-sm text-red-600 flex items-center gap-1">
-              <UIcon name="i-hugeicons-alert-circle" class="w-4 h-4" />
+              <PhIcon name="i-hugeicons-alert-circle" class="w-4 h-4" />
               {{ validationErrors[day as DayOfWeek] }}
             </div>
           </div>

@@ -126,13 +126,13 @@ onMounted(() => {
           <p class="hero-description">
             Join thousands of lawyers connecting with clients who need your expertise
           </p>
-          <UButton
+          <Button
             size="xl"
             to="/auth/register?role=lawyer"
             class="hero-cta-button"
           >
             Register as a Lawyer
-          </UButton>
+          </Button>
         </div>
       </UContainer>
     </section>
@@ -329,13 +329,13 @@ onMounted(() => {
           <p class="final-cta-description">
             Join GetaLawyer today and start connecting with clients who need your expertise
           </p>
-          <UButton
+          <Button
             size="xl"
             to="/auth/register?role=lawyer"
             class="final-cta-button"
           >
             Register as a Lawyer
-          </UButton>
+          </Button>
         </div>
       </UContainer>
     </section>

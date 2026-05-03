@@ -658,14 +658,14 @@ watch(
                   </div>
                 </template>
 
-                <Button
+                <ButtonBusy
                   :loading="loading"
                   class="w-full bg-[#1d6b44] hover:bg-[#154a2f] text-white py-3 rounded-xl text-center mb-4"
                   :disabled="!canContinue"
                   @click="next"
                 >
                   {{ step2[currentStep2Action].btnText }}
-                </Button>
+                </ButtonBusy>
 
                 <div class="flex items-center my-4">
                   <div class="flex-1 h-px bg-border" />
@@ -927,14 +927,14 @@ watch(
                   </button>
                 </div>
                 <div>
-                  <Button
+                  <ButtonBusy
                     :loading="loading"
                     class="w-full py-3 rounded-xl"
                     :disabled="otp.length !== expectedOTPLength"
                     @click="verifyOTP()"
                   >
                     Verify
-                  </Button>
+                  </ButtonBusy>
                 </div>
               </div>
             </div>

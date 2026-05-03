@@ -4,22 +4,26 @@
     <div class="flex justify-between items-center">
       <div class="flex items-center gap-2">
         <span class="font-medium text-gray-700 text-sm">View:</span>
-        <UButtonGroup size="sm">
-          <UButton
+        <div role="group" aria-label="View mode" class="inline-flex isolate overflow-hidden rounded-md shadow-sm ring-1 ring-border">
+          <Button
+            class="rounded-none shadow-none ring-1 ring-transparent first:rounded-l-md last:-ml-px last:rounded-r-md"
+            size="sm"
             :variant="viewMode === 'grid' ? 'solid' : 'outline'"
             icon="i-heroicons-squares-2x2"
             @click="$emit('view-mode-change', 'grid')"
           >
             Grid
-          </UButton>
-          <UButton
+          </Button>
+          <Button
+            class="rounded-none shadow-none ring-1 ring-transparent first:rounded-l-md last:-ml-px last:rounded-r-md"
+            size="sm"
             :variant="viewMode === 'list' ? 'solid' : 'outline'"
             icon="i-heroicons-list-bullet"
             @click="$emit('view-mode-change', 'list')"
           >
             List
-          </UButton>
-        </UButtonGroup>
+          </Button>
+        </div>
       </div>
       
       <div class="flex items-center gap-2 text-gray-500 text-sm">
@@ -30,12 +34,12 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin" />
+      <PhIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin" />
     </div>
 
     <!-- Empty State -->
     <div v-else-if="documents.length === 0" class="py-12 text-center">
-      <UIcon name="i-heroicons-document" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
+      <PhIcon name="i-heroicons-document" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
       <h3 class="mb-2 font-medium text-gray-900 text-lg">No documents found</h3>
       <p class="text-gray-500">
         Upload documents to get started or adjust your search filters.
@@ -79,7 +83,7 @@
         <div class="items-center gap-4 grid grid-cols-12">
           <!-- Name with Icon -->
           <div class="flex items-center gap-3 col-span-5 min-w-0">
-            <UIcon 
+            <PhIcon 
               :name="getFileIcon(document.fileType)" 
               class="flex-shrink-0 w-6 h-6"
               :class="getFileIconColor(document.fileType)"
@@ -114,7 +118,7 @@
           <!-- Actions -->
           <div class="flex justify-end col-span-1">
             <UDropdown :items="getDocumentActions(document)">
-              <UButton 
+              <Button 
                 icon="i-heroicons-ellipsis-vertical" 
                 variant="ghost" 
                 size="sm"
@@ -140,20 +144,20 @@
             class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
           >
             <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-folder" class="w-5 h-5 text-blue-500" />
+              <PhIcon name="i-heroicons-folder" class="w-5 h-5 text-blue-500" />
               <span class="font-medium text-gray-900">{{ folder }}</span>
               <UBadge variant="subtle" size="sm">
                 {{ getFolderDocumentCount(folder) }} files
               </UBadge>
             </div>
             
-            <UButton
+            <Button
               variant="outline"
               size="sm"
               @click="$emit('folder-select', folder)"
             >
               View Folder
-            </UButton>
+            </Button>
           </div>
         </div>
       </UCard>

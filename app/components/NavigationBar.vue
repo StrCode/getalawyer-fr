@@ -24,7 +24,6 @@ const scrollToSection = (sectionId: string) => {
 
 const navLinks = [
   { label: 'How It Works', target: 'how-it-works' },
-  { label: 'Find Lawyers', target: 'find-lawyers' },
   { label: 'Practice Areas', target: 'practice-areas' },
   { label: 'For Lawyers', target: 'for-lawyers' }
 ]
@@ -40,7 +39,7 @@ const navLinks = [
   >
     <div :class="transparent ? 'border-transparent' : 'border-neutral-200/50'" class="border-b transition-colors duration-300">
       <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <div class="flex justify-between items-center h-16">
+        <div class="flex justify-between items-center h-18">
           <!-- Logo -->
           <div class="shrink-0">
             <NuxtLink to="/" class="flex items-center">

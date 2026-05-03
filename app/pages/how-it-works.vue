@@ -128,13 +128,13 @@ onMounted(() => {
           <p class="cta-description">
             Start your search today and connect with qualified legal professionals
           </p>
-          <UButton
+          <Button
             size="xl"
             to="/lawyers"
             class="cta-button"
           >
             Find Your Lawyer
-          </UButton>
+          </Button>
         </div>
       </UContainer>
     </section>

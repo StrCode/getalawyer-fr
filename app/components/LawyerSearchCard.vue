@@ -50,18 +50,18 @@ const viewProfile = () => {
       <div class="card-info">
         <h3 class="lawyer-name">{{ lawyer.name }}</h3>
         <p class="lawyer-location">
-          <UIcon name="i-heroicons-map-pin" class="w-4 h-4" />
+          <PhIcon name="i-heroicons-map-pin" class="w-4 h-4" />
           {{ lawyer.state }}, {{ lawyer.country }}
         </p>
         <p class="lawyer-experience">
-          <UIcon name="i-heroicons-briefcase" class="w-4 h-4" />
+          <PhIcon name="i-heroicons-briefcase" class="w-4 h-4" />
           {{ lawyer.yearsOfExperience }} years experience
         </p>
       </div>
 
       <!-- Bar Association Badge -->
       <div class="bar-badge">
-        <UIcon name="i-heroicons-check-badge-solid" class="w-5 h-5 text-green-600" />
+        <PhIcon name="i-heroicons-check-badge-solid" class="w-5 h-5 text-green-600" />
         <span class="badge-text">Verified</span>
       </div>
     </div>
@@ -93,17 +93,17 @@ const viewProfile = () => {
     <!-- Footer -->
     <div class="card-footer">
       <div class="bar-info">
-        <UIcon name="i-heroicons-identification" class="w-4 h-4 text-gray-500" />
+        <PhIcon name="i-heroicons-identification" class="w-4 h-4 text-gray-500" />
         <span>{{ lawyer.barAssociation }}</span>
       </div>
-      <UButton
+      <Button
         color="primary"
         size="sm"
         trailing-icon="i-heroicons-arrow-right"
         @click.stop="viewProfile"
       >
         View Profile
-      </UButton>
+      </Button>
     </div>
   </div>
 </template>

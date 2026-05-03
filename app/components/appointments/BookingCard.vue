@@ -68,14 +68,14 @@
       </div>
 
       <div class="flex flex-col gap-2">
-        <UButton
+        <Button
           label="Confirm"
           color="primary"
           size="sm"
           class="bg-[#007AFC]"
           @click="$emit('confirm', booking.id)"
         />
-        <UButton
+        <Button
           label="Cancel"
           color="neutral"
           variant="ghost"

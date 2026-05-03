@@ -1,7 +1,7 @@
 <!-- components/auth/AuthNewPassword.vue -->
 <script setup lang="ts">
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent } from '~/types/form-submit-event'
 
 const emit = defineEmits<{ push: [view: string] }>()
 const { identifier, resetToken, close } = useAuthModal()
@@ -128,7 +128,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           autofocus
         >
           <template #trailing>
-            <UButton
+            <Button
               :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
               variant="ghost"
               color="gray"
@@ -160,7 +160,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           size="lg"
         >
           <template #trailing>
-            <UButton
+            <Button
               :icon="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
               variant="ghost"
               color="gray"
@@ -171,7 +171,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </UInput>
       </UFormField>
 
-      <UButton
+      <ButtonBusy
         type="submit"
         :loading="loading"
         block
@@ -179,7 +179,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="bg-[#1d6b44] hover:bg-[#154a2f] rounded-xl"
       >
         {{ loading ? 'Resetting...' : 'Reset password' }}
-      </UButton>
+      </ButtonBusy>
     </UForm>
   </div>
 </template>

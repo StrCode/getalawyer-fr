@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between">
       <h3 class="text-lg font-semibold text-gray-900">Select Date & Time</h3>
       <div class="flex items-center gap-2">
-        <UButton
+        <Button
           icon="i-hugeicons-arrow-left-01"
           color="neutral"
           variant="ghost"
@@ -14,7 +14,7 @@
         <span class="text-sm font-medium text-gray-700 min-w-[140px] text-center">
           {{ currentMonthLabel }}
         </span>
-        <UButton
+        <Button
           icon="i-hugeicons-arrow-right-01"
           color="neutral"
           variant="ghost"
@@ -60,11 +60,11 @@
       <h4 class="text-sm font-semibold text-gray-900">Available Times</h4>
       
       <div v-if="isLoadingSlots" class="flex justify-center py-8">
-        <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
+        <PhIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
       </div>
 
       <div v-else-if="availableTimeSlots.length === 0" class="text-center py-8 text-gray-500">
-        <UIcon name="i-hugeicons-calendar-remove-01" class="w-12 h-12 mx-auto mb-2 text-gray-300" />
+        <PhIcon name="i-hugeicons-calendar-remove-01" class="w-12 h-12 mx-auto mb-2 text-gray-300" />
         <p>No available time slots for this date</p>
       </div>
 

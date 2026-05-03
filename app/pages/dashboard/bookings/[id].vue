@@ -3,7 +3,7 @@
     <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="flex items-center gap-4 mb-8">
-        <UButton
+        <Button
           color="neutral"
           variant="ghost"
           to="/dashboard/bookings"
@@ -11,7 +11,7 @@
           <template #leading>
             <PhArrowLeft class="size-5" />
           </template>
-        </UButton>
+        </Button>
         <div class="flex-1">
           <h1 class="font-bold text-gray-900 text-2xl">Booking Details</h1>
           <p v-if="booking" class="mt-1 text-gray-600 text-sm">
@@ -97,7 +97,7 @@
               <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
                 <dt class="font-medium text-gray-900 text-sm">Meeting Link</dt>
                 <dd class="sm:col-span-2 mt-1 sm:mt-0 text-sm">
-                  <UButton
+                  <Button
                     :to="booking.meetingUrl"
                     target="_blank"
                     label="Join Video Call"
@@ -108,7 +108,7 @@
                     <template #leading>
                       <PhVideoCamera class="size-4 shrink-0" />
                     </template>
-                  </UButton>
+                  </Button>
                 </dd>
               </div>
               <div v-if="booking.meetingType === 'phone' && booking.phoneNumber" class="sm:gap-4 sm:grid sm:grid-cols-3 py-4">
@@ -161,7 +161,7 @@
                     <p class="mt-0.5 text-green-700 text-xs">
                       Your lawyer has created a case for your matter
                     </p>
-                    <UButton
+                    <Button
                       label="View Case"
                       color="primary"
                       size="xs"
@@ -171,7 +171,7 @@
                       <template #trailing>
                         <PhArrowRight class="size-4 shrink-0" />
                       </template>
-                    </UButton>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@
               <p class="text-gray-600 text-sm">
                 Message with {{ booking.lawyer?.name }} about this consultation
               </p>
-              <UButton
+              <Button
                 label="Open Conversation"
                 color="primary"
                 block
@@ -197,7 +197,7 @@
                 <template #leading>
                   <PhChatCircle class="size-5 shrink-0" />
                 </template>
-              </UButton>
+              </Button>
             </div>
           </UCard>
 
@@ -254,7 +254,7 @@
             </template>
 
             <div class="space-y-2">
-              <UButton
+              <Button
                 v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
                 label="Join Video Call"
                 color="primary"
@@ -263,7 +263,7 @@
                 target="_blank"
               />
 
-              <UButton
+              <Button
                 label="Reschedule"
                 color="neutral"
                 variant="soft"
@@ -271,7 +271,7 @@
                 @click="handleReschedule"
               />
 
-              <UButton
+              <Button
                 label="Cancel Booking"
                 color="error"
                 variant="soft"
@@ -304,14 +304,14 @@
       </template>
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
+          <Button
             label="Nevermind"
             color="neutral"
             variant="ghost"
             size="lg"
             @click="isCancelModalOpen = false"
           />
-          <UButton
+          <ButtonBusy
             label="Cancel Booking"
             color="error"
             size="lg"

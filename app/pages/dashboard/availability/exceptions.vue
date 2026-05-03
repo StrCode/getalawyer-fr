@@ -206,14 +206,14 @@ const getExceptionColor = (exception: AvailabilityException) => {
         <p class="mt-2 text-gray-600">Override your weekly schedule for specific dates</p>
       </div>
       <div class="flex gap-3">
-        <UButton
+        <Button
           icon="i-hugeicons-calendar-03"
           size="lg"
           variant="outline"
           to="/dashboard/availability"
         >
           Weekly Schedule
-        </UButton>
+        </Button>
       </div>
     </div>
 
@@ -224,19 +224,19 @@ const getExceptionColor = (exception: AvailabilityException) => {
         <span class="text-sm text-gray-600">Show past exceptions</span>
       </div>
       <div class="flex gap-3">
-        <UButton
+        <Button
           icon="i-hugeicons-add-01"
           @click="isAddModalOpen = true"
         >
           Add Exception
-        </UButton>
-        <UButton
+        </Button>
+        <Button
           icon="i-hugeicons-calendar-block-01"
           variant="outline"
           @click="isVacationModalOpen = true"
         >
           Block Vacation
-        </UButton>
+        </Button>
       </div>
     </div>
 
@@ -251,7 +251,7 @@ const getExceptionColor = (exception: AvailabilityException) => {
         <Icon name="i-hugeicons-calendar-03" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-semibold text-gray-900 mb-2">No exceptions yet</h3>
         <p class="text-gray-600 mb-6">Add exceptions to override your weekly schedule for specific dates</p>
-        <UButton @click="isAddModalOpen = true">Add First Exception</UButton>
+        <Button @click="isAddModalOpen = true">Add First Exception</Button>
       </div>
     </UCard>
 
@@ -289,7 +289,7 @@ const getExceptionColor = (exception: AvailabilityException) => {
             </p>
           </div>
 
-          <UButton
+          <ButtonBusy
             icon="i-hugeicons-delete-02"
             variant="ghost"
             color="error"
@@ -365,20 +365,20 @@ const getExceptionColor = (exception: AvailabilityException) => {
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
+          <Button
             variant="outline"
             size="lg"
             @click="isAddModalOpen = false"
           >
             Cancel
-          </UButton>
-          <UButton
+          </Button>
+          <ButtonBusy
             size="lg"
             @click="handleAddException"
             :loading="createMutation.isPending.value"
           >
             Add Exception
-          </UButton>
+          </ButtonBusy>
         </div>
       </template>
     </UModal>
@@ -426,21 +426,21 @@ const getExceptionColor = (exception: AvailabilityException) => {
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton
+          <Button
             variant="outline"
             size="lg"
             @click="isVacationModalOpen = false"
           >
             Cancel
-          </UButton>
-          <UButton
+          </Button>
+          <ButtonBusy
             color="error"
             size="lg"
             @click="handleBlockVacation"
             :loading="bulkCreateMutation.isPending.value"
           >
             Block Dates
-          </UButton>
+          </ButtonBusy>
         </div>
       </template>
     </UModal>

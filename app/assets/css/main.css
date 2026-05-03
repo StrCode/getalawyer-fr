@@ -56,9 +56,19 @@ body {
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
     --font-heading: var(--font-sans);
+    --color-brand: var(--brand);
+    --color-brand-hover: var(--brand-hover);
+    --color-brand-soft: var(--brand-soft);
+    --color-brand-soft-hover: var(--brand-soft-hover);
+    --color-marketing-canvas: var(--marketing-canvas);
+    --color-marketing-band: var(--marketing-band);
+    --color-hero-accent-sky: var(--hero-accent-sky);
+    --color-hero-accent-lime: var(--hero-accent-lime);
+    --color-hero-panel-warm: var(--hero-panel-warm);
 }
 
 :root {
+    color-scheme: light dark;
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -91,6 +101,16 @@ body {
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --brand: oklch(0.5 0.13 152);
+    --brand-hover: oklch(0.43 0.13 152);
+    --brand-soft: oklch(0.94 0.04 152);
+    --brand-soft-hover: oklch(0.89 0.055 152);
+    --marketing-canvas: oklch(0.985 0.018 152);
+    --marketing-band: oklch(0.2 0.035 152);
+    --hero-accent-sky: oklch(0.92 0.055 230);
+    --hero-accent-lime: oklch(0.95 0.07 135);
+    /* Split-hero right column (warm panel, Dropbox-style) */
+    --hero-panel-warm: oklch(0.965 0.012 88);
 }
 
 .dark {
@@ -125,6 +145,11 @@ body {
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --marketing-canvas: oklch(0.17 0.028 152);
+    --marketing-band: oklch(0.14 0.032 152);
+    --hero-accent-sky: oklch(0.28 0.06 230);
+    --hero-accent-lime: oklch(0.22 0.05 135);
+    --hero-panel-warm: oklch(0.21 0.022 88);
 }
 
 @layer base {
@@ -133,6 +158,16 @@ body {
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground antialiased;
+    }
+
+    /*
+     * Headings benefit from balanced line breaks without changing copy.
+     * @see typography best practices (text-wrap: balance)
+     */
+    h1,
+    h2,
+    h3 {
+        text-wrap: balance;
     }
 }

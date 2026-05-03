@@ -34,25 +34,25 @@
         <div class="flex items-center gap-4 text-gray-500 text-sm">
           <!-- Client/Lawyer Info -->
           <div v-if="getPersonName()" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-user" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-user" class="w-4 h-4" />
             <span>{{ getPersonName() }}</span>
           </div>
           
           <!-- Last Updated -->
           <div class="flex items-center gap-1">
-            <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-clock" class="w-4 h-4" />
             <span>{{ formatDate(props.case.updatedAt) }}</span>
           </div>
           
           <!-- Due Date (if exists and not overdue) -->
           <div v-if="props.case.dueDate && !isOverdue" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-calendar" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-calendar" class="w-4 h-4" />
             <span>Due {{ formatDate(props.case.dueDate) }}</span>
           </div>
           
           <!-- Overdue indicator -->
           <div v-if="isOverdue" class="flex items-center gap-1 text-red-500">
-            <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
             <span>Overdue</span>
           </div>
         </div>
@@ -75,7 +75,7 @@
         
         <!-- Unread Messages -->
         <div v-if="props.case.unreadMessageCount && props.case.unreadMessageCount > 0" class="flex items-center gap-1">
-          <UIcon name="i-heroicons-chat-bubble-left" class="w-4 h-4 text-blue-500" />
+          <PhIcon name="i-heroicons-chat-bubble-left" class="w-4 h-4 text-blue-500" />
           <UBadge color="blue" size="sm">
             {{ props.case.unreadMessageCount }}
           </UBadge>

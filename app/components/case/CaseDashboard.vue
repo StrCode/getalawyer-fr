@@ -13,13 +13,13 @@
       <template #actions>
         <div class="flex gap-3">
           <!-- Create Case Button (Lawyers only) -->
-          <UButton
+          <Button
             v-if="role === 'lawyer'"
             icon="i-heroicons-plus"
             @click="$emit('create-case')"
           >
             New Case
-          </UButton>
+          </Button>
         </div>
       </template>
     </UPageHeader>
@@ -39,7 +39,7 @@
             <p class="text-gray-600 text-sm">Total Cases</p>
             <p class="font-semibold text-2xl">{{ statistics.total }}</p>
           </div>
-          <UIcon name="i-heroicons-briefcase" class="w-8 h-8 text-blue-500" />
+          <PhIcon name="i-heroicons-briefcase" class="w-8 h-8 text-blue-500" />
         </div>
       </UCard>
       
@@ -49,7 +49,7 @@
             <p class="text-gray-600 text-sm">Active Cases</p>
             <p class="font-semibold text-2xl">{{ statistics.active }}</p>
           </div>
-          <UIcon name="i-heroicons-play" class="w-8 h-8 text-green-500" />
+          <PhIcon name="i-heroicons-play" class="w-8 h-8 text-green-500" />
         </div>
       </UCard>
       
@@ -59,7 +59,7 @@
             <p class="text-gray-600 text-sm">Overdue Cases</p>
             <p class="font-semibold text-2xl">{{ statistics.overdue }}</p>
           </div>
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-8 h-8 text-red-500" />
+          <PhIcon name="i-heroicons-exclamation-triangle" class="w-8 h-8 text-red-500" />
         </div>
       </UCard>
       
@@ -69,7 +69,7 @@
             <p class="text-gray-600 text-sm">Closed Cases</p>
             <p class="font-semibold text-2xl">{{ statistics.closed }}</p>
           </div>
-          <UIcon name="i-heroicons-check-circle" class="w-8 h-8 text-gray-500" />
+          <PhIcon name="i-heroicons-check-circle" class="w-8 h-8 text-gray-500" />
         </div>
       </UCard>
     </div>

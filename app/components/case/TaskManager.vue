@@ -5,13 +5,13 @@
       <template #header>
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-lg">Create New Task</h3>
-          <UButton
+          <Button
             v-if="!showCreateForm"
             icon="i-heroicons-plus"
             @click="showCreateForm = true"
           >
             New Task
-          </UButton>
+          </Button>
         </div>
       </template>
       
@@ -68,19 +68,19 @@
         </UFormField>
         
         <div class="flex justify-end gap-3">
-          <UButton
+          <Button
             variant="outline"
             @click="cancelTaskCreation"
           >
             Cancel
-          </UButton>
-          <UButton
+          </Button>
+          <ButtonBusy
             :loading="creating"
             :disabled="!isFormValid"
             @click="createTask"
           >
             Create Task
-          </UButton>
+          </ButtonBusy>
         </div>
       </div>
     </UCard>

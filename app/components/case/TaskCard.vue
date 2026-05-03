@@ -39,17 +39,17 @@
         
         <div class="flex items-center gap-4 text-gray-500 text-sm">
           <div v-if="task.assignee" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-user" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-user" class="w-4 h-4" />
             <span>{{ task.assignee.name }}</span>
           </div>
           
           <div v-if="task.dueDate" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-calendar" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-calendar" class="w-4 h-4" />
             <span>Due {{ formatDate(task.dueDate) }}</span>
           </div>
           
           <div class="flex items-center gap-1">
-            <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+            <PhIcon name="i-heroicons-clock" class="w-4 h-4" />
             <span>Created {{ formatDate(task.createdAt) }}</span>
           </div>
         </div>
@@ -58,40 +58,45 @@
       <div class="flex items-center gap-2 ml-4">
         <!-- Status Change Buttons -->
         <div v-if="canUpdateTask" class="flex gap-1">
-          <UButton
+          <Button
             v-if="task.status === 'pending'"
-            icon="i-heroicons-play"
-            size="xs"
+            size="sm"
             variant="outline"
+            class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
+            <PhPlay class="size-3.5 shrink-0" weight="fill" aria-hidden="true" />
             Start
-          </UButton>
-          
-          <UButton
+          </Button>
+
+          <Button
             v-if="task.status === 'in_progress'"
-            icon="i-heroicons-check"
-            size="xs"
-            color="green"
+            size="sm"
+            variant="default"
+            class="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
             @click="updateStatus('completed')"
           >
+            <PhCheck class="size-3.5 shrink-0" weight="bold" aria-hidden="true" />
             Complete
-          </UButton>
-          
-          <UButton
+          </Button>
+
+          <Button
             v-if="task.status === 'completed'"
-            icon="i-heroicons-arrow-path"
-            size="xs"
+            size="sm"
             variant="outline"
+            class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
+            <PhArrowClockwise class="size-3.5 shrink-0" aria-hidden="true" />
             Reopen
-          </UButton>
+          </Button>
         </div>
-        
+
         <!-- Task Actions Menu -->
         <UDropdown v-if="role === 'lawyer'" :items="taskActions">
-          <UButton icon="i-heroicons-ellipsis-vertical" variant="ghost" size="xs" />
+          <Button variant="ghost" size="icon-sm" class="size-8 shrink-0" aria-label="Task actions">
+            <PhDotsThreeVertical class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+          </Button>
         </UDropdown>
       </div>
     </div>
@@ -99,7 +104,14 @@
 </template>
 
 <script setup lang="ts">
+import {
+  PhArrowClockwise,
+  PhCheck,
+  PhDotsThreeVertical,
+  PhPlay,
+} from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
+import { Button } from '@/components/ui/button'
 import type { Task, TaskStatus, Priority } from '~/types'
 
 interface Props {

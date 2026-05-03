@@ -3,7 +3,7 @@
     <div class="mx-auto px-4 py-8 max-w-5xl">
       <!-- Header -->
       <div class="mb-8">
-        <UButton
+        <Button
           label="Back to Booking"
           color="neutral"
           variant="ghost"
@@ -13,7 +13,7 @@
           <template #leading>
             <PhArrowLeft class="size-5 shrink-0" />
           </template>
-        </UButton>
+        </Button>
         <h1 class="font-bold text-gray-900 text-3xl">Reschedule Booking</h1>
         <p class="mt-2 text-gray-600">Select a new date and time for your consultation</p>
       </div>
@@ -33,7 +33,7 @@
       <div v-else-if="!canReschedule" class="py-12 text-center">
         <PhCalendarX class="mx-auto mb-4 w-12 h-12 text-gray-400" />
         <p class="text-gray-600">This booking cannot be rescheduled</p>
-        <UButton
+        <Button
           label="Back to Booking"
           color="primary"
           class="bg-[#007AFC] mt-4"
@@ -55,13 +55,13 @@
 
             <template #footer>
               <div class="flex justify-end gap-3">
-                <UButton
+                <Button
                   label="Cancel"
                   color="neutral"
                   variant="ghost"
                   :to="`/dashboard/bookings/${bookingId}`"
                 />
-                <UButton
+                <ButtonBusy
                   label="Confirm Reschedule"
                   color="primary"
                   class="bg-[#007AFC]"

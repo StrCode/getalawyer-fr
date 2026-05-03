@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-lg text-gray-900">Availability</h3>
-        <UButton
+        <Button
           icon="i-hugeicons-settings-02"
           size="sm"
           color="neutral"
@@ -15,21 +15,21 @@
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center py-8">
-      <UIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
+      <PhIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
     </div>
 
     <!-- Error State -->
     <div v-else-if="isError" class="text-center py-8 text-red-500">
-      <UIcon name="i-hugeicons-alert-circle" class="w-8 h-8 mx-auto mb-2" />
+      <PhIcon name="i-hugeicons-alert-circle" class="w-8 h-8 mx-auto mb-2" />
       <p class="text-sm">Failed to load availability</p>
     </div>
 
     <!-- Empty State -->
     <div v-else-if="!schedule || schedule.length === 0" class="text-center py-8">
-      <UIcon name="i-hugeicons-clock-01" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
+      <PhIcon name="i-hugeicons-clock-01" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
       <h4 class="font-semibold text-gray-900 mb-2">No availability set</h4>
       <p class="text-sm text-gray-600 mb-4">Set your working hours to start accepting bookings</p>
-      <UButton
+      <Button
         label="Set Availability"
         color="primary"
         class="bg-[#007AFC]"
@@ -62,7 +62,7 @@
           class="flex items-center justify-between p-2 bg-orange-50 rounded-lg mb-2"
         >
           <div class="flex items-center gap-2">
-            <UIcon name="i-hugeicons-calendar-remove-01" class="w-4 h-4 text-orange-600" />
+            <PhIcon name="i-hugeicons-calendar-remove-01" class="w-4 h-4 text-orange-600" />
             <span class="text-sm text-gray-900">{{ exception.reason || 'Time off' }}</span>
           </div>
           <span class="text-xs text-gray-600">
@@ -73,7 +73,7 @@
 
       <!-- View All Link -->
       <div class="text-center pt-2">
-        <UButton
+        <Button
           label="Manage Availability"
           color="neutral"
           variant="ghost"

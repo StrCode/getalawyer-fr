@@ -20,14 +20,14 @@ const { identifier } = useAuthModal()
       Welcome to Getalawyer{{ identifier ? `, ${identifier}` : '' }}.<br />Your account is ready.
     </p>
 
-    <UButton
+    <Button
       block
       size="lg"
       class="bg-gradient-to-r from-[#E31C5F] to-[#FF385C] hover:from-[#d01856] hover:to-[#e8304f] rounded-xl"
       @click="emit('close')"
     >
       Done
-    </UButton>
+    </Button>
   </div>
 </template>
 

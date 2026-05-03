@@ -137,15 +137,15 @@ function close() {
               What happened after the consultation with {{ booking.client?.name }}?
             </p>
           </div>
-          <UButton
-            color="neutral"
+          <Button
             variant="ghost"
+            size="icon-sm"
+            class="shrink-0"
+            aria-label="Close dialog"
             @click="close"
           >
-            <template #leading>
-              <PhX class="w-5 h-5" />
-            </template>
-          </UButton>
+            <PhX class="size-5" weight="bold" aria-hidden="true" />
+          </Button>
         </div>
       </template>
 
@@ -270,17 +270,17 @@ function close() {
 
       <template #footer>
         <div class="flex justify-end gap-3">
-          <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-          <UButton
-            label="Record Outcome"
-            color="primary"
+          <Button variant="outline" @click="close">
+            Cancel
+          </Button>
+          <ButtonBusy
+            variant="default"
             :loading="isPending"
             @click="onSubmit"
           >
-            <template #leading>
-              <PhCheck class="w-4 h-4" />
-            </template>
-          </UButton>
+            <PhCheck class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+            Record Outcome
+          </ButtonBusy>
         </div>
       </template>
     </UCard>
