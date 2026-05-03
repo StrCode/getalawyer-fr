@@ -28,7 +28,7 @@ const handleSearch = (data: {
   <div>
     <HeroPreviewSplit id="hero" @search="handleSearch" />
 
-    <HowItWorksSection id="how-it-works" />
+    <HowItWorksSection />
 
     <PracticeAreasSection
       id="practice-areas"

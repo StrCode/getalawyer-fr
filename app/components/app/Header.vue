@@ -52,9 +52,9 @@ onUnmounted(() => {
 })
 
 const navLinks = [
-  { label: 'How It Works', to: '/how-it-works' },
+  { label: 'How It Works', to: '/#how-it-works' },
   { label: 'Practice Areas', to: '/practice-areas' },
-  { label: 'For Lawyers', to: '/for-lawyers' }
+  { label: 'For Lawyers', to: '/for-lawyers' },
 ]
 </script>
 
@@ -83,7 +83,7 @@ const navLinks = [
         <nav v-if="!props.hideNavigation" class="hidden lg:flex items-center gap-1">
           <NuxtLink
             v-for="link in navLinks"
-            :key="link.to"
+            :key="link.label"
             :to="link.to"
             class="min-h-[44px] inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white"
           >
@@ -162,7 +162,7 @@ const navLinks = [
         <div class="space-y-1 mx-auto px-4 py-4 max-w-7xl">
           <NuxtLink
             v-for="link in navLinks"
-            :key="link.to"
+            :key="link.label"
             :to="link.to"
             class="block hover:bg-neutral-50 px-3 py-2.5 rounded-xl font-medium text-neutral-700 text-sm"
             @click="isMenuOpen = false"

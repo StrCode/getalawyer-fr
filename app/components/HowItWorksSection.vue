@@ -24,35 +24,35 @@ const steps: Step[] = [
     icon: PhUserPlus,
     title: 'Create your account',
     description:
-      'Sign up in minutes with email or Google, then finish any profile details needed to book.',
+      'Sign up in a few minutes with email or Google. Add the basics for your profile so lawyers know who you are and you can book and message without friction later.',
   },
   {
     number: 2,
     icon: PhMagnifyingGlass,
     title: 'Search & filter',
     description:
-      'Browse the directory by practice area, location, and how you prefer to consult.',
+      'Explore the directory by practice area, location, and how you like to meet—video, phone, or in person when it is offered. Narrow the list until the shortlist feels manageable.',
   },
   {
     number: 3,
     icon: PhFileText,
     title: 'Compare profiles',
     description:
-      'Review verification, qualifications, and experience—plus ratings where lawyers have collected them.',
+      'Open each profile to see verification, qualifications, and experience at a glance. Where lawyers have shared them, you can also read reviews and get a clearer sense of fit before you reach out.',
   },
   {
     number: 4,
     icon: PhCalendarBlank,
     title: 'Book a consultation',
     description:
-      'Pick a time that fits; you\'ll see confirmation details before the appointment is finalized.',
+      'Choose a slot that works for you from the lawyer’s calendar. You will see fees, duration, and what is included up front, and you confirm only when the details look right.',
   },
   {
     number: 5,
     icon: PhVideoCamera,
     title: 'Meet your lawyer',
     description:
-      'Join by video, phone, or in person when the lawyer offers it—whatever you agreed when booking.',
+      'Join the session the way you agreed—secure video, phone, or in person when available. Afterward you can keep the conversation and documents in one place on the platform when messaging is enabled.',
   },
 ]
 
@@ -62,7 +62,7 @@ const steps: Step[] = [
   <!-- No overflow-x clip here: overflow-x + visible y often forces y=auto and breaks page-sticky. -->
   <section
     id="how-it-works"
-    class="relative border-border border-y bg-white py-20 md:py-28 dark:bg-background"
+    class="scroll-mt-18 relative border-border border-y bg-white py-20 md:py-28 sm:scroll-mt-20 dark:bg-background"
   >
     <div
       class="pointer-events-none absolute inset-x-0 top-0 h-48 bg-linear-to-b from-muted/25 to-transparent dark:from-muted/20"
@@ -76,7 +76,7 @@ const steps: Step[] = [
         <!-- Left cell stretches to row height (tallest column = list); inner is sticky until row ends. -->
         <header class="min-h-0 lg:col-span-5 lg:self-stretch">
           <div
-            class="mx-auto max-w-xl text-center lg:sticky lg:top-21 lg:mx-0 lg:max-w-md lg:text-left lg:pb-4"
+            class="mx-auto max-w-xl text-center lg:sticky lg:top-21 lg:mx-0 lg:max-w-lg lg:text-left lg:pb-4"
           >
             <motion.div
               class="mb-5 flex justify-center lg:justify-start"
@@ -100,7 +100,7 @@ const steps: Step[] = [
               :transition="{ duration: 0.45, delay: 0.05 }"
               class="text-balance font-bold tracking-tight text-foreground text-[2rem] leading-[1.12] sm:text-[2.1875rem] md:text-[2.4375rem] lg:text-[2.5rem] xl:text-[2.625rem]"
             >
-              From search to session in five steps
+              From your first search to your first consultation
             </motion.h2>
 
             <div class="flex justify-center py-6 lg:justify-start" role="presentation">
@@ -114,9 +114,9 @@ const steps: Step[] = [
               :whileInView="{ opacity: 1, y: 0 }"
               :viewport="{ once: true }"
               :transition="{ duration: 0.45, delay: 0.09 }"
-              class="text-pretty max-w-[36ch] text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base sm:leading-relaxed lg:max-w-[40ch]"
+              class="text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base sm:leading-relaxed lg:max-w-[48ch]"
             >
-              A straightforward path through the marketplace—fewer surprises once you decide to book.
+              GetaLawyer is built around a simple idea: you should see who you are hiring, how they work, and what a first conversation costs before you commit. The steps on the right walk you from first visit to your first session.
             </motion.p>
           </div>
         </header>
