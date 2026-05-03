@@ -1,49 +1,64 @@
 <script setup lang="ts">
-import {
-  PhCheck,
-  PhClock,
-  PhMagnifyingGlass,
-  PhSealCheck,
-  PhShieldCheck,
-} from '@phosphor-icons/vue'
+import { PhMagnifyingGlass } from '@phosphor-icons/vue'
 import { motion } from 'motion-v'
 import { ref } from 'vue'
+
+const props = withDefaults(
+  defineProps<{
+    /** Hero image URL; default is `public/images/find-lawyer.png`. */
+    heroImageSrc?: string
+    heroImageAlt?: string
+  }>(),
+  {
+    heroImageSrc: '/images/find-lawyer.png',
+    heroImageAlt:
+      'Two professionals shaking hands in a bright office — trust and partnership',
+  },
+)
 
 const emit = defineEmits<{
   search: [data: { practiceArea: string | null; location: string | null; consultationType: string | null }]
 }>()
 
-const practiceArea = ref('')
-const location = ref('')
+const searchQuery = ref('')
 
-const submit = () => {
+const runSearch = () => {
+  const q = searchQuery.value.trim()
   emit('search', {
-    practiceArea: practiceArea.value || null,
-    location: location.value || null,
+    practiceArea: q || null,
+    location: null,
     consultationType: null,
+  })
+  navigateTo({
+    path: '/lawyers',
+    ...(q ? { query: { q } } : {}),
   })
 }
 </script>
 
 <template>
-  <!-- Spacer under fixed header (h-18) handles offset; scroll-mt keeps #hero clear of the bar -->
   <section
-    class="relative scroll-mt-18 overflow-hidden border-b border-neutral-200/90 bg-white pt-10 sm:scroll-mt-20 sm:pt-12 lg:pt-16 dark:border-border dark:bg-background"
+    id="hero"
+    class="relative scroll-mt-18 overflow-hidden border-b border-neutral-200/90 bg-white sm:scroll-mt-20 dark:border-border dark:bg-background"
   >
-    <div class="relative z-10 mx-auto grid max-w-7xl lg:grid-cols-2">
-      <!-- Primary column -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_70%_at_0%_0%,rgba(60,132,105,0.05),transparent_50%)] dark:bg-[radial-gradient(ellipse_100%_70%_at_0%_0%,rgba(60,132,105,0.1),transparent_50%)]"
+    />
+
+    <!-- 55 / 45 split: copy + search | image -->
+    <div
+      class="relative z-10 grid min-h-0 w-full grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:items-stretch lg:min-h-[min(44rem,calc(100vh-5.5rem))] xl:min-h-[min(48rem,calc(100vh-5rem))]"
+    >
       <div
-        class="relative border-b border-neutral-200/90 bg-white px-6 py-14 sm:px-10 sm:py-16 lg:border-b-0 lg:border-r lg:px-12 lg:py-20 xl:px-14 dark:border-border dark:bg-background"
+        class="flex w-full flex-col justify-center border-b border-neutral-200/90 bg-linear-to-b from-white to-neutral-50/80 px-6 py-14 sm:px-10 sm:py-16 lg:border-b-0 lg:border-r lg:border-neutral-200/90 lg:bg-linear-to-br lg:from-white lg:to-hero-panel-warm/25 lg:px-12 lg:py-24 xl:px-16 xl:py-28 dark:border-border dark:from-background dark:to-background dark:lg:to-neutral-950/40"
       >
-        <div
-          class="pointer-events-none absolute inset-0 opacity-[0.028] dark:opacity-[0.04]"
-          style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 24px 24px;"
-        />
-        <div class="relative">
+        <!-- Left gutter wrapper (same inset as rail; no visible border stroke) -->
+        <div class="relative pl-6 sm:pl-7 lg:pl-8">
           <motion.p
             :initial="{ opacity: 0, y: 8 }"
             :animate="{ opacity: 1, y: 0 }"
-            class="mb-5 inline-flex w-fit items-center rounded-full border border-brand/15 bg-brand-soft px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand"
+            class="mb-3 inline-flex w-fit items-center rounded-full bg-brand-soft/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand ring-1 ring-brand/15 dark:bg-brand/15 dark:ring-brand/25"
           >
             Verified directory
           </motion.p>
@@ -51,7 +66,7 @@ const submit = () => {
             :initial="{ opacity: 0, y: 16 }"
             :animate="{ opacity: 1, y: 0 }"
             :transition="{ delay: 0.05, duration: 0.5 }"
-            class="text-balance text-4xl font-bold leading-[1.08] tracking-tight text-neutral-900 sm:text-5xl lg:text-[2.75rem] dark:text-foreground"
+            class="text-balance font-bold leading-[1.04] tracking-[-0.03em] text-neutral-950 text-[2.25rem] sm:text-5xl lg:text-[clamp(2.75rem,4vw,3.35rem)] xl:text-[clamp(2.85rem,3.6vw,3.5rem)] dark:text-foreground"
           >
             Legal help that fits your situation.
           </motion.h1>
@@ -59,119 +74,91 @@ const submit = () => {
             :initial="{ opacity: 0, y: 12 }"
             :animate="{ opacity: 1, y: 0 }"
             :transition="{ delay: 0.1, duration: 0.45 }"
-            class="mt-5 max-w-lg text-pretty text-base leading-relaxed text-neutral-600 sm:text-lg dark:text-muted-foreground"
+            class="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-neutral-600 sm:text-xl dark:text-muted-foreground"
           >
             Browse bar-checked lawyers, compare consultation formats, and book in one place.
           </motion.p>
-          <ul class="mt-10 max-w-lg space-y-3.5 text-sm text-neutral-600 dark:text-muted-foreground">
-            <li class="flex gap-3">
-              <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/12 text-brand dark:bg-brand/20">
-                <PhCheck class="size-3" weight="bold" aria-hidden="true" />
+
+          <motion.div
+            :initial="{ opacity: 0, y: 12 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ delay: 0.16, duration: 0.4 }"
+            class="mt-12 lg:max-w-none"
+          >
+            <div
+              class="grid w-full max-w-4xl grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 sm:gap-x-3 lg:gap-x-4"
+            >
+              <NuxtLink
+                to="/lawyers"
+                class="col-start-1 row-start-1 inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white shadow-md shadow-brand/25 outline-none transition-[colors,box-shadow,transform] hover:bg-brand-hover hover:shadow-lg hover:shadow-brand/30 active:translate-y-px focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 dark:focus-visible:ring-offset-background sm:h-14 sm:px-7 sm:text-base lg:px-9 lg:text-lg"
+              >
+                Find a lawyer
+              </NuxtLink>
+
+              <span
+                class="col-start-2 row-start-1 shrink-0 select-none font-semibold text-[12px] text-neutral-400 uppercase tracking-[0.18em] sm:text-[13px] sm:tracking-[0.2em] dark:text-muted-foreground"
+                aria-hidden="true"
+              >
+                or
               </span>
-              <span>Bar verification and credentials surfaced on every profile.</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/12 text-brand dark:bg-brand/20">
-                <PhCheck class="size-3" weight="bold" aria-hidden="true" />
-              </span>
-              <span>Video, phone, or in-person where offered.</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand/12 text-brand dark:bg-brand/20">
-                <PhCheck class="size-3" weight="bold" aria-hidden="true" />
-              </span>
-              <span>Clear consultation pricing before you book.</span>
-            </li>
-          </ul>
+
+              <div
+                class="col-start-3 row-start-1 flex min-h-12 w-full items-center gap-1 rounded-xl border border-neutral-200/90 bg-background pl-1 pr-2 py-0.5 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.1)] outline-none ring-offset-background transition-shadow focus-within:border-brand/40 focus-within:shadow-[0_4px_20px_-8px_rgba(15,23,42,0.14)] focus-within:ring-2 focus-within:ring-brand/20 sm:min-h-14 sm:pr-3 dark:border-input dark:bg-input/30 dark:shadow-none dark:focus-within:ring-brand/30"
+                role="search"
+              >
+                <button
+                  type="button"
+                  class="-ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-brand outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-brand/30 sm:size-10 dark:hover:bg-neutral-800/80"
+                  aria-label="Run search"
+                  @click="runSearch"
+                >
+                  <PhMagnifyingGlass class="size-4.5 sm:size-5" weight="regular" aria-hidden="true" />
+                </button>
+                <input
+                  id="hero-directory-search"
+                  v-model="searchQuery"
+                  type="search"
+                  name="q"
+                  autocomplete="off"
+                  aria-label="Search directory"
+                  placeholder="Browse by city or topic"
+                  class="min-h-10 min-w-0 flex-1 border-0 bg-transparent py-2 pr-1 text-neutral-950 text-sm outline-none placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:opacity-50 dark:text-foreground sm:min-h-11 sm:pr-2 sm:text-base [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden"
+                  @keydown.enter.prevent="runSearch"
+                >
+              </div>
+
+              <p
+                class="col-start-3 row-start-2 text-neutral-500 text-xs leading-snug dark:text-muted-foreground"
+              >
+                Press Enter or tap the icon to search.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      <!-- Secondary: conversion card + micro-trust strip (same white field as rest of hero) -->
-      <div
-        class="flex flex-col justify-center bg-white px-6 py-14 sm:px-10 sm:py-16 lg:px-12 lg:py-20 xl:px-14 dark:bg-background"
-      >
+      <div class="relative min-h-[280px] w-full bg-neutral-100 sm:min-h-[320px] lg:min-h-0 dark:bg-neutral-950">
         <motion.div
-          :initial="{ opacity: 0, y: 20 }"
-          :animate="{ opacity: 1, y: 0 }"
-          :transition="{ delay: 0.12, duration: 0.45 }"
-          class="mx-auto w-full max-w-lg overflow-hidden rounded-xl border border-neutral-200/90 bg-white shadow-[0_20px_50px_-16px_rgba(15,23,42,0.12)] dark:border-border dark:bg-card dark:shadow-[0_20px_50px_-16px_rgba(0,0,0,0.5)]"
+          :initial="{ opacity: 0 }"
+          :animate="{ opacity: 1 }"
+          :transition="{ delay: 0.06, duration: 0.45 }"
+          class="absolute inset-0"
         >
-          <div class="bg-brand px-5 py-3.5">
-            <p class="text-[13px] font-semibold uppercase tracking-wide text-white">
-              Search
-            </p>
-          </div>
-          <div class="px-6 py-6 sm:px-7 sm:py-7">
-            <h2 class="text-lg font-semibold tracking-tight text-neutral-900 dark:text-foreground">
-              Start with what you need
-            </h2>
-            <p class="mt-1.5 text-sm leading-relaxed text-neutral-600 dark:text-muted-foreground">
-              We will narrow results; you can refine filters on the next screen.
-            </p>
-            <label class="mt-6 block">
-              <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-muted-foreground">Practice area</span>
-              <input
-                v-model="practiceArea"
-                type="text"
-                placeholder="e.g. Family law"
-                class="h-11 w-full rounded-lg border border-neutral-200 bg-white px-3.5 text-sm text-neutral-900 outline-none transition-shadow placeholder:text-neutral-400 focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/25 dark:border-input dark:bg-background dark:text-foreground"
-              >
-            </label>
-            <label class="mt-4 block">
-              <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-muted-foreground">Location</span>
-              <input
-                v-model="location"
-                type="text"
-                placeholder="City or state"
-                class="h-11 w-full rounded-lg border border-neutral-200 bg-white px-3.5 text-sm text-neutral-900 outline-none transition-shadow placeholder:text-neutral-400 focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/25 dark:border-input dark:bg-background dark:text-foreground"
-              >
-            </label>
-            <button
-              type="button"
-              class="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand text-sm font-semibold text-white outline-none transition-colors hover:bg-brand-hover focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-              @click="submit"
-            >
-              <PhMagnifyingGlass class="size-4 shrink-0 opacity-95" aria-hidden="true" />
-              Search lawyers
-            </button>
-          </div>
-        </motion.div>
-
-        <motion.div
-          :initial="{ opacity: 0, y: 10 }"
-          :animate="{ opacity: 1, y: 0 }"
-          :transition="{ delay: 0.2, duration: 0.4 }"
-          class="mx-auto mt-8 w-full max-w-lg border-t border-neutral-100 pt-6 dark:border-border/60"
-        >
-          <ul
-            class="grid gap-3 sm:grid-cols-3 sm:gap-2"
-            aria-label="Why search here"
-          >
-            <li class="flex items-start gap-2 text-[13px] leading-snug text-neutral-600 dark:text-muted-foreground">
-              <PhSealCheck
-                class="mt-0.5 size-4.5 shrink-0 text-brand"
-                aria-hidden="true"
-                weight="duotone"
-              />
-              <span>Credentials shown on profiles</span>
-            </li>
-            <li class="flex items-start gap-2 text-[13px] leading-snug text-neutral-600 dark:text-muted-foreground">
-              <PhClock
-                class="mt-0.5 size-4.5 shrink-0 text-brand"
-                aria-hidden="true"
-                weight="duotone"
-              />
-              <span>Book consultations online</span>
-            </li>
-            <li class="flex items-start gap-2 text-[13px] leading-snug text-neutral-600 dark:text-muted-foreground">
-              <PhShieldCheck
-                class="mt-0.5 size-4.5 shrink-0 text-brand"
-                aria-hidden="true"
-                weight="duotone"
-              />
-              <span>Secure checkout when you pay</span>
-            </li>
-          </ul>
+          <img
+            :src="props.heroImageSrc"
+            :alt="props.heroImageAlt"
+            width="1600"
+            height="900"
+            class="h-full w-full object-cover object-[center_28%]"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+            sizes="(max-width: 1024px) 100vw, 45vw"
+          />
+          <div
+            class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent lg:from-black/5 dark:from-black/20"
+            aria-hidden="true"
+          />
         </motion.div>
       </div>
     </div>

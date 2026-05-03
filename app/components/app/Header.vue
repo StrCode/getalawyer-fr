@@ -8,8 +8,12 @@ const props = withDefaults(
     transparent?: boolean
     /** Circle mark + wordmark (used on home layout) */
     showBrandName?: boolean
+    /** Hide site nav links and mobile drawer (brand + CTAs only) */
+    hideNavigation?: boolean
+    /** Hide sign-in / dashboard / promo CTAs (brand-only strip) */
+    hideHeaderActions?: boolean
   }>(),
-  { transparent: false, showBrandName: false },
+  { transparent: false, showBrandName: false, hideNavigation: false, hideHeaderActions: false },
 )
 
 const isMenuOpen = ref(false)
@@ -64,7 +68,10 @@ const navLinks = [
       : 'border-border bg-background/95 backdrop-blur-md supports-backdrop-filter:bg-background/80'"
   >
     <div class="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-      <div class="flex justify-between items-center h-18">
+      <div
+        class="flex items-center gap-4 h-18"
+        :class="props.hideHeaderActions ? 'justify-start' : 'justify-between'"
+      >
 
         <!-- Logo -->
         <AppHeaderBrand
@@ -73,7 +80,7 @@ const navLinks = [
         />
 
         <!-- Desktop Nav -->
-        <nav class="hidden lg:flex items-center gap-1">
+        <nav v-if="!props.hideNavigation" class="hidden lg:flex items-center gap-1">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
@@ -84,8 +91,12 @@ const navLinks = [
           </NuxtLink>
         </nav>
 
-        <!-- Right CTAs -->
-        <div class="hidden lg:flex items-center gap-2">
+        <!-- Right CTAs (always visible when nav is hidden — no hamburger) -->
+        <div
+          v-if="!props.hideHeaderActions"
+          class="items-center gap-2"
+          :class="props.hideNavigation ? 'flex' : 'hidden lg:flex'"
+        >
           <template v-if="session">
             <NuxtLink
               to="/dashboard"
@@ -122,6 +133,7 @@ const navLinks = [
 
         <!-- Mobile menu toggle -->
         <button
+          v-if="!props.hideNavigation"
           type="button"
           class="flex size-11 items-center justify-center rounded-lg outline-none transition-colors hover:bg-black/6 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 lg:hidden dark:hover:bg-white/8"
           @click="isMenuOpen = !isMenuOpen"
@@ -144,7 +156,7 @@ const navLinks = [
       leave-to-class="opacity-0 -translate-y-2"
     >
       <div
-        v-if="isMenuOpen"
+        v-if="!props.hideNavigation && isMenuOpen"
         class="max-h-[80vh] overflow-y-auto border-t border-border bg-background lg:hidden"
       >
         <div class="space-y-1 mx-auto px-4 py-4 max-w-7xl">

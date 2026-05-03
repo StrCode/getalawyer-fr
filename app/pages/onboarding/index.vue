@@ -5,7 +5,8 @@ import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { PhCircleNotch, PhWarningCircle, PhHouse, PhPlus, PhArrowRight } from '@phosphor-icons/vue'
 
 definePageMeta({
-  middleware: ['auth']
+  layout: 'onboarding-draft',
+  middleware: ['auth'],
 })
 
 const { session } = useAuth()
@@ -29,35 +30,42 @@ const { data: draftResponse, isPending: isDraftFetchPending, error: draftFetchEr
 
 watchEffect(() => {
   if (userType.value === 'client') {
-     navigateTo(firstStep.value?.path || '/onboarding', { replace: true })
-     return
+    navigateTo(firstStep.value?.path || '/onboarding', { replace: true })
+    return
   }
 
-  if (!isDraftFetchPending.value) {
-    if (draftFetchError.value) {
-      const status = (draftFetchError.value as any)?.response?.status
-      if (status === 404) {
-          startNewListingBypass()
-      } else {
-          isError.value = true
-          isVerifyingDraft.value = false
-      }
-    } else if (draftResponse.value) {
-      // Check if we actually have data inside the draft
-      let hasData = false;
-      if (draftResponse.value.data) {
-        hasData = Object.keys(draftResponse.value.data).length > 0;
-      }
-      
-      if (hasData) {
-        existingDraft.value = draftResponse.value
-        isVerifyingDraft.value = false
-      } else {
-        startNewListingBypass()
-      }
+  /** Draft query is client-only; on SSR pending is false and data is absent — don't mis-route. */
+  if (import.meta.server) return
+
+  if (isDraftFetchPending.value) return
+
+  if (draftFetchError.value) {
+    const status = (draftFetchError.value as any)?.response?.status
+    if (status === 404) {
+      startNewListingBypass()
     } else {
-       startNewListingBypass()
+      isError.value = true
+      isVerifyingDraft.value = false
     }
+    return
+  }
+
+  if (draftResponse.value) {
+    const payload = draftResponse.value.data
+    const hasResumePayload =
+      payload != null &&
+      typeof payload === 'object' &&
+      !Array.isArray(payload) &&
+      Object.keys(payload).length > 0
+
+    if (hasResumePayload) {
+      existingDraft.value = draftResponse.value
+      isVerifyingDraft.value = false
+    } else {
+      startNewListingBypass()
+    }
+  } else {
+    startNewListingBypass()
   }
 })
 
@@ -104,22 +112,22 @@ const refresh = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-6">
+  <div class="min-h-[calc(100dvh-4.5rem)] flex flex-col items-center justify-center bg-gray-50 py-12 px-6">
     <!-- Initial Loading State -->
     <div v-if="isVerifyingDraft" class="flex flex-col items-center justify-center space-y-4">
       <PhCircleNotch class="w-8 h-8 text-primary animate-spin mx-auto mb-4" />
       <p class="text-gray-500 font-medium tracking-tight">Checking application status...</p>
     </div>
-    
+
     <div v-else-if="isError" class="max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-sm border border-red-100 text-center">
-       <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-          <PhWarningCircle class="w-8 h-8" />
-       </div>
-       <h1 class="text-xl font-bold text-gray-900 mb-2">Sync Error</h1>
-       <p class="text-gray-500 mb-6">We couldn't retrieve your application status. Please verify your connection and try again.</p>
-       <Button variant="default" class="w-full h-12 text-base font-semibold" @click="refresh">
-          Retry Sync
-       </Button>
+      <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+        <PhWarningCircle class="w-8 h-8" />
+      </div>
+      <h1 class="text-xl font-bold text-gray-900 mb-2">Sync Error</h1>
+      <p class="text-gray-500 mb-6">We couldn't retrieve your application status. Please verify your connection and try again.</p>
+      <Button variant="default" class="w-full h-12 text-base font-semibold" @click="refresh">
+        Retry Sync
+      </Button>
     </div>
 
     <!-- Welcome Back Splash -->
@@ -132,11 +140,12 @@ const refresh = () => {
         <!-- Finish Action -->
         <div class="space-y-3">
           <h2 class="text-xl font-medium text-gray-900">Continue your application</h2>
-          
-          <button 
-            @click="restoreDraft"
+
+          <button
+            type="button"
             :disabled="isRestoring"
             class="w-full group text-left bg-white border border-gray-200 hover:border-gray-900 rounded-2xl p-4 sm:p-6 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center justify-between"
+            @click="restoreDraft"
           >
             <div class="flex items-center gap-5">
               <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-900 transition-colors group-hover:bg-gray-200">
@@ -151,7 +160,7 @@ const refresh = () => {
                 </p>
               </div>
             </div>
-            
+
             <div class="pr-2">
               <PhCircleNotch v-if="isRestoring" class="w-5 h-5 text-gray-400 animate-spin" />
               <PhArrowRight v-else class="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors" />
@@ -162,11 +171,12 @@ const refresh = () => {
         <!-- Start New Action -->
         <div class="space-y-3">
           <h2 class="text-xl font-medium text-gray-900">Start over</h2>
-          
-          <button 
-            @click="startNewListing"
+
+          <button
+            type="button"
             :disabled="isDiscarding"
             class="w-full group text-left bg-white border border-gray-200 hover:border-red-600 rounded-2xl p-4 sm:p-6 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 flex items-center justify-between"
+            @click="startNewListing"
           >
             <div class="flex items-center gap-5">
               <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-900 transition-colors group-hover:bg-red-50 group-hover:text-red-600">
@@ -177,10 +187,10 @@ const refresh = () => {
                 <p class="text-sm text-gray-500">This will permanently delete your in-progress draft.</p>
               </div>
             </div>
-            
+
             <div class="pr-2">
-               <PhCircleNotch v-if="isDiscarding" class="w-5 h-5 text-gray-400 animate-spin" />
-               <PhArrowRight v-else class="w-5 h-5 text-gray-400 group-hover:text-red-600 transition-colors" />
+              <PhCircleNotch v-if="isDiscarding" class="w-5 h-5 text-gray-400 animate-spin" />
+              <PhArrowRight v-else class="w-5 h-5 text-gray-400 group-hover:text-red-600 transition-colors" />
             </div>
           </button>
         </div>
