@@ -94,6 +94,11 @@ const testimonials: Testimonial[] = [
   }
 ]
 
+/** Same chrome as the homepage (`AppHeader` + wordmark + marketing nav). */
+definePageMeta({
+  layout: 'home',
+})
+
 // SEO metadata
 useHead({
   title: 'For Lawyers - Join GetaLawyer',
@@ -138,7 +143,7 @@ onMounted(() => {
     </section>
     
     <!-- Benefits Section -->
-    <section class="benefits-section">
+    <section id="benefits" class="benefits-section scroll-mt-24">
       <UContainer>
         <div class="section-header">
           <h2 class="section-title">
@@ -181,7 +186,7 @@ onMounted(() => {
     </section>
     
     <!-- Pricing Section -->
-    <section class="pricing-section">
+    <section id="pricing" class="pricing-section scroll-mt-24">
       <UContainer>
         <div class="pricing-content">
           <h2 class="pricing-title">

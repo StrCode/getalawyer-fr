@@ -1,6 +1,21 @@
 <script setup lang="ts">
-import { PhArrowRight, PhList, PhX } from '@phosphor-icons/vue'
+import { PhArrowRight, PhBriefcase, PhList, PhX } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
+import { cn } from '@/lib/utils'
+
+type LawyerMegaItem = {
+  title: string
+  description: string
+  to: string
+}
 
 const props = withDefaults(
   defineProps<{
@@ -16,16 +31,13 @@ const props = withDefaults(
   { transparent: false, showBrandName: false, hideNavigation: false, hideHeaderActions: false },
 )
 
+const route = useRoute()
+
 const isMenuOpen = ref(false)
 const isElevated = ref(false)
 
 // Auth
-const { session, signOut } = useAuth()
-
-const handleSignOut = async () => {
-  await signOut()
-  navigateTo('/')
-}
+const { session } = useAuth()
 
 let scrollTicking = false
 const onWindowScroll = () => {
@@ -51,11 +63,82 @@ onUnmounted(() => {
   }
 })
 
-const navLinks = [
+watch(
+  () => route.fullPath,
+  () => {
+    isMenuOpen.value = false
+  },
+)
+
+const navItemBaseClass =
+  'min-h-[44px] inline-flex items-center justify-center rounded-lg bg-transparent px-3.5 py-2 text-sm font-medium text-neutral-700 shadow-none outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 data-[active]:bg-black/6 data-[active]:text-neutral-950 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white dark:data-[active]:bg-white/8 dark:data-[active]:text-white'
+
+/** Extra styles when route matches nav target (see `isPrimaryNavActive`). */
+const navItemActiveClass =
+  'bg-black/6 text-neutral-950 dark:bg-white/8 dark:text-white'
+
+function isPrimaryNavActive(linkTo: string) {
+  if (linkTo === '/practice-areas')
+    return route.path === '/practice-areas'
+
+  if (linkTo.includes('how-it-works'))
+    return route.path === '/' && route.hash === '#how-it-works'
+
+  return false
+}
+
+const isForLawyersSectionActive = computed(() => route.path === '/for-lawyers')
+
+const primaryNavLinks = [
   { label: 'How It Works', to: '/#how-it-works' },
   { label: 'Practice Areas', to: '/practice-areas' },
-  { label: 'For Lawyers', to: '/for-lawyers' },
+] as const
+
+const lawyerMegaSections: { heading: string; items: LawyerMegaItem[] }[] = [
+  {
+    heading: 'Learn more',
+    items: [
+      {
+        title: 'Overview',
+        description: 'Benefits and how GetaLawyer fits your practice.',
+        to: '/for-lawyers',
+      },
+      {
+        title: 'Plans & pricing',
+        description: 'Simple subscription—no commissions on consultations.',
+        to: '/for-lawyers#pricing',
+      },
+      {
+        title: 'Verification & credibility',
+        description: 'Bar verification, badge, and trust with clients.',
+        to: '/for-lawyers#benefits',
+      },
+    ],
+  },
+  {
+    heading: 'Get started',
+    items: [
+      {
+        title: 'Join as a lawyer',
+        description: 'Create your account and start the application.',
+        to: '/register?role=lawyer',
+      },
+      {
+        title: 'Lawyer dashboard',
+        description: 'Bookings, listings, messages, and availability.',
+        to: '/dashboard',
+      },
+    ],
+  },
 ]
+
+/** Hover matches top-level links (neutral wash); used in mega rows + mobile lawyer block. */
+const megaRowClass =
+  'block rounded-md p-3 no-underline outline-none transition-colors hover:bg-black/4 focus-visible:bg-black/4 dark:hover:bg-white/6 dark:focus-visible:bg-white/6'
+
+const closeMobile = () => {
+  isMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -79,37 +162,108 @@ const navLinks = [
           :on-hero="props.transparent && !isElevated"
         />
 
-        <!-- Desktop Nav -->
-        <nav v-if="!props.hideNavigation" class="hidden lg:flex items-center gap-1">
-          <NuxtLink
-            v-for="link in navLinks"
-            :key="link.label"
-            :to="link.to"
-            class="min-h-[44px] inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white"
-          >
-            {{ link.label }}
-          </NuxtLink>
-        </nav>
+        <!-- Desktop: full navigation menu -->
+        <NavigationMenu
+          v-if="!props.hideNavigation"
+          :viewport="false"
+          class="group/navigation-menu relative hidden max-w-max flex-none items-center lg:flex"
+        >
+          <NavigationMenuList class="flex flex-none items-center justify-start gap-1">
+            <NavigationMenuItem v-for="link in primaryNavLinks" :key="link.to">
+              <NavigationMenuLink as-child>
+                <NuxtLink
+                  :to="link.to"
+                  :class="cn(navItemBaseClass, 'gap-2', isPrimaryNavActive(link.to) && navItemActiveClass)"
+                  :aria-current="isPrimaryNavActive(link.to) ? 'page' : undefined"
+                >
+                  {{ link.label }}
+                </NuxtLink>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
-        <!-- Right CTAs (always visible when nav is hidden — no hamburger) -->
+            <NavigationMenuItem>
+              <NavigationMenuTrigger
+                :class="cn(
+                  navItemBaseClass,
+                  'h-auto! w-max gap-1 pr-3',
+                  isForLawyersSectionActive && navItemActiveClass,
+                )"
+                :aria-current="isForLawyersSectionActive ? 'page' : undefined"
+              >
+                For Lawyers
+              </NavigationMenuTrigger>
+              <NavigationMenuContent class="origin-top-left p-3">
+                <div
+                  class="grid w-[min(calc(100vw-3rem),46rem)] gap-4 md:grid-cols-[minmax(12rem,0.95fr)_minmax(0,1.2fr)] lg:w-184"
+                >
+                  <NavigationMenuLink as-child class="p-0">
+                    <NuxtLink
+                      to="/for-lawyers"
+                      class="group/hero relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-lg border border-border bg-linear-to-br from-brand/30 via-neutral-900 to-neutral-950 no-underline outline-none ring-1 ring-black/10 ring-inset transition-[filter,box-shadow] hover:brightness-[1.03] focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-2 dark:ring-white/15 dark:focus-visible:ring-white/25 md:min-h-[220px]"
+                    >
+                      <PhBriefcase
+                        class="pointer-events-none absolute -bottom-6 -right-4 size-35 rotate-[-8deg] text-white/10"
+                        weight="regular"
+                        aria-hidden="true"
+                      />
+                      <div
+                        class="pointer-events-none absolute inset-x-4 top-3 h-[3px] max-w-11 rounded-full bg-brand/90"
+                        aria-hidden="true"
+                      />
+                      <div class="relative space-y-1 p-5 text-white">
+                        <p class="text-xs font-medium uppercase tracking-widest text-white/75">
+                          For legal professionals
+                        </p>
+                        <p class="text-lg font-semibold leading-snug tracking-tight">
+                          Grow your practice on GetaLawyer
+                        </p>
+                        <p class="text-sm leading-relaxed text-white/85">
+                          Verified presence, bookings, and client relationships—with no commissions on consultations.
+                        </p>
+                      </div>
+                    </NuxtLink>
+                  </NavigationMenuLink>
+
+                  <div
+                    class="grid grid-cols-1 content-start gap-6 p-1 sm:grid-cols-2 sm:gap-8 md:min-h-[220px]"
+                  >
+                    <div v-for="section in lawyerMegaSections" :key="section.heading">
+                      <p class="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        {{ section.heading }}
+                      </p>
+                      <ul class="flex flex-col gap-0.5">
+                        <li v-for="item in section.items" :key="item.to">
+                          <NavigationMenuLink as-child>
+                            <NuxtLink
+                              :to="item.to"
+                              :class="megaRowClass"
+                            >
+                              <span class="block font-medium leading-none text-neutral-950 dark:text-neutral-50">
+                                {{ item.title }}
+                              </span>
+                              <span class="mt-1.5 block text-xs leading-snug text-muted-foreground">
+                                {{ item.description }}
+                              </span>
+                            </NuxtLink>
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        <!-- Right CTAs -->
         <div
           v-if="!props.hideHeaderActions"
           class="items-center gap-2"
           :class="props.hideNavigation ? 'flex' : 'hidden lg:flex'"
         >
           <template v-if="session">
-            <NuxtLink
-              to="/dashboard"
-              class="min-h-[44px] inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white"
-            >
-              Dashboard
-            </NuxtLink>
-            <button
-              class="min-h-[44px] inline-flex items-center rounded-lg px-3.5 py-2 text-sm font-medium text-neutral-700 outline-none transition-colors hover:bg-black/4 hover:text-neutral-950 focus-visible:ring-2 focus-visible:ring-neutral-900/20 focus-visible:ring-offset-2 dark:text-neutral-200 dark:hover:bg-white/6 dark:hover:text-white"
-              @click="handleSignOut"
-            >
-              Sign out
-            </button>
+            <UserDropdown variant="header" />
           </template>
           <template v-else>
             <NuxtLink
@@ -141,7 +295,7 @@ const navLinks = [
           aria-label="Toggle menu"
         >
           <PhX v-if="isMenuOpen" class="size-5 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
-          <PhList v-else class="size-5 text-neutral-700 dark:text-neutral-200" aria-hidden="true" />
+          <PhList v-else class="size-5 text-neutral-700 dark:text-neutral-200" weight="bold" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -159,34 +313,65 @@ const navLinks = [
         v-if="!props.hideNavigation && isMenuOpen"
         class="max-h-[80vh] overflow-y-auto border-t border-border bg-background lg:hidden"
       >
-        <div class="space-y-1 mx-auto px-4 py-4 max-w-7xl">
+        <div class="mx-auto space-y-1 px-4 py-4 max-w-7xl">
           <NuxtLink
-            v-for="link in navLinks"
-            :key="link.label"
+            v-for="link in primaryNavLinks"
+            :key="link.to"
             :to="link.to"
-            class="block hover:bg-neutral-50 px-3 py-2.5 rounded-xl font-medium text-neutral-700 text-sm"
-            @click="isMenuOpen = false"
+            :class="cn(
+              'block rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-black/4 dark:text-neutral-200 dark:hover:bg-white/6',
+              isPrimaryNavActive(link.to) && 'bg-black/6 text-neutral-950 dark:bg-white/8 dark:text-white',
+            )"
+            :aria-current="isPrimaryNavActive(link.to) ? 'page' : undefined"
+            @click="closeMobile"
           >
             {{ link.label }}
           </NuxtLink>
 
+          <div
+            class="mt-3 rounded-xl border border-border bg-muted/40 p-2 dark:bg-white/4"
+            :class="isForLawyersSectionActive && 'ring-1 ring-neutral-900/10 dark:ring-white/15'"
+          >
+            <p class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              For lawyers
+            </p>
+            <div
+              v-for="section in lawyerMegaSections"
+              :key="`m-${section.heading}`"
+              class="border-neutral-200/80 border-t pt-3 first:border-t-0 first:pt-0 dark:border-neutral-700/60"
+            >
+              <p class="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {{ section.heading }}
+              </p>
+              <NuxtLink
+                v-for="item in section.items"
+                :key="item.to"
+                :to="item.to"
+                :class="cn('block rounded-lg px-3 py-2.5 text-neutral-950 dark:text-neutral-50', megaRowClass)"
+                @click="closeMobile"
+              >
+                <span class="block text-sm font-medium">{{ item.title }}</span>
+                <span class="mt-0.5 block text-xs leading-snug text-muted-foreground">{{ item.description }}</span>
+              </NuxtLink>
+            </div>
+          </div>
+
           <div class="mt-2 flex flex-col gap-2 border-t border-border pt-4 pb-2">
             <template v-if="session">
-              <Button variant="outline" as-child class="w-full rounded-xl font-semibold shadow-xs">
-                <NuxtLink to="/dashboard" @click="isMenuOpen = false">Dashboard</NuxtLink>
-              </Button>
-              <button
-                class="block hover:bg-neutral-50 px-4 py-2.5 border border-neutral-200 rounded-xl font-medium text-neutral-700 text-sm text-center"
-                @click="handleSignOut(); isMenuOpen = false"
-              >
-                Sign out
-              </button>
+              <div class="flex items-center gap-2">
+                <Button variant="outline" as-child class="min-h-11 flex-1 rounded-xl font-semibold shadow-xs">
+                  <NuxtLink to="/dashboard" @click="closeMobile">
+                    Dashboard
+                  </NuxtLink>
+                </Button>
+                <UserDropdown variant="header" />
+              </div>
             </template>
             <template v-else>
               <NuxtLink
                 to="/login"
-                class="block hover:bg-neutral-50 px-4 py-2.5 border border-neutral-200 rounded-xl font-medium text-neutral-700 text-sm text-center"
-                @click="isMenuOpen = false"
+                class="block rounded-xl border border-neutral-200 px-4 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+                @click="closeMobile"
               >
                 Sign in
               </NuxtLink>
@@ -194,7 +379,7 @@ const navLinks = [
                 as-child
                 class="w-full rounded-xl bg-brand-soft font-semibold text-brand shadow-none hover:bg-brand-soft-hover"
               >
-                <NuxtLink to="/lawyers" class="inline-flex w-full items-center justify-center gap-2" @click="isMenuOpen = false">
+                <NuxtLink to="/lawyers" class="inline-flex w-full items-center justify-center gap-2" @click="closeMobile">
                   Find a Lawyer
                   <PhArrowRight class="size-4 shrink-0" weight="bold" aria-hidden="true" />
                 </NuxtLink>

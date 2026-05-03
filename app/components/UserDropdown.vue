@@ -2,6 +2,7 @@
   <DropdownMenu v-if="userData">
     <DropdownMenuTrigger as-child>
       <Button
+        v-if="variant === 'sidebar'"
         variant="ghost"
         class="h-auto w-full justify-start gap-3 py-2 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-gray-800"
       >
@@ -25,12 +26,36 @@
         </div>
         <PhCaretRight class="ms-auto size-4 shrink-0 text-muted-foreground" />
       </Button>
+      <Button
+        v-else
+        variant="ghost"
+        size="icon"
+        aria-label="Open account menu"
+        class="size-11 shrink-0 rounded-full hover:bg-black/4 dark:hover:bg-white/8"
+      >
+        <Avatar class="size-9 shrink-0">
+          <AvatarImage :src="userData.avatar" :alt="userData.name" />
+          <AvatarFallback class="size-9 text-xs">{{ userInitials }}</AvatarFallback>
+        </Avatar>
+      </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56" side="top" align="end" :side-offset="8">
+    <DropdownMenuContent
+      class="w-56"
+      :side="variant === 'header' ? 'bottom' : 'top'"
+      align="end"
+      :side-offset="8"
+    >
       <DropdownMenuLabel class="font-normal text-muted-foreground">
         {{ userData.email }}
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
+      <DropdownMenuItem v-if="variant === 'header'" as-child>
+        <NuxtLink to="/dashboard" class="cursor-pointer">
+          <PhSquaresFour class="size-4" />
+          Dashboard
+        </NuxtLink>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator v-if="variant === 'header'" />
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/profile" class="cursor-pointer">
           <PhUserCircle class="size-4" />
@@ -53,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { PhCaretRight, PhGearSix, PhSignOut, PhUserCircle } from '@phosphor-icons/vue'
+import { PhCaretRight, PhGearSix, PhSignOut, PhSquaresFour, PhUserCircle } from '@phosphor-icons/vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -64,6 +89,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+withDefaults(
+  defineProps<{
+    /** `sidebar` — full-width row + menu opens upward. `header` — avatar chip + menu opens downward. */
+    variant?: 'sidebar' | 'header'
+  }>(),
+  { variant: 'sidebar' },
+)
 
 const { session, signOut } = useAuth()
 
