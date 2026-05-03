@@ -174,7 +174,7 @@ const closeMobile = () => {
           :viewport="false"
           class="group/navigation-menu relative hidden max-w-max flex-none items-center lg:flex"
         >
-          <NavigationMenuList class="flex flex-none items-center justify-start gap-1">
+          <NavigationMenuList class="flex flex-none items-center justify-start gap-4">
             <NavigationMenuItem v-for="link in primaryNavLinks" :key="link.to">
               <NavigationMenuLink as-child>
                 <NuxtLink
@@ -198,7 +198,7 @@ const closeMobile = () => {
               >
                 For Lawyers
               </NavigationMenuTrigger>
-              <NavigationMenuContent class="origin-top-left p-3">
+              <NavigationMenuContent class="origin-top-center left-1/2 -translate-x-1/2 rounded-2xl p-3 shadow-md">
                 <div
                   class="grid w-[min(calc(100vw-3rem),46rem)] gap-4 md:grid-cols-[minmax(12rem,0.95fr)_minmax(0,1.2fr)] lg:w-184"
                 >

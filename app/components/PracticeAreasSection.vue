@@ -58,7 +58,7 @@ const emit = defineEmits<{ selectArea: [areaName: string] }>()
       >
         <HomeStackLink
           to="/practice-areas"
-          variant="primary"
+          variant="ghost"
           inner-class="min-h-12 px-6 py-3 text-base sm:min-h-14 sm:px-7 sm:text-[1.0625rem]"
         >
           <PhSquaresFour class="size-5 shrink-0 text-brand" weight="duotone" aria-hidden="true" />

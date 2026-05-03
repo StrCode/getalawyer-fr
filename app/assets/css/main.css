@@ -153,6 +153,11 @@ body {
 }
 
 @layer base {
+    /* Reserve scrollbar gutter so `overflow:hidden` overlays (menus/modals) do not widen the viewport. */
+    html {
+        scrollbar-gutter: stable;
+    }
+
     * {
         @apply border-border outline-ring/50;
     }
