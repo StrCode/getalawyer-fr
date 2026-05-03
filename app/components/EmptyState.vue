@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PhMagnifyingGlass } from '@phosphor-icons/vue'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface EmptyStateProps {
   title: string
@@ -21,8 +22,8 @@ const handleAction = () => {
 
 <template>
   <div class="empty-state">
-    <UCard>
-      <div class="empty-state-content">
+    <Card class="w-full max-w-lg border-border shadow-sm">
+      <CardContent class="empty-state-content">
         <PhMagnifyingGlass class="empty-state-icon" />
         <h3 class="empty-state-title">
           {{ title }}
@@ -39,8 +40,8 @@ const handleAction = () => {
         >
           {{ actionText }}
         </Button>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
@@ -59,7 +60,7 @@ const handleAction = () => {
   align-items: center;
   text-align: center;
   gap: 1rem;
-  padding: 2rem;
+  padding: 2rem 1.5rem;
 }
 
 .empty-state-icon {

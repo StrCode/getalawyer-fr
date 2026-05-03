@@ -80,6 +80,9 @@ function isPrimaryNavActive(linkTo: string) {
   if (linkTo === '/practice-areas')
     return route.path === '/practice-areas'
 
+  if (linkTo === '/contact')
+    return route.path === '/contact'
+
   if (linkTo.includes('how-it-works'))
     return route.path === '/' && route.hash === '#how-it-works'
 
@@ -91,26 +94,32 @@ const isForLawyersSectionActive = computed(() => route.path === '/for-lawyers')
 const primaryNavLinks = [
   { label: 'How It Works', to: '/#how-it-works' },
   { label: 'Practice Areas', to: '/practice-areas' },
+  { label: 'Contact', to: '/contact' },
 ] as const
 
 const lawyerMegaSections: { heading: string; items: LawyerMegaItem[] }[] = [
   {
-    heading: 'Learn more',
+    heading: 'Explore',
     items: [
       {
         title: 'Overview',
-        description: 'Benefits and how GetaLawyer fits your practice.',
+        description: 'How GetaLawyer fits a modern practice.',
         to: '/for-lawyers',
       },
       {
-        title: 'Plans & pricing',
-        description: 'Simple subscription—no commissions on consultations.',
+        title: 'Membership',
+        description: 'What subscription includes—verification, bookings, messaging.',
+        to: '/for-lawyers#benefits',
+      },
+      {
+        title: 'Pricing & plans',
+        description: 'Monthly membership in Nigerian naira, no commissions on consults.',
         to: '/for-lawyers#pricing',
       },
       {
         title: 'Verification & credibility',
-        description: 'Bar verification, badge, and trust with clients.',
-        to: '/for-lawyers#benefits',
+        description: 'Badge, bar verification, and how you go live.',
+        to: '/for-lawyers#how-you-join',
       },
     ],
   },
@@ -118,8 +127,8 @@ const lawyerMegaSections: { heading: string; items: LawyerMegaItem[] }[] = [
     heading: 'Get started',
     items: [
       {
-        title: 'Join as a lawyer',
-        description: 'Create your account and start the application.',
+        title: 'Register as a lawyer',
+        description: 'Create your account and start onboarding.',
         to: '/register?role=lawyer',
       },
       {
@@ -257,6 +266,36 @@ const closeMobile = () => {
                     </div>
                   </div>
                 </div>
+
+                <!-- Auth shortcuts (marketing lawyers path) -->
+                <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-border border-t px-2 pt-4">
+                  <template v-if="session">
+                    <NuxtLink
+                      to="/dashboard"
+                      class="text-sm font-semibold text-neutral-950 underline-offset-4 transition-colors hover:underline dark:text-neutral-50"
+                      @click="isMenuOpen = false"
+                    >
+                      Lawyer dashboard
+                    </NuxtLink>
+                  </template>
+                  <template v-else>
+                    <NuxtLink
+                      to="/login"
+                      class="text-sm font-medium text-neutral-700 transition-colors hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-white"
+                      @click="isMenuOpen = false"
+                    >
+                      Login
+                    </NuxtLink>
+                    <span class="select-none text-muted-foreground text-xs">or</span>
+                    <NuxtLink
+                      to="/register?role=lawyer"
+                      class="text-sm font-semibold text-brand hover:text-brand-hover"
+                      @click="isMenuOpen = false"
+                    >
+                      Register as a lawyer
+                    </NuxtLink>
+                  </template>
+                </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -370,6 +409,35 @@ const closeMobile = () => {
                 <span class="block text-sm font-medium">{{ item.title }}</span>
                 <span class="mt-0.5 block text-xs leading-snug text-muted-foreground">{{ item.description }}</span>
               </NuxtLink>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-neutral-200/80 border-t px-3 pt-3 dark:border-neutral-700/60">
+              <template v-if="session">
+                <NuxtLink
+                  to="/dashboard"
+                  class="text-sm font-semibold text-neutral-950 dark:text-neutral-50"
+                  @click="closeMobile"
+                >
+                  Lawyer dashboard
+                </NuxtLink>
+              </template>
+              <template v-else>
+                <NuxtLink
+                  to="/login"
+                  class="text-sm font-medium text-neutral-700 dark:text-neutral-200"
+                  @click="closeMobile"
+                >
+                  Login
+                </NuxtLink>
+                <span class="text-muted-foreground text-xs">or</span>
+                <NuxtLink
+                  to="/register?role=lawyer"
+                  class="text-sm font-semibold text-brand"
+                  @click="closeMobile"
+                >
+                  Register
+                </NuxtLink>
+              </template>
             </div>
           </div>
 

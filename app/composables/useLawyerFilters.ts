@@ -80,6 +80,19 @@ export function filtersToQuery(filters: FilterState): LocationQuery {
   return query
 }
 
+/** Builds a `/lawyers` URL query object from explicit parts (homepage hero & command palette). */
+export function lawyersListingQueryFromParts(parts: Partial<Pick<FilterState, 'keywords' | 'location' | 'consultationTypes' | 'practiceAreas'>>): LocationQuery {
+  const base = defaultFilters()
+  const merged: FilterState = {
+    ...base,
+    keywords: parts.keywords ?? base.keywords,
+    location: parts.location ?? base.location,
+    consultationTypes: parts.consultationTypes ?? base.consultationTypes,
+    practiceAreas: parts.practiceAreas ?? base.practiceAreas,
+  }
+  return filtersToQuery(merged)
+}
+
 export function filtersFromQuery(query: LocationQuery): FilterState {
   // Validate query parameters first
   const validation = validateQueryParams(query)

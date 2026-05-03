@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { motion } from 'motion-v'
+import { formatMembershipNgn, useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
 import {
   PhCalendarDots,
   PhChatsCircle,
@@ -53,6 +54,30 @@ useHead({
 
 /** Deep links from the header mega menu. */
 const registerLawyerTo = '/register?role=lawyer'
+
+const dashboardTo = '/dashboard'
+
+const { session } = useAuth()
+
+const isSignedIn = computed(() => Boolean(session.value?.user?.id))
+
+const dashboardCtaLabel = computed(() => {
+  const t = session.value?.user?.userType
+  if (t === 'lawyer')
+    return 'Go to your lawyer dashboard'
+  if (t === 'client')
+    return 'Go to your client dashboard'
+  return 'Go to your dashboard'
+})
+
+const signedInSupportingLine = computed(() => {
+  const t = session.value?.user?.userType
+  if (t === 'lawyer')
+    return 'Use your dashboard to manage your profile, bookings, availability, and messages.'
+  if (t === 'client')
+    return 'You\'re browsing as a signed-in client. Open your dashboard to manage bookings and lawyers you work with.'
+  return 'You\'re signed in—open your dashboard to continue.'
+})
 
 const joinSteps: JoinStep[] = [
   {
@@ -159,6 +184,17 @@ function initials(name: string) {
   const parts = name.replace(/\.$/, '').split(/[\s.]+/).filter(Boolean)
   return (parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')
 }
+
+const { data: membershipPricing, status: pricingStatus } = useLawyerMembershipPricing()
+
+const displayMonthlyNgn = computed(() => {
+  const n = membershipPricing.value?.monthlyAmountNgn
+  return typeof n === 'number' && n > 0 ? n : 20_000
+})
+
+const formattedMonthlyPrice = computed(() => formatMembershipNgn(displayMonthlyNgn.value))
+
+const pricingLoading = computed(() => pricingStatus.value === 'idle' || pricingStatus.value === 'pending')
 </script>
 
 <template>
@@ -188,8 +224,21 @@ function initials(name: string) {
           </p>
 
           <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <HomeStackLink :to="registerLawyerTo" variant="primary" inner-class="min-h-[52px] px-8 text-sm">
+            <HomeStackLink
+              v-if="!isSignedIn"
+              :to="registerLawyerTo"
+              variant="primary"
+              inner-class="min-h-[52px] px-8 text-sm"
+            >
               Register as a lawyer
+            </HomeStackLink>
+            <HomeStackLink
+              v-else
+              :to="dashboardTo"
+              variant="primary"
+              inner-class="min-h-[52px] px-8 text-sm"
+            >
+              {{ dashboardCtaLabel }}
             </HomeStackLink>
             <HomeStackLink
               to="/for-lawyers#how-you-join"
@@ -249,7 +298,7 @@ function initials(name: string) {
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
           <h2 class="font-bold text-3xl text-foreground tracking-tight md:text-4xl">
-            What is included for lawyers
+            Lawyer membership · what&apos;s included
           </h2>
           <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
             These capabilities map directly to the subscription—so what you read here is what you are paying to operate on the platform.
@@ -270,7 +319,8 @@ function initials(name: string) {
             One transparent subscription
           </h2>
           <p class="mt-4 text-lg text-muted-foreground leading-relaxed">
-            Replace commission surprises with a flat monthly fee. Consultation revenue stays with your practice.
+            Monthly membership is billed in <span class="font-medium text-foreground">Nigerian naira (NGN)</span>.
+            Replace commission surprises with a flat recurring fee—consultation revenue stays with your practice.
           </p>
         </div>
 
@@ -284,9 +334,14 @@ function initials(name: string) {
                 Full practitioner toolkit on GetaLawyer
               </CardDescription>
             </div>
-            <div class="flex items-baseline gap-1 pt-2 sm:pt-0">
-              <span class="font-bold text-4xl text-foreground tracking-tight">$99</span>
-              <span class="text-muted-foreground">/month</span>
+            <div class="flex min-h-13 items-baseline gap-1 pt-2 tabular-nums sm:min-h-0 sm:justify-end sm:pt-0">
+              <template v-if="pricingLoading">
+                <span class="inline-block h-10 w-24 animate-pulse rounded-md bg-muted" aria-hidden="true" />
+              </template>
+              <template v-else>
+                <span class="font-bold text-4xl text-foreground tracking-tight">{{ formattedMonthlyPrice }}</span>
+                <span class="text-muted-foreground">/month</span>
+              </template>
             </div>
           </CardHeader>
           <CardContent class="space-y-6 pt-6">
@@ -309,8 +364,31 @@ function initials(name: string) {
               </p>
             </div>
 
-            <HomeStackLink :to="registerLawyerTo" variant="primary" outer-class="w-full" inner-class="min-h-[52px] w-full justify-center text-sm">
+            <p class="text-center text-muted-foreground text-xs leading-relaxed">
+              The amount shown is loaded from configuration or—when wired—your public billing endpoint. What you pay when
+              you subscribe or renew is whatever checkout or invoicing renders.
+              <template v-if="membershipPricing?.source === 'remote'">
+                <span class="text-foreground">&nbsp;(served from billing API)</span>
+              </template>
+            </p>
+
+            <HomeStackLink
+              v-if="!isSignedIn"
+              :to="registerLawyerTo"
+              variant="primary"
+              outer-class="w-full"
+              inner-class="min-h-[52px] w-full justify-center text-sm"
+            >
               Start registration
+            </HomeStackLink>
+            <HomeStackLink
+              v-else
+              :to="dashboardTo"
+              variant="primary"
+              outer-class="w-full"
+              inner-class="min-h-[52px] w-full justify-center text-sm"
+            >
+              {{ dashboardCtaLabel }}
             </HomeStackLink>
           </CardContent>
         </Card>
@@ -371,15 +449,29 @@ function initials(name: string) {
           Ready to put verification, scheduling, and messaging in one stack?
         </h2>
         <p class="mx-auto mt-5 max-w-xl text-base text-white/85 leading-relaxed md:text-lg">
-          Create your lawyer account, complete verification, and publish the profile clients see when they compare practitioners.
+          <template v-if="!isSignedIn">
+            Create your lawyer account, complete verification, and publish the profile clients see when they compare practitioners.
+          </template>
+          <template v-else>
+            {{ signedInSupportingLine }}
+          </template>
         </p>
         <div class="mt-10 flex flex-wrap justify-center gap-3">
           <HomeStackLink
+            v-if="!isSignedIn"
             :to="registerLawyerTo"
             variant="primary"
             inner-class="min-h-[52px] px-8 text-sm"
           >
             Register as a lawyer
+          </HomeStackLink>
+          <HomeStackLink
+            v-else
+            :to="dashboardTo"
+            variant="primary"
+            inner-class="min-h-[52px] px-8 text-sm"
+          >
+            {{ dashboardCtaLabel }}
           </HomeStackLink>
         </div>
       </div>

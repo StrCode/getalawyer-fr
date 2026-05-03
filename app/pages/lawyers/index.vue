@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
 import { usePagination } from '~/composables/usePagination'
+import { watchPersistRecentLawyerDirectorySearch } from '~/composables/useRecentLawyerDirectorySearches'
 import { useLawyers } from '~/composables/useLawyers'
 import type { Lawyer } from '~/types/lawyer'
 
@@ -16,6 +17,8 @@ useHead({
 
 // Composables
 const { filters, resetFilters, filtersFromQuery, filtersToQuery } = useLawyerFilters()
+
+watchPersistRecentLawyerDirectorySearch(filters)
 const route = useRoute()
 const router = useRouter()
 const { useLawyersList } = useLawyers()

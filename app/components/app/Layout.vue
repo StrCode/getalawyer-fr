@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import LawyerDirectoryCommandPalette from '~/components/app/LawyerDirectoryCommandPalette.vue'
 </script>
 
 <template>
-  <!-- <div ref="root" class="bg-white bg-[url('/assets/images/home/hero_bg.png')] bg-cover bg-center relative"> -->
   <div>
     <slot />
+    <ClientOnly>
+      <LawyerDirectoryCommandPalette />
+    </ClientOnly>
   </div>
 </template>

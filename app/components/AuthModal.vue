@@ -1,5 +1,13 @@
 <script setup>
 import { motion, AnimatePresence } from 'motion-v'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 
 const viewport = useViewport()
 const { isOpen, currentView, direction, canGoBack, push, pop, close, otpType } = useAuthModal()
@@ -65,19 +73,16 @@ const initialAnimation = computed(() => {
 </script>
 
 <template>
-  <!-- Desktop: UModal -->
-  <UModal
-    v-if="isDesktop"
-    v-model:open="isOpen"
-    :title="title"
-    :description="description"
-    :transition="false"
-    :ui="{
-      content: 'sm:max-w-[480px] overflow-hidden rounded-2xl',
-      overlay: 'backdrop-blur-sm',
-    }"
-  >
-    <template #content>
+  <!-- Desktop -->
+  <Dialog v-if="isDesktop" v-model:open="isOpen">
+    <DialogContent
+      class="gap-0 border-0 p-0 shadow-xl sm:max-w-[480px] overflow-hidden rounded-2xl outline-none"
+      :show-close-button="false"
+    >
+      <DialogHeader class="sr-only">
+        <DialogTitle>{{ title }}</DialogTitle>
+        <DialogDescription>{{ description }}</DialogDescription>
+      </DialogHeader>
       <AuthShell :title="title" :can-go-back="canGoBack" @pop="pop" @close="close">
         <motion.div
           layout
@@ -105,25 +110,22 @@ const initialAnimation = computed(() => {
           </AnimatePresence>
         </motion.div>
       </AuthShell>
-    </template>
-  </UModal>
+    </DialogContent>
+  </Dialog>
 
-  <!-- Mobile: USlideover bottom sheet -->
-  <USlideover
-    v-else
-    v-model:open="isOpen"
-    side="bottom"
-    :title="title"
-    :description="description"
-    :transition="false"
-    :ui="{
-      content: 'rounded-t-2xl overflow-hidden h-auto max-h-[92dvh]',
-      overlay: 'backdrop-blur-sm',
-    }"
-  >
-    <template #content>
+  <!-- Mobile: bottom sheet -->
+  <Sheet v-else v-model:open="isOpen">
+    <SheetContent
+      side="bottom"
+      class="rounded-t-2xl overflow-hidden h-auto max-h-[92dvh] gap-0 border-0 p-0 outline-none"
+      :show-close-button="false"
+    >
+      <div class="sr-only">
+        <SheetTitle>{{ title }}</SheetTitle>
+        <SheetDescription>{{ description }}</SheetDescription>
+      </div>
       <div class="flex justify-center pt-3 pb-1 shrink-0">
-        <div class="bg-gray-300 rounded-full w-10 h-1" />
+        <div class="rounded-full bg-gray-300 h-1 w-10" />
       </div>
       <AuthShell :title="title" :can-go-back="canGoBack" @pop="pop" @close="close">
         <motion.div
@@ -152,6 +154,6 @@ const initialAnimation = computed(() => {
           </AnimatePresence>
         </motion.div>
       </AuthShell>
-    </template>
-  </USlideover>
+    </SheetContent>
+  </Sheet>
 </template>

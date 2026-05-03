@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { PhMagnifyingGlass } from '@phosphor-icons/vue'
 import { motion } from 'motion-v'
 import { ref } from 'vue'
+import { lawyersListingQueryFromParts } from '~/composables/useLawyerFilters'
 
 const props = withDefaults(
   defineProps<{
@@ -24,15 +25,21 @@ const emit = defineEmits<{
 const searchQuery = ref('')
 
 const runSearch = () => {
-  const q = searchQuery.value.trim()
+  const q = searchQuery.value.trim().replace(/\s+/g, ' ')
+
   emit('search', {
     practiceArea: q || null,
     location: null,
     consultationType: null,
   })
+
+  const query = lawyersListingQueryFromParts({
+    keywords: q || undefined,
+  })
+
   navigateTo({
     path: '/lawyers',
-    ...(q ? { query: { q } } : {}),
+    query,
   })
 }
 </script>

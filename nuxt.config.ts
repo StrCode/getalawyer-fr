@@ -115,6 +115,16 @@ export default defineNuxtConfig({
     ]
   },
   runtimeConfig: {
+    /**
+     * Default monthly lawyer membership display price (NGN minor unit = whole naira).
+     * Override with LAWYER_MEMBERSHIP_MONTHLY_NGN via env (merged at runtime).
+     */
+    lawyerMembershipMonthlyNgn: 20_000,
+    /**
+     * Optional: full GET URL returning JSON `{ "monthlyAmountNgn": number }` or `{ data: { monthlyAmountNgn } }`.
+     * When unset or unreachable, Nitro falls back to `lawyerMembershipMonthlyNgn`.
+     */
+    lawyerMembershipPriceSourceUrl: '',
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001',
       betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3001/api/auth',
