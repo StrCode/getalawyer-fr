@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import type { LawyerSearchResult } from '~/lib/api'
 
-/** Six layout explorations (+ `default` baseline). Preview at `/design/lawyer-search-cards`. */
+/** Layout explorations (+ `default`, directory grid/list). Preview at `/design/lawyer-search-cards`. */
 export type LawyerSearchCardLayout =
   | 'default'
   | 'split'
   | 'compact'
   | 'accent'
   | 'profileStrip'
-  | 'metaChips'
   | 'mirror'
+
+/** Catalog density: tiles in `resultsLayout === 'grid'` vs full-width list rows on `/find-lawyers`. */
+export type LawyerSearchCardDensity = 'grid' | 'row'
 
 const props = withDefaults(
   defineProps<{
     lawyer: LawyerSearchResult
-    /** Catalog density: tighter tiles vs comfortable list rows. */
-    density?: 'grid' | 'row'
+    density?: LawyerSearchCardDensity
     layout?: LawyerSearchCardLayout
   }>(),
   { density: 'row', layout: 'default' },
@@ -138,7 +139,7 @@ async function handleOpenProfile() {
           </div>
         </div>
       </div>
-      <div class="flex min-w-0 flex-1 flex-col gap-1.5 text-left sm:gap-2">
+      <div class="flex min-w-0 flex-1 flex-col gap-2 text-left">
         <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <h3 class="text-balance text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl">
             {{ lawyer.name }}
@@ -148,33 +149,32 @@ async function handleOpenProfile() {
             Verified
           </span>
         </div>
-        <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-left text-xs text-muted-foreground sm:text-sm">
-          <span class="inline-flex min-w-0 max-w-full items-center gap-1 truncate">
-            <PhIcon name="i-heroicons-map-pin" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
-            <span class="truncate">{{ lawyer.state }}, {{ lawyer.country }}</span>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="inline-flex max-w-full min-w-0 items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] text-muted-foreground">
+            <PhIcon name="i-heroicons-map-pin" class="size-3 shrink-0 opacity-85" aria-hidden="true" />
+            <span class="min-w-0 truncate">{{ lawyer.state }}, {{ lawyer.country }}</span>
           </span>
-          <span class="hidden text-muted-foreground/55 select-none sm:inline" aria-hidden="true">·</span>
-          <span class="inline-flex items-center gap-1 whitespace-nowrap">
-            <PhIcon name="i-heroicons-briefcase" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
-            {{ lawyer.yearsOfExperience }} yrs experience
+          <span class="inline-flex shrink-0 items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] tabular-nums text-muted-foreground">
+            <PhIcon name="i-heroicons-briefcase" class="size-3 shrink-0 opacity-85" aria-hidden="true" />
+            {{ lawyer.yearsOfExperience }} yrs
           </span>
-          <template v-if="genderLabel">
-            <span class="hidden text-muted-foreground/55 select-none sm:inline" aria-hidden="true">·</span>
-            <span class="inline-flex items-center gap-1 whitespace-nowrap">
-              <PhIcon name="i-heroicons-user" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
-              {{ genderLabel }}
-            </span>
-          </template>
-          <template v-if="reviewsLabel">
-            <span class="hidden text-muted-foreground/55 select-none sm:inline" aria-hidden="true">·</span>
-            <span class="inline-flex items-center gap-1 whitespace-nowrap tabular-nums">
-              <PhIcon name="i-heroicons-star" class="size-3.5 shrink-0 text-amber-500" aria-hidden="true" />
-              <span v-if="ratingPreview != null" class="font-medium text-foreground">{{ ratingPreview.toFixed(1) }}</span>
-              <span v-if="ratingPreview != null" class="text-muted-foreground/50" aria-hidden="true">·</span>
-              <span>{{ reviewsLabel }}</span>
-            </span>
-          </template>
-        </p>
+          <span
+            v-if="genderLabel"
+            class="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] text-muted-foreground"
+          >
+            <PhIcon name="i-heroicons-user" class="size-3 shrink-0 opacity-85" aria-hidden="true" />
+            {{ genderLabel }}
+          </span>
+          <span
+            v-if="reviewsLabel"
+            class="inline-flex items-center gap-1 rounded-full border border-amber-200/65 bg-amber-500/8 px-2.5 py-0.5 text-[0.7rem] font-medium tabular-nums text-amber-950 dark:border-amber-500/35 dark:bg-amber-500/15 dark:text-amber-300"
+          >
+            <PhIcon name="i-heroicons-star" class="size-3 shrink-0" aria-hidden="true" />
+            <template v-if="ratingPreview != null">{{ ratingPreview.toFixed(1) }}</template>
+            <span v-if="ratingPreview != null" class="mx-px opacity-50" aria-hidden="true">·</span>
+            {{ reviewsLabel }}
+          </span>
+        </div>
       </div>
     </div>
     <LawyerSearchCardTail
@@ -418,80 +418,6 @@ async function handleOpenProfile() {
         @open-profile="handleOpenProfile"
       />
     </div>
-  </article>
-
-  <!-- Meta as chips -->
-  <article
-    v-else-if="layout === 'metaChips'"
-    class="lawyer-search-card border-border/80 hover:border-primary/30 group flex cursor-pointer flex-col gap-4 rounded-2xl border bg-card p-4 text-card-foreground shadow-xs transition-[box-shadow,transform,border-color] hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/25 sm:p-5"
-    @click="handleOpenProfile()"
-  >
-    <div class="flex min-w-0 flex-row items-start gap-3 sm:gap-4">
-      <div class="relative shrink-0">
-        <div
-          class="relative overflow-hidden rounded-2xl ring-1 ring-black/6 dark:ring-white/10"
-          :class="density === 'grid' ? 'size-16 sm:size-[4.5rem]' : 'size-[3.625rem] sm:size-[4.5rem]'"
-        >
-          <img
-            v-if="lawyer.image"
-            :src="lawyer.image"
-            :alt="lawyer.name"
-            class="size-full object-cover"
-            loading="lazy"
-          />
-          <div
-            v-else
-            class="flex size-full items-center justify-center text-base font-bold tracking-tight text-white sm:text-xl"
-            :style="{ background: getAvatarGradient(lawyer.name) }"
-          >
-            {{ getInitials(lawyer.name) }}
-          </div>
-        </div>
-      </div>
-      <div class="flex min-w-0 flex-1 flex-col gap-2 text-left">
-        <div class="flex flex-wrap items-baseline gap-2">
-          <h3 class="text-balance text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl">
-            {{ lawyer.name }}
-          </h3>
-          <span class="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-emerald-300/55 bg-emerald-500/9 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-emerald-800">
-            Verified
-          </span>
-        </div>
-        <div class="flex flex-wrap gap-1.5">
-          <span class="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] text-muted-foreground">
-            <PhIcon name="i-heroicons-map-pin" class="size-3 opacity-85" aria-hidden="true" />
-            {{ lawyer.state }}, {{ lawyer.country }}
-          </span>
-          <span class="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] tabular-nums text-muted-foreground">
-            <PhIcon name="i-heroicons-briefcase" class="size-3 opacity-85" aria-hidden="true" />
-            {{ lawyer.yearsOfExperience }} yrs
-          </span>
-          <span
-            v-if="genderLabel"
-            class="inline-flex items-center gap-1 rounded-full border border-border/70 bg-muted/35 px-2.5 py-0.5 text-[0.7rem] text-muted-foreground"
-          >
-            {{ genderLabel }}
-          </span>
-          <span
-            v-if="reviewsLabel"
-            class="inline-flex items-center gap-1 rounded-full border border-amber-200/65 bg-amber-500/8 px-2.5 py-0.5 text-[0.7rem] font-medium text-amber-950 tabular-nums dark:border-amber-500/35 dark:bg-amber-500/15 dark:text-amber-300"
-          >
-            <PhIcon name="i-heroicons-star" class="size-3" aria-hidden="true" />
-            <template v-if="ratingPreview != null">{{ ratingPreview.toFixed(1) }}</template>
-            <span v-if="ratingPreview != null" class="mx-px opacity-50">·</span>
-            {{ reviewsLabel }}
-          </span>
-        </div>
-      </div>
-    </div>
-    <LawyerSearchCardTail
-      :lawyer="lawyer"
-      :snippet-source="snippetSource"
-      :logged-in="loggedIn"
-      :is-pending="isPending"
-      :profile-href="profileHref"
-      @open-profile="handleOpenProfile"
-    />
   </article>
 
   <!-- Mirror / RTL-ish: avatar on the right -->

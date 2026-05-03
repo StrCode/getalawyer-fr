@@ -22,9 +22,11 @@ withDefaults(
           <div class="h-5 w-[55%] max-w-[14rem] animate-pulse rounded-md bg-muted" />
           <div class="h-5 w-16 animate-pulse rounded-full bg-muted/80" />
         </div>
-        <div class="flex flex-wrap gap-2">
-          <div class="h-3.5 w-24 animate-pulse rounded bg-muted/90" />
-          <div class="h-3.5 w-20 animate-pulse rounded bg-muted/90" />
+        <div class="flex flex-wrap gap-1.5">
+          <div class="h-6 w-[7.25rem] max-w-[min(100%,7.25rem)] animate-pulse rounded-full bg-muted/90" />
+          <div class="h-6 w-[4.75rem] animate-pulse rounded-full bg-muted/90" />
+          <div class="h-6 w-16 animate-pulse rounded-full bg-muted/90" />
+          <div class="h-6 w-[6.25rem] animate-pulse rounded-full bg-amber-500/15 dark:bg-amber-500/25" />
         </div>
       </div>
     </div>
@@ -49,9 +51,14 @@ withDefaults(
     aria-hidden="true"
   >
     <div class="size-11 shrink-0 animate-pulse rounded-xl bg-muted" />
-    <div class="flex min-w-0 flex-1 flex-col gap-2">
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
       <div class="h-4 w-[42%] max-w-xs animate-pulse rounded bg-muted" />
-      <div class="h-3 w-full max-w-lg animate-pulse rounded bg-muted/80" />
+      <div class="flex flex-wrap gap-1.5">
+        <div class="h-5 min-w-[5.5rem] max-w-[40%] flex-1 animate-pulse rounded-full bg-muted/85" />
+        <div class="h-5 w-14 animate-pulse rounded-full bg-muted/85" />
+        <div class="h-5 w-[4.75rem] animate-pulse rounded-full bg-muted/85" />
+        <div class="h-5 w-20 animate-pulse rounded-full bg-amber-500/15 dark:bg-amber-500/25" />
+      </div>
     </div>
     <div class="hidden h-4 w-4 shrink-0 animate-pulse rounded-sm bg-muted/70 sm:block" />
   </div>
