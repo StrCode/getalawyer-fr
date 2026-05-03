@@ -40,7 +40,7 @@ const runSearch = () => {
 <template>
   <section
     id="hero"
-    class="relative scroll-mt-18 overflow-hidden border-b border-neutral-200/90 bg-white sm:scroll-mt-20 dark:border-border dark:bg-background"
+    class="relative scroll-mt-18 overflow-hidden bg-white sm:scroll-mt-20 dark:bg-background"
   >
     <div
       aria-hidden="true"

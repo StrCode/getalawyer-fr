@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { motion } from 'motion-v'
 import {
   PhCalendarBlank,
   PhFileText,
   PhMagnifyingGlass,
   PhUserPlus,
-  PhVideoCamera
+  PhVideoCamera,
 } from '@phosphor-icons/vue'
 
 interface Step {
@@ -17,85 +19,144 @@ interface Step {
 }
 
 const steps: Step[] = [
-  { number: 1, icon: PhUserPlus, title: 'Create Your Account', description: 'Sign up in minutes with your email or social accounts' },
-  { number: 2, icon: PhMagnifyingGlass, title: 'Search & Filter', description: 'Find lawyers by specialty, location, and consultation type' },
-  { number: 3, icon: PhFileText, title: 'Review Profiles', description: 'Check credentials, reviews, and experience before deciding' },
-  { number: 4, icon: PhCalendarBlank, title: 'Book Consultation', description: 'Schedule at your convenience with instant confirmation' },
-  { number: 5, icon: PhVideoCamera, title: 'Consult & Connect', description: 'Meet via video, phone, or in-person at your preferred time' }
+  {
+    number: 1,
+    icon: PhUserPlus,
+    title: 'Create your account',
+    description:
+      'Sign up in minutes with email or Google, then finish any profile details needed to book.',
+  },
+  {
+    number: 2,
+    icon: PhMagnifyingGlass,
+    title: 'Search & filter',
+    description:
+      'Browse the directory by practice area, location, and how you prefer to consult.',
+  },
+  {
+    number: 3,
+    icon: PhFileText,
+    title: 'Compare profiles',
+    description:
+      'Review verification, qualifications, and experience—plus ratings where lawyers have collected them.',
+  },
+  {
+    number: 4,
+    icon: PhCalendarBlank,
+    title: 'Book a consultation',
+    description:
+      'Pick a time that fits; you\'ll see confirmation details before the appointment is finalized.',
+  },
+  {
+    number: 5,
+    icon: PhVideoCamera,
+    title: 'Meet your lawyer',
+    description:
+      'Join by video, phone, or in person when the lawyer offers it—whatever you agreed when booking.',
+  },
 ]
+
 </script>
 
 <template>
-  <section id="how-it-works" class="relative overflow-hidden bg-marketing-canvas py-20 md:py-28">
+  <!-- No overflow-x clip here: overflow-x + visible y often forces y=auto and breaks page-sticky. -->
+  <section
+    id="how-it-works"
+    class="relative border-border border-y bg-white py-20 md:py-28 dark:bg-background"
+  >
     <div
-      class="pointer-events-none absolute left-1/2 top-0 h-[min(420px,55vw)] w-[min(720px,120%)] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.35] blur-[100px] dark:opacity-[0.22]"
-      style="background: radial-gradient(ellipse at center, var(--brand-soft-hover), transparent 70%)"
+      class="pointer-events-none absolute inset-x-0 top-0 h-48 bg-linear-to-b from-muted/25 to-transparent dark:from-muted/20"
       aria-hidden="true"
     />
-    <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
 
-      <!-- Header -->
-      <header class="mx-auto mb-16 max-w-2xl text-center">
-        <motion.span
-          :initial="{ opacity: 0, y: 10 }"
-          :whileInView="{ opacity: 1, y: 0 }"
-          :viewport="{ once: true }"
-          :transition="{ duration: 0.45 }"
-          class="mb-5 inline-flex w-fit items-center rounded-full border border-brand/20 bg-brand-soft/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand shadow-sm backdrop-blur-sm dark:bg-brand-soft/30"
-        >How It Works</motion.span>
-        <motion.h2
-          :initial="{ opacity: 0, y: 16 }"
-          :whileInView="{ opacity: 1, y: 0 }"
-          :viewport="{ once: true }"
-          :transition="{ duration: 0.5, delay: 0.06 }"
-          class="text-3xl font-bold tracking-tight text-balance text-foreground md:text-[2.35rem] md:leading-[1.15]"
-        >
-          Find Your Lawyer in <span class="text-brand">5 Steps</span>
-        </motion.h2>
-        <div
-          class="mx-auto my-5 h-px w-14 bg-linear-to-r from-transparent via-brand/45 to-transparent"
-          aria-hidden="true"
-        />
-        <motion.p
-          :initial="{ opacity: 0, y: 12 }"
-          :whileInView="{ opacity: 1, y: 0 }"
-          :viewport="{ once: true }"
-          :transition="{ duration: 0.5, delay: 0.1 }"
-          class="text-pretty text-lg leading-relaxed text-muted-foreground"
-        >
-          Our streamlined process makes it easy to connect with qualified legal professionals.
-        </motion.p>
-      </header>
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+      <div
+        class="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:items-stretch lg:gap-16 xl:gap-20"
+      >
+        <!-- Left cell stretches to row height (tallest column = list); inner is sticky until row ends. -->
+        <header class="min-h-0 lg:col-span-5 lg:self-stretch">
+          <div
+            class="mx-auto max-w-xl text-center lg:sticky lg:top-21 lg:mx-0 lg:max-w-md lg:text-left lg:pb-4"
+          >
+            <motion.div
+              class="mb-5 flex justify-center lg:justify-start"
+              :initial="{ opacity: 0, y: 10 }"
+              :whileInView="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true }"
+              :transition="{ duration: 0.45 }"
+            >
+              <Badge
+                variant="secondary"
+                class="border border-border bg-muted/90 px-3 py-1.5 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.12em] shadow-none hover:bg-muted"
+              >
+                How it works
+              </Badge>
+            </motion.div>
 
-      <!-- Step cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-        <motion.div
-          v-for="(step, i) in steps"
-          :key="step.number"
-          :initial="{ opacity: 0, y: 28 }"
-          :whileInView="{ opacity: 1, y: 0 }"
-          :viewport="{ once: true, margin: '-40px' }"
-          :transition="{ duration: 0.45, delay: i * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }"
-          :whileHover="{ y: -4, boxShadow: '0 10px 32px rgba(0,0,0,0.09)' }"
-          class="group cursor-default rounded-xl border border-border bg-card p-6 shadow-sm shadow-black/5 transition-shadow duration-200 dark:shadow-black/20"
-        >
-          <!-- Step number + connector line -->
-          <div class="flex items-center gap-3 mb-5">
-            <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-sm font-bold text-brand tabular-nums dark:bg-brand-soft/40">
-              {{ step.number }}
+            <motion.h2
+              :initial="{ opacity: 0, y: 16 }"
+              :whileInView="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true }"
+              :transition="{ duration: 0.45, delay: 0.05 }"
+              class="text-balance font-bold tracking-tight text-foreground text-[2rem] leading-[1.12] sm:text-[2.1875rem] md:text-[2.4375rem] lg:text-[2.5rem] xl:text-[2.625rem]"
+            >
+              From search to session in five steps
+            </motion.h2>
+
+            <div class="flex justify-center py-6 lg:justify-start" role="presentation">
+              <div class="w-16 shrink-0 sm:w-20">
+                <Separator decorative orientation="horizontal" class="bg-border/70" />
+              </div>
             </div>
-            <div v-if="i < steps.length - 1" class="hidden h-px flex-1 bg-border xl:block" />
-          </div>
 
-          <!-- Icon -->
-          <div class="mb-4 flex size-10 items-center justify-center rounded-lg bg-brand-soft/60 transition-colors duration-200 group-hover:bg-brand-soft dark:bg-brand-soft/25 dark:group-hover:bg-brand-soft/40">
-            <component :is="step.icon" class="size-5 text-brand" />
+            <motion.p
+              :initial="{ opacity: 0, y: 12 }"
+              :whileInView="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true }"
+              :transition="{ duration: 0.45, delay: 0.09 }"
+              class="text-pretty max-w-[36ch] text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-base sm:leading-relaxed lg:max-w-[40ch]"
+            >
+              A straightforward path through the marketplace—fewer surprises once you decide to book.
+            </motion.p>
           </div>
+        </header>
 
-          <!-- Text -->
-          <h3 class="mb-1.5 text-[15px] font-semibold text-foreground">{{ step.title }}</h3>
-          <p class="text-sm leading-relaxed text-muted-foreground">{{ step.description }}</p>
-        </motion.div>
+        <!-- Right: step cards (two-up on tablet; single column in the lg+ rail for clarity) -->
+        <ol
+          role="list"
+          class="grid list-none gap-3 p-0 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-1 lg:gap-3 lg:border-l lg:border-border/60 lg:pl-16 lg:pr-8 xl:pl-22 xl:pr-14"
+        >
+          <li
+            v-for="(step, i) in steps"
+            :key="step.number"
+            class="min-h-0 list-none"
+          >
+            <motion.div
+              class="group flex h-full flex-col rounded-md border border-border/80 bg-muted p-5 shadow-sm shadow-black/3 outline-none transition-[transform,box-shadow] duration-200 hover:border-border hover:shadow-md dark:shadow-black/20 dark:hover:shadow-lg motion-reduce:transition-none [@media(hover:hover)]:hover:-translate-y-0.5 motion-reduce:[@media(hover:hover)]:hover:translate-y-0"
+              :initial="{ opacity: 0, y: 22 }"
+              :whileInView="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true, margin: '-40px' }"
+              :transition="{ duration: 0.45, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }"
+            >
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <div
+                  class="flex size-10 shrink-0 items-center justify-center rounded-md border border-border/80 bg-background/85 transition-colors duration-200 group-hover:bg-background dark:border-border dark:bg-muted/50 dark:group-hover:bg-muted/60"
+                >
+                  <component :is="step.icon" class="size-6 text-muted-foreground group-hover:text-foreground" aria-hidden="true" />
+                </div>
+                <div
+                  class="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-background/90 text-xs font-semibold tabular-nums leading-none text-muted-foreground dark:bg-muted/60"
+                  aria-hidden="true"
+                >
+                  {{ step.number }}
+                </div>
+              </div>
+
+              <h3 class="mb-1 text-lg font-semibold leading-snug tracking-tight">{{ step.title }}</h3>
+              <p class="text-sm leading-relaxed text-muted-foreground">{{ step.description }}</p>
+            </motion.div>
+          </li>
+        </ol>
       </div>
     </div>
   </section>
