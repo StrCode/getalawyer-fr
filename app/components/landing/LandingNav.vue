@@ -5,9 +5,9 @@ const emit = defineEmits<{ openModal: [] }>()
 
 const links = [
   { label: 'How it works',   href: '/#how'      },
-  { label: 'Practice areas', href: '/#practice' },
+  { label: 'Practice areas', href: '/practice-areas' },
   { label: 'For lawyers',    href: '/for-lawyers'  },
-  { label: 'Contact',        href: '#contact'  },
+  { label: 'Contact',        href: '/contact'  },
 ]
 </script>
 

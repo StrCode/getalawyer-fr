@@ -5,7 +5,7 @@ const cols = {
   Product: [
     { label: 'How it works', to: '/#how' },
     { label: 'Find lawyers', to: '/' },
-    { label: 'Practice areas', to: '/#practice' },
+    { label: 'Practice areas', to: '/practice-areas' },
     { label: 'Pricing', to: '/for-lawyers' }
   ],
   'For lawyers': [
@@ -16,7 +16,7 @@ const cols = {
   ],
   Company: [
     { label: 'About', to: '#' },
-    { label: 'Contact', to: '#' },
+    { label: 'Contact', to: '/contact' },
     { label: 'Press', to: '#' },
     { label: 'Careers', to: '#' }
   ],
