@@ -20,9 +20,9 @@ const whereInput = ref('')
           </div>
 
           <!-- Headline -->
-          <h1 class="font-heading font-normal text-brand-green-900 leading-none tracking-[-0.03em] mb-6" style="font-size:clamp(44px,6vw,80px);">
+          <h1 class="text-green-950 font-medium leading-none tracking-[-0.03em] mb-6" style="font-size:clamp(44px,6vw,80px);">
             Find a verified Nigerian lawyer.<br>
-            <em class="italic font-normal text-green-700 tracking-[-0.02em]">Booked in minutes.</em>
+            <em class="italic font-medium text-green-900 tracking-[-0.02em]">Booked in minutes.</em>
           </h1>
 
           <!-- Sub -->

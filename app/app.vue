@@ -4,6 +4,17 @@
  * Styles: `vue-sonner/style.css` in `assets/css/main.css`
  */
 import { Toaster } from '~/components/ui/sonner'
+
+useHead({
+  link: [
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,WONK@0,9..144,100..900,1;1,9..144,100..900,1&display=swap'
+    }
+  ]
+})
 </script>
 
 <template>

@@ -4,6 +4,7 @@
    Mapped to shadcn-vue CSS variable tokens (oklch)
    ============================================================ */
 
+
 @import "vue-sonner/style.css";
 
 @import "tailwindcss";
@@ -274,12 +275,7 @@
     --sidebar-ring: oklch(0.73 0.080 152);
 }
 
-/* ============================================================
-   BASE LAYER
-   ============================================================ */
 @layer base {
-
-    /* Reserve scrollbar gutter so `overflow:hidden` overlays (menus/modals) do not widen the viewport. */
     html {
         scrollbar-gutter: stable;
     }
@@ -291,9 +287,18 @@
     body {
         @apply bg-background text-foreground;
         font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-        font-feature-settings: 'ss01', 'ss02';
-        font-synthesis: none;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading) !important;
+        font-variation-settings: 'SOFT' 0, 'WONK' 1 !important;
+    }
+
 }

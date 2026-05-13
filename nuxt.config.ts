@@ -65,15 +65,6 @@ export default defineNuxtConfig({
       ]
     },
     families: [
-      // ── Brand display font ─────────────────────────────────
-      {
-        name: 'Fraunces',
-        provider: 'google',
-        // Variable font: optical-size (9–144) + weight (100–900)
-        weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
-        styles: ['normal', 'italic'],
-        subsets: ['latin'],
-      },
       // ── Brand sans-serif ───────────────────────────────────
       {
         name: 'Geist',
@@ -81,6 +72,10 @@ export default defineNuxtConfig({
         weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
         styles: ['normal'],
         subsets: ['latin'],
+      },
+      {
+        name: 'Fraunces',
+        provider: 'none',  // stop nuxt/fonts touching this entirely
       },
     ]
   },
