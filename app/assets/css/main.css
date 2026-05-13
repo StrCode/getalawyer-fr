@@ -79,17 +79,7 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
-    <<<<<<< HEAD --font-heading: var(--font-sans);
-    --color-brand: var(--brand);
-    --color-brand-hover: var(--brand-hover);
-    --color-brand-soft: var(--brand-soft);
-    --color-brand-soft-hover: var(--brand-soft-hover);
-    --color-marketing-canvas: var(--marketing-canvas);
-    --color-marketing-band: var(--marketing-band);
-    --color-hero-accent-sky: var(--hero-accent-sky);
-    --color-hero-accent-lime: var(--hero-accent-lime);
-    --color-hero-panel-warm: var(--hero-panel-warm);
-    =======>>>>>>>55d2776 (refactor: restructure homepage into modular landing components and add dedicated landing layout)
+
 }
 
 /* ============================================================
