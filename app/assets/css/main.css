@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* ============================================================
+   GETALAWYER — Design System
+   Colors sourced from getalawyer-homepage-v3.html
+   Mapped to shadcn-vue CSS variable tokens (oklch)
+   ============================================================ */
 
 @import "vue-sonner/style.css";
 
@@ -8,15 +12,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-    font-family: 'SuisseIntl', sans-serif;
-    font-synthesis: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
+/* ============================================================
+   TAILWIND THEME BRIDGE
+   Maps shadcn CSS vars → Tailwind color utilities
+   ============================================================ */
 @theme inline {
-    --font-sans: 'SuisseIntl', sans-serif;
+    /* ── Fonts ────────────────────────────────────────────── */
+    --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Fraunces', Georgia, serif;
+
+    /* ── Shadcn semantic tokens ───────────────────────────── */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -35,11 +40,28 @@ body {
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
+
+    /* ── v3 Brand palette (direct Tailwind access) ────────── */
+    /* Usage: bg-brand-green-900, text-brand-ink-soft, etc.   */
+    --color-brand-green-900: var(--brand-green-900);
+    --color-brand-green-700: var(--brand-green-700);
+    --color-brand-green-500: var(--brand-green-500);
+    --color-brand-green-300: var(--brand-green-300);
+    --color-brand-green-100: var(--brand-green-100);
+    --color-brand-cream: var(--brand-cream);
+    --color-brand-cream-warm: var(--brand-cream-warm);
+    --color-brand-ink: var(--brand-ink);
+    --color-brand-ink-soft: var(--brand-ink-soft);
+    --color-brand-line: var(--brand-line);
+
+    /* ── Charts ───────────────────────────────────────────── */
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
+
+    /* ── Sidebar ──────────────────────────────────────────── */
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -48,6 +70,8 @@ body {
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* ── Radius scale ─────────────────────────────────────── */
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -55,7 +79,7 @@ body {
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
-    --font-heading: var(--font-sans);
+    <<<<<<< HEAD --font-heading: var(--font-sans);
     --color-brand: var(--brand);
     --color-brand-hover: var(--brand-hover);
     --color-brand-soft: var(--brand-soft);
@@ -65,94 +89,206 @@ body {
     --color-hero-accent-sky: var(--hero-accent-sky);
     --color-hero-accent-lime: var(--hero-accent-lime);
     --color-hero-panel-warm: var(--hero-panel-warm);
+    =======>>>>>>>55d2776 (refactor: restructure homepage into modular landing components and add dedicated landing layout)
 }
 
+/* ============================================================
+   LIGHT MODE
+   Source palette from getalawyer-homepage-v3.html:
+     --green-900: #0F2E1A  → oklch(0.19  0.055 148)
+     --green-700: #1F4D2C  → oklch(0.31  0.073 150)
+     --green-500: #2D6B3E  → oklch(0.43  0.090 150)
+     --green-300: #86C28E  → oklch(0.73  0.080 152)
+     --green-100: #E8F2EA  → oklch(0.95  0.022 152)
+     --cream:     #F4F1E8  → oklch(0.96  0.012  85)
+     --cream-warm:#FAF7EE  → oklch(0.98  0.010  88)
+     --ink:       #0F1410  → oklch(0.12  0.015 145)
+     --ink-soft:  #4A554D  → oklch(0.38  0.022 152)
+     --line:      #DCD7C7  → oklch(0.87  0.015  88)
+   ============================================================ */
 :root {
     color-scheme: light dark;
     --radius: 0.625rem;
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+
+    /* ── Raw brand tokens ─────────────────────────────────── */
+    --brand-green-900: oklch(0.19 0.055 148);
+    /* #0F2E1A — dark bg */
+    --brand-green-700: oklch(0.31 0.073 150);
+    /* #1F4D2C — primary  */
+    --brand-green-500: oklch(0.43 0.090 150);
+    /* #2D6B3E — accent   */
+    --brand-green-300: oklch(0.73 0.080 152);
+    /* #86C28E — light    */
+    --brand-green-100: oklch(0.95 0.022 152);
+    /* #E8F2EA — pill bg  */
+    --brand-cream: oklch(0.96 0.012 85);
+    /* #F4F1E8 — page bg  */
+    --brand-cream-warm: oklch(0.98 0.010 88);
+    /* #FAF7EE — alt bg   */
+    --brand-ink: oklch(0.12 0.015 145);
+    /* #0F1410 — text     */
+    --brand-ink-soft: oklch(0.38 0.022 152);
+    /* #4A554D — muted    */
+    --brand-line: oklch(0.87 0.015 88);
+    /* #DCD7C7 — border   */
+
+    /* ── Shadcn semantic tokens (light) ───────────────────── */
+    --background: oklch(0.96 0.012 85);
+    /* cream */
+    --foreground: oklch(0.12 0.015 145);
+    /* ink   */
+
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    /* white */
+    --card-foreground: oklch(0.12 0.015 145);
+    /* ink   */
+
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.12 0.015 145);
+
+    --primary: oklch(0.31 0.073 150);
+    /* green-700 */
+    --primary-foreground: oklch(0.96 0.012 85);
+    /* cream on green */
+
+    --secondary: oklch(0.95 0.022 152);
+    /* green-100 */
+    --secondary-foreground: oklch(0.31 0.073 150);
+    /* green-700 on green-100 */
+
+    --muted: oklch(0.95 0.022 152);
+    /* green-100 */
+    --muted-foreground: oklch(0.38 0.022 152);
+    /* ink-soft */
+
+    --accent: oklch(0.95 0.022 152);
+    /* green-100 */
+    --accent-foreground: oklch(0.31 0.073 150);
+    /* green-700 */
+
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-    --brand: oklch(0.5 0.13 152);
-    --brand-hover: oklch(0.43 0.13 152);
-    --brand-soft: oklch(0.94 0.04 152);
-    --brand-soft-hover: oklch(0.89 0.055 152);
-    --marketing-canvas: oklch(0.985 0.018 152);
-    --marketing-band: oklch(0.2 0.035 152);
-    --hero-accent-sky: oklch(0.92 0.055 230);
-    --hero-accent-lime: oklch(0.95 0.07 135);
-    /* Split-hero right column (warm panel, Dropbox-style) */
-    --hero-panel-warm: oklch(0.965 0.012 88);
+
+    --border: oklch(0.87 0.015 88);
+    /* line */
+    --input: oklch(0.87 0.015 88);
+    /* line */
+    --ring: oklch(0.31 0.073 150);
+    /* green-700 */
+
+    /* ── Charts ───────────────────────────────────────────── */
+    --chart-1: oklch(0.31 0.073 150);
+    /* green-700  */
+    --chart-2: oklch(0.73 0.080 152);
+    /* green-300  */
+    --chart-3: oklch(0.43 0.090 150);
+    /* green-500  */
+    --chart-4: oklch(0.95 0.022 152);
+    /* green-100  */
+    --chart-5: oklch(0.19 0.055 148);
+    /* green-900  */
+
+    /* ── Sidebar ──────────────────────────────────────────── */
+    --sidebar: oklch(0.19 0.055 148);
+    /* green-900 */
+    --sidebar-foreground: oklch(0.96 0.012 85);
+    /* cream */
+    --sidebar-primary: oklch(0.73 0.080 152);
+    /* green-300 */
+    --sidebar-primary-foreground: oklch(0.19 0.055 148);
+    /* green-900 */
+    --sidebar-accent: oklch(0.31 0.073 150);
+    /* green-700 hover */
+    --sidebar-accent-foreground: oklch(0.96 0.012 85);
+    /* cream */
+    --sidebar-border: oklch(0.96 0.012 85 / 10%);
+    --sidebar-ring: oklch(0.73 0.080 152);
+    /* green-300 */
 }
 
+/* ============================================================
+   DARK MODE
+   Green-900 becomes the background, cream becomes foreground,
+   green-300 becomes the primary action color.
+   ============================================================ */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    /* Raw brand tokens unchanged */
+    --brand-green-900: oklch(0.19 0.055 148);
+    --brand-green-700: oklch(0.31 0.073 150);
+    --brand-green-500: oklch(0.43 0.090 150);
+    --brand-green-300: oklch(0.73 0.080 152);
+    --brand-green-100: oklch(0.95 0.022 152);
+    --brand-cream: oklch(0.96 0.012 85);
+    --brand-cream-warm: oklch(0.98 0.010 88);
+    --brand-ink: oklch(0.12 0.015 145);
+    --brand-ink-soft: oklch(0.38 0.022 152);
+    --brand-line: oklch(0.87 0.015 88);
+
+    /* Shadcn semantic tokens (dark) */
+    --background: oklch(0.19 0.055 148);
+    /* green-900 */
+    --foreground: oklch(0.96 0.012 85);
+    /* cream */
+
+    --card: oklch(0.25 0.060 149);
+    /* slightly lighter green-900 */
+    --card-foreground: oklch(0.96 0.012 85);
+
+    --popover: oklch(0.25 0.060 149);
+    --popover-foreground: oklch(0.96 0.012 85);
+
+    --primary: oklch(0.73 0.080 152);
+    /* green-300 — light on dark */
+    --primary-foreground: oklch(0.19 0.055 148);
+    /* green-900 text on green-300 */
+
+    --secondary: oklch(0.31 0.073 150);
+    /* green-700 */
+    --secondary-foreground: oklch(0.96 0.012 85);
+    /* cream */
+
+    --muted: oklch(0.31 0.073 150);
+    /* green-700 */
+    --muted-foreground: oklch(0.96 0.012 85 / 60%);
+
+    --accent: oklch(0.31 0.073 150);
+    /* green-700 */
+    --accent-foreground: oklch(0.96 0.012 85);
+
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-    --marketing-canvas: oklch(0.17 0.028 152);
-    --marketing-band: oklch(0.14 0.032 152);
-    --hero-accent-sky: oklch(0.28 0.06 230);
-    --hero-accent-lime: oklch(0.22 0.05 135);
-    --hero-panel-warm: oklch(0.21 0.022 88);
+
+    --border: oklch(0.96 0.012 85 / 10%);
+    --input: oklch(0.96 0.012 85 / 15%);
+    --ring: oklch(0.73 0.080 152);
+    /* green-300 */
+
+    /* Charts (dark) */
+    --chart-1: oklch(0.73 0.080 152);
+    /* green-300 */
+    --chart-2: oklch(0.43 0.090 150);
+    /* green-500 */
+    --chart-3: oklch(0.95 0.022 152);
+    /* green-100 */
+    --chart-4: oklch(0.31 0.073 150);
+    /* green-700 */
+    --chart-5: oklch(0.96 0.012 85);
+    /* cream */
+
+    /* Sidebar (dark) */
+    --sidebar: oklch(0.15 0.048 148);
+    --sidebar-foreground: oklch(0.96 0.012 85);
+    --sidebar-primary: oklch(0.73 0.080 152);
+    --sidebar-primary-foreground: oklch(0.19 0.055 148);
+    --sidebar-accent: oklch(0.31 0.073 150);
+    --sidebar-accent-foreground: oklch(0.96 0.012 85);
+    --sidebar-border: oklch(0.96 0.012 85 / 10%);
+    --sidebar-ring: oklch(0.73 0.080 152);
 }
 
+/* ============================================================
+   BASE LAYER
+   ============================================================ */
 @layer base {
+
     /* Reserve scrollbar gutter so `overflow:hidden` overlays (menus/modals) do not widen the viewport. */
     html {
         scrollbar-gutter: stable;
@@ -163,25 +299,11 @@ body {
     }
 
     body {
-        @apply bg-background text-foreground antialiased;
-    }
-
-    /*
-     * Headings benefit from balanced line breaks without changing copy.
-     * @see typography best practices (text-wrap: balance)
-     */
-    h1,
-    h2,
-    h3 {
-        text-wrap: balance;
-    }
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
+        @apply bg-background text-foreground;
+        font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-feature-settings: 'ss01', 'ss02';
+        font-synthesis: none;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 }

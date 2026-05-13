@@ -1,63 +1,22 @@
 <script setup lang="ts">
-import { useLawyerSearch } from '~/composables/useLawyerSearch'
-import { useRecentLawyerDirectorySearches } from '~/composables/useRecentLawyerDirectorySearches'
-import type { ConsultationType } from '~/types/lawyer'
+definePageMeta({ layout: 'landing' })
 
-definePageMeta({
-  layout: 'home',
+useSeoMeta({
+  title: 'getalawyer — verified Nigerian lawyers, booked in minutes',
+  description: 'Compare practice areas, fees, and availability across hundreds of bar-verified lawyers. Book your consultation online with clear pricing — no calls, no chasing.',
+  ogTitle: 'getalawyer — verified Nigerian lawyers, booked in minutes',
+  ogDescription: 'Find and book verified Nigerian lawyers online. NIN & SCN verified. Clear pricing. Same-day consultations.',
 })
 
-const { updatePracticeArea } = useLawyerSearch()
-const { pushRecentLawyerDirectorySearch } = useRecentLawyerDirectorySearches()
-
-const handlePracticeAreaSelect = (areaName: string) => {
-  updatePracticeArea(areaName)
-  document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
-const handleSearch = (data: {
-  practiceArea: string | null
-  location: string | null
-  consultationType: string | null
-}) => {
-  if (import.meta.dev) {
-    console.info('Search:', data)
-  }
-
-  const ct = data.consultationType
-  const consultationTypes: ConsultationType[] = (
-    ct === 'video' || ct === 'phone' || ct === 'in-person'
-  )
-    ? [ct]
-    : []
-
-  const keywords = data.practiceArea?.trim() ?? ''
-  const location = data.location?.trim() ?? ''
-
-  if (keywords || location || consultationTypes.length > 0) {
-    pushRecentLawyerDirectorySearch({
-      keywords,
-      location,
-      consultationTypes,
-      practiceAreas: [],
-    })
-  }
-}
+const { openModal } = useLandingModal()
 </script>
 
 <template>
-  <div>
-    <HeroPreviewSplit id="hero" @search="handleSearch" />
-
-    <HowItWorksSection />
-
-    <PracticeAreasSection
-      id="practice-areas"
-      @select-area="handlePracticeAreaSelect"
-    />
-
-    <ForLawyersSection id="for-lawyers" />
-
-    <FooterSection />
-  </div>
+  <LandingHero @open-modal="openModal" />
+  <LandingTrustBar />
+  <LandingHowItWorks />
+  <LandingPracticeAreas />
+  <LandingForLawyers @open-modal="openModal" />
+  <LandingTestimonial />
+  <LandingFinalCTA @open-modal="openModal" />
 </template>

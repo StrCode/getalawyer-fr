@@ -65,52 +65,22 @@ export default defineNuxtConfig({
       ]
     },
     families: [
+      // ── Brand display font ─────────────────────────────────
       {
-        name: 'Inter',
+        name: 'Fraunces',
         provider: 'google',
-        weights: [200, 300, 400, 500, 600, 700],
+        // Variable font: optical-size (9–144) + weight (100–900)
+        weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
         styles: ['normal', 'italic'],
         subsets: ['latin'],
       },
+      // ── Brand sans-serif ───────────────────────────────────
       {
-        name: 'Poppins',
+        name: 'Geist',
         provider: 'google',
-        weights: [200, 300, 400, 500, 600, 700],
-        styles: ['normal', 'italic'],
-        subsets: ['latin'],
-      },
-      {
-        name: 'DM Sans',
-        provider: 'google',
-        weights: [400, 500, 700],
+        weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
         styles: ['normal'],
         subsets: ['latin'],
-      },
-
-      {
-        name: 'SuisseIntl',
-        src: '/fonts/SuisseIntl-Regular.woff2',
-        weight: '400',
-        style: 'normal',
-      },
-
-      {
-        name: 'SuisseIntl',
-        src: '/fonts/SuisseIntl-Medium.woff2',
-        weight: '500',
-        style: 'normal',
-      },
-      {
-        name: 'SuisseIntl',
-        src: '/fonts/SuisseIntl-SemiBold.woff2',
-        weight: '600',
-        style: 'normal',
-      },
-      {
-        name: 'SuisseIntl',
-        src: '/fonts/SuisseIntl-Bold.woff2',
-        weight: '700',
-        style: 'normal',
       },
     ]
   },
