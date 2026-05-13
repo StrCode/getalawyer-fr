@@ -79,6 +79,10 @@ export default defineNuxtConfig({
       },
     ]
   },
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' }
+  },
   runtimeConfig: {
     /**
      * Default monthly lawyer membership display price (NGN minor unit = whole naira).

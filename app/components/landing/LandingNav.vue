@@ -4,14 +4,11 @@ withDefaults(defineProps<Props>(), { isScrolled: false })
 const emit = defineEmits<{ openModal: [] }>()
 
 const links = [
-  { label: 'How it works',   href: 'how'      },
-  { label: 'Practice areas', href: 'practice' },
-  { label: 'For lawyers',    href: 'lawyers'  },
-  { label: 'Contact',        href: 'contact'  },
+  { label: 'How it works',   href: '/#how'      },
+  { label: 'Practice areas', href: '/#practice' },
+  { label: 'For lawyers',    href: '/for-lawyers'  },
+  { label: 'Contact',        href: '#contact'  },
 ]
-
-const scrollTo = (id: string) =>
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 </script>
 
 <template>
@@ -30,10 +27,10 @@ const scrollTo = (id: string) =>
       <!-- Nav links — hidden on mobile -->
       <ul class="hidden lg:flex gap-9 list-none m-0 p-0">
         <li v-for="link in links" :key="link.href">
-          <button
-            @click="scrollTo(link.href)"
-            class="text-brand-ink text-[15px] font-medium hover:text-brand-green-700 transition-colors duration-200 bg-transparent border-none cursor-pointer font-sans"
-          >{{ link.label }}</button>
+          <NuxtLink
+            :to="link.href"
+            class="text-brand-ink text-[15px] font-medium hover:text-brand-green-700 transition-colors duration-200 bg-transparent border-none cursor-pointer font-sans no-underline"
+          >{{ link.label }}</NuxtLink>
         </li>
       </ul>
 

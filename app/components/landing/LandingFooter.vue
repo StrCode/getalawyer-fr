@@ -1,11 +1,31 @@
 <script setup lang="ts">
 const year = new Date().getFullYear()
 
-const cols: Record<string, string[]> = {
-  Product:      ['How it works', 'Find lawyers', 'Practice areas', 'Pricing'],
-  'For lawyers': ['Overview', 'Register', 'Dashboard', 'Verification'],
-  Company:      ['About', 'Contact', 'Press', 'Careers'],
-  Legal:        ['Privacy policy', 'Terms of service', 'Cookie policy', 'NDPA compliance'],
+const cols = {
+  Product: [
+    { label: 'How it works', to: '/#how' },
+    { label: 'Find lawyers', to: '/' },
+    { label: 'Practice areas', to: '/#practice' },
+    { label: 'Pricing', to: '/for-lawyers' }
+  ],
+  'For lawyers': [
+    { label: 'Overview', to: '/for-lawyers' },
+    { label: 'Register', to: '/for-lawyers' },
+    { label: 'Dashboard', to: '/dashboard' },
+    { label: 'Verification', to: '/for-lawyers' }
+  ],
+  Company: [
+    { label: 'About', to: '#' },
+    { label: 'Contact', to: '#' },
+    { label: 'Press', to: '#' },
+    { label: 'Careers', to: '#' }
+  ],
+  Legal: [
+    { label: 'Privacy policy', to: '#' },
+    { label: 'Terms of service', to: '#' },
+    { label: 'Cookie policy', to: '#' },
+    { label: 'NDPA compliance', to: '#' }
+  ],
 }
 </script>
 
@@ -18,7 +38,7 @@ const cols: Record<string, string[]> = {
 
         <!-- Brand -->
         <div>
-          <a href="#" class="flex items-center gap-2.5 no-underline mb-4">
+          <a href="/" class="flex items-center gap-2.5 no-underline mb-4">
             <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <polygon points="0,20 38,42 38,82 0,60" fill="#86C28E"/>
               <polygon points="62,42 100,20 100,60 62,82" fill="#86C28E" opacity="0.55"/>
@@ -34,14 +54,14 @@ const cols: Record<string, string[]> = {
         <div v-for="(links, group) in cols" :key="group">
           <h5 class="text-[12px] font-semibold text-brand-cream tracking-[0.08em] uppercase mb-[18px]">{{ group }}</h5>
           <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
-            <li v-for="link in links" :key="link">
-              <a
-                href="#"
+            <li v-for="link in links" :key="link.label">
+              <NuxtLink
+                :to="link.to"
                 class="no-underline text-[14px] transition-colors duration-200 hover:text-brand-cream"
                 style="color:rgba(244,241,232,0.6);"
                 @mouseenter="($event.target as HTMLElement).style.color='rgba(244,241,232,1)'"
                 @mouseleave="($event.target as HTMLElement).style.color='rgba(244,241,232,0.6)'"
-              >{{ link }}</a>
+              >{{ link.label }}</NuxtLink>
             </li>
           </ul>
         </div>

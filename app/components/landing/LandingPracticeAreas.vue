@@ -27,18 +27,18 @@ const areas: Area[] = [
             Find a specialist for what you're facing.
           </h2>
         </div>
-        <a
-          href="#"
+        <NuxtLink
+          to="/practice-areas"
           class="inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full bg-transparent text-brand-ink border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 text-[15px] font-medium no-underline shrink-0 font-sans"
-        >View all 24 areas →</a>
+        >View all areas →</NuxtLink>
       </div>
 
       <!-- 4-col card grid -->
       <div class="grid gap-4" style="grid-template-columns:repeat(4,1fr);">
-        <a
+        <NuxtLink
           v-for="area in areas"
           :key="area.name"
-          href="#"
+          :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
           class="group bg-white border border-brand-line rounded-[14px] p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-brand-green-700 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.15)]"
         >
           <!-- Icon -->
@@ -50,7 +50,7 @@ const areas: Area[] = [
             <span>{{ area.count }}</span>
             <span class="transition-transform duration-200 group-hover:translate-x-1">→</span>
           </div>
-        </a>
+        </NuxtLink>
       </div>
     </div>
   </section>

@@ -48,13 +48,13 @@ const features = [
               @click="emit('openModal')"
               class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-[16px] hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
             >Register as a lawyer</button>
-            <button
-              @click="emit('openModal')"
-              class="inline-flex items-center gap-2 px-7 py-4 rounded-full font-medium text-[16px] border transition-all duration-200 cursor-pointer font-sans bg-transparent text-brand-cream hover:bg-white/5"
+            <NuxtLink
+              to="/for-lawyers"
+              class="inline-flex items-center gap-2 px-7 py-4 rounded-full font-medium text-[16px] border transition-all duration-200 cursor-pointer font-sans bg-transparent text-brand-cream hover:bg-white/5 no-underline"
               style="border-color:rgba(244,241,232,0.3);"
               @mouseenter="(e) => { (e.currentTarget as HTMLElement).style.borderColor='rgba(244,241,232,1)' }"
               @mouseleave="(e) => { (e.currentTarget as HTMLElement).style.borderColor='rgba(244,241,232,0.3)' }"
-            >Learn more</button>
+            >Learn more</NuxtLink>
           </div>
         </div>
 

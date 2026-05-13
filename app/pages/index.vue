@@ -12,11 +12,13 @@ const { openModal } = useLandingModal()
 </script>
 
 <template>
-  <LandingHero @open-modal="openModal" />
-  <LandingTrustBar />
-  <LandingHowItWorks />
-  <LandingPracticeAreas />
-  <LandingForLawyers @open-modal="openModal" />
-  <LandingTestimonial />
-  <LandingFinalCTA @open-modal="openModal" />
+  <div class="bg-brand-cream">
+    <LandingHero @open-modal="openModal" />
+    <LandingTrustBar />
+    <LandingHowItWorks />
+    <LandingPracticeAreas />
+    <LandingForLawyers @open-modal="openModal" />
+    <LandingTestimonial />
+    <LandingFinalCTA @open-modal="openModal" />
+  </div>
 </template>

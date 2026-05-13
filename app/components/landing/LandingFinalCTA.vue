@@ -18,10 +18,10 @@ const emit = defineEmits<{ openModal: [] }>()
           @click="emit('openModal')"
           class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-green-700 text-brand-cream font-medium text-[16px] hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
         >Find a lawyer →</button>
-        <button
-          @click="emit('openModal')"
-          class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-transparent text-brand-ink font-medium text-[16px] border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 cursor-pointer font-sans"
-        >I'm a lawyer</button>
+        <NuxtLink
+          to="/for-lawyers"
+          class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-transparent text-brand-ink font-medium text-[16px] border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 cursor-pointer font-sans no-underline"
+        >I'm a lawyer</NuxtLink>
       </div>
     </div>
   </section>
