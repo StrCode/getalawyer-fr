@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 definePageMeta({ layout: 'landing' })
 
 useSeoMeta({
@@ -30,6 +31,24 @@ const features = [
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
   }
 ]
+
+const lawyerSteps = [
+  { num: '01', title: 'Create your profile', desc: 'Sign up and submit your NIN and SCN for verification. Our team reviews applications within 24 hours.' },
+  { num: '02', title: 'Set your schedule', desc: 'Sync your calendar and set your availability. You have full control over when you take consultations.' },
+  { num: '03', title: 'Receive bookings', desc: 'Clients find you in our directory, book an available slot, and pay upfront. No chasing invoices.' },
+  { num: '04', title: 'Consult & get paid', desc: 'Meet with the client via our built-in tools or in person. You keep 100% of your fee.' },
+]
+
+const faqs = ref([
+  { q: 'How long does verification take?', a: 'We typically verify your NIN and Supreme Court Number within 24-48 hours. Once approved, your profile goes live immediately.', open: false },
+  { q: 'Do you take a percentage of my fees?', a: 'No. Unlike other platforms, we charge a flat ₦30,000 annual subscription. You keep 100% of the consultation fees you charge your clients.', open: false },
+  { q: 'How do I receive payments from clients?', a: 'Clients pay securely through our platform when they book a slot. The funds are routed directly to your connected bank account.', open: false },
+  { q: 'What happens if a client cancels?', a: 'You have full control over your cancellation policy. You can choose to refund them, or keep a percentage if they cancel within 24 hours of the meeting.', open: false },
+])
+
+const toggleFaq = (index: number) => {
+  faqs.value[index].open = !faqs.value[index].open
+}
 </script>
 
 <template>
@@ -89,6 +108,31 @@ const features = [
       </div>
     </section>
 
+    <!-- How it works for lawyers -->
+    <section class="py-[100px] bg-brand-green-900 text-brand-cream border-t border-brand-green-700/30">
+      <div class="max-w-[1280px] mx-auto px-8">
+        <div class="mb-16">
+          <p class="text-[13px] font-semibold text-brand-green-300 tracking-[0.08em] uppercase mb-4">Onboarding</p>
+          <h2 class="font-heading font-medium text-brand-cream tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+            How to get started
+          </h2>
+          <p class="text-[18px] text-brand-cream/70 max-w-[600px]">
+            Four simple steps to start growing your digital practice.
+          </p>
+        </div>
+        
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div v-for="step in lawyerSteps" :key="step.num" class="relative">
+            <div class="font-heading italic font-normal text-brand-green-700 leading-none mb-6" style="font-size:56px;">
+              {{ step.num }}
+            </div>
+            <h3 class="text-[20px] font-semibold text-brand-cream mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
+            <p class="text-[15px] text-brand-cream/70 leading-[1.55]">{{ step.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Pricing Section -->
     <section class="py-[100px] bg-brand-cream-warm border-t border-brand-line/50">
       <div class="max-w-[1280px] mx-auto px-8">
@@ -123,6 +167,62 @@ const features = [
           </button>
         </div>
 
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-[100px]">
+      <div class="max-w-[800px] mx-auto px-8">
+        <div class="text-center mb-16">
+          <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+            Frequently asked questions
+          </h2>
+        </div>
+        
+        <div class="space-y-4">
+          <div 
+            v-for="(faq, idx) in faqs" 
+            :key="idx"
+            class="border border-brand-line bg-white rounded-[16px] overflow-hidden transition-all duration-200"
+          >
+            <button 
+              @click="toggleFaq(idx)"
+              class="w-full flex items-center justify-between p-6 text-left bg-transparent border-none cursor-pointer group"
+            >
+              <span class="text-[16px] font-semibold text-brand-green-900 pr-8">{{ faq.q }}</span>
+              <div 
+                class="w-8 h-8 rounded-full bg-brand-green-100 flex items-center justify-center text-brand-green-700 shrink-0 transition-transform duration-300"
+                :class="{ 'rotate-180': faq.open }"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </button>
+            <div 
+              v-show="faq.open"
+              class="px-6 pb-6 text-[15px] text-brand-ink-soft leading-[1.6]"
+            >
+              {{ faq.a }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="py-[100px] text-center border-t border-brand-line/50">
+      <div class="max-w-[720px] mx-auto px-8">
+        <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-6" style="font-size:clamp(36px,4.5vw,56px);">
+          Ready to grow your digital practice?
+        </h2>
+        <p class="text-[18px] text-brand-ink-soft leading-[1.5] mb-10">
+          Join hundreds of verified lawyers securely acquiring clients on our platform today.
+        </p>
+        <button 
+          @click="openModal('signup')"
+          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-brand-green-900 text-brand-cream border-none font-sans text-[16px] font-medium cursor-pointer hover:bg-brand-green-700 transition-colors duration-200 shadow-md hover:-translate-y-0.5"
+        >
+          Create your lawyer profile
+        </button>
       </div>
     </section>
 
