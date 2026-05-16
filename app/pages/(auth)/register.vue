@@ -436,11 +436,9 @@ const registerSchema = z
   .object({
     firstName: z
       .string('First name is required.')
-      .min(1, 'First name is required.')
       .min(2, 'First name must be at least 2 characters.'),
     lastName: z
       .string('Last name is required.')
-      .min(1, 'Last name is required.')
       .min(2, 'Last name must be at least 2 characters.'),
     email: z
       .email('Please enter a valid email address.')
@@ -448,7 +446,6 @@ const registerSchema = z
     password: authPasswordSchema,
     confirmPassword: z
       .string('Please confirm your password.')
-      .min(1, 'Please confirm your password.'),
   })
   .refine(data => data.password === data.confirmPassword, {
     error: 'Passwords do not match.',
