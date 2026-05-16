@@ -9,7 +9,7 @@ import {
   normalizeScnDigitsOnly,
   SCN_MAX_DIGITS
 } from '~/lib/scn'
-import { lawyerProfessionalInfoSchema } from '~/app/schemas/lawyerProfessionalInfo'
+import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
 import {
   Field,
   FieldError,
