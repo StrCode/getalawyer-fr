@@ -394,8 +394,7 @@ const registerSchema = z
       .string('Last name is required.')
       .min(2, 'Last name must be at least 2 characters.'),
     email: z
-      .email('Please enter a valid email address.')
-      .min(1, 'Email address is required.'),
+      .email('Please enter a valid email address.'),
     password: authPasswordSchema,
     confirmPassword: z
       .string('Please confirm your password.')
