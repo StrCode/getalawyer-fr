@@ -8,7 +8,14 @@
         Check your email
       </h1>
       <p class="text-muted-foreground text-base">
-        We sent a 6-digit code to <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
+        We sent a 6-digit code to
+        <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
+        <NuxtLink
+          to="/forgot-password"
+          class="ms-1 font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Wrong email?
+        </NuxtLink>
       </p>
     </div>
 
@@ -22,13 +29,23 @@
               :maxlength="6"
               :disabled="isSubmitting"
               class="gap-2 justify-center w-full"
-              @update:model-value="(v) => field.handleChange(v as any)"
+              @update:model-value="(v) => onOtpChange(v as string, field)"
             >
               <InputOTPGroup>
                 <InputOTPSlot
-                  v-for="i in 6"
+                  v-for="i in 3"
                   :key="i"
                   :index="i - 1"
+                  class="h-12 w-10 text-lg"
+                  :class="isInvalid(field) ? 'border-destructive' : ''"
+                />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot
+                  v-for="i in 3"
+                  :key="i + 3"
+                  :index="i + 2"
                   class="h-12 w-10 text-lg"
                   :class="isInvalid(field) ? 'border-destructive' : ''"
                 />
@@ -47,29 +64,25 @@
             type="button"
             variant="link"
             class="h-auto p-0 font-medium"
-            :disabled="isResending"
+            :disabled="isResending || resendCooldown > 0"
             @click="handleResend"
           >
-            {{ isResending ? 'Sending…' : 'Resend code' }}
+            <template v-if="isResending">Sending…</template>
+            <template v-else-if="resendCooldown > 0">Resend in {{ resendCooldown }}s</template>
+            <template v-else>Resend code</template>
           </Button>
         </p>
 
-        <div
-          v-if="apiError"
-          role="alert"
-          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-        >
-          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-          <span>{{ apiError }}</span>
-        </div>
+        <AuthFormError :message="apiError" />
 
         <Button
           type="submit"
-          class="w-full h-12"
+          class="w-full h-12 gap-2"
           size="lg"
           :disabled="isSubmitting"
         >
-          Verify code
+          <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+          <span>{{ isSubmitting ? 'Verifying…' : 'Verify code' }}</span>
         </Button>
       </FieldGroup>
     </form>
@@ -88,11 +101,11 @@
 </template>
 
 <script setup lang="ts">
-import { PhWarningCircle } from '@phosphor-icons/vue'
+import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
@@ -100,8 +113,8 @@ import { authClient } from '~/lib/auth-client'
 definePageMeta({
   layout: 'auth',
   middleware: ['guest'],
-  authTitle: 'Recover your account.',
-  authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
+  authTitle: 'Verify your identity.',
+  authDescription: 'Enter the code we sent to your email to continue resetting your password securely.',
 })
 
 const route = useRoute()
@@ -117,7 +130,9 @@ const otpSchema = z.object({
 
 const isSubmitting = ref(false)
 const isResending = ref(false)
+const resendCooldown = ref(0)
 const apiError = ref('')
+let cooldownTimer: ReturnType<typeof setInterval> | null = null
 
 const form = useForm({
   defaultValues: {
@@ -142,7 +157,7 @@ const form = useForm({
         throw new Error(result.error.message || 'Invalid verification code')
       }
 
-      router.push({
+      await router.push({
         path: '/reset-password',
         query: {
           email: emailParam.value,
@@ -168,17 +183,45 @@ const form = useForm({
   },
 })
 
-function isInvalid(field: any) {
-  return field.state.meta.isTouched && !field.state.meta.isValid
+const { isInvalid } = useAuthFieldInvalid()
+
+function onOtpChange(value: string, field: { handleChange: (v: string) => void }) {
+  field.handleChange(value)
+  if (value.length === 6 && !isSubmitting.value) {
+    form.handleSubmit()
+  }
+}
+
+function startResendCooldown(seconds = 60) {
+  resendCooldown.value = seconds
+  if (cooldownTimer) clearInterval(cooldownTimer)
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value -= 1
+    if (resendCooldown.value <= 0 && cooldownTimer) {
+      clearInterval(cooldownTimer)
+      cooldownTimer = null
+    }
+  }, 1000)
 }
 
 onMounted(() => {
   if (!emailParam.value) {
     router.replace('/forgot-password')
+    return
   }
+  nextTick(() => {
+    const first = document.querySelector<HTMLInputElement>('[data-slot="input-otp"] input')
+    first?.focus()
+  })
+})
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
 })
 
 const handleResend = async () => {
+  if (resendCooldown.value > 0 || isResending.value) return
+
   apiError.value = ''
   isResending.value = true
 
@@ -187,6 +230,7 @@ const handleResend = async () => {
       email: emailParam.value,
     })
     form.setFieldValue('otp', '')
+    startResendCooldown()
   }
   catch (err: unknown) {
     apiError.value =

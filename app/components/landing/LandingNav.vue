@@ -3,7 +3,6 @@ import { ref, watch } from 'vue'
 
 interface Props { isScrolled?: boolean }
 withDefaults(defineProps<Props>(), { isScrolled: false })
-const emit = defineEmits<{ openModal: [] }>()
 
 const links = [
   { label: 'How it works',   href: '/#how'      },
@@ -56,10 +55,10 @@ watch(isMobileMenuOpen, (isOpen) => {
             to="/login"
             class="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full text-brand-ink text-4 font-medium border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
           >Sign in</NuxtLink>
-          <button
-            @click="emit('openModal')"
-            class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-brand-green-700 text-brand-cream text-4 font-medium hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
-          >Find a lawyer →</button>
+          <NuxtLink
+            to="/find-lawyers"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-brand-green-700 text-brand-cream text-4 font-medium hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
+          >Find a lawyer →</NuxtLink>
         </div>
 
         <!-- Mobile Hamburger Button -->
@@ -127,12 +126,13 @@ watch(isMobileMenuOpen, (isOpen) => {
 
         <!-- Mobile Menu Footer CTAs -->
         <div class="px-8 pb-12 pt-8 flex flex-col gap-4 shrink-0 animate-slide-up-fade" :style="{ animationDelay: `${links.length * 75 + 100}ms` }">
-          <button
-            @click="() => { isMobileMenuOpen = false; emit('openModal') }"
-            class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-brand-green-700 text-brand-cream text-lg font-medium hover:bg-brand-green-900 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm"
+          <NuxtLink
+            to="/find-lawyers"
+            @click="isMobileMenuOpen = false"
+            class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-brand-green-700 text-brand-cream text-lg font-medium hover:bg-brand-green-900 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
           >
             Find a lawyer
-          </button>
+          </NuxtLink>
           <NuxtLink
             to="/login"
             @click="isMobileMenuOpen = false"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const emit = defineEmits<{ openModal: [] }>()
 </script>
 
 <template>
@@ -20,10 +19,10 @@ const emit = defineEmits<{ openModal: [] }>()
           </p>
           
           <div class="flex gap-4 flex-wrap">
-            <button
-              @click="emit('openModal')"
-              class="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm"
-            >Find a lawyer</button>
+            <NuxtLink
+              to="/find-lawyers"
+              class="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
+            >Find a lawyer</NuxtLink>
             <NuxtLink
               to="/for-lawyers"
               class="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-transparent text-brand-cream font-medium text-4 border border-brand-cream/30 hover:border-brand-cream transition-all duration-200 cursor-pointer font-sans no-underline"

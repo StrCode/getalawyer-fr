@@ -1,17 +1,17 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  middleware: 'guest',
 })
 
-const { open } = useAuthModal()
+const route = useRoute()
 
-onMounted(() => {
-  open('otp')
-})
+await navigateTo({
+  path: '/verify-otp',
+  query: route.query,
+}, { replace: true })
 </script>
 
 <template>
-  <div>
-    <AuthModal />
-  </div>
+  <div />
 </template>

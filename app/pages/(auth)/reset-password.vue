@@ -28,7 +28,8 @@
           Set a new password
         </h1>
         <p class="mb-1 text-muted-foreground text-base leading-relaxed">
-          Choose a new password for your GetaLawyer account.
+          Choose a new password for
+          <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
         </p>
         <p class="mb-6 text-muted-foreground text-base leading-relaxed">
           This will end all active sessions for your account.
@@ -39,34 +40,31 @@
             <form.Field v-slot="{ field }" name="password">
               <Field :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name">New password</FieldLabel>
-                <Input
+                <AuthPasswordInput
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  type="password"
                   placeholder="••••••••"
                   autocomplete="new-password"
-                  class="h-12"
                   :aria-invalid="isInvalid(field)"
                   :disabled="isSubmitting"
                   @blur="field.handleBlur"
                   @update:model-value="(v) => field.handleChange(v as any)"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                <AuthPasswordRequirements class="mt-2" :password="field.state.value" />
               </Field>
             </form.Field>
 
             <form.Field v-slot="{ field }" name="confirmPassword">
               <Field :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name">Confirm new password</FieldLabel>
-                <Input
+                <AuthPasswordInput
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  type="password"
                   placeholder="••••••••"
                   autocomplete="new-password"
-                  class="h-12"
                   :aria-invalid="isInvalid(field)"
                   :disabled="isSubmitting"
                   @blur="field.handleBlur"
@@ -76,21 +74,11 @@
               </Field>
             </form.Field>
 
-            <p class="text-muted-foreground text-xs leading-relaxed">
-              Use at least 8 characters. Avoid common words or patterns.
-            </p>
+            <AuthFormError :message="apiError" />
 
-            <div
-              v-if="apiError"
-              role="alert"
-              class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-base"
-            >
-              <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-              <span>{{ apiError }}</span>
-            </div>
-
-            <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-              Reset password
+            <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
+              <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+              <span>{{ isSubmitting ? 'Resetting…' : 'Reset password' }}</span>
             </Button>
           </FieldGroup>
         </form>
@@ -109,13 +97,13 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhWarningCircle } from '@phosphor-icons/vue'
+import { PhCheckCircle, PhCircleNotch } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
+import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
@@ -133,13 +121,8 @@ const otpParam = computed(() => (route.query.otp as string) || '')
 
 const resetSchema = z
   .object({
-    password: z
-      .string('New password is required.')
-      .min(8, 'Password must be at least 8 characters.')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter.')
-      .regex(/[0-9]/, 'Password must contain at least one number.'),
-    confirmPassword: z
-      .string('Please confirm your new password.')
+    password: authPasswordSchema,
+    confirmPassword: z.string('Please confirm your new password.'),
   })
   .refine(data => data.password === data.confirmPassword, {
     error: 'Passwords do not match.',
@@ -191,9 +174,7 @@ const form = useForm({
   },
 })
 
-function isInvalid(field: any) {
-  return field.state.meta.isTouched && !field.state.meta.isValid
-}
+const { isInvalid } = useAuthFieldInvalid()
 
 onMounted(() => {
   if (!emailParam.value || !otpParam.value) {

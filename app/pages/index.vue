@@ -7,18 +7,16 @@ useSeoMeta({
   ogTitle: 'getalawyer — verified Nigerian lawyers, booked in minutes',
   ogDescription: 'Find and book verified Nigerian lawyers online. NIN & SCN verified. Clear pricing. Same-day consultations.',
 })
-
-const { openModal } = useLandingModal()
 </script>
 
 <template>
   <div class="bg-brand-cream">
-    <LandingHero @open-modal="openModal" />
+    <LandingHero />
     <LandingTrustBar />
     <LandingHowItWorks />
     <LandingPracticeAreas />
-    <LandingForLawyers @open-modal="openModal" />
+    <LandingForLawyers />
     <LandingTestimonial />
-    <LandingFinalCTA @open-modal="openModal" />
+    <LandingFinalCTA />
   </div>
 </template>

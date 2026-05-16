@@ -65,14 +65,12 @@
                 Forgot password?
               </NuxtLink>
             </div>
-            <Input
+            <AuthPasswordInput
               :id="field.name"
               :name="field.name"
               :model-value="field.state.value"
-              type="password"
               placeholder="••••••••"
               autocomplete="current-password"
-              class="h-12"
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
@@ -82,18 +80,11 @@
           </Field>
         </form.Field>
 
-        <div
-          v-if="apiError"
-          role="alert"
-          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-        >
-          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-          <span>{{ apiError }}</span>
-        </div>
+        <AuthFormError :message="apiError" />
 
-        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-          <span v-if="isSubmitting">Signing in…</span>
-          <span v-else>Sign in</span>
+        <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
+          <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+          <span>{{ isSubmitting ? 'Signing in…' : 'Sign in' }}</span>
         </Button>
       </FieldGroup>
     </form>
@@ -122,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { PhWarningCircle } from '@phosphor-icons/vue'
+import { PhCircleNotch } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -197,9 +188,7 @@ const form = useForm({
   },
 })
 
-function isInvalid(field: any) {
-  return field.state.meta.isTouched && !field.state.meta.isValid
-}
+const { isInvalid } = useAuthFieldInvalid()
 
 const handleSocialLogin = async (provider: 'google' | 'facebook') => {
   socialProvider.value = provider

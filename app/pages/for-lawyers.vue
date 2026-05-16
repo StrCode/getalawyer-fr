@@ -7,8 +7,6 @@ useSeoMeta({
   description: 'Grow your practice. Keep every naira you earn. Join verified lawyers across Nigeria reaching clients who are ready to book.',
 })
 
-const { openModal } = useLandingModal()
-
 const features = [
   {
     title: 'Bar-verified credentials',
@@ -69,12 +67,12 @@ const toggleFaq = (index: number) => {
           Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
         </p>
 
-        <button
-          @click="openModal('signup')"
-          class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
+        <NuxtLink
+          to="/register?role=lawyer"
+          class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
         >
           Register as a lawyer
-        </button>
+        </NuxtLink>
       </div>
     </section>
 
@@ -159,12 +157,12 @@ const toggleFaq = (index: number) => {
             <p class="text-3.5 text-brand-ink-soft">Billed annually. Cancel anytime.</p>
           </div>
 
-          <button 
-            @click="openModal('signup')"
-            class="w-full bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200"
+          <NuxtLink
+            to="/register?role=lawyer"
+            class="flex w-full items-center justify-center bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 no-underline"
           >
             Start your membership
-          </button>
+          </NuxtLink>
         </div>
 
       </div>
@@ -217,12 +215,12 @@ const toggleFaq = (index: number) => {
         <p class="text-5 text-brand-ink-soft leading-[1.5] mb-10">
           Join hundreds of verified lawyers securely acquiring clients on our platform today.
         </p>
-        <button 
-          @click="openModal('signup')"
-          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-brand-green-900 text-brand-cream border-none font-sans text-4 font-medium cursor-pointer hover:bg-brand-green-700 transition-colors duration-200 shadow-md hover:-translate-y-0.5"
+        <NuxtLink
+          to="/register?role=lawyer"
+          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-brand-green-900 text-brand-cream border-none font-sans text-4 font-medium cursor-pointer hover:bg-brand-green-700 transition-colors duration-200 shadow-md hover:-translate-y-0.5 no-underline"
         >
           Create your lawyer profile
-        </button>
+        </NuxtLink>
       </div>
     </section>
 

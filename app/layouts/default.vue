@@ -5,8 +5,5 @@
     <AppLayout>
         <AppHeader />
         <slot />
-        <ClientOnly>
-            <AuthModal />
-        </ClientOnly>
     </AppLayout>
 </template>

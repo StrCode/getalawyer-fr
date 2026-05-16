@@ -1,6 +1,4 @@
 <script setup lang="ts">
-const emit = defineEmits<{ openModal: [] }>()
-
 const features = [
   {
     title: 'Bar-verified credentials',
@@ -44,10 +42,10 @@ const features = [
           </p>
 
           <div class="flex items-center gap-3">
-            <button
-              @click="emit('openModal')"
-              class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
-            >Register as a lawyer</button>
+            <NuxtLink
+              to="/register?role=lawyer"
+              class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
+            >Register as a lawyer</NuxtLink>
             <NuxtLink
               to="/for-lawyers"
               class="inline-flex items-center gap-2 px-7 py-4 rounded-full font-medium text-4 border transition-all duration-200 cursor-pointer font-sans bg-transparent text-brand-cream hover:bg-white/5 no-underline"

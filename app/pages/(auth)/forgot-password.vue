@@ -15,7 +15,7 @@
     <div
       v-if="submitted"
       role="status"
-      class="flex gap-3 items-start rounded-lg border border-primary/20 bg-primary/5 mb-6 p-4"
+      class="flex gap-3 items-start rounded-xl border border-primary/20 bg-primary/5 mb-6 p-4"
     >
       <PhCheckCircle class="mt-0.5 w-5 h-5 text-primary shrink-0" />
       <div>
@@ -55,17 +55,11 @@
           </Field>
         </form.Field>
 
-        <div
-          v-if="apiError"
-          role="alert"
-          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-        >
-          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-          <span>{{ apiError }}</span>
-        </div>
+        <AuthFormError :message="apiError" />
 
-        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-          Send reset code
+        <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
+          <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+          <span>{{ isSubmitting ? 'Sending…' : 'Send reset code' }}</span>
         </Button>
       </FieldGroup>
     </form>
@@ -81,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhWarningCircle } from '@phosphor-icons/vue'
+import { PhCheckCircle, PhCircleNotch } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -96,8 +90,6 @@ definePageMeta({
   authTitle: 'Recover your account.',
   authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
-
-// Import removed
 
 const forgotSchema = z.object({
   email: z
@@ -140,9 +132,7 @@ const form = useForm({
   },
 })
 
-function isInvalid(field: any) {
-  return field.state.meta.isTouched && !field.state.meta.isValid
-}
+const { isInvalid } = useAuthFieldInvalid()
 
 const goToVerifyOTP = () => {
   router.push({

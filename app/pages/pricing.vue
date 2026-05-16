@@ -8,8 +8,6 @@ useSeoMeta({
   ogDescription: 'Zero commission. Keep 100% of what you charge. Flat yearly subscription.',
 })
 
-const { openModal } = useLandingModal()
-
 const features = [
   'Bar-verified credentials (NIN & SCN)',
   'Smart booking & calendar sync',
@@ -49,12 +47,12 @@ const features = [
           <p class="text-3.5 text-brand-ink-soft">Billed annually. Cancel anytime.</p>
         </div>
 
-        <button 
-          @click="openModal('signup')"
-          class="w-full bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 mb-9"
+        <NuxtLink
+          to="/register?role=lawyer"
+          class="flex w-full items-center justify-center bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 mb-9 no-underline"
         >
           Register as a lawyer
-        </button>
+        </NuxtLink>
 
         <!-- Features list -->
         <div>

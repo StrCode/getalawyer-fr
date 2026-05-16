@@ -43,9 +43,10 @@
               <Card
                 role="button"
                 tabindex="0"
+                :aria-pressed="role === 'client'"
                 :class="
                   cn(
-                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1',
+                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
                     role === 'client'
                       ? 'border-primary/40 ring-1 ring-primary/20 shadow-xl shadow-primary/5 bg-white/70'
                       : 'hover:border-primary/30',
@@ -53,6 +54,7 @@
                 "
                 @click="role = 'client'"
                 @keydown.enter.prevent="role = 'client'"
+                @keydown.space.prevent="role = 'client'"
               >
                 <div class="p-8">
                   <div class="w-16 h-16 rounded-2xl bg-brand-green-100 flex items-center justify-center mb-8 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner">
@@ -74,9 +76,10 @@
               <Card
                 role="button"
                 tabindex="0"
+                :aria-pressed="role === 'lawyer'"
                 :class="
                   cn(
-                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1',
+                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
                     role === 'lawyer'
                       ? 'border-primary/40 ring-1 ring-primary/20 shadow-xl shadow-primary/5 bg-white/70'
                       : 'hover:border-primary/30',
@@ -84,6 +87,7 @@
                 "
                 @click="role = 'lawyer'"
                 @keydown.enter.prevent="role = 'lawyer'"
+                @keydown.space.prevent="role = 'lawyer'"
               >
                 <div class="p-8">
                   <div class="w-16 h-16 rounded-2xl bg-brand-green-100 flex items-center justify-center mb-8 transition-all group-hover:scale-110 group-hover:-rotate-3 shadow-inner">
@@ -152,6 +156,7 @@
                         :name="field.name"
                         :model-value="field.state.value"
                         placeholder="Alex"
+                        autocomplete="given-name"
                         class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
@@ -170,6 +175,7 @@
                         :name="field.name"
                         :model-value="field.state.value"
                         placeholder="Smith"
+                        autocomplete="family-name"
                         class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
@@ -190,6 +196,7 @@
                       :model-value="field.state.value"
                       type="email"
                       placeholder="alex@example.com"
+                      autocomplete="email"
                       class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
                       :aria-invalid="isInvalid(field)"
                       :disabled="isSubmitting"
@@ -203,32 +210,35 @@
                 <form.Field v-slot="{ field }" name="password">
                   <Field :data-invalid="isInvalid(field)">
                     <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Password</FieldLabel>
-                    <Input
+                    <AuthPasswordInput
                       :id="field.name"
                       :name="field.name"
                       :model-value="field.state.value"
-                      type="password"
                       placeholder="••••••••"
-                      class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                      autocomplete="new-password"
+                      input-class="rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
                       :aria-invalid="isInvalid(field)"
                       :disabled="isSubmitting"
                       @blur="field.handleBlur"
                       @update:model-value="(v) => field.handleChange(v as any)"
                     />
                     <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                    <div class="mt-2">
+                      <AuthPasswordRequirements :password="field.state.value" />
+                    </div>
                   </Field>
                 </form.Field>
 
                 <form.Field v-slot="{ field }" name="confirmPassword">
                   <Field :data-invalid="isInvalid(field)">
                     <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Confirm password</FieldLabel>
-                    <Input
+                    <AuthPasswordInput
                       :id="field.name"
                       :name="field.name"
                       :model-value="field.state.value"
-                      type="password"
                       placeholder="••••••••"
-                      class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                      autocomplete="new-password"
+                      input-class="rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
                       :aria-invalid="isInvalid(field)"
                       :disabled="isSubmitting"
                       @blur="field.handleBlur"
@@ -238,10 +248,7 @@
                   </Field>
                 </form.Field>
 
-                <div v-if="apiError" role="alert" class="flex gap-2 items-start rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-destructive text-sm font-bold">
-                  <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-                  <span>{{ apiError }}</span>
-                </div>
+                <AuthFormError :message="apiError" />
 
                 <Button type="submit" class="w-full h-14 rounded-2xl shadow-2xl shadow-primary/10 text-lg font-bold bg-brand-green-900 hover:bg-brand-green-700" :disabled="isSubmitting">
                   <PhCircleNotch v-if="isSubmitting" class="w-5 h-5 animate-spin mr-2" />
@@ -276,7 +283,6 @@ import {
   PhArrowLeft,
   PhBriefcase,
   PhUser,
-  PhWarningCircle,
   PhCheck,
   PhCircleNotch,
 } from '@phosphor-icons/vue'
@@ -287,6 +293,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { cn } from '@/lib/utils'
+import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
@@ -319,10 +326,7 @@ const registerSchema = z
     email: z
       .email('Please enter a valid email address.')
       .min(1, 'Email address is required.'),
-    password: z
-      .string('Password is required.')
-      .min(1, 'Password is required.')
-      .min(8, 'Password must be at least 8 characters.'),
+    password: authPasswordSchema,
     confirmPassword: z
       .string('Please confirm your password.')
       .min(1, 'Please confirm your password.'),
@@ -379,9 +383,7 @@ const form = useForm({
   },
 })
 
-function isInvalid(field: any) {
-  return field.state.meta.isTouched && !field.state.meta.isValid
-}
+const { isInvalid } = useAuthFieldInvalid()
 
 // Auto-advance if role is provided in query
 onMounted(() => {

@@ -48,8 +48,11 @@
       class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-[oklch(0.98_0.008_85)] border-l border-border"
     >
       <!-- Floating Top Right Link -->
-      <div class="absolute top-6 right-6 sm:top-10 sm:right-10 hidden sm:block z-10">
-        <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
+      <div class="absolute top-6 left-6 right-6 sm:top-10 sm:left-auto sm:right-10 flex justify-between sm:justify-end z-10">
+        <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors sm:hidden">
+          ← Back
+        </NuxtLink>
+        <NuxtLink to="/" class="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
           <span class="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">←</span>
           Back to website
         </NuxtLink>

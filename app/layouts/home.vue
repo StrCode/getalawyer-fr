@@ -5,8 +5,5 @@
   <AppLayout>
     <AppHeader show-brand-name />
     <slot />
-    <ClientOnly>
-      <AuthModal />
-    </ClientOnly>
   </AppLayout>
 </template>

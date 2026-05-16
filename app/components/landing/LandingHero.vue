@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const emit = defineEmits<{ openModal: [] }>()
 const whatInput = ref('')
 const whereInput = ref('')
+
+function onSearch() {
+  navigateTo({
+    path: '/find-lawyers',
+    query: {
+      ...(whatInput.value ? { q: whatInput.value } : {}),
+      ...(whereInput.value ? { where: whereInput.value } : {}),
+    },
+  })
+}
 </script>
 
 <template>
@@ -55,7 +64,8 @@ const whereInput = ref('')
               </div>
               <!-- Search button -->
               <button
-                @click="emit('openModal')"
+                type="button"
+                @click="onSearch"
                 class="bg-brand-green-700 hover:bg-brand-green-900 active:scale-[0.98] text-brand-cream border-none px-8 py-4 sm:py-0 rounded-b-2xl sm:rounded-none sm:rounded-r-2xl font-sans text-4 font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

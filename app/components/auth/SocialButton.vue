@@ -2,7 +2,7 @@
   <button
     type="button"
     :disabled="disabled"
-    class="flex justify-center items-center gap-3 bg-background hover:bg-accent/50 active:bg-accent disabled:opacity-50 px-4 h-12 border border-border rounded-xl w-full font-medium text-foreground text-base shadow-sm transition-all duration-200 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:border-primary"
+    class="flex justify-center items-center gap-3 bg-white/60 hover:bg-white active:scale-95 disabled:opacity-50 px-4 h-12 border border-brand-line/50 rounded-2xl w-full font-bold text-brand-green-900 text-base shadow-sm transition-all duration-200 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:border-primary"
     @click="$emit('click')"
   >
     <PhCircleNotch v-if="loading" class="w-5 h-5 animate-spin text-muted-foreground" />
