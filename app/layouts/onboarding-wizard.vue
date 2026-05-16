@@ -42,6 +42,7 @@ export default defineComponent({
 
     const router = useRouter()
     const queryClient = useQueryClient()
+    const { refetchSession } = useAuth()
 
     // Dynamic resolution of the active store interface
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
@@ -103,7 +104,7 @@ export default defineComponent({
             })
             await router.push('/onboarding/pending')
           } else if (userType.value === 'client' && isLast.value) {
-            await queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
+            await refetchSession()
             await queryClient.invalidateQueries({ queryKey: queryKeys.client.profile })
             toast.success('You’re all set', {
               description: 'Your preferences were saved. Opening your dashboard.'

@@ -1,5 +1,11 @@
+import {
+  isLawyerOrClientUser,
+  isOnboardingIncomplete,
+  type SessionUserWithOnboarding,
+} from '~/lib/session-user'
+
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { session, isPending } = useAuth()
+  const { session, isPending, refetchSession } = useAuth()
 
   // On client side, wait for session to load if it's pending
   if (import.meta.client && isPending.value) {
@@ -24,22 +30,25 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/login', { replace: true })
   }
 
-  // Enforce lawyer onboarding
-  const user = session.value.user
-  console.log(user.userType, user.onboarding_completed)
-  // Use `as any` or handle the typing gracefully if `userType` / `onboarding_completed` 
-  // are not natively on the generic type but are on the actual returned session object
-  const userType = (user as any).userType || (user as any).role
-  const onboardingCompleted = (user as any).onboarding_completed
-  console.log(onboardingCompleted)
-  if (userType === 'lawyer' || userType === 'client') {
-    if (!onboardingCompleted) {
+  let user = session.value.user as SessionUserWithOnboarding
+
+  if (isLawyerOrClientUser(user)) {
+    // Stale session after onboarding API: refetch before sending to /onboarding again
+    if (
+      import.meta.client &&
+      isOnboardingIncomplete(user) &&
+      (to.path === '/dashboard' || to.path.startsWith('/dashboard/'))
+    ) {
+      await refetchSession()
+      user = (session.value?.user ?? user) as SessionUserWithOnboarding
+    }
+
+    if (isOnboardingIncomplete(user)) {
       const inOnboardingFlow = to.path.startsWith('/onboarding')
       if (!inOnboardingFlow) {
         return navigateTo('/onboarding', { replace: true })
       }
     } else if (to.path.startsWith('/onboarding')) {
-      // If they have finished, boot them out to the dashboard
       return navigateTo('/dashboard', { replace: true })
     }
   }

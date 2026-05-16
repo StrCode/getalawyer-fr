@@ -1,3 +1,5 @@
+import { isOnboardingIncomplete } from '~/lib/session-user'
+
 export default defineNuxtRouteMiddleware(async () => {
   const { session, isPending } = useAuth()
 
@@ -10,7 +12,7 @@ export default defineNuxtRouteMiddleware(async () => {
           resolve()
         }
       }, { immediate: true })
-      
+
       // Timeout after 2 seconds
       setTimeout(() => {
         unwatch()
@@ -19,8 +21,13 @@ export default defineNuxtRouteMiddleware(async () => {
     })
   }
 
-  // If user is authenticated, redirect to dashboard
-  if (session.value?.user) {
-    return navigateTo('/dashboard', { replace: true })
+  if (!session.value?.user) {
+    return
   }
+
+  if (isOnboardingIncomplete(session.value.user)) {
+    return navigateTo('/onboarding', { replace: true })
+  }
+
+  return navigateTo('/dashboard', { replace: true })
 })

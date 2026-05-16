@@ -32,10 +32,38 @@ export function useAuth() {
     return null;
   });
 
-  // Get client session from Better Auth
+  // Get client session from Better Auth (includes refetch per Better Auth docs)
   const sessionData = authClient.useSession();
   const clientSession = computed(() => sessionData.value.data);
   const clientPending = computed(() => sessionData.value.isPending);
+
+  /** Refresh session from the auth server (e.g. after onboarding_completed is updated). */
+  const refetchSession = async (): Promise<Session | null> => {
+    if (import.meta.server) {
+      return serverSession.value;
+    }
+
+    try {
+      // Bypass Better Auth cookie cache — onboarding_completed is often updated via Drizzle, not updateUser.
+      const { data: fresh } = await authClient.getSession({
+        query: { disableCookieCache: true },
+      });
+
+      if (fresh) {
+        serverSession.value = fresh;
+        const refetch = sessionData.value.refetch;
+        if (typeof refetch === 'function') {
+          await refetch();
+        }
+        return fresh;
+      }
+
+      return sessionData.value.data ?? null;
+    } catch (error) {
+      console.error('[useAuth] refetchSession failed:', error);
+      return clientSession.value ?? null;
+    }
+  };
 
   // Unified session: prefer server session during initial load, then client session
   const session = computed<Session | null>(() => {
@@ -67,6 +95,7 @@ export function useAuth() {
   return {
     session,
     isPending,
+    refetchSession,
     signIn,
     signUp,
     signOut,

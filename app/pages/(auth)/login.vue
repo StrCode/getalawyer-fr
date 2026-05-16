@@ -125,6 +125,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'
+import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/session-user'
 
 definePageMeta({
   layout: 'auth',
@@ -140,6 +141,7 @@ function sanitizeRedirect(raw: unknown): string {
   return raw
 }
 
+const { refetchSession } = useAuth()
 const route = useRoute()
 const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect))
 
@@ -181,8 +183,12 @@ const form = useForm({
         return
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100))
-      await navigateTo(redirectAfterLogin.value)
+      const freshSession = await refetchSession()
+      if (isOnboardingIncomplete(freshSession?.user as SessionUserWithOnboarding)) {
+        await navigateTo('/onboarding', { replace: true })
+      } else {
+        await navigateTo(redirectAfterLogin.value)
+      }
     }
     catch (err: unknown) {
       apiError.value = err instanceof Error ? err.message : 'An unexpected error occurred.'

@@ -364,6 +364,7 @@ definePageMeta({
   middleware: ['guest'],
 })
 
+const { refetchSession } = useAuth()
 const route = useRoute()
 
 const roleFromQuery = route.query.role as string
@@ -440,6 +441,7 @@ const form = useForm({
         return
       }
 
+      await refetchSession()
       await navigateTo('/onboarding')
     }
     catch (err: unknown) {

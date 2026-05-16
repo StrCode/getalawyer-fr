@@ -13,7 +13,7 @@ export async function getSessionFromBackend(event: H3Event) {
   }
 
   try {
-    const url = `${config.public.apiUrl}/api/auth/get-session`;
+    const url = `${config.public.apiUrl}/api/auth/get-session?disableCookieCache=true`;
     
     const res = await fetch(url, {
       method: 'GET',
