@@ -12,7 +12,7 @@ import {
   PhCaretLeft,
   PhCircleNotch,
   PhCheckCircle,
-  PhSignOut,
+  PhX,
   PhWarningCircle
 } from '@phosphor-icons/vue'
 
@@ -25,7 +25,7 @@ export default defineComponent({
     PhCaretLeft,
     PhCircleNotch,
     PhCheckCircle,
-    PhSignOut,
+    PhX,
     PhWarningCircle
   },
   setup() {
@@ -65,6 +65,7 @@ export default defineComponent({
     })
 
     const isSaving = ref(false)
+    const isExiting = ref(false)
 
     /** Lawyer step pages (e.g. professional info) can register async validation before save. */
     const lawyerStepValidate = ref<(() => Promise<boolean>) | null>(null)
@@ -122,27 +123,36 @@ export default defineComponent({
     }
 
     const handleExit = async () => {
-      if (currentStep.value) {
-        isSaving.value = true
-        try {
+      if (isSaving.value) return
+
+      isExiting.value = true
+      isSaving.value = true
+      try {
+        if (currentStep.value) {
           const saved = await store.value.saveStep(currentStep.value.key)
-          if (!saved) {
+          if (saved) {
+            toast.success('Progress saved', {
+              description: 'You can pick up onboarding again from your dashboard.',
+            })
+          } else {
             toast.warning('Changes may not be saved', {
               description:
-                'We could not sync your latest edits. You can return to onboarding from the dashboard.'
+                'We could not sync your latest edits. You can return to onboarding from the dashboard.',
             })
           }
-        } catch (e) {
-          console.error('[Wizard] Save failed on exit:', e)
-          toast.warning('Changes may not be saved', {
-            description:
-              'We could not sync your latest edits. You can return to onboarding from the dashboard.'
-          })
-        } finally {
-          isSaving.value = false
         }
+        await router.push('/dashboard')
+      } catch (e) {
+        console.error('[Wizard] Save failed on exit:', e)
+        toast.warning('Changes may not be saved', {
+          description:
+            'We could not sync your latest edits. You can return to onboarding from the dashboard.',
+        })
+        await router.push('/dashboard')
+      } finally {
+        isSaving.value = false
+        isExiting.value = false
       }
-      await router.push('/dashboard')
     }
 
     const isScrolled = ref(false)
@@ -164,12 +174,30 @@ export default defineComponent({
       scrollContainer.value?.removeEventListener('scroll', handleScroll, scrollListenerOpts)
     })
 
+    const progressStepNumber = computed(() => {
+      const idx = currentIndex.value
+      return idx >= 0 ? idx + 1 : 0
+    })
+
+    /** Weighted across onboarding sections (matches former segmented bar logic). */
+    const overallProgress = computed(() => {
+      const segs = sectionProgress.value
+      if (!segs.length) return 0
+      const totalSize = segs.reduce((sum, s) => sum + (s.size ?? 0), 0)
+      const filled = segs.reduce((sum, s) => sum + (s.pct / 100) * (s.size ?? 0), 0)
+      return Math.round((filled / totalSize) * 100)
+    })
+
     return {
       validationErrorBanner,
       isPending,
       isFetching,
       isSaving,
-      sectionProgress,
+      isExiting,
+      currentStep,
+      steps,
+      progressStepNumber,
+      overallProgress,
       isFirst,
       isLast,
       userType,
@@ -184,32 +212,42 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="h-screen flex flex-col overflow-hidden bg-white font-sans selection:bg-primary-100 selection:text-primary-900">
+  <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
     <!-- Header -->
-    <header 
-      class="px-8 md:px-12 py-5 flex items-center justify-between shrink-0 transition-all duration-200 z-30"
-      :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
+    <header
+      class="z-30 flex shrink-0 items-center justify-between gap-4 px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
+      :class="isScrolled ? 'border-b border-border bg-background/90 backdrop-blur-md' : ''"
     >
-      <AppHeaderBrand variant="wordmark" />
+      <AuthLogo class="min-w-0 shrink" />
 
-      <div class="flex items-center gap-3">
-        <Button 
-          variant="ghost" 
-          class="font-medium text-gray-600 hover:text-gray-900 gap-2"
-          @click="handleExit"
-        >
-          <PhSignOut class="w-4 h-4" />
-          Exit & Save
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="outline"
+        class="h-10 shrink-0 gap-2 rounded-full border-border bg-background px-3.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 sm:h-11 sm:px-5"
+        :disabled="isSaving"
+        :aria-busy="isExiting"
+        @click="handleExit"
+      >
+        <PhCircleNotch
+          v-if="isExiting"
+          class="size-4 shrink-0 animate-spin text-muted-foreground"
+          aria-hidden="true"
+        />
+        <span v-if="isExiting" class="hidden sm:inline">Saving…</span>
+        <template v-else>
+          <span class="hidden sm:inline">Save &amp; exit</span>
+          <span class="sm:hidden">Save</span>
+          <PhX class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
+        </template>
+      </Button>
     </header>
 
     <!-- Main Content -->
-    <main ref="scrollContainer" class="flex-1 overflow-y-auto relative bg-white border-t border-gray-50">
+    <main ref="scrollContainer" class="relative flex-1 overflow-y-auto border-t border-border/60 bg-background">
       <div class="max-w-4xl mx-auto py-16 px-6 sm:px-10 lg:px-12 relative z-10 w-full transition-all duration-300">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
             <PhCircleNotch class="w-10 h-10 text-primary animate-spin mb-4" />
-            <p class="text-gray-500 font-medium tracking-tight">Syncing your progress...</p>
+            <p class="font-medium tracking-tight text-muted-foreground">Syncing your progress...</p>
          </div>
          
          <div v-else class="w-full relative min-h-[400px]">
@@ -226,24 +264,32 @@ export default defineComponent({
       </div>
     </main>
 
-    <!-- Footer (Etsy Pattern) -->
-    <footer class="border-t border-gray-100 shrink-0 bg-white z-40 shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)] pb-safe">
-      <!-- Progress bar: 3 segments sized proportionally to step count, with gaps -->
-      <div class="flex h-1 gap-1">
-        <div
-          v-for="(seg, i) in sectionProgress"
-          :key="i"
-          class="relative overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
-          :style="{ flex: seg.size }"
-        >
-          <div
-            class="absolute inset-y-0 left-0 bg-black dark:bg-white transition-all duration-300 ease-out"
-            :style="{ width: seg.pct + '%' }"
+    <!-- Footer -->
+    <footer class="z-40 shrink-0 border-t border-border bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
+      <div
+        v-if="steps.length > 0 && progressStepNumber > 0"
+        class="border-b border-border/60 bg-muted/25 px-4 py-3 sm:px-6 md:px-12"
+      >
+        <div class="mx-auto flex w-full max-w-6xl flex-col gap-2">
+          <div class="flex items-center justify-between gap-3 text-sm">
+            <p class="shrink-0 font-medium tabular-nums text-foreground">
+              Step {{ progressStepNumber }} of {{ steps.length }}
+            </p>
+            <p
+              v-if="currentStep"
+              class="min-w-0 truncate text-muted-foreground"
+            >
+              {{ currentStep.label }}
+            </p>
+          </div>
+          <Progress
+            :model-value="overallProgress"
+            class="h-1 bg-muted"
           />
         </div>
       </div>
 
-      <div class="relative max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="relative mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-6 sm:flex-row">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
         <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
           <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -262,7 +308,7 @@ export default defineComponent({
             Back
           </Button>
           
-          <p class="hidden lg:block text-3 text-gray-400 max-w-[320px] leading-snug">
+          <p class="hidden max-w-[320px] text-xs leading-snug text-muted-foreground lg:block">
             <template v-if="userType === 'client' && isLast">
               By saving and continuing, you agree to Getalawyer's
             </template>
@@ -276,17 +322,17 @@ export default defineComponent({
         
         <div class="flex items-center gap-4 order-1 sm:order-2 w-full sm:w-auto">
           <Button
-            class="min-h-10 px-8 bg-black text-white hover:bg-gray-800 disabled:opacity-50 font-medium w-full sm:w-auto"
+            class="min-h-10 w-full px-8 font-medium sm:w-auto"
             :disabled="isSaving"
             @click="handleNext"
           >
             <PhCircleNotch
-              v-if="isSaving"
-              class="animate-spin w-5 h-5 mr-2 shrink-0"
+              v-if="isSaving && !isExiting"
+              class="mr-2 size-5 shrink-0 animate-spin"
             />
             <span>
               {{
-                isSaving
+                isSaving && !isExiting
                   ? 'Please wait...'
                   : !isLast
                     ? 'Next'

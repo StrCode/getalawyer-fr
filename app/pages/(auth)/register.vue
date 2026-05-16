@@ -39,11 +39,11 @@
       </div>
     </header>
 
-    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
-      <div class="w-full min-w-0 max-w-2xl">
+    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-center px-4 py-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
+      <div class="mx-auto w-full min-w-0 max-w-2xl">
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
-          <div v-if="step === 'role'" key="role" class="w-full">
+          <div v-if="step === 'role'" key="role" class="flex w-full flex-col items-center">
             <div class="mb-8 text-center sm:mb-10">
               <p class="mb-3 text-xs font-bold uppercase tracking-widest text-brand-green-700">
                 Account type
@@ -58,7 +58,7 @@
               </p>
             </div>
 
-            <div class="mb-8 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+            <div class="mx-auto mb-8 grid w-full min-w-0 max-w-md grid-cols-1 gap-4 sm:max-w-none sm:grid-cols-2 sm:gap-5">
               <Card
                 role="button"
                 tabindex="0"
@@ -68,7 +68,7 @@
                 @keydown.enter.prevent="role = 'client'"
                 @keydown.space.prevent="role = 'client'"
               >
-                <div class="relative p-6 sm:p-7">
+                <div class="relative p-6 text-center sm:p-7 sm:text-left">
                   <span
                     class="absolute top-5 right-5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6"
                     :class="
@@ -80,7 +80,7 @@
                     <PhCheck v-if="role === 'client'" class="h-3.5 w-3.5 text-white" weight="bold" />
                   </span>
                   <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mb-6 sm:h-14 sm:w-14"
+                    class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14"
                     :class="role === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhUser
@@ -107,7 +107,7 @@
                 @keydown.enter.prevent="role = 'lawyer'"
                 @keydown.space.prevent="role = 'lawyer'"
               >
-                <div class="group relative p-6 sm:p-7">
+                <div class="relative p-6 text-center sm:p-7 sm:text-left">
                   <span
                     class="absolute top-5 right-5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6"
                     :class="
@@ -119,7 +119,7 @@
                     <PhCheck v-if="role === 'lawyer'" class="h-3.5 w-3.5 text-white" weight="bold" />
                   </span>
                   <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mb-6 sm:h-14 sm:w-14"
+                    class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14"
                     :class="role === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhBriefcase
@@ -138,7 +138,7 @@
               </Card>
             </div>
 
-            <div class="flex flex-col items-center gap-6">
+            <div class="flex w-full max-w-md flex-col items-center gap-6 sm:max-w-none">
               <Button
                 type="button"
                 class="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-green-900 text-base font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:max-w-xs"
@@ -158,19 +158,19 @@
           </div>
 
           <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto w-full min-w-0 max-w-lg">
+          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-lg flex-col items-center sm:items-stretch">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              class="mb-6 inline-flex gap-2 rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900"
+              class="mb-6 inline-flex gap-2 rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:self-start"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
               Change selection
             </Button>
 
-            <div class="mb-8 text-center sm:mb-10">
+            <div class="mb-8 w-full text-center sm:mb-10">
               <p class="mb-3 text-xs font-bold uppercase tracking-widest text-brand-green-700">
                 Registration
               </p>
@@ -187,7 +187,7 @@
             </div>
 
             <Card
-              class="relative overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-8 lg:p-10"
+              class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-8 lg:p-10"
             >
               <div
                 class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
@@ -378,7 +378,7 @@ const step = ref<'role' | 'form'>('role')
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
-    'group min-w-0 cursor-pointer overflow-hidden rounded-3xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
+    'group w-full min-w-0 cursor-pointer overflow-hidden rounded-3xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
     role.value === value
       ? 'border-primary/50 bg-white/80 shadow-lg shadow-primary/10 ring-1 ring-primary/20'
       : 'border-brand-line/60 hover:border-primary/30 hover:bg-white/70 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
