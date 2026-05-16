@@ -12,7 +12,7 @@ const links = [
 </script>
 
 <template>
-  <nav class="sticky top-0 z-[100] bg-brand-cream/85 backdrop-blur-md border-b border-brand-line/50">
+  <nav class="sticky top-0 z-100 bg-brand-cream/85 backdrop-blur-md border-b border-brand-line/50">
     <div class="flex items-center justify-between max-w-[1280px] mx-auto px-8 py-[18px]">
 
       <!-- Logo -->

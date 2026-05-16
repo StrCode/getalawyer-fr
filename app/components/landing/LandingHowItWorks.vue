@@ -17,7 +17,7 @@ const steps = [
   },
   {
     num: '04',
-    title: 'Meet & resolve',
+    title: 'Consult & resolve',
     desc: 'Connect by video, phone, or in person. Message your lawyer before and after to keep things moving.',
   },
 ]
@@ -31,12 +31,12 @@ const steps = [
       <h2 class="font-heading font-medium text-brand-green-900 leading-[1.05] tracking-[-0.02em] max-w-[720px] mb-6" style="font-size:clamp(36px,4.5vw,56px);">
         From your first search to your first consultation.
       </h2>
-      <p class="text-[18px] text-brand-ink-soft max-w-[560px] leading-[1.5]">
+      <p class="text-[18px] text-brand-ink-soft max-w-[560px] leading-normal">
         Four steps. No calls. No paperwork. Just verified lawyers ready when you need them.
       </p>
 
       <!-- Steps grid -->
-      <div class="grid gap-6 mt-16" style="grid-template-columns:repeat(4,1fr);">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-6 mt-16">
         <div v-for="step in steps" :key="step.num">
           <!-- Italic Fraunces number -->
           <div class="font-heading italic font-normal text-brand-green-300 leading-none mb-6" style="font-size:56px;">
@@ -49,9 +49,3 @@ const steps = [
     </div>
   </section>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  div[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; gap: 40px !important; }
-}
-</style>

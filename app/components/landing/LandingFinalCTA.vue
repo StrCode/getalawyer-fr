@@ -15,7 +15,7 @@ const emit = defineEmits<{ openModal: [] }>()
           <h2 class="font-heading font-medium text-brand-cream leading-[1.05] tracking-[-0.02em] mb-6" style="font-size:clamp(36px,4vw,52px);max-width:540px;">
             Get the legal help you need, from someone you can trust.
           </h2>
-          <p class="text-[18px] leading-[1.5] mb-10 max-w-[480px]" style="color:rgba(244,241,232,0.85);">
+          <p class="text-[18px] leading-normal mb-10 max-w-[480px]" style="color:rgba(244,241,232,0.85);">
             Verified lawyers. Transparent pricing. Booking in minutes. Take the stress out of finding legal representation today.
           </p>
           
@@ -33,17 +33,20 @@ const emit = defineEmits<{ openModal: [] }>()
 
         <!-- Image Side -->
         <div class="lg:w-[45%] h-[400px] lg:h-auto relative">
-          <img 
-            src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=1600" 
+          <NuxtImg 
+            src="/final-cta-handshake.jpg" 
             alt="Lawyer and client shaking hands in trust" 
             class="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-90"
+            sizes="sm:100vw lg:800px"
+            format="webp"
+            loading="lazy"
           />
           <!-- Green color wash to make the image fit the brand perfectly -->
           <div class="absolute inset-0 bg-brand-green-900/20 mix-blend-multiply"></div>
           
           <!-- Gradient fades to blend the image seamlessly into the solid green card -->
-          <div class="absolute inset-0 bg-gradient-to-r from-brand-green-900 via-brand-green-900/60 to-transparent lg:block hidden"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-brand-green-900 via-brand-green-900/60 to-transparent lg:hidden block"></div>
+          <div class="absolute inset-0 bg-linear-to-r from-brand-green-900 via-brand-green-900/60 to-transparent lg:block hidden"></div>
+          <div class="absolute inset-0 bg-linear-to-t from-brand-green-900 via-brand-green-900/60 to-transparent lg:hidden block"></div>
         </div>
 
       </div>

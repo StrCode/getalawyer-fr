@@ -9,7 +9,7 @@ const whereInput = ref('')
 <template>
   <section class="bg-brand-cream py-[80px] pb-[100px] relative overflow-hidden">
     <div class="max-w-[1280px] mx-auto px-8">
-      <div class="grid items-center gap-[80px]" style="grid-template-columns:1.1fr 1fr;">
+      <div class="grid items-center gap-[60px] lg:gap-[80px] grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
 
         <!-- Left: copy -->
         <div>
@@ -27,12 +27,12 @@ const whereInput = ref('')
 
           <!-- Sub -->
           <p class="text-[19px] leading-[1.55] text-brand-ink-soft mb-10 max-w-[520px]">
-            Compare practice areas, fees, and availability across hundreds of bar-verified lawyers. Book your consultation online with clear pricing — no calls, no chasing.
+            Compare practice areas, upfront fees, and availability across hundreds of verified lawyers. Book instantly—no phone tag, no hidden costs.
           </p>
 
           <!-- Search card -->
           <div class="bg-white rounded-[20px] p-2 border border-brand-line shadow-[0_1px_2px_rgba(15,46,26,0.04),0_12px_32px_-12px_rgba(15,46,26,0.08)] max-w-[580px]">
-            <div class="grid gap-px bg-brand-line rounded-[14px] overflow-hidden" style="grid-template-columns:1fr 1fr auto;">
+            <div class="grid gap-px bg-brand-line rounded-[14px] overflow-hidden grid-cols-1 sm:grid-cols-[1fr_1fr_auto]">
               <!-- What field -->
               <div class="bg-white px-[18px] py-[14px] flex flex-col gap-0.5">
                 <label class="text-[11px] font-semibold text-brand-ink-soft tracking-[0.05em] uppercase">What do you need?</label>
@@ -49,7 +49,7 @@ const whereInput = ref('')
                 <input
                   v-model="whereInput"
                   type="text"
-                  placeholder="Lagos, Abuja, Port Harcourt..."
+                  placeholder="State or city..."
                   class="border-none outline-none font-sans text-[15px] text-brand-ink bg-transparent w-full p-0 placeholder:text-brand-ink-soft placeholder:opacity-60"
                 />
               </div>
@@ -69,16 +69,19 @@ const whereInput = ref('')
           <!-- Secondary link -->
           <p class="mt-5 text-[14px] text-brand-ink-soft">
             Not sure where to start?
-            <a href="#practice" class="text-brand-green-700 underline decoration-[1px] underline-offset-[3px] cursor-pointer">Browse by practice area →</a>
+            <a href="#practice" class="text-brand-green-700 underline decoration-1 underline-offset-[3px] cursor-pointer">Browse by practice area →</a>
           </p>
         </div>
 
         <!-- Right: hero image -->
-        <div class="relative h-[560px] rounded-[24px] overflow-hidden shadow-[0_12px_40px_-12px_rgba(15,46,26,0.25)]">
-          <img
+        <div class="relative h-[460px] max-w-[600px] mx-auto lg:max-w-none lg:mx-0 lg:h-[560px] rounded-[24px] overflow-hidden shadow-[0_12px_40px_-12px_rgba(15,46,26,0.25)] w-full">
+          <NuxtImg
             src="/hero-handshake.png"
             alt="Two professionals shaking hands, representing the trusted connection between client and lawyer"
             class="w-full h-full object-cover block"
+            sizes="sm:100vw md:600px lg:700px"
+            format="webp"
+            preload
           />
           <!-- Gradient overlay -->
           <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(135deg,rgba(15,46,26,0) 40%,rgba(15,46,26,0.25) 100%);" />
@@ -91,8 +94,8 @@ const whereInput = ref('')
               </svg>
             </div>
             <div>
-              <strong class="block text-[16px] text-brand-green-900 font-semibold tracking-[-0.01em]">2,500+ verified lawyers</strong>
-              <span class="text-[12px] text-brand-ink-soft">Across 24 practice areas</span>
+              <strong class="block text-[16px] text-brand-green-900 font-semibold tracking-[-0.01em]">100% Bar-Verified Professionals</strong>
+              <span class="text-[12px] text-brand-ink-soft">NIN &amp; SCN Checked</span>
             </div>
           </div>
         </div>
@@ -101,22 +104,3 @@ const whereInput = ref('')
     </div>
   </section>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  section > div > div {
-    grid-template-columns: 1fr !important;
-    gap: 60px !important;
-  }
-  .relative.h-\[560px\] {
-    height: 460px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-}
-@media (max-width: 640px) {
-  .grid[style*="1fr 1fr auto"] {
-    grid-template-columns: 1fr !important;
-  }
-}
-</style>

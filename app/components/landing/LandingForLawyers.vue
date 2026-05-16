@@ -31,7 +31,7 @@ const features = [
     <div class="absolute pointer-events-none" style="top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(134,194,142,0.08) 0%,transparent 70%);" />
 
     <div class="max-w-[1280px] mx-auto px-8 relative">
-      <div class="grid gap-[80px] items-center" style="grid-template-columns:1fr 1fr;">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-[60px] lg:gap-[80px] items-center">
 
         <!-- Left: copy -->
         <div>
@@ -39,7 +39,7 @@ const features = [
           <h2 class="font-heading font-medium text-brand-cream leading-[1.05] tracking-[-0.02em] max-w-[720px]" style="font-size:clamp(36px,4.5vw,56px);">
             Grow your practice. <em class="italic font-normal">Keep every naira you earn.</em>
           </h2>
-          <p class="text-[18px] leading-[1.5] mt-6 mb-9" style="color:rgba(244,241,232,0.7);max-width:560px;">
+          <p class="text-[18px] leading-normal mt-6 mb-9" style="color:rgba(244,241,232,0.7);max-width:560px;">
             Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat monthly subscription. Your bar-verified credentials, displayed prominently.
           </p>
 
@@ -59,20 +59,20 @@ const features = [
         </div>
 
         <!-- Right: 2×2 feature grid -->
-        <div class="grid grid-cols-2 gap-7">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-7">
           <div
             v-for="feat in features"
             :key="feat.title"
-            class="p-6 rounded-[14px]"
+            class="group p-6 rounded-[14px] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
             style="background:rgba(255,255,255,0.04);border:1px solid rgba(134,194,142,0.15);"
           >
             <div
-              class="w-9 h-9 rounded-[10px] flex items-center justify-center text-brand-green-300 mb-4"
+              class="w-9 h-9 rounded-[10px] flex items-center justify-center text-brand-green-300 mb-4 transition-transform duration-300 group-hover:scale-110"
               style="background:rgba(134,194,142,0.15);"
               v-html="feat.icon"
             />
             <h4 class="text-[16px] font-semibold text-brand-cream mb-1.5">{{ feat.title }}</h4>
-            <p class="text-[14px] leading-[1.5]" style="color:rgba(244,241,232,0.65);">{{ feat.desc }}</p>
+            <p class="text-[14px] leading-normal" style="color:rgba(244,241,232,0.65);">{{ feat.desc }}</p>
           </div>
         </div>
 
@@ -80,12 +80,3 @@ const features = [
     </div>
   </section>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; gap: 60px !important; }
-}
-@media (max-width: 640px) {
-  .grid-cols-2 { grid-template-columns: 1fr !important; }
-}
-</style>

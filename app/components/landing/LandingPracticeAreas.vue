@@ -20,7 +20,7 @@ const areas: Area[] = [
   <section id="practice" class="bg-brand-cream-warm py-[100px]">
     <div class="max-w-[1280px] mx-auto px-8">
       <!-- Header row -->
-      <div class="flex justify-between items-end mb-14 gap-10">
+      <div class="flex flex-col lg:flex-row lg:justify-between items-start lg:items-end mb-14 gap-6 lg:gap-10">
         <div>
           <p class="text-[13px] font-semibold text-brand-green-700 tracking-[0.08em] uppercase mb-4">Practice areas</p>
           <h2 class="font-heading font-medium text-brand-green-900 leading-[1.05] tracking-[-0.02em] max-w-[720px]" style="font-size:clamp(36px,4.5vw,56px);">
@@ -34,7 +34,7 @@ const areas: Area[] = [
       </div>
 
       <!-- 4-col card grid -->
-      <div class="grid gap-4" style="grid-template-columns:repeat(4,1fr);">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <NuxtLink
           v-for="area in areas"
           :key="area.name"
@@ -42,7 +42,7 @@ const areas: Area[] = [
           class="group bg-white border border-brand-line rounded-[14px] p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-brand-green-700 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.15)]"
         >
           <!-- Icon -->
-          <div class="w-10 h-10 bg-brand-green-100 rounded-[10px] flex items-center justify-center text-brand-green-700" v-html="area.icon" />
+          <div class="w-10 h-10 bg-brand-green-100 rounded-[10px] flex items-center justify-center text-brand-green-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-green-200" v-html="area.icon" />
           <!-- Name -->
           <div class="font-semibold text-[15px] text-brand-green-900">{{ area.name }}</div>
           <!-- Count + arrow -->
@@ -55,13 +55,3 @@ const areas: Area[] = [
     </div>
   </section>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  div[style*="repeat(4,1fr)"] { grid-template-columns: repeat(3, 1fr) !important; }
-  .flex.justify-between { flex-direction: column; align-items: flex-start !important; }
-}
-@media (max-width: 640px) {
-  div[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-}
-</style>
