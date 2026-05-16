@@ -116,7 +116,7 @@ watch(isMobileMenuOpen, (isOpen) => {
               <NuxtLink
                 :to="link.href"
                 @click="isMobileMenuOpen = false"
-                class="block text-brand-ink text-10 leading-[1.1] font-serif font-medium hover:text-brand-green-700 transition-colors duration-200 no-underline animate-slide-up-fade"
+                class="block text-brand-ink text-5xl leading-[1.1] font-heading font-medium hover:text-brand-green-700 transition-colors duration-200 no-underline animate-slide-up-fade"
                 :style="{ animationDelay: `${index * 75 + 100}ms` }"
               >
                 {{ link.label }}
