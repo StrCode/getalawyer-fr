@@ -7,7 +7,7 @@ const whereInput = ref('')
 </script>
 
 <template>
-  <section class="bg-brand-cream py-20 pb-24 relative overflow-hidden">
+  <section class="bg-brand-cream py-12 pb-16 md:py-20 md:pb-24 relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <div class="grid items-center gap-16 lg:gap-20 grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
 

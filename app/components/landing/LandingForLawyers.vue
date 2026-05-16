@@ -26,7 +26,7 @@ const features = [
 </script>
 
 <template>
-  <section id="lawyers" class="bg-brand-green-900 text-brand-cream py-24 relative overflow-hidden">
+  <section id="lawyers" class="bg-brand-green-900 text-brand-cream py-12 md:py-24 relative overflow-hidden">
     <!-- Radial glow -->
     <div class="absolute pointer-events-none" style="top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(134,194,142,0.08) 0%,transparent 70%);" />
 

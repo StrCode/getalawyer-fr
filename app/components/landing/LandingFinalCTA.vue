@@ -3,7 +3,7 @@ const emit = defineEmits<{ openModal: [] }>()
 </script>
 
 <template>
-  <section class="bg-brand-cream py-32">
+  <section class="bg-brand-cream py-16 md:py-32">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       
       <!-- Split Card CTA -->

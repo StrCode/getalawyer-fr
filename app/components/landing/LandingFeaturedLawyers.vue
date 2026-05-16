@@ -16,7 +16,7 @@ const lawyers: Lawyer[] = [
 </script>
 
 <template>
-  <section id="lawyers" class="bg-white py-24 px-[5%]">
+  <section id="lawyers" class="bg-white py-12 md:py-24 px-[5%]">
     <!-- Header -->
     <p class="text-center text-[0.78rem] font-semibold tracking-0.5 uppercase text-brand-blue mb-3">Verified Professionals</p>
     <h2 class="font-heading font-bold text-brand-navy text-center mb-2.5 leading-[1.15]" style="font-size:clamp(2rem,4vw,3rem);">Featured Lawyers</h2>

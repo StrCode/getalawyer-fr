@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <section class="bg-brand-cream py-24">
+  <section class="bg-brand-cream py-12 md:py-24">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <div class="max-w-5xl mx-auto">
         <div class="bg-white/40 border border-brand-line/50 rounded-3xl p-12 md:p-20 text-center relative overflow-hidden">

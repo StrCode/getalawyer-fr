@@ -24,7 +24,7 @@ const trustItems = [
 </script>
 
 <template>
-  <section class="bg-brand-green-900 text-brand-cream py-10">
+  <section class="bg-brand-green-900 text-brand-cream py-6 md:py-10">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 items-center">
         <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-3.5">

@@ -17,7 +17,7 @@ const areas: Area[] = [
 </script>
 
 <template>
-  <section id="practice" class="bg-brand-cream-warm py-24">
+  <section id="practice" class="bg-brand-cream-warm py-12 md:py-24">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <!-- Header row -->
       <div class="flex flex-col lg:flex-row lg:justify-between items-start lg:items-end mb-14 gap-6 lg:gap-10">

@@ -30,7 +30,7 @@ const cols = {
 </script>
 
 <template>
-  <footer class="bg-brand-green-900 py-20 pb-8 text-brand-cream/70">
+  <footer class="bg-brand-green-900 py-12 pb-6 md:py-20 md:pb-8 text-brand-cream/70">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
 
       <!-- Grid: brand + 4 cols -->
