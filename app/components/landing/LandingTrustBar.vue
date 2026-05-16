@@ -24,9 +24,9 @@ const trustItems = [
 </script>
 
 <template>
-  <section class="bg-brand-green-900 text-brand-cream py-7">
+  <section class="bg-brand-green-900 text-brand-cream py-10">
     <div class="max-w-[1280px] mx-auto px-8">
-      <div class="grid gap-10 items-center" style="grid-template-columns:repeat(4,1fr);">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 items-center">
         <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-3.5">
           <!-- Icon -->
           <div
@@ -35,7 +35,7 @@ const trustItems = [
             v-html="item.icon"
           />
           <!-- Text -->
-          <div class="text-[13px] leading-[1.4]">
+          <div class="text-[13px] leading-normal">
             <strong class="block text-brand-cream font-semibold mb-0.5">{{ item.label }}</strong>
             <span class="text-brand-cream/60">{{ item.sub }}</span>
           </div>
@@ -44,12 +44,3 @@ const trustItems = [
     </div>
   </section>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  div[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
-}
-@media (max-width: 640px) {
-  div[style*="repeat(4,1fr)"] { grid-template-columns: 1fr !important; }
-}
-</style>

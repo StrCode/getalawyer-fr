@@ -31,7 +31,7 @@ const whereInput = ref('')
           </p>
 
           <!-- Search card -->
-          <div class="bg-white rounded-[20px] p-2 border border-brand-line shadow-[0_1px_2px_rgba(15,46,26,0.04),0_12px_32px_-12px_rgba(15,46,26,0.08)] max-w-[580px]">
+          <div class="bg-white rounded-[24px] p-2 border border-brand-line shadow-[0_1px_2px_rgba(15,46,26,0.04),0_12px_32px_-12px_rgba(15,46,26,0.08)] max-w-[580px] transition-all duration-300 focus-within:ring-4 focus-within:ring-brand-green-700/5 focus-within:border-brand-green-700/30">
             <div class="grid gap-px bg-brand-line rounded-[14px] overflow-hidden grid-cols-1 sm:grid-cols-[1fr_1fr_auto]">
               <!-- What field -->
               <div class="bg-white px-[18px] py-[14px] flex flex-col gap-0.5">
@@ -56,7 +56,7 @@ const whereInput = ref('')
               <!-- Search button -->
               <button
                 @click="emit('openModal')"
-                class="bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none px-7 font-sans text-[15px] font-medium cursor-pointer flex items-center gap-2 transition-colors duration-200"
+                class="bg-brand-green-700 hover:bg-brand-green-900 active:scale-[0.98] text-brand-cream border-none px-8 rounded-r-[12px] sm:rounded-r-[12px] font-sans text-[15px] font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>

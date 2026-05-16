@@ -30,11 +30,11 @@ const cols = {
 </script>
 
 <template>
-  <footer class="bg-brand-green-900 py-20 pb-8" style="color:rgba(244,241,232,0.7);">
+  <footer class="bg-brand-green-900 py-20 pb-8 text-brand-cream/70">
     <div class="max-w-[1280px] mx-auto px-8">
 
       <!-- Grid: brand + 4 cols -->
-      <div class="grid gap-12 mb-16" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-12 mb-16">
 
         <!-- Brand -->
         <div>
@@ -45,7 +45,7 @@ const cols = {
             </svg>
             <span class="font-sans font-bold text-[19px] tracking-[-0.5px] lowercase text-brand-cream">getalawyer</span>
           </a>
-          <p class="text-[14px] leading-[1.55] max-w-[280px]">
+          <p class="text-[14px] leading-normal max-w-[280px]">
             Connecting Nigerians with verified legal professionals. Built for clarity, trust, and speed.
           </p>
         </div>
@@ -57,10 +57,7 @@ const cols = {
             <li v-for="link in links" :key="link.label">
               <NuxtLink
                 :to="link.to"
-                class="no-underline text-[14px] transition-colors duration-200 hover:text-brand-cream"
-                style="color:rgba(244,241,232,0.6);"
-                @mouseenter="($event.target as HTMLElement).style.color='rgba(244,241,232,1)'"
-                @mouseleave="($event.target as HTMLElement).style.color='rgba(244,241,232,0.6)'"
+                class="no-underline text-[14px] transition-colors duration-200 text-brand-cream/60 hover:text-brand-cream"
               >{{ link.label }}</NuxtLink>
             </li>
           </ul>
@@ -68,7 +65,7 @@ const cols = {
       </div>
 
       <!-- Bottom bar -->
-      <div class="flex justify-between items-center pt-8 text-[13px]" style="border-top:1px solid rgba(244,241,232,0.1);">
+      <div class="flex flex-col sm:flex-row justify-between items-center pt-8 text-[13px] border-t border-brand-cream/10 gap-4 sm:gap-0">
         <span>© {{ year }} getalawyer. All rights reserved.</span>
         <div class="flex items-center gap-2 text-brand-green-300">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -80,13 +77,3 @@ const cols = {
     </div>
   </footer>
 </template>
-
-<style scoped>
-@media (max-width: 1024px) {
-  div[style*="2fr 1fr 1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; gap: 40px !important; }
-}
-@media (max-width: 640px) {
-  div[style*="2fr 1fr 1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
-  div.flex.justify-between { flex-direction: column; gap: 16px; text-align: center; }
-}
-</style>

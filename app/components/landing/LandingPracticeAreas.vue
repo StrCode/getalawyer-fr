@@ -39,7 +39,7 @@ const areas: Area[] = [
           v-for="area in areas"
           :key="area.name"
           :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
-          class="group bg-white border border-brand-line rounded-[14px] p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-brand-green-700 hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.15)]"
+          class="group bg-white border border-brand-line rounded-[14px] p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-300 hover:border-brand-green-700/50 hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_rgba(15,46,26,0.12)]"
         >
           <!-- Icon -->
           <div class="w-10 h-10 bg-brand-green-100 rounded-[10px] flex items-center justify-center text-brand-green-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-green-200" v-html="area.icon" />
