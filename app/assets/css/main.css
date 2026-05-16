@@ -19,7 +19,7 @@
    ============================================================ */
 @theme inline {
     /* ── Fonts ────────────────────────────────────────────── */
-    --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-dm: var(--font-sans);
     --font-heading: 'Fraunces', Georgia, serif;
 

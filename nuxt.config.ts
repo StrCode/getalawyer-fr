@@ -67,7 +67,7 @@ export default defineNuxtConfig({
     families: [
       // ── Brand sans-serif ───────────────────────────────────
       {
-        name: 'DM Sans',
+        name: 'Instrument Sans',
         provider: 'google',
         weights: [400, 500, 600, 700],
         styles: ['normal', 'italic'],
