@@ -41,53 +41,6 @@
 
     <main class="relative z-10 flex flex-1 flex-col items-center px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
       <div class="w-full max-w-2xl">
-        <!-- Step indicator (Wise / ElevenLabs pattern) -->
-        <nav
-          class="mb-8 sm:mb-10"
-          aria-label="Registration progress"
-        >
-          <ol class="flex items-center justify-center gap-2 sm:gap-3">
-            <li class="flex items-center gap-2">
-              <span
-                class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors"
-                :class="
-                  step === 'role'
-                    ? 'bg-brand-green-900 text-brand-cream'
-                    : 'bg-primary text-primary-foreground'
-                "
-              >
-                <PhCheck v-if="step === 'form'" class="h-3.5 w-3.5" weight="bold" />
-                <span v-else>1</span>
-              </span>
-              <span
-                class="text-sm font-semibold sm:text-base"
-                :class="step === 'role' ? 'text-brand-green-900' : 'text-brand-ink-soft'"
-              >
-                Account type
-              </span>
-            </li>
-            <li class="h-px w-8 bg-brand-line sm:w-12" aria-hidden="true" />
-            <li class="flex items-center gap-2">
-              <span
-                class="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors"
-                :class="
-                  step === 'form'
-                    ? 'bg-brand-green-900 text-brand-cream'
-                    : 'border border-brand-line bg-white/60 text-brand-ink-soft'
-                "
-              >
-                2
-              </span>
-              <span
-                class="text-sm font-semibold sm:text-base"
-                :class="step === 'form' ? 'text-brand-green-900' : 'text-brand-ink-soft'"
-              >
-                Your details
-              </span>
-            </li>
-          </ol>
-        </nav>
-
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
           <div v-if="step === 'role'" key="role" class="w-full">
@@ -96,11 +49,11 @@
                 Account type
               </p>
               <h1
-                class="font-heading text-3xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl lg:text-5xl"
+                class="font-heading text-3xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
-              <p class="mx-auto mt-3 max-w-md text-base font-medium leading-relaxed text-brand-ink-soft sm:mt-4 sm:text-lg">
+              <p class="mx-auto mt-3 max-w-md text-base leading-relaxed text-brand-ink-soft sm:mt-4">
                 Select the path that matches your needs today.
               </p>
             </div>
@@ -136,10 +89,10 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 font-heading text-xl text-brand-green-900 sm:text-2xl">
+                  <h2 class="mb-2 text-lg font-semibold leading-tight text-brand-green-900 sm:text-xl">
                     I am a Client
                   </h2>
-                  <p class="text-sm leading-relaxed font-medium text-brand-ink-soft sm:text-base">
+                  <p class="text-base leading-relaxed text-brand-ink-soft">
                     Find and book a verified Nigerian lawyer for legal assistance.
                   </p>
                 </div>
@@ -175,10 +128,10 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 font-heading text-xl text-brand-green-900 sm:text-2xl">
+                  <h2 class="mb-2 text-lg font-semibold leading-tight text-brand-green-900 sm:text-xl">
                     I am a Lawyer
                   </h2>
-                  <p class="text-sm leading-relaxed font-medium text-brand-ink-soft sm:text-base">
+                  <p class="text-base leading-relaxed text-brand-ink-soft">
                     List your services and grow your client base on our network.
                   </p>
                 </div>
@@ -188,16 +141,16 @@
             <div class="flex flex-col items-center gap-6">
               <Button
                 type="button"
-                class="h-12 w-full rounded-2xl bg-brand-green-900 text-base font-bold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-14 sm:max-w-xs sm:text-lg"
+                class="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-green-900 text-base font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:max-w-xs"
                 size="lg"
                 :disabled="!role"
                 @click="step = 'form'"
               >
                 Continue
               </Button>
-              <p class="text-center text-sm text-brand-ink-soft sm:hidden">
+              <p class="text-center text-base text-brand-ink-soft sm:hidden">
                 Already have an account?
-                <NuxtLink to="/login" class="font-semibold text-primary hover:underline">
+                <NuxtLink to="/login" class="font-semibold text-primary underline-offset-4 hover:underline">
                   Sign in
                 </NuxtLink>
               </p>
@@ -210,7 +163,7 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="mb-6 inline-flex gap-2 rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-semibold text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900"
+              class="mb-6 inline-flex gap-2 rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
@@ -224,7 +177,7 @@
               <h1 class="font-heading text-3xl font-normal leading-tight text-brand-green-900 sm:text-4xl">
                 {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
               </h1>
-              <p class="mt-3 text-base font-medium text-brand-ink-soft sm:text-lg">
+              <p class="mt-3 text-base leading-relaxed text-brand-ink-soft">
                 {{
                   role === 'lawyer'
                     ? 'Join Nigeria\'s most trusted legal network.'
@@ -253,7 +206,7 @@
                           :model-value="field.state.value"
                           placeholder="Alex"
                           autocomplete="given-name"
-                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base text-brand-green-900 placeholder:text-brand-ink-soft/50 focus:bg-white"
+                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -272,7 +225,7 @@
                           :model-value="field.state.value"
                           placeholder="Smith"
                           autocomplete="family-name"
-                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base text-brand-green-900 placeholder:text-brand-ink-soft/50 focus:bg-white"
+                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -293,7 +246,7 @@
                         type="email"
                         placeholder="alex@example.com"
                         autocomplete="email"
-                        class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base text-brand-green-900 placeholder:text-brand-ink-soft/50 focus:bg-white"
+                        class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -312,7 +265,7 @@
                         :model-value="field.state.value"
                         placeholder="••••••••"
                         autocomplete="new-password"
-                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base text-brand-green-900 placeholder:text-brand-ink-soft/50 focus:bg-white"
+                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -332,7 +285,7 @@
                         :model-value="field.state.value"
                         placeholder="••••••••"
                         autocomplete="new-password"
-                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base text-brand-green-900 placeholder:text-brand-ink-soft/50 focus:bg-white"
+                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -346,11 +299,11 @@
 
                   <Button
                     type="submit"
-                    class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-900 text-base font-bold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-14 sm:text-lg"
+                    class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-900 text-base font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700"
                     size="lg"
                     :disabled="isSubmitting"
                   >
-                    <PhCircleNotch v-if="isSubmitting" class="h-5 w-5 shrink-0 animate-spin" />
+                    <PhCircleNotch v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
                     <span>
                       {{
                         isSubmitting
@@ -367,11 +320,11 @@
 
             <p class="mx-auto mt-6 max-w-sm text-center text-sm leading-relaxed text-brand-ink-soft">
               By continuing, you agree to our
-              <NuxtLink to="/terms" class="font-medium text-brand-green-900 underline underline-offset-2 hover:text-primary">
+              <NuxtLink to="/terms" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
                 Terms of Service
               </NuxtLink>
               and
-              <NuxtLink to="/privacy" class="font-medium text-brand-green-900 underline underline-offset-2 hover:text-primary">
+              <NuxtLink to="/privacy" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
                 Privacy Policy
               </NuxtLink>.
             </p>
@@ -381,7 +334,7 @@
     </main>
 
     <footer class="relative z-20 shrink-0 border-t border-brand-line/10 bg-white/30 px-4 py-6 text-center backdrop-blur-sm sm:py-8">
-      <p class="text-xs font-semibold uppercase tracking-wide text-brand-ink-soft">
+      <p class="text-sm text-brand-ink-soft">
         &copy; {{ new Date().getFullYear() }} GetaLawyer &middot; Verified Nigerian Legal Professionals
       </p>
     </footer>
