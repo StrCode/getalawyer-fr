@@ -1,10 +1,19 @@
 <template>
   <AuthPageLayout>
-    <AuthLogo class="mb-10" />
+    <template #illustration>
+      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
+        Join the future of legal practice.
+      </h2>
+      <p class="text-brand-cream-warm/80 text-lg">
+        Whether you're seeking expert counsel or looking to grow your legal practice, GetaLawyer is your trusted partner.
+      </p>
+    </template>
+
+    <AuthLogo class="mb-10 lg:hidden" />
 
     <!-- STEP 1: Role Selection -->
     <div v-if="step === 'role'" key="role">
-      <h1 class="mb-2 font-semibold text-2xl text-foreground tracking-tight">
+      <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">
         Create your account
       </h1>
       <p class="mb-8 text-muted-foreground text-sm">I am joining as a…</p>
@@ -129,7 +138,7 @@
         </div>
       </div>
 
-      <h1 class="mb-2 font-semibold text-2xl text-foreground tracking-tight">
+      <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">
         {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
       </h1>
       <p class="mb-8 text-muted-foreground text-sm">

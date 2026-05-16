@@ -1,6 +1,15 @@
 <template>
   <AuthPageLayout>
-    <AuthLogo class="mb-10" />
+    <template #illustration>
+      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
+        Recover your account.
+      </h2>
+      <p class="text-brand-cream-warm/80 text-lg">
+        Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.
+      </p>
+    </template>
+
+    <AuthLogo class="mb-10 lg:hidden" />
 
     <Transition name="fade">
       <div v-if="submitted" key="success" class="flex flex-col items-center py-4 text-center">
@@ -9,7 +18,7 @@
         >
           <PhCheckCircle class="w-8 h-8 text-primary" />
         </div>
-        <h1 class="mb-2 font-semibold text-xl text-foreground">Password updated</h1>
+        <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">Password updated</h1>
         <p class="mb-8 max-w-sm text-muted-foreground text-sm leading-relaxed">
           Your password has been reset. You can now log in with your new password.
         </p>
@@ -23,7 +32,7 @@
 
     <Transition name="fade">
       <div v-if="!submitted" key="form">
-        <h1 class="mb-3 font-semibold text-2xl text-foreground tracking-tight">
+        <h1 class="mb-3 font-heading font-semibold text-3xl text-foreground tracking-tight">
           Set a new password
         </h1>
         <p class="mb-1 text-muted-foreground text-sm leading-relaxed">

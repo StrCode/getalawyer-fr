@@ -1,9 +1,18 @@
 <template>
   <AuthPageLayout>
-    <AuthLogo class="mb-10" />
+    <template #illustration>
+      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
+        Welcome back to GetaLawyer.
+      </h2>
+      <p class="text-brand-cream-warm/80 text-lg">
+        Log in to access your dashboard, manage your cases, and connect with top legal professionals.
+      </p>
+    </template>
 
-    <h1 class="mb-6 font-semibold text-2xl text-foreground tracking-tight">
-      Welcome back
+    <AuthLogo class="mb-10 lg:hidden" />
+
+    <h1 class="mb-6 font-heading font-semibold text-3xl text-foreground tracking-tight">
+      Log in to your account
     </h1>
 
     <div class="space-y-3 mb-6">
