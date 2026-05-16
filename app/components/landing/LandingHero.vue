@@ -56,7 +56,7 @@ const whereInput = ref('')
               <!-- Search button -->
               <button
                 @click="emit('openModal')"
-                class="bg-brand-green-700 hover:bg-brand-green-900 active:scale-[0.98] text-brand-cream border-none px-8 rounded-r-xl sm:rounded-r-xl font-sans text-4 font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)]"
+                class="bg-brand-green-700 hover:bg-brand-green-900 active:scale-[0.98] text-brand-cream border-none px-8 py-4 rounded-b-xl sm:rounded-none sm:rounded-r-xl font-sans text-4 font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-200 shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>

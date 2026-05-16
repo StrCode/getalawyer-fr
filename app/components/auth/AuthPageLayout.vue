@@ -8,13 +8,12 @@
       <div class="absolute inset-0 bg-gradient-to-br from-brand-green-700/30 to-transparent mix-blend-overlay"></div>
       
       <div class="relative z-10">
-        <NuxtLink to="/" class="inline-flex items-center gap-2.5">
-          <div class="flex flex-shrink-0 justify-center items-center bg-brand-cream rounded-lg w-8 h-8">
-            <PhFileText class="w-4 h-4 text-brand-green-900" />
-          </div>
-          <span class="font-bold text-[18px] tracking-tight text-brand-cream">
-            GetaLawyer
-          </span>
+        <NuxtLink to="/" class="inline-flex items-center gap-2.5 no-underline text-brand-cream">
+          <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="0,20 38,42 38,82 0,60" fill="currentColor"/>
+            <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55"/>
+          </svg>
+          <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-cream">getalawyer</span>
         </NuxtLink>
       </div>
 
@@ -50,7 +49,7 @@
     <div
       class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-background border-l border-border"
     >
-      <div class="flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-10 min-h-dvh sm:min-h-0 sm:py-12">
+      <div class="flex flex-col justify-center flex-1 px-6 sm:px-10 lg:px-16 py-10 min-h-[100dvh] lg:min-h-0">
         <div class="mx-auto w-full max-w-[400px]">
           <slot />
         </div>
@@ -60,5 +59,5 @@
 </template>
 
 <script setup lang="ts">
-import { PhFileText } from '@phosphor-icons/vue'
+// Layout logic here if needed
 </script>
