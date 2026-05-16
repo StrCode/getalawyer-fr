@@ -1,13 +1,5 @@
 <template>
-  <AuthPageLayout>
-    <template #illustration>
-      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
-        Welcome back to GetaLawyer.
-      </h2>
-      <p class="text-brand-cream-warm/80 text-lg">
-        Log in to access your dashboard, manage your cases, and connect with top legal professionals.
-      </p>
-    </template>
+  <div>
 
     <AuthLogo class="mb-10 lg:hidden" />
 
@@ -126,13 +118,12 @@
         Sign up
       </NuxtLink>
     </p>
-  </AuthPageLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { PhWarningCircle } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -140,8 +131,10 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
-  layout: false,
+  layout: 'auth',
   middleware: 'guest',
+  authTitle: 'Welcome back to GetaLawyer.',
+  authDescription: 'Log in to access your dashboard, manage your cases, and connect with top legal professionals.',
 })
 
 /** Internal path after login — ignore open redirects. */
@@ -156,11 +149,10 @@ const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect)
 
 const loginSchema = z.object({
   email: z
-    .string({ required_error: 'Email address is required.' })
-    .min(1, 'Email address is required.')
-    .email('Please enter a valid email address.'),
+    .email('Please enter a valid email address.')
+    .min(1, 'Email address is required.'),
   password: z
-    .string({ required_error: 'Password is required.' })
+    .string('Password is required.')
     .min(1, 'Password is required.')
     .min(8, 'Password must be at least 8 characters.'),
 })
@@ -175,9 +167,9 @@ const form = useForm({
     password: '',
   },
   validators: {
-    onChange: loginSchema,
+    onSubmit: loginSchema,
+    onBlur: loginSchema,
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     apiError.value = ''
     isSubmitting.value = true
@@ -208,7 +200,7 @@ const form = useForm({
 })
 
 function isInvalid(field: any) {
-  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+  return field.state.meta.isTouched && !field.state.meta.isValid
 }
 
 const handleSocialLogin = async (provider: 'google' | 'facebook') => {

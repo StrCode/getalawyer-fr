@@ -281,7 +281,6 @@ import {
   PhCircleNotch,
 } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -310,27 +309,26 @@ const step = ref<'role' | 'form'>('role')
 const registerSchema = z
   .object({
     firstName: z
-      .string({ required_error: 'First name is required.' })
+      .string('First name is required.')
       .min(1, 'First name is required.')
       .min(2, 'First name must be at least 2 characters.'),
     lastName: z
-      .string({ required_error: 'Last name is required.' })
+      .string('Last name is required.')
       .min(1, 'Last name is required.')
       .min(2, 'Last name must be at least 2 characters.'),
     email: z
-      .string({ required_error: 'Email address is required.' })
-      .min(1, 'Email address is required.')
-      .email('Please enter a valid email address.'),
+      .email('Please enter a valid email address.')
+      .min(1, 'Email address is required.'),
     password: z
-      .string({ required_error: 'Password is required.' })
-    .min(1, 'Password is required.')
-    .min(8, 'Password must be at least 8 characters.'),
+      .string('Password is required.')
+      .min(1, 'Password is required.')
+      .min(8, 'Password must be at least 8 characters.'),
     confirmPassword: z
-      .string({ required_error: 'Please confirm your password.' })
+      .string('Please confirm your password.')
       .min(1, 'Please confirm your password.'),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match.',
+    error: 'Passwords do not match.',
     path: ['confirmPassword'],
   })
 
@@ -346,9 +344,9 @@ const form = useForm({
     confirmPassword: '',
   },
   validators: {
-    onChange: registerSchema,
+    onSubmit: registerSchema,
+    onBlur: registerSchema,
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     apiError.value = ''
     isSubmitting.value = true
@@ -382,7 +380,7 @@ const form = useForm({
 })
 
 function isInvalid(field: any) {
-  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+  return field.state.meta.isTouched && !field.state.meta.isValid
 }
 
 // Auto-advance if role is provided in query

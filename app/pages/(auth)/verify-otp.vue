@@ -1,13 +1,5 @@
 <template>
-  <AuthPageLayout>
-    <template #illustration>
-      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
-        Recover your account.
-      </h2>
-      <p class="text-brand-cream-warm/80 text-lg">
-        Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.
-      </p>
-    </template>
+  <div>
 
     <AuthLogo class="mb-10 lg:hidden" />
 
@@ -92,13 +84,12 @@
         Back to forgot password
       </NuxtLink>
     </p>
-  </AuthPageLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { PhWarningCircle } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
@@ -107,8 +98,10 @@ import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
-  layout: false,
+  layout: 'auth',
   middleware: ['guest'],
+  authTitle: 'Recover your account.',
+  authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
 
 const route = useRoute()
@@ -118,7 +111,7 @@ const emailParam = computed(() => (route.query.email as string) || '')
 
 const otpSchema = z.object({
   otp: z
-    .string({ required_error: 'Verification code is required.' })
+    .string('Verification code is required.')
     .length(6, 'Please enter the full 6-digit code.'),
 })
 
@@ -131,9 +124,9 @@ const form = useForm({
     otp: '',
   },
   validators: {
-    onChange: otpSchema,
+    onSubmit: otpSchema,
+    onBlur: otpSchema,
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     apiError.value = ''
     isSubmitting.value = true
@@ -176,7 +169,7 @@ const form = useForm({
 })
 
 function isInvalid(field: any) {
-  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+  return field.state.meta.isTouched && !field.state.meta.isValid
 }
 
 onMounted(() => {

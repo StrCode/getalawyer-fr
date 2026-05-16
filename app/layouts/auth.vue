@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-dvh w-full overflow-hidden bg-brand-cream">
+  <div class="flex min-h-dvh w-full overflow-hidden bg-[oklch(0.98_0.008_85)] relative">
     <!-- LEFT PANEL: Rich Green Editorial -->
     <aside
       class="hidden lg:flex flex-col flex-1 min-w-0 justify-between bg-brand-green-900 px-10 py-10 relative overflow-hidden text-brand-cream"
@@ -18,14 +18,12 @@
       </div>
 
       <div class="relative z-10 flex flex-col justify-center flex-1 w-full max-w-xl pr-12">
-        <slot name="illustration">
-          <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
-            The most trusted way to find top-tier legal representation.
-          </h2>
-          <p class="text-brand-cream-warm/80 text-lg">
-            Join thousands of businesses and individuals connecting with verified legal professionals every day.
-          </p>
-        </slot>
+        <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
+          {{ authTitle }}
+        </h2>
+        <p class="text-brand-cream-warm/80 text-lg">
+          {{ authDescription }}
+        </p>
       </div>
 
       <div
@@ -47,7 +45,7 @@
 
     <!-- RIGHT PANEL: Form Container -->
     <div
-      class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-brand-cream border-l border-border"
+      class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-[oklch(0.98_0.008_85)] border-l border-border"
     >
       <!-- Floating Top Right Link -->
       <div class="absolute top-6 right-6 sm:top-10 sm:right-10 hidden sm:block z-10">
@@ -72,5 +70,16 @@
 </template>
 
 <script setup lang="ts">
-// Layout logic here if needed
+import { computed } from 'vue'
+import { useRoute } from '#imports'
+
+const route = useRoute()
+
+const authTitle = computed(() => {
+  return (route.meta.authTitle as string) || 'The most trusted way to find top-tier legal representation.'
+})
+
+const authDescription = computed(() => {
+  return (route.meta.authDescription as string) || 'Join thousands of businesses and individuals connecting with verified legal professionals every day.'
+})
 </script>

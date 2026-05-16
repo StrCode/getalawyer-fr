@@ -1,13 +1,5 @@
 <template>
-  <AuthPageLayout>
-    <template #illustration>
-      <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
-        Recover your account.
-      </h2>
-      <p class="text-brand-cream-warm/80 text-lg">
-        Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.
-      </p>
-    </template>
+  <div>
 
     <AuthLogo class="mb-10 lg:hidden" />
 
@@ -113,13 +105,12 @@
         </p>
       </div>
     </Transition>
-  </AuthPageLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { PhCheckCircle, PhWarningCircle } from '@phosphor-icons/vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -128,8 +119,10 @@ import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
-  layout: false,
+  layout: 'auth',
   middleware: ['guest'],
+  authTitle: 'Recover your account.',
+  authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
 
 const route = useRoute()
@@ -141,17 +134,17 @@ const otpParam = computed(() => (route.query.otp as string) || '')
 const resetSchema = z
   .object({
     password: z
-      .string({ required_error: 'New password is required.' })
+      .string('New password is required.')
       .min(1, 'New password is required.')
       .min(8, 'Password must be at least 8 characters.')
       .regex(/[A-Z]/, 'Password must contain at least one uppercase letter.')
       .regex(/[0-9]/, 'Password must contain at least one number.'),
     confirmPassword: z
-      .string({ required_error: 'Please confirm your new password.' })
+      .string('Please confirm your new password.')
       .min(1, 'Please confirm your new password.'),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match.',
+    error: 'Passwords do not match.',
     path: ['confirmPassword'],
   })
 
@@ -165,9 +158,9 @@ const form = useForm({
     confirmPassword: '',
   },
   validators: {
-    onChange: resetSchema,
+    onSubmit: resetSchema,
+    onBlur: resetSchema,
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     if (!emailParam.value || !otpParam.value) {
       apiError.value = 'Invalid reset link. Please request a new one.'
@@ -201,7 +194,7 @@ const form = useForm({
 })
 
 function isInvalid(field: any) {
-  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+  return field.state.meta.isTouched && !field.state.meta.isValid
 }
 
 onMounted(() => {
