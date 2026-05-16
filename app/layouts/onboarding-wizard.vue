@@ -37,7 +37,7 @@ export default defineComponent({
 
     const { 
        currentStep, prevStep, currentIndex, steps, isFirst, isLast, 
-       nextStep, sectionProgress, userType 
+       nextStep, userType 
     } = useOnboardingNavigation()
 
     const router = useRouter()
@@ -179,15 +179,6 @@ export default defineComponent({
       return idx >= 0 ? idx + 1 : 0
     })
 
-    /** Weighted across onboarding sections (matches former segmented bar logic). */
-    const overallProgress = computed(() => {
-      const segs = sectionProgress.value
-      if (!segs.length) return 0
-      const totalSize = segs.reduce((sum, s) => sum + (s.size ?? 0), 0)
-      const filled = segs.reduce((sum, s) => sum + (s.pct / 100) * (s.size ?? 0), 0)
-      return Math.round((filled / totalSize) * 100)
-    })
-
     return {
       validationErrorBanner,
       isPending,
@@ -197,7 +188,6 @@ export default defineComponent({
       currentStep,
       steps,
       progressStepNumber,
-      overallProgress,
       isFirst,
       isLast,
       userType,
@@ -264,32 +254,9 @@ export default defineComponent({
       </div>
     </main>
 
-    <!-- Footer -->
+    <!-- Footer: unified progress + navigation -->
     <footer class="z-40 shrink-0 border-t border-border bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
-      <div
-        v-if="steps.length > 0 && progressStepNumber > 0"
-        class="border-b border-border/60 bg-muted/25 px-4 py-3 sm:px-6 md:px-12"
-      >
-        <div class="mx-auto flex w-full max-w-6xl flex-col gap-2">
-          <div class="flex items-center justify-between gap-3 text-sm">
-            <p class="shrink-0 font-medium tabular-nums text-foreground">
-              Step {{ progressStepNumber }} of {{ steps.length }}
-            </p>
-            <p
-              v-if="currentStep"
-              class="min-w-0 truncate text-muted-foreground"
-            >
-              {{ currentStep.label }}
-            </p>
-          </div>
-          <Progress
-            :model-value="overallProgress"
-            class="h-1 bg-muted"
-          />
-        </div>
-      </div>
-
-      <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-6 md:px-12">
+      <div class="relative mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-5 md:px-12">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
         <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
           <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -298,54 +265,61 @@ export default defineComponent({
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          class="order-2 h-11 shrink-0 px-3 text-base font-medium text-muted-foreground hover:text-foreground sm:order-1"
-          :disabled="isFirst || isSaving"
-          @click="handleBack"
-        >
-          Back
-        </Button>
-
-        <p class="order-1 text-center text-sm leading-relaxed text-muted-foreground sm:order-2 sm:max-w-md sm:flex-1 sm:px-4">
-          <template v-if="userType === 'client' && isLast">
-            By saving and continuing, you agree to GetaLawyer&apos;s
-          </template>
-          <template v-else>
-            By clicking Continue, you agree to GetaLawyer&apos;s
-          </template>
-          <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
-            Terms of Service
-          </NuxtLink>
-          and
-          <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
-            Privacy Policy
-          </NuxtLink>.
-        </p>
-
-        <div class="order-3 w-full sm:w-auto sm:shrink-0">
-          <Button
-            class="inline-flex h-11 w-full items-center justify-center px-8 text-base font-semibold sm:w-auto"
-            :disabled="isSaving"
-            @click="handleNext"
+        <template v-if="steps.length > 0 && progressStepNumber > 0">
+          <div
+            class="mb-4 flex gap-1"
+            role="progressbar"
+            :aria-valuenow="progressStepNumber"
+            aria-valuemin="1"
+            :aria-valuemax="steps.length"
+            :aria-label="`Step ${progressStepNumber} of ${steps.length}`"
           >
-            <PhCircleNotch
-              v-if="isSaving && !isExiting"
-              class="mr-2 h-4 w-4 shrink-0 animate-spin"
+            <span
+              v-for="(step, index) in steps"
+              :key="step.key"
+              class="h-1 flex-1 rounded-full transition-colors duration-300"
+              :class="index < progressStepNumber ? 'bg-primary' : 'bg-muted'"
             />
-            <span>
-              {{
-                isSaving && !isExiting
-                  ? 'Please wait...'
-                  : !isLast
-                    ? 'Next'
-                    : userType === 'client'
-                      ? 'Save and continue'
-                      : 'Submit Application'
-              }}
-            </span>
-          </Button>
-        </div>
+          </div>
+
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-center text-sm font-medium tabular-nums text-foreground sm:text-left">
+              Step {{ progressStepNumber }} of {{ steps.length }}
+            </p>
+
+            <div class="flex items-center gap-3">
+              <Button
+                variant="outline"
+                class="h-11 shrink-0 px-5 text-base font-medium"
+                :disabled="isFirst || isSaving"
+                @click="handleBack"
+              >
+                Back
+              </Button>
+              <Button
+                class="inline-flex h-11 min-w-36 flex-1 items-center justify-center px-8 text-base font-semibold sm:flex-initial"
+                :disabled="isSaving"
+                @click="handleNext"
+              >
+                <PhCircleNotch
+                  v-if="isSaving && !isExiting"
+                  class="mr-2 h-4 w-4 shrink-0 animate-spin"
+                />
+                <span>
+                  {{
+                    isSaving && !isExiting
+                      ? 'Please wait...'
+                      : !isLast
+                        ? 'Continue'
+                        : userType === 'client'
+                          ? 'Save and continue'
+                          : 'Submit application'
+                  }}
+                </span>
+              </Button>
+            </div>
+          </div>
+        </template>
       </div>
     </footer>
     <Toaster position="top-right" />
