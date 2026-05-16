@@ -70,19 +70,19 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
       <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
         <!-- First Name -->
         <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">First name <span class="text-primary">*</span></label>
+          <label class="text-3.5 font-bold text-gray-900 tracking-tight">First name <span class="text-primary">*</span></label>
           <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
         </div>
 
         <!-- Middle Name -->
         <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
+          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
           <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
         </div>
 
         <!-- Last Name -->
         <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
+          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
           <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
         </div>
       </div>
@@ -91,7 +91,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 pt-6 border-t border-gray-50">
         <!-- Date of Birth -->
         <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Date of birth <span class="text-primary">*</span></label>
+          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Date of birth <span class="text-primary">*</span></label>
           <div class="w-full">
              <Popover v-slot="{ close }">
               <PopoverTrigger as-child>
@@ -113,13 +113,13 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 />
               </PopoverContent>
             </Popover>
-            <p class="mt-2 text-[11px] text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
+            <p class="mt-2 text-3 text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
           </div>
         </div>
 
         <!-- Gender -->
         <div class="flex flex-col gap-3 py-1">
-          <label class="text-[14px] font-bold text-gray-900 tracking-tight">Gender <span class="text-primary">*</span></label>
+          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Gender <span class="text-primary">*</span></label>
           <Select v-model="state.gender">
             <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20 w-full">
               <SelectValue placeholder="Select gender" />
@@ -136,23 +136,23 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
       <!-- Location Section -->
       <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 border-t border-gray-50 pt-8">
         <div>
-          <label class="text-[14px] font-bold text-gray-900 block tracking-tight">Location <span class="text-primary">*</span></label>
-          <p class="mt-2 text-[12px] text-gray-400 font-medium leading-relaxed max-w-[180px]">Provide your current state and local government area of residence.</p>
+          <label class="text-3.5 font-bold text-gray-900 block tracking-tight">Location <span class="text-primary">*</span></label>
+          <p class="mt-2 text-3 text-gray-400 font-medium leading-relaxed max-w-[180px]">Provide your current state and local government area of residence.</p>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-xl">
           <div>
-            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
+            <label class="text-3 font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
             <Input v-model="state.state" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
           <div>
-            <label class="text-[11px] font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">LGA</label>
+            <label class="text-3 font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">LGA</label>
             <Input v-model="state.lga" placeholder="Ikeja" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
           </div>
         </div>
       </div>
 
-      <div class="pt-8 italic text-[10px] text-gray-400 font-medium">
+      <div class="pt-8 italic text-2.5 text-gray-400 font-medium">
          * Required fields for verification
       </div>
     </div>

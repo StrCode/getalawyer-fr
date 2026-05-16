@@ -83,7 +83,7 @@ onBeforeUnmount(() => {
 
       <div class="space-y-10">
         <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-          <label class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight" for="nin-input">National Identity Number <span class="text-primary">*</span></label>
+          <label class="text-3.5 font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight" for="nin-input">National Identity Number <span class="text-primary">*</span></label>
           <div class="w-full max-w-md space-y-2">
             <InputGroup
               class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
               </InputGroupAddon>
               <InputGroupAddon align="inline-end">
                 <InputGroupText
-                  class="text-[10px] font-bold uppercase tracking-widest tabular-nums"
+                  class="text-2.5 font-bold uppercase tracking-widest tabular-nums"
                   :class="state.nin.length === 11 ? 'text-primary' : 'text-muted-foreground/60'"
                 >
                   {{ state.nin.length }}/11
@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-          <span class="text-[14px] font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Verification Consent <span class="text-primary">*</span></span>
+          <span class="text-3.5 font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Verification Consent <span class="text-primary">*</span></span>
           <div class="w-full max-w-md">
             <Label
               :for="consentFieldId"

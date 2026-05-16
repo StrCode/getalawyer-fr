@@ -382,7 +382,7 @@ function clearAllFilters(): void {
     >
       <div class="mx-auto box-border w-full max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:px-8 sm:pb-8">
         <div class="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
-          <p class="mb-4 font-semibold text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          <p class="mb-4 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
             Directory
           </p>
           <h1 class="text-balance text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl sm:leading-[1.08] lg:text-6xl">
@@ -399,7 +399,7 @@ function clearAllFilters(): void {
           class="flex w-full flex-col gap-4 md:flex-row md:items-end md:gap-x-5 md:gap-y-4"
         >
           <label class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
-            <span class="ps-px font-semibold text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
               Topic or keywords
             </span>
             <span
@@ -418,7 +418,7 @@ function clearAllFilters(): void {
           </label>
 
           <div class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
-            <span class="ps-px font-semibold text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
               States
             </span>
             <div class="min-w-0 w-full">
@@ -469,7 +469,7 @@ function clearAllFilters(): void {
                         @update:checked="(v: boolean | 'indeterminate') => toggleStateCode(s.code, v === true)"
                       />
                       <span class="min-w-0 leading-snug">{{ s.label }}</span>
-                      <span class="ml-auto shrink-0 tabular-nums text-[11px] font-medium text-muted-foreground">{{ s.code }}</span>
+                      <span class="ml-auto shrink-0 tabular-nums text-3 font-medium text-muted-foreground">{{ s.code }}</span>
                     </label>
                   </div>
                 </PopoverContent>
@@ -478,7 +478,7 @@ function clearAllFilters(): void {
           </div>
 
           <div class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[14rem] md:flex-[1.75]">
-            <span class="ps-px font-semibold text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
               Specializations
             </span>
             <div
@@ -563,7 +563,7 @@ function clearAllFilters(): void {
               Showing {{ ((pagination.page - 1) * pagination.limit) + 1 }}-{{ Math.min(pagination.page * pagination.limit, pagination.total) }} of {{ pagination.total }} lawyers
             </div>
 
-            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-[13px] text-foreground dark:bg-muted/80">
+            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80">
               Keyword Search: {{ filters.keywords }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.keywords = ''">
                 &times;
@@ -573,7 +573,7 @@ function clearAllFilters(): void {
             <div
               v-for="code in selectedStateCodes"
               :key="code"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-[13px] text-foreground dark:bg-muted/80"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80"
             >
               <span class="truncate">{{ stateLabel(code) }}</span>
               <button
@@ -589,7 +589,7 @@ function clearAllFilters(): void {
             <div
               v-for="sid in filters.practiceAreas"
               :key="sid"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-[13px] text-foreground dark:bg-muted/80"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80"
             >
               <span class="truncate">{{ specializationNameById(sid) }}</span>
               <button

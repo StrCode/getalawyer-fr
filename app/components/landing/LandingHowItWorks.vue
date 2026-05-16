@@ -24,14 +24,14 @@ const steps = [
 </script>
 
 <template>
-  <section id="how" class="bg-brand-cream py-[100px]">
-    <div class="max-w-[1280px] mx-auto px-8">
+  <section id="how" class="bg-brand-cream py-24">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
       <!-- Header -->
-      <p class="text-[13px] font-semibold text-brand-green-700 tracking-[0.08em] uppercase mb-4">How it works</p>
-      <h2 class="font-heading font-medium text-brand-green-900 leading-[1.05] tracking-[-0.02em] max-w-[720px] mb-6" style="font-size:clamp(36px,4.5vw,56px);">
+      <p class="text-sm font-semibold text-brand-green-700 tracking-[0.08em] uppercase mb-4">How it works</p>
+      <h2 class="font-heading font-medium text-brand-green-900 leading-[1.05] tracking-[-0.02em] max-w-2xl mb-6" style="font-size:clamp(36px,4.5vw,56px);">
         From your first search to your first consultation.
       </h2>
-      <p class="text-[18px] text-brand-ink-soft max-w-[560px] leading-normal">
+      <p class="text-5 text-brand-ink-soft max-w-xl leading-normal">
         Four steps. No calls. No paperwork. Just verified lawyers ready when you need them.
       </p>
 
@@ -42,8 +42,8 @@ const steps = [
           <div class="font-heading italic font-normal text-brand-green-300 leading-none mb-6" style="font-size:56px;">
             {{ step.num }}
           </div>
-          <h3 class="text-[20px] font-semibold text-brand-green-900 mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
-          <p class="text-[15px] text-brand-ink-soft leading-[1.55]">{{ step.desc }}</p>
+          <h3 class="text-5 font-semibold text-brand-green-900 mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
+          <p class="text-4 text-brand-ink-soft leading-[1.55]">{{ step.desc }}</p>
         </div>
       </div>
     </div>

@@ -72,7 +72,7 @@ const ninDisplay = computed(() => {
 
 const minimalRow =
   'flex flex-col gap-1 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-8'
-const minimalLabel = 'text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:w-[200px] sm:shrink-0'
+const minimalLabel = 'text-3 font-bold uppercase tracking-wider text-gray-400 sm:w-[200px] sm:shrink-0'
 const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
 </script>
 
@@ -93,7 +93,7 @@ const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
     <div class="space-y-10">
         <section class="space-y-4">
           <div class="flex items-center justify-between gap-4">
-            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Basic information</p>
+            <p class="text-3 font-bold uppercase tracking-widest text-gray-500">Basic information</p>
             <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
               <NuxtLink to="/onboarding/personal-info">Edit</NuxtLink>
             </Button>
@@ -152,7 +152,7 @@ const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
 
         <section class="space-y-4">
           <div class="flex items-center justify-between gap-4">
-            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Professional background</p>
+            <p class="text-3 font-bold uppercase tracking-widest text-gray-500">Professional background</p>
             <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
               <NuxtLink to="/onboarding/professional-information">Edit</NuxtLink>
             </Button>
@@ -181,14 +181,14 @@ const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
 
         <section class="space-y-4">
           <div class="flex items-center justify-between gap-4">
-            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Practice details</p>
+            <p class="text-3 font-bold uppercase tracking-widest text-gray-500">Practice details</p>
             <Button variant="link" class="h-auto shrink-0 px-0 text-sm font-semibold text-primary" as-child>
               <NuxtLink to="/onboarding/practice-information">Edit</NuxtLink>
             </Button>
           </div>
           <div class="space-y-4">
             <div class="rounded-lg border border-gray-100 px-4 py-4 sm:px-5">
-              <p class="mb-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">Practice areas</p>
+              <p class="mb-3 text-3 font-bold uppercase tracking-wider text-gray-400">Practice areas</p>
               <div class="flex flex-wrap gap-2">
                 <span
                   v-for="row in practiceAreaRows"

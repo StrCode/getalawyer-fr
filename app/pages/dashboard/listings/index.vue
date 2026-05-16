@@ -53,7 +53,7 @@
           }">
           <div class="flex justify-between items-center gap-1.5 px-6 py-5">
             <div>
-              <span class="font-medium text-[#1C1C1E] text-[20px] leading-6 tracking-tight">Properties</span>
+              <span class="font-medium text-[#1C1C1E] text-5 leading-6 tracking-tight">Properties</span>
               <span class="ml-2 font-normal text-[#8E8E93] text-sm leading-5">Total {{ listings.length }}</span>
             </div>
             <div class="flex items-center gap-3">
@@ -110,7 +110,7 @@
           }">
           <div class="flex justify-between items-center gap-1.5 px-6 py-5">
             <div>
-              <span class="font-medium text-[#1C1C1E] text-[20px] leading-6 tracking-tight">Short Stay Properties</span>
+              <span class="font-medium text-[#1C1C1E] text-5 leading-6 tracking-tight">Short Stay Properties</span>
               <span class="ml-2 font-normal text-[#8E8E93] text-sm leading-5">Total {{ shortStayListings.length }}</span>
             </div>
             <div class="flex items-center gap-3">
@@ -167,7 +167,7 @@
           }">
           <div class="flex justify-between items-center gap-1.5 px-6 py-5">
             <div>
-              <span class="font-medium text-[#1C1C1E] text-[20px] leading-6 tracking-tight">Rental Properties</span>
+              <span class="font-medium text-[#1C1C1E] text-5 leading-6 tracking-tight">Rental Properties</span>
               <span class="ml-2 font-normal text-[#8E8E93] text-sm leading-5">Total {{ rentalListings.length }}</span>
             </div>
             <div class="flex items-center gap-3">
@@ -246,7 +246,7 @@
             }">
             <div class="flex justify-between items-center gap-1.5 px-6 py-5">
               <div>
-                <span class="font-medium text-[#1C1C1E] text-[20px] leading-6 tracking-tight">Pending Approvals</span>
+                <span class="font-medium text-[#1C1C1E] text-5 leading-6 tracking-tight">Pending Approvals</span>
                 <span class="ml-2 font-normal text-[#8E8E93] text-sm leading-5">Total {{ pendingApprovals.length }}</span>
               </div>
               <div class="flex items-center gap-3">

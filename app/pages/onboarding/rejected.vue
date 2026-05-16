@@ -83,7 +83,7 @@ const handleRestart = async () => {
             <div class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-medium">{{ rejectionReason }}</div>
           </div>
 
-          <div v-if="reviewedAt" class="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">
+          <div v-if="reviewedAt" class="text-3 font-bold text-gray-400 uppercase tracking-widest pl-1">
             Reviewed on {{ formatDate(reviewedAt) }}
           </div>
         </div>
@@ -100,15 +100,15 @@ const handleRestart = async () => {
 
         <ol class="space-y-5 text-gray-700">
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold mt-0.5 shrink-0">1</span>
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">1</span>
             <span class="text-sm font-medium">Carefully review the feedback provided above.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold mt-0.5 shrink-0">2</span>
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">2</span>
             <span class="text-sm font-medium">Gather any missing documents or update your credentials as requested.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-[10px] font-bold mt-0.5 shrink-0">3</span>
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">3</span>
             <span class="text-sm font-medium">Click the button below to unlock your application for editing.</span>
           </li>
         </ol>

@@ -31,7 +31,7 @@ const cols = {
 
 <template>
   <footer class="bg-brand-green-900 py-20 pb-8 text-brand-cream/70">
-    <div class="max-w-[1280px] mx-auto px-8">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
 
       <!-- Grid: brand + 4 cols -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-12 mb-16">
@@ -43,21 +43,21 @@ const cols = {
               <polygon points="0,20 38,42 38,82 0,60" fill="#86C28E"/>
               <polygon points="62,42 100,20 100,60 62,82" fill="#86C28E" opacity="0.55"/>
             </svg>
-            <span class="font-sans font-bold text-[19px] tracking-[-0.5px] lowercase text-brand-cream">getalawyer</span>
+            <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-cream">getalawyer</span>
           </a>
-          <p class="text-[14px] leading-normal max-w-[280px]">
+          <p class="text-3.5 leading-normal max-w-xs">
             Connecting Nigerians with verified legal professionals. Built for clarity, trust, and speed.
           </p>
         </div>
 
         <!-- Link columns -->
         <div v-for="(links, group) in cols" :key="group">
-          <h5 class="text-[12px] font-semibold text-brand-cream tracking-[0.08em] uppercase mb-[18px]">{{ group }}</h5>
+          <h5 class="text-3 font-semibold text-brand-cream tracking-[0.08em] uppercase mb-5">{{ group }}</h5>
           <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
             <li v-for="link in links" :key="link.label">
               <NuxtLink
                 :to="link.to"
-                class="no-underline text-[14px] transition-colors duration-200 text-brand-cream/60 hover:text-brand-cream"
+                class="no-underline text-3.5 transition-colors duration-200 text-brand-cream/60 hover:text-brand-cream"
               >{{ link.label }}</NuxtLink>
             </li>
           </ul>
@@ -65,7 +65,7 @@ const cols = {
       </div>
 
       <!-- Bottom bar -->
-      <div class="flex flex-col sm:flex-row justify-between items-center pt-8 text-[13px] border-t border-brand-cream/10 gap-4 sm:gap-0">
+      <div class="flex flex-col sm:flex-row justify-between items-center pt-8 text-sm border-t border-brand-cream/10 gap-4 sm:gap-0">
         <span>© {{ year }} getalawyer. All rights reserved.</span>
         <div class="flex items-center gap-2 text-brand-green-300">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

@@ -52,7 +52,7 @@ onUnmounted(() => {
     >
       <div class="mx-auto max-w-6xl px-6 py-5">
         <slot name="footer-note">
-          <p class="text-center text-[11px] leading-snug text-gray-400 lg:mx-auto lg:max-w-md">
+          <p class="text-center text-3 leading-snug text-gray-400 lg:mx-auto lg:max-w-md">
             By using Getalawyer you agree to our
             <a href="#" class="text-primary hover:underline">Terms of Use</a>
             and

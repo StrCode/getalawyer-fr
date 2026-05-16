@@ -132,7 +132,7 @@ const isBookingModalOpen = ref(false)
             Back to directory
           </NuxtLink>
 
-          <p class="mb-3 font-semibold text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          <p class="mb-3 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
             Lawyer profile
           </p>
 

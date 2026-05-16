@@ -2,7 +2,7 @@
   <div class="space-y-8 pb-20">
     <!-- Heading -->
     <div>
-      <h1 class="mb-2 font-bold text-[28px] text-gray-900 tracking-tight">
+      <h1 class="mb-2 font-bold text-7 text-gray-900 tracking-tight">
         Where are you located?
       </h1>
       <p class="text-gray-500 text-sm leading-relaxed font-medium">
@@ -17,7 +17,7 @@
         class="flex flex-wrap gap-2"
       >
         <div
-          class="inline-flex items-center gap-1.5 bg-primary/10 py-1 px-3 border border-primary/20 rounded-full font-bold text-primary text-[11px] shadow-sm"
+          class="inline-flex items-center gap-1.5 bg-primary/10 py-1 px-3 border border-primary/20 rounded-full font-bold text-primary text-3 shadow-sm"
         >
           <PhCheck class="w-3.5 h-3.5 shrink-0" />
           {{ selectedStateName || selectedCountryName || 'Your region' }}
@@ -46,10 +46,10 @@
       <!-- Country -->
       <div>
         <div class="flex justify-between items-center mb-1.5">
-          <span class="font-bold text-gray-400 text-[10px] uppercase tracking-wider">
+          <span class="font-bold text-gray-400 text-2.5 uppercase tracking-wider">
             Country
           </span>
-          <span class="font-bold text-[10px] uppercase tracking-wider text-gray-400">
+          <span class="font-bold text-2.5 uppercase tracking-wider text-gray-400">
             Fixed
           </span>
         </div>
@@ -63,7 +63,7 @@
             Nigeria
           </div>
         </div>
-        <p class="mt-2 text-[11px] text-gray-400 font-medium leading-snug">
+        <p class="mt-2 text-3 text-gray-400 font-medium leading-snug">
           Currently available in Nigeria only
         </p>
       </div>
@@ -71,7 +71,7 @@
       <!-- State -->
       <div>
         <div class="mb-1.5">
-          <span class="font-bold text-gray-400 text-[10px] uppercase tracking-wider">
+          <span class="font-bold text-gray-400 text-2.5 uppercase tracking-wider">
             State / region
           </span>
         </div>

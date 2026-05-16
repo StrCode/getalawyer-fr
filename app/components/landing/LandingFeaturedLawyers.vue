@@ -16,16 +16,16 @@ const lawyers: Lawyer[] = [
 </script>
 
 <template>
-  <section id="lawyers" class="bg-white py-[100px] px-[5%]">
+  <section id="lawyers" class="bg-white py-24 px-[5%]">
     <!-- Header -->
-    <p class="text-center text-[0.78rem] font-semibold tracking-[2px] uppercase text-brand-blue mb-3">Verified Professionals</p>
+    <p class="text-center text-[0.78rem] font-semibold tracking-0.5 uppercase text-brand-blue mb-3">Verified Professionals</p>
     <h2 class="font-heading font-bold text-brand-navy text-center mb-2.5 leading-[1.15]" style="font-size:clamp(2rem,4vw,3rem);">Featured Lawyers</h2>
-    <p class="text-center text-slate-600 text-[1rem] max-w-[520px] mx-auto mb-16 leading-[1.7]">
+    <p class="text-center text-slate-600 text-[1rem] max-w-lg mx-auto mb-16 leading-[1.7]">
       Hand-verified, highly rated legal professionals ready to take your consultation.
     </p>
 
     <!-- Grid -->
-    <div class="grid gap-6 max-w-[1200px] mx-auto" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
+    <div class="grid gap-6 max-w-6xl mx-auto" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));">
       <div
         v-for="lawyer in lawyers"
         :key="lawyer.name"

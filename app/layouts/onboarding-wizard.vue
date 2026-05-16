@@ -216,7 +216,7 @@ export default defineComponent({
             <!-- Subtle fetch indicator -->
             <transition name="fade">
               <div v-if="isFetching && !isPending" class="absolute -top-10 right-0 flex items-center gap-2">
-                 <span class="text-[11px] font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
+                 <span class="text-3 font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
                  <PhCircleNotch class="w-4 h-4 text-primary/40 animate-spin" />
               </div>
             </transition>
@@ -262,7 +262,7 @@ export default defineComponent({
             Back
           </Button>
           
-          <p class="hidden lg:block text-[11px] text-gray-400 max-w-[320px] leading-snug">
+          <p class="hidden lg:block text-3 text-gray-400 max-w-[320px] leading-snug">
             <template v-if="userType === 'client' && isLast">
               By saving and continuing, you agree to Getalawyer's
             </template>

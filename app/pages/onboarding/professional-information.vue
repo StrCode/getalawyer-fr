@@ -107,7 +107,7 @@ function onScnModelUpdate(v: unknown) {
     <div class="space-y-10">
       <!-- Bar admission -->
       <div class="space-y-6">
-        <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
+        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
           Bar admission
         </p>
 
@@ -116,7 +116,7 @@ function onScnModelUpdate(v: unknown) {
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
             <FormLabel
-              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
             >
               Supreme Court enrolment number (SCN) <span class="text-primary">*</span>
             </FormLabel>
@@ -144,7 +144,7 @@ function onScnModelUpdate(v: unknown) {
                   />
                   <InputGroupAddon align="inline-end">
                     <InputGroupText
-                      class="text-[10px] font-bold uppercase tracking-widest tabular-nums"
+                      class="text-2.5 font-bold uppercase tracking-widest tabular-nums"
                       :class="scnCounterClass"
                     >
                       {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
@@ -172,7 +172,7 @@ function onScnModelUpdate(v: unknown) {
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
             <FormLabel
-              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
             >
               Year called to the Nigerian Bar <span class="text-primary">*</span>
             </FormLabel>
@@ -194,7 +194,7 @@ function onScnModelUpdate(v: unknown) {
                     v-bind="componentField"
                   />
                   <InputGroupAddon align="inline-end">
-                    <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
                       {{ yearMin }}–{{ currentYear }}
                     </InputGroupText>
                   </InputGroupAddon>
@@ -213,7 +213,7 @@ function onScnModelUpdate(v: unknown) {
 
       <!-- University -->
       <div class="space-y-6">
-        <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
+        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
           University education
         </p>
 
@@ -222,7 +222,7 @@ function onScnModelUpdate(v: unknown) {
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
             <FormLabel
-              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
             >
               University (LLB) <span class="text-primary">*</span>
             </FormLabel>
@@ -258,7 +258,7 @@ function onScnModelUpdate(v: unknown) {
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
             <FormLabel
-              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
             >
               Year of LLB graduation <span class="text-primary">*</span>
             </FormLabel>
@@ -280,7 +280,7 @@ function onScnModelUpdate(v: unknown) {
                     v-bind="componentField"
                   />
                   <InputGroupAddon align="inline-end">
-                    <InputGroupText class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
                       {{ yearMin }}–{{ currentYear }}
                     </InputGroupText>
                   </InputGroupAddon>
@@ -299,7 +299,7 @@ function onScnModelUpdate(v: unknown) {
 
       <!-- Law school -->
       <div class="space-y-6">
-        <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
+        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
           Nigerian Law School
         </p>
 
@@ -308,7 +308,7 @@ function onScnModelUpdate(v: unknown) {
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
           >
             <FormLabel
-              class="text-[14px] font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
             >
               NLS campus <span class="text-primary">*</span>
             </FormLabel>

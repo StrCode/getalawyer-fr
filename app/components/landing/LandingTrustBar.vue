@@ -25,17 +25,17 @@ const trustItems = [
 
 <template>
   <section class="bg-brand-green-900 text-brand-cream py-10">
-    <div class="max-w-[1280px] mx-auto px-8">
+    <div class="max-w-7xl mx-auto px-6 md:px-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 items-center">
         <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-3.5">
           <!-- Icon -->
           <div
-            class="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 text-brand-green-300"
+            class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-brand-green-300"
             style="background:rgba(134,194,142,0.15);"
             v-html="item.icon"
           />
           <!-- Text -->
-          <div class="text-[13px] leading-normal">
+          <div class="text-sm leading-normal">
             <strong class="block text-brand-cream font-semibold mb-0.5">{{ item.label }}</strong>
             <span class="text-brand-cream/60">{{ item.sub }}</span>
           </div>

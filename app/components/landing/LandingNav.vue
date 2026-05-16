@@ -29,7 +29,7 @@ watch(isMobileMenuOpen, (isOpen) => {
 <template>
   <div>
     <nav class="sticky top-0 z-[100] bg-brand-cream/85 backdrop-blur-md border-b border-brand-line/50">
-      <div class="flex items-center justify-between max-w-[1280px] mx-auto px-8 py-[18px]">
+      <div class="flex items-center justify-between max-w-7xl mx-auto px-6 md:px-8 py-5">
 
         <!-- Logo -->
         <NuxtLink to="/" class="flex items-center gap-2.5 no-underline text-brand-green-700 z-[110]">
@@ -37,7 +37,7 @@ watch(isMobileMenuOpen, (isOpen) => {
             <polygon points="0,20 38,42 38,82 0,60" fill="#1F4D2C"/>
             <polygon points="62,42 100,20 100,60 62,82" fill="#1F4D2C" opacity="0.55"/>
           </svg>
-          <span class="font-sans font-bold text-[19px] tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
+          <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
         </NuxtLink>
 
         <!-- Nav links — hidden on mobile -->
@@ -45,7 +45,7 @@ watch(isMobileMenuOpen, (isOpen) => {
           <li v-for="link in links" :key="link.href">
             <NuxtLink
               :to="link.href"
-              class="text-brand-ink text-[15px] font-medium hover:text-brand-green-700 transition-colors duration-200 bg-transparent border-none cursor-pointer font-sans no-underline"
+              class="text-brand-ink text-4 font-medium hover:text-brand-green-700 transition-colors duration-200 bg-transparent border-none cursor-pointer font-sans no-underline"
             >{{ link.label }}</NuxtLink>
           </li>
         </ul>
@@ -54,11 +54,11 @@ watch(isMobileMenuOpen, (isOpen) => {
         <div class="hidden lg:flex items-center gap-3">
           <NuxtLink
             to="/login"
-            class="hidden sm:inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full text-brand-ink text-[15px] font-medium border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
+            class="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full text-brand-ink text-4 font-medium border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
           >Sign in</NuxtLink>
           <button
             @click="emit('openModal')"
-            class="inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full bg-brand-green-700 text-brand-cream text-[15px] font-medium hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-brand-green-700 text-brand-cream text-4 font-medium hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
           >Find a lawyer →</button>
         </div>
 
@@ -91,13 +91,13 @@ watch(isMobileMenuOpen, (isOpen) => {
         class="fixed inset-0 z-[200] bg-brand-cream flex flex-col h-[100dvh]"
       >
         <!-- Mobile Menu Header (Matches Main Header Layout) -->
-        <div class="flex items-center justify-between px-8 py-[18px] border-b border-brand-line/50 shrink-0">
+        <div class="flex items-center justify-between px-8 py-5 border-b border-brand-line/50 shrink-0">
           <NuxtLink to="/" @click="isMobileMenuOpen = false" class="flex items-center gap-2.5 no-underline text-brand-green-700">
             <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <polygon points="0,20 38,42 38,82 0,60" fill="#1F4D2C"/>
               <polygon points="62,42 100,20 100,60 62,82" fill="#1F4D2C" opacity="0.55"/>
             </svg>
-            <span class="font-sans font-bold text-[19px] tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
+            <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
           </NuxtLink>
 
           <button
@@ -116,7 +116,7 @@ watch(isMobileMenuOpen, (isOpen) => {
               <NuxtLink
                 :to="link.href"
                 @click="isMobileMenuOpen = false"
-                class="block text-brand-ink text-[40px] leading-[1.1] font-serif font-medium hover:text-brand-green-700 transition-colors duration-200 no-underline animate-slide-up-fade"
+                class="block text-brand-ink text-10 leading-[1.1] font-serif font-medium hover:text-brand-green-700 transition-colors duration-200 no-underline animate-slide-up-fade"
                 :style="{ animationDelay: `${index * 75 + 100}ms` }"
               >
                 {{ link.label }}
@@ -129,14 +129,14 @@ watch(isMobileMenuOpen, (isOpen) => {
         <div class="px-8 pb-12 pt-8 flex flex-col gap-4 shrink-0 animate-slide-up-fade" :style="{ animationDelay: `${links.length * 75 + 100}ms` }">
           <button
             @click="() => { isMobileMenuOpen = false; emit('openModal') }"
-            class="flex items-center justify-center w-full px-6 py-[18px] rounded-full bg-brand-green-700 text-brand-cream text-[17px] font-medium hover:bg-brand-green-900 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm"
+            class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-brand-green-700 text-brand-cream text-lg font-medium hover:bg-brand-green-900 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm"
           >
             Find a lawyer
           </button>
           <NuxtLink
             to="/login"
             @click="isMobileMenuOpen = false"
-            class="flex items-center justify-center w-full px-6 py-[18px] rounded-full text-brand-ink text-[17px] font-medium border border-brand-line hover:bg-white transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
+            class="flex items-center justify-center w-full px-6 py-5 rounded-full text-brand-ink text-lg font-medium border border-brand-line hover:bg-white transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
           >
             Sign in
           </NuxtLink>

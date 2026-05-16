@@ -2,7 +2,7 @@
   <div class="space-y-8 pb-20">
     <!-- Heading -->
     <div>
-      <h1 class="mb-2 font-bold text-[28px] text-gray-900 tracking-tight">
+      <h1 class="mb-2 font-bold text-7 text-gray-900 tracking-tight">
         What do you need help with?
       </h1>
       <p class="text-gray-500 text-sm leading-relaxed font-medium">
@@ -25,11 +25,11 @@
     <!-- Counter + progress -->
     <ClientOnly>
       <div class="flex justify-between items-center mb-1.5">
-        <span class="font-bold text-gray-400 text-[10px] uppercase tracking-wider">
+        <span class="font-bold text-gray-400 text-2.5 uppercase tracking-wider">
           Selected ({{ selectedCount }}/3)
         </span>
         <span
-          class="font-bold text-[10px] uppercase tracking-wider transition-colors"
+          class="font-bold text-2.5 uppercase tracking-wider transition-colors"
           :class="selectedCount === 3 ? 'text-primary' : 'text-gray-400'"
         >
           {{ selectedCount === 3 ? 'Max reached' : `${3 - selectedCount} left` }}
@@ -48,7 +48,7 @@
           v-for="id in storeState.specializationIds"
           :key="id"
           type="button"
-          class="group inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 py-1 pr-1 pl-3 border border-primary/20 rounded-full font-bold text-primary text-[11px] transition-all cursor-pointer shadow-sm active:scale-95"
+          class="group inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 py-1 pr-1 pl-3 border border-primary/20 rounded-full font-bold text-primary text-3 transition-all cursor-pointer shadow-sm active:scale-95"
           @click="toggle(id)"
         >
           {{ nameById(id) }}
@@ -93,8 +93,8 @@
             <PhCheck v-if="isSelected(spec.id)" class="w-3 h-3 text-white" />
           </div>
 
-          <p class="mb-1 font-bold text-[14px] text-gray-900 leading-tight tracking-tight group-hover:text-primary transition-colors">{{ spec.name }}</p>
-          <p class="text-[11px] text-gray-400 line-clamp-2 leading-snug font-medium">{{ spec.description }}</p>
+          <p class="mb-1 font-bold text-3.5 text-gray-900 leading-tight tracking-tight group-hover:text-primary transition-colors">{{ spec.name }}</p>
+          <p class="text-3 text-gray-400 line-clamp-2 leading-snug font-medium">{{ spec.description }}</p>
         </button>
       </div>
     </ClientOnly>
