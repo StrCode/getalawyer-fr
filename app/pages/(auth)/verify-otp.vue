@@ -16,60 +16,70 @@
         Check your email
       </h1>
       <p class="text-muted-foreground text-base">
-        We sent a 6-digit code to <strong class="text-foreground font-medium">{{ email }}</strong>.
+        We sent a 6-digit code to <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
       </p>
     </div>
 
-    <form class="space-y-6" @submit.prevent="handleSubmit">
-      <div class="space-y-3">
-        <Label class="sr-only">Verification code</Label>
-        <InputOTP
-          v-model="formData.otp"
-          :maxlength="6"
-          :disabled="isSubmitting"
-          class="gap-2 justify-center w-full"
-        >
-          <InputOTPGroup>
-            <InputOTPSlot
-              v-for="i in 6"
-              :key="i"
-              :index="i - 1"
-              class="h-12 w-10 text-lg"
-            />
-          </InputOTPGroup>
-        </InputOTP>
-      </div>
+    <form @submit.prevent="form.handleSubmit">
+      <FieldGroup class="space-y-6">
+        <form.Field v-slot="{ field }" name="otp">
+          <Field :data-invalid="isInvalid(field)">
+            <FieldLabel class="sr-only">Verification code</FieldLabel>
+            <InputOTP
+              :model-value="field.state.value"
+              :maxlength="6"
+              :disabled="isSubmitting"
+              class="gap-2 justify-center w-full"
+              @update:model-value="field.handleChange"
+            >
+              <InputOTPGroup>
+                <InputOTPSlot
+                  v-for="i in 6"
+                  :key="i"
+                  :index="i - 1"
+                  class="h-12 w-10 text-lg"
+                  :class="isInvalid(field) ? 'border-destructive' : ''"
+                />
+              </InputOTPGroup>
+            </InputOTP>
+            <p v-if="isInvalid(field)" class="flex items-center justify-center gap-1.5 text-destructive text-sm mt-2">
+              <PhWarningCircle class="w-3.5 h-3.5 shrink-0" />
+              {{ field.state.meta.errors[0] }}
+            </p>
+          </Field>
+        </form.Field>
 
-      <p class="text-muted-foreground text-base text-center leading-relaxed">
-        Code expires in a few minutes.
+        <p class="text-muted-foreground text-base text-center leading-relaxed">
+          Code expires in a few minutes.
+          <Button
+            type="button"
+            variant="link"
+            class="h-auto p-0 font-medium"
+            :disabled="isResending"
+            @click="handleResend"
+          >
+            {{ isResending ? 'Sending…' : 'Resend code' }}
+          </Button>
+        </p>
+
+        <div
+          v-if="apiError"
+          role="alert"
+          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
+        >
+          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
+          <span>{{ apiError }}</span>
+        </div>
+
         <Button
-          type="button"
-          variant="link"
-          class="h-auto p-0 font-medium"
-          :disabled="isResending"
-          @click="handleResend"
+          type="submit"
+          class="w-full h-12"
+          size="lg"
+          :disabled="isSubmitting"
         >
-          {{ isResending ? 'Sending…' : 'Resend code' }}
+          Verify code
         </Button>
-      </p>
-
-      <div
-        v-if="error"
-        role="alert"
-        class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-      >
-        <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-        <span>{{ error }}</span>
-      </div>
-
-      <Button
-        type="submit"
-        class="w-full h-12"
-        size="lg"
-        :disabled="isSubmitting || formData.otp.length !== 6"
-      >
-        Verify code
-      </Button>
+      </FieldGroup>
     </form>
 
     <Separator class="my-6" />
@@ -87,9 +97,12 @@
 
 <script setup lang="ts">
 import { PhWarningCircle } from '@phosphor-icons/vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
-import { Label } from '@/components/ui/label'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
@@ -101,77 +114,89 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 
-const email = computed(() => (route.query.email as string) || '')
+const emailParam = computed(() => (route.query.email as string) || '')
 
-const formData = reactive({ otp: '' })
+const otpSchema = z.object({
+  otp: z
+    .string({ required_error: 'Verification code is required.' })
+    .length(6, 'Please enter the full 6-digit code.'),
+})
+
 const isSubmitting = ref(false)
 const isResending = ref(false)
-const error = ref('')
+const apiError = ref('')
+
+const form = useForm({
+  defaultValues: {
+    otp: '',
+  },
+  validators: {
+    onChange: otpSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    apiError.value = ''
+    isSubmitting.value = true
+
+    try {
+      const result = await authClient.emailOtp.checkVerificationOtp({
+        email: emailParam.value,
+        type: 'forget-password',
+        otp: value.otp,
+      })
+
+      if (result.error) {
+        throw new Error(result.error.message || 'Invalid verification code')
+      }
+
+      router.push({
+        path: '/reset-password',
+        query: {
+          email: emailParam.value,
+          otp: value.otp,
+        },
+      })
+    }
+    catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : ''
+      if (msg.includes('TOO_MANY_ATTEMPTS')) {
+        apiError.value = 'Too many attempts. Please request a new code.'
+      }
+      else if (msg.includes('expired')) {
+        apiError.value = 'This code has expired. Please request a new one.'
+      }
+      else {
+        apiError.value = msg || 'Invalid verification code. Please try again.'
+      }
+    }
+    finally {
+      isSubmitting.value = false
+    }
+  },
+})
+
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+}
 
 onMounted(() => {
-  if (!email.value) {
+  if (!emailParam.value) {
     router.replace('/forgot-password')
   }
 })
 
-const handleSubmit = async () => {
-  error.value = ''
-
-  if (formData.otp.length !== 6) {
-    error.value = 'Please enter the full 6-digit code.'
-    return
-  }
-
-  isSubmitting.value = true
-
-  try {
-    const result = await authClient.emailOtp.checkVerificationOtp({
-      email: email.value,
-      type: 'forget-password',
-      otp: formData.otp,
-    })
-
-    if (result.error) {
-      throw new Error(result.error.message || 'Invalid verification code')
-    }
-
-    router.push({
-      path: '/reset-password',
-      query: {
-        email: email.value,
-        otp: formData.otp,
-      },
-    })
-  }
-  catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : ''
-    if (msg.includes('TOO_MANY_ATTEMPTS')) {
-      error.value = 'Too many attempts. Please request a new code.'
-    }
-    else if (msg.includes('expired')) {
-      error.value = 'This code has expired. Please request a new one.'
-    }
-    else {
-      error.value = msg || 'Invalid verification code. Please try again.'
-    }
-  }
-  finally {
-    isSubmitting.value = false
-  }
-}
-
 const handleResend = async () => {
-  error.value = ''
+  apiError.value = ''
   isResending.value = true
 
   try {
     await authClient.emailOtp.requestPasswordReset({
-      email: email.value,
+      email: emailParam.value,
     })
-    formData.otp = ''
+    form.setFieldValue('otp', '')
   }
   catch (err: unknown) {
-    error.value =
+    apiError.value =
       err instanceof Error ? err.message : 'Failed to resend code. Please try again.'
   }
   finally {

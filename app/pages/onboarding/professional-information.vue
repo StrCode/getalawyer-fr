@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, useId, watch } from 'vue'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
 import { PhCalendarBlank, PhStudent, PhBuildings } from '@phosphor-icons/vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import {
@@ -9,15 +9,14 @@ import {
   normalizeScnDigitsOnly,
   SCN_MAX_DIGITS
 } from '~/lib/scn'
-import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
+import { lawyerProfessionalInfoSchema } from '~/app/schemas/lawyerProfessionalInfo'
 import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '~/components/ui/form'
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldDescription
+} from '@/components/ui/field'
 import {
   InputGroup,
   InputGroupAddon,
@@ -47,13 +46,20 @@ function snapshotFromStore() {
   }
 }
 
-const { validate, values, resetForm, setFieldValue } = useForm({
-  validationSchema: toTypedSchema(lawyerProfessionalInfoSchema),
-  initialValues: snapshotFromStore()
+const form = useForm({
+  defaultValues: snapshotFromStore(),
+  validators: {
+    onChange: lawyerProfessionalInfoSchema
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    Object.assign(store.professionalInfo, value)
+  }
 })
 
+// Sync form values back to store
 watch(
-  values,
+  () => form.state.values,
   (v) => {
     Object.assign(store.professionalInfo, v)
   },
@@ -61,14 +67,18 @@ watch(
 )
 
 onMounted(() => {
-  resetForm({ values: snapshotFromStore() })
+  // Sync store back to form if needed (initial load)
+  form.setFieldValue('barNumber', store.professionalInfo.barNumber)
+  form.setFieldValue('yearOfCall', store.professionalInfo.yearOfCall)
+  form.setFieldValue('university', store.professionalInfo.university)
+  form.setFieldValue('llbYear', store.professionalInfo.llbYear)
+  form.setFieldValue('lawSchool', store.professionalInfo.lawSchool)
+
   registerValidate?.(async () => {
-    const { valid } = await validate()
-    if (!valid) {
-      store.validationError = null
+    await form.validateAllFields('submit')
+    if (form.state.fieldMeta && Object.values(form.state.fieldMeta).some(m => m.errors.length > 0)) {
       return false
     }
-    store.validationError = null
     return true
   })
 })
@@ -81,7 +91,7 @@ const currentYear = new Date().getFullYear()
 const yearMin = 1970
 const formId = useId()
 
-const barNumberStr = computed(() => String(values.barNumber ?? ''))
+const barNumberStr = computed(() => String(form.state.values.barNumber ?? ''))
 
 const scnCounterClass = computed(() => {
   const n = barNumberStr.value.length
@@ -90,8 +100,12 @@ const scnCounterClass = computed(() => {
   return 'text-amber-700'
 })
 
-function onScnModelUpdate(v: unknown) {
-  setFieldValue('barNumber', normalizeScnDigitsOnly(String(v ?? '')))
+function onScnModelUpdate(field: any, v: unknown) {
+  field.handleChange(normalizeScnDigitsOnly(String(v ?? '')))
+}
+
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
 }
 </script>
 
@@ -111,48 +125,49 @@ function onScnModelUpdate(v: unknown) {
           Bar admission
         </p>
 
-        <FormField v-slot="{ componentField }" name="barNumber">
-          <FormItem
+        <form.Field v-slot="{ field }" name="barNumber">
+          <Field
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
+            :data-invalid="isInvalid(field)"
           >
-            <FormLabel
+            <FieldLabel
               class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              :for="field.name"
             >
               Supreme Court enrolment number (SCN) <span class="text-primary">*</span>
-            </FormLabel>
+            </FieldLabel>
             <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
-              <FormControl>
-                <InputGroup
-                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-                >
-                  <InputGroupAddon>
-                    <InputGroupText class="font-mono text-sm font-semibold text-foreground tabular-nums">
-                      SCN
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    :id="`${formId}-bar`"
-                    :name="componentField.name"
-                    :model-value="values.barNumber"
-                    placeholder="1234"
-                    autocomplete="off"
-                    inputmode="numeric"
-                    :maxlength="SCN_MAX_DIGITS"
-                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-                    @blur="componentField.onBlur"
-                    @update:model-value="onScnModelUpdate"
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupText
-                      class="text-2.5 font-bold uppercase tracking-widest tabular-nums"
-                      :class="scnCounterClass"
-                    >
-                      {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
-                    </InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </FormControl>
-              <FormDescription
+              <InputGroup
+                class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+              >
+                <InputGroupAddon>
+                  <InputGroupText class="font-mono text-sm font-semibold text-foreground tabular-nums">
+                    SCN
+                  </InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="1234"
+                  autocomplete="off"
+                  inputmode="numeric"
+                  :maxlength="SCN_MAX_DIGITS"
+                  class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => onScnModelUpdate(field, v)"
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText
+                    class="text-2.5 font-bold uppercase tracking-widest tabular-nums"
+                    :class="scnCounterClass"
+                  >
+                    {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
+                  </InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription
                 class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
               >
                 Your NBA Supreme Court number — also called a Supreme Court Enrolment Number — is issued when you are enrolled at the Supreme Court of Nigeria. Type
@@ -161,54 +176,58 @@ function onScnModelUpdate(v: unknown) {
                 <span class="font-mono font-semibold text-foreground/90">SCN1234</span>
                 → enter
                 <span class="font-mono font-semibold text-foreground/90">1234</span>.
-              </FormDescription>
-              <FormMessage />
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </div>
-          </FormItem>
-        </FormField>
+          </Field>
+        </form.Field>
 
-        <FormField v-slot="{ componentField }" name="yearOfCall">
-          <FormItem
+        <form.Field v-slot="{ field }" name="yearOfCall">
+          <Field
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
+            :data-invalid="isInvalid(field)"
           >
-            <FormLabel
+            <FieldLabel
               class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              :for="field.name"
             >
               Year called to the Nigerian Bar <span class="text-primary">*</span>
-            </FormLabel>
+            </FieldLabel>
             <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
-              <FormControl>
-                <InputGroup
-                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-                >
-                  <InputGroupAddon>
-                    <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    :id="`${formId}-call`"
-                    type="number"
-                    :min="yearMin"
-                    :max="currentYear"
-                    placeholder="Year"
-                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-                    v-bind="componentField"
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
-                      {{ yearMin }}–{{ currentYear }}
-                    </InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </FormControl>
-              <FormDescription
+              <InputGroup
+                class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+              >
+                <InputGroupAddon>
+                  <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  :id="field.name"
+                  :name="field.name"
+                  type="number"
+                  :min="yearMin"
+                  :max="currentYear"
+                  :model-value="field.state.value"
+                  placeholder="Year"
+                  class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
+                    {{ yearMin }}–{{ currentYear }}
+                  </InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription
                 class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
               >
                 Calendar year you were admitted to the bar in Nigeria (after completing the Nigerian Law School Bar Part II programme).
-              </FormDescription>
-              <FormMessage />
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </div>
-          </FormItem>
-        </FormField>
+          </Field>
+        </form.Field>
       </div>
 
       <!-- University -->
@@ -217,84 +236,92 @@ function onScnModelUpdate(v: unknown) {
           University education
         </p>
 
-        <FormField v-slot="{ componentField }" name="university">
-          <FormItem
+        <form.Field v-slot="{ field }" name="university">
+          <Field
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
+            :data-invalid="isInvalid(field)"
           >
-            <FormLabel
+            <FieldLabel
               class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              :for="field.name"
             >
               University (LLB) <span class="text-primary">*</span>
-            </FormLabel>
+            </FieldLabel>
             <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
-              <FormControl>
-                <InputGroup
-                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-                >
-                  <InputGroupAddon>
-                    <PhStudent class="size-5 text-muted-foreground" weight="duotone" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    :id="`${formId}-uni`"
-                    placeholder="e.g. University of Lagos"
-                    autocomplete="organization"
-                    class="h-12 min-h-12 text-base md:text-sm"
-                    v-bind="componentField"
-                  />
-                </InputGroup>
-              </FormControl>
-              <FormDescription
+              <InputGroup
+                class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+              >
+                <InputGroupAddon>
+                  <PhStudent class="size-5 text-muted-foreground" weight="duotone" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="e.g. University of Lagos"
+                  autocomplete="organization"
+                  class="h-12 min-h-12 text-base md:text-sm"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+              </InputGroup>
+              <FieldDescription
                 class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
               >
                 The institution where you completed your Bachelor of Laws (LLB) degree.
-              </FormDescription>
-              <FormMessage />
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </div>
-          </FormItem>
-        </FormField>
+          </Field>
+        </form.Field>
 
-        <FormField v-slot="{ componentField }" name="llbYear">
-          <FormItem
+        <form.Field v-slot="{ field }" name="llbYear">
+          <Field
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
+            :data-invalid="isInvalid(field)"
           >
-            <FormLabel
+            <FieldLabel
               class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              :for="field.name"
             >
               Year of LLB graduation <span class="text-primary">*</span>
-            </FormLabel>
+            </FieldLabel>
             <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
-              <FormControl>
-                <InputGroup
-                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-                >
-                  <InputGroupAddon>
-                    <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    :id="`${formId}-llb`"
-                    type="number"
-                    :min="yearMin"
-                    :max="currentYear"
-                    placeholder="Year"
-                    class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-                    v-bind="componentField"
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
-                      {{ yearMin }}–{{ currentYear }}
-                    </InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </FormControl>
-              <FormDescription
+              <InputGroup
+                class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+              >
+                <InputGroupAddon>
+                  <PhCalendarBlank class="size-5 text-muted-foreground" weight="duotone" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  :id="field.name"
+                  :name="field.name"
+                  type="number"
+                  :min="yearMin"
+                  :max="currentYear"
+                  :model-value="field.state.value"
+                  placeholder="Year"
+                  class="h-12 min-h-12 text-base tabular-nums md:text-sm"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
+                    {{ yearMin }}–{{ currentYear }}
+                  </InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription
                 class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
               >
                 Year you finished your LLB. It must not be after your year of call to the bar.
-              </FormDescription>
-              <FormMessage />
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </div>
-          </FormItem>
-        </FormField>
+          </Field>
+        </form.Field>
       </div>
 
       <!-- Law school -->
@@ -303,41 +330,45 @@ function onScnModelUpdate(v: unknown) {
           Nigerian Law School
         </p>
 
-        <FormField v-slot="{ componentField }" name="lawSchool">
-          <FormItem
+        <form.Field v-slot="{ field }" name="lawSchool">
+          <Field
             class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0"
+            :data-invalid="isInvalid(field)"
           >
-            <FormLabel
+            <FieldLabel
               class="text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start"
+              :for="field.name"
             >
               NLS campus <span class="text-primary">*</span>
-            </FormLabel>
+            </FieldLabel>
             <div class="min-w-0 w-full max-w-md flex-1 space-y-2">
-              <FormControl>
-                <InputGroup
-                  class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-                >
-                  <InputGroupAddon>
-                    <PhBuildings class="size-5 text-muted-foreground" weight="duotone" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    :id="`${formId}-ls`"
-                    placeholder="e.g. Lagos Campus"
-                    autocomplete="off"
-                    class="h-12 min-h-12 text-base md:text-sm"
-                    v-bind="componentField"
-                  />
-                </InputGroup>
-              </FormControl>
-              <FormDescription
+              <InputGroup
+                class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
+              >
+                <InputGroupAddon>
+                  <PhBuildings class="size-5 text-muted-foreground" weight="duotone" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="e.g. Lagos Campus"
+                  autocomplete="off"
+                  class="h-12 min-h-12 text-base md:text-sm"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+              </InputGroup>
+              <FieldDescription
                 class="px-0.5 text-xs font-medium leading-relaxed text-muted-foreground"
               >
                 Nigerian Law School campus where you attended the Bar Part II programme (often named after the city or region).
-              </FormDescription>
-              <FormMessage />
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </div>
-          </FormItem>
-        </FormField>
+          </Field>
+        </form.Field>
       </div>
     </div>
   </div>

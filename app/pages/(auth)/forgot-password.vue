@@ -29,7 +29,7 @@
       <div>
         <p class="mb-0.5 font-medium text-foreground text-base">Check your email</p>
         <p class="text-muted-foreground text-base leading-relaxed">
-          We&apos;ve sent a verification code to <strong class="text-foreground">{{ formData.email }}</strong>.
+          We&apos;ve sent a verification code to <strong class="text-foreground">{{ submittedEmail }}</strong>.
           It may take a few minutes to arrive.
         </p>
       </div>
@@ -41,32 +41,41 @@
       </Button>
     </div>
 
-    <form v-else class="space-y-5" @submit.prevent="handleSubmit">
-      <div class="space-y-1.5">
-        <Label for="forgot-email">Email address</Label>
-        <Input
-          id="forgot-email"
-          v-model="formData.email"
-          type="email"
-          placeholder="alex@example.com"
-          autocomplete="email"
-          class="h-12"
-          :disabled="isSubmitting"
-        />
-      </div>
+    <form v-else @submit.prevent="form.handleSubmit">
+      <FieldGroup class="space-y-5">
+        <form.Field v-slot="{ field }" name="email">
+          <Field :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name">Email address</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              type="email"
+              placeholder="alex@example.com"
+              autocomplete="email"
+              class="h-12"
+              :aria-invalid="isInvalid(field)"
+              :disabled="isSubmitting"
+              @blur="field.handleBlur"
+              @update:model-value="field.handleChange"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
 
-      <div
-        v-if="error"
-        role="alert"
-        class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-      >
-        <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-        <span>{{ error }}</span>
-      </div>
+        <div
+          v-if="apiError"
+          role="alert"
+          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
+        >
+          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
+          <span>{{ apiError }}</span>
+        </div>
 
-      <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-        Send reset code
-      </Button>
+        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
+          Send reset code
+        </Button>
+      </FieldGroup>
     </form>
 
     <Separator class="my-6" />
@@ -81,9 +90,12 @@
 
 <script setup lang="ts">
 import { PhCheckCircle, PhWarningCircle } from '@phosphor-icons/vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
@@ -92,40 +104,57 @@ definePageMeta({
   middleware: ['guest'],
 })
 
-const formData = reactive({ email: '' })
+const forgotSchema = z.object({
+  email: z
+    .string({ required_error: 'Email address is required.' })
+    .min(1, 'Email address is required.')
+    .email('Please enter a valid email address.'),
+})
+
 const isSubmitting = ref(false)
 const submitted = ref(false)
-const error = ref('')
+const submittedEmail = ref('')
+const apiError = ref('')
 
 const router = useRouter()
 
-const handleSubmit = async () => {
-  error.value = ''
+const form = useForm({
+  defaultValues: {
+    email: '',
+  },
+  validators: {
+    onChange: forgotSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    apiError.value = ''
+    isSubmitting.value = true
 
-  if (!formData.email) {
-    error.value = 'Please enter your email address.'
-    return
-  }
+    try {
+      await authClient.emailOtp.requestPasswordReset({
+        email: value.email,
+      })
+      submittedEmail.value = value.email
+      submitted.value = true
+    }
+    catch (err: unknown) {
+      apiError.value =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.'
+    }
+    finally {
+      isSubmitting.value = false
+    }
+  },
+})
 
-  isSubmitting.value = true
-
-  try {
-    await authClient.emailOtp.requestPasswordReset({
-      email: formData.email,
-    })
-    submitted.value = true
-  } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : 'Something went wrong. Please try again.'
-  } finally {
-    isSubmitting.value = false
-  }
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
 }
 
 const goToVerifyOTP = () => {
   router.push({
     path: '/verify-otp',
-    query: { email: formData.email, type: 'password-reset' },
+    query: { email: submittedEmail.value, type: 'password-reset' },
   })
 }
 </script>

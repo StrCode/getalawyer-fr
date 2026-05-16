@@ -1,385 +1,293 @@
 <template>
-  <!-- ─── STEP 1: Role Selection — full-screen centered ─────────────────── -->
-  <Transition
-    enter-active-class="transition-all duration-300 ease-out"
-    enter-from-class="opacity-0 scale-[0.98]"
-    enter-to-class="opacity-100 scale-100"
-    leave-active-class="transition-all duration-200 ease-in"
-    leave-from-class="opacity-100 scale-100"
-    leave-to-class="opacity-0 scale-[0.98]"
-    mode="out-in"
-  >
-    <!-- ── ROLE SELECTION SCREEN ── -->
-    <div
-      v-if="step === 'role'"
-      key="role"
-      class="min-h-dvh w-full bg-brand-cream flex flex-col"
-    >
-      <!-- Top bar -->
-      <header class="flex items-center justify-between px-6 sm:px-10 py-5 shrink-0">
-        <NuxtLink to="/" class="inline-flex items-center gap-2.5 no-underline text-brand-green-700">
-          <svg class="w-6 h-6 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,20 38,42 38,82 0,60" fill="#1F4D2C"/>
-            <polygon points="62,42 100,20 100,60 62,82" fill="#1F4D2C" opacity="0.55"/>
-          </svg>
-          <span class="font-sans font-bold text-lg tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
-        </NuxtLink>
-        <p class="text-muted-foreground text-base">
-          Already have an account?
-          <NuxtLink to="/login" class="font-medium text-brand-green-700 underline-offset-4 hover:underline ml-1">
-            Sign in
-          </NuxtLink>
-        </p>
-      </header>
+  <div class="min-h-dvh w-full bg-brand-cream overflow-x-hidden relative flex flex-col font-sans">
+    <!-- Sophisticated Background Elements (Matching Landing Style) -->
+    <div class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-brand-green-100/60 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-green-100/40 rounded-full blur-[120px] pointer-events-none"></div>
+    
+    <!-- Header: Logo and Sign In -->
+    <header class="w-full px-6 py-6 sm:px-10 sm:py-8 flex items-center justify-between relative z-20 shrink-0">
+      <NuxtLink to="/" class="inline-flex items-center gap-2.5 group">
+        <svg class="w-8 h-8 text-primary transition-transform group-hover:scale-105" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="0,20 38,42 38,82 0,60" fill="currentColor"/>
+          <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55"/>
+        </svg>
+        <span class="font-sans font-bold text-2xl tracking-tight lowercase text-brand-green-900">getalawyer</span>
+      </NuxtLink>
 
-      <!-- Main content -->
-      <main class="flex-1 flex flex-col items-center justify-center px-6 py-12">
-        <div class="w-full max-w-2xl">
-          <!-- Heading -->
-          <div class="text-center mb-12">
-            <h1 class="font-heading font-semibold text-4xl sm:text-5xl text-foreground tracking-tight mb-3">
-              How are you joining?
-            </h1>
-            <p class="text-muted-foreground text-lg">
-              Choose your account type to get started.
-            </p>
-          </div>
-
-          <!-- Role cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <!-- Client card -->
-            <button
-              type="button"
-              :class="[
-                'group relative w-full text-left rounded-2xl border-2 p-7 transition-all duration-200 outline-none cursor-pointer',
-                role === 'client'
-                  ? 'border-brand-green-700 bg-brand-green-700 shadow-lg shadow-brand-green-700/20'
-                  : 'border-border bg-background hover:border-brand-green-300 hover:shadow-md'
-              ]"
-              @click="selectRole('client')"
-            >
-              <!-- Icon -->
-              <div
-                :class="[
-                  'inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-colors duration-200',
-                  role === 'client'
-                    ? 'bg-white/20'
-                    : 'bg-brand-green-100 group-hover:bg-brand-green-100'
-                ]"
-              >
-                <PhUser
-                  :class="[
-                    'w-7 h-7 transition-colors',
-                    role === 'client' ? 'text-white' : 'text-brand-green-700'
-                  ]"
-                  weight="duotone"
-                />
-              </div>
-
-              <!-- Text -->
-              <h2
-                :class="[
-                  'font-heading font-semibold text-2xl mb-2 transition-colors',
-                  role === 'client' ? 'text-white' : 'text-foreground'
-                ]"
-              >
-                I'm a Client
-              </h2>
-              <p
-                :class="[
-                  'text-base leading-relaxed transition-colors',
-                  role === 'client' ? 'text-white/75' : 'text-muted-foreground'
-                ]"
-              >
-                Find and connect with verified lawyers for any legal need.
-              </p>
-
-              <!-- Bullet points -->
-              <ul class="mt-5 space-y-2">
-                <li
-                  v-for="point in clientPoints"
-                  :key="point"
-                  :class="[
-                    'flex items-center gap-2.5 text-sm',
-                    role === 'client' ? 'text-white/80' : 'text-muted-foreground'
-                  ]"
-                >
-                  <PhCheckCircle
-                    :class="[
-                      'w-4 h-4 shrink-0',
-                      role === 'client' ? 'text-white/70' : 'text-brand-green-500'
-                    ]"
-                    weight="fill"
-                  />
-                  {{ point }}
-                </li>
-              </ul>
-
-              <!-- Selected indicator -->
-              <div
-                v-if="role === 'client'"
-                class="absolute top-5 right-5 w-6 h-6 rounded-full bg-white flex items-center justify-center"
-              >
-                <PhCheck class="w-3.5 h-3.5 text-brand-green-700" weight="bold" />
-              </div>
-            </button>
-
-            <!-- Lawyer card -->
-            <button
-              type="button"
-              :class="[
-                'group relative w-full text-left rounded-2xl border-2 p-7 transition-all duration-200 outline-none cursor-pointer',
-                role === 'lawyer'
-                  ? 'border-brand-green-700 bg-brand-green-700 shadow-lg shadow-brand-green-700/20'
-                  : 'border-border bg-background hover:border-brand-green-300 hover:shadow-md'
-              ]"
-              @click="selectRole('lawyer')"
-            >
-              <!-- Icon -->
-              <div
-                :class="[
-                  'inline-flex items-center justify-center w-14 h-14 rounded-xl mb-6 transition-colors duration-200',
-                  role === 'lawyer'
-                    ? 'bg-white/20'
-                    : 'bg-brand-green-100 group-hover:bg-brand-green-100'
-                ]"
-              >
-                <PhBriefcase
-                  :class="[
-                    'w-7 h-7 transition-colors',
-                    role === 'lawyer' ? 'text-white' : 'text-brand-green-700'
-                  ]"
-                  weight="duotone"
-                />
-              </div>
-
-              <!-- Text -->
-              <h2
-                :class="[
-                  'font-heading font-semibold text-2xl mb-2 transition-colors',
-                  role === 'lawyer' ? 'text-white' : 'text-foreground'
-                ]"
-              >
-                I'm a Lawyer
-              </h2>
-              <p
-                :class="[
-                  'text-base leading-relaxed transition-colors',
-                  role === 'lawyer' ? 'text-white/75' : 'text-muted-foreground'
-                ]"
-              >
-                Join our platform and grow your legal practice with new clients.
-              </p>
-
-              <!-- Bullet points -->
-              <ul class="mt-5 space-y-2">
-                <li
-                  v-for="point in lawyerPoints"
-                  :key="point"
-                  :class="[
-                    'flex items-center gap-2.5 text-sm',
-                    role === 'lawyer' ? 'text-white/80' : 'text-muted-foreground'
-                  ]"
-                >
-                  <PhCheckCircle
-                    :class="[
-                      'w-4 h-4 shrink-0',
-                      role === 'lawyer' ? 'text-white/70' : 'text-brand-green-500'
-                    ]"
-                    weight="fill"
-                  />
-                  {{ point }}
-                </li>
-              </ul>
-
-              <!-- Selected indicator -->
-              <div
-                v-if="role === 'lawyer'"
-                class="absolute top-5 right-5 w-6 h-6 rounded-full bg-white flex items-center justify-center"
-              >
-                <PhCheck class="w-3.5 h-3.5 text-brand-green-700" weight="bold" />
-              </div>
-            </button>
-          </div>
-
-          <!-- CTA -->
-          <div class="mt-8">
-            <Button
-              type="button"
-              size="lg"
-              class="w-full h-13 text-base"
-              :disabled="!role"
-              @click="step = 'form'"
-            >
-              {{ role ? `Continue as ${role === 'lawyer' ? 'Lawyer' : 'Client'}` : 'Select an account type' }}
-              <PhArrowRight class="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </main>
-
-      <!-- Footer -->
-      <footer class="px-6 sm:px-10 py-5 text-center shrink-0">
-        <p class="text-muted-foreground/60 text-sm">
-          By continuing, you agree to our
-          <NuxtLink to="/terms" class="text-foreground/70 underline underline-offset-4 hover:text-foreground">Terms</NuxtLink>
-          and
-          <NuxtLink to="/privacy" class="text-foreground/70 underline underline-offset-4 hover:text-foreground">Privacy Policy</NuxtLink>.
-        </p>
-      </footer>
-    </div>
-
-    <!-- ── REGISTRATION FORM SCREEN ── -->
-    <AuthPageLayout v-else key="form">
-      <template #illustration>
-        <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
-          {{ role === 'lawyer' ? 'Join a network of top legal professionals.' : 'Get expert legal help in minutes.' }}
-        </h2>
-        <p class="text-brand-cream-warm/80 text-lg">
-          {{ role === 'lawyer'
-            ? 'Grow your practice by connecting with clients who need your expertise.'
-            : 'Thousands of verified lawyers are ready to help you navigate any legal challenge.' }}
-        </p>
-      </template>
-
-      <AuthLogo class="mb-10 lg:hidden" />
-
-      <!-- Header with back + role badge -->
-      <div class="flex items-center gap-3 mb-8">
-        <button
-          type="button"
-          class="inline-flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-background hover:bg-accent transition-colors shrink-0"
-          aria-label="Back to role selection"
-          @click="step = 'role'"
-        >
-          <PhArrowLeft class="w-4 h-4 text-foreground" />
-        </button>
-        <div class="inline-flex items-center gap-2 bg-brand-green-100 px-3 py-1.5 rounded-full">
-          <PhBriefcase v-if="role === 'lawyer'" class="w-3.5 h-3.5 text-brand-green-700" />
-          <PhUser v-else class="w-3.5 h-3.5 text-brand-green-700" />
-          <span class="font-medium text-brand-green-700 text-sm capitalize">{{ role }}</span>
-        </div>
-      </div>
-
-      <div class="mb-8">
-        <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
-          {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
-        </h1>
-        <p class="text-muted-foreground text-base">
-          {{ role === 'lawyer' ? 'Fill in your details to get verified.' : 'Join in seconds.' }}
-        </p>
-      </div>
-
-      <form class="space-y-5" @submit.prevent="handleSubmit">
-        <div class="gap-3 grid grid-cols-2">
-          <div class="space-y-1.5">
-            <Label for="reg-first">First name</Label>
-            <Input
-              id="reg-first"
-              v-model="formData.firstName"
-              placeholder="Alex"
-              autocomplete="given-name"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
-          <div class="space-y-1.5">
-            <Label for="reg-last">Last name</Label>
-            <Input
-              id="reg-last"
-              v-model="formData.lastName"
-              placeholder="Smith"
-              autocomplete="family-name"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
-        </div>
-
-        <div class="space-y-1.5">
-          <Label for="reg-email">Email address</Label>
-          <Input
-            id="reg-email"
-            v-model="formData.email"
-            type="email"
-            placeholder="alex@example.com"
-            autocomplete="email"
-            class="h-12"
-            :disabled="isSubmitting"
-          />
-        </div>
-
-        <div class="gap-3 grid grid-cols-1 sm:grid-cols-2">
-          <div class="space-y-1.5">
-            <Label for="reg-password">Password</Label>
-            <Input
-              id="reg-password"
-              v-model="formData.password"
-              type="password"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
-          <div class="space-y-1.5">
-            <Label for="reg-confirm">Confirm password</Label>
-            <Input
-              id="reg-confirm"
-              v-model="formData.confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
-        </div>
-
-        <div
-          v-if="error"
-          role="alert"
-          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-        >
-          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-          <span>{{ error }}</span>
-        </div>
-
-        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Creating account…' : (role === 'lawyer' ? 'Apply as Lawyer' : 'Create account') }}
-        </Button>
-      </form>
-
-      <p class="mt-6 text-muted-foreground text-base text-center">
-        Already have an account?
-        <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
+      <div class="flex items-center gap-2">
+        <span class="hidden sm:inline-block text-sm text-brand-ink-soft font-medium">Already have an account?</span>
+        <NuxtLink to="/login" class="text-sm font-bold text-primary hover:bg-white/60 px-5 py-2.5 rounded-full transition-all border border-brand-line/50 bg-white/40 backdrop-blur-sm shadow-sm">
           Sign in
         </NuxtLink>
-      </p>
+      </div>
+    </header>
 
-      <p class="mt-5 text-muted-foreground/70 text-sm text-center leading-relaxed">
-        By continuing, you agree to our
-        <NuxtLink to="/terms" class="text-foreground/70 underline underline-offset-4 hover:text-foreground">Terms of Service</NuxtLink>
-        and
-        <NuxtLink to="/privacy" class="text-foreground/70 underline underline-offset-4 hover:text-foreground">Privacy Policy</NuxtLink>.
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col items-center justify-center relative z-10 px-6 py-12 lg:py-20">
+      <div class="w-full max-w-2xl">
+        <Transition name="slide-fade" mode="out-in">
+          
+          <!-- STEP 1: Full-screen Role Selection -->
+          <div v-if="step === 'role'" key="role" class="w-full">
+            <div class="text-center mb-12">
+              <p class="text-xs font-bold text-brand-green-700 tracking-[0.2em] uppercase mb-4">Account Type</p>
+              <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-normal text-brand-green-900 leading-tight mb-4">
+                How would you like to use <br class="hidden sm:block" /> GetaLawyer?
+              </h1>
+              <p class="text-lg text-brand-ink-soft max-w-lg mx-auto leading-relaxed font-medium">
+                Select the path that matches your needs today.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+              <Card
+                role="button"
+                tabindex="0"
+                :class="
+                  cn(
+                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1',
+                    role === 'client'
+                      ? 'border-primary/40 ring-1 ring-primary/20 shadow-xl shadow-primary/5 bg-white/70'
+                      : 'hover:border-primary/30',
+                  )
+                "
+                @click="role = 'client'"
+                @keydown.enter.prevent="role = 'client'"
+              >
+                <div class="p-8">
+                  <div class="w-16 h-16 rounded-2xl bg-brand-green-100 flex items-center justify-center mb-8 transition-all group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+                    <PhUser :class="cn('w-8 h-8 transition-colors', role === 'client' ? 'text-primary' : 'text-brand-green-700')" weight="duotone" />
+                  </div>
+                  <h3 class="text-2xl font-heading text-brand-green-900 mb-2">I am a Client</h3>
+                  <p class="text-brand-ink-soft leading-relaxed font-medium text-sm">
+                    I need to find and book a verified Nigerian lawyer for legal assistance.
+                  </p>
+                  <div 
+                    class="absolute top-6 right-6 w-6 h-6 rounded-full border-2 border-brand-line flex items-center justify-center transition-all duration-500"
+                    :class="role === 'client' ? 'bg-primary border-primary scale-110 shadow-lg shadow-primary/30' : 'bg-white/50 scale-100'"
+                  >
+                    <PhCheck v-if="role === 'client'" class="w-3.5 h-3.5 text-white" weight="bold" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card
+                role="button"
+                tabindex="0"
+                :class="
+                  cn(
+                    'group relative overflow-hidden border border-brand-line/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 bg-white/40 backdrop-blur-md rounded-[2rem] p-1',
+                    role === 'lawyer'
+                      ? 'border-primary/40 ring-1 ring-primary/20 shadow-xl shadow-primary/5 bg-white/70'
+                      : 'hover:border-primary/30',
+                  )
+                "
+                @click="role = 'lawyer'"
+                @keydown.enter.prevent="role = 'lawyer'"
+              >
+                <div class="p-8">
+                  <div class="w-16 h-16 rounded-2xl bg-brand-green-100 flex items-center justify-center mb-8 transition-all group-hover:scale-110 group-hover:-rotate-3 shadow-inner">
+                    <PhBriefcase :class="cn('w-8 h-8 transition-colors', role === 'lawyer' ? 'text-primary' : 'text-brand-green-700')" weight="duotone" />
+                  </div>
+                  <h3 class="text-2xl font-heading text-brand-green-900 mb-2">I am a Lawyer</h3>
+                  <p class="text-brand-ink-soft leading-relaxed font-medium text-sm">
+                    I am a qualified professional looking to list my services and grow my client base.
+                  </p>
+                  <div 
+                    class="absolute top-6 right-6 w-6 h-6 rounded-full border-2 border-brand-line flex items-center justify-center transition-all duration-500"
+                    :class="role === 'lawyer' ? 'bg-primary border-primary scale-110 shadow-lg shadow-primary/30' : 'bg-white/50 scale-100'"
+                  >
+                    <PhCheck v-if="role === 'lawyer'" class="w-3.5 h-3.5 text-white" weight="bold" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <Button
+                class="w-full sm:w-64 h-14 text-lg font-bold shadow-2xl shadow-primary/10 transition-all active:scale-95 rounded-[1.25rem] bg-brand-green-900 hover:bg-brand-green-700"
+                size="lg"
+                :disabled="!role"
+                @click="step = 'form'"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Full-screen Registration Form -->
+          <div v-else key="form" class="w-full max-w-lg mx-auto">
+            <div class="text-center mb-10">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                class="mb-8 text-brand-ink-soft hover:text-brand-green-900 transition-colors inline-flex gap-2 font-bold px-4 py-2 bg-white/40 backdrop-blur-sm border border-brand-line/50 rounded-full"
+                @click="step = 'role'"
+              >
+                <PhArrowLeft class="w-4 h-4" />
+                Change Selection
+              </Button>
+              
+              <p class="text-xs font-bold text-brand-green-700 tracking-[0.2em] uppercase mb-4">Registration</p>
+              <h1 class="font-heading text-4xl sm:text-5xl font-normal text-brand-green-900 mb-3">
+                {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
+              </h1>
+              <p class="text-brand-ink-soft text-lg font-medium">
+                {{ role === 'lawyer' ? 'Join Nigeria\'s most trusted legal network.' : 'Get started with GetaLawyer today.' }}
+              </p>
+            </div>
+
+            <Card class="p-10 border border-brand-line/50 shadow-2xl shadow-primary/5 bg-white/40 backdrop-blur-xl rounded-[3rem] relative overflow-hidden">
+              <!-- Subtle decorative element matching testimonial -->
+              <div class="absolute -top-10 -right-10 w-40 h-40 bg-brand-green-100/50 rounded-full blur-3xl pointer-events-none"></div>
+
+              <form @submit.prevent="form.handleSubmit" class="space-y-6 relative z-10">
+                <div class="grid grid-cols-2 gap-4">
+                  <form.Field v-slot="{ field }" name="firstName">
+                    <Field :data-invalid="isInvalid(field)">
+                      <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">First name</FieldLabel>
+                      <Input
+                        :id="field.name"
+                        :name="field.name"
+                        :model-value="field.state.value"
+                        placeholder="Alex"
+                        class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                        :aria-invalid="isInvalid(field)"
+                        :disabled="isSubmitting"
+                        @blur="field.handleBlur"
+                        @update:model-value="field.handleChange"
+                      />
+                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                    </Field>
+                  </form.Field>
+
+                  <form.Field v-slot="{ field }" name="lastName">
+                    <Field :data-invalid="isInvalid(field)">
+                      <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Last name</FieldLabel>
+                      <Input
+                        :id="field.name"
+                        :name="field.name"
+                        :model-value="field.state.value"
+                        placeholder="Smith"
+                        class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                        :aria-invalid="isInvalid(field)"
+                        :disabled="isSubmitting"
+                        @blur="field.handleBlur"
+                        @update:model-value="field.handleChange"
+                      />
+                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                    </Field>
+                  </form.Field>
+                </div>
+
+                <form.Field v-slot="{ field }" name="email">
+                  <Field :data-invalid="isInvalid(field)">
+                    <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Email address</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      type="email"
+                      placeholder="alex@example.com"
+                      class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                      :aria-invalid="isInvalid(field)"
+                      :disabled="isSubmitting"
+                      @blur="field.handleBlur"
+                      @update:model-value="field.handleChange"
+                    />
+                    <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </form.Field>
+
+                <form.Field v-slot="{ field }" name="password">
+                  <Field :data-invalid="isInvalid(field)">
+                    <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Password</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      type="password"
+                      placeholder="••••••••"
+                      class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                      :aria-invalid="isInvalid(field)"
+                      :disabled="isSubmitting"
+                      @blur="field.handleBlur"
+                      @update:model-value="field.handleChange"
+                    />
+                    <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </form.Field>
+
+                <form.Field v-slot="{ field }" name="confirmPassword">
+                  <Field :data-invalid="isInvalid(field)">
+                    <FieldLabel :for="field.name" class="text-brand-green-900 font-bold text-xs uppercase tracking-wider ml-1">Confirm password</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      type="password"
+                      placeholder="••••••••"
+                      class="h-12 rounded-2xl bg-white/60 border-brand-line/50 focus:bg-white focus:ring-primary/20 transition-all text-brand-green-900 placeholder:text-brand-ink-soft/40"
+                      :aria-invalid="isInvalid(field)"
+                      :disabled="isSubmitting"
+                      @blur="field.handleBlur"
+                      @update:model-value="field.handleChange"
+                    />
+                    <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </form.Field>
+
+                <div v-if="apiError" role="alert" class="flex gap-2 items-start rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-destructive text-sm font-bold">
+                  <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
+                  <span>{{ apiError }}</span>
+                </div>
+
+                <Button type="submit" class="w-full h-14 rounded-2xl shadow-2xl shadow-primary/10 text-lg font-bold bg-brand-green-900 hover:bg-brand-green-700" :disabled="isSubmitting">
+                  <PhCircleNotch v-if="isSubmitting" class="w-5 h-5 animate-spin mr-2" />
+                  <span v-if="isSubmitting">Syncing account...</span>
+                  <span v-else>{{ role === 'lawyer' ? 'Apply as Lawyer' : 'Create account' }}</span>
+                </Button>
+              </form>
+            </Card>
+
+            <p class="mt-8 text-center text-[10px] text-brand-ink-soft leading-relaxed max-w-sm mx-auto uppercase tracking-widest font-bold">
+              By continuing, you agree to our 
+              <NuxtLink to="/terms" class="text-brand-green-900 hover:text-primary underline underline-offset-2 transition-colors">Terms of Use</NuxtLink> 
+              and 
+              <NuxtLink to="/privacy" class="text-brand-green-900 hover:text-primary underline underline-offset-2 transition-colors">Privacy Policy</NuxtLink>.
+            </p>
+          </div>
+        </Transition>
+      </div>
+    </main>
+
+    <!-- Footer for legal links -->
+    <footer class="w-full px-6 py-10 text-center shrink-0 relative z-20 border-t border-brand-line/10 bg-white/20 backdrop-blur-sm">
+      <p class="text-xs text-brand-ink-soft font-bold uppercase tracking-[0.1em]">
+        &copy; {{ new Date().getFullYear() }} GetaLawyer &middot; Verified Nigerian Legal Professionals
       </p>
-    </AuthPageLayout>
-  </Transition>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
 import {
   PhArrowLeft,
-  PhArrowRight,
   PhBriefcase,
-  PhCheck,
-  PhCheckCircle,
   PhUser,
   PhWarningCircle,
+  PhCheck,
+  PhCircleNotch,
 } from '@phosphor-icons/vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { cn } from '@/lib/utils'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
@@ -399,81 +307,105 @@ const role = ref<'client' | 'lawyer' | null>(
 )
 const step = ref<'role' | 'form'>('role')
 
-const clientPoints = [
-  'Browse verified, rated lawyers',
-  'Book consultations instantly',
-  'Secure messaging & documents',
-]
-
-const lawyerPoints = [
-  'Get matched with ideal clients',
-  'Manage cases & billing in one place',
-  'Build your verified reputation',
-]
-
-function selectRole(r: 'client' | 'lawyer') {
-  role.value = r
-}
-
-const formData = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-})
+const registerSchema = z
+  .object({
+    firstName: z
+      .string({ required_error: 'First name is required.' })
+      .min(1, 'First name is required.')
+      .min(2, 'First name must be at least 2 characters.'),
+    lastName: z
+      .string({ required_error: 'Last name is required.' })
+      .min(1, 'Last name is required.')
+      .min(2, 'Last name must be at least 2 characters.'),
+    email: z
+      .string({ required_error: 'Email address is required.' })
+      .min(1, 'Email address is required.')
+      .email('Please enter a valid email address.'),
+    password: z
+      .string({ required_error: 'Password is required.' })
+    .min(1, 'Password is required.')
+    .min(8, 'Password must be at least 8 characters.'),
+    confirmPassword: z
+      .string({ required_error: 'Please confirm your password.' })
+      .min(1, 'Please confirm your password.'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
 
 const isSubmitting = ref(false)
-const error = ref('')
+const apiError = ref('')
 
-const handleSubmit = async () => {
-  error.value = ''
+const form = useForm({
+  defaultValues: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  },
+  validators: {
+    onChange: registerSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    apiError.value = ''
+    isSubmitting.value = true
 
-  if (
-    !formData.firstName
-    || !formData.lastName
-    || !formData.email
-    || !formData.password
-    || !formData.confirmPassword
-  ) {
-    error.value = 'Please fill in all fields.'
-    return
-  }
-  if (formData.password !== formData.confirmPassword) {
-    error.value = 'Passwords do not match.'
-    return
-  }
-  if (formData.password.length < 8) {
-    error.value = 'Password must be at least 8 characters.'
-    return
-  }
+    try {
+      const fullName = `${value.firstName} ${value.lastName}`.trim()
 
-  isSubmitting.value = true
+      const { error: signUpError } = await authClient.signUp.email({
+        name: fullName,
+        email: value.email,
+        password: value.password,
+        userType: role.value || 'client',
+        onboarding_completed: false,
+        callbackURL: '/onboarding',
+      })
 
-  try {
-    const fullName = `${formData.firstName} ${formData.lastName}`.trim()
+      if (signUpError) {
+        apiError.value = signUpError.message || 'Failed to create account. Please try again.'
+        return
+      }
 
-    const { error: signUpError } = await authClient.signUp.email({
-      name: fullName,
-      email: formData.email,
-      password: formData.password,
-      userType: role.value || 'client',
-      onboarding_completed: false,
-      callbackURL: '/onboarding',
-    })
-
-    if (signUpError) {
-      error.value = signUpError.message || 'Failed to create account. Please try again.'
-      return
+      await navigateTo('/onboarding')
     }
+    catch (err: unknown) {
+      apiError.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
+    }
+    finally {
+      isSubmitting.value = false
+    }
+  },
+})
 
-    await navigateTo('/onboarding')
-  }
-  catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
-  }
-  finally {
-    isSubmitting.value = false
-  }
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
 }
+
+// Auto-advance if role is provided in query
+onMounted(() => {
+  if (role.value) {
+    step.value = 'form'
+  }
+})
 </script>
+
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+</style>

@@ -40,54 +40,70 @@
 
     <AuthDivider class="mb-6" />
 
-    <form class="space-y-5" @submit.prevent="handleSubmit">
-      <div class="space-y-1.5">
-        <Label for="login-email">Email address</Label>
-        <Input
-          id="login-email"
-          v-model="formData.email"
-          type="email"
-          placeholder="alex@example.com"
-          autocomplete="email"
-          class="h-12"
-          :disabled="isSubmitting"
-        />
-      </div>
+    <form @submit.prevent="form.handleSubmit">
+      <FieldGroup class="space-y-5">
+        <form.Field v-slot="{ field }" name="email">
+          <Field :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name">Email address</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              type="email"
+              placeholder="alex@example.com"
+              autocomplete="email"
+              class="h-12"
+              :aria-invalid="isInvalid(field)"
+              :disabled="isSubmitting"
+              @blur="field.handleBlur"
+              @update:model-value="field.handleChange"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
 
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between">
-          <Label for="login-password">Password</Label>
-          <NuxtLink
-            to="/forgot-password"
-            class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Forgot password?
-          </NuxtLink>
+        <form.Field v-slot="{ field }" name="password">
+          <Field :data-invalid="isInvalid(field)">
+            <div class="flex items-center justify-between mb-1.5">
+              <FieldLabel :for="field.name">Password</FieldLabel>
+              <NuxtLink
+                to="/forgot-password"
+                class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Forgot password?
+              </NuxtLink>
+            </div>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              class="h-12"
+              :aria-invalid="isInvalid(field)"
+              :disabled="isSubmitting"
+              @blur="field.handleBlur"
+              @update:model-value="field.handleChange"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+
+        <div
+          v-if="apiError"
+          role="alert"
+          class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
+        >
+          <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
+          <span>{{ apiError }}</span>
         </div>
-        <Input
-          id="login-password"
-          v-model="formData.password"
-          type="password"
-          placeholder="••••••••"
-          autocomplete="current-password"
-          class="h-12"
-          :disabled="isSubmitting"
-        />
-      </div>
 
-      <div
-        v-if="error"
-        role="alert"
-        class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
-      >
-        <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-        <span>{{ error }}</span>
-      </div>
-
-      <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
-        <span v-if="isSubmitting">Signing in…</span>
-        <span v-else>Sign in</span>
-      </Button>
+        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
+          <span v-if="isSubmitting">Signing in…</span>
+          <span v-else>Sign in</span>
+        </Button>
+      </FieldGroup>
     </form>
 
     <p class="mt-6 text-muted-foreground text-base leading-relaxed">
@@ -115,9 +131,12 @@
 
 <script setup lang="ts">
 import { PhWarningCircle } from '@phosphor-icons/vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
@@ -135,65 +154,81 @@ function sanitizeRedirect(raw: unknown): string {
 const route = useRoute()
 const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect))
 
-const formData = reactive({
-  email: '',
-  password: '',
+const loginSchema = z.object({
+  email: z
+    .string({ required_error: 'Email address is required.' })
+    .min(1, 'Email address is required.')
+    .email('Please enter a valid email address.'),
+  password: z
+    .string({ required_error: 'Password is required.' })
+    .min(1, 'Password is required.')
+    .min(8, 'Password must be at least 8 characters.'),
 })
 
 const isSubmitting = ref(false)
 const socialProvider = ref<'google' | 'facebook' | null>(null)
-const error = ref('')
+const apiError = ref('')
+
+const form = useForm({
+  defaultValues: {
+    email: '',
+    password: '',
+  },
+  validators: {
+    onChange: loginSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    apiError.value = ''
+    isSubmitting.value = true
+
+    try {
+      const { error: signInError } = await authClient.signIn.email({
+        email: value.email,
+        password: value.password,
+      })
+
+      if (signInError) {
+        apiError.value =
+          signInError.message ||
+          'The email or password is incorrect. Please try again.'
+        return
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100))
+      await navigateTo(redirectAfterLogin.value)
+    }
+    catch (err: unknown) {
+      apiError.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
+    }
+    finally {
+      isSubmitting.value = false
+    }
+  },
+})
+
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+}
 
 const handleSocialLogin = async (provider: 'google' | 'facebook') => {
   socialProvider.value = provider
   isSubmitting.value = true
-  error.value = ''
+  apiError.value = ''
 
   try {
     await authClient.signIn.social({
       provider,
       callbackURL: redirectAfterLogin.value,
     })
-  } catch (err: unknown) {
-    error.value =
+  }
+  catch (err: unknown) {
+    apiError.value =
       err instanceof Error ? err.message : `Failed to sign in with ${provider}.`
-  } finally {
+  }
+  finally {
     isSubmitting.value = false
     socialProvider.value = null
-  }
-}
-
-const handleSubmit = async () => {
-  error.value = ''
-
-  if (!formData.email || !formData.password) {
-    error.value = 'Please fill in all fields.'
-    return
-  }
-
-  isSubmitting.value = true
-
-  try {
-    const { error: signInError } = await authClient.signIn.email({
-      email: formData.email,
-      password: formData.password,
-    })
-
-    if (signInError) {
-      error.value =
-        signInError.message ||
-        'The email or password is incorrect. Please try again.'
-      isSubmitting.value = false
-      return
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    await navigateTo(redirectAfterLogin.value)
-  } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
-  } finally {
-    isSubmitting.value = false
   }
 }
 </script>

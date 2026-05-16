@@ -42,49 +42,65 @@
           This will end all active sessions for your account.
         </p>
 
-        <form class="space-y-4" @submit.prevent="handleSubmit">
-          <div class="space-y-2">
-            <Label for="reset-password">New password</Label>
-            <Input
-              id="reset-password"
-              v-model="formData.password"
-              type="password"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
+        <form @submit.prevent="form.handleSubmit">
+          <FieldGroup class="space-y-4">
+            <form.Field v-slot="{ field }" name="password">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">New password</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  type="password"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                  class="h-12"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
 
-          <div class="space-y-2">
-            <Label for="reset-confirm">Confirm new password</Label>
-            <Input
-              id="reset-confirm"
-              v-model="formData.confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              class="h-12"
-              :disabled="isSubmitting"
-            />
-          </div>
+            <form.Field v-slot="{ field }" name="confirmPassword">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">Confirm new password</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  type="password"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                  class="h-12"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
 
-          <p class="text-muted-foreground text-xs leading-relaxed">
-            Use at least 8 characters. Avoid common words or patterns.
-          </p>
+            <p class="text-muted-foreground text-xs leading-relaxed">
+              Use at least 8 characters. Avoid common words or patterns.
+            </p>
 
-          <div
-            v-if="error"
-            role="alert"
-            class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-base"
-          >
-            <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
-            <span>{{ error }}</span>
-          </div>
+            <div
+              v-if="apiError"
+              role="alert"
+              class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-base"
+            >
+              <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
+              <span>{{ apiError }}</span>
+            </div>
 
-          <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting || !canSubmit">
-            Reset password
-          </Button>
+            <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
+              Reset password
+            </Button>
+          </FieldGroup>
         </form>
 
         <Separator class="my-6" />
@@ -102,9 +118,12 @@
 
 <script setup lang="ts">
 import { PhCheckCircle, PhWarningCircle } from '@phosphor-icons/vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
@@ -116,68 +135,80 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 
-const email = computed(() => (route.query.email as string) || '')
-const otp = computed(() => (route.query.otp as string) || '')
+const emailParam = computed(() => (route.query.email as string) || '')
+const otpParam = computed(() => (route.query.otp as string) || '')
 
-const formData = reactive({
-  password: '',
-  confirmPassword: '',
-})
+const resetSchema = z
+  .object({
+    password: z
+      .string({ required_error: 'New password is required.' })
+      .min(1, 'New password is required.')
+      .min(8, 'Password must be at least 8 characters.')
+      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter.')
+      .regex(/[0-9]/, 'Password must contain at least one number.'),
+    confirmPassword: z
+      .string({ required_error: 'Please confirm your new password.' })
+      .min(1, 'Please confirm your new password.'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  })
 
 const isSubmitting = ref(false)
 const submitted = ref(false)
-const error = ref('')
+const apiError = ref('')
 
-const canSubmit = computed(
-  () => !!(email.value && otp.value && formData.password && formData.confirmPassword),
-)
+const form = useForm({
+  defaultValues: {
+    password: '',
+    confirmPassword: '',
+  },
+  validators: {
+    onChange: resetSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    if (!emailParam.value || !otpParam.value) {
+      apiError.value = 'Invalid reset link. Please request a new one.'
+      return
+    }
+
+    apiError.value = ''
+    isSubmitting.value = true
+
+    try {
+      await authClient.emailOtp.resetPassword({
+        email: emailParam.value,
+        otp: otpParam.value,
+        password: value.password,
+      })
+      submitted.value = true
+    }
+    catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : ''
+      if (msg.includes('Invalid') || msg.includes('expired')) {
+        apiError.value = 'Invalid or expired verification code. Please request a new one.'
+      }
+      else {
+        apiError.value = msg || 'Something went wrong. Please try again.'
+      }
+    }
+    finally {
+      isSubmitting.value = false
+    }
+  },
+})
+
+function isInvalid(field: any) {
+  return field.state.meta.isTouched && field.state.meta.errors.length > 0
+}
 
 onMounted(() => {
-  if (!email.value || !otp.value) {
+  if (!emailParam.value || !otpParam.value) {
     router.replace('/forgot-password')
   }
 })
-
-const handleSubmit = async () => {
-  error.value = ''
-
-  if (!formData.password || !formData.confirmPassword) {
-    error.value = 'Please fill in all fields.'
-    return
-  }
-
-  if (formData.password !== formData.confirmPassword) {
-    error.value = 'Passwords do not match.'
-    return
-  }
-
-  if (formData.password.length < 8) {
-    error.value = 'Password must be at least 8 characters.'
-    return
-  }
-
-  isSubmitting.value = true
-
-  try {
-    await authClient.emailOtp.resetPassword({
-      email: email.value,
-      otp: otp.value,
-      password: formData.password,
-    })
-    submitted.value = true
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : ''
-    if (msg.includes('Invalid') || msg.includes('expired')) {
-      error.value = 'Invalid or expired verification code. Please request a new one.'
-    }
-    else {
-      error.value = msg || 'Something went wrong. Please try again.'
-    }
-  }
-  finally {
-    isSubmitting.value = false
-  }
-}
 </script>
 
 <style scoped>

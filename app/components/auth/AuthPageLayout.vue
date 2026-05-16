@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-dvh w-full overflow-hidden bg-background">
+  <div class="flex min-h-dvh w-full overflow-hidden bg-brand-cream">
     <!-- LEFT PANEL: Rich Green Editorial -->
     <aside
       class="hidden lg:flex flex-col flex-1 min-w-0 justify-between bg-brand-green-900 px-10 py-10 relative overflow-hidden text-brand-cream"
@@ -47,7 +47,7 @@
 
     <!-- RIGHT PANEL: Form Container -->
     <div
-      class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-background border-l border-border"
+      class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-brand-cream border-l border-border"
     >
       <!-- Floating Top Right Link -->
       <div class="absolute top-6 right-6 sm:top-10 sm:right-10 hidden sm:block z-10">
