@@ -36,10 +36,10 @@ const links = [
 
       <!-- CTAs -->
       <div class="flex items-center gap-3">
-        <button
-          @click="emit('openModal')"
-          class="hidden sm:inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full text-brand-ink text-[15px] font-medium border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 bg-transparent cursor-pointer font-sans"
-        >Sign in</button>
+        <NuxtLink
+          to="/login"
+          class="hidden sm:inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full text-brand-ink text-[15px] font-medium border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
+        >Sign in</NuxtLink>
         <button
           @click="emit('openModal')"
           class="inline-flex items-center gap-2 px-[22px] py-[11px] rounded-full bg-brand-green-700 text-brand-cream text-[15px] font-medium hover:bg-brand-green-900 hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans"
