@@ -289,7 +289,7 @@ export default defineComponent({
         </div>
       </div>
 
-      <div class="relative mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-6 sm:flex-row">
+      <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-6 md:px-12">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
         <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
           <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -298,37 +298,40 @@ export default defineComponent({
           </div>
         </div>
 
-        <div class="flex items-center gap-6 order-2 sm:order-1">
+        <Button
+          variant="ghost"
+          class="order-2 h-11 shrink-0 px-3 text-base font-medium text-muted-foreground hover:text-foreground sm:order-1"
+          :disabled="isFirst || isSaving"
+          @click="handleBack"
+        >
+          Back
+        </Button>
+
+        <p class="order-1 text-center text-sm leading-relaxed text-muted-foreground sm:order-2 sm:max-w-md sm:flex-1 sm:px-4">
+          <template v-if="userType === 'client' && isLast">
+            By saving and continuing, you agree to GetaLawyer&apos;s
+          </template>
+          <template v-else>
+            By clicking Continue, you agree to GetaLawyer&apos;s
+          </template>
+          <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
+            Terms of Service
+          </NuxtLink>
+          and
+          <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
+            Privacy Policy
+          </NuxtLink>.
+        </p>
+
+        <div class="order-3 w-full sm:w-auto sm:shrink-0">
           <Button
-            variant="ghost"
-            class="min-h-12 text-base underline underline-offset-4 font-normal"
-            :disabled="isFirst || isSaving"
-            @click="handleBack"
-          >
-            Back
-          </Button>
-          
-          <p class="hidden max-w-[320px] text-xs leading-snug text-muted-foreground lg:block">
-            <template v-if="userType === 'client' && isLast">
-              By saving and continuing, you agree to Getalawyer's
-            </template>
-            <template v-else>
-              By clicking Continue, you agree to Getalawyer's
-            </template>
-            <a href="#" class="text-primary hover:underline">Terms of Use</a> and
-            <a href="#" class="text-primary hover:underline">Privacy Policy</a>.
-          </p>
-        </div>
-        
-        <div class="flex items-center gap-4 order-1 sm:order-2 w-full sm:w-auto">
-          <Button
-            class="min-h-10 w-full px-8 font-medium sm:w-auto"
+            class="inline-flex h-11 w-full items-center justify-center px-8 text-base font-semibold sm:w-auto"
             :disabled="isSaving"
             @click="handleNext"
           >
             <PhCircleNotch
               v-if="isSaving && !isExiting"
-              class="mr-2 size-5 shrink-0 animate-spin"
+              class="mr-2 h-4 w-4 shrink-0 animate-spin"
             />
             <span>
               {{

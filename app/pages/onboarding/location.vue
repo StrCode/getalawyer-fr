@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-10 pb-20">
+  <div class="mx-auto w-full max-w-2xl space-y-10 pb-20">
     <OnboardingClientStepHeader
       :step="1"
       :total="2"
@@ -8,19 +8,9 @@
       description="We'll use your state to surface lawyers who practice in your region and understand local rules."
     />
 
-    <ClientOnly>
-      <div
-        v-if="storeState.country && storeState.state"
-        class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary"
-      >
-        <PhMapPin class="size-4 shrink-0" weight="fill" />
-        {{ selectedStateName || selectedCountryName }}
-      </div>
-    </ClientOnly>
-
     <div v-if="isLoading" class="space-y-6">
       <Skeleton class="h-16 w-full rounded-xl" />
-      <Skeleton class="h-11 w-full max-w-xl rounded-lg" />
+      <Skeleton class="h-16 w-full rounded-xl" />
     </div>
 
     <div
@@ -60,23 +50,12 @@
       </section>
 
       <section class="space-y-3">
-        <div class="flex items-end justify-between gap-4">
-          <div>
-            <p class="text-sm font-medium text-foreground">State or region</p>
-            <p class="mt-0.5 text-sm text-muted-foreground">
-              Choose where you usually need legal help.
-            </p>
-          </div>
-          <p
-            v-if="storeState.state"
-            class="shrink-0 text-sm font-medium text-primary"
-          >
-            Selected
-          </p>
-        </div>
+        <p class="text-sm font-medium text-foreground">State or region</p>
 
         <Select v-model="storeState.state">
-          <SelectTrigger class="h-11 w-full max-w-xl text-base">
+          <SelectTrigger
+            class="h-auto min-h-14 w-full rounded-xl border-border bg-muted/40 px-4 py-3.5 text-base shadow-sm data-[size=default]:h-auto"
+          >
             <SelectValue placeholder="Select state or region" />
           </SelectTrigger>
           <SelectContent>
@@ -97,7 +76,7 @@
 <script setup lang="ts">
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
-import { PhMapPin, PhWarningCircle } from '@phosphor-icons/vue'
+import { PhWarningCircle } from '@phosphor-icons/vue'
 
 definePageMeta({
   middleware: ['auth'],
@@ -118,14 +97,5 @@ const availableStates = computed(() => {
     label: s.name,
     value: s.code,
   }))
-})
-const selectedCountryName = computed(
-  () => countries.value.find((c: { code2: string }) => c.code2 === storeState.country)?.name || '',
-)
-const selectedStateName = computed(() => {
-  const stateItem = availableStates.value.find(
-    (s: { value: string }) => s.value === storeState.state,
-  )
-  return stateItem?.label || ''
 })
 </script>
