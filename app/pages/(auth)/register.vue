@@ -1,17 +1,17 @@
 <template>
-  <div class="flex min-h-dvh w-full flex-col overflow-x-hidden bg-brand-cream font-sans">
-    <!-- Background -->
-    <div
-      class="pointer-events-none absolute top-0 right-0 h-72 w-72 -translate-y-1/4 translate-x-1/4 rounded-full bg-brand-green-100/60 blur-3xl sm:h-96 sm:w-96"
-      aria-hidden="true"
-    />
-    <div
-      class="pointer-events-none absolute bottom-0 left-0 h-80 w-80 translate-y-1/4 -translate-x-1/4 rounded-full bg-brand-green-100/40 blur-3xl sm:h-96 sm:w-96"
-      aria-hidden="true"
-    />
+  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-brand-cream font-sans">
+    <!-- Background: clipped so blur paint cannot extend scroll width -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div
+        class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand-green-100/60 blur-3xl sm:h-96 sm:w-96"
+      />
+      <div
+        class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-brand-green-100/40 blur-3xl sm:h-96 sm:w-96"
+      />
+    </div>
 
-    <header class="relative z-20 flex shrink-0 items-center justify-between px-4 py-4 sm:px-8 sm:py-6">
-      <NuxtLink to="/" class="group inline-flex items-center gap-2.5">
+    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-3 px-4 py-4 sm:px-8 sm:py-6">
+      <NuxtLink to="/" class="group inline-flex min-w-0 items-center gap-2.5">
         <svg
           class="h-7 w-7 text-primary transition-transform group-hover:scale-105 sm:h-8 sm:w-8"
           viewBox="0 0 100 100"
@@ -26,7 +26,7 @@
         </span>
       </NuxtLink>
 
-      <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <span class="hidden text-sm font-medium text-brand-ink-soft sm:inline">
           Already have an account?
         </span>
@@ -39,8 +39,8 @@
       </div>
     </header>
 
-    <main class="relative z-10 flex flex-1 flex-col items-center px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
-      <div class="w-full max-w-2xl">
+    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
+      <div class="w-full min-w-0 max-w-2xl">
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
           <div v-if="step === 'role'" key="role" class="w-full">
@@ -49,7 +49,7 @@
                 Account type
               </p>
               <h1
-                class="font-heading text-3xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
+                class="font-heading text-balance text-3xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
@@ -58,7 +58,7 @@
               </p>
             </div>
 
-            <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+            <div class="mb-8 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
               <Card
                 role="button"
                 tabindex="0"
@@ -89,7 +89,7 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 text-lg font-semibold leading-tight text-brand-green-900 sm:text-xl">
+                  <h2 class="mb-2 text-xl font-semibold leading-tight text-brand-green-900 sm:text-2xl">
                     I am a Client
                   </h2>
                   <p class="text-base leading-relaxed text-brand-ink-soft">
@@ -128,7 +128,7 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 text-lg font-semibold leading-tight text-brand-green-900 sm:text-xl">
+                  <h2 class="mb-2 text-xl font-semibold leading-tight text-brand-green-900 sm:text-2xl">
                     I am a Lawyer
                   </h2>
                   <p class="text-base leading-relaxed text-brand-ink-soft">
@@ -158,7 +158,7 @@
           </div>
 
           <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto w-full max-w-lg">
+          <div v-else key="form" class="mx-auto w-full min-w-0 max-w-lg">
             <Button
               type="button"
               variant="ghost"
@@ -333,7 +333,7 @@
       </div>
     </main>
 
-    <footer class="relative z-20 shrink-0 border-t border-brand-line/10 bg-white/30 px-4 py-6 text-center backdrop-blur-sm sm:py-8">
+    <footer class="relative z-20 min-w-0 shrink-0 border-t border-brand-line/10 bg-white/30 px-4 py-6 text-center backdrop-blur-sm sm:px-8 sm:py-8">
       <p class="text-sm text-brand-ink-soft">
         &copy; {{ new Date().getFullYear() }} GetaLawyer &middot; Verified Nigerian Legal Professionals
       </p>
@@ -378,7 +378,7 @@ const step = ref<'role' | 'form'>('role')
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
-    'group cursor-pointer overflow-hidden rounded-3xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
+    'group min-w-0 cursor-pointer overflow-hidden rounded-3xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
     role.value === value
       ? 'border-primary/50 bg-white/80 shadow-lg shadow-primary/10 ring-1 ring-primary/20'
       : 'border-brand-line/60 hover:border-primary/30 hover:bg-white/70 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
