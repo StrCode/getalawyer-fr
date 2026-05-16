@@ -68,7 +68,10 @@
       </div>
 
       <div class="flex flex-1 flex-col justify-center items-center px-6 sm:px-10 lg:px-14 xl:px-16 pt-14 pb-10 sm:pt-16 sm:pb-12 lg:py-14">
-        <div class="relative z-10 w-full max-w-md">
+        <div
+          class="relative z-10 w-full"
+          :class="authWide ? 'max-w-2xl' : 'max-w-md'"
+        >
           <slot />
         </div>
       </div>
@@ -89,4 +92,6 @@ const authTitle = computed(() => {
 const authDescription = computed(() => {
   return (route.meta.authDescription as string) || 'Join thousands of businesses and individuals connecting with verified legal professionals every day.'
 })
+
+const authWide = computed(() => route.meta.authWide === true)
 </script>
