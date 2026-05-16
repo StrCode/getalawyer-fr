@@ -3,14 +3,14 @@
 
     <AuthLogo class="mb-10 lg:hidden" />
 
-    <div class="mb-8">
-      <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
+    <header class="mb-8">
+      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
         Forgot your password?
       </h1>
-      <p class="text-muted-foreground text-base">
+      <p class="text-base leading-relaxed text-muted-foreground">
         Enter your email and we&apos;ll send you a reset code.
       </p>
-    </div>
+    </header>
 
     <div
       v-if="submitted"
@@ -45,7 +45,7 @@
               type="email"
               placeholder="alex@example.com"
               autocomplete="email"
-              class="h-12"
+              class="h-11 text-base"
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"

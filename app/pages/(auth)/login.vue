@@ -1,13 +1,13 @@
 <template>
-  <div class="w-full">
+  <div class="w-full font-sans">
 
     <AuthLogo class="mb-8 lg:hidden" />
 
     <header class="mb-8">
-      <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
+      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
         Welcome back
       </h1>
-      <p class="text-muted-foreground text-base leading-relaxed">
+      <p class="text-base leading-relaxed text-muted-foreground">
         Sign in to your GetaLawyer account
       </p>
     </header>
@@ -43,7 +43,7 @@
               type="email"
               placeholder="alex@example.com"
               autocomplete="email"
-              class="h-12"
+              class="h-11 text-base"
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
@@ -70,6 +70,7 @@
               :model-value="field.state.value"
               placeholder="••••••••"
               autocomplete="current-password"
+              input-class="h-11 text-base"
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
@@ -83,7 +84,7 @@
 
         <Button
           type="submit"
-          class="inline-flex h-12 w-full items-center justify-center gap-2"
+          class="inline-flex h-11 w-full items-center justify-center gap-2 text-base font-semibold"
           size="lg"
           :disabled="isSubmitting"
         >
@@ -93,7 +94,7 @@
       </FieldGroup>
     </form>
 
-    <p class="mt-8 text-sm text-muted-foreground leading-relaxed">
+    <p class="mt-8 text-sm leading-relaxed text-muted-foreground">
       By continuing, you agree to our
       <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
         Terms of Service
@@ -104,11 +105,11 @@
       </NuxtLink>.
     </p>
 
-    <p class="mt-6 text-center text-base text-muted-foreground">
+    <p class="mt-5 text-center text-base text-muted-foreground">
       Don&apos;t have an account?
       <NuxtLink
         to="/register"
-        class="font-medium text-primary underline-offset-4 hover:underline"
+        class="font-semibold text-primary underline-offset-4 hover:underline"
       >
         Sign up
       </NuxtLink>

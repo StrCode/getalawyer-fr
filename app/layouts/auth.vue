@@ -12,15 +12,15 @@
             <polygon points="0,20 38,42 38,82 0,60" fill="currentColor"/>
             <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55"/>
           </svg>
-          <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-cream">getalawyer</span>
+          <span class="font-sans font-bold text-xl tracking-tight lowercase text-brand-cream">getalawyer</span>
         </NuxtLink>
       </div>
 
       <div class="relative z-10 flex flex-col justify-center flex-1 w-full max-w-xl py-8">
-        <h2 class="font-heading text-4xl lg:text-5xl font-medium leading-tight mb-6">
+        <h2 class="mb-5 font-sans text-3xl font-semibold leading-tight tracking-tight lg:text-4xl">
           {{ authTitle }}
         </h2>
-        <p class="text-brand-cream-warm/80 text-lg leading-relaxed">
+        <p class="font-sans text-base lg:text-lg leading-relaxed text-brand-cream-warm/80">
           {{ authDescription }}
         </p>
       </div>
@@ -68,7 +68,7 @@
       </div>
 
       <div class="flex flex-1 flex-col justify-center items-center px-6 sm:px-10 lg:px-14 xl:px-16 pt-14 pb-10 sm:pt-16 sm:pb-12 lg:py-14">
-        <div class="w-full max-w-[420px] relative z-10">
+        <div class="relative z-10 w-full max-w-md">
           <slot />
         </div>
       </div>

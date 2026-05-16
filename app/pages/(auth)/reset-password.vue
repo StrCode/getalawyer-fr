@@ -10,8 +10,8 @@
         >
           <PhCheckCircle class="w-8 h-8 text-primary" />
         </div>
-        <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">Password updated</h1>
-        <p class="mb-8 max-w-sm text-muted-foreground text-base leading-relaxed">
+        <h1 class="mb-2 text-2xl font-semibold leading-tight tracking-tight text-foreground">Password updated</h1>
+        <p class="mb-8 max-w-sm text-base leading-relaxed text-muted-foreground">
           Your password has been reset. You can now log in with your new password.
         </p>
         <Button class="w-full max-w-sm h-12" size="lg" as-child>
@@ -24,16 +24,16 @@
 
     <Transition name="fade">
       <div v-if="!submitted" key="form">
-        <h1 class="mb-3 font-heading font-semibold text-3xl text-foreground tracking-tight">
-          Set a new password
-        </h1>
-        <p class="mb-1 text-muted-foreground text-base leading-relaxed">
-          Choose a new password for
-          <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
-        </p>
-        <p class="mb-6 text-muted-foreground text-base leading-relaxed">
-          This will end all active sessions for your account.
-        </p>
+        <header class="mb-6">
+          <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
+            Set a new password
+          </h1>
+          <p class="text-base leading-relaxed text-muted-foreground">
+            Choose a new password for
+            <strong class="font-medium text-foreground">{{ emailParam }}</strong>.
+            This will end all active sessions for your account.
+          </p>
+        </header>
 
         <form @submit.prevent="form.handleSubmit">
           <FieldGroup class="space-y-4">

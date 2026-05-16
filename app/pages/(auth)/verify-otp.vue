@@ -3,21 +3,21 @@
 
     <AuthLogo class="mb-10 lg:hidden" />
 
-    <div class="mb-8">
-      <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
+    <header class="mb-8">
+      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
         Check your email
       </h1>
-      <p class="text-muted-foreground text-base">
+      <p class="text-base leading-relaxed text-muted-foreground">
         We sent a 6-digit code to
-        <strong class="text-foreground font-medium">{{ emailParam }}</strong>.
+        <strong class="font-medium text-foreground">{{ emailParam }}</strong>.
         <NuxtLink
           to="/forgot-password"
-          class="ms-1 font-medium text-primary underline-offset-4 hover:underline"
+          class="ms-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
         >
           Wrong email?
         </NuxtLink>
       </p>
-    </div>
+    </header>
 
     <form @submit.prevent="form.handleSubmit">
       <FieldGroup class="space-y-6">

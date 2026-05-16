@@ -5,7 +5,7 @@
     :aria-label="iconOnly ? resolvedAriaLabel : undefined"
     :class="cn(
       'inline-flex shrink-0 items-center justify-center gap-2.5 bg-white/60 hover:bg-white active:scale-[0.98] disabled:opacity-50 border border-brand-line/50 rounded-2xl font-semibold text-brand-green-900 shadow-sm transition-all duration-200 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:border-primary',
-      iconOnly ? 'h-12 min-w-0 flex-1 px-3' : 'h-12 w-full px-4 text-sm whitespace-nowrap',
+      iconOnly ? 'h-11 min-w-0 flex-1 px-3' : 'h-11 w-full px-4 text-sm whitespace-nowrap',
     )"
     @click="$emit('click')"
   >

@@ -7,7 +7,7 @@
       :type="visible ? 'text' : 'password'"
       :placeholder="placeholder"
       :autocomplete="autocomplete"
-      :class="cn('h-12 pr-11', inputClass)"
+      :class="cn('h-11 pr-11 text-base', inputClass)"
       :aria-invalid="ariaInvalid"
       :disabled="disabled"
       @blur="$emit('blur')"
