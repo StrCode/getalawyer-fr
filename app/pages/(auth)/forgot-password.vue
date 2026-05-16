@@ -49,7 +49,7 @@
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
-              @update:model-value="field.handleChange"
+              @update:model-value="(v) => field.handleChange(v as any)"
             />
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
@@ -102,7 +102,6 @@ definePageMeta({
 const forgotSchema = z.object({
   email: z
     .email('Please enter a valid email address.')
-    .min(1, 'Email address is required.'),
 })
 
 const isSubmitting = ref(false)

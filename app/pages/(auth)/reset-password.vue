@@ -50,7 +50,7 @@
                   :aria-invalid="isInvalid(field)"
                   :disabled="isSubmitting"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v) => field.handleChange(v as any)"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
@@ -70,7 +70,7 @@
                   :aria-invalid="isInvalid(field)"
                   :disabled="isSubmitting"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v) => field.handleChange(v as any)"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
@@ -135,13 +135,11 @@ const resetSchema = z
   .object({
     password: z
       .string('New password is required.')
-      .min(1, 'New password is required.')
       .min(8, 'Password must be at least 8 characters.')
       .regex(/[A-Z]/, 'Password must contain at least one uppercase letter.')
       .regex(/[0-9]/, 'Password must contain at least one number.'),
     confirmPassword: z
       .string('Please confirm your new password.')
-      .min(1, 'Please confirm your new password.'),
   })
   .refine(data => data.password === data.confirmPassword, {
     error: 'Passwords do not match.',

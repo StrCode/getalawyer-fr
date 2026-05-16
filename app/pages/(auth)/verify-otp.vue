@@ -22,7 +22,7 @@
               :maxlength="6"
               :disabled="isSubmitting"
               class="gap-2 justify-center w-full"
-              @update:model-value="field.handleChange"
+              @update:model-value="(v) => field.handleChange(v as any)"
             >
               <InputOTPGroup>
                 <InputOTPSlot

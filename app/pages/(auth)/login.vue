@@ -48,7 +48,7 @@
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
-              @update:model-value="field.handleChange"
+              @update:model-value="(v) => field.handleChange(v as any)"
             />
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
@@ -76,7 +76,7 @@
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
-              @update:model-value="field.handleChange"
+              @update:model-value="(v) => field.handleChange(v as any)"
             />
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
@@ -149,12 +149,10 @@ const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect)
 
 const loginSchema = z.object({
   email: z
-    .email('Please enter a valid email address.')
-    .min(1, 'Email address is required.'),
+    .email({error: 'Please enter a valid email address.'}),
   password: z
-    .string('Password is required.')
-    .min(1, 'Password is required.')
-    .min(8, 'Password must be at least 8 characters.'),
+    .string({error: 'Password is required.'})
+    .min(8, {error: 'Password must be at least 8 characters.'}),
 })
 
 const isSubmitting = ref(false)
