@@ -11,12 +11,14 @@
 
     <AuthLogo class="mb-10 lg:hidden" />
 
-    <h1 class="mb-3 font-heading font-semibold text-3xl text-foreground tracking-tight">
-      Enter verification code
-    </h1>
-    <p class="mb-6 text-muted-foreground text-sm leading-relaxed">
-      We sent a 6-digit code to <strong class="text-foreground">{{ email }}</strong>.
-    </p>
+    <div class="mb-8">
+      <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
+        Check your email
+      </h1>
+      <p class="text-muted-foreground text-base">
+        We sent a 6-digit code to <strong class="text-foreground font-medium">{{ email }}</strong>.
+      </p>
+    </div>
 
     <form class="space-y-6" @submit.prevent="handleSubmit">
       <div class="space-y-3">
@@ -38,7 +40,7 @@
         </InputOTP>
       </div>
 
-      <p class="text-muted-foreground text-sm text-center leading-relaxed">
+      <p class="text-muted-foreground text-base text-center leading-relaxed">
         Code expires in a few minutes.
         <Button
           type="button"
@@ -54,7 +56,7 @@
       <div
         v-if="error"
         role="alert"
-        class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-sm"
+        class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
       >
         <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
         <span>{{ error }}</span>
@@ -62,7 +64,7 @@
 
       <Button
         type="submit"
-        class="w-full h-11"
+        class="w-full h-12"
         size="lg"
         :disabled="isSubmitting || formData.otp.length !== 6"
       >
@@ -72,7 +74,7 @@
 
     <Separator class="my-6" />
 
-    <p class="text-center text-sm">
+    <p class="text-center text-base">
       <NuxtLink
         to="/forgot-password"
         class="font-medium text-primary underline-offset-4 hover:underline"

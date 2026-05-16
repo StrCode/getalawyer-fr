@@ -49,10 +49,23 @@
     <div
       class="flex flex-col w-full overflow-y-auto lg:w-1/2 lg:max-w-[44rem] relative bg-background border-l border-border"
     >
-      <div class="flex flex-col justify-center flex-1 px-6 sm:px-10 lg:px-16 py-10 min-h-[100dvh] lg:min-h-0">
-        <div class="mx-auto w-full max-w-[400px]">
+      <!-- Floating Top Right Link -->
+      <div class="absolute top-6 right-6 sm:top-10 sm:right-10 hidden sm:block z-10">
+        <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
+          <span class="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">←</span>
+          Back to website
+        </NuxtLink>
+      </div>
+
+      <div class="flex flex-col flex-1 px-6 sm:px-10 lg:px-16 pt-12 pb-20 sm:pt-20 lg:pt-0 min-h-[100dvh] lg:min-h-0 relative">
+        <!-- Subtle gradient glow in the background for premium feel -->
+        <div class="absolute inset-0 pointer-events-none hidden lg:block" style="background: radial-gradient(circle at 50% 0%, rgba(134,194,142,0.03) 0%, transparent 60%);"></div>
+        
+        <div class="my-auto mx-auto w-full max-w-[420px] relative z-10">
           <slot />
         </div>
+        <!-- Spacer to push the form up to optical center on desktop -->
+        <div class="hidden lg:block lg:h-[8vh]"></div>
       </div>
     </div>
   </div>

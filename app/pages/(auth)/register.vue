@@ -16,7 +16,7 @@
       <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">
         Create your account
       </h1>
-      <p class="mb-8 text-muted-foreground text-sm">I am joining as a…</p>
+      <p class="mb-8 text-muted-foreground text-base">I am joining as a…</p>
 
       <div class="gap-4 grid grid-cols-1 sm:grid-cols-2 mb-8">
         <Card
@@ -50,7 +50,7 @@
           </div>
           <CardContent class="px-4 py-4">
             <CardTitle class="text-base">Client</CardTitle>
-            <p class="mt-1 text-muted-foreground text-sm leading-relaxed">
+            <p class="mt-1 text-muted-foreground text-base leading-relaxed">
               Find and connect with verified lawyers for your legal needs
             </p>
           </CardContent>
@@ -87,7 +87,7 @@
           </div>
           <CardContent class="px-4 py-4">
             <CardTitle class="text-base">Lawyer</CardTitle>
-            <p class="mt-1 text-muted-foreground text-sm leading-relaxed">
+            <p class="mt-1 text-muted-foreground text-base leading-relaxed">
               Join our platform and offer your legal expertise to clients
             </p>
           </CardContent>
@@ -96,7 +96,7 @@
 
       <Button
         type="button"
-        class="w-full h-11"
+        class="w-full h-12"
         size="lg"
         :disabled="!role"
         @click="step = 'form'"
@@ -108,7 +108,7 @@
         }}
       </Button>
 
-      <p class="mt-6 text-muted-foreground text-sm text-center">
+      <p class="mt-6 text-muted-foreground text-base text-center">
         Already have an account?
         <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
           Log in
@@ -141,7 +141,7 @@
       <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">
         {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
       </h1>
-      <p class="mb-8 text-muted-foreground text-sm">
+      <p class="mb-8 text-muted-foreground text-base">
         {{ role === 'lawyer' ? 'Fill in your details to get verified.' : 'Join in seconds.' }}
       </p>
 
@@ -154,7 +154,7 @@
               v-model="formData.firstName"
               placeholder="Alex"
               autocomplete="given-name"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -165,7 +165,7 @@
               v-model="formData.lastName"
               placeholder="Smith"
               autocomplete="family-name"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -179,7 +179,7 @@
             type="email"
             placeholder="alex@example.com"
             autocomplete="email"
-            class="h-11"
+            class="h-12"
             :disabled="isSubmitting"
           />
         </div>
@@ -193,7 +193,7 @@
               type="password"
               placeholder="••••••••"
               autocomplete="new-password"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -205,7 +205,7 @@
               type="password"
               placeholder="••••••••"
               autocomplete="new-password"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -214,18 +214,18 @@
         <div
           v-if="error"
           role="alert"
-          class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-sm"
+          class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-base"
         >
           <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
           <span>{{ error }}</span>
         </div>
 
-        <Button type="submit" class="w-full h-11" size="lg" :disabled="isSubmitting">
+        <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
           {{ role === 'lawyer' ? 'Apply as Lawyer' : 'Create account' }}
         </Button>
       </form>
 
-      <p class="mt-6 text-muted-foreground text-sm text-center">
+      <p class="mt-6 text-muted-foreground text-base text-center">
         Already have an account?
         <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
           Log in

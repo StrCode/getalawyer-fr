@@ -19,10 +19,10 @@
           <PhCheckCircle class="w-8 h-8 text-primary" />
         </div>
         <h1 class="mb-2 font-heading font-semibold text-3xl text-foreground tracking-tight">Password updated</h1>
-        <p class="mb-8 max-w-sm text-muted-foreground text-sm leading-relaxed">
+        <p class="mb-8 max-w-sm text-muted-foreground text-base leading-relaxed">
           Your password has been reset. You can now log in with your new password.
         </p>
-        <Button class="w-full max-w-sm h-11" size="lg" as-child>
+        <Button class="w-full max-w-sm h-12" size="lg" as-child>
           <NuxtLink to="/login" class="inline-flex justify-center items-center w-full">
             Go to login
           </NuxtLink>
@@ -35,10 +35,10 @@
         <h1 class="mb-3 font-heading font-semibold text-3xl text-foreground tracking-tight">
           Set a new password
         </h1>
-        <p class="mb-1 text-muted-foreground text-sm leading-relaxed">
+        <p class="mb-1 text-muted-foreground text-base leading-relaxed">
           Choose a new password for your GetaLawyer account.
         </p>
-        <p class="mb-6 text-muted-foreground text-sm leading-relaxed">
+        <p class="mb-6 text-muted-foreground text-base leading-relaxed">
           This will end all active sessions for your account.
         </p>
 
@@ -51,7 +51,7 @@
               type="password"
               placeholder="••••••••"
               autocomplete="new-password"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -64,7 +64,7 @@
               type="password"
               placeholder="••••••••"
               autocomplete="new-password"
-              class="h-11"
+              class="h-12"
               :disabled="isSubmitting"
             />
           </div>
@@ -76,20 +76,20 @@
           <div
             v-if="error"
             role="alert"
-            class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-sm"
+            class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-base"
           >
             <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
             <span>{{ error }}</span>
           </div>
 
-          <Button type="submit" class="w-full h-11" size="lg" :disabled="isSubmitting || !canSubmit">
+          <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting || !canSubmit">
             Reset password
           </Button>
         </form>
 
         <Separator class="my-6" />
 
-        <p class="text-muted-foreground text-sm text-center">
+        <p class="text-muted-foreground text-base text-center">
           Need help?
           <NuxtLink to="/contact" class="font-medium text-primary underline-offset-4 hover:underline">
             Contact us

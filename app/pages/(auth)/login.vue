@@ -11,9 +11,12 @@
 
     <AuthLogo class="mb-10 lg:hidden" />
 
-    <h1 class="mb-6 font-heading font-semibold text-3xl text-foreground tracking-tight">
-      Log in to your account
-    </h1>
+    <div class="mb-8">
+      <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
+        Welcome back
+      </h1>
+      <p class="text-muted-foreground text-base">Sign in to your GetaLawyer account</p>
+    </div>
 
     <div class="space-y-3 mb-6">
       <AuthSocialButton
@@ -37,29 +40,37 @@
 
     <AuthDivider class="mb-6" />
 
-    <form class="space-y-4" @submit.prevent="handleSubmit">
-      <div class="space-y-2">
-        <Label for="login-email">Email</Label>
+    <form class="space-y-5" @submit.prevent="handleSubmit">
+      <div class="space-y-1.5">
+        <Label for="login-email">Email address</Label>
         <Input
           id="login-email"
           v-model="formData.email"
           type="email"
           placeholder="alex@example.com"
           autocomplete="email"
-          class="h-11"
+          class="h-12"
           :disabled="isSubmitting"
         />
       </div>
 
-      <div class="space-y-2">
-        <Label for="login-password">Password</Label>
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between">
+          <Label for="login-password">Password</Label>
+          <NuxtLink
+            to="/forgot-password"
+            class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Forgot password?
+          </NuxtLink>
+        </div>
         <Input
           id="login-password"
           v-model="formData.password"
           type="password"
           placeholder="••••••••"
           autocomplete="current-password"
-          class="h-11"
+          class="h-12"
           :disabled="isSubmitting"
         />
       </div>
@@ -67,27 +78,20 @@
       <div
         v-if="error"
         role="alert"
-        class="flex gap-2 items-start rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-destructive text-sm"
+        class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-base"
       >
         <PhWarningCircle class="mt-0.5 w-4 h-4 shrink-0" />
         <span>{{ error }}</span>
       </div>
 
-      <Button type="submit" class="w-full h-11" size="lg" :disabled="isSubmitting">
+      <Button type="submit" class="w-full h-12" size="lg" :disabled="isSubmitting">
         <span v-if="isSubmitting">Signing in…</span>
-        <span v-else>Log in</span>
+        <span v-else>Sign in</span>
       </Button>
     </form>
 
-    <NuxtLink
-      to="/forgot-password"
-      class="block mt-4 text-primary text-sm underline-offset-4 hover:underline"
-    >
-      Forgot your password?
-    </NuxtLink>
-
-    <p class="mt-6 text-muted-foreground text-sm leading-relaxed">
-      By continuing with Google, Facebook, or email, you agree to GetaLawyer&apos;s
+    <p class="mt-6 text-muted-foreground text-base leading-relaxed">
+      By continuing, you agree to our
       <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
         Terms of Service
       </NuxtLink>
@@ -97,7 +101,7 @@
       </NuxtLink>.
     </p>
 
-    <p class="mt-6 text-muted-foreground text-sm text-center">
+    <p class="mt-6 text-muted-foreground text-base text-center">
       Don&apos;t have an account?
       <NuxtLink
         to="/register"
