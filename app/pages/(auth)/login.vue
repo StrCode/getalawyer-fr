@@ -1,39 +1,38 @@
 <template>
-  <div>
+  <div class="w-full">
 
-    <AuthLogo class="mb-10 lg:hidden" />
+    <AuthLogo class="mb-8 lg:hidden" />
 
-    <div class="mb-8">
+    <header class="mb-8">
       <h1 class="mb-1.5 font-heading font-semibold text-3xl text-foreground tracking-tight">
         Welcome back
       </h1>
-      <p class="text-muted-foreground text-base">Sign in to your GetaLawyer account</p>
-    </div>
+      <p class="text-muted-foreground text-base leading-relaxed">
+        Sign in to your GetaLawyer account
+      </p>
+    </header>
 
-    <div class="space-y-3 mb-6">
+    <div class="mb-6 flex items-stretch gap-3">
       <AuthSocialButton
         provider="google"
+        icon-only
         :disabled="isSubmitting"
         :loading="socialProvider === 'google'"
         @click="handleSocialLogin('google')"
-      >
-        Continue with Google
-      </AuthSocialButton>
-
+      />
       <AuthSocialButton
         provider="facebook"
+        icon-only
         :disabled="isSubmitting"
         :loading="socialProvider === 'facebook'"
         @click="handleSocialLogin('facebook')"
-      >
-        Continue with Facebook
-      </AuthSocialButton>
+      />
     </div>
 
     <AuthDivider class="mb-6" />
 
     <form @submit.prevent="form.handleSubmit">
-      <FieldGroup class="space-y-5">
+      <FieldGroup class="gap-5">
         <form.Field v-slot="{ field }" name="email">
           <Field :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name">Email address</FieldLabel>
@@ -56,11 +55,11 @@
 
         <form.Field v-slot="{ field }" name="password">
           <Field :data-invalid="isInvalid(field)">
-            <div class="flex items-center justify-between mb-1.5">
-              <FieldLabel :for="field.name">Password</FieldLabel>
+            <div class="flex w-full items-center justify-between gap-3">
+              <FieldLabel :for="field.name" class="w-auto">Password</FieldLabel>
               <NuxtLink
                 to="/forgot-password"
-                class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                class="shrink-0 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Forgot password?
               </NuxtLink>
@@ -82,14 +81,19 @@
 
         <AuthFormError :message="apiError" />
 
-        <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
-          <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+        <Button
+          type="submit"
+          class="inline-flex h-12 w-full items-center justify-center gap-2"
+          size="lg"
+          :disabled="isSubmitting"
+        >
+          <PhCircleNotch v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Signing in…' : 'Sign in' }}</span>
         </Button>
       </FieldGroup>
     </form>
 
-    <p class="mt-6 text-muted-foreground text-base leading-relaxed">
+    <p class="mt-8 text-sm text-muted-foreground leading-relaxed">
       By continuing, you agree to our
       <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
         Terms of Service
@@ -100,7 +104,7 @@
       </NuxtLink>.
     </p>
 
-    <p class="mt-6 text-muted-foreground text-base text-center">
+    <p class="mt-6 text-center text-base text-muted-foreground">
       Don&apos;t have an account?
       <NuxtLink
         to="/register"
@@ -140,10 +144,10 @@ const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect)
 
 const loginSchema = z.object({
   email: z
-    .email({error: 'Please enter a valid email address.'}),
+    .email({ error: 'Please enter a valid email address.' }),
   password: z
-    .string({error: 'Password is required.'})
-    .min(8, {error: 'Password must be at least 8 characters.'}),
+    .string({ error: 'Password is required.' })
+    .min(8, { error: 'Password must be at least 8 characters.' }),
 })
 
 const isSubmitting = ref(false)
