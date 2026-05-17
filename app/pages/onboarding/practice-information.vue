@@ -14,10 +14,14 @@ import {
   PhCaretDown
 } from '@phosphor-icons/vue'
 
+import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+
 definePageMeta({
   layout: 'onboarding-wizard',
-  middleware: ['auth']
+  middleware: ['auth', 'lawyer-onboarding-guard'],
 })
+
+const step = LAWYER_STEP_CONTENT.practice_info
 
 const store = useLawyerOnboardingStore()
 const state = store.practiceInfo
@@ -85,13 +89,14 @@ const labelColClass =
     <PhCircleNotch class="w-12 h-12 text-primary/20 animate-spin" />
   </div>
 
-  <div v-else class="space-y-12 pb-20">
-    <div class="mb-10 space-y-2">
-      <h1 class="text-2xl font-bold text-gray-900">Practice Details</h1>
-      <p class="mt-2 text-sm text-gray-600">
-        Tell us about your law practice, office location, and areas of legal expertise.
-      </p>
-    </div>
+  <div v-else class="w-full space-y-10 pb-20">
+    <OnboardingClientStepHeader
+      :step="step.step"
+      :total="step.total"
+      :label="step.label"
+      :title="step.title"
+      :description="step.description"
+    />
 
     <div class="space-y-10">
       <!-- Practice identity -->

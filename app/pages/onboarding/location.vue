@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto w-full max-w-2xl space-y-10 pb-20">
+  <div class="w-full space-y-10 pb-20">
     <OnboardingClientStepHeader
       :step="1"
       :total="2"

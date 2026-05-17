@@ -51,7 +51,11 @@ export function createLawyerProfessionalInfoSchema() {
         .min(1, { error: 'Enter your Nigerian Law School campus.' })
     })
     .superRefine((data, ctx) => {
-      if (data.llbYear > data.yearOfCall) {
+      if (
+        data.llbYear != null
+        && data.yearOfCall != null
+        && data.llbYear > data.yearOfCall
+      ) {
         ctx.addIssue({
           code: 'custom',
           path: ['llbYear'],

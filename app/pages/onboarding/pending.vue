@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import {
   fetchLawyerDashboardMe,
-  fetchLawyerOnboardingStatus
+  useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
 import {
   isLawyerAwaitingApproval,
@@ -32,12 +32,8 @@ const {
   data: statusPayload,
   isPending: statusPending,
   isError: statusError,
-  refetch: refetchStatus
-} = useQuery<OnboardingStatusPayload>({
-  queryKey: ['lawyer', 'onboarding', 'status'],
-  queryFn: fetchLawyerOnboardingStatus,
-  staleTime: 30 * 1000
-})
+  refetch: refetchStatus,
+} = useLawyerOnboardingStatus()
 
 const {
   data: dashboardPayload,

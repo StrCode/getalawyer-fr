@@ -24,10 +24,14 @@ import {
   InputGroupText
 } from '~/components/ui/input-group'
 
+import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+
 definePageMeta({
   layout: 'onboarding-wizard',
-  middleware: ['auth']
+  middleware: ['auth', 'lawyer-onboarding-guard'],
 })
+
+const step = LAWYER_STEP_CONTENT.professional_info
 
 const store = useLawyerOnboardingStore()
 
@@ -110,13 +114,14 @@ function isInvalid(field: any) {
 </script>
 
 <template>
-  <div class="space-y-12 pb-20">
-    <div class="mb-10 space-y-2">
-      <h1 class="text-2xl font-bold text-gray-900">Professional Background</h1>
-      <p class="text-sm text-gray-600">
-        We use this to confirm you are enrolled with the Nigerian Bar Association. Provide your legal education and bar admission details.
-      </p>
-    </div>
+  <div class="w-full space-y-10 pb-20">
+    <OnboardingClientStepHeader
+      :step="step.step"
+      :total="step.total"
+      :label="step.label"
+      :title="step.title"
+      :description="step.description"
+    />
 
     <div class="space-y-10">
       <!-- Bar admission -->
@@ -206,12 +211,12 @@ function isInvalid(field: any) {
                   type="number"
                   :min="yearMin"
                   :max="currentYear"
-                  :model-value="field.state.value"
+                  :model-value="field.state.value ?? ''"
                   placeholder="Year"
                   class="h-12 min-h-12 text-base tabular-nums md:text-sm"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v) => field.handleChange(v === '' || v == null ? undefined : Number(v))"
                 />
                 <InputGroupAddon align="inline-end">
                   <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">
@@ -300,12 +305,12 @@ function isInvalid(field: any) {
                   type="number"
                   :min="yearMin"
                   :max="currentYear"
-                  :model-value="field.state.value"
+                  :model-value="field.state.value ?? ''"
                   placeholder="Year"
                   class="h-12 min-h-12 text-base tabular-nums md:text-sm"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v) => field.handleChange(v === '' || v == null ? undefined : Number(v))"
                 />
                 <InputGroupAddon align="inline-end">
                   <InputGroupText class="text-2.5 font-bold uppercase tracking-widest text-muted-foreground">

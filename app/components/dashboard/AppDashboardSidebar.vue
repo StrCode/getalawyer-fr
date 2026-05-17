@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { PhCaretRight, PhMagnifyingGlass } from '@phosphor-icons/vue'
+import { PhCaretRight } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import type { DashboardNavItem } from '@/types/dashboard-nav'
 import {
   Sidebar,
@@ -39,22 +38,22 @@ function isLinkActive(item: DashboardNavItem) {
 <template>
   <Sidebar
     collapsible="icon"
-    class="border-r-0 bg-[#F1F3F5] [&_[data-sidebar=sidebar]]:border-0 [&_[data-sidebar=sidebar]]:bg-[#F1F3F5]"
+    class="border-sidebar-border border-r bg-sidebar text-sidebar-foreground [&_[data-sidebar=sidebar]]:bg-sidebar [&_[data-sidebar=sidebar]]:text-sidebar-foreground"
   >
-    <SidebarHeader class="gap-2 border-sidebar-border border-b p-2">
+    <SidebarHeader class="gap-2 border-sidebar-border border-b p-3">
       <div class="flex justify-between items-center gap-2">
         <div class="min-w-0 flex-1">
           <img
             v-show="state === 'expanded'"
             src="/getalawyer-logo.svg"
             alt="GetALawyer"
-            class="h-9"
+            class="brightness-0 invert h-8"
           >
         </div>
         <Button
           variant="ghost"
           size="icon"
-          class="h-8 w-8 shrink-0 text-foreground hover:bg-white/80"
+          class="hover:bg-sidebar-accent h-8 w-8 shrink-0 text-sidebar-foreground"
           type="button"
           @click="toggleSidebar"
         >
@@ -62,25 +61,14 @@ function isLinkActive(item: DashboardNavItem) {
             class="size-4 transition-transform"
             :class="state === 'collapsed' ? 'rotate-180' : ''"
           />
-          <span class="sr-only">Toggle sidebar</span>
+          <span class="sr-only">Réduire le menu</span>
         </Button>
       </div>
     </SidebarHeader>
 
     <SidebarContent class="gap-4 px-2 py-4">
-      <div class="relative px-1">
-        <PhMagnifyingGlass
-          class="top-1/2 left-3 absolute size-4 text-muted-foreground -translate-y-1/2 pointer-events-none"
-          aria-hidden="true"
-        />
-        <Input
-          placeholder="Search..."
-          class="h-9 border-0 bg-white pr-3 pl-9 shadow-none"
-        />
-      </div>
-
       <SidebarGroup>
-        <SidebarGroupLabel class="text-[#8E8E93] text-xs uppercase tracking-wide">
+        <SidebarGroupLabel class="text-sidebar-foreground/60 text-xs uppercase tracking-wide">
           Menu
         </SidebarGroupLabel>
         <SidebarGroupContent>
@@ -97,10 +85,13 @@ function isLinkActive(item: DashboardNavItem) {
                 >
                   <component
                     :is="item.iconComponent"
-                    class="size-4 shrink-0 text-foreground"
+                    class="size-4 shrink-0"
                   />
                   <span>{{ item.label }}</span>
-                  <SidebarMenuBadge v-if="item.badge">
+                  <SidebarMenuBadge
+                    v-if="item.badge"
+                    class="bg-sidebar-primary text-sidebar-primary-foreground"
+                  >
                     {{ item.badge }}
                   </SidebarMenuBadge>
                 </NuxtLink>
@@ -111,8 +102,8 @@ function isLinkActive(item: DashboardNavItem) {
       </SidebarGroup>
 
       <SidebarGroup>
-        <SidebarGroupLabel class="font-medium text-[#8E8E93] text-xs uppercase tracking-wide">
-          Help &amp; support
+        <SidebarGroupLabel class="text-sidebar-foreground/60 text-xs uppercase tracking-wide">
+          Aide
         </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
@@ -128,7 +119,7 @@ function isLinkActive(item: DashboardNavItem) {
                 >
                   <component
                     :is="item.iconComponent"
-                    class="size-4 shrink-0 text-[#1C1C1E] group-data-[active=true]/menu-button:text-green-600"
+                    class="size-4 shrink-0"
                   />
                   <span>{{ item.label }}</span>
                 </NuxtLink>

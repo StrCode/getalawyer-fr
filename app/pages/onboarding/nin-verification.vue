@@ -10,10 +10,14 @@ import {
   InputGroupText
 } from '~/components/ui/input-group'
 
+import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+
 definePageMeta({
   layout: 'onboarding-wizard',
-  middleware: ['auth']
+  middleware: ['auth', 'lawyer-onboarding-guard'],
 })
+
+const step = LAWYER_STEP_CONTENT.nin_verification
 
 const store = useLawyerOnboardingStore()
 const state = store.ninVerification
@@ -33,7 +37,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="space-y-12 pb-20">
+  <div class="w-full space-y-10 pb-20">
+    <OnboardingClientStepHeader
+      v-if="!isAdminVerified"
+      :step="step.step"
+      :total="step.total"
+      :label="step.label"
+      :title="step.title"
+      :description="step.description"
+    />
     <!-- Admin verified: locked (cannot change NIN) -->
     <div v-if="isAdminVerified" class="text-center py-12">
       <div class="mx-auto w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-6 relative border-4 border-white shadow-sm">
@@ -75,13 +87,8 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- NIN entry -->
-    <div v-else class="space-y-12">
-      <div class="mb-10">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Identity Verification</h1>
-        <p class="text-sm text-gray-600">We verify your identity using the National Identification Number (NIN) to ensure the security and integrity of our network.</p>
-      </div>
-
-      <div class="space-y-10">
+    <div v-else class="space-y-8">
+      <div class="space-y-6">
         <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
           <label class="text-3.5 font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight" for="nin-input">National Identity Number <span class="text-primary">*</span></label>
           <div class="w-full max-w-md space-y-2">

@@ -8,10 +8,14 @@ import {
   PhClock
 } from '@phosphor-icons/vue'
 
+import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+
 definePageMeta({
   layout: 'onboarding-wizard',
-  middleware: ['auth']
+  middleware: ['auth', 'lawyer-onboarding-guard'],
 })
+
+const step = LAWYER_STEP_CONTENT.review
 
 const store = useLawyerOnboardingStore()
 // Use computed to ensure reactivity to summary changes
@@ -77,20 +81,16 @@ const minimalValue = 'min-w-0 flex-1 text-sm font-semibold text-gray-900'
 </script>
 
 <template>
-  <div v-if="summary" class="space-y-12 pb-20">
-    <div class="mb-10 text-center">
-      <div
-        class="relative mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-primary/10 text-primary shadow-sm"
-      >
-        <PhNotePencil class="h-10 w-10" />
-      </div>
-      <h1 class="mb-2 text-2xl font-bold text-gray-900">Review your application</h1>
-      <p class="mx-auto max-w-md text-sm font-medium text-gray-600">
-        Please take a moment to double-check your information before submitting your application for professional review.
-      </p>
-    </div>
+  <div v-if="summary" class="w-full space-y-10 pb-20">
+    <OnboardingClientStepHeader
+      :step="step.step"
+      :total="step.total"
+      :label="step.label"
+      :title="step.title"
+      :description="step.description"
+    />
 
-    <div class="space-y-10">
+    <div class="space-y-8">
         <section class="space-y-4">
           <div class="flex items-center justify-between gap-4">
             <p class="text-3 font-bold uppercase tracking-widest text-gray-500">Basic information</p>

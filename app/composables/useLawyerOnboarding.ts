@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/vue-query'
 import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import {
@@ -32,7 +37,7 @@ export interface PersonalInfoData {
     lastName: string
     middleName?: string
     dateOfBirth: string // ISO 8601 datetime format with timezone
-    gender: 'male' | 'female' | 'other'
+    gender?: 'male' | 'female' | 'other'
     state: string
     lga: string
 }
@@ -49,10 +54,10 @@ export interface NinSubmitResponse {
 
 export interface ProfessionalInfoData {
     barNumber: string
-    yearOfCall: number
+    yearOfCall?: number
     lawSchool: string
     university: string
-    llbYear: number
+    llbYear?: number
 }
 
 export interface PracticeInfoData {
@@ -120,10 +125,35 @@ export async function fetchLawyerDashboardMe(): Promise<LawyerDashboardMePayload
     return parseLawyerDashboardMe(raw)
 }
 
-/** Used on `/onboarding/pending` only — GET /api/onboarding/status */
+/** GET /api/onboarding/status — used as TanStack `queryFn` */
 export async function fetchLawyerOnboardingStatus(): Promise<OnboardingStatusPayload> {
     const raw = await lawyerOnboardingAPI.getOnboardingStatus()
     return parseOnboardingStatus(raw)
+}
+
+const LAWYER_ONBOARDING_STALE_MS = 60 * 1000
+
+/** Deduped status fetch for middleware and entry routing (shared query cache). */
+export function ensureLawyerOnboardingStatus(
+  queryClient: QueryClient,
+): Promise<OnboardingStatusPayload> {
+  return queryClient.ensureQueryData({
+    queryKey: queryKeys.lawyerOnboarding.status,
+    queryFn: fetchLawyerOnboardingStatus,
+    staleTime: LAWYER_ONBOARDING_STALE_MS,
+  })
+}
+
+/** Shared status query — prefer this over calling `fetchLawyerOnboardingStatus` directly. */
+export function useLawyerOnboardingStatus(options?: { enabled?: MaybeRef<boolean> }) {
+  return useQuery({
+    queryKey: queryKeys.lawyerOnboarding.status,
+    queryFn: fetchLawyerOnboardingStatus,
+    enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    staleTime: LAWYER_ONBOARDING_STALE_MS,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  })
 }
 
 // --- Composable ---
@@ -132,11 +162,14 @@ export const useLawyerOnboarding = () => {
     const queryClient = useQueryClient()
 
     // Queries
-    const useDraft = (options?: { enabled?: any }) => {
+    const useDraft = (options?: { enabled?: MaybeRef<boolean> }) => {
         return useQuery({
-            queryKey: ['lawyer', 'onboarding', 'draft'],
+            queryKey: queryKeys.lawyerOnboarding.draft,
             queryFn: lawyerOnboardingAPI.getDraft,
-            enabled: options?.enabled !== undefined ? options.enabled : process.client, // Only fetch on client
+            enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+            staleTime: LAWYER_ONBOARDING_STALE_MS,
+            refetchOnMount: false,
+            refetchOnWindowFocus: false,
         })
     }
 
@@ -145,7 +178,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.saveDraft,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
             }
         })
     }
@@ -154,7 +187,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.discardDraft,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
             }
         })
     }
@@ -163,7 +196,7 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
             }
         })
     }
@@ -172,8 +205,8 @@ export const useLawyerOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.submitOnboarding,
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'draft'] })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding', 'status'] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
                 queryClient.invalidateQueries({ queryKey: ['lawyer', 'dashboard', 'me'] })
                 // Invalidate session/profile so application status gets refreshed
                 queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
@@ -184,9 +217,10 @@ export const useLawyerOnboarding = () => {
 
     return {
         useDraft,
+        useLawyerOnboardingStatus,
         useSaveDraft,
         useDiscardDraft,
         useSaveNin,
-        useSubmitOnboarding
+        useSubmitOnboarding,
     }
 }

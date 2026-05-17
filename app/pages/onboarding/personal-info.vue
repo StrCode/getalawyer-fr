@@ -1,160 +1,388 @@
 <script setup lang="ts">
-import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { computed, inject, onBeforeUnmount, onMounted, watch } from 'vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
 import { type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date'
 import { ChevronDownIcon } from 'lucide-vue-next'
-import { Button } from '~/components/ui/button'
-import { Calendar } from '~/components/ui/calendar'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
+import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+import { getLgasForState, NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
+import { Card } from '@/components/ui/card'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 
 definePageMeta({
   layout: 'onboarding-wizard',
-  middleware: ['auth']
+  middleware: ['auth', 'lawyer-onboarding-guard'],
 })
+
+const step = LAWYER_STEP_CONTENT.personal_info
+
+const inputClass =
+  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
+
+const selectTriggerClass = `${inputClass} w-full`
 
 const store = useLawyerOnboardingStore()
 
-// We don't actually need to re-declare reactive state; we just bind to store.personalInfo.
-const state = store.personalInfo
+const registerValidate = inject<
+  ((fn: (() => Promise<boolean>) | null) => void) | undefined
+>('registerLawyerOnboardingStepValidate', undefined)
 
 const genders = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Other', value: 'other' }
+  { label: 'Male', value: 'male' as const },
+  { label: 'Female', value: 'female' as const },
+  { label: 'Other', value: 'other' as const },
 ]
 
-// Date of Birth handling
+function snapshotFromStore() {
+  const p = store.personalInfo
+  return {
+    firstName: p.firstName ?? '',
+    lastName: p.lastName ?? '',
+    middleName: p.middleName ?? '',
+    dateOfBirth: p.dateOfBirth ?? '',
+    gender: p.gender,
+    state: p.state ?? '',
+    lga: p.lga ?? '',
+  }
+}
+
+const form = useForm({
+  defaultValues: snapshotFromStore(),
+  validators: {
+    onBlur: lawyerPersonalInfoSchema,
+    onChange: lawyerPersonalInfoSchema,
+    onSubmit: lawyerPersonalInfoSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    Object.assign(store.personalInfo, value)
+  },
+})
+
+watch(
+  () => form.state.values,
+  (v) => {
+    Object.assign(store.personalInfo, v)
+  },
+  { deep: true },
+)
+
 const dobDate = ref<DateValue | undefined>()
 
-// Sync from store to local picker
-watch(() => state.dateOfBirth, (newDob) => {
-  if (newDob && !dobDate.value) {
-    try {
-      // Extract YYYY-MM-DD from ISO string
-      const datePart = newDob.split('T')[0]
-      dobDate.value = parseDate(datePart)
-    } catch (e) {
-      console.warn('[Personal Info] Failed to parse dateOfBirth:', e)
-    }
+function syncDobFromIso(iso: string | undefined) {
+  if (!iso) {
+    dobDate.value = undefined
+    return
   }
-}, { immediate: true })
+  try {
+    dobDate.value = parseDate(iso.split('T')[0])
+  } catch {
+    dobDate.value = undefined
+  }
+}
 
-// Sync from local picker to store
-watch(dobDate, (newVal) => {
-  if (newVal) {
-    state.dateOfBirth = newVal.toDate(getLocalTimeZone()).toISOString()
+watch(
+  () => form.state.values.dateOfBirth,
+  (iso) => syncDobFromIso(iso),
+  { immediate: true },
+)
+
+const formState = form.useStore((state) => state.values.state)
+
+const selectedState = computed(() => String(formState.value ?? '').trim())
+
+const lgaOptions = computed(() => getLgasForState(selectedState.value))
+
+watch(formState, (state, prev) => {
+  if (prev !== undefined && state !== prev) {
+    form.setFieldValue('lga', '')
   }
 })
 
-// Max date: Today minus 18 years (standard legal age)
 const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
+const submitAttempted = ref(false)
+
+/** Show errors after blur, while editing (onChange), or after a failed Continue. */
+function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+  if (submitAttempted.value) return !field.state.meta.isValid
+  return field.state.meta.isTouched && !field.state.meta.isValid
+}
+
+function resetFormFromStore() {
+  form.reset(snapshotFromStore())
+  syncDobFromIso(form.state.values.dateOfBirth)
+}
+
+onMounted(() => {
+  resetFormFromStore()
+
+  registerValidate?.(async () => {
+    submitAttempted.value = true
+    await form.validateAllFields('submit')
+    const invalid = Object.values(form.state.fieldMeta).some((m) => !m.isValid)
+    if (invalid) return false
+    submitAttempted.value = false
+    return true
+  })
+})
+
+onBeforeUnmount(() => {
+  registerValidate?.(null)
+})
+
+const hydratedFromDraft = ref(false)
+watch(
+  () => store.draft,
+  (draft) => {
+    if (hydratedFromDraft.value || !draft?.data?.personal) return
+    hydratedFromDraft.value = true
+    submitAttempted.value = false
+    resetFormFromStore()
+  },
+)
 </script>
 
 <template>
-  <div class="space-y-12 pb-20">
-    <!-- Header Section (Etsy Style) -->
-    <div class="mb-10">
-      <h1 class="text-2xl font-bold text-gray-900 mb-2">Tell us a little bit about yourself</h1>
-      <p class="text-sm text-gray-600">
-        For compliance purposes, we may verify your identity with a secure third-party service. 
-        This information will never be displayed publicly. <a href="#" class="text-primary hover:underline font-medium">Learn more</a>
-      </p>
-    </div>
+  <div class="w-full space-y-8 pb-20">
+    <OnboardingClientStepHeader
+      :step="step.step"
+      :total="step.total"
+      :label="step.label"
+      :title="step.title"
+      :description="step.description"
+    />
 
-    <div class="space-y-8">
-      <!-- Names Section -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-8">
-        <!-- First Name -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-3.5 font-bold text-gray-900 tracking-tight">First name <span class="text-primary">*</span></label>
-          <Input v-model="state.firstName" placeholder="Jane" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
-        </div>
+    <Card
+      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+    >
+      <div
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
+        aria-hidden="true"
+      />
 
-        <!-- Middle Name -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Middle name <span class="text-gray-400 font-normal">(Optional)</span></label>
-          <Input v-model="state.middleName" placeholder="Olu" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
-        </div>
-
-        <!-- Last Name -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Last name <span class="text-primary">*</span></label>
-          <Input v-model="state.lastName" placeholder="Smith" class="h-12 rounded-lg border-gray-200 w-full focus-visible:ring-primary/20" />
-        </div>
-      </div>
-
-      <!-- General Info Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 pt-6 border-t border-gray-50">
-        <!-- Date of Birth -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Date of birth <span class="text-primary">*</span></label>
-          <div class="w-full">
-             <Popover v-slot="{ close }">
-              <PopoverTrigger as-child>
-                <Button
-                  variant="outline"
-                  class="w-full h-12 justify-between font-normal rounded-lg border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  {{ dobDate ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : "Select your date of birth" }}
-                  <ChevronDownIcon class="w-4 h-4 text-gray-400" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent class="w-auto overflow-hidden p-0" align="start">
-                <Calendar
-                  v-model="dobDate"
-                  :max-value="maxDate"
-                  initial-focus
-                  layout="month-and-year"
-                  @update:model-value="() => close()"
+      <div class="relative z-10 p-6 sm:p-8">
+        <FieldGroup class="gap-5">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <form.Field v-slot="{ field }" name="firstName">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">First name</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="First name"
+                  autocomplete="given-name"
+                  :class="inputClass"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
                 />
-              </PopoverContent>
-            </Popover>
-            <p class="mt-2 text-3 text-gray-400 font-medium">You must be at least 18 years old to register as a lawyer.</p>
-          </div>
-        </div>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
 
-        <!-- Gender -->
-        <div class="flex flex-col gap-3 py-1">
-          <label class="text-3.5 font-bold text-gray-900 tracking-tight">Gender <span class="text-primary">*</span></label>
-          <Select v-model="state.gender">
-            <SelectTrigger class="h-12 rounded-lg border-gray-200 focus:ring-primary/20 w-full">
-              <SelectValue placeholder="Select gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="g in genders" :key="g.value" :value="g.value">
-                {{ g.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            <form.Field v-slot="{ field }" name="middleName">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">
+                  Middle name
+                  <span class="font-normal text-brand-ink-soft">(optional)</span>
+                </FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="Middle name"
+                  autocomplete="additional-name"
+                  :class="inputClass"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
 
-      <!-- Location Section -->
-      <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3 border-t border-gray-50 pt-8">
-        <div>
-          <label class="text-3.5 font-bold text-gray-900 block tracking-tight">Location <span class="text-primary">*</span></label>
-          <p class="mt-2 text-3 text-gray-400 font-medium leading-relaxed max-w-[180px]">Provide your current state and local government area of residence.</p>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-xl">
-          <div>
-            <label class="text-3 font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">State</label>
-            <Input v-model="state.state" placeholder="Lagos" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
+            <form.Field v-slot="{ field }" name="lastName">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">Last name</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="Last name"
+                  autocomplete="family-name"
+                  :class="inputClass"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="field.handleChange"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
           </div>
-          <div>
-            <label class="text-3 font-bold mb-1.5 block text-gray-500 uppercase tracking-wider">LGA</label>
-            <Input v-model="state.lga" placeholder="Ikeja" class="h-12 rounded-lg border-gray-200 focus-visible:ring-primary/20 w-full" />
-          </div>
-        </div>
-      </div>
 
-      <div class="pt-8 italic text-2.5 text-gray-400 font-medium">
-         * Required fields for verification
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <form.Field v-slot="{ field }" name="dateOfBirth">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="`${field.name}-trigger`">Date of birth</FieldLabel>
+                <Popover v-slot="{ close }">
+                  <PopoverTrigger as-child>
+                    <Button
+                      :id="`${field.name}-trigger`"
+                      type="button"
+                      variant="outline"
+                      class="h-11 w-full justify-between rounded-xl border-brand-line/50 bg-white/80 font-normal text-foreground shadow-none hover:bg-white focus:bg-white"
+                      :aria-invalid="isInvalid(field)"
+                      @blur="field.handleBlur"
+                    >
+                      <span :class="dobDate ? 'text-foreground' : 'text-brand-ink-soft/70'">
+                        {{
+                          dobDate
+                            ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })
+                            : 'Select your date of birth'
+                        }}
+                      </span>
+                      <ChevronDownIcon class="h-4 w-4 shrink-0 text-brand-ink-soft" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-auto overflow-hidden p-0" align="start">
+                    <Calendar
+                      v-model="dobDate"
+                      :max-value="maxDate"
+                      initial-focus
+                      layout="month-and-year"
+                      @update:model-value="(val) => {
+                        if (val) {
+                          field.handleChange(val.toDate(getLocalTimeZone()).toISOString())
+                          field.handleBlur()
+                        }
+                        close()
+                      }"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FieldDescription>
+                  You must be at least 18 years old to register as a lawyer.
+                </FieldDescription>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+
+            <form.Field v-slot="{ field }" name="gender">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">Gender</FieldLabel>
+                <Select
+                  :model-value="field.state.value"
+                  @update:model-value="(v) => {
+                    field.handleChange(v)
+                    field.handleBlur()
+                  }"
+                >
+                  <SelectTrigger
+                    :id="field.name"
+                    class="h-11 w-full rounded-xl border-brand-line/50 bg-white/80 text-base focus:bg-white"
+                    :aria-invalid="isInvalid(field)"
+                  >
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem v-for="g in genders" :key="g.value" :value="g.value">
+                      {{ g.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </div>
+
+          <div class="border-t border-brand-line/40 pt-5">
+            <p class="mb-4 text-sm font-medium text-brand-green-900">Location</p>
+            <FieldDescription class="mb-4">
+              Your current state and local government area of residence.
+            </FieldDescription>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <form.Field v-slot="{ field }" name="state">
+                <Field :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name">State</FieldLabel>
+                  <Select
+                    :model-value="field.state.value || undefined"
+                    @update:model-value="(v) => {
+                      field.handleChange(v ?? '')
+                      field.handleBlur()
+                    }"
+                  >
+                    <SelectTrigger
+                      :id="field.name"
+                      :class="selectTriggerClass"
+                      :aria-invalid="isInvalid(field)"
+                    >
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="name in NIGERIA_STATE_NAMES"
+                        :key="name"
+                        :value="name"
+                      >
+                        {{ name }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </form.Field>
+
+              <form.Field v-slot="{ field }" name="lga">
+                <Field :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name">LGA</FieldLabel>
+                  <Select
+                    :key="`lga-${selectedState}`"
+                    :model-value="field.state.value || undefined"
+                    :disabled="!selectedState"
+                    @update:model-value="(v) => {
+                      field.handleChange(v ?? '')
+                      field.handleBlur()
+                    }"
+                  >
+                    <SelectTrigger
+                      :id="field.name"
+                      :class="selectTriggerClass"
+                      :aria-invalid="isInvalid(field)"
+                      :disabled="!selectedState"
+                    >
+                      <SelectValue
+                        :placeholder="selectedState ? 'Select LGA' : 'Select state first'"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="lgaName in lgaOptions"
+                        :key="lgaName"
+                        :value="lgaName"
+                      >
+                        {{ lgaName }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </form.Field>
+            </div>
+          </div>
+
+          <p class="text-sm leading-relaxed text-brand-ink-soft">
+            All fields except middle name are required for identity verification.
+          </p>
+        </FieldGroup>
       </div>
-    </div>
+    </Card>
   </div>
 </template>

@@ -2,8 +2,15 @@ import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
 import { normalizeScnDigitsOnly } from '~/lib/scn'
+import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
-import { useLawyerOnboarding, type PersonalInfoData, type ProfessionalInfoData, type PracticeInfoData, type NinSubmitData } from '~/composables/useLawyerOnboarding'
+import {
+    useLawyerOnboarding,
+    type PersonalInfoData,
+    type ProfessionalInfoData,
+    type PracticeInfoData,
+    type NinSubmitData,
+} from '~/composables/useLawyerOnboarding'
 
 /** Draft last_step values that imply NIN was already saved server-side */
 const STEPS_AFTER_NIN_VERIFICATION = new Set([
@@ -17,9 +24,11 @@ const STEPS_AFTER_NIN_VERIFICATION = new Set([
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
     const { useDraft, useSaveDraft, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
-    
-    // We can fetch data here and populate the state
-    const { data: draftDataResponse } = useDraft()
+
+    /** Shares TanStack cache with /onboarding index and wizard layout (one network fetch). */
+    const { data: draftDataResponse } = useDraft({
+        enabled: import.meta.client,
+    })
 
     // Initialize mutations here (in the setup context) to avoid injection errors in async actions
     const saveDraftMutation = useSaveDraft()
@@ -34,7 +43,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         lastName: '',
         middleName: '',
         dateOfBirth: '',
-        gender: 'other',
+        gender: undefined,
         state: '',
         lga: ''
     })
@@ -54,13 +63,13 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     const professionalInfo = reactive<ProfessionalInfoData>({
         barNumber: '',
         lawSchool: '',
-        yearOfCall: new Date().getFullYear(),
+        yearOfCall: undefined,
         university: '',
-        llbYear: new Date().getFullYear()
+        llbYear: undefined
     })
 
     const practiceInfo = reactive<PracticeInfoData>({
-        soloPractitioner: true,
+        soloPractitioner: false,
         firmName: '',
         practiceAreas: [],
         statesOfPractice: [],
@@ -101,7 +110,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 } else if (typeof rawSolo === 'boolean') {
                     practiceInfo.soloPractitioner = rawSolo
                 } else {
-                    practiceInfo.soloPractitioner = true
+                    practiceInfo.soloPractitioner = false
                 }
                 if (practiceInfo.soloPractitioner) {
                     practiceInfo.firmName = ''
@@ -221,6 +230,15 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
             })
         }
 
+        if (stepKey === 'personal_info') {
+            const parsed = lawyerPersonalInfoSchema.safeParse(toRaw(personalInfo))
+            if (!parsed.success) {
+                const first = parsed.error.issues[0]
+                validationError.value = first?.message ?? 'Please check your personal details.'
+                return false
+            }
+        }
+
         if (stepKey === 'professional_info') {
             const parsed = lawyerProfessionalInfoSchema.safeParse(toRaw(professionalInfo))
             if (!parsed.success) {
@@ -236,11 +254,11 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
     const resetStore = () => {
         ninResubmitMode.value = false
-        Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: 'other', state: '', lga: '' })
+        Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: undefined, state: '', lga: '' })
         Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
-        Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: new Date().getFullYear(), university: '', llbYear: new Date().getFullYear() })
+        Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: undefined, university: '', llbYear: undefined })
         Object.assign(practiceInfo, {
-            soloPractitioner: true,
+            soloPractitioner: false,
             firmName: '',
             practiceAreas: [],
             statesOfPractice: [],

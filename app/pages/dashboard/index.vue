@@ -24,13 +24,10 @@ useHead({
 
 <template>
   <div>
-    <!-- Page Content -->
-    <div class="space-y-7 mt-7">
-      <ClientDashboard v-if="role === 'client'" />
-      <LawyerDashboard v-else-if="role === 'lawyer'" />
-      <div v-else class="py-12 text-center">
-        <p class="text-gray-600">Loading dashboard...</p>
-      </div>
+    <ClientDashboard v-if="role === 'client'" />
+    <LawyerDashboard v-else-if="role === 'lawyer'" />
+    <div v-else class="py-12 text-center">
+      <p class="text-muted-foreground">Chargement…</p>
     </div>
   </div>
 </template>

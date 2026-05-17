@@ -1,28 +1,38 @@
 <template>
-  <div class="stat-card">
-    <div class="stat-header">
-      <div class="stat-icon" :style="{ backgroundColor: `${color}15` }">
-        <component :is="icon" class="w-5 h-5" :style="{ color }" />
-      </div>
-      <UBadge v-if="trend" :color="trendColor" variant="soft" size="xs">
-        <component :is="trendIconComponent" class="w-3 h-3" />
+  <div class="hover:shadow-sm p-5 border border-border rounded-xl bg-card transition-shadow">
+    <div class="flex justify-between items-start gap-3 mb-4">
+      <span
+        class="flex justify-center items-center rounded-lg size-10 shrink-0"
+        :style="{ backgroundColor: `${color}18` }"
+      >
+        <component :is="icon" class="size-5" :style="{ color }" />
+      </span>
+      <Badge
+        v-if="trend && trend !== 'neutral' && change"
+        :variant="trend === 'up' ? 'secondary' : 'destructive'"
+        class="border-transparent text-xs"
+        :class="trend === 'up' ? 'bg-brand-green-100 text-brand-green-700' : ''"
+      >
+        <component :is="trendIconComponent" class="size-3" />
         {{ change }}
-      </UBadge>
+      </Badge>
     </div>
 
-    <div class="stat-content">
-      <div class="stat-value">{{ value }}</div>
-      <div class="stat-label">{{ label }}</div>
-    </div>
-
-    <div v-if="subtitle" class="stat-subtitle">
+    <p class="font-bold text-foreground text-3xl leading-none tracking-tight">
+      {{ value }}
+    </p>
+    <p class="mt-1 font-medium text-muted-foreground text-sm">
+      {{ label }}
+    </p>
+    <p v-if="subtitle" class="mt-3 pt-3 border-border border-t text-muted-foreground text-xs">
       {{ subtitle }}
-    </div>
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { Badge } from '@/components/ui/badge'
 import { PhMinus, PhTrendDown, PhTrendUp } from '@phosphor-icons/vue'
 
 interface Props {
@@ -36,14 +46,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: '#1d6b44',
-  trend: 'neutral'
-})
-
-const trendColor = computed(() => {
-  if (props.trend === 'up') return 'success'
-  if (props.trend === 'down') return 'error'
-  return 'neutral'
+  color: '#1F4D2C',
+  trend: 'neutral',
 })
 
 const trendIconComponent = computed<Component>(() => {
@@ -52,70 +56,3 @@ const trendIconComponent = computed<Component>(() => {
   return PhMinus
 })
 </script>
-
-<style scoped>
-.stat-card {
-  background: white;
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  transition: all var(--transition-base);
-}
-
-.stat-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-neutral-300);
-}
-
-.stat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.stat-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-content {
-  margin-bottom: var(--space-2);
-}
-
-.stat-value {
-  font-size: var(--text-3xl);
-  font-weight: var(--font-bold);
-  color: var(--color-neutral-900);
-  line-height: var(--leading-tight);
-  margin-bottom: var(--space-1);
-}
-
-.stat-label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--color-neutral-600);
-}
-
-.stat-subtitle {
-  font-size: var(--text-xs);
-  color: var(--color-neutral-500);
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--color-neutral-100);
-}
-
-@media (max-width: 640px) {
-  .stat-card {
-    padding: var(--space-4);
-  }
-
-  .stat-value {
-    font-size: var(--text-2xl);
-  }
-}
-</style>

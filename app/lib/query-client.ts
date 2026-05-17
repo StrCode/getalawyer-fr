@@ -57,6 +57,10 @@ export const queryKeys = {
       startDate,
       endDate,
     ] as const,
+  lawyerOnboarding: {
+    draft: ["lawyer", "onboarding", "draft"] as const,
+    status: ["lawyer", "onboarding", "status"] as const,
+  },
   lawyers: {
     all: ["lawyers"] as const,
     detail: (id: string) => ["lawyers", id] as const,

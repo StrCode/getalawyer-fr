@@ -19,44 +19,39 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    class="flex h-screen flex-col overflow-hidden bg-white font-sans selection:bg-primary-100 selection:text-primary-900"
-  >
+  <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
     <header
-      class="z-30 flex shrink-0 items-center justify-between px-8 py-5 transition-all duration-200 md:px-12"
-      :class="isScrolled ? 'border-b border-gray-100 bg-white/80 backdrop-blur-md' : ''"
+      class="z-30 flex shrink-0 items-center justify-between border-b border-border/40 bg-background px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
+      :class="isScrolled ? 'shadow-sm' : ''"
     >
       <AppHeaderBrand variant="wordmark" />
 
       <div class="flex items-center gap-2">
-        <Button variant="ghost" class="font-medium text-gray-600 hover:text-gray-900" as-child>
-          <NuxtLink to="/dashboard"> Dashboard </NuxtLink>
+        <Button variant="ghost" class="font-medium text-muted-foreground hover:text-foreground" as-child>
+          <NuxtLink to="/dashboard">
+            Dashboard
+          </NuxtLink>
         </Button>
       </div>
     </header>
 
     <main
       ref="scrollContainer"
-      class="relative flex-1 overflow-y-auto border-t border-gray-50 bg-white"
+      class="relative flex-1 overflow-y-auto bg-brand-cream-warm"
     >
-      <div
-        class="relative z-10 mx-auto w-full max-w-4xl px-6 py-12 transition-all duration-300 sm:px-10 lg:px-12"
-      >
+      <div class="relative mx-auto w-full max-w-4xl px-4 py-12 sm:px-6 md:px-12">
         <slot />
       </div>
     </main>
 
-    <!-- No step progress bar — slim footer only -->
-    <footer
-      class="z-40 shrink-0 border-t border-gray-100 bg-white pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)]"
-    >
-      <div class="mx-auto max-w-6xl px-6 py-5">
+    <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.03)]">
+      <div class="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 md:px-12">
         <slot name="footer-note">
-          <p class="text-center text-3 leading-snug text-gray-400 lg:mx-auto lg:max-w-md">
+          <p class="text-center text-sm leading-snug text-muted-foreground">
             By using Getalawyer you agree to our
-            <a href="#" class="text-primary hover:underline">Terms of Use</a>
+            <NuxtLink to="/terms" class="text-primary hover:underline">Terms of Use</NuxtLink>
             and
-            <a href="#" class="text-primary hover:underline">Privacy Policy</a>.
+            <NuxtLink to="/privacy" class="text-primary hover:underline">Privacy Policy</NuxtLink>.
           </p>
         </slot>
       </div>

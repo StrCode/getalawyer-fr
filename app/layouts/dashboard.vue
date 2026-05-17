@@ -1,15 +1,11 @@
 <template>
-  <div class="flex min-h-screen bg-[#F1F3F5]">
+  <div class="flex min-h-screen bg-background">
     <SidebarProvider class="flex w-full min-h-screen flex-1">
       <AppDashboardSidebar :main-links="mainLinks" :support-links="supportLinks" />
-      <SidebarInset class="flex min-h-screen flex-1 flex-col bg-[#F1F3F5]">
-        <div
-          class="flex my-2 mr-2 ml-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white"
-        >
-          <div class="flex-1 overflow-auto px-8 py-4">
-            <slot />
-          </div>
-        </div>
+      <SidebarInset class="flex min-h-screen flex-1 flex-col bg-background">
+        <main class="flex-1 overflow-auto px-6 py-6 lg:px-8 lg:py-8 max-w-[1400px]">
+          <slot />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   </div>
@@ -42,35 +38,35 @@ const role = computed(() => session.value?.user.userType)
 
 const lawyerMainMenuItems = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Overview',
+    label: 'Vue d\'ensemble',
     iconComponent: PhHouse,
     to: '/dashboard',
     exact: true,
   },
   {
-    label: 'Cases',
+    label: 'Dossiers',
     iconComponent: PhBriefcase,
     to: '/dashboard/cases',
     badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
   },
   {
-    label: 'Appointments',
+    label: 'Rendez-vous',
     iconComponent: PhCalendar,
     to: '/dashboard/appointments',
     badge: pendingAppointments.value > 0 ? pendingAppointments.value.toString() : undefined,
   },
   {
-    label: 'Consultation Types',
+    label: 'Types de consultation',
     iconComponent: PhFileText,
     to: '/dashboard/consultation-types',
   },
   {
-    label: 'Availability',
+    label: 'Disponibilités',
     iconComponent: PhClock,
     to: '/dashboard/availability',
   },
   {
-    label: 'Profile',
+    label: 'Profil',
     iconComponent: PhUserCircle,
     to: '/dashboard/profile',
   },
@@ -78,30 +74,30 @@ const lawyerMainMenuItems = computed<DashboardNavItem[]>(() => [
 
 const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Dashboard',
+    label: 'Tableau de bord',
     iconComponent: PhHouse,
     to: '/dashboard',
     exact: true,
   },
   {
-    label: 'My Cases',
+    label: 'Mes dossiers',
     iconComponent: PhBriefcase,
     to: '/dashboard/cases',
     badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
   },
   {
-    label: 'Find Lawyers',
+    label: 'Trouver un avocat',
     iconComponent: PhMagnifyingGlass,
     to: '/find-lawyers',
   },
   {
-    label: 'My Bookings',
+    label: 'Mes rendez-vous',
     iconComponent: PhCalendar,
     to: '/dashboard/bookings',
     badge: upcomingBookings.value > 0 ? upcomingBookings.value.toString() : undefined,
   },
   {
-    label: 'My Lawyers',
+    label: 'Mes avocats',
     iconComponent: PhUsers,
     to: '/dashboard/my-lawyers',
   },
@@ -113,12 +109,12 @@ const mainLinks = computed<DashboardNavItem[]>(() => {
 
 const supportLinks = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Settings',
+    label: 'Paramètres',
     iconComponent: PhGearSix,
     to: '/dashboard/settings',
   },
   {
-    label: 'Help Center',
+    label: 'Centre d\'aide',
     iconComponent: PhQuestion,
     to: '/help',
   },

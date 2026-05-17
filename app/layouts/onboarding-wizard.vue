@@ -29,34 +29,41 @@ export default defineComponent({
     PhWarningCircle
   },
   setup() {
-    const { useDraft } = useLawyerOnboarding()
-    const { isPending: isLawyerPending, isFetching: isLawyerFetching } = useDraft()
-
     const lawyerStore = useLawyerOnboardingStore()
     const clientStore = useClientOnboardingStore()
 
-    const { 
-       currentStep, prevStep, currentIndex, steps, isFirst, isLast, 
-       nextStep, userType 
+    const {
+      currentStep, prevStep, currentIndex, steps, isFirst, isLast,
+      nextStep, userType,
     } = useOnboardingNavigation()
+
+    const wizardMounted = ref(false)
+
+    const { useDraft } = useLawyerOnboarding()
+    const {
+      isPending: isLawyerPending,
+      isFetching: isLawyerFetching,
+      data: lawyerDraftData,
+    } = useDraft({
+      enabled: computed(() => userType.value === 'lawyer' && wizardMounted.value),
+    })
 
     const router = useRouter()
     const queryClient = useQueryClient()
     const { refetchSession } = useAuth()
 
-    // Dynamic resolution of the active store interface
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
-
-    // Lawyer draft only runs on client; without this gate SSR renders the slot while the first
-    // client paint would show "Syncing...", causing hydration mismatches.
-    const wizardMounted = ref(false)
 
     // Layout loading indicators (clients have instantaneous local renders, lawyers fetch remote status)
     const isPending = computed(
-      () => userType.value === 'lawyer' && wizardMounted.value && isLawyerPending.value
+      () =>
+        userType.value === 'lawyer'
+        && wizardMounted.value
+        && isLawyerPending.value
+        && !lawyerDraftData.value,
     )
     const isFetching = computed(
-      () => userType.value === 'lawyer' && wizardMounted.value && isLawyerFetching.value
+      () => userType.value === 'lawyer' && wizardMounted.value && isLawyerFetching.value,
     )
 
     const validationErrorBanner = computed(() => {
@@ -206,8 +213,8 @@ export default defineComponent({
   <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
     <!-- Header -->
     <header
-      class="z-30 flex shrink-0 items-center justify-between gap-4 px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
-      :class="isScrolled ? 'border-b border-border bg-background/90 backdrop-blur-md' : ''"
+      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
+      :class="isScrolled ? 'shadow-sm' : ''"
     >
       <AuthLogo class="min-w-0 shrink" />
 
@@ -234,8 +241,8 @@ export default defineComponent({
     </header>
 
     <!-- Main Content -->
-    <main ref="scrollContainer" class="relative flex-1 overflow-y-auto border-t border-border/60 bg-background">
-      <div class="max-w-4xl mx-auto py-16 px-6 sm:px-10 lg:px-12 relative z-10 w-full transition-all duration-300">
+    <main ref="scrollContainer" class="relative flex-1 overflow-y-auto bg-brand-cream-warm">
+      <div class="relative mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 md:px-12 lg:py-16">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
             <PhCircleNotch class="w-10 h-10 text-primary animate-spin mb-4" />
             <p class="font-medium tracking-tight text-muted-foreground">Syncing your progress...</p>
@@ -256,8 +263,8 @@ export default defineComponent({
     </main>
 
     <!-- Footer: unified progress + navigation -->
-    <footer class="z-40 shrink-0 border-t border-border bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
-      <div class="relative mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-5 md:px-12">
+    <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
+      <div class="relative mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-5 md:px-12">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
         <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
           <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">

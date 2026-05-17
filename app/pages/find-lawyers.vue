@@ -6,7 +6,7 @@ import { usePagination } from '~/composables/usePagination'
 import { watchPersistRecentLawyerDirectorySearch } from '~/composables/useRecentLawyerDirectorySearches'
 import { useLawyers } from '~/composables/useLawyers'
 import { useSpecializations } from '~/composables/useSpecializations'
-import { NIGERIA_STATES } from '~/constants/nigeria-states-lgas'
+import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import type { Specialization } from '~/lib/api'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Checkbox } from '~/components/ui/checkbox'
@@ -48,9 +48,10 @@ function writeStoredResultsLayout(v: 'grid' | 'list') {
   }
 }
 
-const STATE_DIRECTORY_OPTIONS = [...NIGERIA_STATES]
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map(s => ({ code: s.code, label: s.name }))
+const STATE_DIRECTORY_OPTIONS = NIGERIA_STATE_NAMES.map(name => ({
+  code: name,
+  label: name,
+}))
 
 /** One token (code, name, or legacy slug-style) → canonical state code. */
 function normalizeSingleStateCode(raw: string): string {
