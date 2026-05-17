@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
+import { formatOnboardingApiError } from '~/lib/onboarding-api-errors'
 import { normalizeScnDigitsOnly } from '~/lib/scn'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { normalizePracticeAreaSelections } from '~/lib/practice-areas'
@@ -203,6 +204,9 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
+            const draftSaved = await saveDraftState('review')
+            if (!draftSaved) return false
+
             return new Promise((resolve) => {
                 submitOnboardingMutation.mutate(undefined, {
                     onSuccess: () => resolve(true),
@@ -217,8 +221,12 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                             resolve(true)
                             return
                         }
+                        validationError.value = formatOnboardingApiError(
+                            e,
+                            'Could not submit your application. Please try again.',
+                        )
                         resolve(false)
-                    }
+                    },
                 })
             })
         }

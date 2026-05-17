@@ -1,10 +1,17 @@
 // API Error Class
+export type ApiValidationDetail = {
+  field: string;
+  message: string;
+};
+
 export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
     public code?: string,
     public details?: string,
+    /** Field-level validation from onboarding submit / step saves */
+    public validationDetails?: ApiValidationDetail[] | unknown,
   ) {
     super(message);
     this.name = "ApiError";
@@ -18,7 +25,8 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   code?: string;
-  details?: string;
+  details?: string | ApiValidationDetail[];
+  errors?: unknown;
 }
 
 // Retry Configuration
@@ -104,11 +112,13 @@ async function request<T>(
         );
       }
 
+      const details = errorData.details;
       throw new ApiError(
         errorData.error || errorData.message || "Request failed",
         response.status,
         errorData.code,
-        errorData.details,
+        typeof details === "string" ? details : undefined,
+        Array.isArray(details) ? details : errorData.errors,
       );
     }
 
@@ -173,11 +183,13 @@ export const httpClient = {
           );
         }
 
+        const details = errorData.details;
         throw new ApiError(
           errorData.error || errorData.message || "Request failed",
           response.status,
           errorData.code,
-          errorData.details,
+          typeof details === "string" ? details : undefined,
+          Array.isArray(details) ? details : errorData.errors,
         );
       }
 

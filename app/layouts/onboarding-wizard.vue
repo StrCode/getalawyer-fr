@@ -284,10 +284,16 @@ export default defineComponent({
     <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
       <div class="relative mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-5 md:px-12">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
-        <div v-if="validationErrorBanner" class="absolute -top-10 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
-          <div class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center justify-center gap-2 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-             <PhWarningCircle class="w-4 h-4" />
-             {{ validationErrorBanner }}
+        <div
+          v-if="validationErrorBanner"
+          class="absolute -top-14 left-1/2 z-10 w-full max-w-xl -translate-x-1/2 px-4 sm:-top-16"
+        >
+          <div
+            class="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-red-700 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
+            role="alert"
+          >
+            <PhWarningCircle class="mt-0.5 size-4 shrink-0 sm:size-5" />
+            <span class="whitespace-pre-line">{{ validationErrorBanner }}</span>
           </div>
         </div>
 
