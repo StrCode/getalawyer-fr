@@ -105,7 +105,7 @@ const handleRestart = async () => {
           </li>
           <li class="flex items-start gap-4">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">2</span>
-            <span class="text-sm font-medium">Gather any missing documents or update your credentials as requested.</span>
+            <span class="text-sm font-medium">Update your credentials or application details as requested in the feedback.</span>
           </li>
           <li class="flex items-start gap-4">
             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">3</span>

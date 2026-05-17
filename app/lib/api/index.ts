@@ -214,18 +214,6 @@ export const api = {
         "/api/lawyers/onboarding/practice-info",
         data,
       ),
-    saveDocuments: (data: {
-      documents: Array<{
-        type: "bar_license" | "certification";
-        url: string;
-        publicId: string;
-        originalName?: string;
-      }>;
-    }) =>
-      httpClient.patch<ApiResponse>(
-        "/api/lawyers/onboarding/documents",
-        data,
-      ),
     completeOnboarding: (data: {
       specializations: Array<{
         specializationId: string;
@@ -237,17 +225,6 @@ export const api = {
         "/api/lawyers/onboarding/complete",
         data,
       ),
-    uploadDocument: (formData: FormData) =>
-      httpClient.postFormData<ApiResponse>(
-        "/api/lawyers/upload-document",
-        formData,
-      ),
-    getDocuments: () =>
-      httpClient.getAuth<ApiResponse>("/api/lawyers/documents"),
-    deleteDocument: (id: string) =>
-      httpClient.delete<ApiResponse>(`/api/lawyers/documents/${id}`),
-    updateDocument: (id: string, data: { type?: string; originalName?: string }) =>
-      httpClient.patch<ApiResponse>(`/api/lawyers/documents/${id}`, data),
   },
 
   // Bookings API
