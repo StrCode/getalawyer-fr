@@ -30,6 +30,7 @@ import {
   PhFolderPlus,
   PhFunnel,
   PhGraduationCap,
+  PhHouse,
   PhImage,
   PhIdentificationCard,
   PhInfo,
@@ -62,6 +63,7 @@ export function normalizePhIconToken(raw: string): string {
     .toLowerCase()
     .replace(/^i-(heroicons|hugeicons|lucide)-/, '')
     .replace(/^heroicons:/, '')
+    .replace(/^ph:/, '')
 }
 
 export function resolvePhIcon(raw: string): Component {
@@ -204,6 +206,8 @@ export function resolvePhIcon(raw: string): Component {
     return PhBookmarkSimple
   if (k.includes('magnifying-glass') || k.includes('magnifying_glass'))
     return PhMagnifyingGlass
+  if (k === 'house' || k.includes('home'))
+    return PhHouse
   if (k.includes('rows'))
     return PhRows
 
