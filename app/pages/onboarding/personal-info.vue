@@ -6,7 +6,7 @@ import { type DateValue, getLocalTimeZone, today, parseDate } from '@internation
 import { ChevronDownIcon } from 'lucide-vue-next'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
-import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { getLgasForState, NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import { Card } from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -16,7 +16,7 @@ definePageMeta({
   middleware: ['auth', 'lawyer-onboarding-guard'],
 })
 
-const step = LAWYER_STEP_CONTENT.personal_info
+const step = getLawyerStepDisplay('personal_info')
 
 const inputClass =
   'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
@@ -52,7 +52,6 @@ const form = useForm({
   defaultValues: snapshotFromStore(),
   validators: {
     onBlur: lawyerPersonalInfoSchema,
-    onChange: lawyerPersonalInfoSchema,
     onSubmit: lawyerPersonalInfoSchema,
   },
   validatorAdapter: zodValidator(),
@@ -61,8 +60,16 @@ const form = useForm({
   },
 })
 
+/** Reactive snapshot — `form.state.values` is not tracked by Vue watchers. */
+const formValues = form.useStore((state) => state.values)
+const formFieldMeta = form.useStore((state) => state.fieldMeta)
+
+function syncFormToStore() {
+  Object.assign(store.personalInfo, { ...formValues.value })
+}
+
 watch(
-  () => form.state.values,
+  formValues,
   (v) => {
     Object.assign(store.personalInfo, v)
   },
@@ -84,7 +91,7 @@ function syncDobFromIso(iso: string | undefined) {
 }
 
 watch(
-  () => form.state.values.dateOfBirth,
+  () => formValues.value.dateOfBirth,
   (iso) => syncDobFromIso(iso),
   { immediate: true },
 )
@@ -105,7 +112,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
 const submitAttempted = ref(false)
 
-/** Show errors after blur, while editing (onChange), or after a failed Continue. */
+/** Show errors after blur or after a failed Continue. */
 function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
   if (submitAttempted.value) return !field.state.meta.isValid
   return field.state.meta.isTouched && !field.state.meta.isValid
@@ -113,7 +120,7 @@ function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolea
 
 function resetFormFromStore() {
   form.reset(snapshotFromStore())
-  syncDobFromIso(form.state.values.dateOfBirth)
+  syncDobFromIso(formValues.value.dateOfBirth)
 }
 
 onMounted(() => {
@@ -121,9 +128,17 @@ onMounted(() => {
 
   registerValidate?.(async () => {
     submitAttempted.value = true
+    syncFormToStore()
+
     await form.validateAllFields('submit')
-    const invalid = Object.values(form.state.fieldMeta).some((m) => !m.isValid)
+    const meta = formFieldMeta.value
+    const invalid = meta && Object.values(meta).some((m) => !m.isValid)
     if (invalid) return false
+
+    const parsed = lawyerPersonalInfoSchema.safeParse(formValues.value)
+    if (!parsed.success) return false
+
+    Object.assign(store.personalInfo, parsed.data)
     submitAttempted.value = false
     return true
   })

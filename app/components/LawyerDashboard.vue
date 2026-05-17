@@ -28,7 +28,7 @@ const applicationStatus = computed(() => (session.value?.user as { applicationSt
 
 watch(applicationStatus, (status) => {
   if (status === 'rejected') {
-    router.push('/onboarding/lawyer/rejected')
+    router.push('/onboarding/rejected')
   }
 }, { immediate: true })
 
@@ -36,7 +36,7 @@ const { useLawyerBookings } = useBookings()
 const { data: bookings, isPending: isLoadingBookings } = useLawyerBookings()
 const { getNextBooking, sortBookingsByDate } = useBookingDisplay()
 
-const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'vous')
+const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'there')
 
 const bookingsList = computed(() => bookings.value ?? [])
 const nextBooking = computed(() => getNextBooking(bookingsList.value))
@@ -57,26 +57,26 @@ const stats = computed(() => {
 
 const quickLinks: DashboardQuickLink[] = [
   {
-    label: 'Rendez-vous',
-    description: 'Gérer les réservations',
+    label: 'Appointments',
+    description: 'Manage bookings',
     to: '/dashboard/appointments',
     icon: PhCalendarDots,
   },
   {
-    label: 'Types de consultation',
-    description: 'Modifier vos prestations',
+    label: 'Consultation Types',
+    description: 'Edit your services',
     to: '/dashboard/consultation-types',
     icon: PhFileText,
   },
   {
-    label: 'Disponibilités',
-    description: 'Ajuster votre planning',
+    label: 'Availability',
+    description: 'Set your schedule',
     to: '/dashboard/availability',
     icon: PhClock,
   },
   {
-    label: 'Profil',
-    description: 'Mettre à jour vos informations',
+    label: 'Profile',
+    description: 'Update your details',
     to: '/dashboard/profile',
     icon: PhUserCircle,
   },
@@ -100,21 +100,21 @@ function handleDecline(bookingId: string) {
     <div class="flex flex-wrap justify-between items-start gap-4">
       <div>
         <h1 class="font-heading font-semibold text-foreground text-2xl tracking-tight">
-          Bonjour, {{ firstName }}
+          Welcome back, {{ firstName }}!
         </h1>
         <p class="mt-1 text-muted-foreground text-sm">
-          Gérez vos consultations et développez votre activité
+          Manage your consultations and grow your practice
         </p>
       </div>
       <Button as-child variant="outline">
         <NuxtLink to="/dashboard/profile" class="gap-2">
           <PhUserCircle class="size-4" />
-          Mon profil
+          View Profile
         </NuxtLink>
       </Button>
     </div>
 
-    <DashboardQuickLinks title="Accès rapide" :links="quickLinks" />
+    <DashboardQuickLinks title="Quick actions" :links="quickLinks" />
 
     <template v-if="!isLoadingBookings">
       <DashboardNextAppointment
@@ -122,24 +122,24 @@ function handleDecline(bookingId: string) {
         :person-name="nextBooking?.client?.name"
         :consultation-name="nextBooking?.consultationType?.name"
         :detail-path="nextBooking ? `/dashboard/appointments/${nextBooking.id}` : undefined"
-        empty-title="Aucune consultation à venir"
-        empty-description="Complétez votre profil et définissez vos disponibilités pour recevoir des demandes."
-        empty-cta-label="Compléter le profil"
+        empty-title="No upcoming appointments"
+        empty-description="Make sure your profile is complete and your availability is set to start receiving bookings."
+        empty-cta-label="Complete Profile"
         empty-cta-to="/dashboard/profile"
       />
 
       <EmptyState
         v-if="showFullEmpty"
         :icon="PhCalendarDots"
-        title="Aucune consultation pour le moment"
-        description="Vos demandes de rendez-vous apparaîtront ici. Vérifiez que votre profil et vos disponibilités sont à jour."
+        title="No consultations yet"
+        description="Your consultation requests will appear here. Make sure your profile is complete and your availability is set."
       >
         <template #actions>
           <Button as-child>
-            <NuxtLink to="/dashboard/profile">Compléter le profil</NuxtLink>
+            <NuxtLink to="/dashboard/profile">Complete Profile</NuxtLink>
           </Button>
           <Button as-child variant="outline">
-            <NuxtLink to="/dashboard/availability">Définir les disponibilités</NuxtLink>
+            <NuxtLink to="/dashboard/availability">Set Availability</NuxtLink>
           </Button>
         </template>
       </EmptyState>
@@ -151,40 +151,40 @@ function handleDecline(bookingId: string) {
         <div class="space-y-6">
           <div class="gap-4 grid grid-cols-2 lg:grid-cols-4">
             <StatCard
-              label="Actives"
+              label="Active Bookings"
               :value="stats.active"
               :icon="PhCalendarDots"
               :color="BRAND_GREEN"
-              :subtitle="stats.active === 0 ? 'Aucune en cours' : 'Confirmées ou en attente'"
+              :subtitle="stats.active === 0 ? 'No active bookings' : 'In progress'"
             />
             <StatCard
-              label="En attente"
+              label="Pending Requests"
               :value="stats.pending"
               :icon="PhClock"
               color="#b45309"
-              :subtitle="stats.pending === 0 ? 'Aucune demande' : 'À traiter'"
+              :subtitle="stats.pending === 0 ? 'No pending requests' : 'Awaiting response'"
             />
             <StatCard
-              label="Terminées"
+              label="Completed"
               :value="stats.completed"
               :icon="PhCheckCircle"
               :color="BRAND_GREEN"
-              subtitle="Ce mois-ci"
+              subtitle="This month"
             />
             <StatCard
-              label="Revenus"
-              value="0 €"
+              label="Revenue"
+              value="₦0"
               :icon="PhCurrencyEur"
               color="#2D6B3E"
-              subtitle="Ce mois-ci"
+              subtitle="This month"
             />
           </div>
 
           <section v-if="recentBookings.length > 0" class="space-y-3">
             <div class="flex justify-between items-center">
-              <h2 class="font-semibold text-foreground text-lg">Consultations récentes</h2>
+              <h2 class="font-semibold text-foreground text-lg">Recent Consultations</h2>
               <Button as-child variant="ghost" size="sm">
-                <NuxtLink to="/dashboard/appointments">Tout voir</NuxtLink>
+                <NuxtLink to="/dashboard/appointments">View all</NuxtLink>
               </Button>
             </div>
 
@@ -205,10 +205,10 @@ function handleDecline(bookingId: string) {
                 @click.stop
               >
                 <Button size="sm" @click="handleConfirm(booking.id)">
-                  Confirmer
+                  Confirm
                 </Button>
                 <Button size="sm" variant="ghost" @click="handleDecline(booking.id)">
-                  Refuser
+                  Decline
                 </Button>
               </div>
             </div>
@@ -217,18 +217,18 @@ function handleDecline(bookingId: string) {
           <div class="gap-4 grid grid-cols-1 lg:grid-cols-2">
             <section class="p-5 border border-border rounded-xl bg-card">
               <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-foreground text-base">Types de consultation</h2>
+                <h2 class="font-semibold text-foreground text-base">Consultation Types</h2>
                 <Button as-child variant="ghost" size="sm">
-                  <NuxtLink to="/dashboard/consultation-types">Gérer</NuxtLink>
+                  <NuxtLink to="/dashboard/consultation-types">Manage</NuxtLink>
                 </Button>
               </div>
               <DashboardConsultationTypesCard />
             </section>
             <section class="p-5 border border-border rounded-xl bg-card">
               <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-foreground text-base">Disponibilités</h2>
+                <h2 class="font-semibold text-foreground text-base">Availability</h2>
                 <Button as-child variant="ghost" size="sm">
-                  <NuxtLink to="/dashboard/availability">Modifier</NuxtLink>
+                  <NuxtLink to="/dashboard/availability">Update</NuxtLink>
                 </Button>
               </div>
               <DashboardAvailabilityCard />

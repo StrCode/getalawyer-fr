@@ -1,43 +1,140 @@
 <script setup lang="ts">
-import { useId } from 'vue'
-import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
 import { PhShieldCheck, PhIdentificationCard, PhCheckCircle, PhLock } from '@phosphor-icons/vue'
-import { Label } from '~/components/ui/label'
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText
-} from '~/components/ui/input-group'
-
-import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
+import { lawyerNinSchema } from '~/schemas/lawyerNin'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 definePageMeta({
   layout: 'onboarding-wizard',
   middleware: ['auth', 'lawyer-onboarding-guard'],
 })
 
-const step = LAWYER_STEP_CONTENT.nin_verification
+const step = getLawyerStepDisplay('nin_verification')
+
+const inputClass =
+  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
 
 const store = useLawyerOnboardingStore()
-const state = store.ninVerification
+const ninState = store.ninVerification
 const consentFieldId = useId()
 
-const isAdminVerified = computed(() => !!state.verified)
-const isSubmittedPending = computed(() => !!state.isSubmitted && !state.verified)
+const registerValidate = inject<
+  ((fn: (() => Promise<boolean>) | null) => void) | undefined
+>('registerLawyerOnboardingStepValidate', undefined)
 
-function onNinInput(e: Event) {
-  const el = e.target as HTMLInputElement
-  state.nin = el.value.replace(/\D/g, '')
+const isAdminVerified = computed(() => !!ninState.verified)
+const isSubmittedPending = computed(() => !!ninState.isSubmitted && !ninState.verified)
+const showEntryForm = computed(() => !isAdminVerified.value && !isSubmittedPending.value)
+
+function snapshotFromStore() {
+  return {
+    nin: ninState.nin ?? '',
+    consent: !!ninState.consent,
+  }
 }
 
+const form = useForm({
+  defaultValues: snapshotFromStore(),
+  validators: {
+    onBlur: lawyerNinSchema,
+    onSubmit: lawyerNinSchema,
+  },
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    ninState.nin = value.nin
+    ninState.consent = value.consent
+  },
+})
+
+const formValues = form.useStore((state) => state.values)
+const formFieldMeta = form.useStore((state) => state.fieldMeta)
+
+function syncFormToStore() {
+  ninState.nin = String(formValues.value.nin ?? '').replace(/\D/g, '').slice(0, 11)
+  ninState.consent = formValues.value.consent === true
+}
+
+watch(
+  formValues,
+  () => syncFormToStore(),
+  { deep: true },
+)
+
+const submitAttempted = ref(false)
+
+function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+  if (submitAttempted.value) return !field.state.meta.isValid
+  return field.state.meta.isTouched && !field.state.meta.isValid
+}
+
+const ninLength = computed(() => String(formValues.value.nin ?? '').length)
+
+onMounted(() => {
+  form.reset(snapshotFromStore())
+
+  registerValidate?.(async () => {
+    if (isAdminVerified.value || isSubmittedPending.value) {
+      return true
+    }
+
+    submitAttempted.value = true
+    syncFormToStore()
+
+    await form.validateAllFields('submit')
+    const meta = formFieldMeta.value
+    const invalid = meta && Object.values(meta).some((m) => !m.isValid)
+    if (invalid) return false
+
+    const parsed = lawyerNinSchema.safeParse({
+      nin: ninState.nin,
+      consent: ninState.consent,
+    })
+    if (!parsed.success) return false
+
+    ninState.nin = parsed.data.nin
+    ninState.consent = parsed.data.consent
+    submitAttempted.value = false
+    return true
+  })
+})
+
 onBeforeUnmount(() => {
+  registerValidate?.(null)
   store.clearNinResubmitMode()
 })
+
+watch(isSubmittedPending, (pending) => {
+  if (pending) {
+    submitAttempted.value = false
+  }
+})
+
+watch(
+  () => ninState.isSubmitted,
+  (submitted) => {
+    if (!submitted && !ninState.verified) {
+      form.reset(snapshotFromStore())
+      submitAttempted.value = false
+    }
+  },
+)
+
+function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) {
+  const digits = String(raw ?? '').replace(/\D/g, '').slice(0, 11)
+  field.handleChange(digits)
+}
 </script>
 
 <template>
-  <div class="w-full space-y-10 pb-20">
+  <div class="w-full space-y-8 pb-20">
     <OnboardingClientStepHeader
       v-if="!isAdminVerified"
       :step="step.step"
@@ -46,103 +143,142 @@ onBeforeUnmount(() => {
       :title="step.title"
       :description="step.description"
     />
-    <!-- Admin verified: locked (cannot change NIN) -->
-    <div v-if="isAdminVerified" class="text-center py-12">
-      <div class="mx-auto w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-6 relative border-4 border-white shadow-sm">
-        <PhLock class="w-10 h-10" weight="fill" />
-      </div>
-      <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-800 px-3 py-1 text-xs font-bold uppercase tracking-wide mb-4">
-        <PhShieldCheck class="w-4 h-4" weight="fill" />
-        Verified by Getalawyer
-      </div>
-      <h2 class="text-2xl font-bold text-gray-900 mb-3">Identity verified</h2>
-      <p class="text-base text-gray-600 max-w-md mx-auto font-medium">
-        Your National Identification Number has been verified. It cannot be changed while your application is active.
-      </p>
-    </div>
 
-    <!-- Submitted to server, pending admin — allow change until verified -->
-    <div v-else-if="isSubmittedPending" class="space-y-10">
-      <div class="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-6 py-8 text-center max-w-lg mx-auto">
-        <div class="mx-auto w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm border border-emerald-100 mb-4">
-          <PhCheckCircle class="w-8 h-8 text-emerald-600" weight="fill" />
-        </div>
-        <p class="text-lg font-bold text-gray-900 mb-1">NIN already submitted</p>
-        <p class="text-sm text-gray-600 mb-6">
-          Your NIN is saved securely. You can continue, or replace it with a different number if you made a mistake — until it is verified by our team.
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          class="font-semibold border-gray-300"
-          @click="store.beginChangeNin()"
+    <!-- Admin verified -->
+    <Card
+      v-if="isAdminVerified"
+      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 p-8 text-center shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-10"
+    >
+      <div
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-100/60 blur-3xl"
+        aria-hidden="true"
+      />
+      <div class="relative z-10">
+        <div
+          class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-emerald-50 text-emerald-600 shadow-sm"
         >
+          <PhLock class="h-10 w-10" weight="fill" />
+        </div>
+        <div
+          class="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-800"
+        >
+          <PhShieldCheck class="h-4 w-4" weight="fill" />
+          Verified by Getalawyer
+        </div>
+        <h2 class="mb-3 text-2xl font-semibold text-brand-green-900">Identity verified</h2>
+        <p class="mx-auto max-w-md text-base leading-relaxed text-brand-ink-soft">
+          Your National Identification Number has been verified. It cannot be changed while your
+          application is active.
+        </p>
+      </div>
+    </Card>
+
+    <!-- Already submitted -->
+    <Card
+      v-else-if="isSubmittedPending"
+      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+    >
+      <div class="relative z-10 p-6 text-center sm:p-8">
+        <div
+          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50"
+        >
+          <PhCheckCircle class="h-8 w-8 text-emerald-600" weight="fill" />
+        </div>
+        <p class="mb-1 text-lg font-semibold text-brand-green-900">NIN already submitted</p>
+        <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-brand-ink-soft">
+          Your NIN is saved securely. You can continue, or replace it if you made a mistake — until
+          our team verifies it.
+        </p>
+        <Button type="button" variant="outline" class="rounded-xl" @click="store.beginChangeNin()">
           Change NIN
         </Button>
+        <p class="mt-6 text-sm text-brand-ink-soft">
+          Use <span class="font-semibold text-foreground">Continue</span> to move on without
+          changing your NIN.
+        </p>
       </div>
+    </Card>
 
-      <div class="text-center text-sm text-gray-500 max-w-md mx-auto">
-        Use <span class="font-semibold text-gray-700">Next</span> to continue to the next step without changing your NIN.
-      </div>
-    </div>
+    <!-- Entry form -->
+    <Card
+      v-else-if="showEntryForm"
+      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+    >
+      <div
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
+        aria-hidden="true"
+      />
 
-    <!-- NIN entry -->
-    <div v-else class="space-y-8">
-      <div class="space-y-6">
-        <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-          <label class="text-3.5 font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight" for="nin-input">National Identity Number <span class="text-primary">*</span></label>
-          <div class="w-full max-w-md space-y-2">
-            <InputGroup
-              class="h-12 max-w-md rounded-lg border-gray-200/80 bg-background shadow-sm transition-shadow has-[[data-slot=input-group-control]:focus-visible]:shadow-md"
-            >
-              <InputGroupInput
-                id="nin-input"
-                v-model="state.nin"
-                placeholder="11-digit NIN"
-                autocomplete="off"
-                inputmode="numeric"
-                maxlength="11"
-                class="h-12 min-h-12 text-base tabular-nums md:text-sm"
-                @input="onNinInput"
-              />
-              <InputGroupAddon>
-                <PhIdentificationCard class="size-5 text-muted-foreground" />
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupText
-                  class="text-2.5 font-bold uppercase tracking-widest tabular-nums"
-                  :class="state.nin.length === 11 ? 'text-primary' : 'text-muted-foreground/60'"
+      <div class="relative z-10 p-6 sm:p-8">
+        <FieldGroup class="gap-6">
+          <form.Field v-slot="{ field }" name="nin">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">
+                National Identity Number (NIN)
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <div class="flex gap-2">
+                <span
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-brand-line/50 bg-white/80 px-3 text-muted-foreground"
+                  aria-hidden="true"
                 >
-                  {{ state.nin.length }}/11
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-            <p class="text-muted-foreground px-0.5 text-xs font-medium leading-relaxed">
-              Enter your 11-digit National Identity Number.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row md:items-start gap-3 md:gap-12 py-3">
-          <span class="text-3.5 font-bold text-gray-900 md:w-[180px] shrink-0 pt-3 tracking-tight">Verification Consent <span class="text-primary">*</span></span>
-          <div class="w-full max-w-md">
-            <Label
-              :for="consentFieldId"
-              class="hover:bg-primary/8 flex cursor-pointer items-start gap-3.5 rounded-xl border border-primary/15 bg-primary/5 p-4 transition-all has-data-[state=checked]:border-primary/45 has-data-[state=checked]:bg-primary/10 has-data-[state=checked]:shadow-sm"
-            >
-              <Checkbox :id="consentFieldId" v-model="state.consent" class="mt-0.5" />
-              <div class="grid min-w-0 flex-1 gap-1.5 font-normal">
-                <p class="text-foreground text-sm font-medium leading-snug">
-                  I consent to Getalawyer verifying my identity details with the National Identity Management Commission (NIMC) for professional background checks.
-                </p>
-                <p class="text-muted-foreground text-xs leading-relaxed">
-                  Required to proceed. Used only for identity verification.
-                </p>
+                  <PhIdentificationCard class="h-5 w-5" />
+                </span>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  placeholder="11-digit NIN"
+                  autocomplete="off"
+                  inputmode="numeric"
+                  maxlength="11"
+                  :class="[inputClass, 'flex-1 font-mono tabular-nums']"
+                  :aria-invalid="isInvalid(field)"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => onNinInput(field, v)"
+                />
+                <span
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-brand-line/50 bg-white/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
+                  :class="ninLength === 11 ? 'text-primary' : 'text-brand-ink-soft/60'"
+                >
+                  {{ ninLength }}/11
+                </span>
               </div>
-            </Label>
-          </div>
-        </div>
+              <FieldDescription>Enter your 11-digit National Identity Number.</FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+
+          <form.Field v-slot="{ field }" name="consent">
+            <Field :data-invalid="isInvalid(field)">
+              <Label
+                :for="consentFieldId"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-brand-line/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+              >
+                <Checkbox
+                  :id="consentFieldId"
+                  :model-value="field.state.value === true"
+                  class="mt-0.5"
+                  @update:model-value="(v) => {
+                    field.handleChange(!!v)
+                    field.handleBlur()
+                  }"
+                />
+                <span class="grid min-w-0 flex-1 gap-1">
+                  <span class="text-sm font-medium leading-snug text-foreground">
+                    I consent to Getalawyer verifying my identity with the National Identity
+                    Management Commission (NIMC) for professional background checks.
+                  </span>
+                  <span class="text-xs leading-relaxed text-brand-ink-soft">
+                    Required to proceed. Used only for identity verification.
+                  </span>
+                </span>
+              </Label>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </FieldGroup>
       </div>
-    </div>
+    </Card>
   </div>
 </template>

@@ -31,13 +31,7 @@ watch(isMobileMenuOpen, (isOpen) => {
       <div class="flex items-center justify-between max-w-7xl mx-auto px-6 md:px-8 py-5">
 
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2.5 no-underline text-brand-green-700 z-[110]">
-          <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,20 38,42 38,82 0,60" fill="#1F4D2C"/>
-            <polygon points="62,42 100,20 100,60 62,82" fill="#1F4D2C" opacity="0.55"/>
-          </svg>
-          <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
-        </NuxtLink>
+        <LandingBrandLogo class="z-[110]" />
 
         <!-- Nav links — hidden on mobile -->
         <ul class="hidden lg:flex gap-9 list-none m-0 p-0">
@@ -91,13 +85,7 @@ watch(isMobileMenuOpen, (isOpen) => {
       >
         <!-- Mobile Menu Header (Matches Main Header Layout) -->
         <div class="flex items-center justify-between px-8 py-5 border-b border-brand-line/50 shrink-0">
-          <NuxtLink to="/" @click="isMobileMenuOpen = false" class="flex items-center gap-2.5 no-underline text-brand-green-700">
-            <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <polygon points="0,20 38,42 38,82 0,60" fill="#1F4D2C"/>
-              <polygon points="62,42 100,20 100,60 62,82" fill="#1F4D2C" opacity="0.55"/>
-            </svg>
-            <span class="font-sans font-bold text-xl tracking-[-0.5px] lowercase text-brand-green-700">getalawyer</span>
-          </NuxtLink>
+          <LandingBrandLogo @click="isMobileMenuOpen = false" />
 
           <button
             @click="isMobileMenuOpen = false"

@@ -20,7 +20,7 @@ const props = defineProps<{
 
 const { bookingStatusBadge, formatRelativeSchedule, formatStatusLabel } = useBookingDisplay()
 
-const displayName = computed(() => props.personName ?? props.booking?.lawyer?.name ?? 'Avocat')
+const displayName = computed(() => props.personName ?? props.booking?.lawyer?.name ?? 'Lawyer')
 
 const initials = computed(() => {
   const name = displayName.value
@@ -38,7 +38,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
     class="bg-brand-green-100/60 p-6 border border-brand-line rounded-xl"
   >
     <p class="mb-3 font-medium text-brand-green-700 text-xs uppercase tracking-wide">
-      Prochain rendez-vous
+      Next appointment
     </p>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="flex items-start gap-4 min-w-0">
@@ -69,7 +69,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
       </div>
       <Button as-child class="shrink-0">
         <NuxtLink :to="path" class="gap-1.5">
-          Voir le détail
+          View details
           <PhArrowRight class="size-4" />
         </NuxtLink>
       </Button>
@@ -82,15 +82,15 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
   >
     <div>
       <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
-        {{ emptyTitle ?? 'Aucun rendez-vous à venir' }}
+        {{ emptyTitle ?? 'No upcoming appointments' }}
       </h2>
       <p class="mt-1 max-w-md text-muted-foreground text-sm">
-        {{ emptyDescription ?? 'Trouvez un avocat et réservez votre première consultation en ligne.' }}
+        {{ emptyDescription ?? 'Find a lawyer and book your first consultation online.' }}
       </p>
     </div>
     <Button as-child>
       <NuxtLink :to="emptyCtaTo ?? '/find-lawyers'">
-        {{ emptyCtaLabel ?? 'Trouver un avocat' }}
+        {{ emptyCtaLabel ?? 'Find a Lawyer' }}
       </NuxtLink>
     </Button>
   </section>

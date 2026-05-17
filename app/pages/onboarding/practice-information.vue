@@ -1,95 +1,212 @@
 <script setup lang="ts">
-import { useId, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useForm } from '@tanstack/vue-form'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import {
+  ListboxContent,
+  ListboxFilter,
+  ListboxItem,
+  ListboxItemIndicator,
+  ListboxRoot,
+  useFilter,
+} from 'reka-ui'
+import { PhCaretDown, PhCheck, PhCheckCircle, PhCircleNotch, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
+import { cn } from '@/lib/utils'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useSpecializations } from '~/composables/useSpecializations'
-import { Label } from '~/components/ui/label'
-import { Checkbox } from '~/components/ui/checkbox'
+import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
+import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
+import type { PracticeAreaSelection } from '~/lib/practice-areas'
+import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
-  PhCircleNotch,
-  PhMagnifyingGlass,
-  PhX,
-  PhCheck,
-  PhMapPin,
-  PhCheckCircle,
-  PhCaretDown
-} from '@phosphor-icons/vue'
-
-import { LAWYER_STEP_CONTENT } from '~/lib/lawyer-onboarding-steps'
+  TagsInput,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/ui/tags-input'
+import { NIGERIA_STATE_NAMES } from '@/constants/nigeria-states-lgas'
 
 definePageMeta({
   layout: 'onboarding-wizard',
   middleware: ['auth', 'lawyer-onboarding-guard'],
 })
 
-const step = LAWYER_STEP_CONTENT.practice_info
+const step = getLawyerStepDisplay('practice_info')
+const inputClass =
+  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
 
 const store = useLawyerOnboardingStore()
-const state = store.practiceInfo
 
-const soloFieldId = useId()
+const registerValidate = inject<
+  ((fn: (() => Promise<boolean>) | null) => void) | undefined
+>('registerLawyerOnboardingStepValidate', undefined)
+
+function snapshotFromStore() {
+  const p = store.practiceInfo
+  return {
+    soloPractitioner: p.soloPractitioner,
+    firmName: p.firmName ?? '',
+    practiceAreas: [...p.practiceAreas],
+    statesOfPractice: [...p.statesOfPractice],
+  }
+}
+
+const practiceSchema = computed(() =>
+  createLawyerPracticeInfoSchema(store.professionalInfo.yearOfCall),
+)
+
+const form = useForm({
+  defaultValues: snapshotFromStore(),
+  validatorAdapter: zodValidator(),
+  onSubmit: async ({ value }) => {
+    Object.assign(store.practiceInfo, value)
+  },
+})
+
+const formValues = form.useStore((state) => state.values)
 
 watch(
-  () => state.soloPractitioner,
-  (solo) => {
-    if (solo) state.firmName = ''
-  }
+  formValues,
+  (v) => {
+    Object.assign(store.practiceInfo, v)
+  },
+  { deep: true },
 )
+
+watch(
+  () => formValues.value.soloPractitioner,
+  (solo) => {
+    if (solo) {
+      form.setFieldValue('firmName', '')
+    }
+  },
+)
+
+const submitAttempted = ref(false)
+
+function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+  if (submitAttempted.value) return !field.state.meta.isValid
+  return field.state.meta.isTouched && !field.state.meta.isValid
+}
 
 const { data: specData, isPending: isLoadingSpecs } = useSpecializations()
 const specializations = computed(() => specData.value || [])
-
 const query = ref('')
+const stateQuery = ref('')
 
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
   if (!q) return specializations.value
-  return specializations.value.filter((s: any) =>
-    s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q)
+  return specializations.value.filter((s: { name: string; description?: string }) =>
+    s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q),
   )
 })
 
-const nigerianStatesOptions = [
-  'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
-  'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Gombe', 'Imo', 'Jigawa',
-  'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger',
-  'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara', 'FCT Abuja'
-]
+const selectedAreas = computed(() => formValues.value.practiceAreas ?? [])
 
-const selectedCount = computed(() => state.practiceAreas.length)
-const progressPercent = computed(() => (selectedCount.value / 5) * 100)
-const isSelected = (id: string) => state.practiceAreas.includes(id)
-const isDisabled = (id: string) => !isSelected(id) && selectedCount.value >= 5
-const nameById = (id: string) => specializations.value.find((s: any) => s.id === id)?.name ?? id
+const selectedCount = computed(() => selectedAreas.value.length)
 
-const toggle = (id: string) => {
-  const areas = state.practiceAreas
-  state.practiceAreas = areas.includes(id) ? areas.filter(s => s !== id) : [...areas, id]
+const selectedStates = computed(() => {
+  const raw = formValues.value.statesOfPractice
+  return Array.isArray(raw) ? [...raw] : []
+})
+
+const statesPopoverOpen = ref(false)
+const { contains } = useFilter({ sensitivity: 'base' })
+
+function syncStates(value: string[], field?: { handleBlur: () => void }) {
+  form.setFieldValue('statesOfPractice', value)
+  field?.handleBlur()
 }
 
-const toggleState = (s: string) => {
-  if (state.statesOfPractice.includes(s)) {
-    state.statesOfPractice = state.statesOfPractice.filter(item => item !== s)
-  } else {
-    state.statesOfPractice = [...state.statesOfPractice, s]
+function isAreaSelected(id: string) {
+  return selectedAreas.value.some((a) => a.practiceAreaId === id)
+}
+
+function getAreaYears(id: string): number | '' {
+  const row = selectedAreas.value.find((a) => a.practiceAreaId === id)
+  if (row?.yearsOfExperience == null) return ''
+  return row.yearsOfExperience
+}
+
+function toggleArea(id: string) {
+  const current = [...(formValues.value.practiceAreas ?? [])]
+  const idx = current.findIndex((a) => a.practiceAreaId === id)
+  if (idx >= 0) {
+    current.splice(idx, 1)
+  } else if (current.length < 5) {
+    current.push({ practiceAreaId: id, yearsOfExperience: null })
   }
+  form.setFieldValue('practiceAreas', current)
 }
 
-/** Flat controls: border only (`Input` defaults include shadow-xs — override). */
-const inputClass =
-  'h-12 rounded-lg border border-gray-200/80 bg-background shadow-none focus-visible:ring-2 focus-visible:ring-primary/15 w-full'
+function setAreaYears(id: string, raw: string) {
+  const current = [...(formValues.value.practiceAreas ?? [])]
+  const idx = current.findIndex((a) => a.practiceAreaId === id)
+  if (idx < 0) return
+  const trimmed = raw.trim()
+  const years = trimmed === '' ? null : Number(trimmed)
+  current[idx] = {
+    ...current[idx],
+    yearsOfExperience: Number.isFinite(years) ? years : null,
+  } as PracticeAreaSelection
+  form.setFieldValue('practiceAreas', current)
+}
 
-const labelColClass =
-  'text-3.5 font-bold leading-snug text-gray-900 md:w-[200px] md:shrink-0 md:pt-1 items-start self-start tracking-tight'
+const filteredStates = computed(() => {
+  const q = stateQuery.value.trim()
+  if (!q) return NIGERIA_STATE_NAMES
+  return NIGERIA_STATE_NAMES.filter((name) => contains(name, q))
+})
 
-// We rely on the layout's "Next" button to trigger the store's saveStep('practice-information')
+watch(stateQuery, (q) => {
+  if (q) statesPopoverOpen.value = true
+})
+
+const listboxItemClass = cn(
+  'relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden',
+  'data-highlighted:bg-accent data-highlighted:text-accent-foreground',
+  'data-disabled:pointer-events-none data-disabled:opacity-50',
+)
+
+const isDisabled = (id: string) => !isAreaSelected(id) && selectedCount.value >= 5
+
+const nameById = (id: string) =>
+  specializations.value.find((s: { id: string; name: string }) => s.id === id)?.name ?? id
+
+onMounted(() => {
+  form.reset(snapshotFromStore())
+
+  registerValidate?.(async () => {
+    submitAttempted.value = true
+    Object.assign(store.practiceInfo, { ...formValues.value })
+    const parsed = practiceSchema.value.safeParse(formValues.value)
+    if (!parsed.success) {
+      await form.validateAllFields('submit')
+      return false
+    }
+    Object.assign(store.practiceInfo, parsed.data)
+    submitAttempted.value = false
+    return true
+  })
+})
+
+onBeforeUnmount(() => {
+  registerValidate?.(null)
+})
 </script>
 
 <template>
   <div v-if="isLoadingSpecs" class="flex justify-center py-20">
-    <PhCircleNotch class="w-12 h-12 text-primary/20 animate-spin" />
+    <PhCircleNotch class="h-12 w-12 animate-spin text-primary/20" />
   </div>
 
-  <div v-else class="w-full space-y-10 pb-20">
+  <div v-else class="w-full space-y-8 pb-20">
     <OnboardingClientStepHeader
       :step="step.step"
       :total="step.total"
@@ -98,240 +215,241 @@ const labelColClass =
       :description="step.description"
     />
 
-    <div class="space-y-10">
-      <!-- Practice identity -->
-      <div class="space-y-6">
-        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
-          Practice identity
-        </p>
-        <div class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0">
-          <label :class="labelColClass">
-            Firm or practice name <span class="font-normal text-gray-400">(optional)</span>
-          </label>
-          <div class="min-w-0 w-full max-w-xl flex-1 space-y-4">
-            <Label
-              :for="soloFieldId"
-              class="hover:bg-primary/5 flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200/80 bg-background p-4 transition-colors has-data-[state=checked]:border-primary/35 has-data-[state=checked]:bg-primary/5"
-            >
-              <Checkbox :id="soloFieldId" v-model="state.soloPractitioner" class="mt-0.5" />
-              <span class="grid min-w-0 flex-1 gap-1">
-                <span class="text-sm font-bold leading-snug text-gray-900">I am a solo practitioner</span>
-                <span class="text-xs font-medium leading-relaxed text-gray-500">
-                  Practising under your own name — no firm or partnership is shown on your profile.
+    <Card
+      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+    >
+      <div class="relative z-10 p-6 sm:p-8">
+        <FieldGroup class="gap-8">
+          <form.Field v-slot="{ field }" name="soloPractitioner">
+            <Field>
+              <Label
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-brand-line/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+              >
+                <Checkbox
+                  :model-value="field.state.value"
+                  class="mt-0.5"
+                  @update:model-value="(v) => {
+                    field.handleChange(!!v)
+                    field.handleBlur()
+                  }"
+                />
+                <span class="grid gap-1">
+                  <span class="text-sm font-medium text-foreground">I am a solo practitioner</span>
+                  <span class="text-xs text-muted-foreground">
+                    Practising under your own name — no firm shown on your profile.
+                  </span>
                 </span>
-              </span>
-            </Label>
-            <div v-if="!state.soloPractitioner" class="space-y-2">
+              </Label>
+            </Field>
+          </form.Field>
+
+          <form.Field v-if="!formValues.soloPractitioner" v-slot="{ field }" name="firmName">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">
+                Firm or practice name
+                <span class="font-normal text-brand-ink-soft">(optional if solo)</span>
+              </FieldLabel>
               <Input
-                v-model="state.firmName"
+                :id="field.name"
+                :model-value="field.state.value"
                 placeholder="e.g. Adeyemi & Partners"
                 :class="inputClass"
+                :aria-invalid="isInvalid(field)"
+                @blur="field.handleBlur"
+                @update:model-value="field.handleChange"
               />
-              <p class="px-0.5 text-xs font-medium leading-relaxed text-gray-500">
-                This name appears on your public profile when you represent a firm or chambers.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
 
-      <!-- Practice areas -->
-      <div class="space-y-6">
-        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
-          Practice areas
-        </p>
-        <div class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0">
-          <div class="md:w-[200px] md:shrink-0">
-            <p class="text-3.5 font-bold leading-snug text-gray-900">
-              Legal specializations <span class="text-primary">*</span>
-            </p>
-            <p class="mt-2 max-w-[200px] text-xs font-medium leading-relaxed text-gray-500">
-              Select up to 5 areas that match how you practise.
-            </p>
-          </div>
-          <div class="min-w-0 w-full flex-1 space-y-4">
-            <div class="relative w-full max-w-xl">
-              <div class="relative">
-                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <PhMagnifyingGlass class="h-5 w-5" />
-                </div>
+          <form.Field v-slot="{ field }" name="statesOfPractice">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel>
+                States of practice
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <Popover v-model:open="statesPopoverOpen">
+                <ListboxRoot
+                  :model-value="selectedStates"
+                  multiple
+                  highlight-on-hover
+                  @update:model-value="(v) => syncStates(v, field)"
+                >
+                  <PopoverAnchor class="w-full">
+                    <TagsInput
+                      v-slot="{ modelValue: stateTags }"
+                      :model-value="selectedStates"
+                      :aria-invalid="isInvalid(field)"
+                      :class="[
+                        inputClass,
+                        'h-auto min-h-11 w-full gap-1.5 px-2 py-1.5 shadow-none',
+                      ]"
+                      @update:model-value="(v) => syncStates(v, field)"
+                    >
+                      <TagsInputItem
+                        v-for="item in stateTags"
+                        :key="item"
+                        :value="item"
+                        class="rounded-md border border-primary/25 bg-primary/10 text-primary"
+                      >
+                        <TagsInputItemText class="text-xs font-semibold" />
+                        <TagsInputItemDelete />
+                      </TagsInputItem>
+
+                      <ListboxFilter v-model="stateQuery" as-child>
+                        <TagsInputInput
+                          placeholder="Search or select states..."
+                          class="min-h-8 text-base placeholder:text-brand-ink-soft/50"
+                          @keydown.enter.prevent
+                          @keydown.down="statesPopoverOpen = true"
+                        />
+                      </ListboxFilter>
+
+                      <PopoverTrigger as-child>
+                        <Button
+                          type="button"
+                          size="icon-sm"
+                          variant="ghost"
+                          class="order-last ml-auto shrink-0 self-center"
+                          aria-label="Open states list"
+                        >
+                          <PhCaretDown class="size-4 text-muted-foreground" />
+                        </Button>
+                      </PopoverTrigger>
+                    </TagsInput>
+                  </PopoverAnchor>
+                  <PopoverContent
+                    class="w-(--reka-popover-trigger-width) p-1"
+                    align="start"
+                    @open-auto-focus.prevent
+                  >
+                  <ListboxContent
+                    class="max-h-[min(280px,50vh)] scroll-py-1 overflow-x-hidden overflow-y-auto"
+                    tabindex="0"
+                  >
+                    <p
+                      v-if="filteredStates.length === 0"
+                      class="py-6 text-center text-sm text-muted-foreground"
+                    >
+                      No states match your search.
+                    </p>
+                    <ListboxItem
+                      v-for="s in filteredStates"
+                      :key="s"
+                      :value="s"
+                      :class="listboxItemClass"
+                      @select="stateQuery = ''"
+                    >
+                      <span class="min-w-0 leading-snug">{{ s }}</span>
+                      <ListboxItemIndicator class="ml-auto inline-flex items-center justify-center">
+                        <PhCheck class="size-4 text-primary" weight="bold" />
+                      </ListboxItemIndicator>
+                    </ListboxItem>
+                    </ListboxContent>
+                  </PopoverContent>
+                </ListboxRoot>
+              </Popover>
+              <FieldDescription>Select all states where you are licensed or actively practising.</FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+
+          <form.Field v-slot="{ field }" name="practiceAreas">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel>
+                Legal specializations
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <FieldDescription class="mb-3">
+                Select up to 5 areas. Add years in each area if you like (optional).
+              </FieldDescription>
+
+              <div class="relative mb-4">
+                <PhMagnifyingGlass class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   v-model="query"
                   placeholder="Search legal areas..."
-                  class="h-12 w-full rounded-lg border border-gray-200/80 bg-background pl-10 shadow-none focus-visible:ring-2 focus-visible:ring-primary/15"
+                  :class="[inputClass, 'pl-10']"
                 />
               </div>
 
-              <div class="mt-4 flex items-center justify-between px-1">
-                <span class="text-2.5 font-bold uppercase tracking-widest text-gray-400">Selected ({{ selectedCount }}/5)</span>
-                <div class="h-1.5 w-32 overflow-hidden rounded-full bg-gray-100">
-                  <div class="h-full bg-primary transition-all duration-300" :style="{ width: `${progressPercent}%` }" />
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Selected ({{ selectedCount }}/5)
+              </p>
+
+              <div
+                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-brand-line/40 bg-white/50 p-2"
+              >
+                <div
+                  v-for="spec in filtered"
+                  :key="spec.id"
+                  class="rounded-lg border p-3 transition-colors"
+                  :class="isAreaSelected(spec.id)
+                    ? 'border-primary/40 bg-primary/5'
+                    : isDisabled(spec.id)
+                      ? 'cursor-not-allowed border-transparent opacity-50'
+                      : 'cursor-pointer border-brand-line/30 bg-white hover:border-brand-line/60'"
+                  @click="!isDisabled(spec.id) && toggleArea(spec.id)"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-semibold text-foreground">{{ spec.name }}</p>
+                      <p v-if="spec.description" class="line-clamp-1 text-xs text-muted-foreground">
+                        {{ spec.description }}
+                      </p>
+                    </div>
+                    <PhCheckCircle
+                      v-if="isAreaSelected(spec.id)"
+                      class="h-5 w-5 shrink-0 text-primary"
+                      weight="fill"
+                    />
+                  </div>
+                  <div
+                    v-if="isAreaSelected(spec.id)"
+                    class="mt-3 flex items-center gap-2 border-t border-brand-line/30 pt-3"
+                    @click.stop
+                  >
+                    <Label :for="`years-${spec.id}`" class="shrink-0 text-xs text-muted-foreground">
+                      Years (optional)
+                    </Label>
+                    <Input
+                      :id="`years-${spec.id}`"
+                      type="number"
+                      min="0"
+                      :max="store.professionalInfo.yearOfCall
+                        ? new Date().getFullYear() - store.professionalInfo.yearOfCall
+                        : 80"
+                      :model-value="getAreaYears(spec.id) === '' ? '' : String(getAreaYears(spec.id))"
+                      placeholder="—"
+                      class="h-9 max-w-[5.5rem] rounded-lg border-brand-line/50 text-sm tabular-nums"
+                      inputmode="numeric"
+                      @update:model-value="(v) => setAreaYears(spec.id, String(v ?? ''))"
+                    />
+                  </div>
                 </div>
+                <p v-if="filtered.length === 0" class="py-8 text-center text-sm text-muted-foreground">
+                  No areas match "{{ query }}"
+                </p>
               </div>
 
-              <div v-if="selectedCount > 0" class="mt-4 flex flex-wrap gap-2">
+              <div v-if="selectedCount > 0" class="mt-3 flex flex-wrap gap-2">
                 <button
-                  v-for="id in state.practiceAreas"
-                  :key="id"
+                  v-for="row in selectedAreas"
+                  :key="row.practiceAreaId"
                   type="button"
-                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 py-1.5 pr-2 pl-3 text-3 font-bold text-primary transition-all hover:bg-primary/20 active:scale-95"
-                  @click="toggle(id)"
+                  class="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"
+                  @click="toggleArea(row.practiceAreaId)"
                 >
-                  {{ nameById(id) }}
-                  <PhX class="h-3.5 w-3.5" />
+                  {{ nameById(row.practiceAreaId) }}
+                  <PhX class="h-3 w-3" />
                 </button>
               </div>
 
-              <div
-                class="mt-6 overflow-hidden rounded-xl border border-gray-100 bg-white ring-1 ring-black/[0.04]"
-              >
-                <div v-if="filtered.length === 0" class="py-10 text-center text-sm italic text-gray-400">
-                  No legal areas match "{{ query }}"
-                </div>
-                <div v-else class="grid max-h-[300px] grid-cols-1 gap-2 overflow-y-auto p-2 sm:grid-cols-2">
-                  <button
-                    v-for="spec in filtered"
-                    :key="spec.id"
-                    type="button"
-                    class="group relative rounded-lg border p-3 text-left transition-all duration-150"
-                    :class="isSelected(spec.id) ? 'border-primary bg-primary/5' : isDisabled(spec.id) ? 'cursor-not-allowed border-gray-50 bg-gray-50 opacity-50' : 'cursor-pointer border-gray-200 bg-white hover:border-gray-300'"
-                    :disabled="isDisabled(spec.id)"
-                    @click="!isDisabled(spec.id) && toggle(spec.id)"
-                  >
-                    <p class="mb-0.5 text-sm font-bold tracking-tight text-gray-900">{{ spec.name }}</p>
-                    <p class="line-clamp-1 text-2.5 font-medium leading-snug text-gray-400">{{ spec.description }}</p>
-                    <div v-if="isSelected(spec.id)" class="absolute top-2 right-2">
-                      <PhCheckCircle class="h-4.5 w-4.5 text-primary" />
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </FieldGroup>
       </div>
-
-      <!-- States of practice -->
-      <div class="space-y-6">
-        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
-          Licensing & coverage
-        </p>
-        <div class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0">
-          <label :class="labelColClass">
-            States of practice <span class="text-primary">*</span>
-          </label>
-          <div class="min-w-0 w-full max-w-xl flex-1 space-y-2">
-            <Popover>
-              <PopoverTrigger as-child>
-                <div
-                  class="flex h-12 w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200/80 bg-background px-4 transition-colors hover:border-gray-300"
-                >
-                  <div class="flex min-w-0 items-center gap-2 overflow-hidden">
-                    <PhMapPin class="h-5 w-5 shrink-0 text-gray-400" />
-                    <div v-if="state.statesOfPractice.length === 0" class="truncate font-medium text-gray-400">
-                      Select states where you practice
-                    </div>
-                    <div v-else class="flex gap-1.5 overflow-hidden">
-                      <span
-                        v-for="s in state.statesOfPractice.slice(0, 2)"
-                        :key="s"
-                        class="shrink-0 rounded bg-gray-100 px-2 py-0.5 text-3 font-bold text-gray-700"
-                      >
-                        {{ s }}
-                      </span>
-                      <span v-if="state.statesOfPractice.length > 2" class="pt-0.5 text-3 font-bold text-gray-400">
-                        +{{ state.statesOfPractice.length - 2 }} more
-                      </span>
-                    </div>
-                  </div>
-                  <div class="text-gray-400">
-                    <PhCaretDown class="h-4 w-4" />
-                  </div>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent class="w-[var(--reka-popover-trigger-width)] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Filter states..." />
-                  <CommandList class="max-h-[300px]">
-                    <CommandEmpty>No states found.</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        v-for="s in nigerianStatesOptions"
-                        :key="s"
-                        :value="s"
-                        class="flex cursor-pointer items-center gap-2"
-                        @select="toggleState(s)"
-                      >
-                        <div
-                          class="flex h-4 w-4 items-center justify-center rounded border transition-colors"
-                          :class="state.statesOfPractice.includes(s) ? 'border-primary bg-primary' : 'border-gray-300'"
-                        >
-                          <PhCheck v-if="state.statesOfPractice.includes(s)" class="h-3 w-3 text-white" />
-                        </div>
-                        {{ s }}
-                      </CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            <p class="px-0.5 text-xs font-medium leading-relaxed text-gray-500">
-              List all states where you are licensed or actively practising.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Office address -->
-      <div class="space-y-6">
-        <p class="text-3 font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-2">
-          {{ state.soloPractitioner ? 'Your practice address' : 'Primary office' }}
-        </p>
-        <div class="flex w-full flex-col gap-2 md:flex-row md:items-start md:gap-x-10 md:gap-y-0">
-          <div class="md:w-[200px] md:shrink-0">
-            <p class="text-3.5 font-bold leading-snug text-gray-900">
-              <template v-if="state.soloPractitioner">
-                Your office address <span class="text-primary">*</span>
-              </template>
-              <template v-else>
-                Office address <span class="text-primary">*</span>
-              </template>
-            </p>
-            <p class="mt-2 max-w-[200px] text-xs font-medium leading-relaxed text-gray-500">
-              <template v-if="state.soloPractitioner">
-                Where you practise on your own — the address clients may visit or use to reach you.
-              </template>
-              <template v-else>
-                Physical location of your principal law office.
-              </template>
-            </p>
-          </div>
-          <div class="min-w-0 w-full max-w-xl flex-1 space-y-6">
-            <div>
-              <label class="mb-1.5 block text-3 font-bold uppercase tracking-wider text-gray-400">Street address</label>
-              <Input
-                v-model="state.officeAddress.street"
-                placeholder="e.g. 123 Marina Street"
-                :class="inputClass"
-              />
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="mb-1.5 block text-3 font-bold uppercase tracking-wider text-gray-400">City</label>
-                <Input v-model="state.officeAddress.city" placeholder="Lagos" :class="inputClass" />
-              </div>
-              <div>
-                <label class="mb-1.5 block text-3 font-bold uppercase tracking-wider text-gray-400">State</label>
-                <Input v-model="state.officeAddress.state" placeholder="Lagos State" :class="inputClass" />
-              </div>
-            </div>
-            <div>
-              <label class="mb-1.5 block text-3 font-bold uppercase tracking-wider text-gray-400">Postal code</label>
-              <Input v-model="state.officeAddress.postalCode" placeholder="100001" :class="[inputClass, 'max-w-40']" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Card>
   </div>
 </template>

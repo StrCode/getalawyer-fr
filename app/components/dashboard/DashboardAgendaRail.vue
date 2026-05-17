@@ -20,9 +20,9 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 <template>
   <aside class="flex flex-col gap-4 bg-card p-5 border border-border rounded-xl h-fit">
     <div>
-      <h2 class="font-semibold text-foreground text-sm">À venir</h2>
+      <h2 class="font-semibold text-foreground text-sm">Upcoming</h2>
       <p class="mt-0.5 text-muted-foreground text-xs">
-        {{ agendaItems.length > 0 ? `${agendaItems.length} rendez-vous` : 'Aucun rendez-vous planifié' }}
+        {{ agendaItems.length > 0 ? `${agendaItems.length} appointment${agendaItems.length === 1 ? '' : 's'}` : 'Nothing scheduled' }}
       </p>
     </div>
 
@@ -53,7 +53,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
         <PhCalendarX class="size-5" />
       </span>
       <p class="text-muted-foreground text-xs leading-relaxed">
-        Vos prochains rendez-vous apparaîtront ici.
+        Your upcoming appointments will show up here.
       </p>
     </div>
 
@@ -62,7 +62,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
       class="inline-flex items-center gap-1.5 mt-auto font-medium text-primary text-xs hover:underline"
     >
       <PhCalendarCheck class="size-3.5" />
-      Voir tous les rendez-vous
+      View all appointments
     </NuxtLink>
   </aside>
 </template>

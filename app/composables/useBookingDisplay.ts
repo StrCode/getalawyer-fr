@@ -1,7 +1,7 @@
 import type { BadgeVariants } from '@/components/ui/badge'
 import type { Booking, BookingStatus } from '~/types/booking'
 
-const LOCALE = 'fr-FR'
+const LOCALE = 'en-US'
 
 export function useBookingDisplay() {
   function formatBookingDate(date: string, options?: Intl.DateTimeFormatOptions) {
@@ -16,21 +16,14 @@ export function useBookingDisplay() {
   function formatBookingDateLong(date: string) {
     return new Date(date).toLocaleDateString(LOCALE, {
       weekday: 'long',
-      day: 'numeric',
       month: 'long',
+      day: 'numeric',
       year: 'numeric',
     })
   }
 
   function formatStatusLabel(status: BookingStatus | string) {
-    const labels: Record<string, string> = {
-      pending: 'En attente',
-      confirmed: 'Confirmé',
-      completed: 'Terminé',
-      cancelled: 'Annulé',
-      no_show: 'Absent',
-    }
-    return labels[status] ?? status.replace('_', ' ')
+    return status.replace('_', ' ')
   }
 
   function bookingStatusBadge(status: string): {
@@ -42,18 +35,18 @@ export function useBookingDisplay() {
       case 'completed':
         return {
           variant: 'secondary',
-          class: 'border-transparent bg-brand-green-100 text-brand-green-700',
+          class: 'border-transparent bg-brand-green-100 text-brand-green-700 capitalize',
         }
       case 'pending':
         return {
           variant: 'outline',
-          class: 'border-amber-200 bg-amber-50 text-amber-800',
+          class: 'border-amber-200 bg-amber-50 text-amber-800 capitalize',
         }
       case 'cancelled':
       case 'no_show':
-        return { variant: 'destructive', class: '' }
+        return { variant: 'destructive', class: 'capitalize' }
       default:
-        return { variant: 'secondary', class: '' }
+        return { variant: 'secondary', class: 'capitalize' }
     }
   }
 
@@ -90,12 +83,12 @@ export function useBookingDisplay() {
 
     const time = booking.scheduledStartTime.slice(0, 5)
 
-    if (diffDays === 0) return `Aujourd'hui à ${time}`
-    if (diffDays === 1) return `Demain à ${time}`
+    if (diffDays === 0) return `Today at ${time}`
+    if (diffDays === 1) return `Tomorrow at ${time}`
     if (diffDays > 1 && diffDays <= 7) {
-      return `${formatBookingDate(booking.scheduledDate)} à ${time}`
+      return `${formatBookingDate(booking.scheduledDate)} at ${time}`
     }
-    return `${formatBookingDateLong(booking.scheduledDate)} à ${time}`
+    return `${formatBookingDateLong(booking.scheduledDate)} at ${time}`
   }
 
   return {

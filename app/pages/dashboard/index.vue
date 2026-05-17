@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth']
+  middleware: ['auth'],
 })
 
 const { session } = useAuth()
@@ -27,7 +27,7 @@ useHead({
     <ClientDashboard v-if="role === 'client'" />
     <LawyerDashboard v-else-if="role === 'lawyer'" />
     <div v-else class="py-12 text-center">
-      <p class="text-muted-foreground">Chargement…</p>
+      <p class="text-muted-foreground">Loading dashboard…</p>
     </div>
   </div>
 </template>

@@ -7,6 +7,23 @@ export type LawyerStepKey =
   | 'practice_info'
   | 'review'
 
+export const LAWYER_ONBOARDING_TOTAL = 3
+
+/** UX step number shown in headers and footer (5 routes, 3 perceived steps). */
+export const LAWYER_STEP_UX_NUMBER: Record<LawyerStepKey, number> = {
+  personal_info: 1,
+  nin_verification: 1,
+  professional_info: 2,
+  practice_info: 2,
+  review: 3,
+}
+
+export const LAWYER_UX_STEP_LABELS = [
+  'About you',
+  'Credentials & practice',
+  'Review & submit',
+] as const
+
 export interface LawyerStepContent {
   step: number
   total: number
@@ -15,44 +32,32 @@ export interface LawyerStepContent {
   description: string
 }
 
-export const LAWYER_ONBOARDING_TOTAL = 5
-
-export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, LawyerStepContent> = {
+export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 'step' | 'total'>> = {
   personal_info: {
-    step: 1,
-    total: LAWYER_ONBOARDING_TOTAL,
-    label: 'Basic information',
+    label: 'About you',
     title: 'Tell us about yourself',
     description:
       'We use this for identity verification. Your details are kept private and are not shown on your public profile.',
   },
   nin_verification: {
-    step: 2,
-    total: LAWYER_ONBOARDING_TOTAL,
-    label: 'Identity verification',
+    label: 'About you',
     title: 'Verify your identity',
     description:
       'Enter your National Identification Number. We store it securely and verify it during application review.',
   },
   professional_info: {
-    step: 3,
-    total: LAWYER_ONBOARDING_TOTAL,
-    label: 'Professional background',
-    title: 'Your bar admission details',
+    label: 'Credentials & practice',
+    title: 'Bar admission',
     description:
-      'Confirm your Supreme Court enrolment number, law school, and year of call so we can validate your NBA credentials.',
+      'Your Supreme Court enrolment number and year of call help us validate your NBA credentials.',
   },
   practice_info: {
-    step: 4,
-    total: LAWYER_ONBOARDING_TOTAL,
-    label: 'Practice details',
-    title: 'How do you practise?',
+    label: 'Credentials & practice',
+    title: 'How you practise',
     description:
-      'Share your firm or solo practice, office location, states of practice, and areas of legal expertise.',
+      'Share where you practise, your firm or solo status, and the legal areas you focus on.',
   },
   review: {
-    step: 5,
-    total: LAWYER_ONBOARDING_TOTAL,
     label: 'Review & submit',
     title: 'Review your application',
     description:
@@ -60,11 +65,18 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, LawyerStepContent> = {
   },
 }
 
-export function getLawyerStepContent(key: string): LawyerStepContent | null {
-  if (key in LAWYER_STEP_CONTENT) {
-    return LAWYER_STEP_CONTENT[key as LawyerStepKey]
+export function getLawyerStepDisplay(key: LawyerStepKey): LawyerStepContent {
+  const content = LAWYER_STEP_CONTENT[key]
+  return {
+    ...content,
+    step: LAWYER_STEP_UX_NUMBER[key],
+    total: LAWYER_ONBOARDING_TOTAL,
   }
-  return null
+}
+
+export function getLawyerUxStepIndex(stepKey: string | undefined): number {
+  if (!stepKey || !(stepKey in LAWYER_STEP_UX_NUMBER)) return 0
+  return LAWYER_STEP_UX_NUMBER[stepKey as LawyerStepKey] - 1
 }
 
 export function getPathByLawyerStepKey(

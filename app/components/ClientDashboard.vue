@@ -8,14 +8,13 @@ import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
 import { Button } from '@/components/ui/button'
 import {
-  PhBriefcase,
   PhCalendarDots,
+  PhChatCircle,
   PhCheckCircle,
   PhClock,
   PhMagnifyingGlass,
   PhScales,
   PhCircleNotch,
-  PhUsersThree,
 } from '@phosphor-icons/vue'
 
 const BRAND_GREEN = '#1F4D2C'
@@ -25,7 +24,7 @@ const { useClientBookings } = useBookings()
 const { data: bookingsData, isPending } = useClientBookings()
 const { getNextBooking, sortBookingsByDate } = useBookingDisplay()
 
-const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'vous')
+const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'there')
 
 const bookings = computed(() => bookingsData.value ?? [])
 
@@ -48,28 +47,16 @@ const stats = computed(() => {
 
 const quickLinks: DashboardQuickLink[] = [
   {
-    label: 'Trouver un avocat',
-    description: 'Parcourir les professionnels vérifiés',
-    to: '/find-lawyers',
-    icon: PhMagnifyingGlass,
-  },
-  {
-    label: 'Mes rendez-vous',
-    description: 'Consulter toutes les réservations',
+    label: 'My Bookings',
+    description: 'View and manage consultations',
     to: '/dashboard/bookings',
     icon: PhCalendarDots,
   },
   {
-    label: 'Mes avocats',
-    description: 'Professionnels enregistrés',
-    to: '/dashboard/my-lawyers',
-    icon: PhUsersThree,
-  },
-  {
-    label: 'Mes dossiers',
-    description: 'Suivre vos affaires en cours',
-    to: '/dashboard/cases',
-    icon: PhBriefcase,
+    label: 'Messages',
+    description: 'Chat with your lawyers',
+    to: '/dashboard/messages',
+    icon: PhChatCircle,
   },
 ]
 
@@ -79,59 +66,52 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
 
 <template>
   <div class="space-y-8">
-    <!-- Header -->
     <div class="flex flex-wrap justify-between items-start gap-4">
       <div>
         <h1 class="font-heading font-semibold text-foreground text-2xl tracking-tight">
-          Bonjour, {{ firstName }}
+          Welcome back, {{ firstName }}!
         </h1>
         <p class="mt-1 text-muted-foreground text-sm">
-          Voici le résumé de vos consultations juridiques
+          Here's what's happening with your legal consultations
         </p>
       </div>
       <Button as-child>
         <NuxtLink to="/find-lawyers" class="gap-2">
           <PhMagnifyingGlass class="size-4" />
-          Trouver un avocat
+          Find a Lawyer
         </NuxtLink>
       </Button>
     </div>
 
-    <!-- Quick links -->
-    <DashboardQuickLinks title="Accès rapide" :links="quickLinks" />
-
     <template v-if="!isPending">
-      <!-- Hero: next appointment -->
       <DashboardNextAppointment
         :booking="nextBooking"
         :person-name="nextBooking?.lawyer?.name"
         :person-image="nextBooking?.lawyer?.profilePicture"
       />
 
-      <!-- Empty state (no bookings at all) -->
       <EmptyState
         v-if="showFullEmpty"
         :icon="PhCalendarDots"
-        title="Aucune consultation pour le moment"
-        description="Parcourez notre annuaire d'avocats vérifiés et réservez votre premier rendez-vous en ligne."
+        title="No consultations yet"
+        description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
       >
         <template #actions>
           <Button as-child>
             <NuxtLink to="/find-lawyers" class="gap-2">
               <PhMagnifyingGlass class="size-4" />
-              Parcourir les avocats
+              Browse Lawyers
             </NuxtLink>
           </Button>
           <Button as-child variant="outline">
             <NuxtLink to="/practice-areas" class="gap-2">
               <PhScales class="size-4" />
-              Domaines de droit
+              View Practice Areas
             </NuxtLink>
           </Button>
         </template>
       </EmptyState>
 
-      <!-- Main grid: stats + list | agenda -->
       <div
         v-else
         class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_280px]"
@@ -139,57 +119,59 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
         <div class="space-y-6">
           <div class="gap-4 grid grid-cols-2 lg:grid-cols-4">
             <StatCard
-              label="Réservations"
+              label="Total Bookings"
               :value="stats.total"
               :icon="PhCalendarDots"
               :color="BRAND_GREEN"
-              :subtitle="stats.total === 0 ? 'Aucune pour l\'instant' : 'Toutes périodes'"
+              :subtitle="stats.total === 0 ? 'No bookings yet' : 'All time'"
             />
             <StatCard
-              label="Confirmées"
+              label="Active Consultations"
               :value="stats.confirmed"
               :icon="PhClock"
               color="#2D6B3E"
-              :subtitle="stats.confirmed === 0 ? 'Aucune active' : 'En cours'"
+              :subtitle="stats.confirmed === 0 ? 'No active cases' : 'In progress'"
             />
             <StatCard
-              label="En attente"
+              label="Upcoming"
               :value="stats.pending"
               :icon="PhCalendarDots"
               color="#b45309"
-              :subtitle="stats.pending === 0 ? 'Rien en attente' : 'À confirmer'"
+              :subtitle="stats.pending === 0 ? 'No upcoming' : 'Scheduled'"
             />
             <StatCard
-              label="Terminées"
+              label="Completed"
               :value="stats.completed"
               :icon="PhCheckCircle"
               :color="BRAND_GREEN"
-              :subtitle="stats.completed === 0 ? 'Aucune encore' : 'Consultations passées'"
+              :subtitle="stats.completed === 0 ? 'None yet' : 'Finished'"
             />
           </div>
 
           <section v-if="recentBookings.length > 0" class="space-y-3">
             <div class="flex justify-between items-center">
-              <h2 class="font-semibold text-foreground text-lg">Consultations récentes</h2>
+              <h2 class="font-semibold text-foreground text-lg">Recent Consultations</h2>
               <Button as-child variant="ghost" size="sm">
-                <NuxtLink to="/dashboard/bookings">Tout voir</NuxtLink>
+                <NuxtLink to="/dashboard/bookings">View all</NuxtLink>
               </Button>
             </div>
             <DashboardBookingRow
               v-for="booking in recentBookings"
               :key="booking.id"
               :booking="booking"
-              :person-name="booking.lawyer?.name ?? 'Avocat'"
+              :person-name="booking.lawyer?.name ?? 'Lawyer'"
               :person-image="booking.lawyer?.profilePicture"
               :subtitle="booking.consultationType?.name"
               @click="navigateTo(`/dashboard/bookings/${booking.id}`)"
             />
           </section>
+
+          <DashboardQuickLinks title="Quick actions" :links="quickLinks" />
         </div>
 
         <DashboardAgendaRail
           :bookings="bookings"
-          :person-label="(b) => b.lawyer?.name ?? 'Avocat'"
+          :person-label="(b) => b.lawyer?.name ?? 'Lawyer'"
         />
       </div>
     </template>

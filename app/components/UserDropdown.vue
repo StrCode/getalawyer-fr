@@ -4,27 +4,23 @@
       <Button
         v-if="variant === 'sidebar'"
         variant="ghost"
-        class="h-auto w-full justify-start gap-3 py-2 data-[state=open]:bg-gray-50 dark:data-[state=open]:bg-gray-800"
+        class="h-auto hover:bg-white/[0.06] data-[state=open]:bg-white/[0.08] px-2 py-2.5 rounded-lg w-full justify-start gap-3"
       >
-        <Avatar class="size-10 shrink-0">
+        <Avatar class="ring-1 ring-white/10 size-9 shrink-0">
           <AvatarImage :src="userData.avatar" :alt="userData.name" />
-          <AvatarFallback>{{ userInitials }}</AvatarFallback>
+          <AvatarFallback class="bg-brand-green-700 text-primary-foreground text-xs">
+            {{ userInitials }}
+          </AvatarFallback>
         </Avatar>
-        <div class="flex min-w-0 flex-1 flex-col gap-1 text-left">
-          <div
-            class="font-medium text-[#1C1C1E] text-sm"
-            style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: -0.006em;"
-          >
+        <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
+          <span class="font-heading font-medium text-sidebar-foreground text-sm truncate tracking-tight">
             {{ userData.name }}
-          </div>
-          <div
-            class="text-[#525866] text-xs"
-            style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400; font-size: 12px; line-height: 16px;"
-          >
+          </span>
+          <span class="font-sans text-sidebar-foreground/55 text-xs truncate">
             {{ userData.role }}
-          </div>
+          </span>
         </div>
-        <PhCaretRight class="ms-auto size-4 shrink-0 text-muted-foreground" />
+        <PhCaretRight class="ms-auto size-4 shrink-0 text-sidebar-foreground/40" />
       </Button>
       <Button
         v-else

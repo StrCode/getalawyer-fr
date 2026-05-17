@@ -3,7 +3,9 @@ import { toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
 import { normalizeScnDigitsOnly } from '~/lib/scn'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
+import { normalizePracticeAreaSelections } from '~/lib/practice-areas'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
+import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
 import {
     useLawyerOnboarding,
     type PersonalInfoData,
@@ -62,10 +64,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
     const professionalInfo = reactive<ProfessionalInfoData>({
         barNumber: '',
-        lawSchool: '',
         yearOfCall: undefined,
-        university: '',
-        llbYear: undefined
     })
 
     const practiceInfo = reactive<PracticeInfoData>({
@@ -73,12 +72,6 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         firmName: '',
         practiceAreas: [],
         statesOfPractice: [],
-        officeAddress: {
-            street: '',
-            city: '',
-            state: '',
-            postalCode: ''
-        }
     })
 
     // Sync draft data with the reactive store state
@@ -87,29 +80,29 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         if (payload) {
             if (payload.personal) Object.assign(personalInfo, payload.personal)
             if (payload.professional) {
-                const prof = { ...payload.professional }
+                const prof = { ...payload.professional } as ProfessionalInfoData
                 if (prof.barNumber != null && prof.barNumber !== '') {
                     prof.barNumber = normalizeScnDigitsOnly(String(prof.barNumber))
                 }
-                Object.assign(professionalInfo, prof)
+                Object.assign(professionalInfo, {
+                    barNumber: prof.barNumber ?? '',
+                    yearOfCall: prof.yearOfCall,
+                })
             }
             if (payload.ninVerified) {
                 ninVerification.verified = true
                 ninVerification.isSubmitted = true
             }
             if (payload.practice) {
-                const { officeAddress, ...otherPractice } = payload.practice
-                Object.assign(practiceInfo, otherPractice)
-                if (officeAddress) {
-                    Object.assign(practiceInfo.officeAddress, officeAddress)
-                }
+                const raw = payload.practice as Record<string, unknown>
+                practiceInfo.soloPractitioner = Boolean(raw.soloPractitioner)
+                practiceInfo.firmName = String(raw.firmName ?? '')
+                practiceInfo.statesOfPractice = Array.isArray(raw.statesOfPractice)
+                    ? [...(raw.statesOfPractice as string[])]
+                    : []
+                practiceInfo.practiceAreas = normalizePracticeAreaSelections(raw.practiceAreas)
                 const hasFirm = String(practiceInfo.firmName ?? '').trim().length > 0
-                const rawSolo = (payload.practice as { soloPractitioner?: boolean }).soloPractitioner
                 if (hasFirm) {
-                    practiceInfo.soloPractitioner = false
-                } else if (typeof rawSolo === 'boolean') {
-                    practiceInfo.soloPractitioner = rawSolo
-                } else {
                     practiceInfo.soloPractitioner = false
                 }
                 if (practiceInfo.soloPractitioner) {
@@ -246,9 +239,20 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 validationError.value = first?.message ?? 'Please check your professional details.'
                 return false
             }
+            Object.assign(professionalInfo, parsed.data)
         }
 
-        // For personal_info, professional_info, practice_info
+        if (stepKey === 'practice_info') {
+            const schema = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall)
+            const parsed = schema.safeParse(toRaw(practiceInfo))
+            if (!parsed.success) {
+                const first = parsed.error.issues[0]
+                validationError.value = first?.message ?? 'Please check your practice details.'
+                return false
+            }
+            Object.assign(practiceInfo, parsed.data)
+        }
+
         return saveDraftState(stepKey)
     }
 
@@ -256,13 +260,12 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         ninResubmitMode.value = false
         Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: undefined, state: '', lga: '' })
         Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
-        Object.assign(professionalInfo, { barNumber: '', lawSchool: '', yearOfCall: undefined, university: '', llbYear: undefined })
+        Object.assign(professionalInfo, { barNumber: '', yearOfCall: undefined })
         Object.assign(practiceInfo, {
             soloPractitioner: false,
             firmName: '',
             practiceAreas: [],
             statesOfPractice: [],
-            officeAddress: { street: '', city: '', state: '', postalCode: '' }
         })
     }
 

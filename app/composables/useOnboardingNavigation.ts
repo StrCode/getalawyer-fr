@@ -1,5 +1,6 @@
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import { getLawyerUxStepIndex } from '~/lib/lawyer-onboarding-steps'
 
 export interface OnboardingStep {
   key: string
@@ -66,11 +67,10 @@ export function useOnboardingNavigation() {
   const sectionProgress = computed(() => {
     const idx = currentIndex.value
     
-    // Lawyer Mode: 5 steps. [2, 1, 2] chunks.
-    // Client Mode: 2 steps. [1, 1] chunks.
+    // Lawyer Mode: 3 UX steps. Client Mode: 2 steps.
     const isClient = userType.value === 'client'
-    const SECTION_STARTS = isClient ? [0, 1] : [0, 2, 3]
-    const sizes = isClient ? [1, 1] : [2, 1, 2]
+    const SECTION_STARTS = isClient ? [0, 1] : [0, 1, 2]
+    const sizes = isClient ? [1, 1] : [1, 1, 1]
 
     if (idx === -1) {
       return sizes.map(size => ({ pct: 0, size }))
@@ -92,6 +92,13 @@ export function useOnboardingNavigation() {
     })
   })
 
+  const lawyerUxStepNumber = computed(() => {
+    if (userType.value !== 'lawyer' || !currentStep.value) return 0
+    return getLawyerUxStepIndex(currentStep.value.key) + 1
+  })
+
+  const lawyerUxStepTotal = computed(() => (userType.value === 'lawyer' ? 3 : 0))
+
   return {
     steps,
     firstStep,
@@ -104,6 +111,8 @@ export function useOnboardingNavigation() {
     prevStep,
     getPathByState,
     sectionProgress,
-    userType
+    userType,
+    lawyerUxStepNumber,
+    lawyerUxStepTotal,
   }
 }

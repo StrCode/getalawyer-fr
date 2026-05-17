@@ -55,23 +55,18 @@ export interface NinSubmitResponse {
 export interface ProfessionalInfoData {
     barNumber: string
     yearOfCall?: number
-    lawSchool: string
-    university: string
-    llbYear?: number
+}
+
+export interface PracticeAreaSelection {
+    practiceAreaId: string
+    yearsOfExperience?: number | null
 }
 
 export interface PracticeInfoData {
-    /** When true, the lawyer practises alone — firm name is hidden and cleared for save. */
     soloPractitioner: boolean
     firmName: string
-    officeAddress: {
-        street: string
-        city: string
-        state: string
-        postalCode: string
-    }
     statesOfPractice: string[]
-    practiceAreas: string[]
+    practiceAreas: PracticeAreaSelection[]
 }
 
 export interface SubmitResponse {

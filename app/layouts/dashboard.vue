@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import AppDashboardSidebar from '@/components/dashboard/AppDashboardSidebar.vue'
 import type { DashboardNavItem } from '@/types/dashboard-nav'
 import {
@@ -22,84 +22,79 @@ import {
 import {
   PhBriefcase,
   PhCalendar,
+  PhChatCircle,
   PhClock,
   PhFileText,
   PhGearSix,
   PhHouse,
-  PhMagnifyingGlass,
-  PhQuestion,
   PhUserCircle,
-  PhUsers,
 } from '@phosphor-icons/vue'
 
 const { session } = useAuth()
+const role = computed(() => session.value?.user.userType as 'client' | 'lawyer' | undefined)
 
-const role = computed(() => session.value?.user.userType)
+const {
+  clientUpcomingBookingsBadge,
+  unreadMessagesBadge,
+  activeCasesBadge,
+  lawyerPendingAppointmentsBadge,
+} = useDashboardNavBadges()
 
 const lawyerMainMenuItems = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Vue d\'ensemble',
+    label: 'Overview',
     iconComponent: PhHouse,
     to: '/dashboard',
     exact: true,
   },
   {
-    label: 'Dossiers',
+    label: 'Cases',
     iconComponent: PhBriefcase,
     to: '/dashboard/cases',
-    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
+    badge: activeCasesBadge.value,
   },
   {
-    label: 'Rendez-vous',
+    label: 'Appointments',
     iconComponent: PhCalendar,
     to: '/dashboard/appointments',
-    badge: pendingAppointments.value > 0 ? pendingAppointments.value.toString() : undefined,
+    badge: lawyerPendingAppointmentsBadge.value,
   },
   {
-    label: 'Types de consultation',
+    label: 'Consultation Types',
     iconComponent: PhFileText,
     to: '/dashboard/consultation-types',
   },
   {
-    label: 'Disponibilités',
+    label: 'Availability',
     iconComponent: PhClock,
     to: '/dashboard/availability',
   },
   {
-    label: 'Profil',
+    label: 'Profile',
     iconComponent: PhUserCircle,
     to: '/dashboard/profile',
   },
 ])
 
+/** MVP client nav: Overview, Bookings, Messages. Cases omitted until hire flow is launch-ready. */
 const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Tableau de bord',
+    label: 'Overview',
     iconComponent: PhHouse,
     to: '/dashboard',
     exact: true,
   },
   {
-    label: 'Mes dossiers',
-    iconComponent: PhBriefcase,
-    to: '/dashboard/cases',
-    badge: activeCases.value > 0 ? activeCases.value.toString() : undefined,
-  },
-  {
-    label: 'Trouver un avocat',
-    iconComponent: PhMagnifyingGlass,
-    to: '/find-lawyers',
-  },
-  {
-    label: 'Mes rendez-vous',
+    label: 'My Bookings',
     iconComponent: PhCalendar,
     to: '/dashboard/bookings',
-    badge: upcomingBookings.value > 0 ? upcomingBookings.value.toString() : undefined,
+    badge: clientUpcomingBookingsBadge.value,
   },
   {
-    label: 'Mes avocats',
-    iconComponent: PhUsers,
-    to: '/dashboard/my-lawyers',
+    label: 'Messages',
+    iconComponent: PhChatCircle,
+    to: '/dashboard/messages',
+    badge: unreadMessagesBadge.value,
   },
 ])
 
@@ -109,24 +104,10 @@ const mainLinks = computed<DashboardNavItem[]>(() => {
 
 const supportLinks = computed<DashboardNavItem[]>(() => [
   {
-    label: 'Paramètres',
+    label: 'Settings',
     iconComponent: PhGearSix,
     to: '/dashboard/settings',
   },
-  {
-    label: 'Centre d\'aide',
-    iconComponent: PhQuestion,
-    to: '/help',
-  },
 ])
 
-const pendingAppointments = ref(0)
-const upcomingBookings = ref(0)
-
-const { useCasesList } = useCases()
-const { data: casesData } = useCasesList()
-const activeCases = computed(() => {
-  const cases = casesData.value?.cases || []
-  return cases.filter(c => c.status === 'active').length
-})
 </script>

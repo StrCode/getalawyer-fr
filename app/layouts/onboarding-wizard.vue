@@ -34,7 +34,7 @@ export default defineComponent({
 
     const {
       currentStep, prevStep, currentIndex, steps, isFirst, isLast,
-      nextStep, userType,
+      nextStep, userType, lawyerUxStepNumber, lawyerUxStepTotal,
     } = useOnboardingNavigation()
 
     const wizardMounted = ref(false)
@@ -183,8 +183,24 @@ export default defineComponent({
     })
 
     const progressStepNumber = computed(() => {
+      if (userType.value === 'lawyer') {
+        return lawyerUxStepNumber.value
+      }
       const idx = currentIndex.value
       return idx >= 0 ? idx + 1 : 0
+    })
+
+    const progressStepTotal = computed(() => {
+      if (userType.value === 'lawyer') {
+        return lawyerUxStepTotal.value
+      }
+      return steps.value.length
+    })
+
+    const progressSegments = computed(() => {
+      const total = progressStepTotal.value
+      if (total <= 0) return []
+      return Array.from({ length: total }, (_, i) => i + 1)
     })
 
     return {
@@ -196,6 +212,8 @@ export default defineComponent({
       currentStep,
       steps,
       progressStepNumber,
+      progressStepTotal,
+      progressSegments,
       isFirst,
       isLast,
       userType,
@@ -273,26 +291,26 @@ export default defineComponent({
           </div>
         </div>
 
-        <template v-if="steps.length > 0 && progressStepNumber > 0">
+        <template v-if="progressStepTotal > 0 && progressStepNumber > 0">
           <div
             class="mb-4 flex gap-1"
             role="progressbar"
             :aria-valuenow="progressStepNumber"
             aria-valuemin="1"
-            :aria-valuemax="steps.length"
-            :aria-label="`Step ${progressStepNumber} of ${steps.length}`"
+            :aria-valuemax="progressStepTotal"
+            :aria-label="`Step ${progressStepNumber} of ${progressStepTotal}`"
           >
             <span
-              v-for="(step, index) in steps"
-              :key="step.key"
+              v-for="segment in progressSegments"
+              :key="segment"
               class="h-1 flex-1 rounded-full transition-colors duration-300"
-              :class="index < progressStepNumber ? 'bg-primary' : 'bg-muted'"
+              :class="segment <= progressStepNumber ? 'bg-primary' : 'bg-muted'"
             />
           </div>
 
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p class="text-center text-sm font-medium tabular-nums text-foreground sm:text-left">
-              Step {{ progressStepNumber }} of {{ steps.length }}
+              Step {{ progressStepNumber }} of {{ progressStepTotal }}
             </p>
 
             <div class="flex items-center gap-3">
