@@ -17,7 +17,7 @@ defineProps<{
 
 <template>
   <section>
-    <h2 v-if="title" class="mb-3 font-semibold text-foreground text-sm">
+    <h2 v-if="title" class="mb-3 font-semibold text-foreground text-base">
       {{ title }}
     </h2>
     <div class="gap-2 grid grid-cols-1 sm:grid-cols-2">
@@ -31,8 +31,8 @@ defineProps<{
           <component :is="link.icon" class="size-4" weight="duotone" />
         </span>
         <span class="flex-1 min-w-0">
-          <span class="block font-medium text-foreground text-sm">{{ link.label }}</span>
-          <span v-if="link.description" class="block text-muted-foreground text-xs truncate">
+          <span class="block font-medium text-foreground text-base">{{ link.label }}</span>
+          <span v-if="link.description" class="block text-muted-foreground text-sm truncate">
             {{ link.description }}
           </span>
         </span>

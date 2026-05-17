@@ -1,6 +1,5 @@
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <div class="mx-auto px-4 py-8 max-w-5xl">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="mb-8">
         <Button
@@ -122,7 +121,6 @@
           </UCard>
         </div>
       </div>
-    </div>
   </div>
 </template>
 

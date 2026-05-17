@@ -49,7 +49,7 @@ const initials = computed(() => {
       </div>
 
       <h3 class="font-semibold text-foreground text-base">{{ personName }}</h3>
-      <p v-if="subtitle" class="mb-2 text-muted-foreground text-sm">{{ subtitle }}</p>
+      <p v-if="subtitle" class="mb-2 text-muted-foreground text-base">{{ subtitle }}</p>
 
       <div class="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
         <span class="flex items-center gap-1.5">

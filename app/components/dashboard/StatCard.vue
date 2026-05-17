@@ -21,7 +21,7 @@
     <p class="font-bold text-foreground text-3xl leading-none tracking-tight">
       {{ value }}
     </p>
-    <p class="mt-1 font-medium text-muted-foreground text-sm">
+    <p class="mt-1 font-medium text-muted-foreground text-base">
       {{ label }}
     </p>
     <p v-if="subtitle" class="mt-3 pt-3 border-border border-t text-muted-foreground text-xs">

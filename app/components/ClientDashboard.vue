@@ -68,10 +68,10 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
   <div class="space-y-8">
     <div class="flex flex-wrap justify-between items-start gap-4">
       <div>
-        <h1 class="font-heading font-semibold text-foreground text-2xl tracking-tight">
+        <h1 class="app-page-title">
           Welcome back, {{ firstName }}!
         </h1>
-        <p class="mt-1 text-muted-foreground text-sm">
+        <p class="app-page-description">
           Here's what's happening with your legal consultations
         </p>
       </div>

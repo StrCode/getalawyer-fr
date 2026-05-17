@@ -1,12 +1,12 @@
 <template>
-  <div class="p-6">
+  <div class="space-y-6">
     <UPageHeader 
       title="Listings"
       description="Manage your property listings here."
       :ui="{
         root: 'border-none py-0',
         title: 'font-semibold !text-3xl leading-6 tracking-tight',
-        description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
+        description: 'font-normal text-base leading-6 text-gray-600 mt-2'
       }"
     >
       <template #links>

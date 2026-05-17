@@ -84,7 +84,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
       <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
         {{ emptyTitle ?? 'No upcoming appointments' }}
       </h2>
-      <p class="mt-1 max-w-md text-muted-foreground text-sm">
+      <p class="mt-1 max-w-md text-muted-foreground text-base">
         {{ emptyDescription ?? 'Find a lawyer and book your first consultation online.' }}
       </p>
     </div>

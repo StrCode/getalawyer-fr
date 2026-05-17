@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6">
+  <div class="space-y-6">
     <!-- Back Button -->
     <NuxtLink to="/dashboard/listings"
       class="inline-flex items-center gap-1 mb-6 text-[#171717] text-sm decoration-1 decoration-transparent hover:decoration-[#171717] underline underline-offset-4 transition-colors duration-300 cursor-pointer">

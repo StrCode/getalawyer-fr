@@ -1,6 +1,5 @@
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <div class="mx-auto px-4 py-8 max-w-5xl">
+  <div class="space-y-6">
       <!-- Header -->
       <div class="flex items-center gap-4 mb-8">
         <Button
@@ -13,8 +12,8 @@
           </template>
         </Button>
         <div class="flex-1">
-          <h1 class="font-bold text-gray-900 text-2xl">Booking Details</h1>
-          <p v-if="booking" class="mt-1 text-gray-600 text-sm">
+          <h1 class="app-page-title text-gray-900">Booking Details</h1>
+          <p v-if="booking" class="app-page-description text-gray-600">
             Reference: {{ booking.bookingReference }}
           </p>
         </div>
@@ -282,7 +281,6 @@
           </UCard>
         </div>
       </div>
-    </div>
 
     <!-- Cancel Modal -->
     <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">

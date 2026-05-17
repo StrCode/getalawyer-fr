@@ -1,13 +1,12 @@
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <div class="mx-auto px-4 py-8 max-w-7xl">
+  <div class="space-y-6">
       <UPageHeader
         title="My Bookings"
         description="View and manage your consultation bookings"
         :ui="{
           root: 'border-none py-0 mb-6',
           title: 'font-semibold !text-3xl leading-6 tracking-tight',
-          description: 'font-normal text-sm leading-6 text-gray-600 mt-2'
+          description: 'font-normal text-base leading-6 text-gray-600 mt-2'
         }"
       />
 
@@ -164,7 +163,6 @@
           </div>
         </template>
       </UTabs>
-    </div>
 
     <!-- Cancel Modal -->
     <UModal v-model:open="isCancelModalOpen" title="Cancel Booking">

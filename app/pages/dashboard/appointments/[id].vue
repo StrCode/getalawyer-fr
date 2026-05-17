@@ -16,7 +16,7 @@
         :ui="{ 
           root: 'border-none py-0 w-full', 
           title: 'font-semibold !text-2xl leading-6 tracking-tight', 
-          description: 'font-normal text-sm leading-6 text-gray-500 mt-1' 
+          description: 'font-normal text-base leading-6 text-gray-500 mt-1' 
         }"
       />
       

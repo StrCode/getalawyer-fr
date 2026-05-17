@@ -11,7 +11,7 @@ useHead({
     { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
     {
       rel: 'stylesheet',
-      href: 'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,WONK@0,9..144,100..900,1;1,9..144,100..900,1&display=swap'
+      href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght,WONK@0,9..144,100..900,1;1,9..144,100..900,1&display=swap'
     }
   ]
 })

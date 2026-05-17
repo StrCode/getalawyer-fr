@@ -29,7 +29,7 @@ const route = useRoute()
 const { state, toggleSidebar } = useSidebar()
 
 const navLinkClass =
-  'font-heading font-medium text-[0.9375rem] leading-snug tracking-tight transition-colors duration-200'
+  'font-heading font-medium text-base leading-snug tracking-tight transition-colors duration-200'
 
 function isLinkActive(item: DashboardNavItem) {
   const path = route.path

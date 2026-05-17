@@ -1,10 +1,10 @@
 <template>
-  <div class="flex h-[calc(100vh-4rem)]">
+  <div class="flex h-[calc(100dvh-5rem)] -mx-6 -my-8 sm:-mx-8 sm:-my-10 lg:-mx-10 lg:-my-12 min-h-[32rem]">
     <!-- Conversations List Sidebar -->
     <div class="flex flex-col bg-white border-r w-80">
       <div class="p-4 border-b">
-        <h2 class="font-bold text-gray-900 text-xl">Messages</h2>
-        <p class="mt-1 text-gray-500 text-sm">Your conversations</p>
+        <h2 class="font-bold text-gray-900 text-2xl">Messages</h2>
+        <p class="mt-1 text-gray-500 text-base">Your conversations</p>
       </div>
 
       <!-- Conversations List -->

@@ -1,12 +1,12 @@
 <template>
-  <div class="p-6">
+  <div class="space-y-6">
     <UPageHeader 
       title="My Lawyers"
       description="Lawyers you've worked with or bookmarked."
       :ui="{
         root: 'border-none py-0 mb-8',
         title: 'font-semibold !text-3xl',
-        description: 'text-sm text-gray-600 mt-2'
+        description: 'text-base text-gray-600 mt-2'
       }"
     />
 

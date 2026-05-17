@@ -315,7 +315,7 @@ export default defineComponent({
           </div>
 
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-center text-sm font-medium tabular-nums text-foreground sm:text-left">
+            <p class="text-center text-base font-medium tabular-nums text-foreground sm:text-left">
               Step {{ progressStepNumber }} of {{ progressStepTotal }}
             </p>
 

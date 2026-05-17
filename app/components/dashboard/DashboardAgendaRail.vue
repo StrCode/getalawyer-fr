@@ -20,8 +20,8 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 <template>
   <aside class="flex flex-col gap-4 bg-card p-5 border border-border rounded-xl h-fit">
     <div>
-      <h2 class="font-semibold text-foreground text-sm">Upcoming</h2>
-      <p class="mt-0.5 text-muted-foreground text-xs">
+      <h2 class="font-semibold text-foreground text-base">Upcoming</h2>
+      <p class="mt-0.5 text-muted-foreground text-sm">
         {{ agendaItems.length > 0 ? `${agendaItems.length} appointment${agendaItems.length === 1 ? '' : 's'}` : 'Nothing scheduled' }}
       </p>
     </div>

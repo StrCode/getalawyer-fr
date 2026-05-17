@@ -1,10 +1,10 @@
 <template>
-  <div class="p-6">
+  <div class="space-y-6">
     <!-- Header -->
     <div class="flex justify-between items-start mb-6">
       <div>
-        <h1 class="font-semibold text-[#1C1C1E] text-2xl">Account Settings</h1>
-        <p class="text-[#525866] text-sm mt-1">Manage and collaborate on your account settings</p>
+        <h1 class="app-page-title text-[#1C1C1E]">Account Settings</h1>
+        <p class="app-page-description text-[#525866]">Manage and collaborate on your account settings</p>
       </div>
       <div class="flex gap-3">
         <Button

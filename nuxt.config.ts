@@ -65,12 +65,12 @@ export default defineNuxtConfig({
       ]
     },
     families: [
-      // ── Brand sans-serif ───────────────────────────────────
+      // ── Brand sans-serif (Geist on Google Fonts) ───────────
       {
-        name: 'Instrument Sans',
+        name: 'Geist',
         provider: 'google',
-        weights: [400, 500, 600, 700],
-        styles: ['normal', 'italic'],
+        weights: [300, 400, 500, 600, 700],
+        styles: ['normal'],
         subsets: ['latin'],
       },
       {

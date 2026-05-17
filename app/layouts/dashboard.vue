@@ -3,8 +3,10 @@
     <SidebarProvider class="flex w-full min-h-screen flex-1">
       <AppDashboardSidebar :main-links="mainLinks" :support-links="supportLinks" />
       <SidebarInset class="flex min-h-screen flex-1 flex-col bg-background">
-        <main class="flex-1 overflow-auto px-6 py-6 lg:px-8 lg:py-8 max-w-[1400px]">
-          <slot />
+        <main class="flex-1 overflow-auto">
+          <div class="app-shell__content">
+            <slot />
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
