@@ -46,14 +46,11 @@ onUnmounted(() => {
       </div>
     </main>
 
-    <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-[0_-4px_24px_-8px_rgba(0,0,0,0.04)]">
+    <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-sm">
       <div class="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 md:px-12">
         <slot name="footer-note">
           <p class="text-center text-sm leading-snug text-muted-foreground">
-            By using Getalawyer you agree to our
-            <NuxtLink to="/terms" class="text-primary hover:underline">Terms of Use</NuxtLink>
-            and
-            <NuxtLink to="/privacy" class="text-primary hover:underline">Privacy Policy</NuxtLink>.
+            By using Getalawyer you agree to our Terms of Use and Privacy Policy.
           </p>
         </slot>
       </div>

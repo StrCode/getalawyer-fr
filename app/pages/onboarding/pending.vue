@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import { useQueryClient } from '@tanstack/vue-query'
+import {
+  ensureLawyerOnboardingStatus,
+  useLawyerOnboardingStatus,
+} from '~/composables/useLawyerOnboarding'
 import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
 import {
   PhCircleNotch,
@@ -29,20 +33,28 @@ useHead({
 
 const router = useRouter()
 const { session, signOut } = useAuth()
+const queryClient = useQueryClient()
+
+await useAsyncData('onboarding-pending-status', () =>
+  ensureLawyerOnboardingStatus(queryClient),
+)
 
 const {
   data: statusPayload,
   isPending: statusPending,
+  isLoading: statusLoading,
   isError: statusError,
   refetch: refetchStatus,
-} = useLawyerOnboardingStatus()
+} = useLawyerOnboardingStatus({ enabled: true })
 
 const showSpinner = computed(() => {
+  if (statusPending.value || statusLoading.value) return true
   const st = statusPayload.value
   if (st != null && (isLawyerAwaitingApproval(st) || isRejectedState(st))) {
     return false
   }
-  return statusPending.value
+  if (statusError.value) return false
+  return st == null
 })
 
 const statusUnavailable = computed(() => !statusPending.value && statusError.value)
@@ -195,8 +207,7 @@ async function retryStatus() {
     </div>
 
     <!-- Pending (Mobbin: Coinbase / Airwallex / Mercury) -->
-    <template v-else-if="isAwaiting">
-      <div class="space-y-10 py-4 sm:py-8">
+    <div v-else-if="isAwaiting" class="space-y-10 py-4 sm:py-8">
         <!-- Hero -->
         <div class="text-center">
           <div
@@ -352,7 +363,7 @@ async function retryStatus() {
               Sign out
             </button>
             <button
-              v-if="statusError || dashboardError"
+              v-if="statusError"
               type="button"
               class="text-sm font-medium text-primary underline-offset-4 hover:underline"
               @click="retryStatus"
@@ -361,7 +372,6 @@ async function retryStatus() {
             </button>
           </div>
         </div>
-      </div>
-    </template>
+    </div>
   </div>
 </template>

@@ -308,6 +308,35 @@
 }
 
 /* ============================================================
+   ONBOARDING / LISTING WIZARD SHELL (shared SSR-safe layout)
+   ============================================================ */
+@layer components {
+    .wizard-shell-main {
+        @apply relative mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 md:px-12 lg:py-16;
+    }
+
+    .wizard-shell-footer-inner {
+        @apply mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 md:px-12;
+    }
+
+    .wizard-shell-footer {
+        @apply z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-sm;
+    }
+
+    .app-shell__content {
+        @apply mx-auto w-full max-w-[1400px] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12;
+    }
+
+    .app-page-title {
+        @apply font-heading font-semibold text-foreground text-3xl tracking-tight;
+    }
+
+    .app-page-description {
+        @apply mt-1 text-base text-muted-foreground;
+    }
+}
+
+/* ============================================================
    PAGE TRANSITIONS
    ============================================================ */
 .page-enter-active,
