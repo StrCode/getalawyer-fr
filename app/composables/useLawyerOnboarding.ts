@@ -7,9 +7,7 @@ import {
 import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import {
-    parseLawyerDashboardMe,
     parseOnboardingStatus,
-    type LawyerDashboardMePayload,
     type OnboardingStatusPayload
 } from '~/lib/lawyerOnboardingStatus'
 
@@ -109,15 +107,6 @@ const lawyerOnboardingAPI = {
     getOnboardingSummary: async (): Promise<unknown> => {
         return httpClient.getAuth<unknown>('/api/onboarding/summary')
     },
-
-    getDashboardLawyer: async (): Promise<unknown> => {
-        return httpClient.getAuth<unknown>('/api/dashboard/lawyer')
-    }
-}
-
-export async function fetchLawyerDashboardMe(): Promise<LawyerDashboardMePayload> {
-    const raw = await lawyerOnboardingAPI.getDashboardLawyer()
-    return parseLawyerDashboardMe(raw)
 }
 
 /** GET /api/onboarding/status — used as TanStack `queryFn` */
@@ -202,7 +191,6 @@ export const useLawyerOnboarding = () => {
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
-                queryClient.invalidateQueries({ queryKey: ['lawyer', 'dashboard', 'me'] })
                 // Invalidate session/profile so application status gets refreshed
                 queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all })

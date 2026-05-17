@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
-import {
-  fetchLawyerDashboardMe,
-  useLawyerOnboardingStatus,
-} from '~/composables/useLawyerOnboarding'
-import {
-  isLawyerAwaitingApproval,
-  isPendingApprovalDashboard,
-  type LawyerDashboardMePayload,
-} from '~/lib/lawyerOnboardingStatus'
+import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
 import {
   PhCircleNotch,
   PhCheck,
@@ -45,65 +37,34 @@ const {
   refetch: refetchStatus,
 } = useLawyerOnboardingStatus()
 
-const {
-  data: dashboardPayload,
-  isPending: dashboardPending,
-  isError: dashboardError,
-  refetch: refetchDashboard,
-} = useQuery<LawyerDashboardMePayload>({
-  queryKey: ['lawyer', 'dashboard', 'me'],
-  queryFn: fetchLawyerDashboardMe,
-  staleTime: 30 * 1000,
-})
-
-const loading = computed(() => statusPending.value || dashboardPending.value)
-
 const showSpinner = computed(() => {
   const st = statusPayload.value
-  const dash = dashboardPayload.value
-  if (st != null && (isLawyerAwaitingApproval(st) || st.application_status === 'rejected')) {
+  if (st != null && (isLawyerAwaitingApproval(st) || isRejectedState(st))) {
     return false
   }
-  if (
-    dash != null &&
-    (isPendingApprovalDashboard(dash) ||
-      dash.application_status === 'rejected' ||
-      dash.status === 'rejected')
-  ) {
-    return false
-  }
-  return loading.value
+  return statusPending.value
 })
 
-const statusUnavailable = computed(
-  () => !loading.value && statusError.value && dashboardError.value,
-)
+const statusUnavailable = computed(() => !statusPending.value && statusError.value)
 
 const isAwaiting = computed(() => {
   const st = statusPayload.value
-  const dash = dashboardPayload.value
-  return (
-    (st != null && isLawyerAwaitingApproval(st)) ||
-    (dash != null && isPendingApprovalDashboard(dash))
-  )
+  return st != null && isLawyerAwaitingApproval(st)
 })
+
+function isRejectedState(st: {
+  application_status?: string | null
+  current_state?: string | null
+}) {
+  return st.application_status === 'rejected' || st.current_state === 'rejected'
+}
 
 const isRejected = computed(() => {
   const st = statusPayload.value
-  const dash = dashboardPayload.value
-  return (
-    st?.application_status === 'rejected' ||
-    dash?.application_status === 'rejected' ||
-    dash?.status === 'rejected'
-  )
+  return st != null && isRejectedState(st)
 })
 
-const submittedAt = computed(() => {
-  const st = statusPayload.value
-  const dash = dashboardPayload.value
-  if (st?.submitted_at) return st.submitted_at
-  return dash?.submittedAt ?? null
-})
+const submittedAt = computed(() => statusPayload.value?.submitted_at ?? null)
 
 const formatSubmitted = (iso: string | null) => {
   if (!iso) return null
@@ -184,7 +145,7 @@ watchEffect(() => {
 })
 
 async function retryStatus() {
-  await Promise.all([refetchStatus(), refetchDashboard()])
+  await refetchStatus()
 }
 </script>
 

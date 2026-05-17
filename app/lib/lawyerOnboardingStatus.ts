@@ -1,5 +1,5 @@
 /**
- * Normalizes GET /api/dashboard/lawyer and GET /api/onboarding/status payloads for UI.
+ * Normalizes GET /api/onboarding/status payloads for onboarding UI.
  */
 
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected' | null | string
@@ -18,30 +18,7 @@ function unwrapData<T extends Record<string, unknown>>(res: unknown): T {
   return (res as T) ?? ({} as T)
 }
 
-/** GET /api/dashboard/lawyer shape when onboarding_completed is false but application is pending */
-export interface LawyerDashboardMePayload {
-  status?: string
-  submittedAt?: string | null
-  application_status?: ApplicationStatus
-}
-
-export function parseLawyerDashboardMe(res: unknown): LawyerDashboardMePayload {
-  const o = unwrapData<Record<string, unknown>>(res)
-  return {
-    status: typeof o.status === 'string' ? o.status : undefined,
-    submittedAt: (o.submittedAt as string) ?? (o.submitted_at as string) ?? null,
-    application_status:
-      (o.application_status as ApplicationStatus) ??
-      (o.applicationStatus as ApplicationStatus) ??
-      undefined
-  }
-}
-
-export function isPendingApprovalDashboard(payload: LawyerDashboardMePayload): boolean {
-  return payload.status === 'pending_approval'
-}
-
-/** Raw GET /api/onboarding/status → flat fields (used on the pending page only). */
+/** Raw GET /api/onboarding/status → flat fields (pending page, middleware, entry routing). */
 export function parseOnboardingStatus(res: unknown): OnboardingStatusPayload {
   const o = unwrapData<Record<string, unknown>>(res)
   return {
