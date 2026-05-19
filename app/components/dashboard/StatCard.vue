@@ -1,8 +1,8 @@
 <template>
-  <div class="hover:shadow-sm p-5 border border-border rounded-xl bg-card transition-shadow">
+  <div class="rounded-2xl border-0 bg-card p-5 shadow-md ring-1 ring-border/25 transition-shadow hover:shadow-lg">
     <div class="flex justify-between items-start gap-3 mb-4">
       <span
-        class="flex justify-center items-center rounded-lg size-10 shrink-0"
+        class="flex size-11 shrink-0 items-center justify-center rounded-xl"
         :style="{ backgroundColor: `${color}18` }"
       >
         <component :is="icon" class="size-5" :style="{ color }" />

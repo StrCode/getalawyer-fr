@@ -5,6 +5,13 @@
  */
 import { Toaster } from '~/components/ui/sonner'
 
+const route = useRoute()
+
+/** Dashboard: instant switches (no blur/fade). Rest of app keeps the default page transition. */
+const pageTransition = computed(() =>
+  route.path.startsWith('/dashboard') ? false : { name: 'page', mode: 'out-in' },
+)
+
 useHead({
   link: [
     { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -19,7 +26,7 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :transition="pageTransition" />
   </NuxtLayout>
   <ClientOnly>
     <Toaster position="top-right" />

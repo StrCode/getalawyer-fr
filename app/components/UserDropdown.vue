@@ -4,23 +4,26 @@
       <Button
         v-if="variant === 'sidebar'"
         variant="ghost"
-        class="h-auto hover:bg-white/[0.06] data-[state=open]:bg-white/[0.08] px-2 py-2.5 rounded-lg w-full justify-start gap-3"
+        class="h-auto w-full justify-start gap-2.5 rounded-md px-2 py-2 hover:bg-accent data-[state=open]:bg-accent"
+        :class="{ 'size-10 justify-center px-0': collapsed }"
       >
-        <Avatar class="ring-1 ring-white/10 size-9 shrink-0">
+        <Avatar class="size-8 shrink-0" :class="{ 'size-7': collapsed }">
           <AvatarImage :src="userData.avatar" :alt="userData.name" />
-          <AvatarFallback class="bg-brand-green-700 text-primary-foreground text-xs">
+          <AvatarFallback class="bg-primary text-xs text-primary-foreground">
             {{ userInitials }}
           </AvatarFallback>
         </Avatar>
-        <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
-          <span class="font-heading font-medium text-sidebar-foreground text-sm truncate tracking-tight">
-            {{ userData.name }}
-          </span>
-          <span class="font-sans text-sidebar-foreground/55 text-xs truncate">
-            {{ userData.role }}
-          </span>
-        </div>
-        <PhCaretRight class="ms-auto size-4 shrink-0 text-sidebar-foreground/40" />
+        <template v-if="!collapsed">
+          <div class="min-w-0 flex-1 text-left">
+            <div class="truncate text-sm font-medium text-foreground">
+              {{ userData.name }}
+            </div>
+            <div class="truncate text-xs text-muted-foreground">
+              {{ userData.role }}
+            </div>
+          </div>
+          <PhCaretRight class="ms-auto size-4 shrink-0 text-muted-foreground" />
+        </template>
       </Button>
       <Button
         v-else
@@ -90,8 +93,10 @@ withDefaults(
   defineProps<{
     /** `sidebar` — full-width row + menu opens upward. `header` — avatar chip + menu opens downward. */
     variant?: 'sidebar' | 'header'
+    /** Icon-collapsed sidebar rail — hide name/role, center avatar */
+    collapsed?: boolean
   }>(),
-  { variant: 'sidebar' },
+  { variant: 'sidebar', collapsed: false },
 )
 
 const { session, signOut } = useAuth()

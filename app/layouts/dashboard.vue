@@ -1,26 +1,18 @@
 <template>
-  <div class="flex min-h-screen bg-background">
-    <SidebarProvider class="flex w-full min-h-screen flex-1">
-      <AppDashboardSidebar :main-links="mainLinks" :support-links="supportLinks" />
-      <SidebarInset class="flex min-h-screen flex-1 flex-col bg-background">
-        <main class="flex-1 overflow-auto">
-          <div class="app-shell__content">
-            <slot />
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-  </div>
+  <SidebarProvider
+    class="min-h-svh w-full"
+    :style="dashboardSidebarStyle"
+  >
+    <DashboardShell :main-links="mainLinks" :support-links="supportLinks">
+      <slot />
+    </DashboardShell>
+  </SidebarProvider>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import AppDashboardSidebar from '@/components/dashboard/AppDashboardSidebar.vue'
+import DashboardShell from '@/components/dashboard/DashboardShell.vue'
 import type { DashboardNavItem } from '@/types/dashboard-nav'
-import {
-  SidebarInset,
-  SidebarProvider,
-} from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import {
   PhBriefcase,
   PhCalendar,
@@ -31,6 +23,20 @@ import {
   PhHouse,
   PhUserCircle,
 } from '@phosphor-icons/vue'
+
+/** Dashboard sidebar uses light shadcn tokens (cream), not marketing dark sidebar. */
+const dashboardSidebarStyle = {
+  '--sidebar-width': '16rem',
+  '--sidebar-width-icon': '3rem',
+  '--sidebar': 'var(--background)',
+  '--sidebar-foreground': 'var(--foreground)',
+  '--sidebar-primary': 'var(--primary)',
+  '--sidebar-primary-foreground': 'var(--primary-foreground)',
+  '--sidebar-accent': 'var(--accent)',
+  '--sidebar-accent-foreground': 'var(--accent-foreground)',
+  '--sidebar-border': 'var(--border)',
+  '--sidebar-ring': 'var(--ring)',
+} as const
 
 const { session } = useAuth()
 const role = computed(() => session.value?.user.userType as 'client' | 'lawyer' | undefined)
@@ -111,5 +117,4 @@ const supportLinks = computed<DashboardNavItem[]>(() => [
     to: '/dashboard/settings',
   },
 ])
-
 </script>

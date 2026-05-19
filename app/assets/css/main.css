@@ -340,17 +340,13 @@
 }
 
 /* ============================================================
-   PAGE TRANSITIONS
+   PAGE TRANSITIONS (marketing / auth — not dashboard)
    ============================================================ */
-.page-enter-active,
-.page-leave-active,
 .layout-enter-active,
 .layout-leave-active {
     transition: opacity 0.2s ease-in-out;
 }
 
-.page-enter-from,
-.page-leave-to,
 .layout-enter-from,
 .layout-leave-to {
     opacity: 0;
