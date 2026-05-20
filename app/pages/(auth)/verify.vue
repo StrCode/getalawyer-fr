@@ -3,7 +3,6 @@ definePageMeta({
   layout: false,
   middleware: 'guest',
 })
-
 const route = useRoute()
 
 await navigateTo({
