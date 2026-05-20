@@ -39,17 +39,17 @@
       </div>
     </header>
 
-    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-center px-3 py-5 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
+    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-start px-3 pt-6 pb-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
       <div class="mx-auto w-full min-w-0 max-w-xs sm:max-w-xl md:max-w-2xl">
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
-          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full max-w-xs flex-col items-center sm:max-w-none">
-            <div class="mb-5 w-full text-center sm:mb-10">
-              <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
+          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full max-w-xs flex-col items-center gap-6 sm:max-w-none sm:gap-0">
+            <div class="w-full text-center sm:mb-10">
+              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
                 Account type
               </p>
               <h1
-                class="font-heading text-balance text-2xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
+                class="text-balance text-2xl font-medium leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
@@ -60,7 +60,7 @@
 
             <RadioGroup
               v-model="selectedRole"
-              class="mb-5 grid w-full min-w-0 max-w-xs grid-cols-1 gap-3 sm:mb-8 sm:max-w-none sm:grid-cols-2 sm:gap-5"
+              class="grid w-full min-w-0 max-w-xs grid-cols-1 gap-3 sm:mb-8 sm:max-w-none sm:grid-cols-2 sm:gap-5"
             >
               <Label
                 :for="clientRoleId"
@@ -163,19 +163,19 @@
           </div>
 
           <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-xs flex-col items-center sm:max-w-lg sm:items-stretch">
+          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-xs flex-col items-center gap-6 sm:max-w-lg sm:items-stretch sm:gap-0">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              class="mb-4 inline-flex gap-1.5 rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
+              class="inline-flex gap-1.5 rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
               Change selection
             </Button>
 
-            <div class="mb-5 w-full text-center sm:mb-10">
+            <div class="w-full text-center sm:mb-10">
               <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
                 Registration
               </p>
@@ -323,7 +323,7 @@
               </form>
             </Card>
 
-            <p class="mx-auto mt-4 max-w-xs text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-sm sm:text-sm">
+            <p class="mx-auto max-w-xs text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-sm sm:text-sm">
               By continuing, you agree to our
               <NuxtLink to="/terms" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
                 Terms of Service
