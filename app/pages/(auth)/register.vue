@@ -10,7 +10,7 @@
       />
     </div>
 
-    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-8 sm:py-6">
+    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-2 py-3 sm:gap-3 sm:px-8 sm:py-6">
       <NuxtLink to="/" class="group inline-flex min-w-0 items-center gap-2.5">
         <svg
           class="h-7 w-7 text-primary transition-transform group-hover:scale-105 sm:h-8 sm:w-8"
@@ -39,11 +39,11 @@
       </div>
     </header>
 
-    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-start px-3 pt-6 pb-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
-      <div class="mx-auto w-full min-w-0 max-w-xs sm:max-w-xl md:max-w-2xl">
+    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-start px-2 pt-6 pb-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
+      <div class="mx-auto w-full min-w-0 sm:max-w-3xl">
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
-          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full max-w-xs flex-col items-center gap-6 sm:max-w-none sm:gap-0">
+          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full flex-col items-center gap-6 sm:max-w-none sm:gap-0">
             <div class="w-full text-center sm:mb-10">
               <p class="mb-2 text-xs font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
                 Account type
@@ -53,14 +53,14 @@
               >
                 How would you like to use GetaLawyer?
               </h1>
-              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-brand-ink-soft sm:mt-4 sm:max-w-md sm:text-base">
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-brand-ink-soft sm:mt-4 sm:max-w-xl sm:text-base">
                 Select the path that matches your needs today.
               </p>
             </div>
 
             <RadioGroup
               v-model="selectedRole"
-              class="grid w-full min-w-0 max-w-xs grid-cols-1 gap-3 sm:mb-8 sm:max-w-none sm:grid-cols-2 sm:gap-5"
+              class="grid w-full min-w-0 grid-cols-1 gap-3 sm:mb-8 sm:grid-cols-2 sm:gap-5"
             >
               <Label
                 :for="clientRoleId"
@@ -93,10 +93,10 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-1 text-lg font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
+                  <h2 class="mb-1 text-xl font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
                     I am a Client
                   </h2>
-                  <p class="text-sm leading-relaxed text-brand-ink-soft sm:text-base">
+                  <p class="text-base font-normal leading-relaxed text-brand-ink-soft sm:text-base">
                     Find and book a verified Nigerian lawyer for legal assistance.
                   </p>
                 </div>
@@ -133,17 +133,17 @@
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-1 text-lg font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
+                  <h2 class="mb-1 text-xl font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
                     I am a Lawyer
                   </h2>
-                  <p class="text-sm leading-relaxed text-brand-ink-soft sm:text-base">
+                  <p class="text-base font-normal leading-relaxed text-brand-ink-soft sm:text-base">
                     List your services and grow your client base on our network.
                   </p>
                 </div>
               </Label>
             </RadioGroup>
 
-            <div class="flex w-full max-w-xs flex-col items-center gap-4 sm:max-w-none sm:gap-6">
+            <div class="flex w-full flex-col items-center gap-4 sm:gap-6">
               <Button
                 type="button"
                 class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-green-900 text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
@@ -163,7 +163,7 @@
           </div>
 
           <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-xs flex-col items-center gap-6 sm:max-w-lg sm:items-stretch sm:gap-0">
+          <div v-else key="form" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6 sm:items-stretch sm:gap-0">
             <Button
               type="button"
               variant="ghost"
@@ -192,7 +192,7 @@
             </div>
 
             <Card
-              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-brand-line/50 bg-white/70 p-4 py-4 shadow-lg shadow-primary/5 backdrop-blur-xl sm:rounded-3xl sm:p-8 sm:py-8 sm:shadow-xl lg:p-10"
+              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-brand-line/50 bg-white/70 px-5 py-5 shadow-lg shadow-primary/5 backdrop-blur-xl sm:rounded-3xl sm:px-10 sm:py-10 sm:shadow-xl lg:px-12 lg:py-12"
             >
               <div
                 class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
@@ -200,7 +200,7 @@
               />
 
               <form class="relative z-10" @submit.prevent="form.handleSubmit">
-                <FieldGroup class="gap-4 sm:gap-5">
+                <FieldGroup class="gap-4 sm:gap-6">
                   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
                     <form.Field v-slot="{ field }" name="firstName">
                       <Field :data-invalid="isInvalid(field)">
@@ -277,26 +277,6 @@
                         @update:model-value="(v) => field.handleChange(v as any)"
                       />
                       <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                      <AuthPasswordRequirements :password="field.state.value" class="mt-2" />
-                    </Field>
-                  </form.Field>
-
-                  <form.Field v-slot="{ field }" name="confirmPassword">
-                    <Field :data-invalid="isInvalid(field)">
-                      <FieldLabel :for="field.name">Confirm password</FieldLabel>
-                      <AuthPasswordInput
-                        :id="field.name"
-                        :name="field.name"
-                        :model-value="field.state.value"
-                        placeholder="••••••••"
-                        autocomplete="new-password"
-                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
-                        :aria-invalid="isInvalid(field)"
-                        :disabled="isSubmitting"
-                        @blur="field.handleBlur"
-                        @update:model-value="(v) => field.handleChange(v as any)"
-                      />
-                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                     </Field>
                   </form.Field>
 
@@ -323,7 +303,7 @@
               </form>
             </Card>
 
-            <p class="mx-auto max-w-xs text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-sm sm:text-sm">
+            <p class="mx-auto w-full text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-xl sm:text-sm">
               By continuing, you agree to our
               <NuxtLink to="/terms" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
                 Terms of Service
@@ -391,24 +371,17 @@ function roleCardClass(value: 'client' | 'lawyer') {
   )
 }
 
-const registerSchema = z
-  .object({
-    firstName: z
-      .string('First name is required.')
-      .min(2, 'First name must be at least 2 characters.'),
-    lastName: z
-      .string('Last name is required.')
-      .min(2, 'Last name must be at least 2 characters.'),
-    email: z
-      .email('Please enter a valid email address.'),
-    password: authPasswordSchema,
-    confirmPassword: z
-      .string('Please confirm your password.')
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    error: 'Passwords do not match.',
-    path: ['confirmPassword'],
-  })
+const registerSchema = z.object({
+  firstName: z
+    .string('First name is required.')
+    .min(2, 'First name must be at least 2 characters.'),
+  lastName: z
+    .string('Last name is required.')
+    .min(2, 'Last name must be at least 2 characters.'),
+  email: z
+    .email('Please enter a valid email address.'),
+  password: authPasswordSchema,
+})
 
 const isSubmitting = ref(false)
 const apiError = ref('')
@@ -419,7 +392,6 @@ const form = useForm({
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: '',
   },
   validators: {
     onSubmit: registerSchema,
