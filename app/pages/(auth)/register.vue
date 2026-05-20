@@ -10,7 +10,7 @@
       />
     </div>
 
-    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-3 px-4 py-4 sm:px-8 sm:py-6">
+    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-8 sm:py-6">
       <NuxtLink to="/" class="group inline-flex min-w-0 items-center gap-2.5">
         <svg
           class="h-7 w-7 text-primary transition-transform group-hover:scale-105 sm:h-8 sm:w-8"
@@ -21,7 +21,7 @@
           <polygon points="0,20 38,42 38,82 0,60" fill="currentColor" />
           <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55" />
         </svg>
-        <span class="font-sans text-xl font-bold tracking-tight text-brand-green-900 lowercase sm:text-2xl">
+        <span class="font-sans text-lg font-bold tracking-tight text-brand-green-900 lowercase sm:text-2xl">
           getalawyer
         </span>
       </NuxtLink>
@@ -32,123 +32,128 @@
         </span>
         <NuxtLink
           to="/login"
-          class="rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-semibold text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:px-5 sm:py-2.5"
+          class="rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:px-5 sm:py-2.5 sm:text-sm"
         >
           Sign in
         </NuxtLink>
       </div>
     </header>
 
-    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-center px-4 py-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
-      <div class="mx-auto w-full min-w-0 max-w-2xl">
+    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-center px-3 py-5 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
+      <div class="mx-auto w-full min-w-0 max-w-xs sm:max-w-xl md:max-w-2xl">
         <Transition name="slide-fade" mode="out-in">
           <!-- Step 1: Role selection -->
-          <div v-if="step === 'role'" key="role" class="flex w-full flex-col items-center">
-            <div class="mb-8 text-center sm:mb-10">
-              <p class="mb-3 text-xs font-bold uppercase tracking-widest text-brand-green-700">
+          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full max-w-xs flex-col items-center sm:max-w-none">
+            <div class="mb-5 w-full text-center sm:mb-10">
+              <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
                 Account type
               </p>
               <h1
-                class="font-heading text-balance text-3xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
+                class="font-heading text-balance text-2xl font-normal leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
-              <p class="mx-auto mt-3 max-w-md text-base leading-relaxed text-brand-ink-soft sm:mt-4">
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-brand-ink-soft sm:mt-4 sm:max-w-md sm:text-base">
                 Select the path that matches your needs today.
               </p>
             </div>
 
-            <div class="mx-auto mb-8 grid w-full min-w-0 max-w-md grid-cols-1 gap-4 sm:max-w-none sm:grid-cols-2 sm:gap-5">
-              <Card
-                role="button"
-                tabindex="0"
-                :aria-pressed="role === 'client'"
+            <RadioGroup
+              v-model="selectedRole"
+              class="mb-5 grid w-full min-w-0 max-w-xs grid-cols-1 gap-3 sm:mb-8 sm:max-w-none sm:grid-cols-2 sm:gap-5"
+            >
+              <Label
+                :for="clientRoleId"
                 :class="roleCardClass('client')"
-                @click="role = 'client'"
-                @keydown.enter.prevent="role = 'client'"
-                @keydown.space.prevent="role = 'client'"
+                class="group cursor-pointer"
               >
-                <div class="relative p-6 text-center sm:p-7 sm:text-left">
+                <RadioGroupItem
+                  :id="clientRoleId"
+                  value="client"
+                  class="sr-only"
+                />
+                <div class="relative px-5 py-6 text-center sm:p-7 sm:text-left">
                   <span
-                    class="absolute top-5 right-5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6"
+                    class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6 sm:h-6 sm:w-6"
                     :class="
-                      role === 'client'
+                      selectedRole === 'client'
                         ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
                         : 'scale-100 border-brand-line bg-white/80'
                     "
                   >
-                    <PhCheck v-if="role === 'client'" class="h-3.5 w-3.5 text-white" weight="bold" />
+                    <PhCheck v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14"
-                    :class="role === 'client' ? 'sm:group-hover:scale-105' : ''"
+                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhUser
-                      class="h-6 w-6 sm:h-7 sm:w-7"
-                      :class="role === 'client' ? 'text-primary' : 'text-brand-green-700'"
+                      class="h-5 w-5 sm:h-7 sm:w-7"
+                      :class="selectedRole === 'client' ? 'text-primary' : 'text-brand-green-700'"
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 text-xl font-semibold leading-tight text-brand-green-900 sm:text-2xl">
+                  <h2 class="mb-1 text-lg font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
                     I am a Client
                   </h2>
-                  <p class="text-base leading-relaxed text-brand-ink-soft">
+                  <p class="text-sm leading-relaxed text-brand-ink-soft sm:text-base">
                     Find and book a verified Nigerian lawyer for legal assistance.
                   </p>
                 </div>
-              </Card>
+              </Label>
 
-              <Card
-                role="button"
-                tabindex="0"
-                :aria-pressed="role === 'lawyer'"
+              <Label
+                :for="lawyerRoleId"
                 :class="roleCardClass('lawyer')"
-                @click="role = 'lawyer'"
-                @keydown.enter.prevent="role = 'lawyer'"
-                @keydown.space.prevent="role = 'lawyer'"
+                class="group cursor-pointer"
               >
-                <div class="relative p-6 text-center sm:p-7 sm:text-left">
+                <RadioGroupItem
+                  :id="lawyerRoleId"
+                  value="lawyer"
+                  class="sr-only"
+                />
+                <div class="relative px-5 py-6 text-center sm:p-7 sm:text-left">
                   <span
-                    class="absolute top-5 right-5 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6"
+                    class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6 sm:h-6 sm:w-6"
                     :class="
-                      role === 'lawyer'
+                      selectedRole === 'lawyer'
                         ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
                         : 'scale-100 border-brand-line bg-white/80'
                     "
                   >
-                    <PhCheck v-if="role === 'lawyer'" class="h-3.5 w-3.5 text-white" weight="bold" />
+                    <PhCheck v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14"
-                    :class="role === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
+                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhBriefcase
-                      class="h-6 w-6 sm:h-7 sm:w-7"
-                      :class="role === 'lawyer' ? 'text-primary' : 'text-brand-green-700'"
+                      class="h-5 w-5 sm:h-7 sm:w-7"
+                      :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-brand-green-700'"
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-2 text-xl font-semibold leading-tight text-brand-green-900 sm:text-2xl">
+                  <h2 class="mb-1 text-lg font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
                     I am a Lawyer
                   </h2>
-                  <p class="text-base leading-relaxed text-brand-ink-soft">
+                  <p class="text-sm leading-relaxed text-brand-ink-soft sm:text-base">
                     List your services and grow your client base on our network.
                   </p>
                 </div>
-              </Card>
-            </div>
+              </Label>
+            </RadioGroup>
 
-            <div class="flex w-full max-w-md flex-col items-center gap-6 sm:max-w-none">
+            <div class="flex w-full max-w-xs flex-col items-center gap-4 sm:max-w-none sm:gap-6">
               <Button
                 type="button"
-                class="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-green-900 text-base font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:max-w-xs"
+                class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-green-900 text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
                 size="lg"
-                :disabled="!role"
+                :disabled="!selectedRole"
                 @click="step = 'form'"
               >
                 Continue
               </Button>
-              <p class="text-center text-base text-brand-ink-soft sm:hidden">
+              <p class="text-center text-sm text-brand-ink-soft sm:hidden">
                 Already have an account?
                 <NuxtLink to="/login" class="font-semibold text-primary underline-offset-4 hover:underline">
                   Sign in
@@ -158,28 +163,28 @@
           </div>
 
           <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-lg flex-col items-center sm:items-stretch">
+          <div v-else key="form" class="mx-auto flex w-full min-w-0 max-w-xs flex-col items-center sm:max-w-lg sm:items-stretch">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              class="mb-6 inline-flex gap-2 rounded-full border border-brand-line/50 bg-white/50 px-4 py-2 text-sm font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:self-start"
+              class="mb-4 inline-flex gap-1.5 rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
               Change selection
             </Button>
 
-            <div class="mb-8 w-full text-center sm:mb-10">
-              <p class="mb-3 text-xs font-bold uppercase tracking-widest text-brand-green-700">
+            <div class="mb-5 w-full text-center sm:mb-10">
+              <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
                 Registration
               </p>
-              <h1 class="font-heading text-3xl font-normal leading-tight text-brand-green-900 sm:text-4xl">
-                {{ role === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
+              <h1 class="font-heading text-2xl font-normal leading-tight text-brand-green-900 sm:text-4xl">
+                {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
               </h1>
-              <p class="mt-3 text-base leading-relaxed text-brand-ink-soft">
+              <p class="mt-2 text-sm leading-relaxed text-brand-ink-soft sm:mt-3 sm:text-base">
                 {{
-                  role === 'lawyer'
+                  selectedRole === 'lawyer'
                     ? 'Join Nigeria\'s most trusted legal network.'
                     : 'Get started with GetaLawyer today.'
                 }}
@@ -187,7 +192,7 @@
             </div>
 
             <Card
-              class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-8 lg:p-10"
+              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-brand-line/50 bg-white/70 p-4 py-4 shadow-lg shadow-primary/5 backdrop-blur-xl sm:rounded-3xl sm:p-8 sm:py-8 sm:shadow-xl lg:p-10"
             >
               <div
                 class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
@@ -195,8 +200,8 @@
               />
 
               <form class="relative z-10" @submit.prevent="form.handleSubmit">
-                <FieldGroup class="gap-5">
-                  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <FieldGroup class="gap-4 sm:gap-5">
+                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
                     <form.Field v-slot="{ field }" name="firstName">
                       <Field :data-invalid="isInvalid(field)">
                         <FieldLabel :for="field.name">First name</FieldLabel>
@@ -299,7 +304,7 @@
 
                   <Button
                     type="submit"
-                    class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-900 text-base font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700"
+                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-brand-green-900 text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-11 sm:rounded-2xl sm:text-base"
                     size="lg"
                     :disabled="isSubmitting"
                   >
@@ -308,7 +313,7 @@
                       {{
                         isSubmitting
                           ? 'Creating account…'
-                          : role === 'lawyer'
+                          : selectedRole === 'lawyer'
                             ? 'Apply as Lawyer'
                             : 'Create account'
                       }}
@@ -318,7 +323,7 @@
               </form>
             </Card>
 
-            <p class="mx-auto mt-6 max-w-sm text-center text-sm leading-relaxed text-brand-ink-soft">
+            <p class="mx-auto mt-4 max-w-xs text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-sm sm:text-sm">
               By continuing, you agree to our
               <NuxtLink to="/terms" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
                 Terms of Service
@@ -333,11 +338,6 @@
       </div>
     </main>
 
-    <footer class="relative z-20 min-w-0 shrink-0 border-t border-brand-line/10 bg-white/30 px-4 py-6 text-center backdrop-blur-sm sm:px-8 sm:py-8">
-      <p class="text-sm text-brand-ink-soft">
-        &copy; {{ new Date().getFullYear() }} GetaLawyer &middot; Verified Nigerian Legal Professionals
-      </p>
-    </footer>
   </div>
 </template>
 
@@ -354,6 +354,8 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
@@ -367,20 +369,23 @@ definePageMeta({
 const { refetchSession } = useAuth()
 const route = useRoute()
 
+const clientRoleId = useId()
+const lawyerRoleId = useId()
+
 const roleFromQuery = route.query.role as string
-const role = ref<'client' | 'lawyer' | null>(
+const selectedRole = ref<'client' | 'lawyer' | undefined>(
   roleFromQuery === 'lawyer'
     ? 'lawyer'
     : roleFromQuery === 'client'
       ? 'client'
-      : null,
+      : undefined,
 )
 const step = ref<'role' | 'form'>('role')
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
-    'group w-full min-w-0 cursor-pointer overflow-hidden rounded-3xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
-    role.value === value
+    'group w-full min-w-0 cursor-pointer overflow-hidden rounded-2xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 sm:rounded-3xl',
+    selectedRole.value === value
       ? 'border-primary/50 bg-white/80 shadow-lg shadow-primary/10 ring-1 ring-primary/20'
       : 'border-brand-line/60 hover:border-primary/30 hover:bg-white/70 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
   )
@@ -431,7 +436,7 @@ const form = useForm({
         name: fullName,
         email: value.email,
         password: value.password,
-        userType: role.value || 'client',
+        userType: selectedRole.value || 'client',
         onboarding_completed: false,
         callbackURL: '/onboarding',
       })
@@ -456,7 +461,7 @@ const form = useForm({
 const { isInvalid } = useAuthFieldInvalid()
 
 onMounted(() => {
-  if (role.value) {
+  if (selectedRole.value) {
     step.value = 'form'
   }
 })

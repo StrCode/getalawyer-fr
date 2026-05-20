@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
 import {
@@ -41,6 +41,7 @@ const inputClass =
   'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
 
 const store = useLawyerOnboardingStore()
+const soloPractitionerFieldId = useId()
 
 const registerValidate = inject<
   ((fn: (() => Promise<boolean>) | null) => void) | undefined
@@ -223,10 +224,12 @@ onBeforeUnmount(() => {
           <form.Field v-slot="{ field }" name="soloPractitioner">
             <Field>
               <Label
+                :for="soloPractitionerFieldId"
                 class="flex cursor-pointer items-start gap-3 rounded-xl border border-brand-line/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
               >
                 <Checkbox
-                  :model-value="field.state.value"
+                  :id="soloPractitionerFieldId"
+                  :model-value="field.state.value === true"
                   class="mt-0.5"
                   @update:model-value="(v) => {
                     field.handleChange(!!v)
