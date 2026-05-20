@@ -41,7 +41,7 @@
     --sidebar-accent-foreground: oklch(0.95 0.022 152);
     --sidebar-border: oklch(0.31 0.073 150);
     --sidebar-ring: oklch(0.43 0.09 150);
-    --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-serif: 'Fraunces', Georgia, serif;
     --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, monospace;
     --radius: 0.625rem;
