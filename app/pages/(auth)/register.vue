@@ -10,7 +10,7 @@
       />
     </div>
 
-    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-2 py-3 sm:gap-3 sm:px-8 sm:py-6">
+    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-6">
       <NuxtLink to="/" class="group inline-flex min-w-0 items-center gap-2.5">
         <svg
           class="h-7 w-7 text-primary transition-transform group-hover:scale-105 sm:h-8 sm:w-8"
