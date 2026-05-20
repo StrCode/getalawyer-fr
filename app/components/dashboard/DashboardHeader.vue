@@ -1,15 +1,15 @@
 <template>
   <header
-    class="flex h-14 shrink-0 items-center gap-2 border-border border-b bg-card transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:h-16"
+    class="flex h-14 shrink-0 items-center border-border border-b bg-card md:h-16"
   >
-    <div class="flex min-w-0 flex-1 items-center gap-2 px-4">
+    <div class="flex min-w-0 flex-1 items-center gap-2 px-4 md:gap-3">
       <SidebarTrigger
-        class="-ml-1"
+        class="-ml-1 shrink-0"
         aria-label="Toggle sidebar"
       />
       <Separator
         orientation="vertical"
-        class="mr-2 data-[orientation=vertical]:h-4"
+        class="h-4 shrink-0"
       />
       <Breadcrumb class="min-w-0 md:hidden">
         <BreadcrumbList>

@@ -4,9 +4,12 @@
     :support-links="supportLinks"
   />
 
-  <SidebarInset class="min-h-svh flex-col bg-card">
+  <SidebarInset class="flex min-h-0 flex-1 flex-col overflow-hidden bg-card">
     <DashboardHeader />
-    <div class="app-shell__content flex-1 overflow-auto">
+    <div
+      data-dashboard-content
+      class="app-shell__content min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain"
+    >
       <slot />
     </div>
   </SidebarInset>

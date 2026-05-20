@@ -2,27 +2,15 @@
   <Sidebar
     collapsible="icon"
     variant="inset"
-    class="border-sidebar-border border-r"
   >
-    <SidebarHeader class="border-sidebar-border border-b">
-      <div
-        class="flex w-full items-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-1.5"
-        :class="isIconCollapsed ? 'flex-col items-center' : 'flex-row justify-between'"
-      >
-        <div
-          class="flex min-w-0 items-center group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center"
-          :class="isIconCollapsed ? 'w-full justify-center' : 'flex-1'"
-        >
-          <LandingBrandLogo
-            to="/dashboard"
-            :show-wordmark="state === 'expanded'"
-          />
-        </div>
-        <SidebarTrigger
-          class="hidden shrink-0 md:inline-flex"
-          aria-label="Toggle sidebar"
-        />
-      </div>
+    <SidebarHeader
+      class="!flex !h-14 !flex-row !items-center !gap-0 !p-0 shrink-0 px-2 md:!h-16 group-data-[collapsible=icon]:justify-center"
+    >
+      <LandingBrandLogo
+        to="/dashboard"
+        :show-wordmark="state === 'expanded'"
+        class="min-w-0"
+      />
     </SidebarHeader>
 
     <SidebarContent class="gap-0 px-1 py-2">
@@ -58,7 +46,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar'
 

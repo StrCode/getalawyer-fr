@@ -1,6 +1,6 @@
 <template>
   <SidebarProvider
-    class="min-h-svh w-full"
+    class="h-svh w-full overflow-hidden"
     :style="dashboardSidebarStyle"
   >
     <DashboardShell :main-links="mainLinks" :support-links="supportLinks">
@@ -103,6 +103,11 @@ const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
     iconComponent: PhChatCircle,
     to: '/dashboard/messages',
     badge: unreadMessagesBadge.value,
+  },
+  {
+    label: 'Profile',
+    iconComponent: PhUserCircle,
+    to: '/dashboard/profile',
   },
 ])
 

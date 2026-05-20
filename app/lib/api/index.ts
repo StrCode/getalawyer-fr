@@ -167,20 +167,19 @@ export const api = {
   // Client API
   client: {
     getProfile: () =>
-      httpClient.getAuth<ApiResponse<{ profile: ClientProfile }>>(
-        "/api/clients/me",
-      ),
+      httpClient.getAuth<{ profile: ClientProfile }>("/api/clients/me"),
     updateProfile: (data: {
-      name: string;
-      state: string;
-      country: string;
-    }) =>
-      httpClient.patch<ApiResponse>("/api/clients/me", data),
+      name?: string;
+      image?: string;
+      company?: string;
+      country?: string;
+      state?: string;
+      phoneNumber?: string;
+    }) => httpClient.patch<ApiResponse>("/api/clients/me", data),
     uploadAvatar: (formData: FormData) =>
-      httpClient.postFormData<ApiResponse<{ imageUrl: string }>>(
-        "/api/clients/upload-avatar",
-        formData,
-      ),
+      httpClient.postFormData<
+        ApiResponse<{ imageUrl: string }> & { imageUrl?: string }
+      >("/api/clients/upload-avatar", formData),
     completeOnboarding: (data: {
       country: string;
       state: string;
