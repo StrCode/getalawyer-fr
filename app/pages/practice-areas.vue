@@ -76,10 +76,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-brand-cream min-h-screen pb-24">
+  <div class="bg-background min-h-screen pb-24">
     
     <!-- Hero / Header with Photo Background -->
-    <section class="relative py-24 border-b border-brand-line/50 overflow-hidden">
+    <section class="relative py-24 border-b border-border/50 overflow-hidden">
       <!-- Background Image -->
       <div 
         class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -87,12 +87,12 @@ onMounted(() => {
       ></div>
       
       <!-- Overlay (Brand Green 900 gradient) -->
-      <div class="absolute inset-0 bg-brand-green-900/90 mix-blend-multiply"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-brand-green-900 to-transparent opacity-80"></div>
+      <div class="absolute inset-0 bg-sidebar/90 mix-blend-multiply"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-sidebar to-transparent opacity-80"></div>
 
       <div class="max-w-7xl mx-auto px-6 md:px-8 text-center relative z-10">
-        <p class="text-sm font-semibold text-brand-green-300 tracking-[0.08em] uppercase mb-4 drop-shadow-sm">Directory</p>
-        <h1 class="font-heading font-medium text-brand-cream tracking-[-0.02em] mb-4 drop-shadow-md" style="font-size:clamp(36px,4.5vw,56px);">
+        <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4 drop-shadow-sm">Directory</p>
+        <h1 class="font-heading font-medium text-sidebar-foreground tracking-[-0.02em] mb-4 drop-shadow-md" style="font-size:clamp(36px,4.5vw,56px);">
           Practice Areas
         </h1>
         <p class="text-5 max-w-xl mx-auto mb-10 leading-[1.5] drop-shadow-sm" style="color:rgba(244,241,232,0.85);">
@@ -101,14 +101,14 @@ onMounted(() => {
         
         <!-- Search Input -->
         <div class="max-w-lg mx-auto relative group">
-          <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-brand-ink-soft z-10">
+          <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-muted-foreground z-10">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </div>
           <input 
             v-model="searchQuery"
             type="text" 
             placeholder="Search for a legal issue or specialty..."
-            class="w-full bg-white border-2 border-transparent rounded-full py-4.5 pl-12 pr-6 text-4 font-sans text-brand-ink outline-none focus:border-brand-green-300 focus:ring-4 focus:ring-brand-green-300/30 transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] placeholder:text-brand-ink-soft/60"
+            class="w-full bg-white border-2 border-transparent rounded-full py-4.5 pl-12 pr-6 text-4 font-sans text-foreground outline-none focus:border-sidebar-primary focus:ring-4 focus:ring-sidebar-primary/30 transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] placeholder:text-muted-foreground/60"
           />
         </div>
       </div>
@@ -119,11 +119,11 @@ onMounted(() => {
       
       <!-- Empty State -->
       <div v-if="visibleAreas.length === 0" class="text-center py-20">
-        <div class="w-16 h-16 bg-brand-green-100 text-brand-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="w-16 h-16 bg-muted text-primary rounded-full flex items-center justify-center mx-auto mb-4">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
-        <h3 class="text-5 font-semibold text-brand-green-900 mb-2">No practice areas found</h3>
-        <p class="text-4 text-brand-ink-soft">We couldn't find anything matching "{{ searchQuery }}".</p>
+        <h3 class="text-5 font-semibold text-sidebar mb-2">No practice areas found</h3>
+        <p class="text-4 text-muted-foreground">We couldn't find anything matching "{{ searchQuery }}".</p>
       </div>
 
       <!-- Results Grid -->
@@ -133,14 +133,14 @@ onMounted(() => {
           v-for="area in visibleAreas"
           :key="area.name"
           :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
-          class="group bg-white border border-brand-line rounded-2xl p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-brand-green-700 hover:-translate-y-1 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.12)]"
+          class="group bg-white border border-border rounded-2xl p-6 no-underline text-foreground flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-sidebar-accent hover:-translate-y-1 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.12)]"
         >
-          <div class="w-10 h-10 bg-brand-green-100 rounded-xl flex items-center justify-center text-brand-green-700" v-html="area.icon" />
-          <h3 class="font-semibold text-4 text-brand-green-900 leading-tight">{{ area.name }}</h3>
-          <p class="text-3.5 text-brand-ink-soft leading-[1.5]">{{ area.desc }}</p>
+          <div class="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-primary" v-html="area.icon" />
+          <h3 class="font-semibold text-4 text-sidebar leading-tight">{{ area.name }}</h3>
+          <p class="text-3.5 text-muted-foreground leading-[1.5]">{{ area.desc }}</p>
           
           <!-- Subtle arrow that appears on hover -->
-          <div class="mt-auto pt-2 flex items-center gap-1.5 text-sm font-medium text-brand-green-700 opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0">
+          <div class="mt-auto pt-2 flex items-center gap-1.5 text-sm font-medium text-primary opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0">
             View lawyers <span class="text-lg leading-none">&rarr;</span>
           </div>
         </NuxtLink>
@@ -148,7 +148,7 @@ onMounted(() => {
 
       <!-- Infinite Loader Sentinel -->
       <div v-if="hasMore" ref="loaderRef" class="py-16 flex justify-center">
-        <div v-if="isLoading" class="flex gap-2 items-center text-brand-green-700">
+        <div v-if="isLoading" class="flex gap-2 items-center text-primary">
           <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           <span class="text-3.5 font-medium">Loading more areas...</span>
         </div>

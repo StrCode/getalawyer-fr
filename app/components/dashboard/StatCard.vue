@@ -11,7 +11,7 @@
         v-if="trend && trend !== 'neutral' && change"
         :variant="trend === 'up' ? 'secondary' : 'destructive'"
         class="border-transparent text-xs"
-        :class="trend === 'up' ? 'bg-brand-green-100 text-brand-green-700' : ''"
+        :class="trend === 'up' ? 'bg-muted text-primary' : ''"
       >
         <component :is="trendIconComponent" class="size-3" />
         {{ change }}

@@ -20,7 +20,7 @@ definePageMeta({
 const step = getLawyerStepDisplay('nin_verification')
 
 const inputClass =
-  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
 
 const store = useLawyerOnboardingStore()
 const ninState = store.ninVerification
@@ -147,7 +147,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Admin verified -->
     <Card
       v-if="isAdminVerified"
-      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 p-8 text-center shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-10"
+      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 p-8 text-center shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-10"
     >
       <div
         class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-100/60 blur-3xl"
@@ -165,8 +165,8 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           <PhShieldCheck class="h-4 w-4" weight="fill" />
           Verified by Getalawyer
         </div>
-        <h2 class="mb-3 text-2xl font-semibold text-brand-green-900">Identity verified</h2>
-        <p class="mx-auto max-w-md text-base leading-relaxed text-brand-ink-soft">
+        <h2 class="mb-3 text-2xl font-semibold text-sidebar">Identity verified</h2>
+        <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Your National Identification Number has been verified. It cannot be changed while your
           application is active.
         </p>
@@ -176,7 +176,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Already submitted -->
     <Card
       v-else-if="isSubmittedPending"
-      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
     >
       <div class="relative z-10 p-6 text-center sm:p-8">
         <div
@@ -184,15 +184,15 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         >
           <PhCheckCircle class="h-8 w-8 text-emerald-600" weight="fill" />
         </div>
-        <p class="mb-1 text-lg font-semibold text-brand-green-900">NIN already submitted</p>
-        <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-brand-ink-soft">
+        <p class="mb-1 text-lg font-semibold text-sidebar">NIN already submitted</p>
+        <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
           Your NIN is saved securely. You can continue, or replace it if you made a mistake — until
           our team verifies it.
         </p>
         <Button type="button" variant="outline" class="rounded-xl" @click="store.beginChangeNin()">
           Change NIN
         </Button>
-        <p class="mt-6 text-sm text-brand-ink-soft">
+        <p class="mt-6 text-sm text-muted-foreground">
           Use <span class="font-semibold text-foreground">Continue</span> to move on without
           changing your NIN.
         </p>
@@ -202,10 +202,10 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Entry form -->
     <Card
       v-else-if="showEntryForm"
-      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
     >
       <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
         aria-hidden="true"
       />
 
@@ -219,7 +219,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
               </FieldLabel>
               <div class="flex gap-2">
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-brand-line/50 bg-white/80 px-3 text-muted-foreground"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-white/80 px-3 text-muted-foreground"
                   aria-hidden="true"
                 >
                   <PhIdentificationCard class="h-5 w-5" />
@@ -238,8 +238,8 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   @update:model-value="(v) => onNinInput(field, v)"
                 />
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-brand-line/50 bg-white/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
-                  :class="ninLength === 11 ? 'text-primary' : 'text-brand-ink-soft/60'"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-white/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
+                  :class="ninLength === 11 ? 'text-primary' : 'text-muted-foreground/60'"
                 >
                   {{ ninLength }}/11
                 </span>
@@ -253,7 +253,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
             <Field :data-invalid="isInvalid(field)">
               <Label
                 :for="consentFieldId"
-                class="flex cursor-pointer items-start gap-3 rounded-xl border border-brand-line/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
               >
                 <Checkbox
                   :id="consentFieldId"
@@ -269,7 +269,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                     I consent to Getalawyer verifying my identity with the National Identity
                     Management Commission (NIMC) for professional background checks.
                   </span>
-                  <span class="text-xs leading-relaxed text-brand-ink-soft">
+                  <span class="text-xs leading-relaxed text-muted-foreground">
                     Required to proceed. Used only for identity verification.
                   </span>
                 </span>

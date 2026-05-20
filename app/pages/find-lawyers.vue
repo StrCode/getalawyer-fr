@@ -404,7 +404,7 @@ function clearAllFilters(): void {
               Topic or keywords
             </span>
             <span
-              class="flex items-center rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3.5 py-2 transition-colors focus-within:border-brand focus-within:border-solid focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] dark:bg-card dark:border-muted-foreground/30"
+              class="flex items-center rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:border-solid focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] dark:bg-card dark:border-muted-foreground/30"
             >
               <input
                 v-model="filters.keywords"
@@ -427,7 +427,7 @@ function clearAllFilters(): void {
                 <PopoverTrigger as-child>
                   <button
                     type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-brand focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
+                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-primary focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
                     aria-haspopup="dialog"
                     aria-label="States"
                     :aria-expanded="statePopoverOpen"
@@ -494,7 +494,7 @@ function clearAllFilters(): void {
                 <PopoverTrigger as-child>
                   <button
                     type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-brand focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
+                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-primary focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
                     aria-haspopup="dialog"
                     aria-label="Specializations"
                     :aria-expanded="specPopoverOpen"
@@ -554,7 +554,7 @@ function clearAllFilters(): void {
             <button
               v-if="activeFilterCount > 0"
               type="button"
-              class="shrink-0 cursor-pointer rounded-full border border-border bg-background px-3 py-1.5 font-semibold text-[0.8125rem] text-muted-foreground transition-colors hover:border-brand/35 hover:text-[#0f3d28] dark:bg-card dark:hover:text-brand"
+              class="shrink-0 cursor-pointer rounded-full border border-border bg-background px-3 py-1.5 font-semibold text-[0.8125rem] text-muted-foreground transition-colors hover:border-primary/35 hover:text-[#0f3d28] dark:bg-card dark:hover:text-primary"
               @click="clearAllFilters"
             >
               Clear all
@@ -615,7 +615,7 @@ function clearAllFilters(): void {
                 class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
                 :class="
                   resultsLayout === 'grid'
-                    ? 'bg-brand text-white shadow-sm'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 "
                 :aria-pressed="resultsLayout === 'grid'"
@@ -630,7 +630,7 @@ function clearAllFilters(): void {
                 class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
                 :class="
                   resultsLayout === 'list'
-                    ? 'bg-brand text-white shadow-sm'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 "
                 :aria-pressed="resultsLayout === 'list'"
@@ -723,7 +723,7 @@ function clearAllFilters(): void {
               v-for="page in Math.min(pagination.totalPages, 5)"
               :key="page"
               type="button"
-              class="bg-background aria-[current=page]:bg-brand hover:bg-muted/60 dark:bg-card border border-border aria-[current=page]:border-brand hover:border-brand rounded-lg min-w-10 h-10 font-sans font-semibold aria-[current=page]:text-white text-sm transition-colors cursor-pointer"
+              class="bg-background aria-[current=page]:bg-primary hover:bg-muted/60 dark:bg-card border border-border aria-[current=page]:border-primary hover:border-primary rounded-lg min-w-10 h-10 font-sans font-semibold aria-[current=page]:text-white text-sm transition-colors cursor-pointer"
               :aria-current="page === currentPage ? 'page' : undefined"
               @click="currentPage = page"
             >

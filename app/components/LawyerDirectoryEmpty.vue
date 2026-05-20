@@ -26,7 +26,7 @@ const tips = [
   >
     <div
       aria-hidden="true"
-      class="pointer-events-none absolute -right-14 -top-14 size-40 rounded-full bg-brand/[0.07] blur-2xl dark:bg-brand/10"
+      class="pointer-events-none absolute -right-14 -top-14 size-40 rounded-full bg-primary/[0.07] blur-2xl dark:bg-primary/10"
     />
     <div
       aria-hidden="true"
@@ -35,7 +35,7 @@ const tips = [
 
     <div class="relative">
       <div
-        class="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-brand/8 text-brand ring-1 ring-brand/15 dark:bg-brand/12 dark:text-brand dark:ring-brand/25"
+        class="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/15 dark:bg-primary/12 dark:text-primary dark:ring-primary/25"
       >
         <PhMagnifyingGlass class="size-8" weight="duotone" aria-hidden="true" />
       </div>
@@ -66,7 +66,7 @@ const tips = [
         class="mx-auto mt-6 max-w-sm space-y-2.5 text-left text-muted-foreground text-sm"
       >
         <li v-for="(line, idx) in tips" :key="idx" class="flex gap-2.5 leading-snug">
-          <PhFunnel class="mt-0.5 size-4 shrink-0 text-brand/70 opacity-90" aria-hidden="true" />
+          <PhFunnel class="mt-0.5 size-4 shrink-0 text-primary/70 opacity-90" aria-hidden="true" />
           <span>{{ line }}</span>
         </li>
       </ul>

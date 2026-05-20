@@ -85,11 +85,11 @@ const residenceDisplay = computed(() => {
 })
 
 const cardClass =
-  'relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl'
+  'relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl'
 
-const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-brand-line/40 pb-4'
-const sectionTitleClass = 'text-base font-bold uppercase tracking-wide text-brand-green-800'
-const fieldLabelClass = 'text-sm font-semibold uppercase tracking-wide text-brand-ink-soft/70'
+const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-border/40 pb-4'
+const sectionTitleClass = 'text-base font-bold uppercase tracking-wide text-primary'
+const fieldLabelClass = 'text-sm font-semibold uppercase tracking-wide text-muted-foreground/70'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 </script>
 
@@ -140,7 +140,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
       <!-- About you -->
       <Card :class="cardClass">
         <div
-          class="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-brand-green-100/40 blur-3xl"
+          class="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-muted/40 blur-3xl"
           aria-hidden="true"
         />
         <div class="relative z-10 space-y-6 p-6 sm:p-8">
@@ -149,7 +149,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-brand-line/50 bg-white/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
               as-child
             >
               <NuxtLink to="/onboarding/personal-info">
@@ -231,7 +231,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-brand-line/50 bg-white/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
               as-child
             >
               <NuxtLink to="/onboarding/professional-information">
@@ -271,7 +271,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
           <Button
             variant="outline"
             size="sm"
-            class="h-9 shrink-0 gap-1.5 rounded-lg border-brand-line/50 bg-white/80 px-3 text-sm font-semibold"
+            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
             as-child
           >
             <NuxtLink to="/onboarding/practice-information">
@@ -301,7 +301,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <p :class="fieldLabelClass">Legal specializations</p>
             <ul
               v-if="practiceAreaRows.length"
-              class="divide-y divide-brand-line/30 overflow-hidden rounded-xl border border-brand-line/40 bg-white/50"
+              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-white/50"
             >
               <li
                 v-for="row in practiceAreaRows"
@@ -327,10 +327,10 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     </Card>
 
     <!-- Submit notice -->
-    <Card class="rounded-2xl border border-brand-line/50 bg-white/60 shadow-sm">
+    <Card class="rounded-2xl border border-border/50 bg-white/60 shadow-sm">
       <div class="flex gap-3 p-5 sm:p-6">
         <PhInfo class="mt-0.5 size-5 shrink-0 text-primary" weight="fill" />
-        <div class="space-y-1.5 text-sm leading-relaxed text-brand-ink-soft sm:text-base">
+        <div class="space-y-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
           <p class="font-semibold text-foreground">What happens after you submit</p>
           <p>
             Your application goes into a pending state while our team manually reviews your credentials.

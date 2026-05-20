@@ -10,7 +10,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="bg-brand-cream">
+  <div class="bg-background">
     <LandingHero />
     <LandingTrustBar />
     <LandingHowItWorks />

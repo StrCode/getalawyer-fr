@@ -19,13 +19,13 @@ withDefaults(
   <NuxtLink
     :to="to"
     class="flex items-center gap-2.5 no-underline shrink-0 min-w-0 transition-opacity hover:opacity-90"
-    :class="onDark ? 'text-sidebar-foreground' : 'text-brand-green-700'"
+    :class="onDark ? 'text-sidebar-foreground' : 'text-primary'"
   >
     <span
       class="flex justify-center items-center rounded-xl ring-1 shrink-0 size-9"
       :class="onDark
         ? 'bg-white/[0.06] ring-white/[0.08]'
-        : 'bg-white/95 ring-brand-line/80 shadow-xs'"
+        : 'bg-white/95 ring-border/80 shadow-xs'"
     >
       <svg
         class="size-5"

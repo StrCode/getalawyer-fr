@@ -1,12 +1,12 @@
 <template>
-  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-brand-cream font-sans">
+  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background font-sans">
     <!-- Background: clipped so blur paint cannot extend scroll width -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div
-        class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand-green-100/60 blur-3xl sm:h-96 sm:w-96"
+        class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-muted/60 blur-3xl sm:h-96 sm:w-96"
       />
       <div
-        class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-brand-green-100/40 blur-3xl sm:h-96 sm:w-96"
+        class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-muted/40 blur-3xl sm:h-96 sm:w-96"
       />
     </div>
 
@@ -21,18 +21,18 @@
           <polygon points="0,20 38,42 38,82 0,60" fill="currentColor" />
           <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55" />
         </svg>
-        <span class="font-sans text-lg font-bold tracking-tight text-brand-green-900 lowercase sm:text-2xl">
+        <span class="font-sans text-lg font-bold tracking-tight text-sidebar lowercase sm:text-2xl">
           getalawyer
         </span>
       </NuxtLink>
 
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-        <span class="hidden text-sm font-medium text-brand-ink-soft sm:inline">
+        <span class="hidden text-sm font-medium text-muted-foreground sm:inline">
           Already have an account?
         </span>
         <NuxtLink
           to="/login"
-          class="rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:px-5 sm:py-2.5 sm:text-sm"
+          class="rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-semibold text-primary shadow-sm backdrop-blur-sm transition-colors hover:bg-white sm:px-5 sm:py-2.5 sm:text-sm"
         >
           Sign in
         </NuxtLink>
@@ -45,15 +45,15 @@
           <!-- Step 1: Role selection -->
           <div v-if="step === 'role'" key="role" class="mx-auto flex w-full flex-col items-center gap-6 sm:max-w-none sm:gap-0">
             <div class="w-full text-center sm:mb-10">
-              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
+              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary sm:mb-3 sm:text-xs">
                 Account type
               </p>
               <h1
-                class="text-balance text-2xl font-medium leading-tight tracking-tight text-brand-green-900 sm:text-4xl"
+                class="text-balance text-2xl font-medium leading-tight tracking-tight text-sidebar sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
-              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-brand-ink-soft sm:mt-4 sm:max-w-xl sm:text-base">
+              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:max-w-xl sm:text-base">
                 Select the path that matches your needs today.
               </p>
             </div>
@@ -78,25 +78,25 @@
                     :class="
                       selectedRole === 'client'
                         ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
-                        : 'scale-100 border-brand-line bg-white/80'
+                        : 'scale-100 border-border bg-white/80'
                     "
                   >
                     <PhCheck v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-muted transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
                     :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhUser
                       class="h-5 w-5 sm:h-7 sm:w-7"
-                      :class="selectedRole === 'client' ? 'text-primary' : 'text-brand-green-700'"
+                      :class="selectedRole === 'client' ? 'text-primary' : 'text-primary'"
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-1 text-xl font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
+                  <h2 class="mb-1 text-xl font-semibold leading-tight text-sidebar sm:mb-2 sm:text-2xl">
                     I am a Client
                   </h2>
-                  <p class="text-base font-normal leading-relaxed text-brand-ink-soft sm:text-base">
+                  <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
                     Find and book a verified Nigerian lawyer for legal assistance.
                   </p>
                 </div>
@@ -118,25 +118,25 @@
                     :class="
                       selectedRole === 'lawyer'
                         ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
-                        : 'scale-100 border-brand-line bg-white/80'
+                        : 'scale-100 border-border bg-white/80'
                     "
                   >
                     <PhCheck v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green-100 transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-muted transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
                     :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhBriefcase
                       class="h-5 w-5 sm:h-7 sm:w-7"
-                      :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-brand-green-700'"
+                      :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-primary'"
                       weight="duotone"
                     />
                   </div>
-                  <h2 class="mb-1 text-xl font-semibold leading-tight text-brand-green-900 sm:mb-2 sm:text-2xl">
+                  <h2 class="mb-1 text-xl font-semibold leading-tight text-sidebar sm:mb-2 sm:text-2xl">
                     I am a Lawyer
                   </h2>
-                  <p class="text-base font-normal leading-relaxed text-brand-ink-soft sm:text-base">
+                  <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
                     List your services and grow your client base on our network.
                   </p>
                 </div>
@@ -146,14 +146,14 @@
             <div class="flex w-full flex-col items-center gap-4 sm:gap-6">
               <Button
                 type="button"
-                class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-green-900 text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
+                class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-sidebar text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-primary sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
                 size="lg"
                 :disabled="!selectedRole"
                 @click="step = 'form'"
               >
                 Continue
               </Button>
-              <p class="text-center text-sm text-brand-ink-soft sm:hidden">
+              <p class="text-center text-sm text-muted-foreground sm:hidden">
                 Already have an account?
                 <NuxtLink to="/login" class="font-semibold text-primary underline-offset-4 hover:underline">
                   Sign in
@@ -168,7 +168,7 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="inline-flex gap-1.5 rounded-full border border-brand-line/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-brand-ink-soft backdrop-blur-sm hover:bg-white hover:text-brand-green-900 sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
+              class="inline-flex gap-1.5 rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white hover:text-sidebar sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
@@ -176,13 +176,13 @@
             </Button>
 
             <div class="w-full text-center sm:mb-10">
-              <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-brand-green-700 sm:mb-3 sm:text-xs">
+              <p class="mb-2 text-[0.65rem] font-bold uppercase tracking-widest text-primary sm:mb-3 sm:text-xs">
                 Registration
               </p>
-              <h1 class="font-heading text-2xl font-normal leading-tight text-brand-green-900 sm:text-4xl">
+              <h1 class="font-heading text-2xl font-normal leading-tight text-sidebar sm:text-4xl">
                 {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
               </h1>
-              <p class="mt-2 text-sm leading-relaxed text-brand-ink-soft sm:mt-3 sm:text-base">
+              <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
                 {{
                   selectedRole === 'lawyer'
                     ? 'Join Nigeria\'s most trusted legal network.'
@@ -192,10 +192,10 @@
             </div>
 
             <Card
-              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-brand-line/50 bg-white/70 px-5 py-5 shadow-lg shadow-primary/5 backdrop-blur-xl sm:rounded-3xl sm:px-10 sm:py-10 sm:shadow-xl lg:px-12 lg:py-12"
+              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-border/50 bg-white/70 px-5 py-5 shadow-lg shadow-primary/5 backdrop-blur-xl sm:rounded-3xl sm:px-10 sm:py-10 sm:shadow-xl lg:px-12 lg:py-12"
             >
               <div
-                class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
+                class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
                 aria-hidden="true"
               />
 
@@ -211,7 +211,7 @@
                           :model-value="field.state.value"
                           placeholder="Alex"
                           autocomplete="given-name"
-                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
+                          class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -230,7 +230,7 @@
                           :model-value="field.state.value"
                           placeholder="Smith"
                           autocomplete="family-name"
-                          class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
+                          class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -251,7 +251,7 @@
                         type="email"
                         placeholder="alex@example.com"
                         autocomplete="email"
-                        class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
+                        class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -270,7 +270,7 @@
                         :model-value="field.state.value"
                         placeholder="••••••••"
                         autocomplete="new-password"
-                        input-class="h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white"
+                        input-class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -284,7 +284,7 @@
 
                   <Button
                     type="submit"
-                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-brand-green-900 text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-brand-green-700 sm:h-11 sm:rounded-2xl sm:text-base"
+                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-sidebar text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-primary sm:h-11 sm:rounded-2xl sm:text-base"
                     size="lg"
                     :disabled="isSubmitting"
                   >
@@ -303,13 +303,13 @@
               </form>
             </Card>
 
-            <p class="mx-auto w-full text-center text-xs leading-relaxed text-brand-ink-soft sm:mt-6 sm:max-w-xl sm:text-sm">
+            <p class="mx-auto w-full text-center text-xs leading-relaxed text-muted-foreground sm:mt-6 sm:max-w-xl sm:text-sm">
               By continuing, you agree to our
-              <NuxtLink to="/terms" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
+              <NuxtLink to="/terms" class="text-sidebar underline underline-offset-4 hover:text-primary">
                 Terms of Service
               </NuxtLink>
               and
-              <NuxtLink to="/privacy" class="text-brand-green-900 underline underline-offset-4 hover:text-primary">
+              <NuxtLink to="/privacy" class="text-sidebar underline underline-offset-4 hover:text-primary">
                 Privacy Policy
               </NuxtLink>.
             </p>
@@ -367,7 +367,7 @@ function roleCardClass(value: 'client' | 'lawyer') {
     'group w-full min-w-0 cursor-pointer overflow-hidden rounded-2xl border bg-white/50 backdrop-blur-md transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 sm:rounded-3xl',
     selectedRole.value === value
       ? 'border-primary/50 bg-white/80 shadow-lg shadow-primary/10 ring-1 ring-primary/20'
-      : 'border-brand-line/60 hover:border-primary/30 hover:bg-white/70 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
+      : 'border-border/60 hover:border-primary/30 hover:bg-white/70 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
   )
 }
 

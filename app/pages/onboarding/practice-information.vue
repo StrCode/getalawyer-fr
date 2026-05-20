@@ -38,7 +38,7 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('practice_info')
 const inputClass =
-  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
 
 const store = useLawyerOnboardingStore()
 const soloPractitionerFieldId = useId()
@@ -217,7 +217,7 @@ onBeforeUnmount(() => {
     />
 
     <Card
-      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
     >
       <div class="relative z-10 p-6 sm:p-8">
         <FieldGroup class="gap-8">
@@ -225,7 +225,7 @@ onBeforeUnmount(() => {
             <Field>
               <Label
                 :for="soloPractitionerFieldId"
-                class="flex cursor-pointer items-start gap-3 rounded-xl border border-brand-line/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
               >
                 <Checkbox
                   :id="soloPractitionerFieldId"
@@ -250,7 +250,7 @@ onBeforeUnmount(() => {
             <Field :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name">
                 Firm or practice name
-                <span class="font-normal text-brand-ink-soft">(optional if solo)</span>
+                <span class="font-normal text-muted-foreground">(optional if solo)</span>
               </FieldLabel>
               <Input
                 :id="field.name"
@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
                       <ListboxFilter v-model="stateQuery" as-child>
                         <TagsInputInput
                           placeholder="Search or select states..."
-                          class="min-h-8 text-base placeholder:text-brand-ink-soft/50"
+                          class="min-h-8 text-base placeholder:text-muted-foreground/50"
                           @keydown.enter.prevent
                           @keydown.down="statesPopoverOpen = true"
                         />
@@ -381,7 +381,7 @@ onBeforeUnmount(() => {
               </p>
 
               <div
-                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-brand-line/40 bg-white/50 p-2"
+                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-white/50 p-2"
               >
                 <div
                   v-for="spec in filtered"
@@ -391,7 +391,7 @@ onBeforeUnmount(() => {
                     ? 'border-primary/40 bg-primary/5'
                     : isDisabled(spec.id)
                       ? 'cursor-not-allowed border-transparent opacity-50'
-                      : 'cursor-pointer border-brand-line/30 bg-white hover:border-brand-line/60'"
+                      : 'cursor-pointer border-border/30 bg-white hover:border-border/60'"
                   @click="!isDisabled(spec.id) && toggleArea(spec.id)"
                 >
                   <div class="flex items-start justify-between gap-2">
@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
                   </div>
                   <div
                     v-if="isAreaSelected(spec.id)"
-                    class="mt-3 flex items-center gap-2 border-t border-brand-line/30 pt-3"
+                    class="mt-3 flex items-center gap-2 border-t border-border/30 pt-3"
                     @click.stop
                   >
                     <Label :for="`years-${spec.id}`" class="shrink-0 text-xs text-muted-foreground">
@@ -424,7 +424,7 @@ onBeforeUnmount(() => {
                         : 80"
                       :model-value="getAreaYears(spec.id) === '' ? '' : String(getAreaYears(spec.id))"
                       placeholder="—"
-                      class="h-9 max-w-[5.5rem] rounded-lg border-brand-line/50 text-sm tabular-nums"
+                      class="h-9 max-w-[5.5rem] rounded-lg border-border/50 text-sm tabular-nums"
                       inputmode="numeric"
                       @update:model-value="(v) => setAreaYears(spec.id, String(v ?? ''))"
                     />

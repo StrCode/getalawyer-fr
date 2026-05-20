@@ -17,7 +17,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <template>
-  <div class="font-sans text-brand-ink bg-brand-cream antialiased">
+  <div class="font-sans text-foreground bg-background antialiased">
     <LandingNav :is-scrolled="isScrolled" />
     <slot />
     <LandingFooter />

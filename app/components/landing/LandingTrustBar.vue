@@ -24,20 +24,20 @@ const trustItems = [
 </script>
 
 <template>
-  <section class="bg-brand-green-900 text-brand-cream py-6 md:py-10">
+  <section class="bg-sidebar text-sidebar-foreground py-6 md:py-10">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 items-center">
         <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-3.5">
           <!-- Icon -->
           <div
-            class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-brand-green-300"
+            class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sidebar-primary"
             style="background:rgba(134,194,142,0.15);"
             v-html="item.icon"
           />
           <!-- Text -->
           <div class="text-sm leading-normal">
-            <strong class="block text-brand-cream font-semibold mb-0.5">{{ item.label }}</strong>
-            <span class="text-brand-cream/60">{{ item.sub }}</span>
+            <strong class="block text-sidebar-foreground font-semibold mb-0.5">{{ item.label }}</strong>
+            <span class="text-sidebar-foreground/60">{{ item.sub }}</span>
           </div>
         </div>
       </div>

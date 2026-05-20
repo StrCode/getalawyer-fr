@@ -169,7 +169,7 @@ async function retryStatus() {
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
     >
       <div
-        class="flex size-16 items-center justify-center rounded-full border border-brand-line/40 bg-white shadow-sm"
+        class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-white shadow-sm"
       >
         <PhCircleNotch class="size-8 animate-spin text-primary" aria-hidden="true" />
       </div>
@@ -184,19 +184,19 @@ async function retryStatus() {
         <PhHourglass class="size-10" weight="duotone" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-brand-green-700">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary">
           Application status
         </p>
-        <h1 class="font-heading text-3xl font-normal tracking-tight text-brand-green-900 sm:text-4xl">
+        <h1 class="font-heading text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
           Could not load status
         </h1>
-        <p class="mx-auto max-w-md text-base leading-relaxed text-brand-ink-soft">
+        <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Check your connection and try again.
         </p>
       </div>
-      <Card class="overflow-hidden rounded-2xl border border-brand-line/50 bg-white text-left shadow-sm">
+      <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white text-left shadow-sm">
         <div class="space-y-4 p-6">
-          <p class="text-sm leading-relaxed text-brand-ink-soft">
+          <p class="text-sm leading-relaxed text-muted-foreground">
             We could not reach the server to confirm your application status.
           </p>
           <Button class="w-full rounded-full font-semibold" @click="retryStatus">
@@ -221,19 +221,19 @@ async function retryStatus() {
             <PhFileSearch class="size-11 text-primary" weight="duotone" />
           </div>
 
-          <p class="mb-2 text-xs font-bold uppercase tracking-widest text-brand-green-700">
+          <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
             Step 3 of 3 · Application status
           </p>
-          <h1 class="font-heading text-balance text-3xl font-normal tracking-tight text-brand-green-900 sm:text-4xl">
+          <h1 class="font-heading text-balance text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
             Application submitted
           </h1>
-          <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-brand-ink-soft">
+          <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
             Our team is reviewing your profile and credentials. We will notify you when a decision is made.
           </p>
         </div>
 
         <!-- Horizontal progress (Airwallex-style) -->
-        <div class="rounded-2xl border border-brand-line/40 bg-white/80 px-4 py-5 shadow-sm sm:px-6">
+        <div class="rounded-2xl border border-border/40 bg-white/80 px-4 py-5 shadow-sm sm:px-6">
           <ol class="flex items-start justify-between gap-2">
             <li
               v-for="(step, index) in progressSteps"
@@ -257,7 +257,7 @@ async function retryStatus() {
                 <span
                   v-if="index < progressSteps.length - 1"
                   class="mx-1 h-0.5 min-w-2 flex-1 rounded-full"
-                  :class="step.status === 'done' ? 'bg-primary' : 'bg-brand-line/60'"
+                  :class="step.status === 'done' ? 'bg-primary' : 'bg-border/60'"
                 />
               </div>
               <p class="mt-2 text-[11px] font-semibold leading-tight text-foreground sm:text-xs">
@@ -280,15 +280,15 @@ async function retryStatus() {
         </div>
 
         <!-- Status card -->
-        <Card class="overflow-hidden rounded-2xl border border-brand-line/50 bg-white shadow-sm">
-          <div class="border-b border-brand-line/40 px-6 py-5">
+        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+          <div class="border-b border-border/40 px-6 py-5">
             <h2 class="text-base font-semibold text-foreground">
               We are reviewing your details
             </h2>
           </div>
           <div class="space-y-1 px-6 py-5">
             <p class="text-sm font-semibold text-foreground">You are all set for now</p>
-            <p class="text-sm leading-relaxed text-brand-ink-soft">
+            <p class="text-sm leading-relaxed text-muted-foreground">
               <template v-if="formatSubmitted(submittedAt)">
                 Submitted on {{ formatSubmitted(submittedAt) }}.
               </template>
@@ -301,9 +301,9 @@ async function retryStatus() {
         </Card>
 
         <!-- Timeline (Mercury-style) -->
-        <Card class="overflow-hidden rounded-2xl border border-brand-line/50 bg-white shadow-sm">
-          <div class="border-b border-brand-line/40 px-6 py-4">
-            <h2 class="text-sm font-bold uppercase tracking-wide text-brand-green-800">
+        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+          <div class="border-b border-border/40 px-6 py-4">
+            <h2 class="text-sm font-bold uppercase tracking-wide text-primary">
               What happens next
             </h2>
           </div>
@@ -318,13 +318,13 @@ async function retryStatus() {
                   class="relative z-10 flex size-3 shrink-0 rounded-full ring-4 ring-white"
                   :class="{
                     'bg-primary': item.status === 'done' || item.status === 'current',
-                    'bg-brand-line': item.status === 'upcoming',
+                    'bg-border': item.status === 'upcoming',
                   }"
                 />
                 <span
                   v-if="index < timelineSteps.length - 1"
-                  class="mt-1 w-px flex-1 min-h-[2.5rem] bg-brand-line/60"
-                  :class="item.status === 'done' ? 'bg-primary/40' : 'bg-brand-line/60'"
+                  class="mt-1 w-px flex-1 min-h-[2.5rem] bg-border/60"
+                  :class="item.status === 'done' ? 'bg-primary/40' : 'bg-border/60'"
                 />
               </div>
               <div class="min-w-0 flex-1 pt-0">
@@ -334,7 +334,7 @@ async function retryStatus() {
                 >
                   {{ item.label }}
                 </p>
-                <p class="mt-1 text-sm leading-relaxed text-brand-ink-soft">
+                <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
                   {{ item.detail }}
                 </p>
               </div>

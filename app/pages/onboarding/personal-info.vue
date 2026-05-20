@@ -19,7 +19,7 @@ definePageMeta({
 const step = getLawyerStepDisplay('personal_info')
 
 const inputClass =
-  'h-11 rounded-xl border-brand-line/50 bg-white/80 text-base placeholder:text-brand-ink-soft/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
 
 const selectTriggerClass = `${inputClass} w-full`
 
@@ -171,10 +171,10 @@ watch(
     />
 
     <Card
-      class="relative w-full overflow-hidden rounded-3xl border border-brand-line/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
     >
       <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-green-100/50 blur-3xl"
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
         aria-hidden="true"
       />
 
@@ -203,7 +203,7 @@ watch(
               <Field :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name">
                   Middle name
-                  <span class="font-normal text-brand-ink-soft">(optional)</span>
+                  <span class="font-normal text-muted-foreground">(optional)</span>
                 </FieldLabel>
                 <Input
                   :id="field.name"
@@ -249,11 +249,11 @@ watch(
                       :id="`${field.name}-trigger`"
                       type="button"
                       variant="outline"
-                      class="h-11 w-full justify-between rounded-xl border-brand-line/50 bg-white/80 font-normal text-foreground shadow-none hover:bg-white focus:bg-white"
+                      class="h-11 w-full justify-between rounded-xl border-border/50 bg-white/80 font-normal text-foreground shadow-none hover:bg-white focus:bg-white"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                     >
-                      <span :class="dobDate ? 'text-foreground' : 'text-brand-ink-soft/70'">
+                      <span :class="dobDate ? 'text-foreground' : 'text-muted-foreground/70'">
                         {{
                           dobDate
                             ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', {
@@ -264,7 +264,7 @@ watch(
                             : 'Select your date of birth'
                         }}
                       </span>
-                      <ChevronDownIcon class="h-4 w-4 shrink-0 text-brand-ink-soft" />
+                      <ChevronDownIcon class="h-4 w-4 shrink-0 text-muted-foreground" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-auto overflow-hidden p-0" align="start">
@@ -302,7 +302,7 @@ watch(
                 >
                   <SelectTrigger
                     :id="field.name"
-                    class="h-11 w-full rounded-xl border-brand-line/50 bg-white/80 text-base focus:bg-white"
+                    class="h-11 w-full rounded-xl border-border/50 bg-white/80 text-base focus:bg-white"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select gender" />
@@ -318,8 +318,8 @@ watch(
             </form.Field>
           </div>
 
-          <div class="border-t border-brand-line/40 pt-5">
-            <p class="mb-4 text-sm font-medium text-brand-green-900">Location</p>
+          <div class="border-t border-border/40 pt-5">
+            <p class="mb-4 text-sm font-medium text-sidebar">Location</p>
             <FieldDescription class="mb-4">
               Your current state and local government area of residence.
             </FieldDescription>
@@ -393,7 +393,7 @@ watch(
             </div>
           </div>
 
-          <p class="text-sm leading-relaxed text-brand-ink-soft">
+          <p class="text-sm leading-relaxed text-muted-foreground">
             All fields except middle name are required for identity verification.
           </p>
         </FieldGroup>

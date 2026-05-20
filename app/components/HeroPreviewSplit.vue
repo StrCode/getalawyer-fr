@@ -64,7 +64,7 @@ const runSearch = () => {
       >
         <!-- Left rail: thin, low-contrast accent -->
         <div
-          class="relative border-l border-brand/20 pl-4 sm:pl-5 lg:pl-6 dark:border-brand/15"
+          class="relative border-l border-primary/20 pl-4 sm:pl-5 lg:pl-6 dark:border-primary/15"
         >
           <motion.div
             :initial="{ opacity: 0, y: 8 }"
@@ -73,7 +73,7 @@ const runSearch = () => {
           >
             <Badge
               variant="outline"
-              class="border-brand/15 bg-brand-soft/25 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand/70 shadow-none hover:bg-brand-soft/35 dark:border-brand/20 dark:bg-brand-soft/15 dark:text-brand/65"
+              class="border-primary/15 bg-muted/25 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/70 shadow-none hover:bg-muted/35 dark:border-primary/20 dark:bg-muted/15 dark:text-primary/65"
             >
               Verified directory
             </Badge>
@@ -123,12 +123,12 @@ const runSearch = () => {
               </span>
 
               <div
-                class="col-start-1 row-start-3 flex min-h-12 w-full items-center gap-1 rounded-xl border border-neutral-200/90 bg-background pl-1 pr-2 py-0.5 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.1)] outline-none ring-offset-background transition-shadow focus-within:border-brand/40 focus-within:shadow-[0_4px_20px_-8px_rgba(15,23,42,0.14)] focus-within:ring-2 focus-within:ring-brand/20 sm:min-h-14 sm:pr-3 md:col-start-3 md:row-start-1 dark:border-input dark:bg-input/30 dark:shadow-none dark:focus-within:ring-brand/30"
+                class="col-start-1 row-start-3 flex min-h-12 w-full items-center gap-1 rounded-xl border border-neutral-200/90 bg-background pl-1 pr-2 py-0.5 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.1)] outline-none ring-offset-background transition-shadow focus-within:border-primary/40 focus-within:shadow-[0_4px_20px_-8px_rgba(15,23,42,0.14)] focus-within:ring-2 focus-within:ring-primary/20 sm:min-h-14 sm:pr-3 md:col-start-3 md:row-start-1 dark:border-input dark:bg-input/30 dark:shadow-none dark:focus-within:ring-primary/30"
                 role="search"
               >
                 <button
                   type="button"
-                  class="-ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-brand outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-brand/30 sm:size-10 dark:hover:bg-neutral-800/80"
+                  class="-ml-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-primary outline-none transition-colors hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-primary/30 sm:size-10 dark:hover:bg-neutral-800/80"
                   aria-label="Run search"
                   @click="runSearch"
                 >

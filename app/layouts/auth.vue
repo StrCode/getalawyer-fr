@@ -2,17 +2,17 @@
   <div class="flex min-h-dvh w-full overflow-hidden bg-[oklch(0.98_0.008_85)]">
     <!-- LEFT PANEL: Rich Green Editorial -->
     <aside
-      class="hidden lg:flex lg:w-1/2 flex-col min-h-dvh justify-between bg-brand-green-900 px-10 py-10 relative overflow-hidden text-brand-cream"
+      class="hidden lg:flex lg:w-1/2 flex-col min-h-dvh justify-between bg-sidebar px-10 py-10 relative overflow-hidden text-sidebar-foreground"
     >
-      <div class="absolute inset-0 bg-gradient-to-br from-brand-green-700/30 to-transparent mix-blend-overlay" />
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent mix-blend-overlay" />
 
       <div class="relative z-10">
-        <NuxtLink to="/" class="inline-flex items-center gap-2.5 no-underline text-brand-cream">
+        <NuxtLink to="/" class="inline-flex items-center gap-2.5 no-underline text-sidebar-foreground">
           <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <polygon points="0,20 38,42 38,82 0,60" fill="currentColor"/>
             <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55"/>
           </svg>
-          <span class="font-sans font-bold text-xl tracking-tight lowercase text-brand-cream">getalawyer</span>
+          <span class="font-sans font-bold text-xl tracking-tight lowercase text-sidebar-foreground">getalawyer</span>
         </NuxtLink>
       </div>
 
@@ -20,19 +20,19 @@
         <h2 class="mb-5 font-sans text-3xl font-semibold leading-tight tracking-tight lg:text-4xl">
           {{ authTitle }}
         </h2>
-        <p class="font-sans text-base lg:text-lg leading-relaxed text-brand-cream-warm/80">
+        <p class="font-sans text-base lg:text-lg leading-relaxed text-primary-foreground/80">
           {{ authDescription }}
         </p>
       </div>
 
       <div
-        class="relative z-10 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-6 border-t border-brand-green-700/50 w-full"
+        class="relative z-10 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-6 border-t border-sidebar-accent/50 w-full"
       >
         <div class="min-w-0">
-          <p class="mb-1 font-semibold text-brand-cream text-sm">
+          <p class="mb-1 font-semibold text-sidebar-foreground text-sm">
             Take GetaLawyer with you
           </p>
-          <p class="text-brand-cream/70 text-sm leading-relaxed">
+          <p class="text-sidebar-foreground/70 text-sm leading-relaxed">
             Find verified lawyers on our mobile app for iOS and Android.
           </p>
         </div>

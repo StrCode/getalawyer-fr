@@ -35,7 +35,7 @@ export function useBookingDisplay() {
       case 'completed':
         return {
           variant: 'secondary',
-          class: 'border-transparent bg-brand-green-100 text-brand-green-700 capitalize',
+          class: 'border-transparent bg-muted text-primary capitalize',
         }
       case 'pending':
         return {

@@ -98,7 +98,7 @@ const isBookingModalOpen = ref(false)
     <!-- Loading State -->
     <div v-if="pending" class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20">
       <div class="text-center">
-        <PhIcon name="i-heroicons-arrow-path" class="mx-auto mb-4 h-8 w-8 animate-spin text-brand" />
+        <PhIcon name="i-heroicons-arrow-path" class="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
         <p class="text-muted-foreground">Loading lawyer profile…</p>
       </div>
     </div>

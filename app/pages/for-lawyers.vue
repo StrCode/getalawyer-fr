@@ -50,16 +50,16 @@ const toggleFaq = (index: number) => {
 </script>
 
 <template>
-  <div class="bg-brand-cream">
+  <div class="bg-background">
     
     <!-- Hero Section -->
-    <section class="bg-brand-green-900 text-brand-cream py-32 relative overflow-hidden">
+    <section class="bg-sidebar text-sidebar-foreground py-32 relative overflow-hidden">
       <!-- Radial glow -->
       <div class="absolute pointer-events-none" style="top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(134,194,142,0.12) 0%,transparent 70%);" />
 
       <div class="max-w-7xl mx-auto px-6 md:px-8 relative text-center">
-        <p class="text-sm font-semibold text-brand-green-300 tracking-[0.08em] uppercase mb-6">For legal professionals</p>
-        <h1 class="font-heading font-medium text-brand-cream leading-[1.05] tracking-[-0.02em] mx-auto max-w-3xl" style="font-size:clamp(44px,5vw,72px);">
+        <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-6">For legal professionals</p>
+        <h1 class="font-heading font-medium text-sidebar-foreground leading-[1.05] tracking-[-0.02em] mx-auto max-w-3xl" style="font-size:clamp(44px,5vw,72px);">
           Grow your practice.<br>
           <em class="italic font-normal">Keep every naira you earn.</em>
         </h1>
@@ -69,7 +69,7 @@ const toggleFaq = (index: number) => {
 
         <NuxtLink
           to="/register?role=lawyer"
-          class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
+          class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-background text-sidebar font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
         >
           Register as a lawyer
         </NuxtLink>
@@ -80,10 +80,10 @@ const toggleFaq = (index: number) => {
     <section class="py-24">
       <div class="max-w-7xl mx-auto px-6 md:px-8">
         <div class="text-center mb-16">
-          <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
             Everything you need to succeed
           </h2>
-          <p class="text-5 text-brand-ink-soft max-w-2xl mx-auto">
+          <p class="text-5 text-muted-foreground max-w-2xl mx-auto">
             We provide the infrastructure and the clients. You provide the counsel. No hidden fees.
           </p>
         </div>
@@ -92,74 +92,74 @@ const toggleFaq = (index: number) => {
           <div
             v-for="feat in features"
             :key="feat.title"
-            class="p-8 rounded-2xl bg-white border border-brand-line shadow-sm hover:shadow-md transition-shadow"
+            class="p-8 rounded-2xl bg-white border border-border shadow-sm hover:shadow-md transition-shadow"
           >
             <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-brand-green-700 mb-6"
+              class="w-12 h-12 rounded-xl flex items-center justify-center text-primary mb-6"
               style="background:rgba(134,194,142,0.2);"
               v-html="feat.icon"
             />
-            <h4 class="text-5 font-semibold text-brand-green-900 mb-3">{{ feat.title }}</h4>
-            <p class="text-4 leading-[1.5] text-brand-ink-soft">{{ feat.desc }}</p>
+            <h4 class="text-5 font-semibold text-sidebar mb-3">{{ feat.title }}</h4>
+            <p class="text-4 leading-[1.5] text-muted-foreground">{{ feat.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- How it works for lawyers -->
-    <section class="py-24 bg-brand-green-900 text-brand-cream border-t border-brand-green-700/30">
+    <section class="py-24 bg-sidebar text-sidebar-foreground border-t border-sidebar-accent/30">
       <div class="max-w-7xl mx-auto px-6 md:px-8">
         <div class="mb-16">
-          <p class="text-sm font-semibold text-brand-green-300 tracking-[0.08em] uppercase mb-4">Onboarding</p>
-          <h2 class="font-heading font-medium text-brand-cream tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+          <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4">Onboarding</p>
+          <h2 class="font-heading font-medium text-sidebar-foreground tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
             How to get started
           </h2>
-          <p class="text-5 text-brand-cream/70 max-w-2xl">
+          <p class="text-5 text-sidebar-foreground/70 max-w-2xl">
             Four simple steps to start growing your digital practice.
           </p>
         </div>
         
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="step in lawyerSteps" :key="step.num" class="relative">
-            <div class="font-heading italic font-normal text-brand-green-700 leading-none mb-6" style="font-size:56px;">
+            <div class="font-heading italic font-normal text-primary leading-none mb-6" style="font-size:56px;">
               {{ step.num }}
             </div>
-            <h3 class="text-5 font-semibold text-brand-cream mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
-            <p class="text-4 text-brand-cream/70 leading-[1.55]">{{ step.desc }}</p>
+            <h3 class="text-5 font-semibold text-sidebar-foreground mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
+            <p class="text-4 text-sidebar-foreground/70 leading-[1.55]">{{ step.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Pricing Section -->
-    <section class="py-24 bg-brand-cream-warm border-t border-brand-line/50">
+    <section class="py-24 bg-card border-t border-border/50">
       <div class="max-w-7xl mx-auto px-6 md:px-8">
         
         <div class="text-center max-w-2xl mx-auto mb-16">
-          <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
             Simple, transparent pricing.
           </h2>
-          <p class="text-5 text-brand-ink-soft leading-[1.5]">
+          <p class="text-5 text-muted-foreground leading-[1.5]">
             Stop paying 20-30% in platform fees. Reach thousands of clients for a flat annual rate.
           </p>
         </div>
 
         <!-- Pricing Card -->
-        <div class="max-w-lg mx-auto bg-white rounded-3xl border border-brand-line p-10 shadow-[0_12px_40px_-12px_rgba(15,46,26,0.15)] relative overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-[6px] bg-brand-green-700"></div>
+        <div class="max-w-lg mx-auto bg-white rounded-3xl border border-border p-10 shadow-[0_12px_40px_-12px_rgba(15,46,26,0.15)] relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-[6px] bg-primary"></div>
           
           <div class="text-center mb-8 mt-2">
-            <h3 class="text-5 font-semibold text-brand-green-900 mb-3">Annual Subscription</h3>
+            <h3 class="text-5 font-semibold text-sidebar mb-3">Annual Subscription</h3>
             <div class="flex items-end justify-center gap-1.5 mb-2">
-              <span class="font-heading font-medium text-brand-green-900 leading-none" style="font-size: 52px;">₦30,000</span>
-              <span class="text-4 text-brand-ink-soft mb-1.5">/ year</span>
+              <span class="font-heading font-medium text-sidebar leading-none" style="font-size: 52px;">₦30,000</span>
+              <span class="text-4 text-muted-foreground mb-1.5">/ year</span>
             </div>
-            <p class="text-3.5 text-brand-ink-soft">Billed annually. Cancel anytime.</p>
+            <p class="text-3.5 text-muted-foreground">Billed annually. Cancel anytime.</p>
           </div>
 
           <NuxtLink
             to="/register?role=lawyer"
-            class="flex w-full items-center justify-center bg-brand-green-700 hover:bg-brand-green-900 text-brand-cream border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 no-underline"
+            class="flex w-full items-center justify-center bg-primary hover:bg-sidebar text-sidebar-foreground border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 no-underline"
           >
             Start your membership
           </NuxtLink>
@@ -172,7 +172,7 @@ const toggleFaq = (index: number) => {
     <section class="py-24">
       <div class="max-w-3xl mx-auto px-8">
         <div class="text-center mb-16">
-          <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
             Frequently asked questions
           </h2>
         </div>
@@ -181,15 +181,15 @@ const toggleFaq = (index: number) => {
           <div 
             v-for="(faq, idx) in faqs" 
             :key="idx"
-            class="border border-brand-line bg-white rounded-2xl overflow-hidden transition-all duration-200"
+            class="border border-border bg-white rounded-2xl overflow-hidden transition-all duration-200"
           >
             <button 
               @click="toggleFaq(idx)"
               class="w-full flex items-center justify-between p-6 text-left bg-transparent border-none cursor-pointer group"
             >
-              <span class="text-4 font-semibold text-brand-green-900 pr-8">{{ faq.q }}</span>
+              <span class="text-4 font-semibold text-sidebar pr-8">{{ faq.q }}</span>
               <div 
-                class="w-8 h-8 rounded-full bg-brand-green-100 flex items-center justify-center text-brand-green-700 shrink-0 transition-transform duration-300"
+                class="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-primary shrink-0 transition-transform duration-300"
                 :class="{ 'rotate-180': faq.open }"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -197,7 +197,7 @@ const toggleFaq = (index: number) => {
             </button>
             <div 
               v-show="faq.open"
-              class="px-6 pb-6 text-4 text-brand-ink-soft leading-[1.6]"
+              class="px-6 pb-6 text-4 text-muted-foreground leading-[1.6]"
             >
               {{ faq.a }}
             </div>
@@ -207,17 +207,17 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Bottom CTA -->
-    <section class="py-24 text-center border-t border-brand-line/50">
+    <section class="py-24 text-center border-t border-border/50">
       <div class="max-w-2xl mx-auto px-8">
-        <h2 class="font-heading font-medium text-brand-green-900 tracking-tight mb-6" style="font-size:clamp(36px,4.5vw,56px);">
+        <h2 class="font-heading font-medium text-sidebar tracking-tight mb-6" style="font-size:clamp(36px,4.5vw,56px);">
           Ready to grow your digital practice?
         </h2>
-        <p class="text-5 text-brand-ink-soft leading-[1.5] mb-10">
+        <p class="text-5 text-muted-foreground leading-[1.5] mb-10">
           Join hundreds of verified lawyers securely acquiring clients on our platform today.
         </p>
         <NuxtLink
           to="/register?role=lawyer"
-          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-brand-green-900 text-brand-cream border-none font-sans text-4 font-medium cursor-pointer hover:bg-brand-green-700 transition-colors duration-200 shadow-md hover:-translate-y-0.5 no-underline"
+          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-sidebar text-sidebar-foreground border-none font-sans text-4 font-medium cursor-pointer hover:bg-primary transition-colors duration-200 shadow-md hover:-translate-y-0.5 no-underline"
         >
           Create your lawyer profile
         </NuxtLink>

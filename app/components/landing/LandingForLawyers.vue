@@ -24,7 +24,7 @@ const features = [
 </script>
 
 <template>
-  <section id="lawyers" class="bg-brand-green-900 text-brand-cream py-12 md:py-24 relative overflow-hidden">
+  <section id="lawyers" class="bg-sidebar text-sidebar-foreground py-12 md:py-24 relative overflow-hidden">
     <!-- Radial glow -->
     <div class="absolute pointer-events-none" style="top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(134,194,142,0.08) 0%,transparent 70%);" />
 
@@ -33,8 +33,8 @@ const features = [
 
         <!-- Left: copy -->
         <div>
-          <p class="text-sm font-semibold text-brand-green-300 tracking-[0.08em] uppercase mb-4">For legal professionals</p>
-          <h2 class="font-heading font-medium text-brand-cream leading-[1.05] tracking-[-0.02em] max-w-2xl" style="font-size:clamp(36px,4.5vw,56px);">
+          <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4">For legal professionals</p>
+          <h2 class="font-heading font-medium text-sidebar-foreground leading-[1.05] tracking-[-0.02em] max-w-2xl" style="font-size:clamp(36px,4.5vw,56px);">
             Grow your practice. <em class="italic font-normal">Keep every naira you earn.</em>
           </h2>
           <p class="text-5 leading-normal mt-6 mb-9" style="color:rgba(244,241,232,0.7);max-width:560px;">
@@ -44,11 +44,11 @@ const features = [
           <div class="flex items-center gap-3">
             <NuxtLink
               to="/register?role=lawyer"
-              class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-cream text-brand-green-900 font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
+              class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-background text-sidebar font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
             >Register as a lawyer</NuxtLink>
             <NuxtLink
               to="/for-lawyers"
-              class="inline-flex items-center gap-2 px-7 py-4 rounded-full font-medium text-4 border transition-all duration-200 cursor-pointer font-sans bg-transparent text-brand-cream hover:bg-white/5 no-underline"
+              class="inline-flex items-center gap-2 px-7 py-4 rounded-full font-medium text-4 border transition-all duration-200 cursor-pointer font-sans bg-transparent text-sidebar-foreground hover:bg-white/5 no-underline"
               style="border-color:rgba(244,241,232,0.3);"
               @mouseenter="(e) => { (e.currentTarget as HTMLElement).style.borderColor='rgba(244,241,232,1)' }"
               @mouseleave="(e) => { (e.currentTarget as HTMLElement).style.borderColor='rgba(244,241,232,0.3)' }"
@@ -65,11 +65,11 @@ const features = [
             style="background:rgba(255,255,255,0.04);border:1px solid rgba(134,194,142,0.15);"
           >
             <div
-              class="w-9 h-9 rounded-xl flex items-center justify-center text-brand-green-300 mb-4 transition-transform duration-300 group-hover:scale-110"
+              class="w-9 h-9 rounded-xl flex items-center justify-center text-sidebar-primary mb-4 transition-transform duration-300 group-hover:scale-110"
               style="background:rgba(134,194,142,0.15);"
               v-html="feat.icon"
             />
-            <h4 class="text-4 font-semibold text-brand-cream mb-1.5">{{ feat.title }}</h4>
+            <h4 class="text-4 font-semibold text-sidebar-foreground mb-1.5">{{ feat.title }}</h4>
             <p class="text-3.5 leading-normal" style="color:rgba(244,241,232,0.65);">{{ feat.desc }}</p>
           </div>
         </div>

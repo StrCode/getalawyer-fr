@@ -37,14 +37,14 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
     v-if="booking"
     class="rounded-xl border border-border bg-muted/50 p-6"
   >
-    <p class="mb-3 font-medium text-brand-green-700 text-xs uppercase tracking-wide">
+    <p class="mb-3 font-medium text-primary text-xs uppercase tracking-wide">
       Next appointment
     </p>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="flex items-start gap-4 min-w-0">
         <Avatar class="size-14 shrink-0 ring-2 ring-white">
           <AvatarImage :src="personImage ?? booking.lawyer?.profilePicture" :alt="displayName" />
-          <AvatarFallback class="bg-brand-green-700 text-primary-foreground text-lg">
+          <AvatarFallback class="bg-primary text-primary-foreground text-lg">
             {{ initials }}
           </AvatarFallback>
         </Avatar>
@@ -52,16 +52,16 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
           <Badge v-bind="bookingStatusBadge(booking.status)" class="mb-2">
             {{ formatStatusLabel(booking.status) }}
           </Badge>
-          <h2 class="font-heading font-semibold text-brand-ink text-xl tracking-tight">
+          <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
             {{ displayName }}
           </h2>
-          <p class="mt-0.5 text-brand-ink-soft text-sm">
+          <p class="mt-0.5 text-muted-foreground text-sm">
             {{ consultationName ?? booking.consultationType?.name ?? 'Consultation' }}
           </p>
-          <p class="flex items-center gap-1.5 mt-3 text-brand-ink-soft text-sm">
+          <p class="flex items-center gap-1.5 mt-3 text-muted-foreground text-sm">
             <PhCalendarBlank class="size-4 shrink-0" />
             {{ formatRelativeSchedule(booking) }}
-            <span class="text-brand-line">·</span>
+            <span class="text-border">·</span>
             <component :is="meetingTypeIcon(booking.meetingType)" class="size-4 shrink-0" />
             <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
           </p>

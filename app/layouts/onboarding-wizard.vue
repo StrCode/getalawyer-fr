@@ -259,7 +259,7 @@ export default defineComponent({
     </header>
 
     <!-- Main Content -->
-    <main ref="scrollContainer" class="relative flex-1 overflow-y-auto bg-brand-cream-warm">
+    <main ref="scrollContainer" class="relative flex-1 overflow-y-auto bg-card">
       <div class="relative mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 md:px-12 lg:py-16">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
             <PhCircleNotch class="w-10 h-10 text-primary animate-spin mb-4" />

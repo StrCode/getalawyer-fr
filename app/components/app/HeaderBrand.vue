@@ -33,7 +33,7 @@ withDefaults(
       class="font-semibold text-[1.0625rem] leading-none tracking-tight text-neutral-900 transition-colors group-hover:text-neutral-950 dark:text-white dark:group-hover:text-white"
       :class="{ 'drop-shadow-[0_1px_1px_rgba(0,0,0,0.06)]': onHero }"
     >
-      Geta<span class="text-brand">Lawyer</span>
+      Geta<span class="text-primary">Lawyer</span>
     </span>
     <span v-if="variant === 'mark'" class="sr-only">Getalawyer — home</span>
   </NuxtLink>

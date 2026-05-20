@@ -30,7 +30,7 @@ const innerVariantClass = computed(() => {
   if (props.variant === 'ghost')
     return 'border-b-2 border-transparent pb-1 text-foreground transition-[border-color] hover:border-neutral-950 dark:hover:border-neutral-50'
   if (props.variant === 'primary')
-    return 'bg-brand-soft text-brand hover:bg-brand-soft-hover'
+    return 'bg-muted text-primary hover:bg-muted/80'
   return 'bg-background text-foreground hover:bg-muted/50'
 })
 
@@ -39,7 +39,7 @@ const showStack = computed(() => props.stackBackdrop && props.variant !== 'ghost
 /** Matches header stacked CTAs: accent green reads on soft fill inside dark border plate. */
 const outerFocusRing = computed(() => {
   if (props.variant === 'primary')
-    return 'focus-visible:ring-brand/35'
+    return 'focus-visible:ring-primary/35'
   return 'focus-visible:ring-ring/45'
 })
 </script>

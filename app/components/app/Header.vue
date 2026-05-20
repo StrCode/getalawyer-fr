@@ -214,7 +214,7 @@ const closeMobile = () => {
                   <NavigationMenuLink as-child class="p-0">
                     <NuxtLink
                       to="/for-lawyers"
-                      class="group/hero relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-lg border border-border bg-linear-to-br from-brand/30 via-neutral-900 to-neutral-950 no-underline outline-none ring-1 ring-black/10 ring-inset transition-[filter,box-shadow] hover:brightness-[1.03] focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-2 dark:ring-white/15 dark:focus-visible:ring-white/25 md:min-h-[220px]"
+                      class="group/hero relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-lg border border-border bg-linear-to-br from-primary/30 via-neutral-900 to-neutral-950 no-underline outline-none ring-1 ring-black/10 ring-inset transition-[filter,box-shadow] hover:brightness-[1.03] focus-visible:ring-2 focus-visible:ring-neutral-900/30 focus-visible:ring-offset-2 dark:ring-white/15 dark:focus-visible:ring-white/25 md:min-h-[220px]"
                     >
                       <PhBriefcase
                         class="pointer-events-none absolute -bottom-6 -right-4 size-35 rotate-[-8deg] text-white/10"
@@ -222,7 +222,7 @@ const closeMobile = () => {
                         aria-hidden="true"
                       />
                       <div
-                        class="pointer-events-none absolute inset-x-4 top-3 h-[3px] max-w-11 rounded-full bg-brand/90"
+                        class="pointer-events-none absolute inset-x-4 top-3 h-[3px] max-w-11 rounded-full bg-primary/90"
                         aria-hidden="true"
                       />
                       <div class="relative space-y-1 p-5 text-white">
@@ -289,7 +289,7 @@ const closeMobile = () => {
                     <span class="select-none text-muted-foreground text-xs">or</span>
                     <NuxtLink
                       to="/register?role=lawyer"
-                      class="text-sm font-semibold text-brand hover:text-brand-hover"
+                      class="text-sm font-semibold text-primary hover:text-primary"
                       @click="isMenuOpen = false"
                     >
                       Register as a lawyer
@@ -330,7 +330,7 @@ const closeMobile = () => {
               <NuxtLink
                 to="/find-lawyers"
                 :class="cn(
-                  'relative z-10 inline-flex min-h-[52px] items-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-6 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
+                  'relative z-10 inline-flex min-h-[52px] items-center gap-2 rounded-xl border-2 border-neutral-950 bg-muted px-6 text-sm font-semibold text-primary hover:bg-muted/80 dark:border-neutral-100',
                   headerCtaStackMotion,
                 )"
               >
@@ -432,7 +432,7 @@ const closeMobile = () => {
                 <span class="text-muted-foreground text-xs">or</span>
                 <NuxtLink
                   to="/register?role=lawyer"
-                  class="text-sm font-semibold text-brand"
+                  class="text-sm font-semibold text-primary"
                   @click="closeMobile"
                 >
                   Register
@@ -483,7 +483,7 @@ const closeMobile = () => {
                 <NuxtLink
                   to="/find-lawyers"
                   :class="cn(
-                    'relative z-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border-2 border-neutral-950 bg-brand-soft px-4 text-sm font-semibold text-brand hover:bg-brand-soft-hover dark:border-neutral-100',
+                    'relative z-10 inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border-2 border-neutral-950 bg-muted px-4 text-sm font-semibold text-primary hover:bg-muted/80 dark:border-neutral-100',
                     headerCtaStackMotion,
                   )"
                   @click="closeMobile"

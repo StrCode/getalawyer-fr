@@ -17,19 +17,19 @@ const areas: Area[] = [
 </script>
 
 <template>
-  <section id="practice" class="bg-brand-cream-warm py-12 md:py-24">
+  <section id="practice" class="bg-card py-12 md:py-24">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
       <!-- Header row -->
       <div class="flex flex-col lg:flex-row lg:justify-between items-start lg:items-end mb-14 gap-6 lg:gap-10">
         <div>
-          <p class="text-sm font-semibold text-brand-green-700 tracking-[0.08em] uppercase mb-4">Practice areas</p>
-          <h2 class="font-heading font-medium text-brand-green-900 leading-[1.05] tracking-[-0.02em] max-w-2xl" style="font-size:clamp(36px,4.5vw,56px);">
+          <p class="text-sm font-semibold text-primary tracking-[0.08em] uppercase mb-4">Practice areas</p>
+          <h2 class="font-heading font-medium text-sidebar leading-[1.05] tracking-[-0.02em] max-w-2xl" style="font-size:clamp(36px,4.5vw,56px);">
             Find a specialist for what you're facing.
           </h2>
         </div>
         <NuxtLink
           to="/practice-areas"
-          class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-transparent text-brand-ink border border-brand-line hover:bg-white hover:border-brand-ink transition-all duration-200 text-4 font-medium no-underline shrink-0 font-sans"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-transparent text-foreground border border-border hover:bg-white hover:border-foreground transition-all duration-200 text-4 font-medium no-underline shrink-0 font-sans"
         >View all areas →</NuxtLink>
       </div>
 
@@ -39,14 +39,14 @@ const areas: Area[] = [
           v-for="area in areas"
           :key="area.name"
           :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
-          class="group bg-white border border-brand-line rounded-2xl p-6 no-underline text-brand-ink flex flex-col gap-3.5 relative overflow-hidden transition-all duration-300 hover:border-brand-green-700/50 hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_rgba(15,46,26,0.12)]"
+          class="group bg-white border border-border rounded-2xl p-6 no-underline text-foreground flex flex-col gap-3.5 relative overflow-hidden transition-all duration-300 hover:border-sidebar-accent/50 hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_rgba(15,46,26,0.12)]"
         >
           <!-- Icon -->
-          <div class="w-10 h-10 bg-brand-green-100 rounded-xl flex items-center justify-center text-brand-green-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-green-200" v-html="area.icon" />
+          <div class="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-secondary" v-html="area.icon" />
           <!-- Name -->
-          <div class="font-semibold text-4 text-brand-green-900">{{ area.name }}</div>
+          <div class="font-semibold text-4 text-sidebar">{{ area.name }}</div>
           <!-- Count + arrow -->
-          <div class="text-sm text-brand-ink-soft flex items-center justify-between">
+          <div class="text-sm text-muted-foreground flex items-center justify-between">
             <span>{{ area.count }}</span>
             <span class="transition-transform duration-200 group-hover:translate-x-1">→</span>
           </div>

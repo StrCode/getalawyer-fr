@@ -18,8 +18,8 @@ const lawyers: Lawyer[] = [
 <template>
   <section id="lawyers" class="bg-white py-12 md:py-24 px-[5%]">
     <!-- Header -->
-    <p class="text-center text-[0.78rem] font-semibold tracking-0.5 uppercase text-brand-blue mb-3">Verified Professionals</p>
-    <h2 class="font-heading font-bold text-brand-navy text-center mb-2.5 leading-[1.15]" style="font-size:clamp(2rem,4vw,3rem);">Featured Lawyers</h2>
+    <p class="text-center text-[0.78rem] font-semibold tracking-0.5 uppercase text-primary mb-3">Verified Professionals</p>
+    <h2 class="font-heading font-bold text-sidebar text-center mb-2.5 leading-[1.15]" style="font-size:clamp(2rem,4vw,3rem);">Featured Lawyers</h2>
     <p class="text-center text-slate-600 text-[1rem] max-w-lg mx-auto mb-16 leading-[1.7]">
       Hand-verified, highly rated legal professionals ready to take your consultation.
     </p>
@@ -32,14 +32,14 @@ const lawyers: Lawyer[] = [
         class="border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer bg-white hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(15,39,68,0.12)]"
       >
         <!-- Navy header -->
-        <div class="bg-brand-navy px-6 py-5 flex items-center gap-4 relative">
+        <div class="bg-sidebar px-6 py-5 flex items-center gap-4 relative">
           <div
-            class="w-14 h-14 rounded-full border-2 border-brand-gold flex items-center justify-center font-heading text-[1.3rem] font-bold text-brand-navy shrink-0"
+            class="w-14 h-14 rounded-full border-2 border-sidebar-primary flex items-center justify-center font-heading text-[1.3rem] font-bold text-sidebar shrink-0"
             :style="{ background: lawyer.avatarBg }"
           >{{ lawyer.initials }}</div>
           <div>
             <div class="font-semibold text-[1rem] text-white mb-0.5">{{ lawyer.name }}</div>
-            <div class="text-[0.8rem] text-brand-gold-light">{{ lawyer.specialty }}</div>
+            <div class="text-[0.8rem] text-sidebar-primary">{{ lawyer.specialty }}</div>
           </div>
           <span class="absolute top-4 right-4 text-[0.7rem] font-semibold px-2.5 py-1 rounded-full tracking-[0.5px]"
             style="background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:#e8c97a;">
@@ -77,7 +77,7 @@ const lawyers: Lawyer[] = [
           <div class="flex gap-2.5">
             <button
               @click="emit('openModal')"
-              class="flex-1 bg-brand-navy hover:bg-brand-blue text-white border-none py-2.5 rounded-lg font-sans text-[0.85rem] font-semibold cursor-pointer transition-colors duration-200"
+              class="flex-1 bg-sidebar hover:bg-primary text-white border-none py-2.5 rounded-lg font-sans text-[0.85rem] font-semibold cursor-pointer transition-colors duration-200"
             >Book Consultation</button>
             <button
               @click="emit('openModal')"

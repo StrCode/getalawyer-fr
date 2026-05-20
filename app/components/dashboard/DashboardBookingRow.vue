@@ -33,7 +33,7 @@ const initials = computed(() => {
   >
     <Avatar class="size-11 shrink-0">
       <AvatarImage :src="personImage ?? undefined" :alt="personName" />
-      <AvatarFallback class="bg-brand-green-100 text-brand-green-700 text-sm">
+      <AvatarFallback class="bg-muted text-primary text-sm">
         {{ initials }}
       </AvatarFallback>
     </Avatar>

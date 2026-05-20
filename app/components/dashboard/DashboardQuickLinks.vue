@@ -27,7 +27,7 @@ defineProps<{
         :to="link.to"
         class="group flex items-center gap-3 hover:bg-muted/60 px-3 py-2.5 border border-border rounded-lg transition-colors"
       >
-        <span class="flex justify-center items-center bg-brand-green-100 rounded-md size-9 shrink-0 text-brand-green-700">
+        <span class="flex justify-center items-center bg-muted rounded-md size-9 shrink-0 text-primary">
           <component :is="link.icon" class="size-4" weight="duotone" />
         </span>
         <span class="flex-1 min-w-0">
