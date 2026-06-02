@@ -4,7 +4,7 @@ import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
-import { useInitializeSubscription, useSubscriptionStatus } from '~/composables/useSubscription'
+import { useSubscriptionStatus } from '~/composables/useSubscription'
 import {
   isLawyerAwaitingApproval,
   isLawyerRejected,
@@ -19,8 +19,6 @@ import {
   PhHourglass,
   PhSignOut,
 } from '@phosphor-icons/vue'
-import { toast } from 'vue-sonner'
-import { ApiError } from '~/lib/api/client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -66,8 +64,7 @@ const {
 } = useSubscriptionStatus({
   enabled: computed(() => isAwaiting.value),
 })
-const { mutateAsync: initializeSubscription, isPending: subscriptionInitPending } =
-  useInitializeSubscription()
+const navigatingToPayment = ref(false)
 
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
@@ -190,23 +187,8 @@ const hasActiveSubscription = computed(
 )
 
 async function startSubscription() {
-  try {
-    const data = await initializeSubscription()
-    if (data?.redirectUrl) {
-      await navigateTo(data.redirectUrl, { external: true })
-      return
-    }
-    toast.error('Could not start payment', {
-      description: 'Missing payment redirect URL. Please try again.',
-    })
-  } catch (error) {
-    console.error('[Subscriptions] Failed to initialize payment', error)
-    const message =
-      error instanceof ApiError
-        ? error.message
-        : 'We could not start your payment right now. Please try again.'
-    toast.error('Subscription payment failed', { description: message })
-  }
+  navigatingToPayment.value = true
+  await navigateTo('/verify-payment')
 }
 </script>
 
@@ -403,14 +385,14 @@ async function startSubscription() {
             <Button
               v-else
               class="w-full rounded-full font-semibold"
-              :disabled="subscriptionInitPending"
+              :disabled="navigatingToPayment"
               @click="startSubscription"
             >
               <PhCircleNotch
-                v-if="subscriptionInitPending"
+                v-if="navigatingToPayment"
                 class="mr-2 size-4 animate-spin"
               />
-              {{ subscriptionInitPending ? 'Preparing payment...' : 'Pay annual subscription' }}
+              {{ navigatingToPayment ? 'Opening payment...' : 'Pay annual subscription' }}
             </Button>
           </div>
         </Card>
