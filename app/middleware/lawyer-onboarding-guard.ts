@@ -47,7 +47,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (isLawyerAwaitingApproval(status)) {
-      return navigateTo('/onboarding/pending', { replace: true })
+      return navigateTo('/onboarding/subscription', { replace: true })
     }
   } catch {
     // Allow wizard if status is temporarily unavailable

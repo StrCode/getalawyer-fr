@@ -107,9 +107,9 @@ export default defineComponent({
         if (success) {
           if (userType.value === 'lawyer' && isLast.value) {
             toast.success('Application submitted', {
-              description: 'Your application is now pending review.'
+              description: 'Complete your annual subscription payment on the next screen.',
             })
-            await router.push('/onboarding/pending')
+            await router.push('/onboarding/subscription')
           } else if (userType.value === 'client' && isLast.value) {
             await refetchSession()
             await queryClient.invalidateQueries({ queryKey: queryKeys.client.profile })

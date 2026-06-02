@@ -38,11 +38,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (isLawyerAwaitingApproval(status)) {
-      return navigateTo('/onboarding/pending', { replace: true })
+      return navigateTo('/onboarding/subscription', { replace: true })
     }
 
     return navigateTo('/onboarding', { replace: true })
   } catch {
-    return navigateTo('/onboarding/pending', { replace: true })
+    return navigateTo('/onboarding/subscription', { replace: true })
   }
 })

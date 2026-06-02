@@ -6,6 +6,7 @@ import {
 } from '~/composables/useLawyerOnboarding'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import {
+  getLawyerApplicationStatusNotice,
   isLawyerAwaitingApproval,
   isLawyerRejected,
   isLawyerVerificationFailed,
@@ -64,7 +65,9 @@ const {
 } = useSubscriptionStatus({
   enabled: computed(() => isAwaiting.value),
 })
-const navigatingToPayment = ref(false)
+const applicationNotice = computed(() =>
+  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
+)
 
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
@@ -186,10 +189,9 @@ const hasActiveSubscription = computed(
   () => subscriptionStatus.value?.hasActiveSubscription === true,
 )
 
-async function startSubscription() {
-  navigatingToPayment.value = true
-  await navigateTo('/verify-payment')
-}
+const needsSubscriptionPayment = computed(
+  () => isAwaiting.value && !subscriptionStatusPending.value && !hasActiveSubscription.value,
+)
 </script>
 
 <template>
@@ -297,6 +299,38 @@ async function startSubscription() {
           </p>
         </div>
 
+        <div
+          v-if="applicationNotice"
+          class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-4 text-sky-950 sm:px-5"
+          role="status"
+        >
+          <p class="text-sm font-semibold">
+            {{ applicationNotice.title }}
+          </p>
+          <p class="mt-1 text-sm leading-relaxed opacity-90">
+            {{ applicationNotice.description }}
+          </p>
+        </div>
+
+        <Card
+          v-if="needsSubscriptionPayment"
+          class="overflow-hidden rounded-2xl border-amber-200/80 bg-amber-50/50 shadow-sm"
+        >
+          <div class="space-y-3 px-6 py-5">
+            <p class="text-sm font-semibold text-amber-950">
+              Annual subscription not paid yet
+            </p>
+            <p class="text-sm leading-relaxed text-amber-900/90">
+              Pay your yearly membership fee so your account is ready as soon as you are approved.
+            </p>
+            <Button class="w-full rounded-full font-semibold" as-child>
+              <NuxtLink to="/onboarding/subscription">
+                Go to subscription payment
+              </NuxtLink>
+            </Button>
+          </div>
+        </Card>
+
         <!-- Horizontal progress (Airwallex-style) -->
         <div class="rounded-2xl border border-border/40 bg-white/80 px-4 py-5 shadow-sm sm:px-6">
           <ol class="flex items-start justify-between gap-2">
@@ -365,34 +399,21 @@ async function startSubscription() {
           </div>
         </Card>
 
-        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
-          <div class="border-b border-border/40 px-6 py-5">
-            <h2 class="text-base font-semibold text-foreground">
-              Subscription payment
-            </h2>
-          </div>
-          <div class="space-y-3 px-6 py-5">
-            <p class="text-sm leading-relaxed text-muted-foreground">
-              Activate your annual lawyer subscription so your account is ready immediately after
-              verification approval.
+        <Card
+          v-if="!subscriptionStatusPending && hasActiveSubscription"
+          class="overflow-hidden rounded-2xl border border-emerald-200/80 bg-emerald-50/40 shadow-sm"
+        >
+          <div class="px-6 py-5">
+            <p class="text-sm font-semibold text-emerald-900">
+              Subscription active
             </p>
-            <p
-              v-if="!subscriptionStatusPending && hasActiveSubscription"
-              class="text-sm font-medium text-primary"
-            >
-              Payment confirmed. Your subscription is active.
+            <p class="mt-1 text-sm text-emerald-800/90">
+              Your annual membership payment is confirmed. No further payment is needed while your application is reviewed.
             </p>
-            <Button
-              v-else
-              class="w-full rounded-full font-semibold"
-              :disabled="navigatingToPayment"
-              @click="startSubscription"
-            >
-              <PhCircleNotch
-                v-if="navigatingToPayment"
-                class="mr-2 size-4 animate-spin"
-              />
-              {{ navigatingToPayment ? 'Opening payment...' : 'Pay annual subscription' }}
+            <Button variant="outline" class="mt-3 w-full rounded-full" as-child>
+              <NuxtLink to="/onboarding/subscription">
+                View subscription details
+              </NuxtLink>
             </Button>
           </div>
         </Card>

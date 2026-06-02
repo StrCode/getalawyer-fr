@@ -90,6 +90,7 @@ export const queryKeys = {
   },
   subscription: {
     status: ["subscription", "status"] as const,
+    pricing: ["subscription", "pricing"] as const,
     verify: (reference: string) => ["subscription", "verify", reference] as const,
   },
   messaging: {

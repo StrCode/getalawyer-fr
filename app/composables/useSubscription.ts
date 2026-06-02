@@ -39,6 +39,34 @@ interface VerifySubscriptionPayload {
 
 const FINAL_VERIFY_STATUSES = new Set(['active', 'failed', 'abandoned', 'cancelled'])
 
+export interface SubscriptionPricingPayload {
+  subscriptionPriceNaira: number
+  verificationAdminFeeNaira: number
+}
+
+export function formatNairaAmount(amount: number): string {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
+export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }) {
+  return useQuery({
+    queryKey: queryKeys.subscription.pricing,
+    enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    queryFn: async () => {
+      const res = await httpClient.getAuth<{ success: boolean; data: SubscriptionPricingPayload }>(
+        '/api/subscriptions/pricing',
+      )
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> }) {
   return useQuery({
     queryKey: queryKeys.subscription.status,

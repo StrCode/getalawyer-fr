@@ -105,3 +105,56 @@ export function isLawyerRejected(payload: OnboardingStatusPayload): boolean {
   const appStatus = onboardingApplicationStatus(payload)
   return appStatus === 'rejected' || cs === 'rejected'
 }
+
+export type ApplicationStatusNoticeTone = 'pending' | 'approved' | 'failed'
+
+export interface ApplicationStatusNotice {
+  tone: ApplicationStatusNoticeTone
+  title: string
+  description: string
+}
+
+/** Human-readable application decision for post-submit subscription and status pages. */
+export function getLawyerApplicationStatusNotice(
+  payload: OnboardingStatusPayload,
+): ApplicationStatusNotice | null {
+  if (isLawyerVerificationFailed(payload)) {
+    return {
+      tone: 'failed',
+      title: 'Verification could not be completed',
+      description:
+        'Your application was not approved. If you paid a subscription fee, a refund minus the admin processing fee will be returned to your payment method.',
+    }
+  }
+
+  const appStatus = String(onboardingApplicationStatus(payload) ?? '')
+
+  if (appStatus === 'approved') {
+    return {
+      tone: 'approved',
+      title: 'Application approved',
+      description:
+        'Your credentials have been verified. You can access your lawyer dashboard when onboarding is complete.',
+    }
+  }
+
+  if (appStatus === 'pending_verification') {
+    return {
+      tone: 'pending',
+      title: 'Application pending verification',
+      description:
+        'Your application has been submitted. Our team is verifying your identity (NIN) and bar enrolment (SCN).',
+    }
+  }
+
+  if (isLawyerAwaitingApproval(payload)) {
+    return {
+      tone: 'pending',
+      title: 'Application pending review',
+      description:
+        'Your application has been submitted and is waiting in the review queue. We will email you when there is an update.',
+    }
+  }
+
+  return null
+}

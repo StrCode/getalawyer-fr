@@ -74,8 +74,12 @@ export function resolveLawyerOnboardingDestination(options: {
     return '/dashboard'
   }
 
-  if (status && (isLawyerAwaitingApproval(status) || isLawyerVerificationFailed(status))) {
+  if (status && isLawyerVerificationFailed(status)) {
     return '/onboarding/pending'
+  }
+
+  if (status && isLawyerAwaitingApproval(status)) {
+    return '/onboarding/subscription'
   }
 
   if (draftHasResumePayload(draft)) {
