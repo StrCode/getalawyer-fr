@@ -64,7 +64,11 @@ watch(
     toast.success('Payment confirmed', {
       description: 'Taking you to your application status.',
     })
-    await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.pricing }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status }),
+    ])
     await navigateTo('/onboarding/pending', { replace: true })
   },
   { immediate: true },
