@@ -1,0 +1,36 @@
+<template>
+  <Card class="overflow-hidden border-gray-200/80 bg-white shadow-sm ring-1 ring-gray-200/25">
+    <CardHeader
+      v-if="title || description || $slots.action"
+      class="flex flex-row flex-wrap items-start justify-between gap-4 border-b border-border/60"
+    >
+      <div class="space-y-1">
+        <CardTitle class="text-base">
+          {{ title }}
+        </CardTitle>
+        <CardDescription v-if="description">
+          {{ description }}
+        </CardDescription>
+      </div>
+      <div
+        v-if="$slots.action"
+        class="shrink-0"
+      >
+        <slot name="action" />
+      </div>
+    </CardHeader>
+    <CardContent :class="contentClass">
+      <slot />
+    </CardContent>
+  </Card>
+</template>
+
+<script setup lang="ts">
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+defineProps<{
+  title: string
+  description?: string
+  contentClass?: string
+}>()
+</script>

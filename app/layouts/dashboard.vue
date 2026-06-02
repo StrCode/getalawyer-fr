@@ -24,17 +24,17 @@ import {
   PhUserCircle,
 } from '@phosphor-icons/vue'
 
-/** Dashboard sidebar uses light shadcn tokens (cream), not marketing dark sidebar. */
+/** Dashboard shell — gray canvas + white panel (getalawyer-admin). */
 const dashboardSidebarStyle = {
   '--sidebar-width': '16rem',
   '--sidebar-width-icon': '3rem',
-  '--sidebar': 'var(--background)',
-  '--sidebar-foreground': 'var(--foreground)',
+  '--sidebar': '#F1F3F5',
+  '--sidebar-foreground': '#1C1C1E',
   '--sidebar-primary': 'var(--primary)',
   '--sidebar-primary-foreground': 'var(--primary-foreground)',
-  '--sidebar-accent': 'var(--accent)',
-  '--sidebar-accent-foreground': 'var(--accent-foreground)',
-  '--sidebar-border': 'var(--border)',
+  '--sidebar-accent': '#ffffff',
+  '--sidebar-accent-foreground': 'var(--primary)',
+  '--sidebar-border': 'rgb(229 231 235 / 0.6)',
   '--sidebar-ring': 'var(--ring)',
 } as const
 
@@ -104,11 +104,6 @@ const clientMainMenuItems = computed<DashboardNavItem[]>(() => [
     to: '/dashboard/messages',
     badge: unreadMessagesBadge.value,
   },
-  {
-    label: 'Profile',
-    iconComponent: PhUserCircle,
-    to: '/dashboard/profile',
-  },
 ])
 
 const mainLinks = computed<DashboardNavItem[]>(() => {
@@ -116,6 +111,11 @@ const mainLinks = computed<DashboardNavItem[]>(() => {
 })
 
 const supportLinks = computed<DashboardNavItem[]>(() => [
+  {
+    label: 'Profile',
+    iconComponent: PhUserCircle,
+    to: '/dashboard/profile',
+  },
   {
     label: 'Settings',
     iconComponent: PhGearSix,

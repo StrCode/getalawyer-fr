@@ -10,6 +10,14 @@ import {
   ListboxRoot,
   useFilter,
 } from 'reka-ui'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
 import { PhCaretDown, PhCheck, PhCheckCircle, PhCircleNotch, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
 import { cn } from '@/lib/utils'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
@@ -54,7 +62,38 @@ function snapshotFromStore() {
     firmName: p.firmName ?? '',
     practiceAreas: [...p.practiceAreas],
     statesOfPractice: [...p.statesOfPractice],
+    primaryState: p.primaryState ?? p.statesOfPractice[0] ?? '',
+    additionalPracticeStates: [...p.additionalPracticeStates],
+    termsAccepted: p.termsAccepted,
+    termsVersion: p.termsVersion,
+    refundPolicyAccepted: p.refundPolicyAccepted,
   }
+}
+
+function syncPrimaryAndAdditional(states: string[], primary?: string) {
+  const list = [...states]
+  const nextPrimary =
+    list.length === 0
+      ? ''
+      : primary && list.includes(primary)
+        ? primary
+        : list[0]!
+  const nextAdditional = list.length === 0 ? [] : list.filter((s) => s !== nextPrimary)
+
+  if (formValues.value.primaryState !== nextPrimary) {
+    form.setFieldValue('primaryState', nextPrimary)
+  }
+  const currentAdditional = formValues.value.additionalPracticeStates ?? []
+  if (
+    currentAdditional.length !== nextAdditional.length
+    || currentAdditional.some((s, i) => s !== nextAdditional[i])
+  ) {
+    form.setFieldValue('additionalPracticeStates', nextAdditional)
+  }
+}
+
+function syncFormToStore() {
+  Object.assign(store.practiceInfo, { ...formValues.value })
 }
 
 const practiceSchema = computed(() =>
@@ -71,18 +110,13 @@ const form = useForm({
 
 const formValues = form.useStore((state) => state.values)
 
-watch(
-  formValues,
-  (v) => {
-    Object.assign(store.practiceInfo, v)
-  },
-  { deep: true },
-)
+/** Keep Pinia in sync for wizard save; avoid watchers that call setFieldValue on the same form. */
+watch(formValues, () => syncFormToStore(), { deep: true })
 
 watch(
   () => formValues.value.soloPractitioner,
   (solo) => {
-    if (solo) {
+    if (solo && formValues.value.firmName) {
       form.setFieldValue('firmName', '')
     }
   },
@@ -122,7 +156,23 @@ const { contains } = useFilter({ sensitivity: 'base' })
 
 function syncStates(value: string[], field?: { handleBlur: () => void }) {
   form.setFieldValue('statesOfPractice', value)
+  syncPrimaryAndAdditional(value, formValues.value.primaryState)
+  syncFormToStore()
   field?.handleBlur()
+}
+
+function onPrimaryStateChange(
+  value: unknown,
+  field: { handleChange: (v: string) => void; handleBlur: () => void },
+) {
+  const primary = String(value ?? '')
+  field.handleChange(primary)
+  field.handleBlur()
+  const list = Array.isArray(formValues.value.statesOfPractice)
+    ? [...formValues.value.statesOfPractice]
+    : []
+  syncPrimaryAndAdditional(list, primary)
+  syncFormToStore()
 }
 
 function isAreaSelected(id: string) {
@@ -144,6 +194,7 @@ function toggleArea(id: string) {
     current.push({ practiceAreaId: id, yearsOfExperience: null })
   }
   form.setFieldValue('practiceAreas', current)
+  syncFormToStore()
 }
 
 function setAreaYears(id: string, raw: string) {
@@ -157,6 +208,7 @@ function setAreaYears(id: string, raw: string) {
     yearsOfExperience: Number.isFinite(years) ? years : null,
   } as PracticeAreaSelection
   form.setFieldValue('practiceAreas', current)
+  syncFormToStore()
 }
 
 const filteredStates = computed(() => {
@@ -192,12 +244,14 @@ onMounted(() => {
       return false
     }
     Object.assign(store.practiceInfo, parsed.data)
+    syncFormToStore()
     submitAttempted.value = false
     return true
   })
 })
 
 onBeforeUnmount(() => {
+  syncFormToStore()
   registerValidate?.(null)
 })
 </script>
@@ -451,6 +505,47 @@ onBeforeUnmount(() => {
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
+
+          <form.Field v-slot="{ field }" name="primaryState">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">
+                Primary state of practice
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <Select
+                :model-value="field.state.value || undefined"
+                :disabled="selectedStates.length === 0"
+                @update:model-value="(v) => onPrimaryStateChange(v, field)"
+              >
+                <SelectTrigger :id="field.name" :class="inputClass" :aria-invalid="isInvalid(field)">
+                  <SelectValue placeholder="Select primary state" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="s in selectedStates" :key="s" :value="s">
+                    {{ s }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FieldDescription>
+                Your main base — other selected states are listed as additional practice locations.
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+
+          <LegalAcceptanceFields
+            :terms-accepted="formValues.termsAccepted === true"
+            :refund-policy-accepted="formValues.refundPolicyAccepted === true"
+            @update:terms-accepted="(v) => form.setFieldValue('termsAccepted', v)"
+            @update:refund-policy-accepted="(v) => form.setFieldValue('refundPolicyAccepted', v)"
+          />
+          <p
+            v-if="submitAttempted && (!formValues.termsAccepted || !formValues.refundPolicyAccepted)"
+            class="text-sm text-destructive"
+            role="alert"
+          >
+            Accept the Terms and refund policy to continue.
+          </p>
         </FieldGroup>
       </div>
     </Card>

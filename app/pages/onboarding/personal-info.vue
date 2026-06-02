@@ -41,6 +41,7 @@ function snapshotFromStore() {
     firstName: p.firstName ?? '',
     lastName: p.lastName ?? '',
     middleName: p.middleName ?? '',
+    governmentIdLegalName: p.governmentIdLegalName ?? '',
     dateOfBirth: p.dateOfBirth ?? '',
     gender: p.gender,
     state: p.state ?? '',
@@ -238,6 +239,30 @@ watch(
               </Field>
             </form.Field>
           </div>
+
+          <form.Field v-slot="{ field }" name="governmentIdLegalName">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">
+                Full name on government-issued ID
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                placeholder="As shown on NIN, passport, or driver licence"
+                autocomplete="name"
+                :class="inputClass"
+                :aria-invalid="isInvalid(field)"
+                @blur="field.handleBlur"
+                @update:model-value="field.handleChange"
+              />
+              <FieldDescription>
+                Used for identity verification and your public profile display name. Must match your NIN.
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
 
           <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="dateOfBirth">

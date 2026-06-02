@@ -37,6 +37,12 @@ export function createLawyerPersonalInfoSchema() {
         },
         z.string().max(100, { error: 'Middle name is too long.' })
       ),
+      governmentIdLegalName: z
+        .string()
+        .trim()
+        .min(3, { error: 'Enter the full name on your government-issued ID.' })
+        .max(120, { error: 'Legal name is too long.' })
+        .regex(/^[a-zA-Z\s'-]+$/, { error: 'Legal name contains invalid characters.' }),
       dateOfBirth: z
         .string()
         .trim()

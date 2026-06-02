@@ -42,11 +42,32 @@ const practiceAreaRows = computed(() => {
 
 const statesList = computed(() => summary.value?.practice?.statesOfPractice ?? [])
 
-const fullName = computed(() => {
+const primaryStateDisplay = computed(() => {
+  const primary = summary.value?.practice?.primaryState
+  if (primary) return primary
+  return statesList.value[0] ?? 'Not provided'
+})
+
+const additionalStatesDisplay = computed(() => {
+  const extra = summary.value?.practice?.additionalPracticeStates
+  if (Array.isArray(extra) && extra.length) return extra.join(', ')
+  const primary = summary.value?.practice?.primaryState
+  const rest = statesList.value.filter((s) => s !== primary)
+  return rest.length ? rest.join(', ') : '—'
+})
+
+const publicLegalName = computed(() => {
   const p = summary.value?.personal
-  if (!p) return ''
+  const legal = String(p?.governmentIdLegalName ?? '').trim()
+  if (legal) return legal
+  if (!p) return 'Not provided'
   const parts = [p.firstName, p.middleName, p.lastName].filter(Boolean)
   return parts.join(' ') || 'Not provided'
+})
+
+const scnLegalName = computed(() => {
+  const name = String(summary.value?.professional?.scnFullNameAtCallToBar ?? '').trim()
+  return name || 'Not provided'
 })
 
 function formatDate(dateStr: string | undefined) {
@@ -161,8 +182,8 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 
           <div class="grid gap-5 sm:grid-cols-2">
             <div class="space-y-1 sm:col-span-2">
-              <p :class="fieldLabelClass">Full legal name</p>
-              <p :class="fieldValueClass">{{ fullName }}</p>
+              <p :class="fieldLabelClass">Name on government ID</p>
+              <p :class="fieldValueClass">{{ publicLegalName }}</p>
             </div>
             <div class="space-y-1">
               <p :class="fieldLabelClass">Gender</p>
@@ -255,6 +276,10 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
               </p>
             </div>
             <div class="space-y-1 sm:col-span-2">
+              <p :class="fieldLabelClass">Name on SCN</p>
+              <p :class="fieldValueClass">{{ scnLegalName }}</p>
+            </div>
+            <div class="space-y-1 sm:col-span-2">
               <p :class="fieldLabelClass">Practice arrangement</p>
               <p :class="fieldValueClass">{{ firmDisplay }}</p>
             </div>
@@ -282,6 +307,17 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
         </div>
 
         <div class="space-y-6">
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div class="space-y-1">
+              <p :class="fieldLabelClass">Primary state</p>
+              <p :class="fieldValueClass">{{ primaryStateDisplay }}</p>
+            </div>
+            <div class="space-y-1">
+              <p :class="fieldLabelClass">Additional states</p>
+              <p :class="fieldValueClass">{{ additionalStatesDisplay }}</p>
+            </div>
+          </div>
+
           <div class="space-y-2">
             <p :class="fieldLabelClass">States of practice</p>
             <div v-if="statesList.length" class="flex flex-wrap gap-2">

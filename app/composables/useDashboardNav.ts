@@ -30,9 +30,9 @@ export function useDashboardNav() {
 
     if (target === current) {
       nextTick(() => {
-        document
-          .querySelector('[data-dashboard-content]')
-          ?.scrollTo({ top: 0, behavior: 'smooth' })
+        const viewport = document.querySelector('[data-slot="scroll-area-viewport"]')
+          ?? document.querySelector('[data-dashboard-content]')
+        viewport?.scrollTo({ top: 0, behavior: 'smooth' })
       })
     }
   }

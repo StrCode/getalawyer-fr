@@ -114,10 +114,18 @@
         {{ expandedSpec.description }}
       </p>
     </div>
+
+    <LegalAcceptanceFields
+      :terms-accepted="storeState.termsAccepted"
+      :refund-policy-accepted="storeState.refundPolicyAccepted"
+      @update:terms-accepted="(v) => { storeState.termsAccepted = v }"
+      @update:refund-policy-accepted="(v) => { storeState.refundPolicyAccepted = v }"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { PhMagnifyingGlass, PhCheck, PhPlus } from '@phosphor-icons/vue'

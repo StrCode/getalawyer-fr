@@ -36,6 +36,7 @@ function snapshotFromStore() {
   const p = store.professionalInfo
   return {
     barNumber: p.barNumber ?? '',
+    scnFullNameAtCallToBar: p.scnFullNameAtCallToBar ?? '',
     yearOfCall: p.yearOfCall,
   }
 }
@@ -166,6 +167,30 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                 >
                   {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
                 </span>
+              </FieldDescription>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+
+          <form.Field v-slot="{ field }" name="scnFullNameAtCallToBar">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">
+                Full name on Supreme Court Number
+                <span class="text-primary">*</span>
+              </FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                placeholder="Exactly as on your call-to-bar records"
+                autocomplete="name"
+                :class="inputClass"
+                :aria-invalid="isInvalid(field)"
+                @blur="field.handleBlur"
+                @update:model-value="field.handleChange"
+              />
+              <FieldDescription>
+                For bar verification only — not shown on your public profile.
               </FieldDescription>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>

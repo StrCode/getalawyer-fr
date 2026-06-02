@@ -13,18 +13,23 @@
 
     <template v-else>
       <!-- Sticky actions (Clay / Relevance AI pattern) -->
-      <motion.div
-        class="sticky top-0 z-10 -mx-1 flex flex-wrap items-start justify-between gap-4 border-b border-border/60 bg-card/90 px-1 pb-5 backdrop-blur-sm supports-[backdrop-filter]:bg-card/75"
-      >
-        <motion.div class="min-w-0">
+      <div class="dashboard-page-header">
+        <div class="min-w-0">
           <h1 class="app-page-title">
             Profile
           </h1>
           <p class="app-page-description">
-            Manage how you appear to lawyers on GetALawyer.
+            Your photo, contact details, and how you appear to lawyers.
+            <NuxtLink
+              to="/dashboard/settings"
+              class="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Account settings
+            </NuxtLink>
+            for preferences, documents, and privacy.
           </p>
-        </motion.div>
-        <motion.div
+        </div>
+        <div
           v-if="!isLoading && !isError"
           class="flex shrink-0 flex-wrap items-center gap-2"
         >
@@ -52,8 +57,8 @@
           >
             Save changes
           </ButtonBusy>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       <motion.div
         v-if="isLoading"
@@ -87,7 +92,7 @@
         class="space-y-6"
         @submit.prevent="onSubmit"
       >
-        <Card class="overflow-hidden shadow-sm">
+        <Card class="overflow-hidden border-gray-200/80 bg-white shadow-sm ring-1 ring-gray-200/25">
           <!-- Avatar hero (Clay-style) -->
           <CardContent class="flex flex-col gap-6 border-b border-border/60 p-6 sm:flex-row sm:items-center sm:p-8">
             <div class="relative shrink-0 self-center sm:self-auto">
@@ -194,6 +199,42 @@
               </ProfileSettingsRow>
 
               <ProfileSettingsRow
+                title="Gender"
+                description="Optional — helps match you with the right lawyer if you prefer."
+              >
+                <Select v-model="form.gender">
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="female">
+                      Female
+                    </SelectItem>
+                    <SelectItem value="male">
+                      Male
+                    </SelectItem>
+                    <SelectItem value="non_binary">
+                      Non-binary
+                    </SelectItem>
+                    <SelectItem value="prefer_not">
+                      Prefer not to say
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </ProfileSettingsRow>
+
+              <ProfileSettingsRow
+                title="Date of birth"
+                description="Used for identity verification when required."
+              >
+                <Input
+                  id="profile-dob"
+                  v-model="form.dateOfBirth"
+                  type="date"
+                />
+              </ProfileSettingsRow>
+
+              <ProfileSettingsRow
                 title="Company"
                 description="Optional — shown if you book on behalf of an organization."
               >
@@ -253,20 +294,85 @@
                 title="State or region"
                 description="Required for lawyer matching in your area."
               >
-                <Select v-model="form.state">
+                <div class="grid gap-3 sm:grid-cols-2">
+                  <Select v-model="form.state">
+                    <SelectTrigger class="w-full">
+                      <SelectValue placeholder="Select state or region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="s in availableStates"
+                        :key="s.value"
+                        :value="s.value"
+                      >
+                        {{ s.label }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="profile-city"
+                    v-model="form.city"
+                    placeholder="City"
+                    autocomplete="address-level2"
+                  />
+                </div>
+              </ProfileSettingsRow>
+
+              <ProfileSettingsRow
+                title="Preferred language"
+                description="Consultations and documents in your preferred language."
+              >
+                <Select v-model="form.language">
                   <SelectTrigger class="w-full">
-                    <SelectValue placeholder="Select state or region" />
+                    <SelectValue placeholder="Language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem
-                      v-for="s in availableStates"
-                      :key="s.value"
-                      :value="s.value"
-                    >
-                      {{ s.label }}
+                    <SelectItem value="en">
+                      English
+                    </SelectItem>
+                    <SelectItem value="yo">
+                      Yoruba
+                    </SelectItem>
+                    <SelectItem value="ig">
+                      Igbo
+                    </SelectItem>
+                    <SelectItem value="ha">
+                      Hausa
+                    </SelectItem>
+                    <SelectItem value="fr">
+                      French
                     </SelectItem>
                   </SelectContent>
                 </Select>
+              </ProfileSettingsRow>
+            </FieldGroup>
+          </CardContent>
+
+          <Separator />
+
+          <!-- About you -->
+          <CardContent class="space-y-8 p-6 sm:p-8">
+            <motion.div class="space-y-1">
+              <h2 class="text-sm font-semibold text-foreground">
+                About you
+              </h2>
+              <p class="text-sm text-muted-foreground">
+                Optional context for lawyers before your first consultation.
+              </p>
+            </motion.div>
+
+            <FieldGroup>
+              <ProfileSettingsRow
+                title="Short bio / legal needs"
+                description="A brief note on what you need help with."
+              >
+                <Textarea
+                  id="profile-bio"
+                  v-model="form.bio"
+                  rows="4"
+                  placeholder="e.g. I need advice on a tenancy agreement in Lagos…"
+                  class="resize-y"
+                />
               </ProfileSettingsRow>
             </FieldGroup>
           </CardContent>
@@ -368,6 +474,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientProfile } from '~/composables/useClientProfile'
 import type { ClientProfile } from '~/lib/api'
@@ -415,17 +522,30 @@ const form = reactive({
   company: '',
   country: DEFAULT_COUNTRY,
   state: '',
+  city: '',
   phoneNumber: '',
+  gender: '',
+  dateOfBirth: '',
+  language: 'en',
+  bio: '',
 })
 
 const snapshot = ref('')
 
 function profileToForm(p: ClientProfile) {
+  const extras = {
+    gender: form.gender,
+    dateOfBirth: form.dateOfBirth,
+    city: form.city,
+    language: form.language,
+    bio: form.bio,
+  }
   form.name = p.name ?? ''
   form.company = p.company ?? ''
   form.country = p.country || DEFAULT_COUNTRY
   form.state = p.state ?? ''
   form.phoneNumber = p.phoneNumber ?? ''
+  Object.assign(form, extras)
   snapshot.value = JSON.stringify(form)
 }
 

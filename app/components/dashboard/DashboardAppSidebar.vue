@@ -2,9 +2,10 @@
   <Sidebar
     collapsible="icon"
     variant="inset"
+    class="border-0 bg-[#F1F3F5] text-[#1C1C1E] [&_[data-sidebar=sidebar]]:bg-[#F1F3F5]"
   >
     <SidebarHeader
-      class="!flex !h-14 !flex-row !items-center !gap-0 !p-0 shrink-0 px-2 md:!h-16 group-data-[collapsible=icon]:justify-center"
+      class="!flex !h-14 !flex-row !items-center !gap-0 !p-0 shrink-0 border-b border-gray-200/60 px-2 md:!h-16 group-data-[collapsible=icon]:justify-center"
     >
       <LandingBrandLogo
         to="/dashboard"
@@ -25,7 +26,7 @@
       />
     </SidebarContent>
 
-    <SidebarFooter class="border-sidebar-border border-t">
+    <SidebarFooter class="border-t border-gray-200/60">
       <UserDropdown
         variant="sidebar"
         :collapsed="isIconCollapsed"

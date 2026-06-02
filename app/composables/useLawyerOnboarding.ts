@@ -34,6 +34,7 @@ export interface PersonalInfoData {
     firstName: string
     lastName: string
     middleName?: string
+    governmentIdLegalName: string
     dateOfBirth: string // ISO 8601 datetime format with timezone
     gender?: 'male' | 'female' | 'other'
     state: string
@@ -52,6 +53,7 @@ export interface NinSubmitResponse {
 
 export interface ProfessionalInfoData {
     barNumber: string
+    scnFullNameAtCallToBar: string
     yearOfCall?: number
 }
 
@@ -64,7 +66,12 @@ export interface PracticeInfoData {
     soloPractitioner: boolean
     firmName: string
     statesOfPractice: string[]
+    primaryState: string
+    additionalPracticeStates: string[]
     practiceAreas: PracticeAreaSelection[]
+    termsAccepted: boolean
+    termsVersion: string
+    refundPolicyAccepted: boolean
 }
 
 export interface SubmitResponse {
@@ -198,9 +205,27 @@ export const useLawyerOnboarding = () => {
         })
     }
 
+    const useOnboardingSummary = (options?: { enabled?: MaybeRef<boolean> }) => {
+        return useQuery({
+            queryKey: queryKeys.lawyerOnboarding.summary,
+            queryFn: async () => {
+                const raw = await lawyerOnboardingAPI.getOnboardingSummary()
+                if (raw && typeof raw === 'object' && 'data' in raw) {
+                    return (raw as { data: unknown }).data
+                }
+                return raw
+            },
+            enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+            staleTime: LAWYER_ONBOARDING_STALE_MS,
+        })
+    }
+
     return {
         useDraft,
         useLawyerOnboardingStatus,
+        useOnboardingSummary,
+        /** @deprecated Use `useOnboardingSummary` */
+        useSummary: useOnboardingSummary,
         useSaveDraft,
         useDiscardDraft,
         useSaveNin,

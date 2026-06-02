@@ -7,6 +7,7 @@ import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { normalizePracticeAreaSelections } from '~/lib/practice-areas'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
 import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
+import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 import {
     useLawyerOnboarding,
     type PersonalInfoData,
@@ -45,6 +46,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         firstName: '',
         lastName: '',
         middleName: '',
+        governmentIdLegalName: '',
         dateOfBirth: '',
         gender: undefined,
         state: '',
@@ -65,6 +67,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
     const professionalInfo = reactive<ProfessionalInfoData>({
         barNumber: '',
+        scnFullNameAtCallToBar: '',
         yearOfCall: undefined,
     })
 
@@ -73,6 +76,11 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         firmName: '',
         practiceAreas: [],
         statesOfPractice: [],
+        primaryState: '',
+        additionalPracticeStates: [],
+        termsAccepted: false,
+        termsVersion: CURRENT_TERMS_VERSION,
+        refundPolicyAccepted: false,
     })
 
     // Sync draft data with the reactive store state
@@ -87,6 +95,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 }
                 Object.assign(professionalInfo, {
                     barNumber: prof.barNumber ?? '',
+                    scnFullNameAtCallToBar: prof.scnFullNameAtCallToBar ?? '',
                     yearOfCall: prof.yearOfCall,
                 })
             }
@@ -101,6 +110,21 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 practiceInfo.statesOfPractice = Array.isArray(raw.statesOfPractice)
                     ? [...(raw.statesOfPractice as string[])]
                     : []
+                const primary =
+                    String(raw.primaryState ?? '').trim()
+                    || practiceInfo.statesOfPractice[0]
+                    || ''
+                practiceInfo.primaryState = primary
+                if (Array.isArray(raw.additionalPracticeStates)) {
+                    practiceInfo.additionalPracticeStates = [...(raw.additionalPracticeStates as string[])]
+                } else if (primary) {
+                    practiceInfo.additionalPracticeStates = practiceInfo.statesOfPractice.filter((s) => s !== primary)
+                } else {
+                    practiceInfo.additionalPracticeStates = []
+                }
+                practiceInfo.termsAccepted = Boolean(raw.termsAccepted)
+                practiceInfo.refundPolicyAccepted = Boolean(raw.refundPolicyAccepted)
+                practiceInfo.termsVersion = String(raw.termsVersion ?? CURRENT_TERMS_VERSION)
                 practiceInfo.practiceAreas = normalizePracticeAreaSelections(raw.practiceAreas)
                 const hasFirm = String(practiceInfo.firmName ?? '').trim().length > 0
                 if (hasFirm) {
@@ -266,14 +290,28 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
     const resetStore = () => {
         ninResubmitMode.value = false
-        Object.assign(personalInfo, { firstName: '', lastName: '', middleName: '', dateOfBirth: '', gender: undefined, state: '', lga: '' })
+        Object.assign(personalInfo, {
+            firstName: '',
+            lastName: '',
+            middleName: '',
+            governmentIdLegalName: '',
+            dateOfBirth: '',
+            gender: undefined,
+            state: '',
+            lga: '',
+        })
         Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
-        Object.assign(professionalInfo, { barNumber: '', yearOfCall: undefined })
+        Object.assign(professionalInfo, { barNumber: '', scnFullNameAtCallToBar: '', yearOfCall: undefined })
         Object.assign(practiceInfo, {
             soloPractitioner: false,
             firmName: '',
             practiceAreas: [],
             statesOfPractice: [],
+            primaryState: '',
+            additionalPracticeStates: [],
+            termsAccepted: false,
+            termsVersion: CURRENT_TERMS_VERSION,
+            refundPolicyAccepted: false,
         })
     }
 

@@ -1,4 +1,5 @@
 import * as z from 'zod'
+import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 
 export function createLawyerPracticeInfoSchema(yearOfCall?: number) {
   const careerCap =
@@ -31,6 +32,15 @@ export function createLawyerPracticeInfoSchema(yearOfCall?: number) {
         .array(z.string().trim().min(2))
         .min(1, { error: 'Select at least one state where you practise.' })
         .max(37),
+      primaryState: z.string().trim().min(2, { error: 'Select your primary state of practice.' }),
+      additionalPracticeStates: z.array(z.string().trim().min(2)).default([]),
+      termsAccepted: z.boolean().refine((v) => v === true, {
+        error: 'You must accept the Terms and Conditions to continue.',
+      }),
+      termsVersion: z.string().min(1, { error: 'Terms version is required.' }).default(CURRENT_TERMS_VERSION),
+      refundPolicyAccepted: z.boolean().refine((v) => v === true, {
+        error: 'You must accept the refund policy to continue.',
+      }),
     })
     .superRefine((data, ctx) => {
       if (!data.soloPractitioner && !String(data.firmName ?? '').trim()) {
@@ -38,6 +48,20 @@ export function createLawyerPracticeInfoSchema(yearOfCall?: number) {
           code: 'custom',
           path: ['firmName'],
           message: 'Enter a firm name or mark yourself as a solo practitioner.',
+        })
+      }
+      if (!data.statesOfPractice.includes(data.primaryState)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['primaryState'],
+          message: 'Primary state must be one of your selected practice states.',
+        })
+      }
+      if (data.additionalPracticeStates.includes(data.primaryState)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['additionalPracticeStates'],
+          message: 'Do not duplicate your primary state in additional states.',
         })
       }
     })

@@ -4,7 +4,12 @@ import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
-import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
+import {
+  isLawyerAwaitingApproval,
+  isLawyerRejected,
+  isLawyerVerificationFailed,
+  onboardingSubmittedAt,
+} from '~/lib/lawyerOnboardingStatus'
 import {
   PhCircleNotch,
   PhCheck,
@@ -50,7 +55,10 @@ const {
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
   const st = statusPayload.value
-  if (st != null && (isLawyerAwaitingApproval(st) || isRejectedState(st))) {
+  if (
+    st != null
+    && (isLawyerAwaitingApproval(st) || isRejectedState(st) || isLawyerVerificationFailed(st))
+  ) {
     return false
   }
   if (statusError.value) return false
@@ -64,11 +72,8 @@ const isAwaiting = computed(() => {
   return st != null && isLawyerAwaitingApproval(st)
 })
 
-function isRejectedState(st: {
-  application_status?: string | null
-  current_state?: string | null
-}) {
-  return st.application_status === 'rejected' || st.current_state === 'rejected'
+function isRejectedState(st: Parameters<typeof isLawyerRejected>[0]) {
+  return isLawyerRejected(st)
 }
 
 const isRejected = computed(() => {
@@ -76,7 +81,15 @@ const isRejected = computed(() => {
   return st != null && isRejectedState(st)
 })
 
-const submittedAt = computed(() => statusPayload.value?.submitted_at ?? null)
+const isVerificationFailed = computed(() => {
+  const st = statusPayload.value
+  return st != null && isLawyerVerificationFailed(st)
+})
+
+const submittedAt = computed(() => {
+  const st = statusPayload.value
+  return st ? onboardingSubmittedAt(st) : null
+})
 
 const formatSubmitted = (iso: string | null) => {
   if (!iso) return null
@@ -201,6 +214,40 @@ async function retryStatus() {
           </p>
           <Button class="w-full rounded-full font-semibold" @click="retryStatus">
             Try again
+          </Button>
+        </div>
+      </Card>
+    </div>
+
+    <!-- Verification failed — refund initiated -->
+    <div v-else-if="isVerificationFailed" class="space-y-8 py-8 text-center">
+      <div
+        class="mx-auto flex size-20 items-center justify-center rounded-full bg-amber-50 text-amber-700 ring-4 ring-white shadow-lg"
+      >
+        <PhHourglass class="size-10" weight="duotone" />
+      </div>
+      <div class="space-y-2">
+        <p class="text-xs font-bold uppercase tracking-widest text-primary">
+          Verification outcome
+        </p>
+        <h1 class="font-heading text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
+          Verification could not be completed
+        </h1>
+        <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
+          We could not verify your credentials. If you paid a subscription fee, a refund minus the
+          admin processing fee will be returned to your payment method.
+        </p>
+      </div>
+      <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white text-left shadow-sm">
+        <div class="space-y-4 p-6 text-sm text-muted-foreground">
+          <p>
+            Questions? Email
+            <a href="mailto:support@getalawyer.ng" class="font-semibold text-primary underline">
+              support@getalawyer.ng
+            </a>
+          </p>
+          <Button variant="outline" class="w-full rounded-full" @click="signOut">
+            Sign out
           </Button>
         </div>
       </Card>

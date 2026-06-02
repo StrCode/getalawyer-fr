@@ -1,6 +1,9 @@
 import type { PropertyDraftResponse } from '~/composables/useLawyerOnboarding'
 import {
   isLawyerAwaitingApproval,
+  isLawyerRejected,
+  isLawyerVerificationFailed,
+  onboardingCurrentState,
   type OnboardingStatusPayload,
 } from '~/lib/lawyerOnboardingStatus'
 import {
@@ -37,7 +40,7 @@ function resolveWizardStepPath(
   const lastStepRaw =
     draft?.last_step ??
     (draft as { lastStep?: string | null } | undefined)?.lastStep ??
-    status?.current_state ??
+    onboardingCurrentState(status ?? {}) ??
     'personal_info'
 
   const key =
@@ -63,15 +66,15 @@ export function resolveLawyerOnboardingDestination(options: {
     return '/dashboard'
   }
 
-  if (status?.application_status === 'rejected' || status?.current_state === 'rejected') {
+  if (status && isLawyerRejected(status)) {
     return '/onboarding/rejected'
   }
 
-  if (status?.current_state === 'approved') {
+  if (onboardingCurrentState(status ?? {}) === 'approved') {
     return '/dashboard'
   }
 
-  if (status && isLawyerAwaitingApproval(status)) {
+  if (status && (isLawyerAwaitingApproval(status) || isLawyerVerificationFailed(status))) {
     return '/onboarding/pending'
   }
 

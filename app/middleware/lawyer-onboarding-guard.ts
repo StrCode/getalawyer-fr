@@ -1,5 +1,9 @@
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
-import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
+import {
+  isLawyerAwaitingApproval,
+  isLawyerRejected,
+  onboardingCurrentState,
+} from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
 
 const WIZARD_PATHS = new Set([
@@ -34,11 +38,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const queryClient = useQueryClient()
     const status = await ensureLawyerOnboardingStatus(queryClient)
 
-    if (status.application_status === 'rejected' || status.current_state === 'rejected') {
+    if (isLawyerRejected(status)) {
       return navigateTo('/onboarding/rejected', { replace: true })
     }
 
-    if (status.current_state === 'approved') {
+    if (onboardingCurrentState(status) === 'approved') {
       return navigateTo('/dashboard', { replace: true })
     }
 

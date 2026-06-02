@@ -60,6 +60,7 @@ export const queryKeys = {
   lawyerOnboarding: {
     draft: ["lawyer", "onboarding", "draft"] as const,
     status: ["lawyer", "onboarding", "status"] as const,
+    summary: ["lawyer", "onboarding", "summary"] as const,
   },
   lawyers: {
     all: ["lawyers"] as const,

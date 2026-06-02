@@ -35,6 +35,12 @@ export function createLawyerProfessionalInfoSchema() {
       }),
     ),
     yearOfCall: yearField('Enter your year of call to the bar.'),
+    scnFullNameAtCallToBar: z
+      .string()
+      .trim()
+      .min(3, { error: 'Enter your full name as on your Supreme Court Number.' })
+      .max(120, { error: 'SCN name is too long.' })
+      .regex(/^[a-zA-Z\s'-]+$/, { error: 'SCN name contains invalid characters.' }),
   })
 }
 

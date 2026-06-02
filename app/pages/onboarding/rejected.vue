@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
-import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
+import { httpClient } from '~/lib/api/client'
 import { 
   PhWarning, 
   PhCircleNotch, 
@@ -22,12 +23,28 @@ useHead({
   ]
 })
 
-const { useSummary } = useLawyerOnboarding()
-const { data: summary, isLoading, isError } = useSummary()
+interface LawyerDashboardRejected {
+  status: 'rejected'
+  reason?: string
+  message?: string
+}
+
+const { data: dashboardState, isLoading, isError } = useQuery({
+  queryKey: ['lawyer-dashboard', 'rejected'],
+  queryFn: async () => {
+    const res = await httpClient.getAuth<LawyerDashboardRejected & { status: string }>(
+      '/api/dashboard/lawyer',
+    )
+    return res
+  },
+  enabled: import.meta.client,
+})
+
 const { restart, isPending: isRestarting } = useOnboardingRestart()
 
-const rejectionReason = computed(() => summary.value?.status?.reviewNotes)
-const reviewedAt = computed(() => summary.value?.status?.updatedAt)
+const rejectionReason = computed(
+  () => dashboardState.value?.reason ?? dashboardState.value?.message ?? '',
+)
 
 const formatDate = (dateString: string) => {
   if (!dateString) return ''
@@ -68,7 +85,7 @@ const handleRestart = async () => {
     </div>
 
     <!-- Rejection Details -->
-    <div v-else-if="summary" class="space-y-12">
+    <div v-else class="space-y-12">
       <!-- Feedback Section -->
       <div class="text-left bg-white rounded-2xl p-8 border border-gray-100 shadow-sm transition-all hover:shadow-md">
         <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
@@ -83,9 +100,6 @@ const handleRestart = async () => {
             <div class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-medium">{{ rejectionReason }}</div>
           </div>
 
-          <div v-if="reviewedAt" class="text-3 font-bold text-gray-400 uppercase tracking-widest pl-1">
-            Reviewed on {{ formatDate(reviewedAt) }}
-          </div>
         </div>
       </div>
 

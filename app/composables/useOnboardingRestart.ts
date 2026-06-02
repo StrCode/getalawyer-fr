@@ -5,6 +5,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { httpClient, type ApiResponse } from '~/lib/api/client'
+import { queryKeys } from '~/lib/query-client'
 
 interface RestartResponse {
   success: boolean
@@ -12,36 +13,35 @@ interface RestartResponse {
   nextState: string
 }
 
-// API functions
 const onboardingRestartAPI = {
   restart: async (): Promise<RestartResponse> => {
     const response = await httpClient.post<ApiResponse<RestartResponse>>(
-      '/api/onboarding/restart'
+      '/api/onboarding/restart',
     )
     if (!response.data) throw new Error('Failed to restart application')
     return response.data
-  }
+  },
 }
 
-// Composable
 export const useOnboardingRestart = () => {
   const queryClient = useQueryClient()
 
-  // Mutation: Restart application
-  const useRestartApplication = () => {
-    return useMutation({
-      mutationFn: onboardingRestartAPI.restart,
-      onSuccess: () => {
-        // Invalidate onboarding-related queries
-        return Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['lawyer', 'onboarding'] }),
-          queryClient.invalidateQueries({ queryKey: ['lawyer-dashboard'] })
-        ])
-      },
-    })
-  }
+  const mutation = useMutation({
+    mutationFn: onboardingRestartAPI.restart,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.summary }),
+        queryClient.invalidateQueries({ queryKey: ['user', 'session'] }),
+        queryClient.invalidateQueries({ queryKey: ['lawyer-dashboard'] }),
+      ])
+    },
+  })
 
   return {
-    useRestartApplication
+    restart: () => mutation.mutateAsync(),
+    isPending: mutation.isPending,
+    useRestartApplication: () => mutation,
   }
 }
