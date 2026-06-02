@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useQueryClient } from '@tanstack/vue-query'
 import { useLawyerOnboarding, useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
