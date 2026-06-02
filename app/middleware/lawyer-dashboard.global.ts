@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import { useAuth } from '~/composables/useAuth'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import { resolveLawyerAwaitingApprovalPath } from '~/composables/useLawyerOnboardingEntry'
 import {
   isLawyerAwaitingApproval,
   isLawyerRejected,
@@ -38,7 +39,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (isLawyerAwaitingApproval(status)) {
-      return navigateTo('/onboarding/subscription', { replace: true })
+      const path = await resolveLawyerAwaitingApprovalPath(queryClient)
+      return navigateTo(path, { replace: true })
     }
 
     return navigateTo('/onboarding', { replace: true })

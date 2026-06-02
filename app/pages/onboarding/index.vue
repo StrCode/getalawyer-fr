@@ -2,7 +2,11 @@
 import { useLawyerOnboarding, useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
-import { resolveLawyerOnboardingDestination } from '~/composables/useLawyerOnboardingEntry'
+import {
+  resolveLawyerAwaitingApprovalPath,
+  resolveLawyerOnboardingDestination,
+} from '~/composables/useLawyerOnboardingEntry'
+import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
 import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 
 definePageMeta({
@@ -11,6 +15,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const queryClient = useQueryClient()
 const { session } = useAuth()
 const { firstStep, userType, steps } = useOnboardingNavigation()
 const store = useLawyerOnboardingStore()
@@ -63,12 +68,19 @@ async function routeLawyerToDestination() {
       return
     }
 
-    const destination = resolveLawyerOnboardingDestination({
-      user: session.value?.user ?? null,
-      draft: draftResponse.value ?? null,
-      lawyerSteps: steps.value,
-      status: statusPayload.value ?? null,
-    })
+    const status = statusPayload.value ?? null
+
+    let destination: string
+    if (status && isLawyerAwaitingApproval(status)) {
+      destination = await resolveLawyerAwaitingApprovalPath(queryClient)
+    } else {
+      destination = resolveLawyerOnboardingDestination({
+        user: session.value?.user ?? null,
+        draft: draftResponse.value ?? null,
+        lawyerSteps: steps.value,
+        status,
+      })
+    }
 
     hasRouted.value = true
     await navigateTo(destination, { replace: true })

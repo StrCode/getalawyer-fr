@@ -152,6 +152,11 @@ watchEffect(() => {
 
   if (!isLawyerAwaitingApproval(st)) {
     router.replace('/onboarding')
+    return
+  }
+
+  if (hasActiveSubscription.value) {
+    router.replace('/onboarding/pending')
   }
 })
 
@@ -314,11 +319,12 @@ async function retry() {
       </Card>
 
       <div class="flex flex-col items-center gap-3 pt-2">
-        <Button variant="outline" class="w-full max-w-xs rounded-full" as-child>
-          <NuxtLink to="/onboarding/pending">
-            View application status
-          </NuxtLink>
-        </Button>
+        <p
+          v-if="hasActiveSubscription"
+          class="text-center text-sm text-muted-foreground"
+        >
+          Payment complete — you are being sent to your application status.
+        </p>
         <button
           type="button"
           class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"

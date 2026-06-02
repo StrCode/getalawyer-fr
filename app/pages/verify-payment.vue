@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useQueryClient } from '@tanstack/vue-query'
 import { PhCheckCircle, PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
 import { useVerifySubscription } from '~/composables/useSubscription'
+import { queryKeys } from '~/lib/query-client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -16,6 +18,7 @@ useHead({
 })
 
 const route = useRoute()
+const queryClient = useQueryClient()
 
 const reference = computed(() => {
   const r = route.query.reference ?? route.query.trxref
@@ -51,14 +54,18 @@ const isFailed = computed(() => {
   return s === 'failed' || s === 'abandoned' || s === 'cancelled'
 })
 
+const redirectedAfterSuccess = ref(false)
+
 watch(
   isSuccess,
-  (ok) => {
-    if (ok) {
-      toast.success('Subscription activated', {
-        description: 'Your payment has been confirmed.',
-      })
-    }
+  async (ok) => {
+    if (!ok || redirectedAfterSuccess.value) return
+    redirectedAfterSuccess.value = true
+    toast.success('Payment confirmed', {
+      description: 'Taking you to your application status.',
+    })
+    await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+    await navigateTo('/onboarding/pending', { replace: true })
   },
   { immediate: true },
 )
@@ -71,7 +78,7 @@ function retryVerify() {
 <template>
   <div class="mx-auto w-full max-w-xl py-14">
     <Card
-      v-if="!missingReference"
+      v-if="!missingReference && !redirectedAfterSuccess"
       class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm"
     >
       <div class="space-y-6 px-6 py-8 text-center">
@@ -111,10 +118,10 @@ function retryVerify() {
           </h1>
           <p class="text-sm leading-relaxed text-muted-foreground">
             <template v-if="verifyPending">
-              We are confirming your payment. This usually takes a few seconds after Paystack redirects you here.
+              We are confirming your payment. You will be redirected to your application status shortly.
             </template>
             <template v-else-if="isSuccess">
-              Your subscription is active. Return to the subscription page or check your application status.
+              Redirecting to your application status…
             </template>
             <template v-else-if="isFailed">
               {{ verifyMessage || 'This payment was not completed. You can try again from the subscription page.' }}
@@ -125,13 +132,13 @@ function retryVerify() {
           </p>
         </div>
 
-        <div class="grid gap-2 sm:grid-cols-2">
+        <div v-if="!isSuccess" class="grid gap-2 sm:grid-cols-2">
           <Button variant="outline" :disabled="verifyPending" @click="retryVerify">
             Check again
           </Button>
           <Button as-child>
             <NuxtLink to="/onboarding/subscription">
-              Return to subscription
+              Back to subscription
             </NuxtLink>
           </Button>
         </div>
@@ -141,5 +148,13 @@ function retryVerify() {
         </p>
       </div>
     </Card>
+
+    <div
+      v-else-if="redirectedAfterSuccess || (isSuccess && !verifyPending)"
+      class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
+    >
+      <PhCircleNotch class="size-8 animate-spin text-primary" />
+      <p>Opening your application status…</p>
+    </div>
   </div>
 </template>

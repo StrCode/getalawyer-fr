@@ -1,4 +1,7 @@
+import type { QueryClient } from '@tanstack/vue-query'
 import type { PropertyDraftResponse } from '~/composables/useLawyerOnboarding'
+import { httpClient } from '~/lib/api/client'
+import { queryKeys } from '~/lib/query-client'
 import {
   isLawyerAwaitingApproval,
   isLawyerRejected,
@@ -49,6 +52,33 @@ function resolveWizardStepPath(
       : 'personal_info'
 
   return getPathByLawyerStepKey(key as LawyerStepKey, lawyerSteps)
+}
+
+/**
+ * After submit: unpaid lawyers pay on subscription; paid lawyers see application status on pending.
+ */
+export async function resolveLawyerAwaitingApprovalPath(
+  queryClient: QueryClient,
+): Promise<'/onboarding/pending' | '/onboarding/subscription'> {
+  try {
+    const data = await queryClient.fetchQuery({
+      queryKey: queryKeys.subscription.status,
+      queryFn: async () => {
+        const res = await httpClient.getAuth<{
+          success: boolean
+          data: { hasActiveSubscription: boolean }
+        }>('/api/subscriptions/status')
+        return res.data
+      },
+      staleTime: 30_000,
+    })
+    if (data?.hasActiveSubscription) {
+      return '/onboarding/pending'
+    }
+  } catch {
+    // Default to payment step when status is unavailable
+  }
+  return '/onboarding/subscription'
 }
 
 /**

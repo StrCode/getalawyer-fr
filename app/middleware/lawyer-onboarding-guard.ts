@@ -1,4 +1,5 @@
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import { resolveLawyerAwaitingApprovalPath } from '~/composables/useLawyerOnboardingEntry'
 import {
   isLawyerAwaitingApproval,
   isLawyerRejected,
@@ -47,7 +48,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (isLawyerAwaitingApproval(status)) {
-      return navigateTo('/onboarding/subscription', { replace: true })
+      const path = await resolveLawyerAwaitingApprovalPath(queryClient)
+      return navigateTo(path, { replace: true })
     }
   } catch {
     // Allow wizard if status is temporarily unavailable

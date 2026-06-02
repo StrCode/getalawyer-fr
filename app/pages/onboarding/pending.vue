@@ -166,6 +166,10 @@ watchEffect(() => {
   }
 })
 
+const hasActiveSubscription = computed(
+  () => subscriptionStatus.value?.hasActiveSubscription === true,
+)
+
 watchEffect(() => {
   if (showSpinner.value) return
   if ((session.value?.user as { onboarding_completed?: boolean })?.onboarding_completed) return
@@ -181,17 +185,18 @@ watchEffect(() => {
   router.replace('/onboarding')
 })
 
+watchEffect(() => {
+  if (showSpinner.value) return
+  if (!isAwaiting.value) return
+  if (subscriptionStatusPending.value) return
+  if (!hasActiveSubscription.value) {
+    router.replace('/onboarding/subscription')
+  }
+})
+
 async function retryStatus() {
   await refetchStatus()
 }
-
-const hasActiveSubscription = computed(
-  () => subscriptionStatus.value?.hasActiveSubscription === true,
-)
-
-const needsSubscriptionPayment = computed(
-  () => isAwaiting.value && !subscriptionStatusPending.value && !hasActiveSubscription.value,
-)
 </script>
 
 <template>
@@ -312,25 +317,6 @@ const needsSubscriptionPayment = computed(
           </p>
         </div>
 
-        <Card
-          v-if="needsSubscriptionPayment"
-          class="overflow-hidden rounded-2xl border-amber-200/80 bg-amber-50/50 shadow-sm"
-        >
-          <div class="space-y-3 px-6 py-5">
-            <p class="text-sm font-semibold text-amber-950">
-              Annual subscription not paid yet
-            </p>
-            <p class="text-sm leading-relaxed text-amber-900/90">
-              Pay your yearly membership fee so your account is ready as soon as you are approved.
-            </p>
-            <Button class="w-full rounded-full font-semibold" as-child>
-              <NuxtLink to="/onboarding/subscription">
-                Go to subscription payment
-              </NuxtLink>
-            </Button>
-          </div>
-        </Card>
-
         <!-- Horizontal progress (Airwallex-style) -->
         <div class="rounded-2xl border border-border/40 bg-white/80 px-4 py-5 shadow-sm sm:px-6">
           <ol class="flex items-start justify-between gap-2">
@@ -410,11 +396,6 @@ const needsSubscriptionPayment = computed(
             <p class="mt-1 text-sm text-emerald-800/90">
               Your annual membership payment is confirmed. No further payment is needed while your application is reviewed.
             </p>
-            <Button variant="outline" class="mt-3 w-full rounded-full" as-child>
-              <NuxtLink to="/onboarding/subscription">
-                View subscription details
-              </NuxtLink>
-            </Button>
           </div>
         </Card>
 
