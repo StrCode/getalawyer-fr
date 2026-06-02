@@ -88,6 +88,10 @@ export const queryKeys = {
   client: {
     profile: ["client", "profile"] as const,
   },
+  subscription: {
+    status: ["subscription", "status"] as const,
+    verify: (reference: string) => ["subscription", "verify", reference] as const,
+  },
   messaging: {
     conversations: ["messaging", "conversations"] as const,
     conversation: (id: string) => ["messaging", "conversation", id] as const,

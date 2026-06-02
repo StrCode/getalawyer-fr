@@ -4,6 +4,7 @@ import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
+import { useInitializeSubscription, useSubscriptionStatus } from '~/composables/useSubscription'
 import {
   isLawyerAwaitingApproval,
   isLawyerRejected,
@@ -18,6 +19,8 @@ import {
   PhHourglass,
   PhSignOut,
 } from '@phosphor-icons/vue'
+import { toast } from 'vue-sonner'
+import { ApiError } from '~/lib/api/client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -52,6 +55,20 @@ const {
   refetch: refetchStatus,
 } = useLawyerOnboardingStatus({ enabled: true })
 
+const isAwaiting = computed(() => {
+  const st = statusPayload.value
+  return st != null && isLawyerAwaitingApproval(st)
+})
+
+const {
+  data: subscriptionStatus,
+  isPending: subscriptionStatusPending,
+} = useSubscriptionStatus({
+  enabled: computed(() => isAwaiting.value),
+})
+const { mutateAsync: initializeSubscription, isPending: subscriptionInitPending } =
+  useInitializeSubscription()
+
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
   const st = statusPayload.value
@@ -66,11 +83,6 @@ const showSpinner = computed(() => {
 })
 
 const statusUnavailable = computed(() => !statusPending.value && statusError.value)
-
-const isAwaiting = computed(() => {
-  const st = statusPayload.value
-  return st != null && isLawyerAwaitingApproval(st)
-})
 
 function isRejectedState(st: Parameters<typeof isLawyerRejected>[0]) {
   return isLawyerRejected(st)
@@ -171,6 +183,30 @@ watchEffect(() => {
 
 async function retryStatus() {
   await refetchStatus()
+}
+
+const hasActiveSubscription = computed(
+  () => subscriptionStatus.value?.hasActiveSubscription === true,
+)
+
+async function startSubscription() {
+  try {
+    const data = await initializeSubscription()
+    if (data?.redirectUrl) {
+      await navigateTo(data.redirectUrl, { external: true })
+      return
+    }
+    toast.error('Could not start payment', {
+      description: 'Missing payment redirect URL. Please try again.',
+    })
+  } catch (error) {
+    console.error('[Subscriptions] Failed to initialize payment', error)
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : 'We could not start your payment right now. Please try again.'
+    toast.error('Subscription payment failed', { description: message })
+  }
 }
 </script>
 
@@ -344,6 +380,38 @@ async function retryStatus() {
               </template>
               No further action is needed unless we contact you.
             </p>
+          </div>
+        </Card>
+
+        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+          <div class="border-b border-border/40 px-6 py-5">
+            <h2 class="text-base font-semibold text-foreground">
+              Subscription payment
+            </h2>
+          </div>
+          <div class="space-y-3 px-6 py-5">
+            <p class="text-sm leading-relaxed text-muted-foreground">
+              Activate your annual lawyer subscription so your account is ready immediately after
+              verification approval.
+            </p>
+            <p
+              v-if="!subscriptionStatusPending && hasActiveSubscription"
+              class="text-sm font-medium text-primary"
+            >
+              Payment confirmed. Your subscription is active.
+            </p>
+            <Button
+              v-else
+              class="w-full rounded-full font-semibold"
+              :disabled="subscriptionInitPending"
+              @click="startSubscription"
+            >
+              <PhCircleNotch
+                v-if="subscriptionInitPending"
+                class="mr-2 size-4 animate-spin"
+              />
+              {{ subscriptionInitPending ? 'Preparing payment...' : 'Pay annual subscription' }}
+            </Button>
           </div>
         </Card>
 
