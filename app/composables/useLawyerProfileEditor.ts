@@ -8,6 +8,7 @@ import type {
   CreateExperienceInput,
   CreateLicenseInput,
   CreateSkillInput,
+  CreateArticleInput,
   LawyerProfileEditorData,
   ReplacePracticeAreasInput,
   UpdateLawyerAboutInput,
@@ -29,7 +30,10 @@ function normalizeEditorProfileResponse(res: unknown): LawyerProfileEditorData {
     throw new Error('Invalid lawyer profile response')
   }
 
-  return data
+  return {
+    ...data,
+    articles: Array.isArray(data.articles) ? data.articles : [],
+  }
 }
 
 async function fetchEditorProfile(): Promise<LawyerProfileEditorData> {
@@ -153,6 +157,22 @@ export function useLawyerProfileEditor(options?: {
     onSuccess: invalidate,
   })
 
+  const createArticle = useMutation({
+    mutationFn: (data: CreateArticleInput) => lawyerProfileAPI.createArticle(data),
+    onSuccess: invalidate,
+  })
+
+  const updateArticle = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateArticleInput> }) =>
+      lawyerProfileAPI.updateArticle(id, data),
+    onSuccess: invalidate,
+  })
+
+  const deleteArticle = useMutation({
+    mutationFn: (id: string) => lawyerProfileAPI.deleteArticle(id),
+    onSuccess: invalidate,
+  })
+
   return {
     profileQuery,
     completeness,
@@ -171,5 +191,8 @@ export function useLawyerProfileEditor(options?: {
     createSkill,
     updateSkill,
     deleteSkill,
+    createArticle,
+    updateArticle,
+    deleteArticle,
   }
 }

@@ -4,6 +4,7 @@ import type {
   CreateExperienceInput,
   CreateLicenseInput,
   CreateSkillInput,
+  CreateArticleInput,
   LawyerProfileEditorData,
   ReplacePracticeAreasInput,
   UpdateLawyerAboutInput,
@@ -58,4 +59,13 @@ export const lawyerProfileAPI = {
 
   deleteSkill: (id: string) =>
     httpClient.delete<ApiResponse>(`/api/lawyer/profile/skills/${id}`),
+
+  createArticle: (data: CreateArticleInput) =>
+    httpClient.post<ApiResponse>('/api/lawyer/profile/articles', data),
+
+  updateArticle: (id: string, data: Partial<CreateArticleInput>) =>
+    httpClient.patch<ApiResponse>(`/api/lawyer/profile/articles/${id}`, data),
+
+  deleteArticle: (id: string) =>
+    httpClient.delete<ApiResponse>(`/api/lawyer/profile/articles/${id}`),
 }

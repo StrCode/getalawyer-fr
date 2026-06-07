@@ -56,6 +56,20 @@ export interface LawyerProfileSkill {
   updatedAt: string
 }
 
+export type LawyerArticleStatus = 'draft' | 'published'
+
+export interface LawyerProfileArticle {
+  id: string
+  lawyerId: string
+  title: string
+  excerpt: string | null
+  body: string
+  status: LawyerArticleStatus
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export interface LawyerProfilePracticeArea {
   id: string
   name: string
@@ -75,11 +89,13 @@ export interface LawyerProfilePracticeInfo {
 }
 
 export interface LawyerProfileEditorData {
+  lawyerId: string
   about: LawyerProfileAbout
   experiences: LawyerProfileExperience[]
   education: LawyerProfileEducation[]
   licenses: LawyerProfileLicense[]
   skills: LawyerProfileSkill[]
+  articles: LawyerProfileArticle[]
   practiceAreas: LawyerProfilePracticeArea[]
   practiceInfo: LawyerProfilePracticeInfo | null
 }
@@ -135,6 +151,15 @@ export interface CreateLicenseInput {
 export interface CreateSkillInput {
   name: string
 }
+
+export interface CreateArticleInput {
+  title: string
+  excerpt?: string | null
+  body: string
+  status?: LawyerArticleStatus
+}
+
+export interface UpdateArticleInput extends Partial<CreateArticleInput> {}
 
 /** Public API profile block on GET /api/lawyers/:id */
 export interface LawyerPublicProfileSections {

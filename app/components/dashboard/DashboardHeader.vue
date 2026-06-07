@@ -1,8 +1,8 @@
 <template>
   <header
-    class="flex h-14 shrink-0 items-center border-b border-border/60 bg-[#F1F3F5] md:h-16"
+    class="flex h-14 shrink-0 items-center border-b border-border/60 bg-background md:h-16"
   >
-    <div class="flex min-w-0 flex-1 items-center gap-2 px-4 md:gap-3">
+    <div class="mx-auto flex w-full max-w-[1400px] min-w-0 flex-1 items-center gap-2 px-6 sm:px-8 md:gap-3 lg:px-10">
       <SidebarTrigger
         class="-ml-1 shrink-0"
         aria-label="Toggle sidebar"

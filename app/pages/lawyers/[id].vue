@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import LawyerPublicProfileSections from '@/components/lawyer-profile/LawyerPublicProfileSections.vue'
+import LawyerPublicArticles from '@/components/lawyer-profile/LawyerPublicArticles.vue'
 import type { LawyerProfileResponse, ConsultationType, AvailabilitySchedule } from '~/types/lawyer'
 
 definePageMeta({
@@ -21,6 +22,7 @@ const lawyer = computed(() => profileData.value?.data)
 const isAuthenticated = computed(() => profileData.value?.authenticated || false)
 
 const profileSections = computed(() => lawyer.value?.profile)
+const publishedArticles = computed(() => lawyer.value?.articles ?? [])
 
 const displayLocation = computed(() => {
   if (!lawyer.value?.practiceInfo) return 'Nigeria'
@@ -278,7 +280,17 @@ const isBookingModalOpen = ref(false)
           />
 
           <hr
-            v-if="hasProfileContent && lawyer.specializations.length"
+            v-if="hasProfileContent && publishedArticles.length"
+            class="border-border"
+          >
+
+          <LawyerPublicArticles
+            v-if="publishedArticles.length"
+            :articles="publishedArticles"
+          />
+
+          <hr
+            v-if="(hasProfileContent || publishedArticles.length) && lawyer.specializations.length"
             class="border-border"
           >
 

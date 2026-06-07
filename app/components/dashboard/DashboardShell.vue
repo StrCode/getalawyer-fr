@@ -5,11 +5,11 @@
   />
 
   <SidebarInset
-    class="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#F1F3F5] md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-none"
+    class="flex min-h-0 flex-1 flex-col overflow-hidden bg-sidebar p-2 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-none md:pl-0"
   >
-    <DashboardHeader />
-    <div class="mx-2 mb-2 flex min-h-0 min-w-0 flex-1 flex-col md:mr-2 md:ml-0">
-      <ScrollArea class="min-h-0 flex-1 rounded-2xl border border-border bg-background max-md:h-[calc(100svh-3.5rem)] md:h-[calc(100svh-4rem)]">
+    <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background">
+      <DashboardHeader />
+      <ScrollArea class="min-h-0 flex-1">
         <div
           data-dashboard-content
           class="mx-auto w-full max-w-[1400px] px-6 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12"

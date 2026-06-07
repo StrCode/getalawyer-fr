@@ -1,6 +1,6 @@
 // Lawyer Profile Types
 
-import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
+import type { LawyerProfileArticle, LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
 
 export interface LawyerPersonalInfo {
   firstName: string
@@ -94,6 +94,8 @@ export interface LawyerProfile {
   specializations: LawyerSpecialization[]
   /** Profile sections from GET /api/lawyers/:id → data.profile */
   profile?: LawyerPublicProfileSections
+  /** Published articles from GET /api/lawyers/:id → data.articles */
+  articles?: LawyerProfileArticle[]
   documents: LawyerDocument[]
   consultationTypes: ConsultationType[]
   availability: LawyerAvailability

@@ -1,0 +1,58 @@
+<script setup lang="ts">
+import type { LawyerProfileArticle } from '~/types/lawyer-profile-editor'
+
+defineProps<{
+  articles: LawyerProfileArticle[]
+}>()
+
+function formatPublishedDate(value: string | null | undefined): string | null {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return date.toLocaleDateString(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+</script>
+
+<template>
+  <section v-if="articles.length">
+    <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <PhArticle class="size-6 text-muted-foreground" />
+      Articles
+    </h2>
+    <div class="space-y-4">
+      <article
+        v-for="item in articles"
+        :key="item.id"
+        class="rounded-2xl border border-border bg-card p-6 shadow-sm"
+      >
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <h3 class="text-lg font-bold text-foreground">
+            {{ item.title }}
+          </h3>
+          <p
+            v-if="formatPublishedDate(item.publishedAt)"
+            class="text-sm tabular-nums text-muted-foreground"
+          >
+            {{ formatPublishedDate(item.publishedAt) }}
+          </p>
+        </div>
+        <p
+          v-if="item.excerpt?.trim()"
+          class="mt-3 text-sm font-medium text-muted-foreground"
+        >
+          {{ item.excerpt }}
+        </p>
+        <p
+          class="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
+          :class="{ 'mt-3': !item.excerpt?.trim() }"
+        >
+          {{ item.body }}
+        </p>
+      </article>
+    </div>
+  </section>
+</template>

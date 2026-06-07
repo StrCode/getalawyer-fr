@@ -3,6 +3,7 @@ import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
 import ProfileAboutSection from '@/components/profile/sections/ProfileAboutSection.vue'
+import ProfileArticlesSection from '@/components/profile/sections/ProfileArticlesSection.vue'
 import ProfileEducationSection from '@/components/profile/sections/ProfileEducationSection.vue'
 import ProfileExperienceSection from '@/components/profile/sections/ProfileExperienceSection.vue'
 import ProfileLicenseSection from '@/components/profile/sections/ProfileLicenseSection.vue'
@@ -72,6 +73,9 @@ const {
   createSkill,
   updateSkill,
   deleteSkill,
+  createArticle,
+  updateArticle,
+  deleteArticle,
 } = useLawyerProfileEditor({
   enabled: lawyerQueryEnabled,
   activeConsultationTypeCount,
@@ -79,6 +83,10 @@ const {
 })
 
 const profile = computed(() => profileQuery.data.value)
+
+const publicProfileUrl = computed(() =>
+  profile.value?.lawyerId ? `/lawyers/${profile.value.lawyerId}` : null,
+)
 
 const isLoading = computed(
   () =>
@@ -246,6 +254,32 @@ async function deleteSkillItem(id: string) {
     'Could not remove skill',
   )
 }
+
+async function createArticleItem(payload: Parameters<typeof createArticle.mutateAsync>[0]) {
+  await runProfileMutation(
+    () => createArticle.mutateAsync(payload),
+    'Article saved',
+    'Could not save article',
+  )
+}
+
+async function updateArticleItem(
+  payload: Parameters<typeof updateArticle.mutateAsync>[0],
+) {
+  await runProfileMutation(
+    () => updateArticle.mutateAsync(payload),
+    'Article updated',
+    'Could not update article',
+  )
+}
+
+async function deleteArticleItem(id: string) {
+  await runProfileMutation(
+    () => deleteArticle.mutateAsync(id),
+    'Article removed',
+    'Could not remove article',
+  )
+}
 </script>
 
 <template>
@@ -268,6 +302,26 @@ async function deleteSkillItem(id: string) {
           Account settings
         </NuxtLink>
         for email and security.
+      </template>
+      <template
+        v-if="publicProfileUrl"
+        #actions
+      >
+        <Button
+          as-child
+          variant="outline"
+          size="sm"
+        >
+          <NuxtLink
+            :to="publicProfileUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="gap-2"
+          >
+            View public profile
+            <PhArrowSquareOut class="size-4" />
+          </NuxtLink>
+        </Button>
       </template>
     </AppPageHeader>
 
@@ -370,6 +424,15 @@ async function deleteSkillItem(id: string) {
         :on-create="createSkillItem"
         :on-update="updateSkillItem"
         :on-delete="deleteSkillItem"
+      />
+
+      <ProfileArticlesSection
+        :items="profile.articles"
+        :disabled="!canEdit"
+        :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
+        :on-create="createArticleItem"
+        :on-update="updateArticleItem"
+        :on-delete="deleteArticleItem"
       />
     </template>
 

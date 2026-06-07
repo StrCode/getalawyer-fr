@@ -26,15 +26,15 @@ import {
   PhUserCircle,
 } from '@phosphor-icons/vue'
 
-/** Dashboard sidebar tokens — gray canvas, white active pill (Fresha / Jobber pattern). */
+/** Dashboard canvas + sidebar — light gray rail, white active pill (Cal.com / Rox). */
 const dashboardSidebarStyle = {
   '--sidebar-width': '16rem',
   '--sidebar-width-icon': '3rem',
-  '--sidebar': '#F1F3F5',
+  '--sidebar': 'oklch(0.965 0.004 250)',
   '--sidebar-foreground': 'oklch(0.12 0.015 145)',
   '--sidebar-primary': 'var(--primary)',
   '--sidebar-primary-foreground': 'var(--primary-foreground)',
-  '--sidebar-accent': '#ffffff',
+  '--sidebar-accent': 'var(--background)',
   '--sidebar-accent-foreground': 'var(--primary)',
   '--sidebar-border': 'oklch(0.87 0.015 88 / 0.6)',
   '--sidebar-ring': 'var(--ring)',

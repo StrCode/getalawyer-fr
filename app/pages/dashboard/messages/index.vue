@@ -81,7 +81,7 @@ function previewText(conversation: ConversationInfo) {
 </script>
 
 <template>
-  <div class="flex h-[calc(100dvh-5rem)] min-h-[32rem] -mx-6 -my-8 sm:-mx-8 sm:-my-10 lg:-mx-10 lg:-my-12">
+  <div class="flex min-h-[max(32rem,calc(100svh-5rem))] flex-1 -mx-6 -my-8 sm:-mx-8 sm:-my-10 lg:-mx-10 lg:-my-12">
     <aside class="flex w-80 shrink-0 flex-col border-r bg-background">
       <div class="border-b p-4">
         <h2 class="text-2xl font-bold text-foreground">

@@ -15,7 +15,7 @@
           <SidebarMenuButton
             as-child
             :is-active="isLinkActive(item)"
-            :tooltip="item.label"
+            :tooltip="navTooltip(item)"
             class="h-auto w-full rounded-lg p-0 hover:bg-transparent data-[active=true]:bg-transparent data-[active=true]:font-normal data-[active=true]:text-inherit"
           >
             <NuxtLink
@@ -37,7 +37,7 @@
               <span class="truncate group-data-[collapsible=icon]:hidden">{{ item.label }}</span>
               <SidebarMenuBadge
                 v-if="item.badge"
-                class="static ml-auto rounded-full bg-primary/10 px-1.5 text-[11px] font-medium text-primary tabular-nums"
+                class="static ml-auto rounded-full bg-primary/10 px-1.5 text-[11px] font-medium text-primary tabular-nums group-data-[collapsible=icon]:hidden"
               >
                 {{ item.badge }}
               </SidebarMenuBadge>
@@ -70,4 +70,10 @@ const props = defineProps<{
 }>()
 
 const { isLinkActive, onSidebarNavClick } = useDashboardNav()
+
+function navTooltip(item: DashboardNavItem) {
+  if (item.badge)
+    return `${item.label} (${item.badge})`
+  return item.label
+}
 </script>
