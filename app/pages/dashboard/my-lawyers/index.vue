@@ -1,30 +1,31 @@
 <template>
   <div class="space-y-6">
-    <UPageHeader 
-      title="My Lawyers"
+    <AppPageHeader
+      title="My lawyers"
       description="Lawyers you've worked with or bookmarked."
-      :ui="{
-        root: 'border-none py-0 mb-8',
-        title: 'font-semibold !text-3xl',
-        description: 'text-base text-gray-600 mt-2'
-      }"
     />
 
-    <UCard>
-      <div class="text-center py-12 text-gray-500">
-        <p>You haven't connected with any lawyers yet.</p>
-        <Button 
-          to="/dashboard/listings" 
-          color="primary" 
-          class="mt-4 bg-[#007AFC] hover:bg-blue-600"
+    <Card class="rounded-xl border-dashed">
+      <CardContent class="py-14 text-center">
+        <p class="text-muted-foreground">
+          You haven't connected with any lawyers yet.
+        </p>
+        <Button
+          as-child
+          class="mt-4"
         >
-          Browse Lawyers
+          <NuxtLink to="/find-lawyers">
+            Browse lawyers
+          </NuxtLink>
         </Button>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+
 definePageMeta({ layout: 'dashboard' })
 </script>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
-import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability';
+import { PhCalendarBlank, PhInfo, PhWarningCircle } from '@phosphor-icons/vue'
+import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability'
 
 definePageMeta({
   layout: 'dashboard',
@@ -16,18 +17,6 @@ const {
 
 const { data: schedules, isPending, isError, error, isSuccess } = useAvailabilitySchedule();
 
-// Debug TanStack Query state
-watch([schedules, isPending, isError, isSuccess], ([data, pending, err, success]) => {
-  console.log('TanStack Query State:', {
-    isPending: pending,
-    isError: err,
-    isSuccess: success,
-    dataType: typeof data,
-    dataIsArray: Array.isArray(data),
-    dataLength: data?.length,
-    rawData: data
-  });
-}, { immediate: true });
 const setScheduleMutation = useSetSchedule();
 const bulkSetMutation = useBulkSetSchedule();
 const deleteMutation = useDeleteSchedule();
@@ -92,7 +81,6 @@ watch(weekSchedule, (newSchedule) => {
 
 // Load existing schedules
 watch(schedules, (newSchedules) => {
-  console.log('Schedules updated:', newSchedules, 'Length:', newSchedules?.length);
   if (newSchedules && Array.isArray(newSchedules) && newSchedules.length > 0) {
     // Create a fresh schedule object
     const freshSchedule: Record<DayOfWeek, { enabled: boolean; startTime: string; endTime: string }> = {
@@ -107,7 +95,6 @@ watch(schedules, (newSchedules) => {
     
     // Populate with actual schedule data
     newSchedules.forEach((schedule: LawyerAvailabilitySchedule) => {
-      console.log('Processing schedule:', schedule.dayOfWeek, schedule.isAvailable, schedule.startTime, schedule.endTime);
       freshSchedule[schedule.dayOfWeek] = {
         enabled: schedule.isAvailable,
         startTime: schedule.startTime.substring(0, 5), // HH:mm
@@ -115,11 +102,7 @@ watch(schedules, (newSchedules) => {
       };
     });
     
-    console.log('Fresh schedule:', JSON.stringify(freshSchedule, null, 2));
-    // Replace the entire ref value to trigger reactivity
     weekSchedule.value = freshSchedule;
-  } else {
-    console.log('Schedules is empty or undefined');
   }
 }, { immediate: true });
 
@@ -268,139 +251,149 @@ const handleSaveAll = async () => {
 
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-start">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Weekly Availability</h1>
-        <p class="mt-2 text-gray-600">Set your recurring weekly schedule for client bookings</p>
-      </div>
-      <Button
-        icon="i-hugeicons-calendar-03"
-        size="lg"
-        to="/dashboard/availability/exceptions"
-        variant="outline"
-      >
-        Manage Exceptions
-      </Button>
+    <AppPageHeader
+      title="Weekly availability"
+      description="Set your recurring weekly schedule for client bookings"
+    >
+      <template #actions>
+        <Button
+          variant="outline"
+          as-child
+        >
+          <NuxtLink
+            to="/dashboard/availability/exceptions"
+            class="gap-2"
+          >
+            <PhCalendarBlank class="size-4" />
+            Manage exceptions
+          </NuxtLink>
+        </Button>
+      </template>
+    </AppPageHeader>
+
+    <Card class="rounded-xl">
+      <CardHeader>
+        <CardTitle class="text-lg">
+          Quick setup
+        </CardTitle>
+        <CardDescription>
+          Apply common schedule templates
+        </CardDescription>
+      </CardHeader>
+      <CardContent class="flex flex-wrap gap-3">
+        <ButtonBusy
+          :loading="bulkSetMutation.isPending.value"
+          @click="handleQuickSetup('weekdays')"
+        >
+          Mon–Fri 9am–5pm
+        </ButtonBusy>
+        <ButtonBusy
+          variant="outline"
+          :loading="bulkSetMutation.isPending.value"
+          @click="handleQuickSetup('weekdays-sat')"
+        >
+          Mon–Fri 9am–5pm, Sat 9am–2pm
+        </ButtonBusy>
+      </CardContent>
+    </Card>
+
+    <div
+      v-if="isPending"
+      class="space-y-3"
+    >
+      <Skeleton
+        v-for="i in 4"
+        :key="i"
+        class="h-16 w-full rounded-xl"
+      />
     </div>
 
-    <!-- Quick Setup -->
-    <UCard>
-      <div class="space-y-4">
-        <h3 class="font-semibold text-lg">Quick Setup</h3>
-        <p class="text-sm text-gray-600">Apply common schedule templates</p>
-        <div class="flex gap-3">
-          <ButtonBusy
-            icon="i-hugeicons-clock-01"
-            @click="handleQuickSetup('weekdays')"
-            :loading="bulkSetMutation.isPending.value"
-          >
-            Mon-Fri 9am-5pm
-          </ButtonBusy>
-          <ButtonBusy
-            icon="i-hugeicons-clock-01"
-            @click="handleQuickSetup('weekdays-sat')"
-            variant="outline"
-            :loading="bulkSetMutation.isPending.value"
-          >
-            Mon-Fri 9am-5pm, Sat 9am-2pm
-          </ButtonBusy>
-        </div>
-      </div>
-    </UCard>
-
-    <!-- Loading State -->
-    <div v-if="isPending" class="flex justify-center py-12">
-      <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin" />
-    </div>
-
-    <!-- Weekly Schedule -->
-    <UCard v-else>
-      <div class="space-y-6">
-        <div class="flex justify-between items-center">
-          <h3 class="font-semibold text-lg">Custom Schedule</h3>
-          <ButtonBusy
-            icon="i-hugeicons-tick-02"
-            @click="handleSaveAll"
-            :loading="bulkSetMutation.isPending.value"
-          >
-            Save All Changes
-          </ButtonBusy>
-        </div>
-
-        <div class="space-y-4">
-          <div
-            v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
-            :key="day"
-            class="border rounded-lg p-4"
-            :class="{ 'border-red-300 bg-red-50': validationErrors[day as DayOfWeek] }"
-          >
-            <div class="flex items-center gap-4">
-              <!-- Enable Toggle -->
-              <div class="w-40 flex items-center gap-2">
-                <USwitch
-                  v-model="weekSchedule[day as DayOfWeek].enabled"
-                />
-                <span class="font-medium text-gray-900">{{ dayNames[index] }}</span>
-              </div>
-
-              <!-- Time Inputs -->
-              <div v-if="weekSchedule[day as DayOfWeek].enabled" class="flex-1 flex items-center gap-4">
-                <div class="flex-1">
-                  <UInput
-                    v-model="weekSchedule[day as DayOfWeek].startTime"
-                    type="time"
-                    placeholder="Start time"
-                    size="lg"
-                    :color="validationErrors[day as DayOfWeek] ? 'error' : undefined"
-                  />
-                </div>
-                <span class="text-gray-500">to</span>
-                <div class="flex-1">
-                  <UInput
-                    v-model="weekSchedule[day as DayOfWeek].endTime"
-                    type="time"
-                    placeholder="End time"
-                    size="lg"
-                    :color="validationErrors[day as DayOfWeek] ? 'error' : undefined"
-                  />
-                </div>
-                <ButtonBusy
-                  icon="i-hugeicons-tick-02"
-                  size="sm"
-                  variant="outline"
-                  @click="handleSaveDay(day as DayOfWeek)"
-                  :loading="savingDay === day"
-                  :disabled="!!validationErrors[day as DayOfWeek]"
-                >
-                  Save
-                </ButtonBusy>
-              </div>
-
-              <div v-else class="flex-1 text-gray-400 italic">
-                Not available
-              </div>
+    <Card
+      v-else
+      class="rounded-xl"
+    >
+      <CardHeader class="flex flex-row items-center justify-between gap-4">
+        <CardTitle class="text-lg">
+          Custom schedule
+        </CardTitle>
+        <ButtonBusy
+          :loading="bulkSetMutation.isPending.value"
+          @click="handleSaveAll"
+        >
+          Save all changes
+        </ButtonBusy>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div
+          v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
+          :key="day"
+          class="rounded-lg border p-4"
+          :class="validationErrors[day as DayOfWeek] ? 'border-destructive/40 bg-destructive/5' : 'border-border'"
+        >
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex w-40 items-center gap-2">
+              <Switch
+                :model-value="weekSchedule[day as DayOfWeek].enabled"
+                @update:model-value="weekSchedule[day as DayOfWeek].enabled = $event"
+              />
+              <span class="font-medium text-foreground">{{ dayNames[index] }}</span>
             </div>
-            
-            <!-- Error Message -->
-            <div v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled" class="mt-2 text-sm text-red-600 flex items-center gap-1">
-              <PhIcon name="i-hugeicons-alert-circle" class="w-4 h-4" />
-              {{ validationErrors[day as DayOfWeek] }}
+
+            <div
+              v-if="weekSchedule[day as DayOfWeek].enabled"
+              class="flex flex-1 flex-wrap items-center gap-4"
+            >
+              <Input
+                v-model="weekSchedule[day as DayOfWeek].startTime"
+                type="time"
+                class="max-w-40 flex-1"
+                :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
+              />
+              <span class="text-muted-foreground">to</span>
+              <Input
+                v-model="weekSchedule[day as DayOfWeek].endTime"
+                type="time"
+                class="max-w-40 flex-1"
+                :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
+              />
+              <ButtonBusy
+                size="sm"
+                variant="outline"
+                :loading="savingDay === day"
+                :disabled="!!validationErrors[day as DayOfWeek]"
+                @click="handleSaveDay(day as DayOfWeek)"
+              >
+                Save
+              </ButtonBusy>
+            </div>
+
+            <div
+              v-else
+              class="flex-1 italic text-muted-foreground"
+            >
+              Not available
             </div>
           </div>
-        </div>
-      </div>
-    </UCard>
 
-    <!-- Info Card -->
-    <UCard>
-      <div class="flex gap-4">
-        <Icon name="i-hugeicons-information-circle" class="w-6 h-6 text-blue-500 shrink-0" />
-        <div class="space-y-2 text-sm text-gray-600">
+          <p
+            v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled"
+            class="mt-2 flex items-center gap-1 text-sm text-destructive"
+          >
+            <PhWarningCircle class="size-4" />
+            {{ validationErrors[day as DayOfWeek] }}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card class="rounded-xl">
+      <CardContent class="flex gap-4 p-5">
+        <PhInfo class="size-6 shrink-0 text-primary" />
+        <div class="space-y-2 text-sm text-muted-foreground">
           <p>Your weekly schedule sets your default availability. You can override specific dates using exceptions.</p>
           <p>Changes take effect immediately and will be visible to clients when booking consultations.</p>
         </div>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
   </div>
 </template>

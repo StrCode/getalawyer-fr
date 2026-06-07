@@ -1,186 +1,106 @@
-<script setup lang="ts">
-import { toast } from 'vue-sonner'
-import type { ConsultationType } from '~/types/booking';
-
-definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth']
-});
-
-const { useConsultationTypesList, useDeleteConsultationType, useActivateConsultationType, useDeactivateConsultationType } = useConsultationTypes();
-
-const showInactive = ref(false);
-const isCreateModalOpen = ref(false);
-const isEditModalOpen = ref(false);
-const selectedType = ref<ConsultationType | null>(null);
-
-const { data: consultationTypes, isPending, refetch } = useConsultationTypesList(showInactive);
-const deleteMutation = useDeleteConsultationType();
-const activateMutation = useActivateConsultationType();
-const deactivateMutation = useDeactivateConsultationType();
-
-const handleCreate = () => {
-  isCreateModalOpen.value = true;
-};
-
-const handleEdit = (type: ConsultationType) => {
-  selectedType.value = type;
-  isEditModalOpen.value = true;
-};
-
-const handleToggleActive = async (type: ConsultationType) => {
-  try {
-    if (type.isActive) {
-      await deactivateMutation.mutateAsync(type.id);
-      toast.success('Success', {
-        description: 'Consultation type deactivated'
-      });
-    } else {
-      await activateMutation.mutateAsync(type.id);
-      toast.success('Success', {
-        description: 'Consultation type activated'
-      });
-    }
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to update status'
-    });
-  }
-};
-
-const handleDelete = async (type: ConsultationType) => {
-  if (!confirm(`Are you sure you want to delete "${type.name}"?`)) {
-    return;
-  }
-
-  try {
-    await deleteMutation.mutateAsync(type.id);
-    toast.success('Success', {
-      description: 'Consultation type deleted'
-    });
-  } catch (error: any) {
-    if (error.statusCode === 409) {
-      const shouldDeactivate = confirm(
-        'This consultation type has existing bookings and cannot be deleted. Would you like to deactivate it instead?'
-      );
-      if (shouldDeactivate) {
-        await handleToggleActive(type);
-      }
-    } else {
-      toast.error('Error', {
-        description: error.message || 'Failed to delete consultation type'
-      });
-    }
-  }
-};
-
-const formatPrice = (price: string, currency: string) => {
-  const amount = parseFloat(price);
-  if (amount === 0) return 'Free';
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: currency,
-  }).format(amount);
-};
-
-const getMeetingTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    video: 'Video Call',
-    phone: 'Phone Call',
-    in_person: 'In Person',
-    any: 'Any Type'
-  };
-  return labels[type] || type;
-};
-</script>
-
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Consultation Types</h1>
-        <p class="mt-2 text-gray-600">Manage the services you offer to clients</p>
-      </div>
-      <Button
-        icon="i-hugeicons-add-01"
-        size="lg"
-        @click="handleCreate"
-      >
-        Create New
-      </Button>
-    </div>
+    <AppPageHeader
+      title="Consultation types"
+      description="Manage the services you offer to clients"
+    >
+      <template #actions>
+        <Button @click="handleCreate">
+          <PhPlus class="mr-2 size-4" />
+          Create new
+        </Button>
+      </template>
+    </AppPageHeader>
 
-    <!-- Filter Toggle -->
     <div class="flex items-center gap-2">
-      <USwitch v-model="showInactive" />
-      <span class="text-sm text-gray-600">Show inactive types</span>
+      <Switch
+        :model-value="showInactive"
+        @update:model-value="showInactive = $event"
+      />
+      <span class="text-sm text-muted-foreground">Show inactive types</span>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="isPending" class="flex justify-center py-12">
-      <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin" />
+    <div
+      v-if="isPending"
+      class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+    >
+      <Skeleton
+        v-for="i in 3"
+        :key="i"
+        class="h-52 w-full rounded-xl"
+      />
     </div>
 
-    <!-- Empty State -->
-    <UCard v-else-if="!consultationTypes || consultationTypes.length === 0">
-      <div class="text-center py-12">
-        <Icon name="i-hugeicons-file-02" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No consultation types yet</h3>
-        <p class="text-gray-600 mb-6">Create your first consultation type to start accepting bookings</p>
-        <Button @click="handleCreate">Create Consultation Type</Button>
-      </div>
-    </UCard>
+    <EmptyState
+      v-else-if="!consultationTypes?.length"
+      :icon="PhFileText"
+      title="No consultation types yet"
+      description="Create your first consultation type to start accepting bookings"
+    >
+      <template #actions>
+        <Button @click="handleCreate">
+          Create consultation type
+        </Button>
+      </template>
+    </EmptyState>
 
-    <!-- Consultation Types Grid -->
-    <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <UCard
+    <div
+      v-else
+      class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+    >
+      <Card
         v-for="type in consultationTypes"
         :key="type.id"
+        class="rounded-xl"
       >
-        <div class="space-y-4">
-          <!-- Header -->
-          <div class="flex justify-between items-start">
-            <div class="flex-1">
-              <h3 class="font-semibold text-lg text-gray-900">{{ type.name }}</h3>
-              <p v-if="type.description" class="text-sm text-gray-600 mt-1">
+        <CardHeader class="pb-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <CardTitle class="text-lg">
+                {{ type.name }}
+              </CardTitle>
+              <CardDescription
+                v-if="type.description"
+                class="mt-1 line-clamp-2"
+              >
                 {{ type.description }}
-              </p>
+              </CardDescription>
             </div>
-            <UBadge
-              :color="type.isActive ? 'success' : 'neutral'"
-              variant="subtle"
+            <Badge
+              :variant="type.isActive ? 'secondary' : 'outline'"
+              :class="type.isActive ? 'border-transparent bg-muted text-primary' : ''"
             >
               {{ type.isActive ? 'Active' : 'Inactive' }}
-            </UBadge>
+            </Badge>
           </div>
-
-          <!-- Details -->
-          <div class="space-y-2 text-sm">
-            <div class="flex items-center gap-2 text-gray-700">
-              <Icon name="i-hugeicons-clock-01" class="w-4 h-4" />
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="space-y-2 text-sm text-muted-foreground">
+            <div class="flex items-center gap-2">
+              <PhClock class="size-4 shrink-0" />
               <span>{{ type.durationMinutes }} minutes</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-700">
-              <Icon name="i-hugeicons-money-01" class="w-4 h-4" />
-              <span class="font-semibold">{{ formatPrice(type.price, type.currency) }}</span>
+            <div class="flex items-center gap-2">
+              <PhCurrencyEur class="size-4 shrink-0" />
+              <span class="font-semibold text-foreground">{{ formatPrice(type.price, type.currency) }}</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-700">
-              <Icon name="i-hugeicons-video-01" class="w-4 h-4" />
+            <div class="flex items-center gap-2">
+              <PhVideoCamera class="size-4 shrink-0" />
               <span>{{ getMeetingTypeLabel(type.meetingType) }}</span>
             </div>
-            <div v-if="type.bufferMinutes > 0" class="flex items-center gap-2 text-gray-700">
-              <Icon name="i-hugeicons-time-02" class="w-4 h-4" />
+            <div
+              v-if="type.bufferMinutes > 0"
+              class="flex items-center gap-2"
+            >
+              <PhTimer class="size-4 shrink-0" />
               <span>{{ type.bufferMinutes }}min buffer</span>
             </div>
           </div>
 
-          <!-- Actions -->
-          <div class="flex gap-2 pt-4 border-t">
+          <div class="flex flex-wrap gap-2 border-t border-border/60 pt-4">
             <Button
               variant="outline"
               size="sm"
-              icon="i-hugeicons-edit-02"
               @click="handleEdit(type)"
             >
               Edit
@@ -188,7 +108,6 @@ const getMeetingTypeLabel = (type: string) => {
             <Button
               variant="outline"
               size="sm"
-              :icon="type.isActive ? 'i-hugeicons-eye-off' : 'i-hugeicons-eye'"
               @click="handleToggleActive(type)"
             >
               {{ type.isActive ? 'Deactivate' : 'Activate' }}
@@ -196,24 +115,21 @@ const getMeetingTypeLabel = (type: string) => {
             <Button
               variant="outline"
               size="sm"
-              color="error"
-              icon="i-hugeicons-delete-02"
+              class="text-destructive hover:text-destructive"
               @click="handleDelete(type)"
             >
               Delete
             </Button>
           </div>
-        </div>
-      </UCard>
+        </CardContent>
+      </Card>
     </div>
 
-    <!-- Create Modal -->
     <ConsultationTypeModal
       v-model="isCreateModalOpen"
       @success="refetch"
     />
 
-    <!-- Edit Modal -->
     <ConsultationTypeModal
       v-model="isEditModalOpen"
       :consultation-type="selectedType"
@@ -221,3 +137,108 @@ const getMeetingTypeLabel = (type: string) => {
     />
   </div>
 </template>
+
+<script setup lang="ts">
+import { toast } from 'vue-sonner'
+import {
+  PhClock,
+  PhCurrencyEur,
+  PhFileText,
+  PhPlus,
+  PhTimer,
+  PhVideoCamera,
+} from '@phosphor-icons/vue'
+import EmptyState from '@/components/dashboard/EmptyState.vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
+import type { ConsultationType } from '~/types/booking'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth'],
+})
+
+const { useConsultationTypesList, useDeleteConsultationType, useActivateConsultationType, useDeactivateConsultationType } = useConsultationTypes()
+
+const showInactive = ref(false)
+const isCreateModalOpen = ref(false)
+const isEditModalOpen = ref(false)
+const selectedType = ref<ConsultationType | null>(null)
+
+const { data: consultationTypes, isPending, refetch } = useConsultationTypesList(showInactive)
+const deleteMutation = useDeleteConsultationType()
+const activateMutation = useActivateConsultationType()
+const deactivateMutation = useDeactivateConsultationType()
+
+function handleCreate() {
+  isCreateModalOpen.value = true
+}
+
+function handleEdit(type: ConsultationType) {
+  selectedType.value = type
+  isEditModalOpen.value = true
+}
+
+async function handleToggleActive(type: ConsultationType) {
+  try {
+    if (type.isActive) {
+      await deactivateMutation.mutateAsync(type.id)
+      toast.success('Consultation type deactivated')
+    }
+    else {
+      await activateMutation.mutateAsync(type.id)
+      toast.success('Consultation type activated')
+    }
+  }
+  catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to update status'
+    toast.error(message)
+  }
+}
+
+async function handleDelete(type: ConsultationType) {
+  if (!confirm(`Are you sure you want to delete "${type.name}"?`))
+    return
+
+  try {
+    await deleteMutation.mutateAsync(type.id)
+    toast.success('Consultation type deleted')
+  }
+  catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'statusCode' in error && (error as { statusCode: number }).statusCode === 409) {
+      const shouldDeactivate = confirm(
+        'This consultation type has existing bookings and cannot be deleted. Would you like to deactivate it instead?',
+      )
+      if (shouldDeactivate)
+        await handleToggleActive(type)
+    }
+    else {
+      const message = error instanceof Error ? error.message : 'Failed to delete consultation type'
+      toast.error(message)
+    }
+  }
+}
+
+function formatPrice(price: string, currency: string) {
+  const amount = Number.parseFloat(price)
+  if (amount === 0)
+    return 'Free'
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency,
+  }).format(amount)
+}
+
+function getMeetingTypeLabel(type: string) {
+  const labels: Record<string, string> = {
+    video: 'Video call',
+    phone: 'Phone call',
+    in_person: 'In person',
+    any: 'Any type',
+  }
+  return labels[type] || type
+}
+</script>

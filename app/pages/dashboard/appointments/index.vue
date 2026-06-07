@@ -1,36 +1,49 @@
 <template>
   <div class="space-y-6">
-    <UPageHeader 
+    <AppPageHeader
       title="Appointments"
       description="Manage your consultation bookings and appointments."
-      :ui="{
-        root: 'border-none py-0',
-        title: 'font-semibold !text-3xl leading-6 tracking-tight',
-        description: 'font-normal text-base leading-6 text-gray-600 mt-2'
-      }"
     />
-    
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <PhCircleNotch class="w-8 h-8 text-gray-400 animate-spin" />
+
+    <div
+      v-if="isLoading"
+      class="space-y-4"
+    >
+      <Skeleton class="h-40 w-full rounded-xl" />
+      <Skeleton class="h-56 w-full rounded-xl" />
     </div>
-    
-    <div v-else-if="isError" class="py-12 text-red-500 text-center">
-      Error loading appointments. Please try again later.
-    </div>
-    
-    <div v-else class="space-y-6 mt-6">
-      <!-- Pending Confirmations -->
-      <UCard v-if="pendingBookings.length > 0" :ui="{ body: 'p-0' }">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-gray-900 text-lg">Pending Confirmations</h3>
-              <UBadge color="orange" variant="subtle">{{ pendingBookings.length }}</UBadge>
-            </div>
+
+    <Card
+      v-else-if="isError"
+      class="border-dashed"
+    >
+      <CardContent class="py-14 text-center text-sm text-muted-foreground">
+        Error loading appointments. Please try again later.
+      </CardContent>
+    </Card>
+
+    <div
+      v-else
+      class="space-y-6"
+    >
+      <Card
+        v-if="pendingBookings.length > 0"
+        class="overflow-hidden rounded-xl py-0"
+      >
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+          <div class="flex items-center gap-2">
+            <CardTitle class="text-lg">
+              Pending confirmations
+            </CardTitle>
+            <Badge
+              variant="outline"
+              class="border-amber-200 bg-amber-50 text-amber-800"
+            >
+              {{ pendingBookings.length }}
+            </Badge>
           </div>
-        </template>
-        
-        <div class="divide-y divide-gray-200">
+        </CardHeader>
+        <CardContent class="divide-y divide-border/60 p-0">
           <BookingCard
             v-for="booking in pendingBookings"
             :key="booking.id"
@@ -38,126 +51,164 @@
             @confirm="handleConfirm"
             @cancel="handleCancelBooking"
           />
-        </div>
-      </UCard>
+        </CardContent>
+      </Card>
 
-      <!-- Today's Appointments -->
-      <UCard :ui="{ body: 'p-0' }">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-gray-900 text-lg">Today's Appointments</h3>
-              <UBadge v-if="todayBookings.length > 0" color="blue" variant="subtle">{{ todayBookings.length }}</UBadge>
-            </div>
-            <span class="text-gray-500 text-sm">{{ new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) }}</span>
+      <Card class="overflow-hidden rounded-xl py-0">
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+          <div class="flex items-center gap-2">
+            <CardTitle class="text-lg">
+              Today's appointments
+            </CardTitle>
+            <Badge
+              v-if="todayBookings.length > 0"
+              variant="secondary"
+            >
+              {{ todayBookings.length }}
+            </Badge>
           </div>
-        </template>
-        
-        <div v-if="todayBookings.length === 0" class="p-8 text-gray-500 text-center">
-          <PhCalendar class="mx-auto mb-3 w-12 h-12 text-gray-300" />
-          <p>No appointments scheduled for today</p>
-        </div>
-        <div v-else class="divide-y divide-gray-200">
-          <TodayBookingCard
-            v-for="booking in todayBookings"
-            :key="booking.id"
-            :booking="booking"
-            @complete="handleComplete"
-            @no-show="handleNoShow"
-            @cancel="handleCancelBooking"
-          />
-        </div>
-      </UCard>
-
-      <!-- Upcoming Appointments -->
-      <UCard :ui="{ body: 'p-0' }">
-        <template #header>
-          <h3 class="font-semibold text-gray-900 text-lg">Upcoming Appointments</h3>
-        </template>
-        
-        <div v-if="upcomingBookings.length === 0" class="p-8 text-gray-500 text-center">
-          <PhCalendarCheck class="mx-auto mb-3 w-12 h-12 text-gray-300" />
-          <p>No upcoming appointments</p>
-        </div>
-        <div v-else class="divide-y divide-gray-200">
-          <UpcomingBookingCard
-            v-for="booking in upcomingBookings"
-            :key="booking.id"
-            :booking="booking"
-            @cancel="handleCancelBooking"
-          />
-        </div>
-      </UCard>
-
-      <!-- Completed Appointments -->
-      <UCard v-if="completedBookings.length > 0" :ui="{ body: 'p-0' }">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-gray-900 text-lg">Completed Appointments</h3>
-              <UBadge color="gray" variant="subtle">{{ completedBookings.length }}</UBadge>
-            </div>
+          <span class="text-sm text-muted-foreground">
+            {{ todayLabel }}
+          </span>
+        </CardHeader>
+        <CardContent class="p-0">
+          <div
+            v-if="todayBookings.length === 0"
+            class="px-6 py-12 text-center text-muted-foreground"
+          >
+            <PhCalendar class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <p>No appointments scheduled for today</p>
           </div>
-        </template>
-        
-        <div class="divide-y divide-gray-200">
+          <div
+            v-else
+            class="divide-y divide-border/60"
+          >
+            <TodayBookingCard
+              v-for="booking in todayBookings"
+              :key="booking.id"
+              :booking="booking"
+              @complete="handleComplete"
+              @no-show="handleNoShow"
+              @cancel="handleCancelBooking"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card class="overflow-hidden rounded-xl py-0">
+        <CardHeader class="border-b border-border/60 px-5 py-4 sm:px-6">
+          <CardTitle class="text-lg">
+            Upcoming appointments
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="p-0">
+          <div
+            v-if="upcomingBookings.length === 0"
+            class="px-6 py-12 text-center text-muted-foreground"
+          >
+            <PhCalendarCheck class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <p>No upcoming appointments</p>
+          </div>
+          <div
+            v-else
+            class="divide-y divide-border/60"
+          >
+            <UpcomingBookingCard
+              v-for="booking in upcomingBookings"
+              :key="booking.id"
+              :booking="booking"
+              @cancel="handleCancelBooking"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        v-if="completedBookings.length > 0"
+        class="overflow-hidden rounded-xl py-0"
+      >
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+          <div class="flex items-center gap-2">
+            <CardTitle class="text-lg">
+              Completed appointments
+            </CardTitle>
+            <Badge variant="outline">
+              {{ completedBookings.length }}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent class="divide-y divide-border/60 p-0">
           <UpcomingBookingCard
             v-for="booking in completedBookings"
             :key="booking.id"
             :booking="booking"
             @cancel="handleCancelBooking"
           />
-        </div>
-      </UCard>
+        </CardContent>
+      </Card>
     </div>
 
-    <!-- Cancel Modal -->
-    <UModal v-model:open="isCancelModalOpen" title="Cancel Appointment">
-      <template #body>
-        <div class="space-y-6">
-          <p class="text-gray-600 text-sm">
+    <Dialog v-model:open="isCancelModalOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Cancel appointment</DialogTitle>
+          <DialogDescription>
             Are you sure you want to cancel this appointment? The client will be notified.
-          </p>
-          <UFormField label="Cancellation Reason" name="cancelReason" required size="xl">
-            <UTextarea 
-              v-model="cancelReason" 
-              placeholder="Let the client know why you're cancelling..."
-              size="xl"
-              :rows="3"
-              class="w-full"
-            />
-          </UFormField>
+          </DialogDescription>
+        </DialogHeader>
+        <div class="space-y-2">
+          <Label for="cancel-reason">Cancellation reason</Label>
+          <Textarea
+            id="cancel-reason"
+            v-model="cancelReason"
+            placeholder="Let the client know why you're cancelling..."
+            :rows="3"
+          />
         </div>
-      </template>
-      <template #footer>
-        <div class="flex justify-end gap-3">
-          <Button variant="ghost" size="lg" @click="isCancelModalOpen = false">
+        <DialogFooter>
+          <Button
+            variant="ghost"
+            @click="isCancelModalOpen = false"
+          >
             Nevermind
           </Button>
           <ButtonBusy
             variant="destructive"
-            size="lg"
             :loading="isCanceling"
             :disabled="!cancelReason"
             @click="confirmCancel"
           >
-            Cancel Appointment
+            Cancel appointment
           </ButtonBusy>
-        </div>
-      </template>
-    </UModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
-import { PhCalendar, PhCalendarCheck, PhCircleNotch } from '@phosphor-icons/vue'
-import { useBookings } from '~/composables/useBookings'
-import type { Booking } from '~/types'
+import { PhCalendar, PhCalendarCheck } from '@phosphor-icons/vue'
 import BookingCard from '~/components/appointments/BookingCard.vue'
 import TodayBookingCard from '~/components/appointments/TodayBookingCard.vue'
 import UpcomingBookingCard from '~/components/appointments/UpcomingBookingCard.vue'
+import ButtonBusy from '@/components/ButtonBusy.vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
+import { useBookings } from '~/composables/useBookings'
 
 definePageMeta({
   layout: 'dashboard',
@@ -166,156 +217,115 @@ definePageMeta({
 useHead({
   title: 'Appointments - GetaLawyer',
   meta: [
-    { name: 'description', content: 'Manage your consultation appointments' }
-  ]
+    { name: 'description', content: 'Manage your consultation appointments' },
+  ],
 })
 
-const { 
-  useLawyerBookings, 
-  useConfirmBooking, 
-  useCompleteBooking, 
+const {
+  useLawyerBookings,
+  useConfirmBooking,
+  useCompleteBooking,
   useMarkAsNoShow,
-  useCancelLawyerBooking 
+  useCancelLawyerBooking,
 } = useBookings()
 
 const { data: bookings, isLoading, isError } = useLawyerBookings()
 
-// Debug logging
-watch(bookings, (newBookings) => {
-  console.log('📋 Bookings updated:', newBookings)
-  console.log('📋 Bookings length:', newBookings?.length)
-  if (newBookings?.length) {
-    console.log('📋 First booking:', newBookings[0])
-  }
-}, { immediate: true })
+const todayLabel = computed(() =>
+  new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+)
 
-watch(isLoading, (loading) => {
-  console.log('⏳ Loading state:', loading)
-}, { immediate: true })
-
-watch(isError, (error) => {
-  console.log('❌ Error state:', error)
-}, { immediate: true })
-
-// Filter bookings
-const pendingBookings = computed(() => {
-  const pending = bookings.value?.filter(b => b.status === 'pending') || []
-  console.log('⏳ Pending bookings:', pending)
-  return pending
-})
+const pendingBookings = computed(() =>
+  bookings.value?.filter(b => b.status === 'pending') ?? [],
+)
 
 const todayBookings = computed(() => {
   const today = new Date().toISOString().split('T')[0]
-  console.log('📅 Today date:', today)
-  const today_bookings = bookings.value?.filter(b => 
-    b.scheduledDate === today && 
-    (b.status === 'confirmed' || b.status === 'pending')
-  ) || []
-  console.log('📅 Today bookings:', today_bookings)
-  return today_bookings
+  return bookings.value?.filter(b =>
+    b.scheduledDate === today
+    && (b.status === 'confirmed' || b.status === 'pending'),
+  ) ?? []
 })
 
 const upcomingBookings = computed(() => {
   const today = new Date().toISOString().split('T')[0]
-  const upcoming = bookings.value?.filter(b => 
-    b.scheduledDate > today && 
-    (b.status === 'confirmed' || b.status === 'pending')
-  ).sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate)) || []
-  console.log('🚀 Upcoming bookings:', upcoming)
-  return upcoming
+  return bookings.value?.filter(b =>
+    b.scheduledDate > today
+    && (b.status === 'confirmed' || b.status === 'pending'),
+  ).sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate)) ?? []
 })
 
-const completedBookings = computed(() => {
-  const completed = bookings.value?.filter(b => b.status === 'completed').sort((a, b) => 
-    new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime()
-  ) || []
-  console.log('✅ Completed bookings:', completed)
-  return completed
-})
+const completedBookings = computed(() =>
+  bookings.value?.filter(b => b.status === 'completed').sort((a, b) =>
+    new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime(),
+  ) ?? [],
+)
 
-// Mutations
-const { mutate: confirmBooking, isPending: isConfirming } = useConfirmBooking()
-const { mutate: completeBooking, isPending: isCompleting } = useCompleteBooking()
-const { mutate: markAsNoShow, isPending: isMarkingNoShow } = useMarkAsNoShow()
+const { mutate: confirmBooking } = useConfirmBooking()
+const { mutate: completeBooking } = useCompleteBooking()
+const { mutate: markAsNoShow } = useMarkAsNoShow()
 const { mutate: cancelBooking, isPending: isCanceling } = useCancelLawyerBooking()
 
-// Handlers
-const handleConfirm = (bookingId: string) => {
+function handleConfirm(bookingId: string) {
   confirmBooking(bookingId, {
     onSuccess: () => {
-      toast.success('Success', {
-        description: 'Appointment confirmed. Client has been notified.'
-      })
+      toast.success('Appointment confirmed. Client has been notified.')
     },
-    onError: (error: any) => {
-      toast.error('Error', {
-        description: error.message || 'Failed to confirm appointment'
-      })
-    }
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to confirm appointment')
+    },
   })
 }
 
-const handleComplete = (bookingId: string) => {
+function handleComplete(bookingId: string) {
   completeBooking(bookingId, {
     onSuccess: () => {
-      toast.success('Success', {
-        description: 'Appointment marked as completed'
-      })
+      toast.success('Appointment marked as completed')
     },
-    onError: (error: any) => {
-      toast.error('Error', {
-        description: error.message || 'Failed to complete appointment'
-      })
-    }
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to complete appointment')
+    },
   })
 }
 
-const handleNoShow = (bookingId: string) => {
+function handleNoShow(bookingId: string) {
   markAsNoShow(bookingId, {
     onSuccess: () => {
-      toast.success('Success', {
-        description: 'Appointment marked as no-show'
-      })
+      toast.success('Appointment marked as no-show')
     },
-    onError: (error: any) => {
-      toast.error('Error', {
-        description: error.message || 'Failed to mark as no-show'
-      })
-    }
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to mark as no-show')
+    },
   })
 }
 
-// Cancel modal
 const isCancelModalOpen = ref(false)
 const cancelReason = ref('')
 const bookingToCancel = ref<string | null>(null)
 
-const handleCancelBooking = (bookingId: string) => {
+function handleCancelBooking(bookingId: string) {
   bookingToCancel.value = bookingId
   cancelReason.value = ''
   isCancelModalOpen.value = true
 }
 
-const confirmCancel = () => {
-  if (!bookingToCancel.value || !cancelReason.value) return
-  
+function confirmCancel() {
+  if (!bookingToCancel.value || !cancelReason.value)
+    return
+
   cancelBooking(
     { id: bookingToCancel.value, data: { reason: cancelReason.value } },
     {
       onSuccess: () => {
-        toast.success('Success', {
-          description: 'Appointment cancelled. Client has been notified.'
-        })
+        toast.success('Appointment cancelled. Client has been notified.')
         isCancelModalOpen.value = false
         bookingToCancel.value = null
         cancelReason.value = ''
       },
-      onError: (error: any) => {
-        toast.error('Error', {
-          description: error.message || 'Failed to cancel appointment'
-        })
-      }
-    }
+      onError: (error: Error) => {
+        toast.error(error.message || 'Failed to cancel appointment')
+      },
+    },
   )
 }
 </script>

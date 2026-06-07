@@ -16,26 +16,23 @@
     <LawyerProfileEditorShell v-else-if="isLawyer" />
 
     <template v-else-if="isClient">
-      <!-- Sticky actions (Clay / Relevance AI pattern) -->
-      <div class="dashboard-page-header">
-        <div class="min-w-0">
-          <h1 class="app-page-title">
-            Profile
-          </h1>
-          <p class="app-page-description">
-            Your photo, contact details, and how you appear to lawyers.
-            <NuxtLink
-              to="/dashboard/settings"
-              class="font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Account settings
-            </NuxtLink>
-            for preferences, documents, and privacy.
-          </p>
-        </div>
-        <div
+      <AppPageHeader
+        title="Profile"
+        sticky
+      >
+        <template #description>
+          Your photo, contact details, and how you appear to lawyers.
+          <NuxtLink
+            to="/dashboard/settings"
+            class="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Account settings
+          </NuxtLink>
+          for preferences, documents, and privacy.
+        </template>
+        <template
           v-if="!isLoading && !isError"
-          class="flex shrink-0 flex-wrap items-center gap-2"
+          #actions
         >
           <Badge
             v-if="isDirty"
@@ -61,8 +58,8 @@
           >
             Save changes
           </ButtonBusy>
-        </div>
-      </div>
+        </template>
+      </AppPageHeader>
 
       <motion.div
         v-if="isLoading"

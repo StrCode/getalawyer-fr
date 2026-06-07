@@ -4,7 +4,7 @@
       <Button
         v-if="variant === 'sidebar'"
         variant="ghost"
-        class="h-auto w-full justify-start gap-2.5 rounded-md px-2 py-2 hover:bg-accent data-[state=open]:bg-accent"
+        class="h-auto w-full justify-start gap-2.5 rounded-lg px-2 py-2 hover:bg-background/60 data-[state=open]:bg-background"
         :class="{ 'size-10 justify-center px-0': collapsed }"
       >
         <Avatar class="size-8 shrink-0" :class="{ 'size-7': collapsed }">

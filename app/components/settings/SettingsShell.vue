@@ -6,11 +6,11 @@
       aria-label="Account settings"
     >
       <div class="sticky top-20 space-y-6 rounded-xl bg-[#F1F3F5] p-3">
-        <div class="hidden lg:block px-1">
-          <p class="text-xs font-medium uppercase tracking-wider text-[#8E8E93]">
+        <div class="hidden px-1 lg:block">
+          <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
             Settings
           </p>
-          <p class="mt-1 text-sm text-[#3C3C43]">
+          <p class="mt-1 text-sm text-foreground/80">
             Manage your account and legal preferences.
           </p>
         </div>
@@ -21,7 +21,7 @@
             :key="group.key"
             class="space-y-0.5"
           >
-            <p class="mb-1.5 px-2 text-xs font-medium uppercase tracking-wider text-[#8E8E93]">
+            <p class="mb-1.5 px-2 text-xs font-medium tracking-wider text-muted-foreground uppercase">
               {{ group.label }}
             </p>
             <ul class="space-y-0.5">
@@ -33,8 +33,8 @@
                   type="button"
                   class="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors"
                   :class="activeSection === item.id
-                    ? 'bg-white font-medium text-primary shadow-sm ring-1 ring-gray-200/80'
-                    : 'text-[#3C3C43] hover:bg-white/60 hover:text-[#1C1C1E]'"
+                    ? 'bg-background font-medium text-primary shadow-sm ring-1 ring-border/80'
+                    : 'text-foreground/80 hover:bg-background/60 hover:text-foreground'"
                   @click="$emit('update:activeSection', item.id)"
                 >
                   <component

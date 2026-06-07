@@ -116,16 +116,11 @@ async function startPayment() {
 
 <template>
   <div class="mx-auto w-full max-w-3xl space-y-6">
-    <div class="dashboard-page-header">
-      <div class="min-w-0">
-        <h1 class="app-page-title">
-          Subscription
-        </h1>
-        <p class="app-page-description">
-          Your annual GetALawyer membership — verification, directory listing, bookings, and messaging.
-        </p>
-      </div>
-    </div>
+    <AppPageHeader
+      title="Subscription"
+      description="Your annual GetALawyer membership — verification, directory listing, bookings, and messaging."
+      sticky
+    />
 
     <div
       v-if="pageLoading"

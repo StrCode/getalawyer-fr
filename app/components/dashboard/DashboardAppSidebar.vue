@@ -2,10 +2,10 @@
   <Sidebar
     collapsible="icon"
     variant="inset"
-    class="border-0 bg-[#F1F3F5] text-[#1C1C1E] [&_[data-sidebar=sidebar]]:bg-[#F1F3F5]"
+    class="border-0 bg-sidebar text-sidebar-foreground [&_[data-sidebar=sidebar]]:bg-sidebar"
   >
     <SidebarHeader
-      class="!flex !h-14 !flex-row !items-center !gap-0 !p-0 shrink-0 border-b border-gray-200/60 px-2 md:!h-16 group-data-[collapsible=icon]:justify-center"
+      class="!flex !h-14 !flex-row !items-center !gap-0 !p-0 shrink-0 border-b border-border/60 px-2 md:!h-16 group-data-[collapsible=icon]:justify-center"
     >
       <LandingBrandLogo
         to="/dashboard"
@@ -14,19 +14,19 @@
       />
     </SidebarHeader>
 
-    <SidebarContent class="gap-0 px-1 py-2">
+    <SidebarContent class="gap-1 px-2 py-3">
       <DashboardNavMenu
         :label="mainGroupLabel"
         :items="mainLinks"
       />
       <DashboardNavMenu
-        class="mt-1"
+        class="mt-4"
         label="Account"
         :items="supportLinks"
       />
     </SidebarContent>
 
-    <SidebarFooter class="border-t border-gray-200/60">
+    <SidebarFooter class="border-t border-border/60 p-2">
       <UserDropdown
         variant="sidebar"
         :collapsed="isIconCollapsed"

@@ -1,95 +1,122 @@
 <template>
-  <div class="p-6 hover:bg-gray-50 transition-colors">
+  <div class="p-5 transition-colors hover:bg-muted/30 sm:p-6">
     <div class="flex items-start justify-between gap-4">
-      <div class="flex-1 space-y-3">
-        <div class="flex items-center gap-3">
-          <UBadge
-            :color="statusColor"
-            variant="subtle"
-            size="sm"
-            class="capitalize"
+      <div class="min-w-0 flex-1 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <Badge v-bind="bookingStatusBadge(booking.status)">
+            {{ formatStatusLabel(booking.status) }}
+          </Badge>
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ booking.bookingReference }}
+          </span>
+          <span
+            v-if="isUpcoming"
+            class="text-sm font-medium text-primary"
           >
-            {{ booking.status }}
-          </UBadge>
-          <span class="text-sm font-medium text-gray-500">{{ booking.bookingReference }}</span>
-          <span v-if="isUpcoming" class="text-sm text-blue-600 font-medium">
             Starts in {{ getTimeUntil() }}
           </span>
-          <span v-else-if="isPast" class="text-sm text-gray-500">
+          <span
+            v-else-if="isPast"
+            class="text-sm text-muted-foreground"
+          >
             Ended {{ getTimeSince() }} ago
           </span>
         </div>
 
         <div>
-          <h4 class="font-semibold text-gray-900">{{ booking.client?.name || 'Client' }}</h4>
-          <p class="text-sm text-gray-600">{{ booking.consultationType?.name || 'Consultation' }}</p>
+          <h4 class="font-semibold text-foreground">
+            {{ booking.client?.name || 'Client' }}
+          </h4>
+          <p class="text-sm text-muted-foreground">
+            {{ booking.consultationType?.name || 'Consultation' }}
+          </p>
         </div>
 
-        <div class="flex items-center gap-4 text-sm text-gray-600">
+        <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <PhClock class="w-4 h-4" />
+            <PhClock class="size-4" />
             <span class="font-medium">{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <component :is="meetingTypeIcon(booking.meetingType)" class="w-4 h-4" />
-            <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+          <div class="flex items-center gap-1.5 capitalize">
+            <component
+              :is="meetingTypeIcon(booking.meetingType)"
+              class="size-4"
+            />
+            <span>{{ booking.meetingType.replace('_', ' ') }}</span>
           </div>
         </div>
 
-        <div v-if="booking.meetingType === 'video' && booking.meetingUrl" class="flex items-center gap-2">
+        <div
+          v-if="booking.meetingType === 'video' && booking.meetingUrl"
+          class="flex items-center gap-2"
+        >
           <Button
-            :to="booking.meetingUrl"
-            target="_blank"
-            label="Join Meeting"
-            color="primary"
             size="sm"
-            class="bg-[#007AFC]"
+            as-child
           >
-            <template #leading>
-              <PhVideoCamera class="w-4 h-4" />
-            </template>
+            <NuxtLink
+              :to="booking.meetingUrl"
+              target="_blank"
+              class="gap-2"
+            >
+              <PhVideoCamera class="size-4" />
+              Join meeting
+            </NuxtLink>
           </Button>
         </div>
 
-        <div v-if="booking.clientNotes" class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-          <p class="font-medium text-gray-700 mb-1">Client Notes:</p>
+        <div
+          v-if="booking.clientNotes"
+          class="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground"
+        >
+          <p class="mb-1 font-medium text-foreground">
+            Client notes
+          </p>
           <p>{{ booking.clientNotes }}</p>
         </div>
       </div>
 
-      <div v-if="booking.status === 'confirmed' && isPast" class="flex flex-col gap-2">
+      <div
+        v-if="booking.status === 'confirmed' && isPast"
+        class="flex shrink-0 flex-col gap-2"
+      >
         <Button
-          label="Mark Completed"
-          color="primary"
           size="sm"
-          class="bg-green-600 hover:bg-green-700"
           @click="$emit('complete', booking.id)"
-        />
+        >
+          Mark completed
+        </Button>
         <Button
-          label="Mark No-Show"
-          color="neutral"
           variant="ghost"
           size="sm"
           @click="$emit('no-show', booking.id)"
-        />
+        >
+          Mark no-show
+        </Button>
       </div>
 
-      <div v-else-if="booking.status === 'pending'" class="flex flex-col gap-2">
+      <div
+        v-else-if="booking.status === 'pending'"
+        class="flex shrink-0 flex-col gap-2"
+      >
         <Button
-          label="Cancel"
-          color="neutral"
           variant="ghost"
           size="sm"
           @click="$emit('cancel', booking.id)"
-        />
+        >
+          Cancel
+        </Button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { PhClock, PhVideoCamera } from '@phosphor-icons/vue'
 import { computed } from 'vue'
+import { PhClock, PhVideoCamera } from '@phosphor-icons/vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types'
 
 const props = defineProps<{
@@ -102,16 +129,7 @@ defineEmits<{
   cancel: [id: string]
 }>()
 
-const statusColor = computed(() => {
-  switch (props.booking.status) {
-    case 'confirmed': return 'success'
-    case 'pending': return 'warning'
-    case 'completed': return 'success'
-    case 'cancelled': return 'error'
-    case 'no_show': return 'error'
-    default: return 'neutral'
-  }
-})
+const { bookingStatusBadge, formatStatusLabel } = useBookingDisplay()
 
 const isUpcoming = computed(() => {
   const now = new Date()
@@ -125,31 +143,25 @@ const isPast = computed(() => {
   return bookingEndTime < now
 })
 
-const getTimeUntil = () => {
+function getTimeUntil() {
   const now = new Date()
   const bookingTime = new Date(`${props.booking.scheduledDate}T${props.booking.scheduledStartTime}`)
   const diff = bookingTime.getTime() - now.getTime()
-
   const hours = Math.floor(diff / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-  if (hours > 0) {
+  if (hours > 0)
     return `${hours}h ${minutes}m`
-  }
   return `${minutes}m`
 }
 
-const getTimeSince = () => {
+function getTimeSince() {
   const now = new Date()
   const bookingEndTime = new Date(`${props.booking.scheduledDate}T${props.booking.scheduledEndTime}`)
   const diff = now.getTime() - bookingEndTime.getTime()
-
   const hours = Math.floor(diff / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-  if (hours > 0) {
+  if (hours > 0)
     return `${hours}h ${minutes}m`
-  }
   return `${minutes}m`
 }
 </script>

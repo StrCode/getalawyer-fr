@@ -1,69 +1,71 @@
 <template>
   <NuxtLink
     :to="`/dashboard/appointments/${booking.id}`"
-    class="block p-6 hover:bg-gray-50 transition-colors"
+    class="block p-5 transition-colors hover:bg-muted/30 sm:p-6"
   >
     <div class="flex items-start justify-between gap-4">
-      <div class="flex-1 space-y-3">
-        <div class="flex items-center gap-3">
-          <UBadge
-            :color="statusColor"
-            variant="subtle"
-            size="sm"
-            class="capitalize"
-          >
-            {{ booking.status }}
-          </UBadge>
-          <span class="text-sm font-medium text-gray-500">{{ booking.bookingReference }}</span>
+      <div class="min-w-0 flex-1 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <Badge v-bind="bookingStatusBadge(booking.status)">
+            {{ formatStatusLabel(booking.status) }}
+          </Badge>
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ booking.bookingReference }}
+          </span>
         </div>
 
         <div>
-          <h4 class="font-semibold text-gray-900">{{ booking.client?.name || 'Client' }}</h4>
-          <p class="text-sm text-gray-600">{{ booking.consultationType?.name || 'Consultation' }}</p>
+          <h4 class="font-semibold text-foreground">
+            {{ booking.client?.name || 'Client' }}
+          </h4>
+          <p class="text-sm text-muted-foreground">
+            {{ booking.consultationType?.name || 'Consultation' }}
+          </p>
         </div>
 
-        <div class="flex items-center gap-4 text-sm text-gray-600">
+        <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <PhCalendarBlank class="w-4 h-4" />
+            <PhCalendarBlank class="size-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <PhClock class="w-4 h-4" />
+            <PhClock class="size-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <component :is="meetingTypeIcon(booking.meetingType)" class="w-4 h-4" />
-            <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+          <div class="flex items-center gap-1.5 capitalize">
+            <component
+              :is="meetingTypeIcon(booking.meetingType)"
+              class="size-4"
+            />
+            <span>{{ booking.meetingType.replace('_', ' ') }}</span>
           </div>
         </div>
 
-        <div v-if="booking.clientNotes" class="text-sm text-gray-600">
-          <p class="font-medium text-gray-700">Client Notes:</p>
-          <p class="line-clamp-2">{{ booking.clientNotes }}</p>
+        <div
+          v-if="booking.clientNotes"
+          class="text-sm text-muted-foreground"
+        >
+          <p class="font-medium text-foreground">
+            Client notes
+          </p>
+          <p class="line-clamp-2">
+            {{ booking.clientNotes }}
+          </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <Button
-          color="neutral"
-          variant="ghost"
-          size="sm"
-        >
-          <template #leading>
-            <PhArrowRight class="w-4 h-4" />
-          </template>
-        </Button>
-      </div>
+      <PhArrowRight class="size-4 shrink-0 text-muted-foreground" />
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { PhArrowRight, PhCalendarBlank, PhClock } from '@phosphor-icons/vue'
-import { computed } from 'vue'
+import { Badge } from '@/components/ui/badge'
+import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types'
 
-const props = defineProps<{
+defineProps<{
   booking: Booking
 }>()
 
@@ -71,20 +73,14 @@ defineEmits<{
   cancel: [id: string]
 }>()
 
-const statusColor = computed(() => {
-  switch (props.booking.status) {
-    case 'confirmed': return 'success'
-    case 'pending': return 'warning'
-    default: return 'neutral'
-  }
-})
+const { bookingStatusBadge, formatStatusLabel } = useBookingDisplay()
 
-const formatDate = (date: string) => {
+function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-    year: 'numeric'
+    year: 'numeric',
   })
 }
 </script>

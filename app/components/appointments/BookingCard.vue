@@ -1,87 +1,99 @@
 <template>
-  <div class="hover:bg-gray-50 p-6 transition-colors">
-    <div class="flex justify-between items-start gap-4">
-      <div class="flex-1 space-y-3">
-        <div class="flex items-center gap-3">
-          <UBadge color="orange" variant="subtle" size="sm" class="capitalize">
+  <div class="p-5 transition-colors hover:bg-muted/30 sm:p-6">
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0 flex-1 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <Badge
+            variant="outline"
+            class="border-amber-200 bg-amber-50 text-amber-800 capitalize"
+          >
             Pending
-          </UBadge>
-          <span class="font-medium text-gray-500 text-sm">{{ booking.bookingReference }}</span>
+          </Badge>
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ booking.bookingReference }}
+          </span>
         </div>
 
         <div>
-          <h4 class="font-semibold text-gray-900">{{ booking.client?.name || 'Client' }}</h4>
-          <p class="text-gray-600 text-sm">{{ booking.consultationType?.name || 'Consultation' }}</p>
+          <h4 class="font-semibold text-foreground">
+            {{ booking.client?.name || 'Client' }}
+          </h4>
+          <p class="text-sm text-muted-foreground">
+            {{ booking.consultationType?.name || 'Consultation' }}
+          </p>
         </div>
 
-        <div class="flex items-center gap-4 text-gray-600 text-sm">
+        <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <PhCalendarBlank class="w-4 h-4" />
+            <PhCalendarBlank class="size-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <PhClock class="w-4 h-4" />
+            <PhClock class="size-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <component :is="meetingTypeIcon(booking.meetingType)" class="w-4 h-4" />
-            <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+          <div class="flex items-center gap-1.5 capitalize">
+            <component
+              :is="meetingTypeIcon(booking.meetingType)"
+              class="size-4"
+            />
+            <span>{{ booking.meetingType.replace('_', ' ') }}</span>
           </div>
         </div>
 
-        <!-- Engagement & Conversation Indicators -->
-        <div v-if="booking.conversationId || booking.engagementOutcome" class="flex items-center gap-2">
-          <UBadge
+        <div
+          v-if="booking.conversationId || booking.engagementOutcome"
+          class="flex flex-wrap items-center gap-2"
+        >
+          <Badge
             v-if="booking.conversationId"
-            color="blue"
-            variant="subtle"
-            size="sm"
-            class="flex items-center gap-1"
+            variant="secondary"
+            class="gap-1"
           >
-            <PhChatsCircle class="w-3 h-3" />
-            <span>Conversation</span>
-          </UBadge>
-          <UBadge
+            <PhChatsCircle class="size-3" />
+            Conversation
+          </Badge>
+          <Badge
             v-if="booking.engagementOutcome === 'client_hired'"
-            color="green"
-            variant="subtle"
-            size="sm"
-            class="flex items-center gap-1"
+            variant="secondary"
+            class="gap-1 border-transparent bg-muted text-primary"
           >
-            <PhBriefcase class="w-3 h-3" />
-            <span>Case Created</span>
-          </UBadge>
-          <UBadge
+            <PhBriefcase class="size-3" />
+            Case Created
+          </Badge>
+          <Badge
             v-if="booking.engagementOutcome === 'consultation_only'"
-            color="gray"
-            variant="subtle"
-            size="sm"
+            variant="outline"
           >
             Consultation Only
-          </UBadge>
+          </Badge>
         </div>
 
-        <div v-if="booking.clientNotes" class="bg-gray-50 p-3 rounded-lg text-gray-600 text-sm">
-          <p class="mb-1 font-medium text-gray-700">Client Notes:</p>
+        <div
+          v-if="booking.clientNotes"
+          class="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground"
+        >
+          <p class="mb-1 font-medium text-foreground">
+            Client notes
+          </p>
           <p>{{ booking.clientNotes }}</p>
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex shrink-0 flex-col gap-2">
         <Button
-          label="Confirm"
-          color="primary"
           size="sm"
-          class="bg-[#007AFC]"
           @click="$emit('confirm', booking.id)"
-        />
+        >
+          Confirm
+        </Button>
         <Button
-          label="Cancel"
-          color="neutral"
           variant="ghost"
           size="sm"
           @click="$emit('cancel', booking.id)"
-        />
+        >
+          Cancel
+        </Button>
       </div>
     </div>
   </div>
@@ -89,6 +101,9 @@
 
 <script setup lang="ts">
 import { PhBriefcase, PhCalendarBlank, PhChatsCircle, PhClock } from '@phosphor-icons/vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types'
 
 defineProps<{
@@ -100,11 +115,11 @@ defineEmits<{
   cancel: [id: string]
 }>()
 
-const formatDate = (date: string) => {
+function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 </script>

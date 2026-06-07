@@ -12,8 +12,8 @@
           </template>
         </Button>
         <div class="flex-1">
-          <h1 class="app-page-title text-gray-900">Booking Details</h1>
-          <p v-if="booking" class="app-page-description text-gray-600">
+          <h1 class="font-heading text-3xl font-semibold tracking-tight text-foreground">Booking Details</h1>
+          <p v-if="booking" class="mt-1 text-base text-muted-foreground">
             Reference: {{ booking.bookingReference }}
           </p>
         </div>

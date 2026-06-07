@@ -65,23 +65,20 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
 </script>
 
 <template>
-  <div class="space-y-8">
-    <div class="flex flex-wrap justify-between items-start gap-4">
-      <div>
-        <h1 class="app-page-title">
-          Welcome back, {{ firstName }}!
-        </h1>
-        <p class="app-page-description">
-          Here's what's happening with your legal consultations
-        </p>
-      </div>
-      <Button as-child>
-        <NuxtLink to="/find-lawyers" class="gap-2">
-          <PhMagnifyingGlass class="size-4" />
-          Find a Lawyer
-        </NuxtLink>
-      </Button>
-    </div>
+  <div class="space-y-6">
+    <AppPageHeader
+      :title="`Welcome back, ${firstName}!`"
+      description="Here's what's happening with your legal consultations"
+    >
+      <template #actions>
+        <Button as-child>
+          <NuxtLink to="/find-lawyers" class="gap-2">
+            <PhMagnifyingGlass class="size-4" />
+            Find a Lawyer
+          </NuxtLink>
+        </Button>
+      </template>
+    </AppPageHeader>
 
     <template v-if="!isPending">
       <DashboardNextAppointment

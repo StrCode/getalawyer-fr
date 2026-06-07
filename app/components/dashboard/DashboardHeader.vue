@@ -1,6 +1,6 @@
 <template>
   <header
-    class="dashboard-canvas flex h-14 shrink-0 items-center border-b border-gray-200/60 md:h-16"
+    class="flex h-14 shrink-0 items-center border-b border-border/60 bg-[#F1F3F5] md:h-16"
   >
     <div class="flex min-w-0 flex-1 items-center gap-2 px-4 md:gap-3">
       <SidebarTrigger

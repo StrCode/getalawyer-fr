@@ -96,23 +96,20 @@ function handleDecline(bookingId: string) {
 </script>
 
 <template>
-  <div class="space-y-8">
-    <div class="flex flex-wrap justify-between items-start gap-4">
-      <div>
-        <h1 class="app-page-title">
-          Welcome back, {{ firstName }}!
-        </h1>
-        <p class="app-page-description">
-          Manage your consultations and grow your practice
-        </p>
-      </div>
-      <Button as-child variant="outline">
-        <NuxtLink to="/dashboard/profile" class="gap-2">
-          <PhUserCircle class="size-4" />
-          View Profile
-        </NuxtLink>
-      </Button>
-    </div>
+  <div class="space-y-6">
+    <AppPageHeader
+      :title="`Welcome back, ${firstName}!`"
+      description="Manage your consultations and grow your practice"
+    >
+      <template #actions>
+        <Button as-child variant="outline">
+          <NuxtLink to="/dashboard/profile" class="gap-2">
+            <PhUserCircle class="size-4" />
+            View Profile
+          </NuxtLink>
+        </Button>
+      </template>
+    </AppPageHeader>
 
     <DashboardQuickLinks title="Quick actions" :links="quickLinks" />
 

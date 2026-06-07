@@ -17,15 +17,13 @@
     </Card>
 
     <template v-else>
-      <div class="dashboard-page-header">
-        <div class="min-w-0 flex-1">
-          <h1 class="app-page-title">
-            Account settings
-          </h1>
-          <p class="app-page-description">
-            {{ activeNavItem?.description ?? 'Manage your account' }}
-          </p>
-          <p class="mt-2 text-sm text-muted-foreground">
+      <AppPageHeader
+        title="Account settings"
+        :description="activeNavItem?.description ?? 'Manage your account'"
+        sticky
+      >
+        <template #extra>
+          <p class="text-sm text-muted-foreground">
             Personal details and photo are on
             <NuxtLink
               to="/dashboard/profile"
@@ -34,7 +32,6 @@
               Profile
             </NuxtLink>.
           </p>
-          <!-- Mobile section picker -->
           <Select
             class="mt-3 lg:hidden"
             :model-value="activeSection"
@@ -53,10 +50,10 @@
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        <div
+        </template>
+        <template
           v-if="isDirty"
-          class="flex shrink-0 flex-wrap items-center gap-2"
+          #actions
         >
           <Badge
             variant="outline"
@@ -79,8 +76,8 @@
           >
             Save changes
           </ButtonBusy>
-        </div>
-      </div>
+        </template>
+      </AppPageHeader>
 
       <SettingsShell
         :active-section="activeSection"
