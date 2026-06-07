@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import LawyerPublicProfileSections from '@/components/lawyer-profile/LawyerPublicProfileSections.vue'
 import LawyerPublicArticles from '@/components/lawyer-profile/LawyerPublicArticles.vue'
 import type { LawyerProfileResponse, ConsultationType, AvailabilitySchedule } from '~/types/lawyer'
+import { getSessionUserType } from '~/lib/session-user'
 
 definePageMeta({
   layout: 'home',
@@ -10,19 +11,69 @@ definePageMeta({
 })
 
 const route = useRoute()
-const lawyerId = route.params.id as string
+const { session } = useAuth()
 
-const { data: profileData, pending, error } = await useLazyAsyncData<LawyerProfileResponse>(
-  `lawyer-${lawyerId}`,
-  () => httpClient.getAuth<LawyerProfileResponse>(`/api/lawyers/${lawyerId}`),
-  { server: true },
+const lawyerId = computed(() => route.params.id as string)
+const isLawyerSession = computed(
+  () => getSessionUserType(session.value?.user) === 'lawyer',
 )
 
-const lawyer = computed(() => profileData.value?.data)
-const isAuthenticated = computed(() => profileData.value?.authenticated || false)
+const {
+  data: profileData,
+  pending,
+  error,
+  refresh,
+} = await useAsyncData(
+  () => `lawyer-${lawyerId.value}`,
+  () => $fetch<LawyerProfileResponse>(`/api/lawyers/${lawyerId.value}`),
+  { watch: [lawyerId] },
+)
+
+const lawyer = computed(() => profileData.value?.data ?? null)
+const isAuthenticated = computed(() => profileData.value?.authenticated ?? false)
+
+const isOwnProfile = computed(
+  () =>
+    Boolean(
+      lawyer.value?.userId
+      && session.value?.user?.id
+      && lawyer.value.userId === session.value.user.id,
+    ),
+)
 
 const profileSections = computed(() => lawyer.value?.profile)
 const publishedArticles = computed(() => lawyer.value?.articles ?? [])
+
+const loadErrorMessage = computed(() => {
+  if (!error.value) return 'This profile could not be loaded.'
+  const err = error.value as {
+    statusCode?: number
+    message?: string
+    data?: { code?: string; error?: string }
+  }
+  const code = err.data?.code
+  if (err.statusCode === 403 || code === 'LAWYER_DIRECTORY_FORBIDDEN') {
+    return 'You can only browse your own public profile from the dashboard.'
+  }
+  if (err.statusCode === 404) {
+    return 'This profile was not found or is not visible yet.'
+  }
+  return err.data?.error || err.message || 'This profile could not be loaded.'
+})
+
+const errorBackTo = computed(() =>
+  isLawyerSession.value ? '/dashboard/profile' : '/find-lawyers',
+)
+const errorBackLabel = computed(() =>
+  isLawyerSession.value ? 'Back to profile editor' : 'Browse lawyers',
+)
+
+const backLink = computed(() =>
+  isOwnProfile.value ? '/dashboard/profile' : '/find-lawyers',
+)
+const backLinkLabel = computed(() =>
+  isOwnProfile.value ? 'Back to profile editor' : 'Back to directory',
+)
 
 const displayLocation = computed(() => {
   if (!lawyer.value?.practiceInfo) return 'Nigeria'
@@ -111,41 +162,69 @@ const isBookingModalOpen = ref(false)
 
 <template>
   <div class="flex min-h-screen flex-col bg-neutral-100 pb-24 font-sans text-foreground sm:pb-32 lg:pb-40 dark:bg-background">
-    <!-- Loading State -->
-    <div v-if="pending" class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20">
-      <div class="text-center">
-        <PhIcon name="i-heroicons-arrow-path" class="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
-        <p class="text-muted-foreground">Loading lawyer profile…</p>
-      </div>
+    <!-- Loading -->
+    <div
+      v-if="pending"
+      class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
+    >
+      <PhCircleNotch class="mx-auto mb-4 size-8 animate-spin text-primary" />
+      <p class="text-muted-foreground">
+        Loading profile…
+      </p>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error || !lawyer" class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20">
+    <!-- Error -->
+    <div
+      v-else-if="error || !lawyer"
+      class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
+    >
       <div class="mx-auto max-w-md text-center">
-        <PhIcon name="i-heroicons-exclamation-triangle" class="mx-auto mb-4 h-16 w-16 text-destructive" />
-        <h2 class="mb-2 text-2xl font-bold text-foreground">Lawyer Not Found</h2>
-        <p class="mb-6 text-muted-foreground">
-          The lawyer profile you're looking for doesn't exist or has been removed.
+        <PhWarningCircle class="mx-auto mb-4 size-12 text-destructive" />
+        <h2 class="mb-2 text-xl font-bold text-foreground">
+          {{ error?.statusCode === 403 ? 'Profile unavailable' : 'Profile not found' }}
+        </h2>
+        <p class="mb-6 text-sm text-muted-foreground">
+          {{ loadErrorMessage }}
         </p>
-        <Button as-child>
-          <NuxtLink to="/find-lawyers">Browse Lawyers</NuxtLink>
-        </Button>
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            @click="() => refresh()"
+          >
+            Retry
+          </Button>
+          <Button
+            as-child
+            size="sm"
+          >
+            <NuxtLink :to="errorBackTo">
+              {{ errorBackLabel }}
+            </NuxtLink>
+          </Button>
+        </div>
       </div>
     </div>
 
-    <!-- Profile Content -->
+    <!-- Profile (same page clients see; owners get a preview notice only) -->
     <template v-else>
-      <!-- Hero / Header Section (matches directory marketing band) -->
       <header
         class="border-b border-border/80 bg-[radial-gradient(ellipse_120%_80%_at_0%_0%,oklch(0.7_0.12_152/0.15),transparent_55%)] bg-muted/35 pt-6 dark:bg-muted/20 sm:pt-8"
       >
         <div class="relative z-10 mx-auto box-border w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 sm:pb-14">
+          <div
+            v-if="isOwnProfile"
+            class="mb-6 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground"
+          >
+            You’re viewing your public profile — this is exactly what clients see.
+          </div>
+
           <NuxtLink
-            to="/find-lawyers"
+            :to="backLink"
             class="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             <PhIcon name="i-heroicons-arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
-            Back to directory
+            {{ backLinkLabel }}
           </NuxtLink>
 
           <p class="mb-3 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
@@ -243,7 +322,10 @@ const isBookingModalOpen = ref(false)
               </div>
             </div>
 
-            <div class="mt-4 flex w-full shrink-0 flex-col gap-3 md:mt-2 md:w-auto">
+            <div
+              v-if="!isOwnProfile"
+              class="mt-4 flex w-full shrink-0 flex-col gap-3 md:mt-2 md:w-auto"
+            >
               <Button
                 size="lg"
                 class="h-12 w-full gap-2 px-8 font-semibold shadow-sm md:w-auto md:justify-center"
@@ -513,7 +595,10 @@ const isBookingModalOpen = ref(false)
               </div>
 
               <!-- Call to Action -->
-              <div class="pt-2">
+              <div
+                v-if="!isOwnProfile"
+                class="pt-2"
+              >
                 <Button
                   size="lg"
                   class="h-14 w-full bg-foreground text-base font-bold text-background shadow-md transition-all duration-200 hover:bg-foreground/90 hover:shadow-lg"
@@ -532,9 +617,14 @@ const isBookingModalOpen = ref(false)
         </div>
       </div>
 
-      <BookingWizard v-model:open="isBookingModalOpen" :initial-lawyer-id="lawyerId" :lawyer-info="lawyer" />
-    </template>
+      <BookingWizard
+        v-if="!isOwnProfile"
+        v-model:open="isBookingModalOpen"
+        :initial-lawyer-id="lawyerId"
+        :lawyer-info="lawyer"
+      />
 
-    <FooterSection />
+      <FooterSection />
+    </template>
   </div>
 </template>
