@@ -4,6 +4,8 @@ import { queryKeys } from '~/lib/query-client'
 import { useMessagingStore } from '~/stores/messagingStore'
 import type { Message, Notification } from '~/types/messaging'
 
+let socketListenersInitialized = false
+
 export const useMessaging = () => {
   const { $socket } = useNuxtApp()
   const queryClient = useQueryClient()
@@ -11,6 +13,9 @@ export const useMessaging = () => {
 
   // Initialize socket listeners
   const initSocketListeners = () => {
+    if (socketListenersInitialized) return
+    socketListenersInitialized = true
+
     const socket = $socket
 
     // New message received
