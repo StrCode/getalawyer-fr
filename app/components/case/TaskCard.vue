@@ -3,7 +3,7 @@
     <div class="flex justify-between items-start">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3 mb-2">
-          <h4 class="font-medium text-gray-900 truncate">
+          <h4 class="font-medium text-foreground truncate">
             {{ task.title }}
           </h4>
           
@@ -33,11 +33,11 @@
           </UBadge>
         </div>
         
-        <p v-if="task.description" class="mb-3 text-gray-600 text-sm">
+        <p v-if="task.description" class="mb-3 text-muted-foreground text-sm">
           {{ task.description }}
         </p>
         
-        <div class="flex items-center gap-4 text-gray-500 text-sm">
+        <div class="flex items-center gap-4 text-muted-foreground text-sm">
           <div v-if="task.assignee" class="flex items-center gap-1">
             <PhIcon name="i-heroicons-user" class="w-4 h-4" />
             <span>{{ task.assignee.name }}</span>

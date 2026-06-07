@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-start gap-3 hover:bg-gray-50 p-3 rounded-lg transition-colors">
+  <div class="flex items-start gap-3 hover:bg-background p-3 rounded-lg transition-colors">
     <!-- Activity Icon -->
     <div class="flex-shrink-0">
       <div 
@@ -18,11 +18,11 @@
     <div class="flex-1 min-w-0">
       <div class="flex justify-between items-start">
         <div class="flex-1">
-          <h4 class="font-medium text-gray-900">
+          <h4 class="font-medium text-foreground">
             {{ activity.title }}
           </h4>
           
-          <p v-if="activity.description" class="mt-1 text-gray-600 text-sm">
+          <p v-if="activity.description" class="mt-1 text-muted-foreground text-sm">
             {{ activity.description }}
           </p>
           
@@ -31,7 +31,7 @@
             <div
               v-for="(value, key) in activity.metadata"
               :key="key"
-              class="text-gray-500 text-xs"
+              class="text-muted-foreground text-xs"
             >
               <span class="font-medium">{{ formatMetadataKey(key) }}:</span>
               {{ formatMetadataValue(key, value) }}
@@ -41,11 +41,11 @@
         
         <!-- Activity Time and User -->
         <div class="flex-shrink-0 ml-4 text-right">
-          <p class="text-gray-900 text-sm">
+          <p class="text-foreground text-sm">
             {{ formatActivityTime(activity.createdAt) }}
           </p>
           
-          <p class="mt-1 text-gray-500 text-xs">
+          <p class="mt-1 text-muted-foreground text-xs">
             {{ activity.user?.name || 'System' }}
           </p>
           

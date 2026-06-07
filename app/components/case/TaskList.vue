@@ -49,8 +49,8 @@
         </Button>
       </div>
       
-      <div v-else-if="filteredTasks.length === 0" class="py-12 text-gray-500 text-center">
-        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+      <div v-else-if="filteredTasks.length === 0" class="py-12 text-muted-foreground text-center">
+        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p class="mb-2 font-medium text-lg">No tasks found</p>
         <p class="text-sm">
           {{ getEmptyMessage() }}
@@ -62,7 +62,7 @@
         <div v-if="statusFilter === 'all'" class="space-y-6">
           <div v-for="(statusTasks, status) in groupedTasks" :key="status" class="space-y-3">
             <div v-if="statusTasks.length > 0">
-              <h4 class="flex items-center gap-2 mb-3 font-medium text-gray-900">
+              <h4 class="flex items-center gap-2 mb-3 font-medium text-foreground">
                 <component :is="getStatusIcon(status)" class="w-4 h-4" />
                 {{ getStatusLabel(status) }}
                 <UBadge :color="getStatusColor(status)" variant="subtle" size="sm">

@@ -149,7 +149,7 @@ watch(filteredMessages, (newResults) => {
     </div>
 
     <!-- Search Stats -->
-    <div v-if="searchQuery || hasActiveFilters" class="flex justify-between items-center text-gray-600 text-sm">
+    <div v-if="searchQuery || hasActiveFilters" class="flex justify-between items-center text-muted-foreground text-sm">
       <div class="flex items-center space-x-4">
         <span>{{ searchStats.filtered }} of {{ searchStats.total }} messages</span>
         <span v-if="searchStats.withFiles > 0">{{ searchStats.withFiles }} with files</span>
@@ -166,10 +166,10 @@ watch(filteredMessages, (newResults) => {
     </div>
 
     <!-- Advanced Filters -->
-    <div v-if="showAdvancedFilters" class="space-y-4 bg-gray-50 p-4 border rounded-lg">
+    <div v-if="showAdvancedFilters" class="space-y-4 bg-background p-4 border rounded-lg">
       <!-- Quick Date Filters -->
       <div>
-        <label class="block mb-2 font-medium text-gray-700 text-sm">Quick Filters</label>
+        <label class="block mb-2 font-medium text-foreground text-sm">Quick Filters</label>
         <div class="flex flex-wrap gap-2">
           <Button
             variant="outline"
@@ -204,7 +204,7 @@ watch(filteredMessages, (newResults) => {
 
       <!-- Custom Date Range -->
       <div>
-        <label class="block mb-2 font-medium text-gray-700 text-sm">Custom Date Range</label>
+        <label class="block mb-2 font-medium text-foreground text-sm">Custom Date Range</label>
         <div class="gap-2 grid grid-cols-2">
           <UInput
             v-model="dateFilter.start"
@@ -223,7 +223,7 @@ watch(filteredMessages, (newResults) => {
 
       <!-- Sender Filter -->
       <div v-if="messageSenders.length > 1">
-        <label class="block mb-2 font-medium text-gray-700 text-sm">Filter by Sender</label>
+        <label class="block mb-2 font-medium text-foreground text-sm">Filter by Sender</label>
         <div class="flex flex-wrap gap-2">
           <Button
             v-for="sender in messageSenders"
@@ -248,7 +248,7 @@ watch(filteredMessages, (newResults) => {
 
       <!-- Message Type Filter -->
       <div>
-        <label class="block mb-2 font-medium text-gray-700 text-sm">Message Type</label>
+        <label class="block mb-2 font-medium text-foreground text-sm">Message Type</label>
         <div class="flex space-x-2">
           <Button
             variant="outline"
@@ -279,7 +279,7 @@ watch(filteredMessages, (newResults) => {
 
       <!-- Search Options -->
       <div>
-        <label class="block mb-2 font-medium text-gray-700 text-sm">Search Options</label>
+        <label class="block mb-2 font-medium text-foreground text-sm">Search Options</label>
         <div class="space-y-2">
           <UCheckbox
             v-model="searchOptions.caseSensitive"
@@ -306,13 +306,13 @@ watch(filteredMessages, (newResults) => {
         
         <div class="space-y-4">
           <div>
-            <p class="mb-3 text-gray-600 text-sm">
+            <p class="mb-3 text-muted-foreground text-sm">
               Export {{ searchStats.filtered }} filtered messages in your preferred format.
             </p>
             
             <!-- Export Format Selection -->
             <div>
-              <label class="block mb-2 font-medium text-gray-700 text-sm">Export Format</label>
+              <label class="block mb-2 font-medium text-foreground text-sm">Export Format</label>
               <URadioGroup
                 v-model="exportFormat"
                 :options="[
@@ -325,8 +325,8 @@ watch(filteredMessages, (newResults) => {
           </div>
           
           <!-- Export Preview -->
-          <div class="bg-gray-50 p-3 rounded-lg">
-            <div class="text-gray-700 text-sm">
+          <div class="bg-background p-3 rounded-lg">
+            <div class="text-foreground text-sm">
               <p class="mb-2 font-medium">Export will include:</p>
               <ul class="space-y-1 text-xs">
                 <li>• {{ searchStats.filtered }} messages</li>

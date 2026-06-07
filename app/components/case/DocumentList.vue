@@ -3,7 +3,7 @@
     <!-- View Mode Toggle -->
     <div class="flex justify-between items-center">
       <div class="flex items-center gap-2">
-        <span class="font-medium text-gray-700 text-sm">View:</span>
+        <span class="font-medium text-foreground text-sm">View:</span>
         <div role="group" aria-label="View mode" class="inline-flex isolate overflow-hidden rounded-md shadow-sm ring-1 ring-border">
           <Button
             class="rounded-none shadow-none ring-1 ring-transparent first:rounded-l-md last:-ml-px last:rounded-r-md"
@@ -26,7 +26,7 @@
         </div>
       </div>
       
-      <div class="flex items-center gap-2 text-gray-500 text-sm">
+      <div class="flex items-center gap-2 text-muted-foreground text-sm">
         <span>{{ documents.length }} documents</span>
         <span v-if="totalSize > 0">• {{ formatFileSize(totalSize) }} total</span>
       </div>
@@ -34,14 +34,14 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <PhIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin" />
+      <PhIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-muted-foreground animate-spin" />
     </div>
 
     <!-- Empty State -->
     <div v-else-if="documents.length === 0" class="py-12 text-center">
-      <PhIcon name="i-heroicons-document" class="mx-auto mb-4 w-16 h-16 text-gray-300" />
-      <h3 class="mb-2 font-medium text-gray-900 text-lg">No documents found</h3>
-      <p class="text-gray-500">
+      <PhIcon name="i-heroicons-document" class="mx-auto mb-4 w-16 h-16 text-muted-foreground/40" />
+      <h3 class="mb-2 font-medium text-foreground text-lg">No documents found</h3>
+      <p class="text-muted-foreground">
         Upload documents to get started or adjust your search filters.
       </p>
     </div>
@@ -64,8 +64,8 @@
 
     <!-- List View -->
     <div v-else class="space-y-2">
-      <div class="bg-gray-50 px-4 py-2 rounded-lg">
-        <div class="gap-4 grid grid-cols-12 font-medium text-gray-600 text-sm">
+      <div class="bg-background px-4 py-2 rounded-lg">
+        <div class="gap-4 grid grid-cols-12 font-medium text-muted-foreground text-sm">
           <div class="col-span-5">Name</div>
           <div class="col-span-2">Type</div>
           <div class="col-span-2">Size</div>
@@ -77,7 +77,7 @@
       <div
         v-for="document in documents"
         :key="document.id"
-        class="bg-white hover:bg-gray-50 px-4 py-3 border rounded-lg transition-colors cursor-pointer"
+        class="cursor-pointer rounded-lg border border-border bg-card px-4 py-3 transition-colors hover:bg-background"
         @click="$emit('document-click', document)"
       >
         <div class="items-center gap-4 grid grid-cols-12">
@@ -89,10 +89,10 @@
               :class="getFileIconColor(document.fileType)"
             />
             <div class="min-w-0">
-              <p class="font-medium text-gray-900 truncate" :title="document.fileName">
+              <p class="font-medium text-foreground truncate" :title="document.fileName">
                 {{ document.fileName }}
               </p>
-              <p v-if="document.folderPath" class="text-gray-500 text-xs truncate">
+              <p v-if="document.folderPath" class="text-muted-foreground text-xs truncate">
                 {{ document.folderPath }}
               </p>
             </div>
@@ -106,12 +106,12 @@
           </div>
           
           <!-- Size -->
-          <div class="col-span-2 text-gray-600 text-sm">
+          <div class="col-span-2 text-muted-foreground text-sm">
             {{ formatFileSize(document.fileSize) }}
           </div>
           
           <!-- Upload Date -->
-          <div class="col-span-2 text-gray-600 text-sm">
+          <div class="col-span-2 text-muted-foreground text-sm">
             {{ formatDate(document.createdAt) }}
           </div>
           
@@ -134,18 +134,18 @@
     <div v-if="showFolderOrganization && folders.length > 0" class="mt-6">
       <UCard>
         <template #header>
-          <h4 class="font-medium text-gray-900">Organize by Folders</h4>
+          <h4 class="font-medium text-foreground">Organize by Folders</h4>
         </template>
         
         <div class="space-y-3">
           <div
             v-for="folder in folders"
             :key="folder"
-            class="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
+            class="flex justify-between items-center bg-background p-3 rounded-lg"
           >
             <div class="flex items-center gap-2">
               <PhIcon name="i-heroicons-folder" class="w-5 h-5 text-blue-500" />
-              <span class="font-medium text-gray-900">{{ folder }}</span>
+              <span class="font-medium text-foreground">{{ folder }}</span>
               <UBadge variant="subtle" size="sm">
                 {{ getFolderDocumentCount(folder) }} files
               </UBadge>
@@ -224,8 +224,8 @@ const getFileIconColor = (fileType: string) => {
   if (fileType === 'application/pdf') return 'text-red-500'
   if (fileType.includes('word')) return 'text-blue-500'
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'text-green-600'
-  if (fileType.startsWith('text/')) return 'text-gray-500'
-  return 'text-gray-400'
+  if (fileType.startsWith('text/')) return 'text-muted-foreground'
+  return 'text-muted-foreground'
 }
 
 const getFileTypeLabel = (fileType: string) => {

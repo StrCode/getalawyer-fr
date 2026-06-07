@@ -11,7 +11,7 @@
             />
             <div>
               <h3 class="font-semibold text-lg truncate">{{ document.fileName }}</h3>
-              <p class="text-gray-500 text-sm">
+              <p class="text-muted-foreground text-sm">
                 {{ formatFileSize(document.fileSize) }} • 
                 Uploaded {{ formatDate(document.createdAt) }}
                 <span v-if="document.uploader">by {{ document.uploader.name }}</span>
@@ -49,7 +49,7 @@
 
       <div class="space-y-4">
         <!-- Document Preview -->
-        <div class="bg-gray-50 rounded-lg overflow-hidden" style="min-height: 500px;">
+        <div class="bg-background rounded-lg overflow-hidden" style="min-height: 500px;">
           <!-- PDF Preview -->
           <div v-if="isPDF" class="w-full h-full">
             <iframe
@@ -60,8 +60,8 @@
               title="Document Preview"
             />
             <div v-else class="flex flex-col justify-center items-center py-12 h-full">
-              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
-              <p class="mb-4 text-gray-600">PDF preview not available</p>
+              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-muted-foreground" />
+              <p class="mb-4 text-muted-foreground">PDF preview not available</p>
               <Button @click="$emit('download', document.id)">
                 Download to View
               </Button>
@@ -78,8 +78,8 @@
               @error="handleImageError"
             />
             <div v-else class="flex flex-col justify-center items-center py-12">
-              <PhIcon name="i-heroicons-photo" class="mb-4 w-16 h-16 text-gray-400" />
-              <p class="mb-4 text-gray-600">Image preview not available</p>
+              <PhIcon name="i-heroicons-photo" class="mb-4 w-16 h-16 text-muted-foreground" />
+              <p class="mb-4 text-muted-foreground">Image preview not available</p>
               <Button @click="$emit('download', document.id)">
                 Download to View
               </Button>
@@ -88,12 +88,12 @@
 
           <!-- Text File Preview -->
           <div v-else-if="isText" class="p-4">
-            <div v-if="textContent" class="bg-white p-4 border rounded max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap">
+            <div v-if="textContent" class="bg-card p-4 border rounded max-h-96 overflow-y-auto font-mono text-sm whitespace-pre-wrap">
               {{ textContent }}
             </div>
             <div v-else class="flex flex-col justify-center items-center py-12">
-              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-gray-400" />
-              <p class="mb-4 text-gray-600">Text preview not available</p>
+              <PhIcon name="i-heroicons-document-text" class="mb-4 w-16 h-16 text-muted-foreground" />
+              <p class="mb-4 text-muted-foreground">Text preview not available</p>
               <Button @click="loadTextContent">
                 Load Preview
               </Button>
@@ -104,10 +104,10 @@
           <div v-else class="flex flex-col justify-center items-center py-12">
             <PhIcon 
               :name="getFileIcon(document.fileType)" 
-              class="mb-4 w-16 h-16 text-gray-400"
+              class="mb-4 w-16 h-16 text-muted-foreground"
             />
-            <h4 class="mb-2 font-medium text-gray-900">{{ getFileTypeLabel(document.fileType) }} File</h4>
-            <p class="mb-4 text-gray-600 text-center">
+            <h4 class="mb-2 font-medium text-foreground">{{ getFileTypeLabel(document.fileType) }} File</h4>
+            <p class="mb-4 text-muted-foreground text-center">
               Preview not available for this file type.<br>
               Download the file to view its contents.
             </p>
@@ -119,35 +119,35 @@
         </div>
 
         <!-- Document Metadata -->
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h4 class="mb-3 font-medium text-gray-900">Document Information</h4>
+        <div class="bg-background p-4 rounded-lg">
+          <h4 class="mb-3 font-medium text-foreground">Document Information</h4>
           <div class="gap-4 grid grid-cols-1 md:grid-cols-2">
             <div>
-              <dt class="text-gray-500 text-sm">File Name</dt>
-              <dd class="font-medium text-gray-900">{{ document.fileName }}</dd>
+              <dt class="text-muted-foreground text-sm">File Name</dt>
+              <dd class="font-medium text-foreground">{{ document.fileName }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">File Type</dt>
-              <dd class="font-medium text-gray-900">{{ getFileTypeLabel(document.fileType) }}</dd>
+              <dt class="text-muted-foreground text-sm">File Type</dt>
+              <dd class="font-medium text-foreground">{{ getFileTypeLabel(document.fileType) }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">File Size</dt>
-              <dd class="font-medium text-gray-900">{{ formatFileSize(document.fileSize) }}</dd>
+              <dt class="text-muted-foreground text-sm">File Size</dt>
+              <dd class="font-medium text-foreground">{{ formatFileSize(document.fileSize) }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">Upload Date</dt>
-              <dd class="font-medium text-gray-900">{{ formatDate(document.createdAt) }}</dd>
+              <dt class="text-muted-foreground text-sm">Upload Date</dt>
+              <dd class="font-medium text-foreground">{{ formatDate(document.createdAt) }}</dd>
             </div>
             <div v-if="document.uploader">
-              <dt class="text-gray-500 text-sm">Uploaded By</dt>
-              <dd class="font-medium text-gray-900">{{ document.uploader.name }}</dd>
+              <dt class="text-muted-foreground text-sm">Uploaded By</dt>
+              <dd class="font-medium text-foreground">{{ document.uploader.name }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">Downloads</dt>
-              <dd class="font-medium text-gray-900">{{ document.downloadCount }}</dd>
+              <dt class="text-muted-foreground text-sm">Downloads</dt>
+              <dd class="font-medium text-foreground">{{ document.downloadCount }}</dd>
             </div>
             <div>
-              <dt class="text-gray-500 text-sm">Visibility</dt>
+              <dt class="text-muted-foreground text-sm">Visibility</dt>
               <dd>
                 <UBadge
                   :color="document.isClientAccessible ? 'green' : 'orange'"
@@ -162,10 +162,10 @@
 
         <!-- Document Sharing Controls -->
         <div v-if="canManageAccess" class="bg-blue-50 p-4 rounded-lg">
-          <h4 class="mb-3 font-medium text-gray-900">Document Access Control</h4>
+          <h4 class="mb-3 font-medium text-foreground">Document Access Control</h4>
           <div class="flex justify-between items-center">
             <div>
-              <p class="text-gray-700 text-sm">
+              <p class="text-foreground text-sm">
                 {{ document.isClientAccessible 
                   ? 'This document is accessible to the client' 
                   : 'This document is only visible to lawyers' 
@@ -248,8 +248,8 @@ const getFileIconColor = (fileType: string) => {
   if (fileType === 'application/pdf') return 'text-red-500'
   if (fileType.includes('word')) return 'text-blue-500'
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'text-green-600'
-  if (fileType.startsWith('text/')) return 'text-gray-500'
-  return 'text-gray-400'
+  if (fileType.startsWith('text/')) return 'text-muted-foreground'
+  return 'text-muted-foreground'
 }
 
 const getFileTypeLabel = (fileType: string) => {

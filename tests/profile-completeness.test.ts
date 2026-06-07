@@ -23,7 +23,7 @@ describe('computeProfileCompleteness', () => {
       hasAvailability: false,
     })
     expect(result.percent).toBe(0)
-    expect(result.incomplete.length).toBe(10)
+    expect(result.incomplete.length).toBe(11)
   })
 
   it('counts about and practice areas', () => {

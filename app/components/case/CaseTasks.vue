@@ -88,8 +88,8 @@
         <PhCircleNotch class="w-6 h-6 animate-spin" />
       </div>
       
-      <div v-else-if="filteredTasks.length === 0" class="py-8 text-gray-500 text-center">
-        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+      <div v-else-if="filteredTasks.length === 0" class="py-8 text-muted-foreground text-center">
+        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p>No tasks found.</p>
       </div>
       

@@ -12,10 +12,10 @@
         </div>
         
         <div class="flex-1 min-w-0">
-          <h4 class="font-medium text-gray-900 truncate" :title="document.fileName">
+          <h4 class="font-medium text-foreground truncate" :title="document.fileName">
             {{ document.fileName }}
           </h4>
-          <p class="text-gray-500 text-sm">
+          <p class="text-muted-foreground text-sm">
             {{ formatFileSize(document.fileSize) }} • {{ formatDate(document.createdAt) }}
           </p>
         </div>
@@ -23,12 +23,12 @@
       
       <!-- Document Metadata -->
       <div class="space-y-2">
-        <div class="flex items-center gap-2 text-gray-600 text-sm">
+        <div class="flex items-center gap-2 text-muted-foreground text-sm">
           <PhIcon name="i-heroicons-user" class="w-4 h-4" />
           <span>{{ document.uploader?.name || 'Unknown' }}</span>
         </div>
         
-        <div v-if="document.downloadCount > 0" class="flex items-center gap-2 text-gray-600 text-sm">
+        <div v-if="document.downloadCount > 0" class="flex items-center gap-2 text-muted-foreground text-sm">
           <PhIcon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
           <span>{{ document.downloadCount }} downloads</span>
         </div>
@@ -40,14 +40,14 @@
       </div>
       
       <!-- Actions -->
-      <div class="flex justify-between items-center pt-2 border-gray-100 border-t">
+      <div class="flex justify-between items-center pt-2 border-t border-border">
         <Button
           variant="ghost"
           size="sm"
           class="gap-2"
           @click="previewDocument"
         >
-          <PhEye class="size-4 shrink-0 text-neutral-600" aria-hidden="true" />
+          <PhEye class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           Preview
         </Button>
 
@@ -128,8 +128,8 @@ const getFileIconColor = (fileType: string) => {
   if (fileType === 'application/pdf') return 'text-red-500'
   if (fileType.includes('word')) return 'text-blue-500'
   if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'text-green-600'
-  if (fileType.startsWith('text/')) return 'text-gray-500'
-  return 'text-gray-400'
+  if (fileType.startsWith('text/')) return 'text-muted-foreground'
+  return 'text-muted-foreground'
 }
 
 const formatFileSize = (bytes: number) => {

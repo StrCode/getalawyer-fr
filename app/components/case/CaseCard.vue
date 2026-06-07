@@ -8,7 +8,7 @@
       <!-- Case Info -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3 mb-2">
-          <h3 class="font-semibold text-gray-900 text-lg truncate">
+          <h3 class="font-semibold text-foreground text-lg truncate">
             {{ props.case.caseTitle || props.case.title }}
           </h3>
           <UBadge 
@@ -27,11 +27,11 @@
           </UBadge>
         </div>
         
-        <p class="mb-3 text-gray-600 text-sm">
+        <p class="mb-3 text-muted-foreground text-sm">
           Case #{{ props.case.caseNumber }}
         </p>
         
-        <div class="flex items-center gap-4 text-gray-500 text-sm">
+        <div class="flex items-center gap-4 text-muted-foreground text-sm">
           <!-- Client/Lawyer Info -->
           <div v-if="getPersonName()" class="flex items-center gap-1">
             <PhIcon name="i-heroicons-user" class="w-4 h-4" />
@@ -62,10 +62,10 @@
       <div class="flex flex-col items-end gap-2 ml-4">
         <!-- Task Progress -->
         <div v-if="props.case.tasks && props.case.tasks.length > 0" class="text-right">
-          <div class="text-gray-600 text-sm">
+          <div class="text-muted-foreground text-sm">
             {{ completedTaskCount }}/{{ props.case.tasks.length }} tasks
           </div>
-          <div class="bg-gray-200 mt-1 rounded-full w-20 h-2">
+          <div class="bg-muted mt-1 rounded-full w-20 h-2">
             <div 
               class="bg-green-500 rounded-full h-2 transition-all duration-300"
               :style="{ width: `${completedTaskCount / props.case.tasks.length * 100}%` }"
@@ -82,14 +82,14 @@
         </div>
         
         <!-- Total Billed (for lawyers) -->
-        <div v-if="role === 'lawyer' && (props.case.amountBilled || props.case.totalBilled) > 0" class="text-gray-600 text-sm">
+        <div v-if="role === 'lawyer' && (props.case.amountBilled || props.case.totalBilled) > 0" class="text-muted-foreground text-sm">
           ${{ formatCurrency(props.case.amountBilled || props.case.totalBilled || 0) }}
         </div>
       </div>
     </div>
     
     <!-- Case Description -->
-    <p v-if="props.case.description" class="mt-3 text-gray-600 text-sm line-clamp-2">
+    <p v-if="props.case.description" class="mt-3 text-muted-foreground text-sm line-clamp-2">
       {{ props.case.description }}
     </p>
   </UCard>

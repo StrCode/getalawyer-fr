@@ -11,8 +11,8 @@
       </Button>
     </div>
 
-    <div v-else-if="cases.length === 0" class="py-12 text-gray-500 text-center">
-      <PhBriefcase class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+    <div v-else-if="cases.length === 0" class="py-12 text-muted-foreground text-center">
+      <PhBriefcase class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
       <p class="mb-2 font-medium text-lg">No cases found</p>
       <p class="text-sm">
         {{ emptyMessage }}

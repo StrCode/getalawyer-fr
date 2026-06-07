@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col bg-white shadow-sm border rounded-lg h-full">
+  <div class="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card">
     <!-- Header -->
-    <div class="flex justify-between items-center bg-gray-50 p-4 border-b rounded-t-lg">
+    <div class="flex items-center justify-between border-b border-border bg-background p-4">
       <div class="flex items-center space-x-3">
-        <PhChatsCircle class="w-5 h-5 text-gray-600" />
-        <h3 class="font-semibold text-gray-900">Case Messages</h3>
+        <PhChatsCircle class="w-5 h-5 text-muted-foreground" />
+        <h3 class="font-semibold text-foreground">Case Messages</h3>
         <UBadge v-if="messages?.length" variant="soft" color="blue">
           {{ messages.length }} messages
         </UBadge>
@@ -15,7 +15,7 @@
     <div class="flex-1 space-y-4 p-4 overflow-y-auto" style="max-height: 400px;">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-8">
-        <PhCircleNotch class="w-6 h-6 text-gray-400 animate-spin" />
+        <PhCircleNotch class="w-6 h-6 text-muted-foreground animate-spin" />
       </div>
 
       <!-- Error State -->
@@ -26,8 +26,8 @@
 
       <!-- Empty State -->
       <div v-else-if="!messages?.length" class="py-8 text-center">
-        <PhChatCircleDots class="mx-auto mb-3 w-12 h-12 text-gray-300" />
-        <p class="text-gray-500 text-sm">No messages yet. Start the conversation!</p>
+        <PhChatCircleDots class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
+        <p class="text-muted-foreground text-sm">No messages yet. Start the conversation!</p>
       </div>
 
       <!-- Messages List -->
@@ -44,8 +44,8 @@
             :class="[
               'max-w-xs lg:max-w-md px-4 py-2 rounded-lg',
               isMessageFromCurrentUser(message)
-                ? 'bg-primary-500 text-white'
-                : 'bg-gray-100 text-gray-900'
+                ? 'bg-primary text-primary-foreground'
+                : 'border border-border bg-background text-foreground'
             ]"
           >
             <!-- Sender name (for received messages) -->
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Message Input -->
-    <div v-if="!readonly" class="p-4 border-t">
+    <div v-if="!readonly" class="border-t border-border p-4">
       <div class="flex items-end space-x-3">
         <div class="flex-1">
           <UTextarea
@@ -98,8 +98,8 @@
     </div>
 
     <!-- Read-only indicator -->
-    <div v-else class="bg-gray-50 p-3 border-t text-center">
-      <p class="text-gray-600 text-sm">This conversation is read-only</p>
+    <div v-else class="border-t border-border bg-background p-3 text-center">
+      <p class="text-muted-foreground text-sm">This conversation is read-only</p>
     </div>
   </div>
 </template>

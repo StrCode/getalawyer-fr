@@ -35,29 +35,29 @@
     <div class="gap-4 grid grid-cols-2 md:grid-cols-4">
       <UCard>
         <div class="text-center">
-          <p class="font-semibold text-gray-900 text-2xl">{{ activityStats.total }}</p>
-          <p class="text-gray-600 text-sm">Total Activities</p>
+          <p class="font-semibold text-foreground text-2xl">{{ activityStats.total }}</p>
+          <p class="text-muted-foreground text-sm">Total Activities</p>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <p class="font-semibold text-blue-600 text-2xl">{{ activityStats.recent }}</p>
-          <p class="text-gray-600 text-sm">Recent (24h)</p>
+          <p class="text-muted-foreground text-sm">Recent (24h)</p>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <p class="font-semibold text-green-600 text-2xl">{{ activityStats.byType.message_sent || 0 }}</p>
-          <p class="text-gray-600 text-sm">Messages</p>
+          <p class="text-muted-foreground text-sm">Messages</p>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <p class="font-semibold text-orange-600 text-2xl">{{ activityStats.byType.document_uploaded || 0 }}</p>
-          <p class="text-gray-600 text-sm">Documents</p>
+          <p class="text-muted-foreground text-sm">Documents</p>
         </div>
       </UCard>
     </div>
@@ -72,8 +72,8 @@
         <PhCircleNotch class="w-6 h-6 animate-spin" />
       </div>
       
-      <div v-else-if="filteredActivities.length === 0" class="py-8 text-gray-500 text-center">
-        <PhClock class="mx-auto mb-4 w-12 h-12 text-gray-300" />
+      <div v-else-if="filteredActivities.length === 0" class="py-8 text-muted-foreground text-center">
+        <PhClock class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p>No activities found.</p>
       </div>
       
@@ -84,11 +84,11 @@
           :key="date"
           class="space-y-3"
         >
-          <h4 class="top-0 sticky bg-white py-2 font-medium text-gray-900">
+          <h4 class="top-0 sticky bg-card py-2 font-medium text-foreground">
             {{ formatDateHeader(date) }}
           </h4>
           
-          <div class="space-y-3 pl-4 border-gray-200 border-l-2">
+          <div class="space-y-3 border-l-2 border-border pl-4">
             <ActivityCard
               v-for="activity in dayActivities"
               :key="activity.id"

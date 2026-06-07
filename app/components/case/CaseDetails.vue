@@ -16,7 +16,7 @@
           <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
         </div>
         
-        <div class="flex items-center gap-4 text-gray-600 text-sm">
+        <div class="flex items-center gap-4 text-muted-foreground text-sm">
           <span>Case #{{ props.case.caseNumber }}</span>
           <span>•</span>
           <span>Created {{ formatDate(props.case.createdAt) }}</span>
@@ -60,23 +60,23 @@
         
         <div class="space-y-4">
           <div>
-            <label class="font-medium text-gray-700 text-sm">Client</label>
-            <p class="text-gray-900 text-sm">{{ props.case.client?.name || 'N/A' }}</p>
+            <label class="font-medium text-foreground text-sm">Client</label>
+            <p class="text-foreground text-sm">{{ props.case.client?.name || 'N/A' }}</p>
           </div>
           
           <div>
-            <label class="font-medium text-gray-700 text-sm">Lawyer</label>
-            <p class="text-gray-900 text-sm">{{ props.case.lawyer?.name || 'N/A' }}</p>
+            <label class="font-medium text-foreground text-sm">Lawyer</label>
+            <p class="text-foreground text-sm">{{ props.case.lawyer?.name || 'N/A' }}</p>
           </div>
           
           <div v-if="props.case.dueDate">
-            <label class="font-medium text-gray-700 text-sm">Due Date</label>
-            <p class="text-gray-900 text-sm">{{ formatDate(props.case.dueDate) }}</p>
+            <label class="font-medium text-foreground text-sm">Due Date</label>
+            <p class="text-foreground text-sm">{{ formatDate(props.case.dueDate) }}</p>
           </div>
           
           <div v-if="role === 'lawyer' && props.case.hourlyRate">
-            <label class="font-medium text-gray-700 text-sm">Hourly Rate</label>
-            <p class="text-gray-900 text-sm">${{ props.case.hourlyRate }}/hour</p>
+            <label class="font-medium text-foreground text-sm">Hourly Rate</label>
+            <p class="text-foreground text-sm">${{ props.case.hourlyRate }}/hour</p>
           </div>
         </div>
       </UCard>
@@ -100,16 +100,16 @@
         
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-gray-600 text-sm">Total Tasks</span>
+            <span class="text-muted-foreground text-sm">Total Tasks</span>
             <span class="font-medium">{{ props.case.totalTaskCount || 0 }}</span>
           </div>
           
           <div class="flex justify-between items-center">
-            <span class="text-gray-600 text-sm">Completed</span>
+            <span class="text-muted-foreground text-sm">Completed</span>
             <span class="font-medium text-green-600">{{ props.case.completedTaskCount || 0 }}</span>
           </div>
           
-          <div class="bg-gray-200 rounded-full w-full h-2">
+          <div class="bg-muted rounded-full w-full h-2">
             <div 
               class="bg-green-500 rounded-full h-2 transition-all duration-300"
               :style="{ width: `${taskCompletionRate}%` }"
@@ -126,12 +126,12 @@
         
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-gray-600 text-sm">Total Files</span>
+            <span class="text-muted-foreground text-sm">Total Files</span>
             <span class="font-medium">{{ documentCount }}</span>
           </div>
           
           <div class="flex justify-between items-center">
-            <span class="text-gray-600 text-sm">Storage Used</span>
+            <span class="text-muted-foreground text-sm">Storage Used</span>
             <span class="font-medium">{{ formatFileSize(totalSize) }}</span>
           </div>
         </div>
@@ -156,7 +156,7 @@
         </div>
       </template>
       
-      <p class="text-gray-700">{{ props.case.description }}</p>
+      <p class="text-foreground">{{ props.case.description }}</p>
     </UCard>
 
     <!-- Status Update Modal (Lawyers only) -->

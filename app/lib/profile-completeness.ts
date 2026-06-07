@@ -9,6 +9,7 @@ export type ProfileCompletenessCheckId =
   | 'experience'
   | 'education'
   | 'skills'
+  | 'articles'
   | 'consultationType'
   | 'availability'
 
@@ -95,6 +96,13 @@ const CHECK_DEFS: Array<
     label: 'Skills',
     weight: 10,
     isComplete: ({ profile }) => (profile?.skills?.length ?? 0) >= 1,
+  },
+  {
+    id: 'articles',
+    label: 'Published article',
+    weight: 5,
+    isComplete: ({ profile }) =>
+      (profile?.articles?.some((a) => a.status === 'published') ?? false),
   },
   {
     id: 'consultationType',

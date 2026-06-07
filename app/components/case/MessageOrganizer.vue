@@ -192,11 +192,11 @@ watch(organizedMessages, (newGroups) => {
 <template>
   <div class="space-y-4">
     <!-- Organization Controls -->
-    <div class="flex justify-between items-center bg-gray-50 p-3 border rounded-lg">
+    <div class="flex justify-between items-center bg-background p-3 border rounded-lg">
       <div class="flex items-center space-x-4">
         <!-- Group By -->
         <div class="flex items-center space-x-2">
-          <label class="font-medium text-gray-700 text-sm">Group by:</label>
+          <label class="font-medium text-foreground text-sm">Group by:</label>
  by:</label>
           <USelect
             v-model="selectedSortBy"
@@ -237,7 +237,7 @@ watch(organizedMessages, (newGroups) => {
     </div>
 
     <!-- Organization Stats -->
-    <div class="flex justify-between items-center text-gray-600 text-sm">
+    <div class="flex justify-between items-center text-muted-foreground text-sm">
       <div class="flex items-center space-x-4">
         <span>{{ totalMessages }} messages</span>
         <span v-if="selectedGroupBy !== 'none'">{{ totalGroups }} groups</span>
@@ -254,15 +254,15 @@ watch(organizedMessages, (newGroups) => {
         <!-- Group Header -->
         <div
           v-if="selectedGroupBy !== 'none'"
-          class="flex justify-between items-center bg-gray-50 hover:bg-gray-100 p-3 border-b cursor-pointer"
+          class="flex justify-between items-center bg-background hover:bg-background p-3 border-b cursor-pointer"
           @click="toggleGroup(group.key)"
         >
           <div class="flex items-center space-x-3">
             <PhIcon
               :name="expandedGroups.has(group.key) ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
-              class="w-4 h-4 text-gray-500"
+              class="w-4 h-4 text-muted-foreground"
             />
-            <h4 class="font-medium text-gray-900">{{ group.label }}</h4>
+            <h4 class="font-medium text-foreground">{{ group.label }}</h4>
             <UBadge variant="soft" color="gray">
               {{ group.count }} messages
             </UBadge>
@@ -287,7 +287,7 @@ watch(organizedMessages, (newGroups) => {
           <div
             v-for="message in group.messages"
             :key="message.id"
-            class="hover:bg-gray-50 p-4"
+            class="hover:bg-background p-4"
           >
             <div class="flex items-start space-x-3">
               <!-- Sender Avatar -->
@@ -300,9 +300,9 @@ watch(organizedMessages, (newGroups) => {
                 />
                 <div
                   v-else
-                  class="flex justify-center items-center bg-gray-300 rounded-full w-8 h-8"
+                  class="flex justify-center items-center bg-muted rounded-full w-8 h-8"
                 >
-                  <PhIcon name="i-heroicons-user" class="w-4 h-4 text-gray-600" />
+                  <PhIcon name="i-heroicons-user" class="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
 
@@ -311,10 +311,10 @@ watch(organizedMessages, (newGroups) => {
                 <!-- Message Header -->
                 <div class="flex justify-between items-center mb-1">
                   <div class="flex items-center space-x-2">
-                    <span class="font-medium text-gray-900 text-sm">
+                    <span class="font-medium text-foreground text-sm">
                       {{ message.sender?.name || 'Unknown' }}
                     </span>
-                    <span class="text-gray-500 text-xs">
+                    <span class="text-muted-foreground text-xs">
                       {{ new Date(message.createdAt).toLocaleString() }}
                     </span>
                   </div>
@@ -331,20 +331,20 @@ watch(organizedMessages, (newGroups) => {
                     <PhIcon
                       v-if="message.fileName"
                       name="i-heroicons-paper-clip"
-                      class="w-3 h-3 text-gray-400"
+                      class="w-3 h-3 text-muted-foreground"
                     />
                   </div>
                 </div>
 
                 <!-- Message Text -->
-                <p class="text-gray-700 text-sm break-words">
+                <p class="text-foreground text-sm break-words">
                   {{ message.content }}
                 </p>
 
                 <!-- File Attachment -->
-                <div v-if="message.fileName" class="bg-gray-100 mt-2 p-2 rounded text-xs">
+                <div v-if="message.fileName" class="border border-border bg-background mt-2 p-2 rounded text-xs">
                   <div class="flex items-center space-x-2">
-                    <PhIcon name="i-heroicons-paper-clip" class="w-3 h-3 text-gray-500" />
+                    <PhIcon name="i-heroicons-paper-clip" class="w-3 h-3 text-muted-foreground" />
                     <span class="truncate">{{ message.fileName }}</span>
                     <Button
                       v-if="message.fileUrl"
@@ -363,9 +363,9 @@ watch(organizedMessages, (newGroups) => {
         <!-- Empty Group -->
         <div
           v-if="selectedGroupBy !== 'none' && expandedGroups.has(group.key) && group.messages.length === 0"
-          class="p-8 text-gray-500 text-center"
+          class="p-8 text-muted-foreground text-center"
         >
-          <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-2 w-8 h-8 text-gray-300" />
+          <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-2 w-8 h-8 text-muted-foreground/40" />
           <p class="text-sm">No messages in this group</p>
         </div>
       </div>
@@ -373,9 +373,9 @@ watch(organizedMessages, (newGroups) => {
 
     <!-- Empty State -->
     <div v-if="organizedMessages.length === 0" class="py-12 text-center">
-      <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-4 w-12 h-12 text-gray-300" />
-      <h3 class="mb-2 font-medium text-gray-900 text-lg">No messages to organize</h3>
-      <p class="text-gray-500">Messages will appear here once they are available.</p>
+      <PhIcon name="i-heroicons-chat-bubble-left-ellipsis" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+      <h3 class="mb-2 font-medium text-foreground text-lg">No messages to organize</h3>
+      <p class="text-muted-foreground">Messages will appear here once they are available.</p>
     </div>
   </div>
 </template>

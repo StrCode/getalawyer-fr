@@ -30,6 +30,7 @@ Lawyers who are not yet **approved** can open `/dashboard/profile` but writes re
 │  § Education                 [+ Add]  list + edit/delete    │
 │  § Licenses & certifications [+ Add]  list + edit/delete    │
 │  § Skills                    [+ Add]  chips + delete        │
+│  § Articles                  [+ Add]  draft/publish + delete │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -42,7 +43,7 @@ Lawyers who are not yet **approved** can open `/dashboard/profile` but writes re
 | Account email/password | `/dashboard/settings` |
 | Consultation types | `/dashboard/consultation-types` |
 | Availability | `/dashboard/availability` |
-| Avatar | Settings or profile header (TBD — may reuse client upload pattern for lawyers) |
+| Avatar | Profile photo section — `POST /api/lawyer/profile/avatar` (Cloudinary) |
 
 ---
 
@@ -60,8 +61,10 @@ Lawyers who are not yet **approved** can open `/dashboard/profile` but writes re
 | Education | `POST/PATCH/DELETE` | `/api/lawyer/profile/education` … | same pattern |
 | License | `POST/PATCH/DELETE` | `/api/lawyer/profile/licenses` … | `{ name, issuingOrganization, …, credentialUrl? }` |
 | Skill | `POST/PATCH/DELETE` | `/api/lawyer/profile/skills` … | `{ name }` |
+| Article | `POST/PATCH/DELETE` | `/api/lawyer/profile/articles` … | `{ title, summary?, body, status: draft \| published }` |
+| Avatar | `POST` | `/api/lawyer/profile/avatar` | `multipart/form-data` field `image` |
 
-Public read (clients): `GET /api/lawyers/:id` → `data.profile` (education may include `source: "onboarding"` fallback rows).
+Public read (clients): `GET /api/lawyers/:id` → `data.profile` + `data.articles` (published only).
 
 ---
 
@@ -85,10 +88,11 @@ Computed client-side in `app/lib/profile-completeness.ts` from:
 | `experience` | 10 | `experiences.length ≥ 1` |
 | `education` | 10 | `education.length ≥ 1` (DB rows only in editor) |
 | `skills` | 10 | `skills.length ≥ 1` |
+| `articles` | 5 | ≥ 1 article with `status === 'published'` |
 | `consultationType` | 15 | ≥ 1 active consultation type |
 | `availability` | 10 | ≥ 1 schedule row with `isAvailable: true` |
 
-**Score:** sum of weights for completed checks / 100 → integer percent.
+**Score:** sum of weights for completed checks / 115 → integer percent.
 
 Each item exposes `{ id, label, complete, weight, href? }` for checklist UI and deep links (`/dashboard/consultation-types`, etc.).
 
@@ -106,6 +110,7 @@ Experience: profile.experiences[]
 Education: profile.education[] (show subtle note if source === 'onboarding')
 Licenses: profile.licenses[] + isVerified badge when true
 Skills: profile.skills[] as chips
+Articles: data.articles[] (published only; title, summary, body, publishedAt)
 Sidebar: consultation types, availability, Book CTA
 ```
 
@@ -113,12 +118,13 @@ Sidebar: consultation types, availability, Book CTA
 
 ## Implementation order
 
-1. ✅ Types + API client + composable + completeness util (this PR)
+1. ✅ Types + API client + composable + completeness util
 2. ✅ Completeness card + editor shell + About section
-3. Office + practice areas forms
-4. List section modals (experience, education, license, skill)
-5. Public profile section components on `/lawyers/[id]`
-6. Articles module (Phase 2 #5)
+3. ✅ Office + practice areas forms
+4. ✅ List section modals (experience, education, license, skill)
+5. ✅ Public profile section components on `/lawyers/[id]`
+6. ✅ Articles module + public articles display
+7. ✅ Avatar upload (`POST /api/lawyer/profile/avatar`)
 
 ---
 
@@ -133,3 +139,6 @@ Sidebar: consultation types, availability, Book CTA
 | `app/components/profile/ProfileCompletenessCard.vue` | Progress + checklist |
 | `app/components/profile/LawyerProfileEditorShell.vue` | Dashboard lawyer profile page body |
 | `app/components/profile/sections/ProfileAboutSection.vue` | About/headline form |
+| `app/components/profile/sections/ProfileArticlesSection.vue` | Articles CRUD + publish |
+| `app/components/profile/sections/ProfilePhotoSection.vue` | Avatar upload |
+| `app/components/lawyer-profile/LawyerPublicArticles.vue` | Public profile articles list |

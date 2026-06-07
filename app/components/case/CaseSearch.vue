@@ -47,7 +47,7 @@
       <div class="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <!-- Status Filter -->
         <div>
-          <label class="block mb-2 font-medium text-gray-700 text-sm">Status</label>
+          <label class="block mb-2 font-medium text-foreground text-sm">Status</label>
           <USelectMenu
             v-model="filters.status"
             :options="statusOptions"
@@ -60,7 +60,7 @@
         
         <!-- Priority Filter -->
         <div>
-          <label class="block mb-2 font-medium text-gray-700 text-sm">Priority</label>
+          <label class="block mb-2 font-medium text-foreground text-sm">Priority</label>
           <USelectMenu
             v-model="filters.priority"
             :options="priorityOptions"
@@ -73,7 +73,7 @@
         
         <!-- Date Range -->
         <div>
-          <label class="block mb-2 font-medium text-gray-700 text-sm">Created Date Range</label>
+          <label class="block mb-2 font-medium text-foreground text-sm">Created Date Range</label>
           <div class="flex gap-2">
             <UInput
               v-model="filters.dateFrom"
@@ -138,7 +138,7 @@
     </UCard>
 
     <!-- Search Results Summary -->
-    <div v-if="hasSearched" class="flex justify-between items-center text-gray-600 text-sm">
+    <div v-if="hasSearched" class="flex justify-between items-center text-muted-foreground text-sm">
       <span>
         Found {{ resultCount }} {{ resultCount === 1 ? 'case' : 'cases' }}
         <span v-if="searchQuery"> matching "{{ searchQuery }}"</span>

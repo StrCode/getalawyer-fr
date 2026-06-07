@@ -90,28 +90,28 @@
       <UCard>
         <div class="text-center">
           <div class="font-bold text-blue-600 text-2xl">{{ taskStats.total }}</div>
-          <div class="text-gray-600 text-sm">Total Tasks</div>
+          <div class="text-muted-foreground text-sm">Total Tasks</div>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <div class="font-bold text-green-600 text-2xl">{{ taskStats.completed }}</div>
-          <div class="text-gray-600 text-sm">Completed</div>
+          <div class="text-muted-foreground text-sm">Completed</div>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <div class="font-bold text-orange-600 text-2xl">{{ taskStats.inProgress }}</div>
-          <div class="text-gray-600 text-sm">In Progress</div>
+          <div class="text-muted-foreground text-sm">In Progress</div>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
           <div class="font-bold text-red-600 text-2xl">{{ taskStats.overdue }}</div>
-          <div class="text-gray-600 text-sm">Overdue</div>
+          <div class="text-muted-foreground text-sm">Overdue</div>
         </div>
       </UCard>
     </div>

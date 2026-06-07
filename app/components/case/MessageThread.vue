@@ -139,7 +139,7 @@ const toggleSenderFilter = (senderId: string) => {
 <template>
   <div class="flex flex-col h-full">
     <!-- Search and Filters -->
-    <div v-if="searchable" class="space-y-3 bg-gray-50 p-4 border-b">
+    <div v-if="searchable" class="space-y-3 bg-background p-4 border-b">
       <!-- Search Input -->
       <div class="flex items-center space-x-2">
         <UInput
@@ -174,10 +174,10 @@ const toggleSenderFilter = (senderId: string) => {
       </div>
 
       <!-- Advanced Filters -->
-      <div v-if="showAdvancedFilters" class="space-y-3 bg-white p-3 border rounded-lg">
+      <div v-if="showAdvancedFilters" class="space-y-3 bg-card p-3 border rounded-lg">
         <!-- Date Range Filter -->
         <div>
-          <label class="block mb-1 font-medium text-gray-700 text-sm">Date Range</label>
+          <label class="block mb-1 font-medium text-foreground text-sm">Date Range</label>
           <div class="flex items-center space-x-2">
             <UInput
               v-model="dateFilter.start"
@@ -185,7 +185,7 @@ const toggleSenderFilter = (senderId: string) => {
               placeholder="Start date"
               size="sm"
             />
-            <span class="text-gray-400">to</span>
+            <span class="text-muted-foreground">to</span>
             <UInput
               v-model="dateFilter.end"
               type="date"
@@ -197,7 +197,7 @@ const toggleSenderFilter = (senderId: string) => {
 
         <!-- Sender Filter -->
         <div v-if="messageSenders.length > 1">
-          <label class="block mb-1 font-medium text-gray-700 text-sm">Senders</label>
+          <label class="block mb-1 font-medium text-foreground text-sm">Senders</label>
           <div class="flex flex-wrap gap-2">
             <Button
               v-for="sender in messageSenders"
@@ -214,7 +214,7 @@ const toggleSenderFilter = (senderId: string) => {
 
         <!-- File Filter -->
         <div>
-          <label class="block mb-1 font-medium text-gray-700 text-sm">Message Type</label>
+          <label class="block mb-1 font-medium text-foreground text-sm">Message Type</label>
           <div class="flex space-x-2">
             <Button
               variant="outline"
@@ -243,9 +243,9 @@ const toggleSenderFilter = (senderId: string) => {
         v-if="messagesByDate.length === 0"
         class="flex flex-col flex-1 justify-center items-center px-4 py-12"
       >
-        <PhMagnifyingGlass v-if="hasActiveFilters" class="mb-3 w-12 h-12 text-gray-300" />
-        <PhChatCircleDots v-else class="mb-3 w-12 h-12 text-gray-300" />
-        <p class="text-center text-gray-500">
+        <PhMagnifyingGlass v-if="hasActiveFilters" class="mb-3 w-12 h-12 text-muted-foreground/40" />
+        <PhChatCircleDots v-else class="mb-3 w-12 h-12 text-muted-foreground/40" />
+        <p class="text-center text-muted-foreground">
           {{ hasActiveFilters ? 'No messages match your filters' : 'No messages yet' }}
         </p>
         <Button
@@ -264,7 +264,7 @@ const toggleSenderFilter = (senderId: string) => {
         <div v-for="[date, dayMessages] in messagesByDate" :key="date" class="space-y-4">
           <!-- Date Separator -->
           <div class="flex justify-center items-center">
-            <div class="bg-gray-100 px-3 py-1 rounded-full font-medium text-gray-600 text-xs">
+            <div class="border border-border bg-background px-3 py-1 rounded-full font-medium text-muted-foreground text-xs">
               {{ formatDate(date) }}
             </div>
           </div>
@@ -284,7 +284,7 @@ const toggleSenderFilter = (senderId: string) => {
                   'max-w-xs lg:max-w-md px-4 py-3 rounded-lg relative',
                   isMessageFromCurrentUser(message)
                     ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 text-gray-900',
+                    : 'border border-border bg-background text-foreground',
                   message.metadata?.isPreConsultation && 'opacity-75 border-l-4 border-blue-300'
                 ]"
                 @click="selectedMessage = message"
@@ -350,7 +350,7 @@ const toggleSenderFilter = (senderId: string) => {
                   <Button
                     variant="ghost"
                     size="xs"
-                    class="bg-white shadow-sm"
+                    class="bg-card shadow-sm"
                     @click.stop="handleReply(message)"
                   >
                     <template #leading>
@@ -366,7 +366,7 @@ const toggleSenderFilter = (senderId: string) => {
     </div>
 
     <!-- Export Button -->
-    <div v-if="exportable && messages.length > 0" class="bg-gray-50 p-4 border-t">
+    <div v-if="exportable && messages.length > 0" class="bg-background p-4 border-t">
       <Button
         variant="outline"
         size="sm"
@@ -402,15 +402,15 @@ const toggleSenderFilter = (senderId: string) => {
           <!-- Message info -->
           <div class="space-y-2">
             <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-700">From:</span>
+              <span class="font-medium text-foreground">From:</span>
               <span>{{ selectedMessage.sender?.name || 'Unknown' }}</span>
             </div>
             <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-700">Sent:</span>
+              <span class="font-medium text-foreground">Sent:</span>
               <span>{{ new Date(selectedMessage.createdAt).toLocaleString() }}</span>
             </div>
             <div class="flex justify-between text-sm">
-              <span class="font-medium text-gray-700">Status:</span>
+              <span class="font-medium text-foreground">Status:</span>
               <UBadge :color="selectedMessage.status === 'read' ? 'green' : 'yellow'">
                 {{ selectedMessage.status }}
               </UBadge>
@@ -419,18 +419,18 @@ const toggleSenderFilter = (senderId: string) => {
 
           <!-- Message content -->
           <div>
-            <label class="block mb-2 font-medium text-gray-700 text-sm">Content</label>
-            <div class="bg-gray-50 p-3 rounded-lg text-sm whitespace-pre-wrap">
+            <label class="block mb-2 font-medium text-foreground text-sm">Content</label>
+            <div class="bg-background p-3 rounded-lg text-sm whitespace-pre-wrap">
               {{ selectedMessage.content }}
             </div>
           </div>
 
           <!-- File attachment -->
           <div v-if="selectedMessage.fileName">
-            <label class="block mb-2 font-medium text-gray-700 text-sm">Attachment</label>
-            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+            <label class="block mb-2 font-medium text-foreground text-sm">Attachment</label>
+            <div class="flex justify-between items-center bg-background p-3 rounded-lg">
               <div class="flex items-center space-x-2">
-                <PhPaperclip class="w-4 h-4 text-gray-500" />
+                <PhPaperclip class="w-4 h-4 text-muted-foreground" />
                 <span class="text-sm">{{ selectedMessage.fileName }}</span>
               </div>
               <Button

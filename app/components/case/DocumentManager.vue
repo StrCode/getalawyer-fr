@@ -14,17 +14,17 @@
       <!-- Drag & Drop Upload Area -->
       <div class="space-y-4">
         <div
-          class="relative p-8 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors"
-          :class="{ 'border-blue-400 bg-blue-50': isDragOver }"
+          class="relative p-8 border-2 border-border hover:border-primary/30 border-dashed rounded-lg text-center transition-colors"
+          :class="{ 'border-primary/40 bg-primary/5': isDragOver }"
           @dragover.prevent="handleDragOver"
           @dragleave.prevent="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <PhIcon name="i-heroicons-cloud-arrow-up" class="mx-auto mb-4 w-12 h-12 text-gray-400" />
-          <h4 class="mb-2 font-medium text-gray-900 text-lg">
+          <PhIcon name="i-heroicons-cloud-arrow-up" class="mx-auto mb-4 w-12 h-12 text-muted-foreground" />
+          <h4 class="mb-2 font-medium text-foreground text-lg">
             Drop files here or click to browse
           </h4>
-          <p class="mb-4 text-gray-500 text-sm">
+          <p class="mb-4 text-muted-foreground text-sm">
             Supports PDF, DOC, DOCX, JPG, PNG, TXT, XLS up to 25MB each
           </p>
           
@@ -45,23 +45,23 @@
         
         <!-- Upload Progress -->
         <div v-if="uploadingDocuments.length > 0" class="space-y-3">
-          <h4 class="font-medium text-gray-900">Uploading Files...</h4>
+          <h4 class="font-medium text-foreground">Uploading Files...</h4>
           <div
             v-for="doc in uploadingDocuments"
             :key="doc.id"
-            class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg"
+            class="flex items-center gap-3 bg-background p-4 rounded-lg"
           >
-            <PhIcon name="i-heroicons-document" class="w-5 h-5 text-gray-400" />
+            <PhIcon name="i-heroicons-document" class="w-5 h-5 text-muted-foreground" />
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-gray-900 text-sm truncate">{{ doc.fileName }}</p>
-              <div class="bg-gray-200 mt-2 rounded-full w-full h-2">
+              <p class="font-medium text-foreground text-sm truncate">{{ doc.fileName }}</p>
+              <div class="bg-muted mt-2 rounded-full w-full h-2">
                 <div 
-                  class="bg-blue-500 rounded-full h-2 transition-all duration-300"
+                  class="bg-primary h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${doc.uploadProgress || 0}%` }"
                 />
               </div>
             </div>
-            <span class="font-medium text-gray-500 text-sm">{{ doc.uploadProgress || 0 }}%</span>
+            <span class="font-medium text-muted-foreground text-sm">{{ doc.uploadProgress || 0 }}%</span>
           </div>
         </div>
 
@@ -116,7 +116,7 @@
 
         <!-- Folder Organization -->
         <div v-if="folders.length > 0" class="space-y-2">
-          <h4 class="font-medium text-gray-900 text-sm">Folders</h4>
+          <h4 class="font-medium text-foreground text-sm">Folders</h4>
           <div class="flex flex-wrap gap-2">
             <Button
               v-for="folder in folders"
