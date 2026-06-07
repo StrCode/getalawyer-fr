@@ -9,7 +9,6 @@ export interface ClientOnboardingData {
     specializationIds: string[]
     termsAccepted: boolean
     termsVersion: string
-    refundPolicyAccepted: boolean
 }
 
 export const useClientOnboardingStore = defineStore('client-onboarding', () => {
@@ -19,7 +18,6 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
         specializationIds: [],
         termsAccepted: false,
         termsVersion: CURRENT_TERMS_VERSION,
-        refundPolicyAccepted: false,
     })
 
     const validationError = ref<string | null>(null)
@@ -37,8 +35,8 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
                     validationError.value = 'Select at least one practice area.'
                     return false
                 }
-                if (!clientState.termsAccepted || !clientState.refundPolicyAccepted) {
-                    validationError.value = 'Accept the Terms and refund policy to continue.'
+                if (!clientState.termsAccepted) {
+                    validationError.value = 'Accept the Terms and Conditions to continue.'
                     return false
                 }
                 try {

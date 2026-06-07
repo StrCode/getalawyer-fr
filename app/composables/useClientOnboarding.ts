@@ -13,7 +13,6 @@ interface OnboardingData {
   specializationIds: string[]
   termsAccepted: boolean
   termsVersion: string
-  refundPolicyAccepted: boolean
 }
 
 interface CompleteOnboardingResponse {

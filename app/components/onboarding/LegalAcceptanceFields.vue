@@ -2,10 +2,15 @@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
 
-defineProps<{
-  termsAccepted: boolean
-  refundPolicyAccepted: boolean
-}>()
+withDefaults(
+  defineProps<{
+    termsAccepted: boolean
+    refundPolicyAccepted?: boolean
+    /** Clients only accept T&C; lawyers also accept the verification refund policy. */
+    variant?: 'client' | 'lawyer'
+  }>(),
+  { variant: 'lawyer' },
+)
 
 const emit = defineEmits<{
   'update:termsAccepted': [value: boolean]
@@ -18,7 +23,9 @@ const refundId = useId()
 
 <template>
   <div class="space-y-4 rounded-xl border border-border/50 bg-white/80 p-4">
-    <p class="text-sm font-semibold text-foreground">Legal agreements</p>
+    <p class="text-sm font-semibold text-foreground">
+      Legal agreements
+    </p>
 
     <Field>
       <div class="flex items-start gap-3">
@@ -31,7 +38,11 @@ const refundId = useId()
         <div class="grid gap-1">
           <FieldLabel :for="termsId" class="cursor-pointer font-normal leading-snug">
             I accept the
-            <NuxtLink to="/privacy" class="font-semibold text-primary underline underline-offset-2" target="_blank">
+            <NuxtLink
+              to="/privacy"
+              class="font-semibold text-primary underline underline-offset-2"
+              target="_blank"
+            >
               Terms &amp; Conditions
             </NuxtLink>
             <span class="text-destructive">*</span>
@@ -43,7 +54,7 @@ const refundId = useId()
       </div>
     </Field>
 
-    <Field>
+    <Field v-if="variant === 'lawyer'">
       <div class="flex items-start gap-3">
         <Checkbox
           :id="refundId"

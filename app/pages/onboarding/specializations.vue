@@ -116,10 +116,9 @@
     </div>
 
     <LegalAcceptanceFields
+      variant="client"
       :terms-accepted="storeState.termsAccepted"
-      :refund-policy-accepted="storeState.refundPolicyAccepted"
       @update:terms-accepted="(v) => { storeState.termsAccepted = v }"
-      @update:refund-policy-accepted="(v) => { storeState.refundPolicyAccepted = v }"
     />
   </div>
 </template>
