@@ -47,7 +47,7 @@ export function useLawyerProfileEditor(options?: {
   hasAvailability?: MaybeRef<boolean>
 }) {
   const queryClient = useQueryClient()
-  const { session } = useAuth()
+  const { session, refetchSession } = useAuth()
 
   const queryEnabled = computed(() => {
     if (!import.meta.client) return false
@@ -173,6 +173,21 @@ export function useLawyerProfileEditor(options?: {
     onSuccess: invalidate,
   })
 
+  const uploadAvatar = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('image', file)
+      const res = await lawyerProfileAPI.uploadAvatar(formData)
+      if (res.imageUrl) return res.imageUrl
+      const data = res as { data?: { imageUrl?: string } }
+      if (data.data?.imageUrl) return data.data.imageUrl
+      throw new Error('Upload failed')
+    },
+    onSuccess: async () => {
+      await refetchSession()
+    },
+  })
+
   return {
     profileQuery,
     completeness,
@@ -194,5 +209,6 @@ export function useLawyerProfileEditor(options?: {
     createArticle,
     updateArticle,
     deleteArticle,
+    uploadAvatar,
   }
 }

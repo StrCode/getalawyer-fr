@@ -60,6 +60,11 @@ export const lawyerProfileAPI = {
   deleteSkill: (id: string) =>
     httpClient.delete<ApiResponse>(`/api/lawyer/profile/skills/${id}`),
 
+  uploadAvatar: (formData: FormData) =>
+    httpClient.postFormData<
+      ApiResponse<{ imageUrl: string }> & { imageUrl?: string }
+    >('/api/lawyer/profile/avatar', formData),
+
   createArticle: (data: CreateArticleInput) =>
     httpClient.post<ApiResponse>('/api/lawyer/profile/articles', data),
 

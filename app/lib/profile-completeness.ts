@@ -45,7 +45,6 @@ const CHECK_DEFS: Array<
     id: 'photo',
     label: 'Profile photo',
     weight: 10,
-    href: '/dashboard/settings',
     isComplete: ({ hasPhoto }) => hasPhoto,
   },
   {

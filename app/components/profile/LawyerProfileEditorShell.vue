@@ -8,6 +8,7 @@ import ProfileEducationSection from '@/components/profile/sections/ProfileEducat
 import ProfileExperienceSection from '@/components/profile/sections/ProfileExperienceSection.vue'
 import ProfileLicenseSection from '@/components/profile/sections/ProfileLicenseSection.vue'
 import ProfileOfficeSection from '@/components/profile/sections/ProfileOfficeSection.vue'
+import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSection.vue'
 import ProfilePracticeAreasSection from '@/components/profile/sections/ProfilePracticeAreasSection.vue'
 import ProfileSkillSection from '@/components/profile/sections/ProfileSkillSection.vue'
 import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard.vue'
@@ -23,7 +24,10 @@ import {
 } from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
 
-const { session, isPending: authPending } = useAuth()
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
+const { session, isPending: authPending, refetchSession } = useAuth()
 
 const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
 
@@ -76,6 +80,7 @@ const {
   createArticle,
   updateArticle,
   deleteArticle,
+  uploadAvatar,
 } = useLawyerProfileEditor({
   enabled: lawyerQueryEnabled,
   activeConsultationTypeCount,
@@ -87,6 +92,16 @@ const profile = computed(() => profileQuery.data.value)
 const publicProfileUrl = computed(() =>
   profile.value?.lawyerId ? `/lawyers/${profile.value.lawyerId}` : null,
 )
+
+const displayName = computed(() => session.value?.user?.name?.trim() || 'Your profile')
+
+const avatarPreview = ref<string | null>(null)
+
+const avatarSrc = computed(
+  () => avatarPreview.value ?? session.value?.user?.image ?? '',
+)
+
+const isUploadingAvatar = computed(() => uploadAvatar.isPending.value)
 
 const isLoading = computed(
   () =>
@@ -280,6 +295,36 @@ async function deleteArticleItem(id: string) {
     'Could not remove article',
   )
 }
+
+async function onAvatarUpload(file: File) {
+  if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+    toast.error('Invalid file type', { description: 'Use JPEG, PNG, GIF, or WebP.' })
+    return
+  }
+
+  if (file.size > MAX_AVATAR_BYTES) {
+    toast.error('File too large', { description: 'Maximum size is 5 MB.' })
+    return
+  }
+
+  avatarPreview.value = URL.createObjectURL(file)
+
+  try {
+    await uploadAvatar.mutateAsync(file)
+    toast.success('Photo updated')
+    await refetchSession()
+  } catch (error) {
+    avatarPreview.value = null
+    const message = error instanceof ApiError ? error.message : 'Upload failed'
+    toast.error('Could not upload photo', { description: message })
+  }
+}
+
+onBeforeUnmount(() => {
+  if (avatarPreview.value) {
+    URL.revokeObjectURL(avatarPreview.value)
+  }
+})
 </script>
 
 <template>
@@ -368,6 +413,14 @@ async function deleteArticleItem(id: string) {
 
     <template v-else-if="profile">
       <ProfileCompletenessCard :completeness="completeness" />
+
+      <ProfilePhotoSection
+        :name="displayName"
+        :email="session?.user?.email"
+        :image-url="avatarSrc"
+        :uploading="isUploadingAvatar"
+        @upload="onAvatarUpload"
+      />
 
       <ProfileAboutSection
         :about="profile.about"

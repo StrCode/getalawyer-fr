@@ -3,11 +3,13 @@ import { computeProfileCompleteness } from '../app/lib/profile-completeness'
 import type { LawyerProfileEditorData } from '../app/types/lawyer-profile-editor'
 
 const emptyProfile: LawyerProfileEditorData = {
+  lawyerId: 'lawyer-1',
   about: { headline: null, about: null },
   experiences: [],
   education: [],
   licenses: [],
   skills: [],
+  articles: [],
   practiceAreas: [],
   practiceInfo: null,
 }
