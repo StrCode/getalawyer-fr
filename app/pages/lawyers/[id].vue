@@ -231,7 +231,7 @@ const isBookingModalOpen = ref(false)
 
           <div class="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
             <div
-              class="relative size-32 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted shadow-sm md:size-40"
+              class="relative size-32 shrink-0 overflow-hidden rounded-2xl border border-border bg-background md:size-40"
             >
               <img
                 v-if="lawyer.image"

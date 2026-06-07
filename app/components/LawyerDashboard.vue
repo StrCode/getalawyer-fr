@@ -8,7 +8,19 @@ import DashboardConsultationTypesCard from '@/components/dashboard/ConsultationT
 import DashboardAvailabilityCard from '@/components/dashboard/AvailabilityCard.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
+import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'vue-sonner'
 import {
   PhCalendarDots,
   PhCheckCircle,
@@ -32,9 +44,17 @@ watch(applicationStatus, (status) => {
   }
 }, { immediate: true })
 
-const { useLawyerBookings } = useBookings()
+const { useLawyerBookings, useConfirmBooking, useCancelLawyerBooking } = useBookings()
 const { data: bookings, isPending: isLoadingBookings } = useLawyerBookings()
 const { getNextBooking, sortBookingsByDate } = useBookingDisplay()
+
+const { mutate: confirmBooking, isPending: isConfirming } = useConfirmBooking()
+const { mutate: cancelBooking, isPending: isDeclining } = useCancelLawyerBooking()
+
+const isCancelModalOpen = ref(false)
+const declineReason = ref('')
+const bookingToDecline = ref<string | null>(null)
+const confirmingBookingId = ref<string | null>(null)
 
 const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'there')
 
@@ -85,13 +105,44 @@ const quickLinks: DashboardQuickLink[] = [
 const showFullEmpty = computed(() => !isLoadingBookings.value && bookingsList.value.length === 0)
 
 function handleConfirm(bookingId: string) {
-  // TODO: wire confirm mutation
-  console.log('Confirm booking:', bookingId)
+  confirmingBookingId.value = bookingId
+  confirmBooking(bookingId, {
+    onSuccess: () => {
+      toast.success('Appointment confirmed. Client has been notified.')
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to confirm appointment')
+    },
+    onSettled: () => {
+      confirmingBookingId.value = null
+    },
+  })
 }
 
 function handleDecline(bookingId: string) {
-  // TODO: wire decline mutation
-  console.log('Decline booking:', bookingId)
+  bookingToDecline.value = bookingId
+  declineReason.value = ''
+  isCancelModalOpen.value = true
+}
+
+function confirmDecline() {
+  if (!bookingToDecline.value || !declineReason.value.trim())
+    return
+
+  cancelBooking(
+    { id: bookingToDecline.value, data: { reason: declineReason.value.trim() } },
+    {
+      onSuccess: () => {
+        toast.success('Appointment declined. Client has been notified.')
+        isCancelModalOpen.value = false
+        bookingToDecline.value = null
+        declineReason.value = ''
+      },
+      onError: (error: Error) => {
+        toast.error(error.message || 'Failed to decline appointment')
+      },
+    },
+  )
 }
 </script>
 
@@ -201,10 +252,18 @@ function handleDecline(bookingId: string) {
                 class="top-4 right-14 absolute flex flex-col gap-2"
                 @click.stop
               >
-                <Button size="sm" @click="handleConfirm(booking.id)">
+                <Button
+                  size="sm"
+                  :disabled="isConfirming && confirmingBookingId === booking.id"
+                  @click="handleConfirm(booking.id)"
+                >
                   Confirm
                 </Button>
-                <Button size="sm" variant="ghost" @click="handleDecline(booking.id)">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  @click="handleDecline(booking.id)"
+                >
                   Decline
                 </Button>
               </div>
@@ -245,5 +304,41 @@ function handleDecline(bookingId: string) {
     <div v-else class="flex justify-center py-16">
       <PhCircleNotch class="size-8 text-muted-foreground animate-spin" />
     </div>
+
+    <Dialog v-model:open="isCancelModalOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Decline appointment</DialogTitle>
+          <DialogDescription>
+            The client will be notified. Please share a brief reason.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="space-y-2">
+          <Label for="decline-reason">Reason</Label>
+          <Textarea
+            id="decline-reason"
+            v-model="declineReason"
+            placeholder="Let the client know why you're declining..."
+            :rows="3"
+          />
+        </div>
+        <DialogFooter>
+          <Button
+            variant="ghost"
+            @click="isCancelModalOpen = false"
+          >
+            Nevermind
+          </Button>
+          <ButtonBusy
+            variant="destructive"
+            :loading="isDeclining"
+            :disabled="!declineReason.trim()"
+            @click="confirmDecline"
+          >
+            Decline appointment
+          </ButtonBusy>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

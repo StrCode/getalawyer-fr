@@ -13,7 +13,7 @@ import Input from '~/components/ui/input/Input.vue'
 import { PhCaretDown, PhRows, PhSquaresFour } from '@phosphor-icons/vue'
 import type { LocationQuery } from 'vue-router'
 
-/** `/find-lawyers` — directory listing with home layout (same shell as marketing pages). */
+/** `/find-lawyers` — directory listing with landing layout (same nav/footer as homepage). */
 
 const FIND_LAWYERS_LAYOUT_KEY = 'getalawyer-fr:find-lawyers-layout'
 
@@ -101,7 +101,7 @@ function resolvePracticeAreaToken(specs: Specialization[], token: string): strin
 }
 
 definePageMeta({
-  layout: 'home',
+  layout: 'landing',
   middleware: ['client-directory'],
 })
 
@@ -308,6 +308,7 @@ const {
   hasNextPage,
   fetchNextPage,
   error,
+  refetch,
 } = useLawyersInfiniteList(searchParams)
 
 const lawyers = computed(() => {
@@ -355,16 +356,14 @@ function clearAllFilters(): void {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 pb-24 font-sans text-foreground sm:pb-32 lg:pb-40 dark:bg-background">
-    <header
-      class="border-border/80 border-b bg-[radial-gradient(ellipse_120%_80%_at_0%_0%,oklch(0.7_0.12_152/0.15),transparent_55%)] bg-muted/35 pt-20 sm:pt-24 dark:bg-muted/20"
-    >
-      <div class="mx-auto box-border w-full max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:px-8 sm:pb-8">
+  <div class="pb-16 font-sans text-foreground sm:pb-24">
+    <header class="border-b border-border bg-background">
+      <div class="mx-auto box-border w-full max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8 sm:pb-10">
         <div class="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
           <p class="mb-4 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
             Directory
           </p>
-          <h1 class="text-balance text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl sm:leading-[1.08] lg:text-6xl">
+          <h1 class="font-heading text-balance text-4xl font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl sm:leading-[1.08] lg:text-6xl">
             Find a lawyer
           </h1>
           <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
@@ -382,7 +381,7 @@ function clearAllFilters(): void {
               Lawyer name
             </span>
             <span
-              class="flex items-center rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:border-solid focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] dark:bg-card dark:border-muted-foreground/30"
+              class="flex items-center rounded-lg border border-border bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)]"
             >
               <input
                 v-model="filters.lawyerName"
@@ -401,7 +400,7 @@ function clearAllFilters(): void {
               Topic or keywords
             </span>
             <span
-              class="flex items-center rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:border-solid focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] dark:bg-card dark:border-muted-foreground/30"
+              class="flex items-center rounded-lg border border-border bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)]"
             >
               <input
                 v-model="filters.keywords"
@@ -424,7 +423,7 @@ function clearAllFilters(): void {
                 <PopoverTrigger as-child>
                   <button
                     type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-primary focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
+                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-primary/30 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none"
                     aria-haspopup="dialog"
                     aria-label="States"
                     :aria-expanded="statePopoverOpen"
@@ -440,13 +439,13 @@ function clearAllFilters(): void {
                       type="search"
                       autocomplete="off"
                       placeholder="Filter states…"
-                      class="h-9 border-dotted bg-transparent"
+                      class="h-9 border-border bg-transparent"
                     />
                   </div>
                   <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                     <button
                       type="button"
-                      class="mb-3 w-full rounded-md border border-dotted border-muted-foreground/40 bg-muted/5 px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-muted-foreground/60 hover:bg-muted/25 hover:text-foreground dark:bg-transparent dark:hover:bg-muted/20"
+                      class="mb-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
                       @click="clearStatesFilter"
                     >
                       No filters
@@ -460,7 +459,7 @@ function clearAllFilters(): void {
                     <label
                       v-for="s in filteredStates"
                       :key="s.code"
-                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-muted/80"
+                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-background"
                     >
                       <Checkbox
                         :checked="selectedStateCodes.includes(s.code)"
@@ -481,7 +480,7 @@ function clearAllFilters(): void {
             </span>
             <div
               v-if="specsLoading"
-              class="flex h-11 min-w-0 w-full items-center rounded-lg border border-dotted border-muted-foreground/35 bg-muted/25 px-3 text-sm text-muted-foreground"
+              class="flex h-11 min-w-0 w-full items-center rounded-lg border border-border bg-background px-3 text-sm text-muted-foreground"
               aria-busy="true"
             >
               Loading specializations…
@@ -491,7 +490,7 @@ function clearAllFilters(): void {
                 <PopoverTrigger as-child>
                   <button
                     type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-muted-foreground/50 hover:bg-muted/40 focus-visible:border-primary focus-visible:border-solid focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none dark:bg-input/30 dark:border-muted-foreground/30"
+                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-primary/30 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none"
                     aria-haspopup="dialog"
                     aria-label="Specializations"
                     :aria-expanded="specPopoverOpen"
@@ -507,13 +506,13 @@ function clearAllFilters(): void {
                       type="search"
                       autocomplete="off"
                       placeholder="Filter specializations…"
-                      class="h-9 border-dotted bg-transparent"
+                      class="h-9 border-border bg-transparent"
                     />
                   </div>
                   <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                     <button
                       type="button"
-                      class="mb-3 w-full rounded-md border border-dotted border-muted-foreground/40 bg-muted/5 px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-muted-foreground/60 hover:bg-muted/25 hover:text-foreground dark:bg-transparent dark:hover:bg-muted/20"
+                      class="mb-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
                       @click="clearSpecializationsFilter"
                     >
                       No filters
@@ -527,7 +526,7 @@ function clearAllFilters(): void {
                     <label
                       v-for="s in filteredSpecializations"
                       :key="s.id"
-                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-muted/80"
+                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-background"
                     >
                       <Checkbox
                         :checked="filters.practiceAreas.includes(s.id)"
@@ -559,14 +558,14 @@ function clearAllFilters(): void {
               Clear all
             </button>
 
-            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80">
+            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground">
               Name: {{ filters.lawyerName }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.lawyerName = ''">
                 &times;
               </button>
             </div>
 
-            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80">
+            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground">
               Keyword Search: {{ filters.keywords }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.keywords = ''">
                 &times;
@@ -576,7 +575,7 @@ function clearAllFilters(): void {
             <div
               v-for="code in selectedStateCodes"
               :key="code"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground"
             >
               <span class="truncate">{{ stateLabel(code) }}</span>
               <button
@@ -592,7 +591,7 @@ function clearAllFilters(): void {
             <div
               v-for="sid in filters.practiceAreas"
               :key="sid"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground"
             >
               <span class="truncate">{{ specializationNameById(sid) }}</span>
               <button
@@ -608,7 +607,7 @@ function clearAllFilters(): void {
 
           <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
             <div
-              class="inline-flex items-center rounded-lg border border-border/80 bg-background p-0.5 shadow-xs dark:bg-card"
+              class="inline-flex items-center rounded-lg border border-border bg-background p-0.5"
               role="toolbar"
               aria-label="Layout"
             >
@@ -617,8 +616,8 @@ function clearAllFilters(): void {
                 class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
                 :class="
                   resultsLayout === 'grid'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
                 "
                 :aria-pressed="resultsLayout === 'grid'"
                 title="Grid"
@@ -632,8 +631,8 @@ function clearAllFilters(): void {
                 class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
                 :class="
                   resultsLayout === 'list'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
                 "
                 :aria-pressed="resultsLayout === 'list'"
                 title="List"
@@ -669,18 +668,18 @@ function clearAllFilters(): void {
           />
         </div>
 
-        <div v-else-if="error" class="bg-background dark:bg-card px-6 sm:px-8 py-12 border border-border rounded-xl text-center">
+        <div v-else-if="error" class="rounded-xl border border-border bg-card px-6 py-12 text-center sm:px-8">
           <EmptyState
             title="Error loading lawyers"
             description="There was an error loading the lawyers list. Please try again."
             action-text="Retry"
-            @action="() => {}"
+            @action="refetch()"
           />
         </div>
 
         <div
           v-else-if="lawyers.length === 0"
-          class="rounded-xl border border-dotted border-border bg-background px-4 py-10 dark:bg-card sm:px-8 sm:py-12"
+          class="rounded-xl border border-dashed border-border bg-background px-4 py-10 sm:px-8 sm:py-12"
         >
           <LawyerDirectoryEmpty
             :active-filter-count="activeFilterCount"
@@ -710,7 +709,6 @@ function clearAllFilters(): void {
           class="mt-8 flex justify-center pb-8"
         >
           <Button
-            color="neutral"
             variant="outline"
             :disabled="isFetchingNextPage"
             @click="fetchNextPage()"
