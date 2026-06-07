@@ -136,13 +136,18 @@ function retryVerify() {
           </p>
         </div>
 
-        <div v-if="!isSuccess" class="grid gap-2 sm:grid-cols-2">
-          <Button variant="outline" :disabled="verifyPending" @click="retryVerify">
+        <div v-if="!isSuccess" class="grid gap-2" :class="isFailed ? '' : 'sm:grid-cols-2'">
+          <Button
+            v-if="!isFailed"
+            variant="outline"
+            :disabled="verifyPending"
+            @click="retryVerify"
+          >
             Check again
           </Button>
-          <Button as-child>
+          <Button as-child :class="isFailed ? 'w-full' : ''">
             <NuxtLink to="/onboarding/subscription">
-              Back to subscription
+              {{ isFailed ? 'Try again' : 'Back to subscription' }}
             </NuxtLink>
           </Button>
         </div>
