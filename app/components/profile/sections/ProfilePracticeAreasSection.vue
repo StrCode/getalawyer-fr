@@ -174,7 +174,7 @@ function onSave() {
         </Field>
 
         <div
-          class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-muted/10 p-2"
+          class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border bg-background p-2"
         >
           <div
             v-for="spec in filtered"

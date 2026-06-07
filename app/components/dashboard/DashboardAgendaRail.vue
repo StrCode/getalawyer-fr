@@ -33,7 +33,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
       >
         <NuxtLink
           :to="`${itemPathPrefix}/${booking.id}`"
-          class="block hover:bg-muted/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
+          class="-mx-2 block rounded-lg px-2 py-2 transition-colors hover:bg-background"
         >
           <p class="font-medium text-foreground text-sm truncate">
             {{ personLabel(booking) }}
@@ -49,7 +49,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
       v-else
       class="flex flex-col items-center gap-2 py-6 text-center"
     >
-      <span class="flex justify-center items-center bg-muted rounded-full size-10 text-muted-foreground">
+      <span class="flex size-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
         <PhCalendarX class="size-5" />
       </span>
       <p class="text-muted-foreground text-xs leading-relaxed">

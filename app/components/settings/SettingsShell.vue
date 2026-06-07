@@ -5,7 +5,7 @@
       class="hidden lg:block lg:w-56 lg:shrink-0"
       aria-label="Account settings"
     >
-      <div class="sticky top-20 space-y-6 rounded-xl bg-[#F1F3F5] p-3">
+      <div class="sticky top-20 space-y-6 rounded-xl border border-border bg-background p-3">
         <div class="hidden px-1 lg:block">
           <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
             Settings

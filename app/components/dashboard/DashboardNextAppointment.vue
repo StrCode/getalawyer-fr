@@ -35,7 +35,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
 <template>
   <section
     v-if="booking"
-    class="rounded-xl border border-border bg-muted/50 p-6"
+    class="rounded-xl border border-border bg-card p-6"
   >
     <p class="mb-3 font-medium text-primary text-xs uppercase tracking-wide">
       Next appointment
@@ -78,7 +78,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
 
   <section
     v-else
-    class="flex flex-col gap-4 rounded-xl border border-dashed border-border bg-muted/30 p-6 sm:flex-row sm:items-center sm:justify-between"
+    class="flex flex-col gap-4 rounded-xl border border-dashed border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between"
   >
     <div>
       <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">

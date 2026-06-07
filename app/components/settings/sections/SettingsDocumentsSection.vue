@@ -50,7 +50,7 @@
           class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
         >
           <div class="flex min-w-0 items-center gap-3">
-            <div class="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-background">
               <PhFileText class="size-4 text-muted-foreground" />
             </div>
             <div class="min-w-0">

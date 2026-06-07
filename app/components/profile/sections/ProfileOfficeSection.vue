@@ -107,7 +107,7 @@ function onSave() {
           </FieldDescription>
         </Field>
 
-        <div class="space-y-4 rounded-xl border border-border/50 bg-muted/20 p-4">
+        <div class="space-y-4 rounded-xl border border-border bg-background p-4">
           <div class="flex items-start gap-2">
             <PhMapPin class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">

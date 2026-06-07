@@ -26,6 +26,20 @@
         </template>
       </Button>
       <Button
+        v-else-if="variant === 'landing'"
+        variant="ghost"
+        size="icon"
+        aria-label="Open account menu"
+        class="size-10 shrink-0 rounded-full border border-border bg-background p-0 transition-colors hover:border-foreground/30 hover:bg-white"
+      >
+        <Avatar class="size-9 shrink-0">
+          <AvatarImage :src="userData.avatar" :alt="userData.name" />
+          <AvatarFallback class="bg-primary text-xs text-primary-foreground">
+            {{ userInitials }}
+          </AvatarFallback>
+        </Avatar>
+      </Button>
+      <Button
         v-else
         variant="ghost"
         size="icon"
@@ -40,7 +54,7 @@
     </DropdownMenuTrigger>
     <DropdownMenuContent
       class="w-56"
-      :side="variant === 'header' ? 'bottom' : 'top'"
+      :side="variant === 'sidebar' ? 'top' : 'bottom'"
       align="end"
       :side-offset="8"
     >
@@ -48,13 +62,13 @@
         {{ userData.email }}
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem v-if="variant === 'header'" as-child>
+      <DropdownMenuItem v-if="variant === 'header' || variant === 'landing'" as-child>
         <NuxtLink to="/dashboard" class="cursor-pointer">
           <PhSquaresFour class="size-4" />
           Dashboard
         </NuxtLink>
       </DropdownMenuItem>
-      <DropdownMenuSeparator v-if="variant === 'header'" />
+      <DropdownMenuSeparator v-if="variant === 'header' || variant === 'landing'" />
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/profile" class="cursor-pointer">
           <PhUserCircle class="size-4" />
@@ -91,8 +105,8 @@ import {
 
 withDefaults(
   defineProps<{
-    /** `sidebar` — full-width row + menu opens upward. `header` — avatar chip + menu opens downward. */
-    variant?: 'sidebar' | 'header'
+    /** `sidebar` — full-width row + menu opens upward. `header` — avatar chip + menu opens downward. `landing` — compact avatar for marketing nav. */
+    variant?: 'sidebar' | 'header' | 'landing'
     /** Icon-collapsed sidebar rail — hide name/role, center avatar */
     collapsed?: boolean
   }>(),
@@ -114,7 +128,7 @@ const userData = computed(() => {
     name: user.name || user.email || 'User',
     role: roleLabel,
     email: user.email || 'user@example.com',
-    avatar: (user as Record<string, unknown>).image as string || 'https://avatars.githubusercontent.com/u/739984?v=4',
+    avatar: ((user as Record<string, unknown>).image as string | undefined) ?? '',
   }
 })
 

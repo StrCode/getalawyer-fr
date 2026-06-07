@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-3 rounded-lg border border-dashed border-border bg-muted/20 p-6 sm:flex-row sm:items-center sm:justify-between"
+    class="flex flex-col gap-3 rounded-lg border border-dashed border-border bg-background p-6 sm:flex-row sm:items-center sm:justify-between"
   >
     <div class="min-w-0">
       <p class="text-sm font-medium text-foreground">

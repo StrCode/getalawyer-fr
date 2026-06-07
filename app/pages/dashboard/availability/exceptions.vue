@@ -208,7 +208,7 @@ function exceptionStatusBadge(exception: AvailabilityException) {
   if (exception.isAvailable) {
     return {
       variant: 'secondary' as const,
-      class: 'border-transparent bg-muted text-primary',
+      class: 'border-transparent bg-primary/10 text-primary',
     }
   }
   if (exception.startTime) {
@@ -517,7 +517,7 @@ const minDate = new Date().toISOString().split('T')[0]
           </Field>
           <div
             v-if="vacationForm.startDate && vacationForm.endDate"
-            class="rounded-lg border border-border bg-muted/50 p-4"
+            class="rounded-lg border border-border bg-background p-4"
           >
             <p class="text-sm text-foreground">
               This will block {{ generateDateRange(vacationForm.startDate, vacationForm.endDate).length }} day(s)

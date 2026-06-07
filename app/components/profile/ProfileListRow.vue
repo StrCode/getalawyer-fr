@@ -18,7 +18,7 @@ defineEmits<{
 
 <template>
   <div
-    class="flex items-start justify-between gap-3 rounded-xl border border-border/40 bg-muted/10 p-3 transition-colors hover:bg-muted/20"
+    class="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3 transition-colors hover:bg-background/80"
   >
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-2">

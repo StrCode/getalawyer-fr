@@ -82,7 +82,7 @@
                   :src="booking.lawyer?.profilePicture ?? undefined"
                   :alt="booking.lawyer?.name"
                 />
-                <AvatarFallback class="bg-muted text-sm text-primary">
+                <AvatarFallback class="bg-primary/10 text-sm text-primary">
                   {{ lawyerInitials(booking.lawyer?.name) }}
                 </AvatarFallback>
               </Avatar>
@@ -139,7 +139,7 @@
                   <Badge
                     v-if="booking.caseId"
                     variant="secondary"
-                    class="gap-1 border-transparent bg-muted text-primary"
+                    class="gap-1 border-transparent bg-primary/10 text-primary"
                   >
                     <PhBriefcase class="size-3" />
                     Case Created

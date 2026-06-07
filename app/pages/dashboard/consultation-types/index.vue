@@ -68,7 +68,7 @@
             </div>
             <Badge
               :variant="type.isActive ? 'secondary' : 'outline'"
-              :class="type.isActive ? 'border-transparent bg-muted text-primary' : ''"
+              :class="type.isActive ? 'border-transparent bg-primary/10 text-primary' : ''"
             >
               {{ type.isActive ? 'Active' : 'Inactive' }}
             </Badge>

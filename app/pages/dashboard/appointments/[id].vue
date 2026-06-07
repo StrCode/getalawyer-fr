@@ -189,7 +189,7 @@
             </div>
             <div
               v-if="booking.engagementOutcome === 'client_hired'"
-              class="rounded-lg border border-border bg-muted/50 p-4"
+              class="rounded-lg border border-border bg-background p-4"
             >
               <div class="flex items-start gap-2">
                 <PhCheckCircle class="mt-0.5 size-5 text-primary" />

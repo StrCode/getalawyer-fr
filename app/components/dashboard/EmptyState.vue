@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center justify-center text-center px-6 py-12 border border-border rounded-xl bg-card">
     <span
-      class="flex justify-center items-center mb-6 rounded-2xl size-20"
+      class="flex justify-center items-center mb-6 rounded-xl size-20"
       :style="{ backgroundColor: `${color}15` }"
     >
       <component :is="icon" class="size-12" :style="{ color }" />

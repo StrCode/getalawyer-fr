@@ -93,11 +93,11 @@
         class="space-y-6"
         @submit.prevent="onSubmit"
       >
-        <Card class="overflow-hidden border-gray-200/80 bg-white shadow-sm ring-1 ring-gray-200/25">
+        <Card class="overflow-hidden border-border bg-card shadow-none">
           <!-- Avatar hero (Clay-style) -->
           <CardContent class="flex flex-col gap-6 border-b border-border/60 p-6 sm:flex-row sm:items-center sm:p-8">
             <div class="relative shrink-0 self-center sm:self-auto">
-              <Avatar class="size-24 ring-4 ring-background shadow-md sm:size-28">
+              <Avatar class="size-24 ring-4 ring-background sm:size-28">
                 <AvatarImage
                   :src="avatarSrc"
                   :alt="form.name || 'Profile'"
@@ -194,7 +194,7 @@
                     :model-value="profile?.email ?? ''"
                     type="email"
                     disabled
-                    class="bg-muted/40 pl-9"
+                    class="bg-background pl-9"
                   />
                 </motion.div>
               </ProfileSettingsRow>
@@ -272,7 +272,7 @@
                 description="GetALawyer is available in Nigeria for now."
               >
                 <motion.div
-                  class="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3"
+                  class="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3"
                 >
                   <span
                     class="flex size-10 shrink-0 items-center justify-center rounded-md bg-background text-lg shadow-sm ring-1 ring-border"
@@ -421,7 +421,7 @@
           </CardContent>
 
           <!-- Mobile save bar -->
-          <CardFooter class="flex flex-wrap justify-end gap-2 border-t border-border/60 bg-muted/20 p-4 sm:hidden">
+          <CardFooter class="flex flex-wrap justify-end gap-2 border-t border-border/60 bg-background p-4 sm:hidden">
             <Button
               type="button"
               variant="outline"

@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg border border-border/80 bg-muted/20 p-4">
+  <div class="rounded-lg border border-border bg-background p-4">
     <div class="mb-3 flex items-center justify-between gap-2">
       <p class="text-sm font-medium text-foreground">
         {{ title }}

@@ -45,7 +45,7 @@ function onFileSelected(event: Event) {
     </CardHeader>
     <CardContent class="flex flex-col gap-6 sm:flex-row sm:items-center">
       <div class="relative shrink-0 self-center sm:self-auto">
-        <Avatar class="size-24 ring-4 ring-background shadow-md sm:size-28">
+        <Avatar class="size-24 ring-4 ring-background sm:size-28">
           <AvatarImage
             :src="imageUrl ?? ''"
             :alt="name"

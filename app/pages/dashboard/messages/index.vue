@@ -119,8 +119,8 @@ function previewText(conversation: ConversationInfo) {
             v-for="conversation in conversations"
             :key="conversation.id"
             type="button"
-            class="w-full p-4 text-left transition-colors hover:bg-muted/50"
-            :class="selectedConversationId === conversation.id ? 'border-l-4 border-l-primary bg-muted/40' : ''"
+            class="w-full p-4 text-left transition-colors hover:bg-background"
+            :class="selectedConversationId === conversation.id ? 'border-l-4 border-l-primary bg-primary/5' : ''"
             @click="selectConversation(conversation.id)"
           >
             <div class="flex items-start justify-between gap-2">
@@ -149,7 +149,7 @@ function previewText(conversation: ConversationInfo) {
       </div>
     </aside>
 
-    <section class="flex min-w-0 flex-1 flex-col bg-muted/20">
+    <section class="flex min-w-0 flex-1 flex-col bg-background">
       <div v-if="!selectedConversationId" class="flex flex-1 flex-col items-center justify-center text-muted-foreground">
         <PhChatCircle class="mb-4 size-16 opacity-30" />
         <p class="text-lg font-medium text-foreground">

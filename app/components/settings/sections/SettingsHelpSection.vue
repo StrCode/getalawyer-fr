@@ -92,7 +92,7 @@
       description="Temporarily pause or permanently delete your account."
       content-class="space-y-4"
     >
-      <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 p-4">
+      <div class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-background p-4">
         <div>
           <p class="text-sm font-medium text-foreground">
             Deactivate account

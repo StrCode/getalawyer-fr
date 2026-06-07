@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/dashboard/appointments/${booking.id}`"
-    class="block p-5 transition-colors hover:bg-muted/30 sm:p-6"
+    class="block p-5 transition-colors hover:bg-background sm:p-6"
   >
     <div class="flex items-start justify-between gap-4">
       <div class="min-w-0 flex-1 space-y-3">

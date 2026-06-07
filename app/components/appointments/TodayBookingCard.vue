@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 transition-colors hover:bg-muted/30 sm:p-6">
+  <div class="p-5 transition-colors hover:bg-background sm:p-6">
     <div class="flex items-start justify-between gap-4">
       <div class="min-w-0 flex-1 space-y-3">
         <div class="flex flex-wrap items-center gap-2">
@@ -67,7 +67,7 @@
 
         <div
           v-if="booking.clientNotes"
-          class="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground"
+          class="rounded-lg border border-border bg-background p-3 text-sm text-muted-foreground"
         >
           <p class="mb-1 font-medium text-foreground">
             Client notes

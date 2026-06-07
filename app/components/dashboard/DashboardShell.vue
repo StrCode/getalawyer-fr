@@ -5,9 +5,9 @@
   />
 
   <SidebarInset
-    class="flex min-h-0 flex-1 flex-col overflow-hidden bg-sidebar p-2 md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-none md:pl-0"
+    class="flex min-h-0 flex-1 flex-col overflow-hidden bg-background md:peer-data-[variant=inset]:m-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-none"
   >
-    <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-background">
+    <div class="flex min-h-0 flex-1 flex-col overflow-hidden border-l border-border bg-background">
       <DashboardHeader />
       <ScrollArea class="min-h-0 flex-1">
         <div

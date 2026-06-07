@@ -118,7 +118,7 @@ async function onDeleteConfirm() {
           {{ item.name }}
           <button
             type="button"
-            class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+            class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
             :disabled="disabled"
             aria-label="Edit skill"
             @click="openEdit(item)"

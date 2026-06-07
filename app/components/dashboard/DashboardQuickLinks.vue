@@ -25,9 +25,9 @@ defineProps<{
         v-for="link in links"
         :key="link.to"
         :to="link.to"
-        class="group flex items-center gap-3 hover:bg-muted/60 px-3 py-2.5 border border-border rounded-lg transition-colors"
+        class="group flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 transition-colors hover:border-primary/25 hover:bg-background"
       >
-        <span class="flex justify-center items-center bg-muted rounded-md size-9 shrink-0 text-primary">
+        <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
           <component :is="link.icon" class="size-4" weight="duotone" />
         </span>
         <span class="flex-1 min-w-0">

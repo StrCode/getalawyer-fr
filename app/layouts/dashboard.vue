@@ -26,17 +26,20 @@ import {
   PhUserCircle,
 } from '@phosphor-icons/vue'
 
-/** Dashboard canvas + sidebar — light gray rail, white active pill (Cal.com / Rox). */
+/** Dashboard — neutral rail, white surfaces, green accents only on primary actions. */
 const dashboardSidebarStyle = {
   '--sidebar-width': '16rem',
   '--sidebar-width-icon': '3rem',
-  '--sidebar': 'oklch(0.965 0.004 250)',
+  '--background': 'oklch(1 0 0)',
+  '--card': 'oklch(1 0 0)',
+  '--muted': 'oklch(0.965 0.004 250)',
+  '--sidebar': 'oklch(0.985 0.002 250)',
   '--sidebar-foreground': 'oklch(0.12 0.015 145)',
   '--sidebar-primary': 'var(--primary)',
   '--sidebar-primary-foreground': 'var(--primary-foreground)',
-  '--sidebar-accent': 'var(--background)',
+  '--sidebar-accent': 'oklch(1 0 0)',
   '--sidebar-accent-foreground': 'var(--primary)',
-  '--sidebar-border': 'oklch(0.87 0.015 88 / 0.6)',
+  '--sidebar-border': 'oklch(0.92 0.005 250 / 0.8)',
   '--sidebar-ring': 'var(--ring)',
 } as const
 
@@ -144,3 +147,9 @@ const supportLinks = computed<DashboardNavItem[]>(() => {
   ]
 })
 </script>
+
+<style>
+[data-dashboard-content] [data-slot="card"] {
+  box-shadow: none;
+}
+</style>

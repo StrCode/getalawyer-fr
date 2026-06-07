@@ -1,5 +1,5 @@
 <template>
-  <Card class="overflow-hidden border-gray-200/80 bg-white shadow-sm ring-1 ring-gray-200/25">
+  <Card class="overflow-hidden border-border bg-card shadow-none">
     <CardHeader
       v-if="title || description || $slots.action"
       class="flex flex-row flex-wrap items-start justify-between gap-4 border-b border-border/60"

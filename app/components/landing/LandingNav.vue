@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import UserDropdown from '@/components/UserDropdown.vue'
 import { getSessionUserType } from '~/lib/session-user'
 
 interface Props { isScrolled?: boolean }
 withDefaults(defineProps<Props>(), { isScrolled: false })
 
 const { session } = useAuth()
+const isSignedIn = computed(() => Boolean(session.value?.user))
 const showFindLawyerCta = computed(
   () => getSessionUserType(session.value?.user) !== 'lawyer',
 )
@@ -18,6 +20,15 @@ const links = [
 ]
 
 const isMobileMenuOpen = ref(false)
+
+const route = useRoute()
+
+watch(
+  () => route.fullPath,
+  () => {
+    isMobileMenuOpen.value = false
+  },
+)
 
 // Prevent scrolling when the mobile menu is open
 watch(isMobileMenuOpen, (isOpen) => {
@@ -51,7 +62,12 @@ watch(isMobileMenuOpen, (isOpen) => {
 
         <!-- Desktop CTAs -->
         <div class="hidden lg:flex items-center gap-3">
+          <UserDropdown
+            v-if="isSignedIn"
+            variant="landing"
+          />
           <NuxtLink
+            v-else
             to="/login"
             class="hidden sm:inline-flex items-center gap-2 px-5 py-3 rounded-full text-foreground text-4 font-medium border border-border hover:bg-white hover:border-foreground transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
           >Sign in</NuxtLink>
@@ -121,21 +137,43 @@ watch(isMobileMenuOpen, (isOpen) => {
 
         <!-- Mobile Menu Footer CTAs -->
         <div class="px-8 pb-12 pt-8 flex flex-col gap-4 shrink-0 animate-slide-up-fade" :style="{ animationDelay: `${links.length * 75 + 100}ms` }">
-          <NuxtLink
-            v-if="showFindLawyerCta"
-            to="/find-lawyers"
-            @click="isMobileMenuOpen = false"
-            class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-primary text-sidebar-foreground text-lg font-medium hover:bg-sidebar transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
-          >
-            Find a lawyer
-          </NuxtLink>
-          <NuxtLink
-            to="/login"
-            @click="isMobileMenuOpen = false"
-            class="flex items-center justify-center w-full px-6 py-5 rounded-full text-foreground text-lg font-medium border border-border hover:bg-white transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
-          >
-            Sign in
-          </NuxtLink>
+          <template v-if="isSignedIn">
+            <div class="w-full rounded-2xl border border-border bg-background p-2">
+              <UserDropdown variant="sidebar" />
+            </div>
+            <NuxtLink
+              to="/dashboard"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-primary text-sidebar-foreground text-lg font-medium hover:bg-sidebar transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
+            >
+              Go to dashboard
+            </NuxtLink>
+            <NuxtLink
+              v-if="showFindLawyerCta"
+              to="/find-lawyers"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center justify-center w-full px-6 py-5 rounded-full text-foreground text-lg font-medium border border-border hover:bg-white transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
+            >
+              Find a lawyer
+            </NuxtLink>
+          </template>
+          <template v-else>
+            <NuxtLink
+              v-if="showFindLawyerCta"
+              to="/find-lawyers"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center justify-center w-full px-6 py-5 rounded-full bg-primary text-sidebar-foreground text-lg font-medium hover:bg-sidebar transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
+            >
+              Find a lawyer
+            </NuxtLink>
+            <NuxtLink
+              to="/login"
+              @click="isMobileMenuOpen = false"
+              class="flex items-center justify-center w-full px-6 py-5 rounded-full text-foreground text-lg font-medium border border-border hover:bg-white transition-all duration-200 bg-transparent cursor-pointer font-sans no-underline"
+            >
+              Sign in
+            </NuxtLink>
+          </template>
         </div>
 
       </div>
