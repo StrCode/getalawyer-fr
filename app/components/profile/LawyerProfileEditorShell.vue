@@ -23,6 +23,7 @@ import {
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
+import { PhArrowSquareOut, PhWarningCircle } from '@phosphor-icons/vue'
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']

@@ -7,6 +7,14 @@ import {
   formatLicenseDates,
 } from '~/lib/profile-list-format'
 import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
+import {
+  PhArrowSquareOut,
+  PhBriefcase,
+  PhGraduationCap,
+  PhIdentificationCard,
+  PhSparkle,
+  PhUser,
+} from '@phosphor-icons/vue'
 
 defineProps<{
   profile: LawyerPublicProfileSections
