@@ -1,5 +1,6 @@
 import type { Booking } from '~/types/booking'
 import type { ConversationInfo } from '~/types/messaging'
+import { useSubscriptionStatus } from '~/composables/useSubscription'
 
 function badgeFromCount(count: number): string | undefined {
   return count > 0 ? String(count) : undefined
@@ -22,6 +23,10 @@ export function useDashboardNavBadges() {
 
   const { useCasesList } = useCases()
   const { data: casesData, isFetched: casesFetched } = useCasesList()
+
+  const { data: subscriptionStatus, isFetched: subscriptionFetched } = useSubscriptionStatus({
+    enabled: computed(() => role.value === 'lawyer'),
+  })
 
   const clientUpcomingBookingsBadge = computed(() => {
     if (role.value !== 'client' || !clientBookingsFetched.value) return undefined
@@ -50,10 +55,17 @@ export function useDashboardNavBadges() {
     return badgeFromCount(count)
   })
 
+  /** Shown when lawyer has no active membership. */
+  const lawyerSubscriptionBadge = computed(() => {
+    if (role.value !== 'lawyer' || !subscriptionFetched.value) return undefined
+    return subscriptionStatus.value?.hasActiveSubscription ? undefined : '!'
+  })
+
   return {
     clientUpcomingBookingsBadge,
     unreadMessagesBadge,
     activeCasesBadge,
     lawyerPendingAppointmentsBadge,
+    lawyerSubscriptionBadge,
   }
 }

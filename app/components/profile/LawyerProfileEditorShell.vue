@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
+import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
 import ProfileAboutSection from '@/components/profile/sections/ProfileAboutSection.vue'
 import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard.vue'
 import { Badge } from '@/components/ui/badge'
@@ -7,9 +8,27 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ApiError } from '~/lib/api/client'
+import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import {
+  canEditLawyerPublicProfile,
+  getProfileEditorApprovalNotice,
+  onboardingApplicationStatus,
+} from '~/lib/lawyerOnboardingStatus'
 
 const { session } = useAuth()
 const isLawyer = computed(() => session.value?.user.userType === 'lawyer')
+
+const { data: onboardingStatus, isPending: onboardingStatusPending } =
+  useLawyerOnboardingStatus({ enabled: isLawyer })
+
+const approvalNotice = computed(() =>
+  onboardingStatus.value ? getProfileEditorApprovalNotice(onboardingStatus.value) : null
+)
+
+const canEdit = computed(() => {
+  if (!onboardingStatus.value) return false
+  return canEditLawyerPublicProfile(onboardingApplicationStatus(onboardingStatus.value))
+})
 
 const { useConsultationTypesList } = useConsultationTypes()
 const { useAvailabilitySchedule } = useAvailability()
@@ -36,10 +55,17 @@ const {
 })
 
 const profile = computed(() => profileQuery.data.value)
-const isLoading = computed(() => profileQuery.isPending.value)
+const isLoading = computed(
+  () => profileQuery.isPending.value || onboardingStatusPending.value
+)
 const isError = computed(() => profileQuery.isError.value)
 
 async function handleSaveAbout(payload: { headline: string | null; about: string | null }) {
+  if (!canEdit.value) {
+    toast.error('Profile editing is available after admin approval')
+    return
+  }
+
   try {
     await updateAbout.mutateAsync(payload)
     toast.success('About saved')
@@ -103,6 +129,11 @@ const sectionSummaries = computed(() => {
       </div>
     </div>
 
+    <LawyerProfileApprovalBanner
+      v-if="approvalNotice"
+      :notice="approvalNotice"
+    />
+
     <motion.div
       v-if="isLoading"
       class="space-y-4"
@@ -135,6 +166,7 @@ const sectionSummaries = computed(() => {
 
       <ProfileAboutSection
         :about="profile.about"
+        :disabled="!canEdit"
         :saving="updateAbout.isPending.value"
         @save="handleSaveAbout"
       />

@@ -158,3 +158,59 @@ export function getLawyerApplicationStatusNotice(
 
   return null
 }
+
+/** POST/PATCH profile sections require lawyers.application_status === 'approved'. */
+export function canEditLawyerPublicProfile(applicationStatus: ApplicationStatus): boolean {
+  return applicationStatus === 'approved'
+}
+
+export interface ProfileEditorApprovalNotice {
+  variant: 'info' | 'warning' | 'destructive'
+  title: string
+  description: string
+}
+
+/** Banner copy for /dashboard/profile when writes are blocked. */
+export function getProfileEditorApprovalNotice(
+  payload: OnboardingStatusPayload,
+): ProfileEditorApprovalNotice | null {
+  if (canEditLawyerPublicProfile(onboardingApplicationStatus(payload))) {
+    return null
+  }
+
+  if (isLawyerVerificationFailed(payload)) {
+    return {
+      variant: 'destructive',
+      title: 'Profile editing unavailable',
+      description:
+        'Your verification did not complete. Profile changes are disabled until your account status is resolved.',
+    }
+  }
+
+  if (isLawyerRejected(payload)) {
+    return {
+      variant: 'destructive',
+      title: 'Application not approved',
+      description:
+        'Update and resubmit your application from onboarding before you can edit your public profile.',
+    }
+  }
+
+  const appStatus = String(onboardingApplicationStatus(payload) ?? '')
+
+  if (appStatus === 'pending_verification') {
+    return {
+      variant: 'info',
+      title: 'Profile preview — editing locked',
+      description:
+        'We are verifying your NIN and Supreme Court Number. You can preview your profile here; saving changes unlocks once you are approved.',
+    }
+  }
+
+  return {
+    variant: 'info',
+    title: 'Profile preview — editing locked',
+    description:
+      'Your application is under review. You can preview sections below; saving changes unlocks once an admin approves your account.',
+  }
+}

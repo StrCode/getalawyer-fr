@@ -18,6 +18,7 @@ import {
   PhCalendar,
   PhChatCircle,
   PhClock,
+  PhCreditCard,
   PhFileText,
   PhGearSix,
   PhHouse,
@@ -46,6 +47,7 @@ const {
   unreadMessagesBadge,
   activeCasesBadge,
   lawyerPendingAppointmentsBadge,
+  lawyerSubscriptionBadge,
 } = useDashboardNavBadges()
 
 const lawyerMainMenuItems = computed<DashboardNavItem[]>(() => [
@@ -110,16 +112,34 @@ const mainLinks = computed<DashboardNavItem[]>(() => {
   return role.value === 'lawyer' ? lawyerMainMenuItems.value : clientMainMenuItems.value
 })
 
-const supportLinks = computed<DashboardNavItem[]>(() => [
-  {
-    label: 'Profile',
-    iconComponent: PhUserCircle,
-    to: '/dashboard/profile',
-  },
-  {
-    label: 'Settings',
-    iconComponent: PhGearSix,
-    to: '/dashboard/settings',
-  },
-])
+const supportLinks = computed<DashboardNavItem[]>(() => {
+  if (role.value === 'lawyer') {
+    return [
+      {
+        label: 'Subscription',
+        iconComponent: PhCreditCard,
+        to: '/dashboard/subscription',
+        badge: lawyerSubscriptionBadge.value,
+      },
+      {
+        label: 'Settings',
+        iconComponent: PhGearSix,
+        to: '/dashboard/settings',
+      },
+    ]
+  }
+
+  return [
+    {
+      label: 'Profile',
+      iconComponent: PhUserCircle,
+      to: '/dashboard/profile',
+    },
+    {
+      label: 'Settings',
+      iconComponent: PhGearSix,
+      to: '/dashboard/settings',
+    },
+  ]
+})
 </script>
