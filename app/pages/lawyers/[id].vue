@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import LawyerPublicProfileSections from '@/components/lawyer-profile/LawyerPublicProfileSections.vue'
 import LawyerPublicArticles from '@/components/lawyer-profile/LawyerPublicArticles.vue'
 import type { LawyerProfileResponse, ConsultationType, AvailabilitySchedule } from '~/types/lawyer'
 import { getSessionUserType } from '~/lib/session-user'
 
 definePageMeta({
-  layout: 'home',
+  layout: 'landing',
   middleware: ['require-login', 'client-directory'],
 })
 
@@ -161,7 +162,7 @@ const isBookingModalOpen = ref(false)
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-neutral-100 pb-24 font-sans text-foreground sm:pb-32 lg:pb-40 dark:bg-background">
+  <div class="min-h-screen bg-background pb-16 font-sans text-foreground antialiased md:pb-20">
     <!-- Loading -->
     <div
       v-if="pending"
@@ -206,15 +207,12 @@ const isBookingModalOpen = ref(false)
       </div>
     </div>
 
-    <!-- Profile (same page clients see; owners get a preview notice only) -->
     <template v-else>
-      <header
-        class="border-b border-border/80 bg-[radial-gradient(ellipse_120%_80%_at_0%_0%,oklch(0.7_0.12_152/0.15),transparent_55%)] bg-muted/35 pt-6 dark:bg-muted/20 sm:pt-8"
-      >
-        <div class="relative z-10 mx-auto box-border w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 sm:pb-14">
+      <header class="border-b border-border bg-background">
+        <div class="mx-auto max-w-7xl px-6 pb-10 pt-8 md:px-8 md:pb-12 md:pt-10">
           <div
             v-if="isOwnProfile"
-            class="mb-6 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground"
+            class="mb-6 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground"
           >
             You’re viewing your public profile — this is exactly what clients see.
           </div>
@@ -223,128 +221,130 @@ const isBookingModalOpen = ref(false)
             :to="backLink"
             class="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            <PhIcon name="i-heroicons-arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
+            <PhArrowLeft class="size-4 shrink-0" aria-hidden="true" />
             {{ backLinkLabel }}
           </NuxtLink>
 
-          <p class="mb-3 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
+          <p class="mb-3 text-3 font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             Lawyer profile
           </p>
 
-          <div class="flex flex-col items-start gap-8 md:flex-row">
-            <!-- Avatar -->
+          <div class="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
             <div
-              class="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border-4 border-background bg-muted shadow-lg ring-1 ring-border md:h-44 md:w-44"
+              class="relative size-32 shrink-0 overflow-hidden rounded-2xl border border-border bg-muted shadow-sm md:size-40"
             >
               <img
                 v-if="lawyer.image"
                 :src="lawyer.image"
-                class="h-full w-full object-cover"
+                class="size-full object-cover"
                 :alt="`${lawyer.name} profile photo`"
               >
               <div
                 v-else
-                class="flex h-full w-full items-center justify-center bg-linear-to-br from-primary-500 to-primary-600"
+                class="flex size-full items-center justify-center bg-primary/10"
               >
-                <span class="text-5xl font-bold text-white">{{ lawyer.name.charAt(0) }}</span>
+                <span class="text-4xl font-semibold text-primary md:text-5xl">
+                  {{ lawyer.name.charAt(0) }}
+                </span>
               </div>
             </div>
 
-            <!-- Header Info -->
-            <div class="mt-2 flex-1">
-              <div class="mb-2 flex flex-wrap items-center gap-2">
-                <UBadge
+            <div class="min-w-0 flex-1">
+              <div class="mb-3 flex flex-wrap items-center gap-2">
+                <Badge
                   v-if="lawyer.applicationStatus === 'approved'"
-                  color="success"
-                  variant="soft"
-                  class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                  variant="secondary"
                 >
                   Approved
-                </UBadge>
-                <UBadge
+                </Badge>
+                <Badge
                   v-if="lawyer.ninVerified"
-                  color="info"
-                  variant="soft"
-                  class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                  variant="outline"
                 >
                   NIN verified
-                </UBadge>
+                </Badge>
               </div>
+
               <div class="mb-2 flex flex-wrap items-center gap-3">
-                <h1 class="text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+                <h1 class="font-heading text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
                   {{ lawyer.name }}
                 </h1>
                 <PhSealCheck
                   v-if="lawyer.ninVerified"
-                  class="mt-1 size-8 text-blue-500"
+                  class="size-7 text-primary"
                   weight="fill"
                 />
               </div>
-              <p class="mb-1 text-xl font-medium text-muted-foreground">
+
+              <p class="text-lg text-muted-foreground md:text-xl">
                 {{ heroSubtitle }}
               </p>
               <p
                 v-if="lawyer.practiceInfo?.firmName"
-                class="mb-5 text-base text-muted-foreground"
+                class="mt-1 text-sm text-muted-foreground"
               >
                 {{ lawyer.practiceInfo.firmName }}
               </p>
-              <div
-                v-else
-                class="mb-5"
-              />
 
-              <div class="mb-6 flex flex-wrap items-center gap-5 text-sm text-muted-foreground md:text-base">
-                <div class="flex items-center gap-1.5">
-                  <PhIcon name="i-heroicons-map-pin" class="h-5 w-5 shrink-0" />
+              <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+                <span class="inline-flex items-center gap-1.5">
+                  <PhMapPin class="size-4 shrink-0" />
                   {{ displayLocation }}
-                </div>
-                <div v-if="yearsExperience > 0" class="flex items-center gap-1.5">
-                  <PhIcon name="i-heroicons-briefcase" class="h-5 w-5 shrink-0" />
-                  {{ yearsExperience }} Years Experience
-                </div>
-                <div v-if="lawyer.professionalInfo?.yearOfCall" class="flex items-center gap-1.5">
-                  <PhIcon name="i-heroicons-identification" class="h-5 w-5 shrink-0" />
+                </span>
+                <span
+                  v-if="yearsExperience > 0"
+                  class="inline-flex items-center gap-1.5"
+                >
+                  <PhBriefcase class="size-4 shrink-0" />
+                  {{ yearsExperience }} years experience
+                </span>
+                <span
+                  v-if="lawyer.professionalInfo?.yearOfCall"
+                  class="inline-flex items-center gap-1.5"
+                >
+                  <PhIdentificationCard class="size-4 shrink-0" />
                   Called {{ lawyer.professionalInfo.yearOfCall }}
-                </div>
+                </span>
               </div>
 
-              <div v-if="lawyer.specializations.length" class="flex flex-wrap gap-2">
-                <UBadge
+              <div
+                v-if="lawyer.specializations.length"
+                class="mt-5 flex flex-wrap gap-2"
+              >
+                <Badge
                   v-for="spec in lawyer.specializations"
                   :key="spec.id"
-                  color="neutral"
-                  variant="soft"
-                  class="rounded-full border border-border px-3.5 py-1.5 text-sm font-medium"
+                  variant="outline"
+                  class="px-3 py-1 text-sm font-medium"
                 >
                   {{ spec.name }}
-                </UBadge>
+                </Badge>
               </div>
             </div>
 
             <div
               v-if="!isOwnProfile"
-              class="mt-4 flex w-full shrink-0 flex-col gap-3 md:mt-2 md:w-auto"
+              class="flex w-full shrink-0 flex-col gap-3 lg:w-auto"
             >
               <Button
                 size="lg"
-                class="h-12 w-full gap-2 px-8 font-semibold shadow-sm md:w-auto md:justify-center"
+                class="h-12 w-full gap-2 px-8 font-semibold lg:w-auto"
                 :disabled="!lawyer.consultationTypes.some(ct => ct.isActive)"
                 @click="isBookingModalOpen = true"
               >
-                <PhIcon name="i-heroicons-calendar-days" class="size-5 shrink-0" aria-hidden="true" />
-                Book Consultation
+                <PhCalendar class="size-5 shrink-0" />
+                Book consultation
               </Button>
               <Button
                 v-if="isAuthenticated && lawyer.email"
                 variant="outline"
                 size="lg"
-                class="h-12 w-full gap-2 px-8 font-semibold md:w-auto md:justify-center"
+                class="h-12 w-full gap-2 px-8 font-semibold lg:w-auto"
                 as-child
               >
                 <a :href="`mailto:${lawyer.email}`">
-                  <PhIcon name="i-heroicons-envelope" class="size-5 shrink-0" aria-hidden="true" />
-                  Send Email
+                  <PhEnvelope class="size-5 shrink-0" />
+                  Send email
                 </a>
               </Button>
             </div>
@@ -352,8 +352,7 @@ const isBookingModalOpen = ref(false)
         </div>
       </header>
 
-      <!-- Main Content Split Layout -->
-      <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
+      <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-10 md:px-8 lg:grid-cols-3 lg:gap-12 lg:py-12">
         <!-- Left Column (About, Experience, etc) -->
         <div class="space-y-12 lg:col-span-2">
           <LawyerPublicProfileSections
@@ -376,30 +375,33 @@ const isBookingModalOpen = ref(false)
             class="border-border"
           >
 
-          <!-- Practice areas -->
           <section v-if="lawyer.specializations.length">
-            <h2 class="mb-6 flex items-center gap-2 text-2xl font-bold text-foreground">
-              <PhIcon name="i-heroicons-scale" class="h-6 w-6 text-muted-foreground" />
+            <h2 class="mb-5 flex items-center gap-2 text-xl font-semibold text-foreground">
+              <PhScales class="size-5 text-muted-foreground" />
               Practice areas
             </h2>
             <div class="grid grid-cols-1 gap-4">
               <div
                 v-for="spec in lawyer.specializations"
                 :key="spec.id"
-                class="rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
+                class="rounded-xl border border-border bg-card p-5"
               >
-                <div class="mb-2 flex items-start justify-between">
-                  <h3 class="text-lg font-bold text-foreground">{{ spec.name }}</h3>
-                  <UBadge
+                <div class="mb-1 flex items-start justify-between gap-3">
+                  <h3 class="text-base font-semibold text-foreground">
+                    {{ spec.name }}
+                  </h3>
+                  <Badge
                     v-if="spec.yearsOfExperience != null"
-                    color="primary"
-                    variant="soft"
-                    class="shrink-0"
+                    variant="secondary"
+                    class="shrink-0 tabular-nums"
                   >
-                    {{ spec.yearsOfExperience }} years
-                  </UBadge>
+                    {{ spec.yearsOfExperience }} yrs
+                  </Badge>
                 </div>
-                <p v-if="spec.description" class="text-sm leading-relaxed text-muted-foreground">
+                <p
+                  v-if="spec.description"
+                  class="text-sm leading-relaxed text-muted-foreground"
+                >
                   {{ spec.description }}
                 </p>
               </div>
@@ -411,58 +413,63 @@ const isBookingModalOpen = ref(false)
             class="border-border"
           >
 
-          <!-- Consultation Types -->
           <section v-if="lawyer.consultationTypes.filter(ct => ct.isActive).length">
-            <h2 class="mb-6 flex items-center gap-2 text-2xl font-bold text-foreground">
-              <PhIcon name="i-heroicons-calendar-days" class="h-6 w-6 text-muted-foreground" />
-              Consultation Options
+            <h2 class="mb-5 flex items-center gap-2 text-xl font-semibold text-foreground">
+              <PhCalendar class="size-5 text-muted-foreground" />
+              Consultation options
             </h2>
             <div class="grid grid-cols-1 gap-4">
               <div
                 v-for="consult in lawyer.consultationTypes.filter(ct => ct.isActive)"
                 :key="consult.id"
-                class="rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
+                class="rounded-xl border border-border bg-card p-5"
               >
-                <div class="mb-3 flex items-start justify-between">
+                <div class="flex items-start justify-between gap-4">
                   <div class="min-w-0 flex-1">
-                    <h3 class="mb-1 text-lg font-bold text-foreground">{{ consult.name }}</h3>
-                    <p v-if="consult.description" class="text-sm text-muted-foreground">{{ consult.description }}</p>
+                    <h3 class="font-semibold text-foreground">
+                      {{ consult.name }}
+                    </h3>
+                    <p
+                      v-if="consult.description"
+                      class="mt-1 text-sm text-muted-foreground"
+                    >
+                      {{ consult.description }}
+                    </p>
                   </div>
-                  <div class="ml-4 shrink-0 text-right">
-                    <div class="text-2xl font-bold text-foreground">
+                  <div class="shrink-0 text-right">
+                    <p class="text-xl font-semibold tabular-nums text-foreground">
                       {{ parseFloat(consult.price) === 0 ? 'Free' : `₦${parseFloat(consult.price).toLocaleString()}` }}
-                    </div>
-                    <div class="text-xs text-muted-foreground">{{ consult.durationMinutes }} minutes</div>
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                      {{ consult.durationMinutes }} min
+                    </p>
                   </div>
                 </div>
                 <div class="mt-4 flex flex-wrap gap-2">
-                  <UBadge
+                  <Badge
                     v-if="consult.meetingType === 'video' || consult.meetingType === 'any'"
-                    color="info"
-                    variant="soft"
-                    class="text-xs"
+                    variant="outline"
+                    class="gap-1"
                   >
-                    <PhIcon name="i-heroicons-video-camera" class="mr-1 h-3 w-3" />
-                    Video Call
-                  </UBadge>
-                  <UBadge
+                    <PhVideoCamera class="size-3.5" />
+                    Video
+                  </Badge>
+                  <Badge
                     v-if="consult.meetingType === 'phone' || consult.meetingType === 'any'"
-                    color="success"
-                    variant="soft"
-                    class="text-xs"
+                    variant="outline"
+                    class="gap-1"
                   >
-                    <PhIcon name="i-heroicons-phone" class="mr-1 h-3 w-3" />
-                    Phone Call
-                  </UBadge>
-                  <UBadge
+                    <PhPhone class="size-3.5" />
+                    Phone
+                  </Badge>
+                  <Badge
                     v-if="consult.meetingType === 'in_person' || consult.meetingType === 'any'"
-                    color="secondary"
-                    variant="soft"
-                    class="text-xs"
+                    variant="outline"
+                    class="gap-1"
                   >
-                    <PhIcon name="i-heroicons-building-office" class="mr-1 h-3 w-3" />
-                    In-Person
-                  </UBadge>
+                    <PhBuildings class="size-3.5" />
+                    In person
+                  </Badge>
                 </div>
               </div>
             </div>
@@ -470,105 +477,110 @@ const isBookingModalOpen = ref(false)
 
           <hr class="border-border">
 
-          <!-- Availability Schedule -->
           <section v-if="workingDays.length">
-            <h2 class="mb-6 flex items-center gap-2 text-2xl font-bold text-foreground">
-              <PhIcon name="i-heroicons-clock" class="h-6 w-6 text-muted-foreground" />
-              Availability Schedule
+            <h2 class="mb-5 flex items-center gap-2 text-xl font-semibold text-foreground">
+              <PhClock class="size-5 text-muted-foreground" />
+              Availability
             </h2>
-            <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <div class="space-y-3">
+            <div class="rounded-xl border border-border bg-card p-5">
+              <div class="space-y-2">
                 <div
                   v-for="schedule in workingDays"
                   :key="schedule.day"
-                  class="flex items-center justify-between border-b border-border/60 py-2 last:border-0"
+                  class="flex items-center justify-between border-b border-border/60 py-2.5 last:border-0"
                 >
-                  <span class="font-semibold text-foreground">{{ schedule.day }}</span>
-                  <span class="tabular-nums text-muted-foreground">{{ schedule.startTime }} – {{ schedule.endTime }}</span>
+                  <span class="text-sm font-medium text-foreground">{{ schedule.day }}</span>
+                  <span class="text-sm tabular-nums text-muted-foreground">
+                    {{ schedule.startTime }} – {{ schedule.endTime }}
+                  </span>
                 </div>
               </div>
-              <p class="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
-                <PhIcon name="i-heroicons-information-circle" class="h-4 w-4 shrink-0" />
-                Times shown are in your local timezone
+              <p class="mt-4 text-xs text-muted-foreground">
+                Times shown in your local timezone.
               </p>
             </div>
           </section>
         </div>
 
-        <!-- Right Column (Sticky Box) -->
         <div class="lg:col-span-1">
-          <div class="sticky top-20 mt-2 overflow-hidden rounded-3xl border border-border bg-card shadow-xl lg:mt-0">
-            <!-- Price Header -->
-            <div class="border-b border-border bg-muted/50 p-6 md:p-8">
-              <div v-if="priceRange.min > 0" class="mb-1 flex flex-wrap items-baseline gap-2">
-                <span class="text-4xl font-extrabold text-foreground">₦{{ priceRange.min.toLocaleString() }}</span>
-                <span v-if="priceRange.max > priceRange.min" class="font-medium text-muted-foreground">
+          <div class="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+            <div class="border-b border-border p-6 md:p-7">
+              <div
+                v-if="priceRange.min > 0"
+                class="mb-1 flex flex-wrap items-baseline gap-2"
+              >
+                <span class="text-3xl font-semibold tabular-nums text-foreground">
+                  ₦{{ priceRange.min.toLocaleString() }}
+                </span>
+                <span
+                  v-if="priceRange.max > priceRange.min"
+                  class="text-sm text-muted-foreground"
+                >
                   – ₦{{ priceRange.max.toLocaleString() }}
                 </span>
               </div>
-              <div v-else class="mb-1">
-                <span class="text-3xl font-extrabold text-green-600">Free Consultation</span>
-              </div>
-              <p class="text-sm text-muted-foreground">
-                {{ priceRange.min > 0 ? 'Consultation rates' : 'Available' }}
+              <p
+                v-else
+                class="text-2xl font-semibold text-primary"
+              >
+                Free consultation
+              </p>
+              <p class="mt-1 text-sm text-muted-foreground">
+                {{ priceRange.min > 0 ? 'Consultation rates' : 'Available to book' }}
               </p>
             </div>
 
-            <!-- Box Details -->
-            <div class="space-y-8 p-6 md:p-8">
-              <!-- Meeting Types -->
+            <div class="space-y-6 p-6 md:p-7">
               <div v-if="availableMeetingTypes.length">
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Available Meeting Types
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Meeting types
                 </h3>
-                <div class="space-y-3">
+                <div class="space-y-2">
                   <div
                     v-if="availableMeetingTypes.includes('video')"
-                    class="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/60 p-3.5 transition-colors hover:bg-blue-50 dark:border-blue-900/35 dark:bg-blue-950/40 dark:hover:bg-blue-950/60"
+                    class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
                   >
                     <div class="flex items-center gap-3">
-                      <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
-                        <PhIcon name="i-heroicons-video-camera" class="h-4 w-4 text-blue-700 dark:text-blue-300" />
-                      </div>
-                      <span class="text-sm font-semibold text-foreground">Video Call</span>
+                      <PhVideoCamera class="size-4 text-muted-foreground" />
+                      <span class="text-sm font-medium text-foreground">Video call</span>
                     </div>
-                    <PhIcon name="i-heroicons-check" class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                    <PhCheck class="size-4 text-primary" weight="bold" />
                   </div>
                   <div
                     v-if="availableMeetingTypes.includes('phone')"
-                    class="flex items-center justify-between rounded-xl border border-green-100 bg-green-50/60 p-3.5 transition-colors hover:bg-green-50 dark:border-green-900/35 dark:bg-green-950/40 dark:hover:bg-green-950/60"
+                    class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
                   >
                     <div class="flex items-center gap-3">
-                      <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
-                        <PhIcon name="i-heroicons-phone" class="h-4 w-4 text-green-700 dark:text-green-300" />
-                      </div>
-                      <span class="text-sm font-semibold text-foreground">Phone Call</span>
+                      <PhPhone class="size-4 text-muted-foreground" />
+                      <span class="text-sm font-medium text-foreground">Phone call</span>
                     </div>
-                    <PhIcon name="i-heroicons-check" class="h-5 w-5 shrink-0 text-green-600 dark:text-green-400" />
+                    <PhCheck class="size-4 text-primary" weight="bold" />
                   </div>
                   <div
                     v-if="availableMeetingTypes.includes('in_person')"
-                    class="flex items-center justify-between rounded-xl border border-purple-100 bg-purple-50/60 p-3.5 transition-colors hover:bg-purple-50 dark:border-purple-900/35 dark:bg-purple-950/40 dark:hover:bg-purple-950/60"
+                    class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
                   >
                     <div class="flex items-center gap-3">
-                      <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/50">
-                        <PhIcon name="i-heroicons-building-office" class="h-4 w-4 text-purple-700 dark:text-purple-300" />
-                      </div>
-                      <span class="text-sm font-semibold text-foreground">In-Person</span>
+                      <PhBuildings class="size-4 text-muted-foreground" />
+                      <span class="text-sm font-medium text-foreground">In person</span>
                     </div>
-                    <PhIcon name="i-heroicons-check" class="h-5 w-5 shrink-0 text-purple-600 dark:text-purple-400" />
+                    <PhCheck class="size-4 text-primary" weight="bold" />
                   </div>
                 </div>
               </div>
 
-              <!-- Office Location (for authenticated users or if in-person available) -->
               <div v-if="lawyer.practiceInfo && (isAuthenticated || availableMeetingTypes.includes('in_person'))">
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Office Location</h3>
-                <div class="rounded-xl border border-border bg-muted/40 p-4">
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Office
+                </h3>
+                <div class="rounded-lg border border-border p-4">
                   <div class="flex items-start gap-3">
-                    <PhIcon name="i-heroicons-map-pin" class="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+                    <PhMapPin class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                     <div class="text-sm text-muted-foreground">
-                      <p v-if="isAuthenticated && lawyer.practiceInfo.officeStreet" class="font-medium text-foreground">
+                      <p
+                        v-if="isAuthenticated && lawyer.practiceInfo.officeStreet"
+                        class="font-medium text-foreground"
+                      >
                         {{ lawyer.practiceInfo.officeStreet }}
                       </p>
                       <p>{{ lawyer.practiceInfo.officeCity }}, {{ lawyer.practiceInfo.officeState }}</p>
@@ -580,36 +592,33 @@ const isBookingModalOpen = ref(false)
                 </div>
               </div>
 
-              <!-- States of Practice -->
               <div v-if="lawyer.practiceInfo?.statesOfPractice?.length">
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Licensed in</h3>
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Licensed in
+                </h3>
                 <div class="flex flex-wrap gap-2">
-                  <span
+                  <Badge
                     v-for="state in lawyer.practiceInfo.statesOfPractice"
                     :key="state"
-                    class="inline-flex items-center rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-xs font-bold text-foreground"
+                    variant="outline"
                   >
                     {{ state }}
-                  </span>
+                  </Badge>
                 </div>
               </div>
 
-              <!-- Call to Action -->
-              <div
-                v-if="!isOwnProfile"
-                class="pt-2"
-              >
+              <div v-if="!isOwnProfile">
                 <Button
                   size="lg"
-                  class="h-14 w-full bg-foreground text-base font-bold text-background shadow-md transition-all duration-200 hover:bg-foreground/90 hover:shadow-lg"
+                  class="h-12 w-full font-semibold"
                   :disabled="!lawyer.consultationTypes.some(ct => ct.isActive)"
                   @click="isBookingModalOpen = true"
                 >
-                  Book Consultation
+                  Book consultation
                 </Button>
-                <p class="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-                  <PhIcon name="i-heroicons-shield-check" class="h-4 w-4 shrink-0 text-green-600" />
-                  Secure booking process
+                <p class="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+                  <PhShieldCheck class="size-4 text-primary" weight="fill" />
+                  Secure booking
                 </p>
               </div>
             </div>
@@ -623,8 +632,6 @@ const isBookingModalOpen = ref(false)
         :initial-lawyer-id="lawyerId"
         :lawyer-info="lawyer"
       />
-
-      <FooterSection />
     </template>
   </div>
 </template>

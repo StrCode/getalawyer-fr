@@ -19,11 +19,11 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
 <template>
   <div class="space-y-12">
     <section v-if="hasAbout(profile)">
-      <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
         <PhUser class="size-6 text-muted-foreground" />
         About
       </h2>
-      <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div class="rounded-xl border border-border bg-card p-5">
         <p
           v-if="profile.about.headline?.trim()"
           class="text-lg font-semibold text-foreground"
@@ -46,7 +46,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     >
 
     <section v-if="profile.experiences.length">
-      <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
         <PhBriefcase class="size-6 text-muted-foreground" />
         Experience
       </h2>
@@ -54,7 +54,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         <article
           v-for="item in profile.experiences"
           :key="item.id"
-          class="rounded-2xl border border-border bg-card p-6 shadow-sm"
+          class="rounded-xl border border-border bg-card p-5"
         >
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="min-w-0">
@@ -88,7 +88,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     >
 
     <section v-if="profile.education.length">
-      <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
         <PhGraduationCap class="size-6 text-muted-foreground" />
         Education
       </h2>
@@ -96,7 +96,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         <article
           v-for="item in profile.education"
           :key="item.id"
-          class="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
+          class="flex items-start gap-4 rounded-xl border border-border bg-card p-5"
         >
           <div
             class="flex size-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/50"
@@ -136,7 +136,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     >
 
     <section v-if="profile.licenses.length">
-      <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
         <PhIdentificationCard class="size-6 text-muted-foreground" />
         Licenses & certifications
       </h2>
@@ -144,7 +144,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         <article
           v-for="item in profile.licenses"
           :key="item.id"
-          class="rounded-2xl border border-border bg-card p-6 shadow-sm"
+          class="rounded-xl border border-border bg-card p-5"
         >
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="min-w-0">
@@ -197,7 +197,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     >
 
     <section v-if="profile.skills.length">
-      <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
+      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
         <PhSparkle class="size-6 text-muted-foreground" />
         Skills
       </h2>

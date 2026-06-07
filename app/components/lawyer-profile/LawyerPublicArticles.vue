@@ -19,18 +19,18 @@ function formatPublishedDate(value: string | null | undefined): string | null {
 
 <template>
   <section v-if="articles.length">
-    <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
-      <PhArticle class="size-6 text-muted-foreground" />
+    <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
+      <PhArticle class="size-5 text-muted-foreground" />
       Articles
     </h2>
     <div class="space-y-4">
       <article
         v-for="item in articles"
         :key="item.id"
-        class="rounded-2xl border border-border bg-card p-6 shadow-sm"
+        class="rounded-xl border border-border bg-card p-5"
       >
         <div class="flex flex-wrap items-start justify-between gap-3">
-          <h3 class="text-lg font-bold text-foreground">
+          <h3 class="text-base font-semibold text-foreground">
             {{ item.title }}
           </h3>
           <p
