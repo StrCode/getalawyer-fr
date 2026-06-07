@@ -9,6 +9,7 @@ import {
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
+  useSyncPendingSubscription,
 } from '~/composables/useSubscription'
 import { ApiError } from '~/lib/api/client'
 import { toast } from 'vue-sonner'
@@ -67,10 +68,19 @@ const {
 const { mutateAsync: initializeSubscription, isPending: paymentInitPending } =
   useInitializeSubscription()
 
+const { mutateAsync: syncPendingSubscription, isPending: syncPendingPending } =
+  useSyncPendingSubscription()
+
 const navigatingToPayment = ref(false)
+const confirmingPendingPayment = ref(false)
+const pendingSyncAttempted = ref(false)
 
 const hasActiveSubscription = computed(
   () => subscriptionStatus.value?.hasActiveSubscription === true,
+)
+
+const hasPendingSubscription = computed(
+  () => subscriptionStatus.value?.subscription?.status === 'pending',
 )
 
 const applicationNotice = computed(() =>
@@ -160,6 +170,41 @@ watchEffect(() => {
   }
 })
 
+async function confirmPendingPayment() {
+  if (confirmingPendingPayment.value || hasActiveSubscription.value) return
+  confirmingPendingPayment.value = true
+  try {
+    const result = await syncPendingSubscription()
+    if (result?.success && result.status === 'active') {
+      toast.success('Payment confirmed', {
+        description: 'Taking you to your application status.',
+      })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+      await router.replace('/onboarding/pending')
+      return
+    }
+    if (result?.status === 'pending') {
+      toast.message('Payment still processing', {
+        description: result.message ?? 'Please wait a moment and try again.',
+      })
+    }
+  } catch (error) {
+    console.error('[Subscription] Failed to confirm pending payment', error)
+  } finally {
+    confirmingPendingPayment.value = false
+  }
+}
+
+watch(
+  () => [pageLoading.value, hasPendingSubscription.value, hasActiveSubscription.value] as const,
+  async ([loading, pending, active]) => {
+    if (loading || active || !pending || pendingSyncAttempted.value) return
+    pendingSyncAttempted.value = true
+    await confirmPendingPayment()
+  },
+  { immediate: true },
+)
+
 async function startPayment() {
   navigatingToPayment.value = true
   try {
@@ -183,7 +228,9 @@ async function startPayment() {
   }
 }
 
-const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPending.value)
+const paymentBusy = computed(
+  () => navigatingToPayment.value || paymentInitPending.value || confirmingPendingPayment.value,
+)
 
 async function retry() {
   await Promise.all([
@@ -197,12 +244,17 @@ async function retry() {
 <template>
   <div class="mx-auto w-full max-w-xl pb-12">
     <div
-      v-if="pageLoading"
+      v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
     >
       <PhCircleNotch class="size-10 animate-spin text-primary" aria-hidden="true" />
       <p class="text-sm font-medium text-muted-foreground">
-        Loading subscription details…
+        <template v-if="hasPendingSubscription && confirmingPendingPayment">
+          Confirming your payment…
+        </template>
+        <template v-else>
+          Loading subscription details…
+        </template>
       </p>
     </div>
 
@@ -313,8 +365,17 @@ async function retry() {
               v-if="paymentBusy"
               class="mr-2 size-4 animate-spin"
             />
-            {{ paymentBusy ? 'Opening Paystack…' : 'Pay annual subscription' }}
+            {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : 'Pay annual subscription' }}
           </Button>
+
+          <button
+            v-if="hasPendingSubscription && !paymentBusy"
+            type="button"
+            class="w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+            @click="confirmPendingPayment"
+          >
+            I already paid — confirm my payment
+          </button>
         </div>
       </Card>
 

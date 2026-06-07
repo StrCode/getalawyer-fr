@@ -39,6 +39,8 @@ interface VerifySubscriptionPayload {
 
 const FINAL_VERIFY_STATUSES = new Set(['active', 'failed', 'abandoned', 'cancelled'])
 
+export const SUBSCRIPTION_PAYMENT_REF_KEY = 'gal_subscription_payment_ref'
+
 export interface SubscriptionPricingPayload {
   subscriptionPriceNaira: number
   verificationAdminFeeNaira: number
@@ -90,8 +92,30 @@ export function useInitializeSubscription() {
       )
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (import.meta.client && data?.reference) {
+        sessionStorage.setItem(SUBSCRIPTION_PAYMENT_REF_KEY, data.reference)
+      }
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+    },
+  })
+}
+
+export function useSyncPendingSubscription() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await httpClient.post<VerifySubscriptionPayload>(
+        '/api/subscriptions/sync-pending',
+      )
+      return res
+    },
+    onSuccess: (data) => {
+      if (data?.success && data.status === 'active' && import.meta.client) {
+        sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_REF_KEY)
+      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+      queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
     },
   })
 }

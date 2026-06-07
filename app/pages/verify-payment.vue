@@ -2,7 +2,12 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import { PhCheckCircle, PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
-import { useVerifySubscription } from '~/composables/useSubscription'
+import {
+  SUBSCRIPTION_PAYMENT_REF_KEY,
+  useSubscriptionStatus,
+  useSyncPendingSubscription,
+  useVerifySubscription,
+} from '~/composables/useSubscription'
 import { queryKeys } from '~/lib/query-client'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -21,18 +26,63 @@ const route = useRoute()
 const queryClient = useQueryClient()
 
 const reference = computed(() => {
-  const r = route.query.reference ?? route.query.trxref
-  return typeof r === 'string' ? r : null
+  const fromQuery = route.query.reference ?? route.query.trxref
+  if (typeof fromQuery === 'string' && fromQuery.length > 0) {
+    return fromQuery
+  }
+  if (import.meta.client) {
+    const stored = sessionStorage.getItem(SUBSCRIPTION_PAYMENT_REF_KEY)
+    if (stored) return stored
+  }
+  return null
 })
 
-const missingReference = computed(() => !reference.value)
+const resolvingReference = ref(!reference.value)
+const missingReference = computed(() => !reference.value && !resolvingReference.value)
+
+const { data: subscriptionStatus, isPending: subscriptionStatusPending } = useSubscriptionStatus({
+  enabled: computed(() => import.meta.client && !reference.value),
+})
+
+const { mutateAsync: syncPendingSubscription } = useSyncPendingSubscription()
+const referenceResolutionAttempted = ref(false)
 
 watch(
-  missingReference,
-  (missing) => {
-    if (missing) {
-      void navigateTo('/onboarding/subscription', { replace: true })
+  [reference, subscriptionStatus, subscriptionStatusPending],
+  async ([ref, status, statusPending]) => {
+    if (ref) {
+      resolvingReference.value = false
+      return
     }
+    if (!import.meta.client || referenceResolutionAttempted.value) return
+    if (statusPending) return
+
+    referenceResolutionAttempted.value = true
+
+    if (status?.hasActiveSubscription) {
+      resolvingReference.value = false
+      await navigateTo('/onboarding/pending', { replace: true })
+      return
+    }
+
+    if (status?.subscription?.status === 'pending') {
+      try {
+        const result = await syncPendingSubscription()
+        if (result?.success && result.status === 'active') {
+          resolvingReference.value = false
+          toast.success('Payment confirmed', {
+            description: 'Taking you to your application status.',
+          })
+          await navigateTo('/onboarding/pending', { replace: true })
+          return
+        }
+      } catch {
+        // Fall through to subscription page below
+      }
+    }
+
+    resolvingReference.value = false
+    await navigateTo('/onboarding/subscription', { replace: true })
   },
   { immediate: true },
 )
@@ -61,6 +111,9 @@ watch(
   async (ok) => {
     if (!ok || redirectedAfterSuccess.value) return
     redirectedAfterSuccess.value = true
+    if (import.meta.client) {
+      sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_REF_KEY)
+    }
     toast.success('Payment confirmed', {
       description: 'Taking you to your application status.',
     })
@@ -81,8 +134,16 @@ function retryVerify() {
 
 <template>
   <div class="mx-auto w-full max-w-xl py-14">
+    <div
+      v-if="resolvingReference || missingReference"
+      class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
+    >
+      <PhCircleNotch class="size-8 animate-spin text-primary" />
+      <p>{{ resolvingReference ? 'Checking your payment status…' : 'Redirecting…' }}</p>
+    </div>
+
     <Card
-      v-if="!missingReference && !redirectedAfterSuccess"
+      v-else-if="!redirectedAfterSuccess"
       class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm"
     >
       <div class="space-y-6 px-6 py-8 text-center">
