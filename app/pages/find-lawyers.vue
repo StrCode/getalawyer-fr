@@ -100,9 +100,9 @@ function resolvePracticeAreaToken(specs: Specialization[], token: string): strin
   return bySlug?.id ?? t
 }
 
-/** Same shell as homepage: `AppHeader` + wordmark + marketing nav. */
 definePageMeta({
-  layout: 'home'
+  layout: 'home',
+  middleware: ['client-directory'],
 })
 
 useHead({

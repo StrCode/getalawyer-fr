@@ -269,7 +269,8 @@ const handleBookingSuccess = (booking: any) => {
 }
 
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  middleware: ['require-login', 'client-directory'],
 })
 
 useHead({

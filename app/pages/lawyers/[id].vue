@@ -7,7 +7,7 @@ import type { LawyerProfileResponse, ConsultationType, AvailabilitySchedule } fr
 
 definePageMeta({
   layout: 'home',
-  middleware: ['require-login'],
+  middleware: ['require-login', 'client-directory'],
 })
 
 const route = useRoute()
