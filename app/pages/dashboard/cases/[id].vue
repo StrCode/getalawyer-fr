@@ -1,19 +1,35 @@
 <template>
-  <div v-if="loading" class="flex justify-center py-8">
-    <PhCircleNotch class="w-8 h-8 animate-spin" />
+  <div
+    v-if="loading"
+    class="flex justify-center py-8"
+  >
+    <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
   </div>
 
-  <div v-else-if="error" class="py-8 text-center">
-    <PhWarning class="mx-auto mb-4 w-12 h-12 text-red-500" />
-    <h2 class="mb-2 font-semibold text-xl">Case Not Found</h2>
-    <p class="mb-4 text-gray-600">{{ error }}</p>
-    <Button @click="navigateTo('/dashboard/cases')">
-      Back to Cases
+  <div
+    v-else-if="error"
+    class="space-y-4 py-8 text-center"
+  >
+    <PhWarning class="mx-auto size-12 text-destructive" />
+    <h2 class="text-xl font-semibold text-foreground">
+      Case not found
+    </h2>
+    <p class="text-muted-foreground">
+      {{ error }}
+    </p>
+    <Button
+      as-child
+    >
+      <NuxtLink to="/dashboard/cases">
+        Back to cases
+      </NuxtLink>
     </Button>
   </div>
 
-  <div v-else-if="currentCase" class="space-y-6">
-    <!-- Case Details Component -->
+  <div
+    v-else-if="currentCase"
+    class="space-y-6"
+  >
     <CaseDetails
       :case="currentCase"
       :role="role"
@@ -26,32 +42,53 @@
       @description-update="handleDescriptionUpdate"
     />
 
-    <!-- Tabs for different sections -->
-    <UTabs :items="tabs" class="w-full">
-      <template #leading="{ item }">
-        <component
-          v-if="item.iconComponent"
-          :is="item.iconComponent"
-          class="size-4 shrink-0"
-          data-slot="leadingIcon"
-        />
-      </template>
-      <template #messages="{ item }">
+    <Tabs
+      default-value="messages"
+      class="w-full"
+    >
+      <TabsList>
+        <TabsTrigger
+          v-for="tab in tabs"
+          :key="tab.slot"
+          :value="tab.slot"
+          class="gap-2"
+        >
+          <component
+            :is="tab.iconComponent"
+            class="size-4 shrink-0"
+          />
+          {{ tab.label }}
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent
+        value="messages"
+        class="mt-6"
+      >
         <CaseMessaging :case-id="currentCase.id" />
-      </template>
-      
-      <template #tasks="{ item }">
+      </TabsContent>
+
+      <TabsContent
+        value="tasks"
+        class="mt-6"
+      >
         <CaseTasks :case-id="currentCase.id" />
-      </template>
-      
-      <template #documents="{ item }">
+      </TabsContent>
+
+      <TabsContent
+        value="documents"
+        class="mt-6"
+      >
         <CaseDocuments :case-id="currentCase.id" />
-      </template>
-      
-      <template #activity="{ item }">
+      </TabsContent>
+
+      <TabsContent
+        value="activity"
+        class="mt-6"
+      >
         <CaseActivity :case-id="currentCase.id" />
-      </template>
-    </UTabs>
+      </TabsContent>
+    </Tabs>
   </div>
 </template>
 
@@ -64,8 +101,10 @@ import {
   PhClipboardText,
   PhClock,
   PhFile,
-  PhWarning
+  PhWarning,
 } from '@phosphor-icons/vue'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { CaseStatus } from '~/types'
 
 type CaseTabItem = {
@@ -81,63 +120,57 @@ const { session } = useAuth()
 const { useCase, useUpdateCase, useUpdateCaseStatus } = useCases()
 const { documents, totalSize } = useDocuments()
 
-// Fetch case data
 const caseId = computed(() => route.params.id as string)
 const { data: currentCase, isLoading: loading, error } = useCase(caseId)
 
-// Setup real-time updates for this case
 useCaseRealTime(caseId)
 
-// Mutations
 const { mutateAsync: updateCase } = useUpdateCase()
 const { mutateAsync: updateCaseStatus } = useUpdateCaseStatus()
 
-// Reactive data
 const showCreateTaskModal = ref(false)
 const showUploadModal = ref(false)
 
-// Computed properties
 const role = computed(() => session.value?.user.userType)
 
-// Tab configuration
 const tabs: CaseTabItem[] = [
   {
     label: 'Messages',
     iconComponent: PhChatCircle,
-    slot: 'messages'
+    slot: 'messages',
   },
   {
     label: 'Tasks',
     iconComponent: PhClipboardText,
-    slot: 'tasks'
+    slot: 'tasks',
   },
   {
     label: 'Documents',
     iconComponent: PhFile,
-    slot: 'documents'
+    slot: 'documents',
   },
   {
     label: 'Activity',
     iconComponent: PhClock,
-    slot: 'activity'
-  }
+    slot: 'activity',
+  },
 ]
 
-// Methods
 const handleStatusUpdate = async (status: CaseStatus, reason?: string) => {
   try {
     await updateCaseStatus({
       id: caseId.value,
       status,
-      reason
+      reason,
     })
-    
+
     toast.success('Success', {
-      description: 'Case status updated successfully'
+      description: 'Case status updated successfully',
     })
-  } catch (error) {
+  }
+  catch {
     toast.error('Error', {
-      description: 'Failed to update case status'
+      description: 'Failed to update case status',
     })
   }
 }
@@ -146,15 +179,16 @@ const handleDescriptionUpdate = async (description: string) => {
   try {
     await updateCase({
       id: caseId.value,
-      updates: { description }
+      updates: { description },
     })
-    
+
     toast.success('Success', {
-      description: 'Case description updated successfully'
+      description: 'Case description updated successfully',
     })
-  } catch (error) {
+  }
+  catch {
     toast.error('Error', {
-      description: 'Failed to update case description'
+      description: 'Failed to update case description',
     })
   }
 }

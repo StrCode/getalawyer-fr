@@ -1,5 +1,7 @@
 // Lawyer Profile Types
 
+import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
+
 export interface LawyerPersonalInfo {
   firstName: string
   lastName: string
@@ -11,11 +13,11 @@ export interface LawyerPersonalInfo {
 }
 
 export interface LawyerProfessionalInfo {
-  barNumber: string
-  yearOfCall: number
-  lawSchool: string
-  university: string
-  llbYear: number
+  barNumber?: string
+  yearOfCall?: number
+  lawSchool?: string
+  university?: string
+  llbYear?: number
 }
 
 export interface LawyerPracticeInfo {
@@ -90,6 +92,8 @@ export interface LawyerProfile {
   professionalInfo: LawyerProfessionalInfo | null
   practiceInfo: LawyerPracticeInfo | null
   specializations: LawyerSpecialization[]
+  /** Profile sections from GET /api/lawyers/:id → data.profile */
+  profile?: LawyerPublicProfileSections
   documents: LawyerDocument[]
   consultationTypes: ConsultationType[]
   availability: LawyerAvailability

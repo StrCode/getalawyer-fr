@@ -1,110 +1,140 @@
 <template>
   <div class="space-y-6">
-    <!-- Page Header -->
-    <UPageHeader 
-      :title="role === 'lawyer' ? 'Case Management' : 'My Cases'"
+    <AppPageHeader
+      :title="role === 'lawyer' ? 'Case management' : 'My cases'"
       :description="role === 'lawyer' ? 'Manage and track all your legal cases.' : 'Track and manage your legal cases.'"
-      :ui="{
-        root: 'border-none py-0',
-        title: 'font-semibold !text-3xl',
-        description: 'text-sm text-gray-600 mt-2'
-      }"
     >
       <template #actions>
-        <div class="flex gap-3">
-          <!-- Create Case Button (Lawyers only) -->
-          <Button
-            v-if="role === 'lawyer'"
-            icon="i-heroicons-plus"
-            @click="$emit('create-case')"
-          >
-            New Case
-          </Button>
-        </div>
+        <Button
+          v-if="role === 'lawyer'"
+          class="gap-2"
+          @click="$emit('create-case')"
+        >
+          <PhPlus class="size-4" />
+          New case
+        </Button>
       </template>
-    </UPageHeader>
+    </AppPageHeader>
 
-    <!-- Search Component -->
     <CaseSearch
       :result-count="filteredCases.length"
       @search="handleSearch"
       @clear="handleClearSearch"
     />
 
-    <!-- Case Statistics -->
-    <div class="gap-4 grid grid-cols-1 md:grid-cols-4 mb-6">
-      <UCard>
-        <div class="flex justify-between items-center">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <Card class="rounded-xl">
+        <CardContent class="flex items-center justify-between pt-6">
           <div>
-            <p class="text-gray-600 text-sm">Total Cases</p>
-            <p class="font-semibold text-2xl">{{ statistics.total }}</p>
+            <p class="text-sm text-muted-foreground">
+              Total cases
+            </p>
+            <p class="text-2xl font-semibold text-foreground">
+              {{ statistics.total }}
+            </p>
           </div>
-          <PhIcon name="i-heroicons-briefcase" class="w-8 h-8 text-blue-500" />
-        </div>
-      </UCard>
-      
-      <UCard>
-        <div class="flex justify-between items-center">
+          <PhBriefcase class="size-8 text-primary" />
+        </CardContent>
+      </Card>
+
+      <Card class="rounded-xl">
+        <CardContent class="flex items-center justify-between pt-6">
           <div>
-            <p class="text-gray-600 text-sm">Active Cases</p>
-            <p class="font-semibold text-2xl">{{ statistics.active }}</p>
+            <p class="text-sm text-muted-foreground">
+              Active cases
+            </p>
+            <p class="text-2xl font-semibold text-foreground">
+              {{ statistics.active }}
+            </p>
           </div>
-          <PhIcon name="i-heroicons-play" class="w-8 h-8 text-green-500" />
-        </div>
-      </UCard>
-      
-      <UCard>
-        <div class="flex justify-between items-center">
+          <PhPlay class="size-8 text-primary" />
+        </CardContent>
+      </Card>
+
+      <Card class="rounded-xl">
+        <CardContent class="flex items-center justify-between pt-6">
           <div>
-            <p class="text-gray-600 text-sm">Overdue Cases</p>
-            <p class="font-semibold text-2xl">{{ statistics.overdue }}</p>
+            <p class="text-sm text-muted-foreground">
+              Overdue cases
+            </p>
+            <p class="text-2xl font-semibold text-foreground">
+              {{ statistics.overdue }}
+            </p>
           </div>
-          <PhIcon name="i-heroicons-exclamation-triangle" class="w-8 h-8 text-red-500" />
-        </div>
-      </UCard>
-      
-      <UCard>
-        <div class="flex justify-between items-center">
+          <PhWarning class="size-8 text-destructive" />
+        </CardContent>
+      </Card>
+
+      <Card class="rounded-xl">
+        <CardContent class="flex items-center justify-between pt-6">
           <div>
-            <p class="text-gray-600 text-sm">Closed Cases</p>
-            <p class="font-semibold text-2xl">{{ statistics.closed }}</p>
+            <p class="text-sm text-muted-foreground">
+              Closed cases
+            </p>
+            <p class="text-2xl font-semibold text-foreground">
+              {{ statistics.closed }}
+            </p>
           </div>
-          <PhIcon name="i-heroicons-check-circle" class="w-8 h-8 text-gray-500" />
-        </div>
-      </UCard>
+          <PhCheckCircle class="size-8 text-muted-foreground" />
+        </CardContent>
+      </Card>
     </div>
 
-    <!-- Cases List -->
-    <UCard>
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="font-semibold text-lg">Cases</h3>
-          <div class="flex items-center gap-2">
-            <USelectMenu
-              v-model="sortBy"
-              :options="sortOptions"
-              value-attribute="value"
-              option-attribute="label"
-              class="w-40"
-            />
-          </div>
-        </div>
-      </template>
-
-      <CaseList
-        :cases="filteredCases"
-        :loading="loading"
-        :error="error"
-        :empty-message="emptyMessage"
-        @case-click="handleCaseClick"
-        @retry="$emit('retry')"
-      />
-    </UCard>
+    <Card class="rounded-xl">
+      <CardHeader class="flex flex-row items-center justify-between space-y-0">
+        <CardTitle class="text-lg">
+          Cases
+        </CardTitle>
+        <Select
+          :model-value="sortBy"
+          @update:model-value="sortBy = $event"
+        >
+          <SelectTrigger class="w-40">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="opt in sortOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >
+              {{ opt.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent>
+        <CaseList
+          :cases="filteredCases"
+          :loading="loading"
+          :error="error"
+          :empty-message="emptyMessage"
+          @case-click="handleCaseClick"
+          @retry="$emit('retry')"
+        />
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Case, CaseFilters, CaseStatus, Priority } from '~/types'
+import {
+  PhBriefcase,
+  PhCheckCircle,
+  PhPlay,
+  PhPlus,
+  PhWarning,
+} from '@phosphor-icons/vue'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import type { Case, CaseFilters } from '~/types'
 
 interface Props {
   cases: Case[]
@@ -116,17 +146,16 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
-  role: 'client'
+  role: 'client',
 })
 
 const emit = defineEmits<{
   'create-case': []
   'case-click': [caseId: string]
-  'retry': []
+  retry: []
   'filters-change': [filters: CaseFilters]
 }>()
 
-// Reactive data
 const searchQuery = ref('')
 const sortBy = ref('updatedAt')
 
@@ -134,10 +163,9 @@ const localFilters = ref<CaseFilters>({
   status: undefined,
   priority: undefined,
   dateFrom: undefined,
-  dateTo: undefined
+  dateTo: undefined,
 })
 
-// Computed properties
 const statistics = computed(() => {
   const total = props.cases.length
   const active = props.cases.filter(c => c.status === 'active').length
@@ -145,12 +173,12 @@ const statistics = computed(() => {
     return c.dueDate ? new Date(c.dueDate) < new Date() : false
   }).length
   const closed = props.cases.filter(c => c.status === 'closed').length
-  
+
   return { total, active, overdue, closed }
 })
 
-const hasActiveFilters = computed(() => 
-  Object.values(localFilters.value).some(v => v !== undefined && v !== '') || searchQuery.value !== ''
+const hasActiveFilters = computed(() =>
+  Object.values(localFilters.value).some(v => v !== undefined && v !== '') || searchQuery.value !== '',
 )
 
 const emptyMessage = computed(() => {
@@ -163,18 +191,16 @@ const emptyMessage = computed(() => {
 const filteredCases = computed(() => {
   let filtered = [...props.cases]
 
-  // Apply search
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(c => 
-      (c.caseTitle || c.title || '').toLowerCase().includes(query) ||
-      c.caseNumber.toLowerCase().includes(query) ||
-      c.client?.name.toLowerCase().includes(query) ||
-      c.lawyer?.name.toLowerCase().includes(query)
+    filtered = filtered.filter(c =>
+      (c.caseTitle || c.title || '').toLowerCase().includes(query)
+      || c.caseNumber.toLowerCase().includes(query)
+      || c.client?.name.toLowerCase().includes(query)
+      || c.lawyer?.name.toLowerCase().includes(query),
     )
   }
 
-  // Apply filters
   if (localFilters.value.status) {
     filtered = filtered.filter(c => c.status === localFilters.value.status)
   }
@@ -193,30 +219,27 @@ const filteredCases = computed(() => {
     filtered = filtered.filter(c => new Date(c.createdAt) <= toDate)
   }
 
-  // Apply sorting
   filtered.sort((a, b) => {
     const aValue = a[sortBy.value as keyof Case]
     const bValue = b[sortBy.value as keyof Case]
-    
+
     if (aValue instanceof Date && bValue instanceof Date) {
-      return bValue.getTime() - aValue.getTime() // Newest first
+      return bValue.getTime() - aValue.getTime()
     }
-    
+
     return String(bValue).localeCompare(String(aValue))
   })
 
   return filtered
 })
 
-// Options for dropdowns
 const sortOptions = [
-  { label: 'Last Updated', value: 'updatedAt' },
-  { label: 'Created Date', value: 'createdAt' },
-  { label: 'Case Number', value: 'caseNumber' },
-  { label: 'Priority', value: 'priority' }
+  { label: 'Last updated', value: 'updatedAt' },
+  { label: 'Created date', value: 'createdAt' },
+  { label: 'Case number', value: 'caseNumber' },
+  { label: 'Priority', value: 'priority' },
 ]
 
-// Methods
 const handleSearch = (query: string, filters: CaseFilters) => {
   searchQuery.value = query
   localFilters.value = filters
@@ -229,7 +252,7 @@ const handleClearSearch = () => {
     status: undefined,
     priority: undefined,
     dateFrom: undefined,
-    dateTo: undefined
+    dateTo: undefined,
   }
   emit('filters-change', {})
 }

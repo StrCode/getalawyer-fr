@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { httpClient } from '~/lib/api/client'
+import LawyerPublicProfileSections from '@/components/lawyer-profile/LawyerPublicProfileSections.vue'
 import type { LawyerProfileResponse, ConsultationType, AvailabilitySchedule } from '~/types/lawyer'
 
 definePageMeta({
@@ -13,33 +11,49 @@ definePageMeta({
 const route = useRoute()
 const lawyerId = route.params.id as string
 
-// Fetch lawyer profile data
 const { data: profileData, pending, error } = await useLazyAsyncData<LawyerProfileResponse>(
   `lawyer-${lawyerId}`,
-  () => httpClient.get<LawyerProfileResponse>(`/api/lawyers/${lawyerId}`),
-  {
-    server: true
-  }
+  () => httpClient.getAuth<LawyerProfileResponse>(`/api/lawyers/${lawyerId}`),
+  { server: true },
 )
 
 const lawyer = computed(() => profileData.value?.data)
 const isAuthenticated = computed(() => profileData.value?.authenticated || false)
 
-// Computed properties for display
+const profileSections = computed(() => lawyer.value?.profile)
+
 const displayLocation = computed(() => {
   if (!lawyer.value?.practiceInfo) return 'Nigeria'
   const { officeCity, officeState } = lawyer.value.practiceInfo
-  return `${officeCity}, ${officeState}`
+  if (!officeCity && !officeState) return 'Nigeria'
+  return [officeCity, officeState].filter(Boolean).join(', ')
 })
 
 const yearsExperience = computed(() => {
-  if (!lawyer.value?.professionalInfo) return 0
-  return new Date().getFullYear() - lawyer.value.professionalInfo.yearOfCall
+  const year = lawyer.value?.professionalInfo?.yearOfCall
+  if (!year) return 0
+  return Math.max(0, new Date().getFullYear() - year)
 })
 
-const primarySpecialty = computed(() => {
+const heroSubtitle = computed(() => {
+  const headline = profileSections.value?.about.headline?.trim()
+  if (headline) return headline
   if (!lawyer.value?.specializations?.length) return 'Legal Services'
   return lawyer.value.specializations[0]?.name || 'Legal Services'
+})
+
+const primarySpecialty = computed(() => heroSubtitle.value)
+
+const hasProfileContent = computed(() => {
+  const p = profileSections.value
+  if (!p) return false
+  return (
+    Boolean(p.about.headline?.trim() || p.about.about?.trim())
+    || p.experiences.length > 0
+    || p.education.length > 0
+    || p.licenses.length > 0
+    || p.skills.length > 0
+  )
 })
 
 const priceRange = computed(() => {
@@ -157,17 +171,47 @@ const isBookingModalOpen = ref(false)
 
             <!-- Header Info -->
             <div class="mt-2 flex-1">
+              <div class="mb-2 flex flex-wrap items-center gap-2">
+                <UBadge
+                  v-if="lawyer.applicationStatus === 'approved'"
+                  color="success"
+                  variant="soft"
+                  class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                >
+                  Approved
+                </UBadge>
+                <UBadge
+                  v-if="lawyer.ninVerified"
+                  color="info"
+                  variant="soft"
+                  class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                >
+                  NIN verified
+                </UBadge>
+              </div>
               <div class="mb-2 flex flex-wrap items-center gap-3">
                 <h1 class="text-3xl font-bold tracking-tight text-foreground md:text-5xl">
                   {{ lawyer.name }}
                 </h1>
-                <PhIcon
+                <PhSealCheck
                   v-if="lawyer.ninVerified"
-                  name="i-heroicons-check-badge-solid"
-                  class="mt-1 h-8 w-8 text-blue-500"
+                  class="mt-1 size-8 text-blue-500"
+                  weight="fill"
                 />
               </div>
-              <p class="mb-5 text-xl font-medium text-muted-foreground">{{ primarySpecialty }}</p>
+              <p class="mb-1 text-xl font-medium text-muted-foreground">
+                {{ heroSubtitle }}
+              </p>
+              <p
+                v-if="lawyer.practiceInfo?.firmName"
+                class="mb-5 text-base text-muted-foreground"
+              >
+                {{ lawyer.practiceInfo.firmName }}
+              </p>
+              <div
+                v-else
+                class="mb-5"
+              />
 
               <div class="mb-6 flex flex-wrap items-center gap-5 text-sm text-muted-foreground md:text-base">
                 <div class="flex items-center gap-1.5">
@@ -178,7 +222,7 @@ const isBookingModalOpen = ref(false)
                   <PhIcon name="i-heroicons-briefcase" class="h-5 w-5 shrink-0" />
                   {{ yearsExperience }} Years Experience
                 </div>
-                <div v-if="lawyer.professionalInfo" class="flex items-center gap-1.5">
+                <div v-if="lawyer.professionalInfo?.yearOfCall" class="flex items-center gap-1.5">
                   <PhIcon name="i-heroicons-identification" class="h-5 w-5 shrink-0" />
                   Called {{ lawyer.professionalInfo.yearOfCall }}
                 </div>
@@ -228,36 +272,21 @@ const isBookingModalOpen = ref(false)
       <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <!-- Left Column (About, Experience, etc) -->
         <div class="space-y-12 lg:col-span-2">
-          <!-- About / Bio Section -->
-          <section v-if="lawyer.practiceInfo?.firmName || lawyer.specializations.length">
-            <h2 class="mb-5 flex items-center gap-2 text-2xl font-bold text-foreground">
-              <PhIcon name="i-heroicons-user" class="h-6 w-6 text-muted-foreground" />
-              About {{ lawyer.personalInfo?.firstName || lawyer.name.split(' ')[0] }}
-            </h2>
-            <div class="prose prose-neutral max-w-none text-lg leading-relaxed text-muted-foreground dark:prose-invert">
-              <p v-if="lawyer.practiceInfo?.firmName">
-                {{ lawyer.personalInfo?.firstName || lawyer.name.split(' ')[0] }} is a legal professional at
-                <strong class="text-foreground">{{ lawyer.practiceInfo.firmName }}</strong>, specializing in
-                {{ lawyer.specializations.map(s => s.name).join(', ') }}.
-              </p>
-              <p v-if="lawyer.professionalInfo" class="mt-4">
-                With {{ yearsExperience }} years of experience since being called to the Nigerian Bar in
-                {{ lawyer.professionalInfo.yearOfCall }}, they bring extensive knowledge and expertise to every case.
-              </p>
-              <p v-if="lawyer.practiceInfo?.statesOfPractice?.length" class="mt-4">
-                Licensed to practice in {{ lawyer.practiceInfo.statesOfPractice.join(', ') }}, providing legal services
-                across multiple jurisdictions.
-              </p>
-            </div>
-          </section>
+          <LawyerPublicProfileSections
+            v-if="profileSections && hasProfileContent"
+            :profile="profileSections"
+          />
 
-          <hr class="border-border">
+          <hr
+            v-if="hasProfileContent && lawyer.specializations.length"
+            class="border-border"
+          >
 
-          <!-- Specializations Detail -->
+          <!-- Practice areas -->
           <section v-if="lawyer.specializations.length">
             <h2 class="mb-6 flex items-center gap-2 text-2xl font-bold text-foreground">
               <PhIcon name="i-heroicons-scale" class="h-6 w-6 text-muted-foreground" />
-              Practice Areas & Expertise
+              Practice areas
             </h2>
             <div class="grid grid-cols-1 gap-4">
               <div
@@ -267,7 +296,12 @@ const isBookingModalOpen = ref(false)
               >
                 <div class="mb-2 flex items-start justify-between">
                   <h3 class="text-lg font-bold text-foreground">{{ spec.name }}</h3>
-                  <UBadge color="primary" variant="soft" class="shrink-0">
+                  <UBadge
+                    v-if="spec.yearsOfExperience != null"
+                    color="primary"
+                    variant="soft"
+                    class="shrink-0"
+                  >
                     {{ spec.yearsOfExperience }} years
                   </UBadge>
                 </div>
@@ -278,79 +312,10 @@ const isBookingModalOpen = ref(false)
             </div>
           </section>
 
-          <hr class="border-border">
-
-          <!-- Education & Credentials -->
-          <section v-if="lawyer.professionalInfo">
-            <h2 class="mb-6 flex items-center gap-2 text-2xl font-bold text-foreground">
-              <PhIcon name="i-heroicons-academic-cap" class="h-6 w-6 text-muted-foreground" />
-              Education & Admissions
-            </h2>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <!-- University -->
-              <div
-                class="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/50"
-                >
-                  <PhIcon name="i-heroicons-building-library" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h3 class="text-base font-bold leading-tight text-foreground">
-                    {{ lawyer.professionalInfo.university }}
-                  </h3>
-                  <p class="mt-1 text-sm text-muted-foreground">Bachelor of Laws (LL.B.)</p>
-                  <p class="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-                    Class of {{ lawyer.professionalInfo.llbYear }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Law School -->
-              <div
-                class="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-purple-100 bg-purple-50 dark:border-purple-900/40 dark:bg-purple-950/50"
-                >
-                  <PhIcon name="i-heroicons-academic-cap" class="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
-                  <h3 class="text-base font-bold leading-tight text-foreground">
-                    {{ lawyer.professionalInfo.lawSchool }}
-                  </h3>
-                  <p class="mt-1 text-sm text-muted-foreground">Nigerian Law School</p>
-                  <p class="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground/80">
-                    Called {{ lawyer.professionalInfo.yearOfCall }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Bar Admission -->
-              <div
-                class="flex items-start gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md md:col-span-2"
-              >
-                <div
-                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-green-100 bg-green-50 dark:border-green-900/40 dark:bg-green-950/50"
-                >
-                  <PhIcon name="i-heroicons-identification" class="h-6 w-6 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <h3 class="text-base font-bold leading-tight text-foreground">Nigerian Bar Association</h3>
-                  <p class="mt-1 text-sm text-muted-foreground">
-                    Supreme Court No. {{ lawyer.professionalInfo.barNumber }}
-                  </p>
-                  <p class="mt-1 flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-green-600">
-                    <PhIcon name="i-heroicons-check-circle" class="h-3.5 w-3.5" />
-                    {{ lawyer.ninVerified ? 'Verified' : 'Active' }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <hr class="border-border">
+          <hr
+            v-if="lawyer.specializations.length && lawyer.consultationTypes.filter(ct => ct.isActive).length"
+            class="border-border"
+          >
 
           <!-- Consultation Types -->
           <section v-if="lawyer.consultationTypes.filter(ct => ct.isActive).length">

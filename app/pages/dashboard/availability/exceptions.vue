@@ -1,48 +1,78 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
-import type { AvailabilityException } from '~/types/availability';
+import {
+  PhCalendarBlank,
+  PhCalendarX,
+  PhCircleNotch,
+  PhClock,
+  PhPlus,
+  PhTrash,
+} from '@phosphor-icons/vue'
+import ButtonBusy from '@/components/ButtonBusy.vue'
+import EmptyState from '@/components/dashboard/EmptyState.vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import type { AvailabilityException } from '~/types/availability'
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth']
-});
+  middleware: ['auth'],
+})
 
-const { 
-  useAvailabilityExceptions, 
+const {
+  useAvailabilityExceptions,
   useCreateAvailabilityException,
   useBulkCreateExceptions,
-  useDeleteAvailabilityException 
-} = useAvailability();
+  useDeleteAvailabilityException,
+} = useAvailability()
 
-const showPast = ref(false);
+const showPast = ref(false)
 const { data: exceptions, isPending, refetch } = useAvailabilityExceptions(
-  computed(() => ({ futureOnly: !showPast.value }))
-);
+  computed(() => ({ futureOnly: !showPast.value })),
+)
 
-const createMutation = useCreateAvailabilityException();
-const bulkCreateMutation = useBulkCreateExceptions();
-const deleteMutation = useDeleteAvailabilityException();
+const createMutation = useCreateAvailabilityException()
+const bulkCreateMutation = useBulkCreateExceptions()
+const deleteMutation = useDeleteAvailabilityException()
 
-// Modals
-const isAddModalOpen = ref(false);
-const isVacationModalOpen = ref(false);
+const isAddModalOpen = ref(false)
+const isVacationModalOpen = ref(false)
 
-// Add Exception Form
 const exceptionForm = ref({
   date: '',
   startTime: '',
   endTime: '',
   isAvailable: false,
   reason: '',
-  isAllDay: true
-});
+  isAllDay: true,
+})
 
-// Vacation Form
 const vacationForm = ref({
   startDate: '',
   endDate: '',
-  reason: ''
-});
+  reason: '',
+})
+
+const exceptionTypeModel = computed({
+  get: () => (exceptionForm.value.isAvailable ? 'available' : 'blocked'),
+  set: (value: string) => {
+    exceptionForm.value.isAvailable = value === 'available'
+  },
+})
 
 const resetExceptionForm = () => {
   exceptionForm.value = {
@@ -51,398 +81,465 @@ const resetExceptionForm = () => {
     endTime: '',
     isAvailable: false,
     reason: '',
-    isAllDay: true
-  };
-};
+    isAllDay: true,
+  }
+}
 
 const resetVacationForm = () => {
   vacationForm.value = {
     startDate: '',
     endDate: '',
-    reason: ''
-  };
-};
+    reason: '',
+  }
+}
 
 const handleAddException = async () => {
-  const form = exceptionForm.value;
-  
+  const form = exceptionForm.value
+
   if (!form.date) {
-    toast.error('Error', {
-      description: 'Please select a date'
-    });
-    return;
+    toast.error('Error', { description: 'Please select a date' })
+    return
   }
 
   try {
     await createMutation.mutateAsync({
       date: form.date,
-      startTime: form.isAllDay ? undefined : (form.startTime ? form.startTime + ':00' : undefined),
-      endTime: form.isAllDay ? undefined : (form.endTime ? form.endTime + ':00' : undefined),
+      startTime: form.isAllDay ? undefined : (form.startTime ? `${form.startTime}:00` : undefined),
+      endTime: form.isAllDay ? undefined : (form.endTime ? `${form.endTime}:00` : undefined),
       isAvailable: form.isAvailable,
-      reason: form.reason || undefined
-    });
-    
-    toast.success('Success', {
-      description: 'Exception added successfully'
-    });
-    
-    isAddModalOpen.value = false;
-    resetExceptionForm();
-    refetch();
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to add exception'
-    });
+      reason: form.reason || undefined,
+    })
+
+    toast.success('Success', { description: 'Exception added successfully' })
+    isAddModalOpen.value = false
+    resetExceptionForm()
+    refetch()
   }
-};
+  catch (error: any) {
+    toast.error('Error', { description: error.message || 'Failed to add exception' })
+  }
+}
 
 const generateDateRange = (start: string, end: string): string[] => {
-  const dates: string[] = [];
-  const current = new Date(start);
-  const endDate = new Date(end);
-  
+  const dates: string[] = []
+  const current = new Date(start)
+  const endDate = new Date(end)
+
   while (current <= endDate) {
-    const dateStr = current.toISOString().split('T')[0];
+    const dateStr = current.toISOString().split('T')[0]
     if (dateStr) {
-      dates.push(dateStr);
+      dates.push(dateStr)
     }
-    current.setDate(current.getDate() + 1);
+    current.setDate(current.getDate() + 1)
   }
-  
-  return dates;
-};
+
+  return dates
+}
 
 const handleBlockVacation = async () => {
-  const form = vacationForm.value;
-  
+  const form = vacationForm.value
+
   if (!form.startDate || !form.endDate) {
-    toast.error('Error', {
-      description: 'Please select start and end dates'
-    });
-    return;
+    toast.error('Error', { description: 'Please select start and end dates' })
+    return
   }
 
-  const dates = generateDateRange(form.startDate, form.endDate);
-  
+  const dates = generateDateRange(form.startDate, form.endDate)
+
   if (dates.length === 0) {
-    toast.error('Error', {
-      description: 'Invalid date range'
-    });
-    return;
+    toast.error('Error', { description: 'Invalid date range' })
+    return
   }
-  
+
   try {
     await bulkCreateMutation.mutateAsync({
       dates,
       isAvailable: false,
-      reason: form.reason || 'Vacation'
-    });
-    
-    toast.success('Success', {
-      description: `${dates.length} day(s) blocked successfully`
-    });
-    
-    isVacationModalOpen.value = false;
-    resetVacationForm();
-    refetch();
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to block vacation'
-    });
+      reason: form.reason || 'Vacation',
+    })
+
+    toast.success('Success', { description: `${dates.length} day(s) blocked successfully` })
+    isVacationModalOpen.value = false
+    resetVacationForm()
+    refetch()
   }
-};
+  catch (error: any) {
+    toast.error('Error', { description: error.message || 'Failed to block vacation' })
+  }
+}
 
 const handleDelete = async (exception: AvailabilityException) => {
   if (!confirm('Are you sure you want to delete this exception?')) {
-    return;
+    return
   }
 
   try {
-    await deleteMutation.mutateAsync(exception.id);
-    toast.success('Success', {
-      description: 'Exception deleted successfully'
-    });
-    refetch();
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to delete exception'
-    });
+    await deleteMutation.mutateAsync(exception.id)
+    toast.success('Success', { description: 'Exception deleted successfully' })
+    refetch()
   }
-};
+  catch (error: any) {
+    toast.error('Error', { description: error.message || 'Failed to delete exception' })
+  }
+}
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('en-US', {
     weekday: 'short',
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
-  });
-};
+    day: 'numeric',
+  })
+}
 
 const formatTime = (timeStr: string | null) => {
-  if (!timeStr) return null;
-  return timeStr.substring(0, 5); // HH:mm
-};
+  if (!timeStr) return null
+  return timeStr.substring(0, 5)
+}
 
 const getExceptionTypeLabel = (exception: AvailabilityException) => {
   if (exception.startTime && exception.endTime) {
-    return exception.isAvailable ? 'Special Hours' : 'Time Block';
+    return exception.isAvailable ? 'Special hours' : 'Time block'
   }
-  return exception.isAvailable ? 'Extra Availability' : 'Day Off';
-};
+  return exception.isAvailable ? 'Extra availability' : 'Day off'
+}
 
-const getExceptionColor = (exception: AvailabilityException) => {
-  if (exception.isAvailable) return 'success';
-  return exception.startTime ? 'warning' : 'error';
-};
+function exceptionStatusBadge(exception: AvailabilityException) {
+  if (exception.isAvailable) {
+    return {
+      variant: 'secondary' as const,
+      class: 'border-transparent bg-muted text-primary',
+    }
+  }
+  if (exception.startTime) {
+    return {
+      variant: 'outline' as const,
+      class: 'border-amber-200 bg-amber-50 text-amber-800',
+    }
+  }
+  return { variant: 'destructive' as const, class: '' }
+}
+
+const minDate = new Date().toISOString().split('T')[0]
 </script>
 
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-start">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Availability Exceptions</h1>
-        <p class="mt-2 text-gray-600">Override your weekly schedule for specific dates</p>
-      </div>
-      <div class="flex gap-3">
+    <AppPageHeader
+      title="Availability exceptions"
+      description="Override your weekly schedule for specific dates"
+    >
+      <template #actions>
         <Button
-          icon="i-hugeicons-calendar-03"
-          size="lg"
           variant="outline"
-          to="/dashboard/availability"
+          as-child
         >
-          Weekly Schedule
+          <NuxtLink
+            to="/dashboard/availability"
+            class="gap-2"
+          >
+            <PhCalendarBlank class="size-4" />
+            Weekly schedule
+          </NuxtLink>
         </Button>
-      </div>
-    </div>
+      </template>
+    </AppPageHeader>
 
-    <!-- Actions -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-2">
-        <USwitch v-model="showPast" />
-        <span class="text-sm text-gray-600">Show past exceptions</span>
+        <Switch
+          id="show-past"
+          :model-value="showPast"
+          @update:model-value="showPast = $event"
+        />
+        <Label
+          for="show-past"
+          class="text-sm font-normal text-muted-foreground"
+        >
+          Show past exceptions
+        </Label>
       </div>
-      <div class="flex gap-3">
+      <div class="flex flex-wrap gap-3">
         <Button
-          icon="i-hugeicons-add-01"
+          class="gap-2"
           @click="isAddModalOpen = true"
         >
-          Add Exception
+          <PhPlus class="size-4" />
+          Add exception
         </Button>
         <Button
-          icon="i-hugeicons-calendar-block-01"
           variant="outline"
+          class="gap-2"
           @click="isVacationModalOpen = true"
         >
-          Block Vacation
+          <PhCalendarX class="size-4" />
+          Block vacation
         </Button>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="isPending" class="flex justify-center py-12">
-      <Icon name="i-hugeicons-loading-03" class="w-8 h-8 text-primary animate-spin" />
+    <div
+      v-if="isPending"
+      class="flex justify-center py-12"
+    >
+      <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
     </div>
 
-    <!-- Empty State -->
-    <UCard v-else-if="!exceptions || exceptions.length === 0">
-      <div class="text-center py-12">
-        <Icon name="i-hugeicons-calendar-03" class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No exceptions yet</h3>
-        <p class="text-gray-600 mb-6">Add exceptions to override your weekly schedule for specific dates</p>
-        <Button @click="isAddModalOpen = true">Add First Exception</Button>
-      </div>
-    </UCard>
+    <EmptyState
+      v-else-if="!exceptions || exceptions.length === 0"
+      :icon="PhCalendarBlank"
+      title="No exceptions yet"
+      description="Add exceptions to override your weekly schedule for specific dates"
+    >
+      <template #actions>
+        <Button @click="isAddModalOpen = true">
+          Add first exception
+        </Button>
+      </template>
+    </EmptyState>
 
-    <!-- Exceptions List -->
-    <div v-else class="space-y-4">
-      <UCard
+    <div
+      v-else
+      class="space-y-4"
+    >
+      <Card
         v-for="exception in exceptions"
         :key="exception.id"
+        class="rounded-xl"
       >
-        <div class="flex justify-between items-start">
-          <div class="flex-1 space-y-2">
-            <div class="flex items-center gap-3">
-              <h3 class="font-semibold text-lg">{{ formatDate(exception.date) }}</h3>
-              <UBadge
-                :color="getExceptionColor(exception)"
-                variant="subtle"
-              >
+        <CardContent class="flex items-start justify-between gap-4 pt-6">
+          <div class="min-w-0 flex-1 space-y-2">
+            <div class="flex flex-wrap items-center gap-3">
+              <h3 class="text-lg font-semibold text-foreground">
+                {{ formatDate(exception.date) }}
+              </h3>
+              <Badge v-bind="exceptionStatusBadge(exception)">
                 {{ getExceptionTypeLabel(exception) }}
-              </UBadge>
+              </Badge>
             </div>
 
-            <div class="flex items-center gap-4 text-sm text-gray-600">
-              <div v-if="exception.startTime && exception.endTime" class="flex items-center gap-2">
-                <Icon name="i-hugeicons-clock-01" class="w-4 h-4" />
-                <span>{{ formatTime(exception.startTime) }} - {{ formatTime(exception.endTime) }}</span>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              <div
+                v-if="exception.startTime && exception.endTime"
+                class="flex items-center gap-2"
+              >
+                <PhClock class="size-4" />
+                <span>{{ formatTime(exception.startTime) }} – {{ formatTime(exception.endTime) }}</span>
               </div>
-              <div v-else class="flex items-center gap-2">
-                <Icon name="i-hugeicons-calendar-block-01" class="w-4 h-4" />
+              <div
+                v-else
+                class="flex items-center gap-2"
+              >
+                <PhCalendarX class="size-4" />
                 <span>All day</span>
               </div>
             </div>
 
-            <p v-if="exception.reason" class="text-sm text-gray-600">
+            <p
+              v-if="exception.reason"
+              class="text-sm text-muted-foreground"
+            >
               {{ exception.reason }}
             </p>
           </div>
 
           <ButtonBusy
-            icon="i-hugeicons-delete-02"
             variant="ghost"
-            color="error"
-            size="sm"
-            @click="handleDelete(exception)"
+            size="icon"
+            class="text-destructive hover:text-destructive"
             :loading="deleteMutation.isPending.value"
-          />
-        </div>
-      </UCard>
+            @click="handleDelete(exception)"
+          >
+            <PhTrash class="size-4" />
+          </ButtonBusy>
+        </CardContent>
+      </Card>
     </div>
 
-    <!-- Add Exception Modal -->
-    <UModal v-model:open="isAddModalOpen" title="Add Exception">
-      <template #body>
-        <div class="space-y-6">
-          <UFormField label="Date" name="date" required size="xl">
-            <UInput
+    <Dialog v-model:open="isAddModalOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add exception</DialogTitle>
+        </DialogHeader>
+        <FieldGroup class="space-y-4">
+          <Field>
+            <FieldLabel for="ex-date">
+              Date
+            </FieldLabel>
+            <Input
+              id="ex-date"
               v-model="exceptionForm.date"
               type="date"
-              size="xl"
-              :min="new Date().toISOString().split('T')[0]"
-              class="w-full"
+              :min="minDate"
+              required
             />
-          </UFormField>
+          </Field>
 
-          <UFormField label="Type" name="isAvailable" required size="xl">
-            <URadioGroup
-              v-model="exceptionForm.isAvailable"
-              :items="[
-                { value: false, label: 'Block time (unavailable)' },
-                { value: true, label: 'Add special availability' }
-              ]"
-            />
-          </UFormField>
+          <Field>
+            <FieldLabel>Type</FieldLabel>
+            <RadioGroup
+              v-model="exceptionTypeModel"
+              class="grid gap-2"
+            >
+              <div class="flex items-center gap-2">
+                <RadioGroupItem
+                  id="ex-blocked"
+                  value="blocked"
+                />
+                <Label for="ex-blocked">
+                  Block time (unavailable)
+                </Label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioGroupItem
+                  id="ex-available"
+                  value="available"
+                />
+                <Label for="ex-available">
+                  Add special availability
+                </Label>
+              </div>
+            </RadioGroup>
+          </Field>
 
-          <UFormField label="Duration" name="isAllDay" size="xl">
-            <div class="flex items-center gap-2">
-              <USwitch v-model="exceptionForm.isAllDay" />
-              <span class="text-sm text-gray-700">All day</span>
+          <Field>
+            <div class="flex items-center gap-3">
+              <Switch
+                id="ex-all-day"
+                :model-value="exceptionForm.isAllDay"
+                @update:model-value="exceptionForm.isAllDay = $event"
+              />
+              <FieldLabel
+                for="ex-all-day"
+                class="font-normal"
+              >
+                All day
+              </FieldLabel>
             </div>
-          </UFormField>
+          </Field>
 
-          <div v-if="!exceptionForm.isAllDay" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <UFormField label="Start Time" name="startTime" required size="xl">
-              <UInput
+          <div
+            v-if="!exceptionForm.isAllDay"
+            class="grid grid-cols-1 gap-4 md:grid-cols-2"
+          >
+            <Field>
+              <FieldLabel for="ex-start">
+                Start time
+              </FieldLabel>
+              <Input
+                id="ex-start"
                 v-model="exceptionForm.startTime"
                 type="time"
-                size="xl"
-                class="w-full"
+                required
               />
-            </UFormField>
-            <UFormField label="End Time" name="endTime" required size="xl">
-              <UInput
+            </Field>
+            <Field>
+              <FieldLabel for="ex-end">
+                End time
+              </FieldLabel>
+              <Input
+                id="ex-end"
                 v-model="exceptionForm.endTime"
                 type="time"
-                size="xl"
-                class="w-full"
+                required
               />
-            </UFormField>
+            </Field>
           </div>
 
-          <UFormField label="Reason (optional)" name="reason" size="xl">
-            <UTextarea
+          <Field>
+            <FieldLabel for="ex-reason">
+              Reason (optional)
+            </FieldLabel>
+            <Textarea
+              id="ex-reason"
               v-model="exceptionForm.reason"
               placeholder="e.g., Lunch meeting, Court appearance"
-              size="xl"
               :rows="3"
-              class="w-full"
             />
-          </UFormField>
-        </div>
-      </template>
-
-      <template #footer>
-        <div class="flex justify-end gap-3">
+          </Field>
+        </FieldGroup>
+        <DialogFooter>
           <Button
             variant="outline"
-            size="lg"
             @click="isAddModalOpen = false"
           >
             Cancel
           </Button>
           <ButtonBusy
-            size="lg"
-            @click="handleAddException"
             :loading="createMutation.isPending.value"
+            @click="handleAddException"
           >
-            Add Exception
+            Add exception
           </ButtonBusy>
-        </div>
-      </template>
-    </UModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
-    <!-- Block Vacation Modal -->
-    <UModal v-model:open="isVacationModalOpen" title="Block Vacation Period">
-      <template #body>
-        <div class="space-y-6">
-          <UFormField label="Start Date" name="startDate" required size="xl">
-            <UInput
+    <Dialog v-model:open="isVacationModalOpen">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Block vacation period</DialogTitle>
+        </DialogHeader>
+        <FieldGroup class="space-y-4">
+          <Field>
+            <FieldLabel for="vac-start">
+              Start date
+            </FieldLabel>
+            <Input
+              id="vac-start"
               v-model="vacationForm.startDate"
               type="date"
-              size="xl"
-              :min="new Date().toISOString().split('T')[0]"
-              class="w-full"
+              :min="minDate"
+              required
             />
-          </UFormField>
-
-          <UFormField label="End Date" name="endDate" required size="xl">
-            <UInput
+          </Field>
+          <Field>
+            <FieldLabel for="vac-end">
+              End date
+            </FieldLabel>
+            <Input
+              id="vac-end"
               v-model="vacationForm.endDate"
               type="date"
-              size="xl"
-              :min="vacationForm.startDate || new Date().toISOString().split('T')[0]"
-              class="w-full"
+              :min="vacationForm.startDate || minDate"
+              required
             />
-          </UFormField>
-
-          <UFormField label="Reason (optional)" name="reason" size="xl">
-            <UInput
+          </Field>
+          <Field>
+            <FieldLabel for="vac-reason">
+              Reason (optional)
+            </FieldLabel>
+            <Input
+              id="vac-reason"
               v-model="vacationForm.reason"
               placeholder="e.g., Summer vacation, Conference"
-              size="xl"
-              class="w-full"
             />
-          </UFormField>
-
-          <div v-if="vacationForm.startDate && vacationForm.endDate" class="p-4 bg-blue-50 rounded-lg">
-            <p class="text-sm text-blue-900">
+          </Field>
+          <div
+            v-if="vacationForm.startDate && vacationForm.endDate"
+            class="rounded-lg border border-border bg-muted/50 p-4"
+          >
+            <p class="text-sm text-foreground">
               This will block {{ generateDateRange(vacationForm.startDate, vacationForm.endDate).length }} day(s)
             </p>
           </div>
-        </div>
-      </template>
-
-      <template #footer>
-        <div class="flex justify-end gap-3">
+        </FieldGroup>
+        <DialogFooter>
           <Button
             variant="outline"
-            size="lg"
             @click="isVacationModalOpen = false"
           >
             Cancel
           </Button>
           <ButtonBusy
-            color="error"
-            size="lg"
-            @click="handleBlockVacation"
+            variant="destructive"
             :loading="bulkCreateMutation.isPending.value"
+            @click="handleBlockVacation"
           >
-            Block Dates
+            Block dates
           </ButtonBusy>
-        </div>
-      </template>
-    </UModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
