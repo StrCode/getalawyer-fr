@@ -16,22 +16,31 @@ import type {
   CreateBookingInput,
 } from '~/types'
 
+type BookingsQueryOptions = {
+  enabled?: MaybeRef<boolean>
+}
+
 export const useBookings = () => {
   const queryClient = useQueryClient()
 
   // Query: Get client bookings
-  const useClientBookings = (filters?: Ref<BookingFilters> | BookingFilters) => {
+  const useClientBookings = (
+    filters?: Ref<BookingFilters> | BookingFilters,
+    options?: BookingsQueryOptions,
+  ) => {
     return useQuery({
       queryKey: computed(() => [...queryKeys.bookings.client, unref(filters)]),
       queryFn: () => bookingsAPI.getClientBookings(unref(filters)),
+      enabled: computed(() => options?.enabled === undefined || !!unref(options.enabled)),
     })
   }
 
   // Query: Get upcoming client bookings
-  const useUpcomingBookings = () => {
+  const useUpcomingBookings = (options?: BookingsQueryOptions) => {
     return useQuery({
       queryKey: [...queryKeys.bookings.client, 'upcoming'],
       queryFn: bookingsAPI.getUpcomingBookings,
+      enabled: computed(() => options?.enabled === undefined || !!unref(options.enabled)),
     })
   }
 
@@ -91,10 +100,14 @@ export const useBookings = () => {
   }
 
   // Query: Get lawyer bookings
-  const useLawyerBookings = (filters?: Ref<{ status?: string; upcoming?: boolean; date?: string }>) => {
+  const useLawyerBookings = (
+    filters?: Ref<{ status?: string; upcoming?: boolean; date?: string }>,
+    options?: BookingsQueryOptions,
+  ) => {
     return useQuery({
       queryKey: computed(() => [...queryKeys.bookings.lawyer, unref(filters)]),
       queryFn: () => bookingsAPI.getLawyerBookings(unref(filters)),
+      enabled: computed(() => options?.enabled === undefined || !!unref(options.enabled)),
     })
   }
 

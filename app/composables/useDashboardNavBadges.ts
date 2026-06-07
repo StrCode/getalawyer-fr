@@ -16,8 +16,15 @@ export function useDashboardNavBadges() {
   const { isUpcomingBooking } = useBookingDisplay()
 
   const { useClientBookings, useLawyerBookings } = useBookings()
-  const { data: clientBookings, isFetched: clientBookingsFetched } = useClientBookings()
-  const { data: lawyerBookings, isFetched: lawyerBookingsFetched } = useLawyerBookings()
+  const isClient = computed(() => role.value === 'client')
+  const isLawyer = computed(() => role.value === 'lawyer')
+
+  const { data: clientBookings, isFetched: clientBookingsFetched } = useClientBookings(undefined, {
+    enabled: isClient,
+  })
+  const { data: lawyerBookings, isFetched: lawyerBookingsFetched } = useLawyerBookings(undefined, {
+    enabled: isLawyer,
+  })
 
   const { useConversations } = useMessaging()
   const { data: conversations, isFetched: conversationsFetched } = useConversations()
