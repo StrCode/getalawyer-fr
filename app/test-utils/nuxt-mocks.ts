@@ -3,9 +3,12 @@ export const useNuxtApp = () => ({
   $fetch: vi.fn()
 })
 
+import { DEV_API_URL, DEV_BETTER_AUTH_URL } from '~/lib/api-config'
+
 export const useRuntimeConfig = () => ({
   public: {
-    apiUrl: 'http://localhost:3000'
+    apiUrl: DEV_API_URL,
+    betterAuthUrl: DEV_BETTER_AUTH_URL,
   }
 })
 

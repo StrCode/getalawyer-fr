@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import { DEV_API_URL, DEV_BETTER_AUTH_URL } from "./app/lib/api-config";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -15,8 +16,10 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
     define: {
-      'import.meta.env.VITE_NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'https://api.getalawyer.ng'),
-      'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || 'https://api.getalawyer.ng'),
+      'import.meta.env.VITE_NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || DEV_API_URL),
+      'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || DEV_API_URL),
+      'import.meta.env.VITE_NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL),
+      'import.meta.env.NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL),
     },
   },
   modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
@@ -95,8 +98,8 @@ export default defineNuxtConfig({
      */
     lawyerMembershipPriceSourceUrl: '',
     public: {
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001',
-      betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:3001/api/auth',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || DEV_API_URL,
+      betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL,
     },
   },
 })

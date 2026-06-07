@@ -2,13 +2,14 @@
  * Composable for lawyers listing and search
  */
 
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useInfiniteQuery } from '@tanstack/vue-query'
 import { computed, type MaybeRef, unref } from 'vue'
 import { api } from '~/lib/api'
 import { queryKeys } from '~/lib/query-client'
 
 export interface LawyersSearchParams {
   q?: string
+  name?: string
   state?: string
   specializations?: string[]
   minExperience?: number
@@ -19,7 +20,7 @@ export interface LawyersSearchParams {
 }
 
 export const useLawyers = () => {
-  // Query: Search lawyers with filters
+  // Query: Search lawyers with filters (single page)
   const useLawyersList = (params?: MaybeRef<LawyersSearchParams>) => {
     const searchParams = computed(() => unref(params))
     
@@ -27,6 +28,21 @@ export const useLawyers = () => {
       queryKey: computed(() => ['lawyers', 'search', searchParams.value]),
       queryFn: () => api.search.lawyers(searchParams.value || {}),
       staleTime: 5 * 60 * 1000, // 5 minutes
+    })
+  }
+
+  // Infinite query: load-more directory listing
+  const useLawyersInfiniteList = (params?: MaybeRef<Omit<LawyersSearchParams, 'page'>>) => {
+    const searchParams = computed(() => unref(params) ?? {})
+
+    return useInfiniteQuery({
+      queryKey: computed(() => ['lawyers', 'search', 'infinite', searchParams.value]),
+      queryFn: ({ pageParam }) =>
+        api.search.lawyers({ ...searchParams.value, page: pageParam }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) =>
+        lastPage.pagination.hasMore ? lastPage.pagination.page + 1 : undefined,
+      staleTime: 5 * 60 * 1000,
     })
   }
 
@@ -54,6 +70,7 @@ export const useLawyers = () => {
 
   return {
     useLawyersList,
+    useLawyersInfiniteList,
     useLawyerDetail,
     useLawyerPublicProfile,
   }

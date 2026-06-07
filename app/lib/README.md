@@ -27,8 +27,8 @@ npm install
 Copy `.env.example` to `.env` and fill in the values:
 
 ```env
-NUXT_PUBLIC_API_URL=http://localhost:3000
-NUXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000/api/auth
+NUXT_PUBLIC_API_URL=http://localhost:3001
+NUXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3001/api/auth
 ```
 
 ### 3. Using Authentication

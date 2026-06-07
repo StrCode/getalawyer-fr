@@ -77,10 +77,12 @@ async function retryWithBackoff<T>(
   throw lastError!;
 }
 
+import { DEV_API_URL } from '../api-config';
+
 // Get API URL from runtime config
 const getApiUrl = () => {
   const config = useRuntimeConfig();
-  return config.public.apiUrl || "http://localhost:3000";
+  return config.public.apiUrl || DEV_API_URL;
 };
 
 // HTTP Client

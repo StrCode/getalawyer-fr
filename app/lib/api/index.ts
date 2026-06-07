@@ -54,8 +54,6 @@ export interface LawyerSearchResult {
 export interface SearchPagination {
   page: number;
   limit: number;
-  total: number;
-  totalPages: number;
   hasMore: boolean;
 }
 
@@ -63,7 +61,6 @@ export interface SearchFilters {
   specializations: Array<{
     id: string;
     name: string;
-    count: number;
   }>;
 }
 
@@ -335,6 +332,7 @@ export const api = {
   search: {
     lawyers: (params: {
       q?: string;
+      name?: string;
       state?: string;
       specializations?: string[];
       minExperience?: number;
@@ -345,6 +343,7 @@ export const api = {
     }) => {
       const searchParams = new URLSearchParams();
       if (params.q) searchParams.set("q", params.q);
+      if (params.name) searchParams.set("name", params.name);
       if (params.state) searchParams.set("state", params.state);
       if (params.specializations?.length) {
         searchParams.set("specializations", params.specializations.join(","));

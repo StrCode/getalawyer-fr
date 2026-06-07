@@ -2,7 +2,6 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
-import { usePagination } from '~/composables/usePagination'
 import { watchPersistRecentLawyerDirectorySearch } from '~/composables/useRecentLawyerDirectorySearches'
 import { useLawyers } from '~/composables/useLawyers'
 import { useSpecializations } from '~/composables/useSpecializations'
@@ -116,16 +115,9 @@ useHead({
 
 const route = useRoute()
 const router = useRouter()
-const { useLawyersList } = useLawyers()
+const { useLawyersInfiniteList } = useLawyers()
 
-const totalItems = ref(0)
-
-const { currentPage, itemsPerPage } = usePagination({
-  itemsPerPage: 12,
-  totalItems,
-})
-
-const resultsLayout = ref<'grid' | 'list'>(parseViewQuery(route.query.view) ?? 'grid')
+const ITEMS_PER_PAGE = 12
 
 function directoryQueryMerge(base: LocationQuery): LocationQuery {
   const q: LocationQuery = { ...base }
@@ -133,12 +125,11 @@ function directoryQueryMerge(base: LocationQuery): LocationQuery {
     q.view = 'list'
   else
     delete q.view
-  if (currentPage.value > 1)
-    q.page = String(currentPage.value)
-  else
-    delete q.page
+  delete q.page
   return q
 }
+
+const resultsLayout = ref<'grid' | 'list'>(parseViewQuery(route.query.view) ?? 'grid')
 
 const { filters, resetFilters, filtersFromQuery, filtersToQuery } = useLawyerFilters({
   mergeQuery: directoryQueryMerge,
@@ -185,7 +176,6 @@ function specializationNameById(id: string): string {
 }
 
 function toggleSpecialization(id: string, checked: boolean) {
-  currentPage.value = 1
   const next = new Set(filters.value.practiceAreas)
   if (checked) next.add(id)
   else next.delete(id)
@@ -242,7 +232,6 @@ function stateLabel(code: string): string {
 }
 
 function toggleStateCode(code: string, checked: boolean) {
-  currentPage.value = 1
   const norm = normalizeSingleStateCode(code)
   const next = new Set(selectedStateCodes.value)
   if (checked) next.add(norm)
@@ -258,13 +247,11 @@ function removeStateCode(code: string) {
 }
 
 function clearStatesFilter() {
-  currentPage.value = 1
   filters.value = { ...filters.value, location: '' }
   statePopoverOpen.value = false
 }
 
 function clearSpecializationsFilter() {
-  currentPage.value = 1
   filters.value = { ...filters.value, practiceAreas: [] }
   specPopoverOpen.value = false
 }
@@ -297,14 +284,14 @@ const searchParams = computed(() => {
   const params: Record<string, unknown> = {}
 
   if (filters.value.keywords) params.q = filters.value.keywords
+  if (filters.value.lawyerName) params.name = filters.value.lawyerName
   if (filters.value.location) params.state = filters.value.location
   if (filters.value.practiceAreas.length > 0) params.specializations = filters.value.practiceAreas
   if (filters.value.minExperience) params.minExperience = filters.value.minExperience
   if (filters.value.priceRange.max) params.maxExperience = filters.value.priceRange.max
-  if (currentPage.value > 1) params.page = currentPage.value
-  params.limit = itemsPerPage.value
+  params.limit = ITEMS_PER_PAGE
 
-  if (filters.value.keywords) {
+  if (filters.value.keywords || filters.value.lawyerName) {
     params.sortBy = 'relevance'
   }
   else {
@@ -314,26 +301,18 @@ const searchParams = computed(() => {
   return params
 })
 
-const { data: lawyersData, isLoading, error } = useLawyersList(searchParams)
+const {
+  data: lawyersData,
+  isLoading,
+  isFetchingNextPage,
+  hasNextPage,
+  fetchNextPage,
+  error,
+} = useLawyersInfiniteList(searchParams)
 
 const lawyers = computed(() => {
-  if (!lawyersData.value?.results) return []
-  return lawyersData.value.results
-})
-
-const pagination = computed(() => lawyersData.value?.pagination)
-
-watch(pagination, (newPagination) => {
-  if (newPagination) {
-    totalItems.value = newPagination.total
-  }
-}, { immediate: true })
-
-/** Pagination changes don't go through filter debounce — mirror query here. */
-watch(currentPage, () => {
-  router.replace({
-    query: directoryQueryMerge(filtersToQuery(filters.value)),
-  })
+  if (!lawyersData.value?.pages) return []
+  return lawyersData.value.pages.flatMap(page => page.results)
 })
 
 watch(resultsLayout, (v) => {
@@ -371,7 +350,6 @@ const activeFilterCount = computed(() => {
 })
 
 function clearAllFilters(): void {
-  currentPage.value = 1
   resetFilters()
 }
 </script>
@@ -397,8 +375,27 @@ function clearAllFilters(): void {
         <div
           role="search"
           aria-label="Search lawyers"
-          class="flex w-full flex-col gap-4 md:flex-row md:items-end md:gap-x-5 md:gap-y-4"
+          class="flex w-full flex-col gap-4 md:flex-row md:flex-wrap md:items-end md:gap-x-5 md:gap-y-4"
         >
+          <label class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
+            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
+              Lawyer name
+            </span>
+            <span
+              class="flex items-center rounded-lg border border-dotted border-muted-foreground/35 bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:border-solid focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] dark:bg-card dark:border-muted-foreground/30"
+            >
+              <input
+                v-model="filters.lawyerName"
+                type="search"
+                enterkeyhint="search"
+                autocomplete="off"
+                aria-label="Lawyer name"
+                class="min-w-0 flex-1 border-0 bg-transparent text-[0.9375rem] text-foreground outline-none placeholder:text-muted-foreground"
+                placeholder="Search by legal name"
+              >
+            </span>
+          </label>
+
           <label class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
             <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
               Topic or keywords
@@ -549,10 +546,12 @@ function clearAllFilters(): void {
 
     <div class="mx-auto box-border w-full max-w-7xl px-4 py-7 md:py-7 sm:px-6 lg:px-8">
       <main class="w-full min-w-0">
-        <div class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-3">
+        <div
+          v-if="activeFilterCount > 0"
+          class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-3"
+        >
           <div class="flex flex-wrap items-center gap-2.5">
             <button
-              v-if="activeFilterCount > 0"
               type="button"
               class="shrink-0 cursor-pointer rounded-full border border-border bg-background px-3 py-1.5 font-semibold text-[0.8125rem] text-muted-foreground transition-colors hover:border-primary/35 hover:text-[#0f3d28] dark:bg-card dark:hover:text-primary"
               @click="clearAllFilters"
@@ -560,8 +559,11 @@ function clearAllFilters(): void {
               Clear all
             </button>
 
-            <div v-if="pagination" class="font-semibold text-[0.8125rem] text-muted-foreground">
-              Showing {{ ((pagination.page - 1) * pagination.limit) + 1 }}-{{ Math.min(pagination.page * pagination.limit, pagination.total) }} of {{ pagination.total }} lawyers
+            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80">
+              Name: {{ filters.lawyerName }}
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.lawyerName = ''">
+                &times;
+              </button>
             </div>
 
             <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full bg-muted px-3.5 py-1.5 font-medium text-sm text-foreground dark:bg-muted/80">
@@ -703,45 +705,19 @@ function clearAllFilters(): void {
           />
         </div>
 
-        <nav
-          v-if="pagination && pagination.totalPages > 1"
-          class="flex flex-wrap justify-center items-center gap-4 sm:gap-4 mt-8 pb-8"
-          aria-label="Pagination"
+        <div
+          v-if="hasNextPage && lawyers.length > 0"
+          class="mt-8 flex justify-center pb-8"
         >
           <Button
             color="neutral"
             variant="outline"
-            icon="i-heroicons-chevron-left"
-            :disabled="currentPage === 1"
-            @click="currentPage--"
+            :disabled="isFetchingNextPage"
+            @click="fetchNextPage()"
           >
-            Previous
+            {{ isFetchingNextPage ? 'Loading…' : 'Load more lawyers' }}
           </Button>
-
-          <div class="flex max-sm:flex flex-wrap justify-center gap-2 order-3 sm:order-none w-full sm:w-auto basis-full sm:basis-auto">
-            <button
-              v-for="page in Math.min(pagination.totalPages, 5)"
-              :key="page"
-              type="button"
-              class="bg-background aria-[current=page]:bg-primary hover:bg-muted/60 dark:bg-card border border-border aria-[current=page]:border-primary hover:border-primary rounded-lg min-w-10 h-10 font-sans font-semibold aria-[current=page]:text-white text-sm transition-colors cursor-pointer"
-              :aria-current="page === currentPage ? 'page' : undefined"
-              @click="currentPage = page"
-            >
-              {{ page }}
-            </button>
-            <span v-if="pagination.totalPages > 5" class="px-2 font-semibold text-muted-foreground">…</span>
-          </div>
-
-          <Button
-            color="neutral"
-            variant="outline"
-            trailing-icon="i-heroicons-chevron-right"
-            :disabled="!pagination.hasMore"
-            @click="currentPage++"
-          >
-            Next
-          </Button>
-        </nav>
+        </div>
       </main>
     </div>
   </div>
