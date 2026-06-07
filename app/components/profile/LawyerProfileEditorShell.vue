@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
 import ProfileAboutSection from '@/components/profile/sections/ProfileAboutSection.vue'
@@ -14,12 +15,16 @@ import {
   getProfileEditorApprovalNotice,
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
+import { getSessionUserType } from '~/lib/session-user'
 
-const { session } = useAuth()
-const isLawyer = computed(() => session.value?.user.userType === 'lawyer')
+const { session, isPending: authPending } = useAuth()
+
+const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
+
+const lawyerQueryEnabled = computed(() => import.meta.client && isLawyer.value)
 
 const { data: onboardingStatus, isPending: onboardingStatusPending } =
-  useLawyerOnboardingStatus({ enabled: isLawyer })
+  useLawyerOnboardingStatus({ enabled: lawyerQueryEnabled })
 
 const approvalNotice = computed(() =>
   onboardingStatus.value ? getProfileEditorApprovalNotice(onboardingStatus.value) : null
@@ -49,16 +54,28 @@ const {
   completeness,
   updateAbout,
 } = useLawyerProfileEditor({
-  enabled: isLawyer,
+  enabled: lawyerQueryEnabled,
   activeConsultationTypeCount,
   hasAvailability,
 })
 
 const profile = computed(() => profileQuery.data.value)
+
 const isLoading = computed(
-  () => profileQuery.isPending.value || onboardingStatusPending.value
+  () =>
+    authPending.value ||
+    (lawyerQueryEnabled.value &&
+      (profileQuery.isPending.value || onboardingStatusPending.value))
 )
+
 const isError = computed(() => profileQuery.isError.value)
+
+const loadErrorMessage = computed(() => {
+  const err = profileQuery.error.value
+  if (err instanceof ApiError) return err.message
+  if (err instanceof Error) return err.message
+  return 'We could not load your profile.'
+})
 
 async function handleSaveAbout(payload: { headline: string | null; about: string | null }) {
   if (!canEdit.value) {
@@ -148,8 +165,17 @@ const sectionSummaries = computed(() => {
     >
       <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
         <PhWarningCircle class="size-9 text-muted-foreground" />
+        <p class="text-sm font-medium text-foreground">
+          Couldn't load profile
+        </p>
         <p class="text-sm text-muted-foreground">
-          We couldn't load your profile. Refresh and try again.
+          {{ loadErrorMessage }}
+        </p>
+        <p
+          v-if="loadErrorMessage.toLowerCase().includes('not found')"
+          class="text-xs text-muted-foreground"
+        >
+          Your account may not have a lawyer record yet. Complete onboarding or contact support.
         </p>
         <Button
           variant="outline"
@@ -226,5 +252,14 @@ const sectionSummaries = computed(() => {
         </CardContent>
       </Card>
     </template>
+
+    <Card
+      v-else
+      class="border-dashed"
+    >
+      <CardContent class="py-10 text-center text-sm text-muted-foreground">
+        No profile data available. Try refreshing the page.
+      </CardContent>
+    </Card>
   </motion.div>
 </template>

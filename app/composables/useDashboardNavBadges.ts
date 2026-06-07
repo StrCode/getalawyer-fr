@@ -1,6 +1,7 @@
 import type { Booking } from '~/types/booking'
 import type { ConversationInfo } from '~/types/messaging'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
+import { getSessionUserType } from '~/lib/session-user'
 
 function badgeFromCount(count: number): string | undefined {
   return count > 0 ? String(count) : undefined
@@ -11,7 +12,7 @@ function badgeFromCount(count: number): string | undefined {
  */
 export function useDashboardNavBadges() {
   const { session } = useAuth()
-  const role = computed(() => session.value?.user.userType)
+  const role = computed(() => getSessionUserType(session.value?.user))
   const { isUpcomingBooking } = useBookingDisplay()
 
   const { useClientBookings, useLawyerBookings } = useBookings()

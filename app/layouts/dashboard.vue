@@ -13,6 +13,7 @@
 import DashboardShell from '@/components/dashboard/DashboardShell.vue'
 import type { DashboardNavItem } from '@/types/dashboard-nav'
 import { SidebarProvider } from '@/components/ui/sidebar'
+import { getSessionUserType } from '~/lib/session-user'
 import {
   PhBriefcase,
   PhCalendar,
@@ -40,7 +41,7 @@ const dashboardSidebarStyle = {
 } as const
 
 const { session } = useAuth()
-const role = computed(() => session.value?.user.userType as 'client' | 'lawyer' | undefined)
+const role = computed(() => getSessionUserType(session.value?.user) as 'client' | 'lawyer' | undefined)
 
 const {
   clientUpcomingBookingsBadge,

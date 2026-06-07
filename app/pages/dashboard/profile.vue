@@ -5,9 +5,17 @@
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
   >
-    <LawyerProfileEditorShell v-if="!isClient" />
+    <div
+      v-if="authPending"
+      class="space-y-4"
+    >
+      <Skeleton class="h-36 w-full rounded-xl" />
+      <Skeleton class="h-64 w-full rounded-xl" />
+    </div>
 
-    <template v-else>
+    <LawyerProfileEditorShell v-else-if="isLawyer" />
+
+    <template v-else-if="isClient">
       <!-- Sticky actions (Clay / Relevance AI pattern) -->
       <div class="dashboard-page-header">
         <div class="min-w-0">
@@ -94,7 +102,7 @@
             <div class="relative shrink-0 self-center sm:self-auto">
               <Avatar class="size-24 ring-4 ring-background shadow-md sm:size-28">
                 <AvatarImage
-                  :src="avatarPreview ?? profile?.image ?? undefined"
+                  :src="avatarSrc"
                   :alt="form.name || 'Profile'"
                 />
                 <AvatarFallback class="bg-primary text-2xl text-primary-foreground">
@@ -442,6 +450,7 @@
 </template>
 
 <script setup lang="ts">
+import { motion } from 'motion-v'
 import {
   PhBuildings,
   PhCamera,
@@ -453,6 +462,7 @@ import {
   PhWarningCircle,
 } from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
+import LawyerProfileEditorShell from '@/components/profile/LawyerProfileEditorShell.vue'
 import ProfileSettingsRow from '@/components/dashboard/ProfileSettingsRow.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -475,6 +485,7 @@ import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientProfile } from '~/composables/useClientProfile'
 import type { ClientProfile } from '~/lib/api'
 import { ApiError } from '~/lib/api/client'
+import { getSessionUserType } from '~/lib/session-user'
 
 const PHONE_REGEX = /^\+?[1-9]\d{1,14}$/
 const DEFAULT_COUNTRY = 'NG'
@@ -493,8 +504,9 @@ definePageMeta({
   middleware: 'auth',
 })
 
-const { session } = useAuth()
-const isClient = computed(() => session.value?.user.userType === 'client')
+const { session, isPending: authPending } = useAuth()
+const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
+const isClient = computed(() => getSessionUserType(session.value?.user) === 'client')
 
 const { useProfile, useUpdateProfile, useUploadAvatar } = useClientProfile()
 const { useCountries } = useClientOnboarding()
@@ -577,6 +589,8 @@ const initials = computed(() => {
   if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase()
   return `${parts[0]![0]}${parts[parts.length - 1]![0]}`.toUpperCase()
 })
+
+const avatarSrc = computed(() => avatarPreview.value ?? profile.value?.image ?? '')
 
 const isDirty = computed(() => JSON.stringify(form) !== snapshot.value)
 

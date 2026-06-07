@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { lawyerProfileAPI } from '~/lib/api/lawyer-profile'
 import { computeProfileCompleteness } from '~/lib/profile-completeness'
 import { queryKeys } from '~/lib/query-client'
+import { getSessionUserType } from '~/lib/session-user'
 import type {
   CreateEducationInput,
   CreateExperienceInput,
@@ -13,26 +14,49 @@ import type {
   UpdateLawyerOfficeInput,
 } from '~/types/lawyer-profile-editor'
 
-async function fetchEditorProfile(): Promise<LawyerProfileEditorData> {
-  const res = await lawyerProfileAPI.getEditor()
-  if (!res.data) {
+function normalizeEditorProfileResponse(res: unknown): LawyerProfileEditorData {
+  if (!res || typeof res !== 'object') {
     throw new Error('Invalid lawyer profile response')
   }
-  return res.data
+
+  const payload = res as Record<string, unknown>
+  const data =
+    payload.data && typeof payload.data === 'object'
+      ? (payload.data as LawyerProfileEditorData)
+      : (payload as unknown as LawyerProfileEditorData)
+
+  if (!('about' in data) || !Array.isArray(data.experiences)) {
+    throw new Error('Invalid lawyer profile response')
+  }
+
+  return data
+}
+
+async function fetchEditorProfile(): Promise<LawyerProfileEditorData> {
+  const res = await lawyerProfileAPI.getEditor()
+  return normalizeEditorProfileResponse(res)
 }
 
 export function useLawyerProfileEditor(options?: {
-  enabled?: Ref<boolean> | boolean
-  activeConsultationTypeCount?: Ref<number> | number
-  hasAvailability?: Ref<boolean> | boolean
+  enabled?: MaybeRef<boolean>
+  activeConsultationTypeCount?: MaybeRef<number>
+  hasAvailability?: MaybeRef<boolean>
 }) {
   const queryClient = useQueryClient()
   const { session } = useAuth()
 
+  const queryEnabled = computed(() => {
+    if (!import.meta.client) return false
+    if (options?.enabled !== undefined) {
+      return Boolean(unref(options.enabled))
+    }
+    return getSessionUserType(session.value?.user) === 'lawyer'
+  })
+
   const profileQuery = useQuery({
     queryKey: queryKeys.lawyers.profileEditor,
     queryFn: fetchEditorProfile,
-    enabled: options?.enabled ?? true,
+    enabled: queryEnabled,
   })
 
   const invalidate = () =>
