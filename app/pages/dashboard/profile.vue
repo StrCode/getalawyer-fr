@@ -5,11 +5,7 @@
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
   >
-    <Card v-if="!isClient" class="border-dashed">
-      <CardContent class="py-12 text-center text-sm text-muted-foreground">
-        Lawyer profile editing is coming soon. Use Settings for account options in the meantime.
-      </CardContent>
-    </Card>
+    <LawyerProfileEditorShell v-if="!isClient" />
 
     <template v-else>
       <!-- Sticky actions (Clay / Relevance AI pattern) -->

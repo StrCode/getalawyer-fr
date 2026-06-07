@@ -66,6 +66,7 @@ export const queryKeys = {
     all: ["lawyers"] as const,
     detail: (id: string) => ["lawyers", id] as const,
     public: (id: string) => ["lawyers", "public", id] as const,
+    profileEditor: ["lawyer", "profile", "editor"] as const,
   },
   calendar: {
     connection: ["calendar", "connection"] as const,
