@@ -1,16 +1,19 @@
 import { authClient } from "~/lib/auth-client";
 import { toBetterAuthPhone } from "~/lib/phone";
 
-export type PhonePasswordStrategy = "setPassword" | "resetPassword";
+export type PhonePasswordStrategy = "serverSetPassword" | "resetPassword";
 
-/** Which path passed Phase 1.5 spike — resetPassword works on Better Auth 1.6.20; setPassword is server-only */
+/** serverSetPassword: one OTP after verify (via /api/account/set-phone-password). resetPassword: legacy two-OTP fallback. */
 export function getPhonePasswordStrategy(): PhonePasswordStrategy {
   const configured = import.meta.env.NUXT_PUBLIC_PHONE_PASSWORD_STRATEGY;
-  if (configured === "setPassword") return "setPassword";
-  return "resetPassword";
+  if (configured === "resetPassword") return "resetPassword";
+  return "serverSetPassword";
 }
 
 export function usePhoneAuth() {
+  const config = useRuntimeConfig();
+  const apiBase = computed(() => (config.public.apiUrl as string).replace(/\/$/, ""));
+
   function normalizePhone(phone: string): string | null {
     return toBetterAuthPhone(phone);
   }
@@ -41,8 +44,27 @@ export function usePhoneAuth() {
     });
   }
 
+  /** Set password right after phone verify — uses server-only Better Auth setPassword (one OTP total). */
   async function setPasswordAfterVerify(password: string) {
-    return authClient.setPassword({ newPassword: password });
+    try {
+      await $fetch<{ success: boolean; error?: string }>(
+        `${apiBase.value}/api/account/set-phone-password`,
+        {
+          method: "POST",
+          body: { newPassword: password },
+          credentials: "include",
+        },
+      );
+      return { data: { status: true }, error: null };
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === "object" && "data" in err
+          ? String((err as { data?: { error?: string } }).data?.error ?? "Failed to set password.")
+          : err instanceof Error
+            ? err.message
+            : "Failed to set password.";
+      return { data: null, error: { message } };
+    }
   }
 
   async function resetPasswordAfterSignup(params: {
@@ -61,7 +83,7 @@ export function usePhoneAuth() {
     });
   }
 
-  /** After verify: request password-reset OTP (second SMS). Returns when sent. */
+  /** Legacy two-OTP path — only when NUXT_PUBLIC_PHONE_PASSWORD_STRATEGY=resetPassword */
   async function requestSignupPasswordOtp(phone: string) {
     const phoneNumber = normalizePhone(phone);
     if (!phoneNumber) {
@@ -75,8 +97,7 @@ export function usePhoneAuth() {
     code: string;
     password: string;
   }) {
-    const strategy = getPhonePasswordStrategy();
-    if (strategy === "resetPassword") {
+    if (getPhonePasswordStrategy() === "resetPassword") {
       return resetPasswordAfterSignup(params);
     }
     return setPasswordAfterVerify(params.password);

@@ -350,16 +350,9 @@
             </Button>
 
             <div class="w-full text-center">
-              <h1 class="text-2xl font-normal text-sidebar sm:text-3xl">
-                {{ otpPhase === 'password' ? 'Set your password' : 'Verify your phone' }}
-              </h1>
+              <h1 class="text-2xl font-normal text-sidebar sm:text-3xl">Verify your phone</h1>
               <p class="mt-2 text-sm text-muted-foreground">
-                <template v-if="otpPhase === 'password'">
-                  Enter the new code sent to <strong>{{ pendingPhone }}</strong> to finish creating your account.
-                </template>
-                <template v-else>
-                  Enter the code sent to <strong>{{ pendingPhone }}</strong>
-                </template>
+                Enter the code sent to <strong>{{ pendingPhone }}</strong>
               </p>
             </div>
 
@@ -383,7 +376,7 @@
                 @click="completePhoneRegistration"
               >
                 <PhCircleNotch v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
-                {{ otpPhase === 'password' ? 'Create account' : 'Verify phone' }}
+                Create account
               </Button>
             </Card>
           </div>
@@ -442,7 +435,6 @@ const pendingPhone = ref('')
 const pendingPassword = ref('')
 const pendingName = ref('')
 const phoneOtp = ref('')
-const otpPhase = ref<'verify' | 'password'>('verify')
 const otpError = ref('')
 const otpBlocked = ref(false)
 const isResending = ref(false)
@@ -452,9 +444,7 @@ let cooldownTimer: ReturnType<typeof setInterval> | null = null
 const {
   sendPhoneOtp,
   verifyPhoneAndRegister,
-  requestSignupPasswordOtp,
   completePhoneRegistrationPassword,
-  getPhonePasswordStrategy,
   isTooManyAttemptsError,
 } = usePhoneAuth()
 
@@ -576,27 +566,6 @@ async function completePhoneRegistration() {
   isSubmitting.value = true
 
   try {
-    if (otpPhase.value === 'password') {
-      const { error: pwdError } = await completePhoneRegistrationPassword({
-        phone: pendingPhone.value,
-        code: phoneOtp.value,
-        password: pendingPassword.value,
-      })
-
-      if (pwdError) {
-        if (isTooManyAttemptsError(pwdError)) {
-          otpBlocked.value = true
-        } else {
-          otpError.value = pwdError.message || 'Invalid code.'
-        }
-        return
-      }
-
-      await refetchSession()
-      await navigateTo('/onboarding')
-      return
-    }
-
     const { error: verifyError } = await verifyPhoneAndRegister({
       phone: pendingPhone.value,
       code: phoneOtp.value,
@@ -610,18 +579,6 @@ async function completePhoneRegistration() {
       } else {
         otpError.value = verifyError.message || 'Invalid verification code.'
       }
-      return
-    }
-
-    if (getPhonePasswordStrategy() === 'resetPassword') {
-      const { error: resetOtpError } = await requestSignupPasswordOtp(pendingPhone.value)
-      if (resetOtpError) {
-        apiError.value = resetOtpError.message || 'Failed to send password code.'
-        return
-      }
-      otpPhase.value = 'password'
-      phoneOtp.value = ''
-      startCooldown()
       return
     }
 
@@ -651,9 +608,7 @@ async function handleOtpResend() {
   otpError.value = ''
   otpBlocked.value = false
   try {
-    const { error } = otpPhase.value === 'password'
-      ? await requestSignupPasswordOtp(pendingPhone.value)
-      : await sendPhoneOtp(pendingPhone.value)
+    const { error } = await sendPhoneOtp(pendingPhone.value)
     if (error) {
       apiError.value = error.message || 'Failed to resend code.'
       return
