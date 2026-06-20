@@ -149,7 +149,7 @@
                 class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-sidebar text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-primary sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
                 size="lg"
                 :disabled="!selectedRole"
-                @click="step = 'method'"
+                @click="step = 'form'"
               >
                 Continue
               </Button>
@@ -162,48 +162,17 @@
             </div>
           </div>
 
-          <!-- Step 2: Auth method -->
-          <div v-else-if="step === 'method'" key="method" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="inline-flex gap-1.5 self-start rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white sm:px-4 sm:py-2 sm:text-sm"
-              @click="step = 'role'"
-            >
-              <PhArrowLeft class="h-4 w-4" />
-              Change selection
-            </Button>
-
-            <div class="w-full text-center">
-              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">Registration</p>
-              <h1 class="text-2xl font-normal leading-tight text-sidebar sm:text-4xl">How would you like to sign up?</h1>
-              <p class="mt-2 text-sm text-muted-foreground">Choose email or phone number.</p>
-            </div>
-
-            <Card class="w-full rounded-2xl border border-border/50 bg-white/70 p-6 shadow-lg backdrop-blur-xl sm:rounded-3xl sm:p-8">
-              <AuthMethodTabs v-model="authMethod" class="mb-6" />
-              <Button
-                type="button"
-                class="h-11 w-full cursor-pointer rounded-xl bg-sidebar text-base font-semibold hover:bg-primary"
-                @click="step = 'form'"
-              >
-                Continue
-              </Button>
-            </Card>
-          </div>
-
-          <!-- Step 3: Registration form -->
+          <!-- Step 2: Registration form (email or phone tabs) -->
           <div v-else-if="step === 'form'" key="form" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6 sm:items-stretch sm:gap-0">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               class="inline-flex gap-1.5 rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white hover:text-sidebar sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
-              @click="step = 'method'"
+              @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
-              Change method
+              Change selection
             </Button>
 
             <div class="w-full text-center sm:mb-10">
@@ -272,38 +241,44 @@
                     </form.Field>
                   </div>
 
-                  <form.Field v-if="authMethod === 'email'" v-slot="{ field }" name="email">
-                    <Field :data-invalid="isInvalid(field)">
-                      <FieldLabel :for="field.name">Email address</FieldLabel>
-                      <Input
-                        :id="field.name"
-                        :name="field.name"
-                        :model-value="field.state.value"
-                        type="email"
-                        placeholder="alex@example.com"
-                        autocomplete="email"
-                        class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
-                        :aria-invalid="isInvalid(field)"
-                        :disabled="isSubmitting"
-                        @blur="field.handleBlur"
-                        @update:model-value="(v) => field.handleChange(v as any)"
-                      />
-                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                    </Field>
-                  </form.Field>
+                  <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting">
+                    <TabsContent value="email" class="mt-0 space-y-0">
+                      <form.Field v-slot="{ field }" name="email">
+                        <Field :data-invalid="isInvalid(field)">
+                          <FieldLabel :for="field.name">Email address</FieldLabel>
+                          <Input
+                            :id="field.name"
+                            :name="field.name"
+                            :model-value="field.state.value"
+                            type="email"
+                            placeholder="alex@example.com"
+                            autocomplete="email"
+                            class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
+                            :aria-invalid="isInvalid(field)"
+                            :disabled="isSubmitting"
+                            @blur="field.handleBlur"
+                            @update:model-value="(v) => field.handleChange(v as any)"
+                          />
+                          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                        </Field>
+                      </form.Field>
+                    </TabsContent>
 
-                  <form.Field v-else v-slot="{ field }" name="phone">
-                    <Field :data-invalid="isInvalid(field)">
-                      <AuthPhoneInput
-                        :model-value="field.state.value"
-                        :invalid="isInvalid(field)"
-                        :disabled="isSubmitting"
-                        @blur="field.handleBlur"
-                        @update:model-value="(v) => field.handleChange(v as any)"
-                      />
-                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                    </Field>
-                  </form.Field>
+                    <TabsContent value="phone" class="mt-0 space-y-0">
+                      <form.Field v-slot="{ field }" name="phone">
+                        <Field :data-invalid="isInvalid(field)">
+                          <AuthPhoneInput
+                            :model-value="field.state.value"
+                            :invalid="isInvalid(field)"
+                            :disabled="isSubmitting"
+                            @blur="field.handleBlur"
+                            @update:model-value="(v) => field.handleChange(v as any)"
+                          />
+                          <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                        </Field>
+                      </form.Field>
+                    </TabsContent>
+                  </AuthMethodTabs>
 
                   <form.Field v-slot="{ field }" name="password">
                     <Field :data-invalid="isInvalid(field)">
@@ -435,6 +410,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { TabsContent } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
@@ -460,7 +436,7 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
       ? 'client'
       : undefined,
 )
-const step = ref<'role' | 'method' | 'form' | 'verify'>('role')
+const step = ref<'role' | 'form' | 'verify'>('role')
 const authMethod = ref<AuthMethod>('email')
 const pendingPhone = ref('')
 const pendingPassword = ref('')
@@ -707,7 +683,7 @@ onUnmounted(() => {
 
 onMounted(() => {
   if (selectedRole.value) {
-    step.value = 'method'
+    step.value = 'form'
   }
 })
 </script>

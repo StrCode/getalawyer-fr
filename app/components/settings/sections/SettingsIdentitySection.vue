@@ -1,15 +1,28 @@
 <template>
   <div class="space-y-6">
     <SettingsSectionCard
-      v-if="needsRealEmail"
+      v-if="needsLinkEmail"
       title="Email address"
       description="Link a real email to receive notifications and recover your account."
     >
       <p class="mb-4 text-sm text-muted-foreground">
-        Your account uses a phone-based email placeholder. Add your real email below.
+        Your account uses a phone-based email placeholder. Add your real email from the dashboard.
       </p>
       <Button as-child variant="outline" class="cursor-pointer">
-        <NuxtLink to="/onboarding/link-email">Link email address</NuxtLink>
+        <NuxtLink to="/dashboard/verify-email">Link email address</NuxtLink>
+      </Button>
+    </SettingsSectionCard>
+
+    <SettingsSectionCard
+      v-else-if="needsVerifyEmail"
+      title="Email verification"
+      description="Confirm your email to receive booking and security notifications."
+    >
+      <p class="mb-4 text-sm text-muted-foreground">
+        Email verification is optional during onboarding. You can verify anytime from your dashboard.
+      </p>
+      <Button as-child variant="outline" class="cursor-pointer">
+        <NuxtLink to="/dashboard/verify-email">Verify email</NuxtLink>
       </Button>
     </SettingsSectionCard>
 
@@ -118,15 +131,13 @@ import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import SettingsUploadField from '@/components/settings/SettingsUploadField.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { isTempPhoneEmail } from '~/lib/auth-constants'
 import type { AccountSettingsDraft, VerificationStatus } from '~/types/account-settings'
 
 const draft = defineModel<AccountSettingsDraft['identity']>('draft', { required: true })
 
 const { session, refetchSession } = useAuth()
 const { sendPhoneOtp, verifyPhoneOtp, isTooManyAttemptsError } = usePhoneAuth()
-
-const needsRealEmail = computed(() => isTempPhoneEmail(session.value?.user?.email))
+const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
 
 const idFileName = ref('')
 const addressFileName = ref('')

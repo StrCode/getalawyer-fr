@@ -148,6 +148,8 @@ function confirmDecline() {
 
 <template>
   <div class="space-y-6">
+    <DashboardEmailVerificationAlert />
+
     <AppPageHeader
       :title="`Welcome back, ${firstName}!`"
       description="Manage your consultations and grow your practice"

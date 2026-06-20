@@ -66,6 +66,8 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
 
 <template>
   <div class="space-y-6">
+    <DashboardEmailVerificationAlert />
+
     <AppPageHeader
       :title="`Welcome back, ${firstName}!`"
       description="Here's what's happening with your legal consultations"

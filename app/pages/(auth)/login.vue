@@ -24,8 +24,6 @@
 
     <AuthDivider class="mb-6" />
 
-    <AuthMethodTabs v-model="authMethod" class="mb-6" :disabled="isSubmitting" />
-
     <!-- Inline OTP after unverified phone login — server auto-sent OTP on 401 -->
     <div v-if="showPhoneOtpStep" class="space-y-6">
       <header>
@@ -59,38 +57,44 @@
 
     <form v-else @submit.prevent="form.handleSubmit">
       <FieldGroup class="gap-5">
-        <form.Field v-if="authMethod === 'email'" v-slot="{ field }" name="email">
-          <Field :data-invalid="isInvalid(field)">
-            <FieldLabel :for="field.name">Email address</FieldLabel>
-            <Input
-              :id="field.name"
-              :name="field.name"
-              :model-value="field.state.value"
-              type="email"
-              placeholder="alex@example.com"
-              autocomplete="email"
-              class="h-11 text-base"
-              :aria-invalid="isInvalid(field)"
-              :disabled="isSubmitting"
-              @blur="field.handleBlur"
-              @update:model-value="(v) => field.handleChange(v as any)"
-            />
-            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-          </Field>
-        </form.Field>
+        <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting">
+          <TabsContent value="email" class="mt-0">
+            <form.Field v-slot="{ field }" name="email">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">Email address</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  type="email"
+                  placeholder="alex@example.com"
+                  autocomplete="email"
+                  class="h-11 text-base"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(v as any)"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </TabsContent>
 
-        <form.Field v-else v-slot="{ field }" name="phone">
-          <Field :data-invalid="isInvalid(field)">
-            <AuthPhoneInput
-              :model-value="field.state.value"
-              :invalid="isInvalid(field)"
-              :disabled="isSubmitting"
-              @blur="field.handleBlur"
-              @update:model-value="(v) => field.handleChange(v as any)"
-            />
-            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-          </Field>
-        </form.Field>
+          <TabsContent value="phone" class="mt-0">
+            <form.Field v-slot="{ field }" name="phone">
+              <Field :data-invalid="isInvalid(field)">
+                <AuthPhoneInput
+                  :model-value="field.state.value"
+                  :invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(v as any)"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </TabsContent>
+        </AuthMethodTabs>
 
         <form.Field v-slot="{ field }" name="password">
           <Field :data-invalid="isInvalid(field)">
@@ -163,6 +167,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { TabsContent } from '@/components/ui/tabs'
 import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'

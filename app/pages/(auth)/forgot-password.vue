@@ -16,8 +16,6 @@
       </p>
     </header>
 
-    <AuthMethodTabs v-model="authMethod" class="mb-6" :disabled="isSubmitting || submitted" />
-
     <div
       v-if="submitted"
       role="status"
@@ -43,45 +41,51 @@
 
     <form v-else @submit.prevent="form.handleSubmit">
       <FieldGroup class="space-y-5">
-        <div
-          v-if="authMethod === 'email' && tempEmailWarning"
-          class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-100"
-        >
-          This account uses phone sign-in. Switch to the <strong>Phone</strong> tab to reset your password.
-        </div>
+        <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting || submitted">
+          <TabsContent value="email" class="mt-0 space-y-5">
+            <div
+              v-if="tempEmailWarning"
+              class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-100"
+            >
+              This account uses phone sign-in. Switch to the <strong>Phone</strong> tab to reset your password.
+            </div>
 
-        <form.Field v-if="authMethod === 'email'" v-slot="{ field }" name="email">
-          <Field :data-invalid="isInvalid(field)">
-            <FieldLabel :for="field.name">Email address</FieldLabel>
-            <Input
-              :id="field.name"
-              :name="field.name"
-              :model-value="field.state.value"
-              type="email"
-              placeholder="alex@example.com"
-              autocomplete="email"
-              class="h-11 text-base"
-              :aria-invalid="isInvalid(field)"
-              :disabled="isSubmitting"
-              @blur="field.handleBlur"
-              @update:model-value="(v) => { field.handleChange(v as any); checkTempEmail(v as string) }"
-            />
-            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-          </Field>
-        </form.Field>
+            <form.Field v-slot="{ field }" name="email">
+              <Field :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name">Email address</FieldLabel>
+                <Input
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  type="email"
+                  placeholder="alex@example.com"
+                  autocomplete="email"
+                  class="h-11 text-base"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => { field.handleChange(v as any); checkTempEmail(v as string) }"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </TabsContent>
 
-        <form.Field v-else v-slot="{ field }" name="phone">
-          <Field :data-invalid="isInvalid(field)">
-            <AuthPhoneInput
-              :model-value="field.state.value"
-              :invalid="isInvalid(field)"
-              :disabled="isSubmitting"
-              @blur="field.handleBlur"
-              @update:model-value="(v) => field.handleChange(v as any)"
-            />
-            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-          </Field>
-        </form.Field>
+          <TabsContent value="phone" class="mt-0">
+            <form.Field v-slot="{ field }" name="phone">
+              <Field :data-invalid="isInvalid(field)">
+                <AuthPhoneInput
+                  :model-value="field.state.value"
+                  :invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(v as any)"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </TabsContent>
+        </AuthMethodTabs>
 
         <AuthFormError :message="apiError" />
 
@@ -109,6 +113,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { TabsContent } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'

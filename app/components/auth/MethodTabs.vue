@@ -1,43 +1,48 @@
 <template>
-  <div
-    class="inline-flex w-full rounded-xl border border-border/60 bg-muted/30 p-1"
-    role="tablist"
-    aria-label="Sign-in method"
+  <Tabs
+    :model-value="modelValue"
+    class="w-full gap-6"
+    @update:model-value="onTabChange"
   >
-    <button
-      v-for="option in options"
-      :key="option.value"
-      type="button"
-      role="tab"
-      class="flex-1 cursor-pointer rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
-      :class="
-        modelValue === option.value
-          ? 'bg-background text-foreground shadow-sm'
-          : 'text-muted-foreground hover:text-foreground'
-      "
-      :aria-selected="modelValue === option.value"
-      :disabled="disabled"
-      @click="$emit('update:modelValue', option.value)"
+    <TabsList
+      class="grid h-11 w-full grid-cols-2 rounded-xl border border-border/60 bg-muted/30 p-1"
     >
-      {{ option.label }}
-    </button>
-  </div>
+      <TabsTrigger
+        value="email"
+        class="cursor-pointer rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+        :disabled="disabled"
+      >
+        Email
+      </TabsTrigger>
+      <TabsTrigger
+        value="phone"
+        class="cursor-pointer rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+        :disabled="disabled"
+      >
+        Phone
+      </TabsTrigger>
+    </TabsList>
+    <slot />
+  </Tabs>
 </template>
 
 <script setup lang="ts">
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 export type AuthMethod = "email" | "phone";
 
-defineProps<{
+const props = defineProps<{
   modelValue: AuthMethod;
   disabled?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   "update:modelValue": [value: AuthMethod];
 }>();
 
-const options: { value: AuthMethod; label: string }[] = [
-  { value: "email", label: "Email" },
-  { value: "phone", label: "Phone" },
-];
+function onTabChange(value: string | number) {
+  if (value === "email" || value === "phone") {
+    emit("update:modelValue", value);
+  }
+}
 </script>
