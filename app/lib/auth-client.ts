@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/vue";
-import { emailOTPClient, inferAdditionalFields } from "better-auth/client/plugins";
+import { emailOTPClient, inferAdditionalFields, phoneNumberClient } from "better-auth/client/plugins";
 import { DEV_BETTER_AUTH_URL, PROD_BETTER_AUTH_URL } from "./api-config";
 
 /**
@@ -52,6 +52,7 @@ export const authClient = createAuthClient({
       },
     }),
     emailOTPClient(),
+    phoneNumberClient(),
   ],
 });
 

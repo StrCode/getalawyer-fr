@@ -30,7 +30,7 @@
           </h1>
           <p class="text-base leading-relaxed text-muted-foreground">
             Choose a new password for
-            <strong class="font-medium text-foreground">{{ emailParam }}</strong>.
+            <strong class="font-medium text-foreground">{{ identifierLabel }}</strong>.
             This will end all active sessions for your account.
           </p>
         </header>
@@ -115,9 +115,15 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
+const { resetPhonePassword } = usePhoneAuth()
 
+const isPhoneMethod = computed(() => route.query.method === 'phone')
 const emailParam = computed(() => (route.query.email as string) || '')
+const phoneParam = computed(() => (route.query.phone as string) || '')
 const otpParam = computed(() => (route.query.otp as string) || '')
+const identifierLabel = computed(() =>
+  isPhoneMethod.value ? phoneParam.value : emailParam.value,
+)
 
 const resetSchema = z
   .object({
@@ -143,7 +149,15 @@ const form = useForm({
     onBlur: resetSchema,
   },
   onSubmit: async ({ value }) => {
-    if (!emailParam.value || !otpParam.value) {
+    if (!otpParam.value) {
+      apiError.value = 'Invalid reset link. Please request a new one.'
+      return
+    }
+    if (isPhoneMethod.value && !phoneParam.value) {
+      apiError.value = 'Invalid reset link. Please request a new one.'
+      return
+    }
+    if (!isPhoneMethod.value && !emailParam.value) {
       apiError.value = 'Invalid reset link. Please request a new one.'
       return
     }
@@ -152,11 +166,20 @@ const form = useForm({
     isSubmitting.value = true
 
     try {
-      await authClient.emailOtp.resetPassword({
-        email: emailParam.value,
-        otp: otpParam.value,
-        password: value.password,
-      })
+      if (isPhoneMethod.value) {
+        const { error } = await resetPhonePassword({
+          phone: phoneParam.value,
+          otp: otpParam.value,
+          newPassword: value.password,
+        })
+        if (error) throw new Error(error.message)
+      } else {
+        await authClient.emailOtp.resetPassword({
+          email: emailParam.value,
+          otp: otpParam.value,
+          password: value.password,
+        })
+      }
       submitted.value = true
     }
     catch (err: unknown) {
@@ -177,7 +200,7 @@ const form = useForm({
 const { isInvalid } = useAuthFieldInvalid()
 
 onMounted(() => {
-  if (!emailParam.value || !otpParam.value) {
+  if (!otpParam.value || (!emailParam.value && !phoneParam.value)) {
     router.replace('/forgot-password')
   }
 })

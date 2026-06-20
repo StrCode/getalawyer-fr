@@ -149,7 +149,7 @@
                 class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-sidebar text-sm font-semibold shadow-lg shadow-primary/10 hover:bg-primary sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
                 size="lg"
                 :disabled="!selectedRole"
-                @click="step = 'form'"
+                @click="step = 'method'"
               >
                 Continue
               </Button>
@@ -162,17 +162,48 @@
             </div>
           </div>
 
-          <!-- Step 2: Registration form -->
-          <div v-else key="form" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6 sm:items-stretch sm:gap-0">
+          <!-- Step 2: Auth method -->
+          <div v-else-if="step === 'method'" key="method" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              class="inline-flex gap-1.5 self-start rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white sm:px-4 sm:py-2 sm:text-sm"
+              @click="step = 'role'"
+            >
+              <PhArrowLeft class="h-4 w-4" />
+              Change selection
+            </Button>
+
+            <div class="w-full text-center">
+              <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">Registration</p>
+              <h1 class="text-2xl font-normal leading-tight text-sidebar sm:text-4xl">How would you like to sign up?</h1>
+              <p class="mt-2 text-sm text-muted-foreground">Choose email or phone number.</p>
+            </div>
+
+            <Card class="w-full rounded-2xl border border-border/50 bg-white/70 p-6 shadow-lg backdrop-blur-xl sm:rounded-3xl sm:p-8">
+              <AuthMethodTabs v-model="authMethod" class="mb-6" />
+              <Button
+                type="button"
+                class="h-11 w-full cursor-pointer rounded-xl bg-sidebar text-base font-semibold hover:bg-primary"
+                @click="step = 'form'"
+              >
+                Continue
+              </Button>
+            </Card>
+          </div>
+
+          <!-- Step 3: Registration form -->
+          <div v-else-if="step === 'form'" key="form" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6 sm:items-stretch sm:gap-0">
             <Button
               type="button"
               variant="ghost"
               size="sm"
               class="inline-flex gap-1.5 rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white hover:text-sidebar sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
-              @click="step = 'role'"
+              @click="step = 'method'"
             >
               <PhArrowLeft class="h-4 w-4" />
-              Change selection
+              Change method
             </Button>
 
             <div class="w-full text-center sm:mb-10">
@@ -241,7 +272,7 @@
                     </form.Field>
                   </div>
 
-                  <form.Field v-slot="{ field }" name="email">
+                  <form.Field v-if="authMethod === 'email'" v-slot="{ field }" name="email">
                     <Field :data-invalid="isInvalid(field)">
                       <FieldLabel :for="field.name">Email address</FieldLabel>
                       <Input
@@ -253,6 +284,19 @@
                         autocomplete="email"
                         class="h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white"
                         :aria-invalid="isInvalid(field)"
+                        :disabled="isSubmitting"
+                        @blur="field.handleBlur"
+                        @update:model-value="(v) => field.handleChange(v as any)"
+                      />
+                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                    </Field>
+                  </form.Field>
+
+                  <form.Field v-else v-slot="{ field }" name="phone">
+                    <Field :data-invalid="isInvalid(field)">
+                      <AuthPhoneInput
+                        :model-value="field.state.value"
+                        :invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
                         @update:model-value="(v) => field.handleChange(v as any)"
@@ -292,10 +336,12 @@
                     <span>
                       {{
                         isSubmitting
-                          ? 'Creating account…'
-                          : selectedRole === 'lawyer'
-                            ? 'Apply as Lawyer'
-                            : 'Create account'
+                          ? (authMethod === 'phone' ? 'Sending code…' : 'Creating account…')
+                          : authMethod === 'phone'
+                            ? 'Send verification code'
+                            : selectedRole === 'lawyer'
+                              ? 'Apply as Lawyer'
+                              : 'Create account'
                       }}
                     </span>
                   </Button>
@@ -313,6 +359,58 @@
                 Privacy Policy
               </NuxtLink>.
             </p>
+          </div>
+
+          <!-- Step 4: Phone OTP verify -->
+          <div v-else key="verify" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              class="inline-flex gap-1.5 self-start rounded-full border border-border/50 bg-white/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm hover:bg-white sm:px-4 sm:py-2 sm:text-sm"
+              @click="step = 'form'"
+            >
+              <PhArrowLeft class="h-4 w-4" />
+              Back
+            </Button>
+
+            <div class="w-full text-center">
+              <h1 class="text-2xl font-normal text-sidebar sm:text-3xl">
+                {{ otpPhase === 'password' ? 'Set your password' : 'Verify your phone' }}
+              </h1>
+              <p class="mt-2 text-sm text-muted-foreground">
+                <template v-if="otpPhase === 'password'">
+                  Enter the new code sent to <strong>{{ pendingPhone }}</strong> to finish creating your account.
+                </template>
+                <template v-else>
+                  Enter the code sent to <strong>{{ pendingPhone }}</strong>
+                </template>
+              </p>
+            </div>
+
+            <Card class="w-full rounded-2xl border border-border/50 bg-white/70 p-6 shadow-lg backdrop-blur-xl sm:p-8">
+              <AuthOtpStep
+                v-model="phoneOtp"
+                :error="otpError"
+                :blocked="otpBlocked"
+                :is-submitting="isSubmitting"
+                :is-resending="isResending"
+                :resend-cooldown="resendCooldown"
+                @resend="handleOtpResend"
+                @request-new-code="handleOtpRequestNew"
+              />
+              <AuthDevOtpHint class="mt-4" />
+              <AuthFormError :message="apiError" class="mt-4" />
+              <Button
+                type="button"
+                class="mt-6 h-11 w-full cursor-pointer rounded-xl bg-sidebar font-semibold hover:bg-primary"
+                :disabled="isSubmitting || phoneOtp.length < 6"
+                @click="completePhoneRegistration"
+              >
+                <PhCircleNotch v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
+                {{ otpPhase === 'password' ? 'Create account' : 'Verify phone' }}
+              </Button>
+            </Card>
           </div>
         </Transition>
       </div>
@@ -340,6 +438,8 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
+import { isValidNgPhone } from '~/lib/phone'
+import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 
 definePageMeta({
   layout: false,
@@ -360,7 +460,27 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
       ? 'client'
       : undefined,
 )
-const step = ref<'role' | 'form'>('role')
+const step = ref<'role' | 'method' | 'form' | 'verify'>('role')
+const authMethod = ref<AuthMethod>('email')
+const pendingPhone = ref('')
+const pendingPassword = ref('')
+const pendingName = ref('')
+const phoneOtp = ref('')
+const otpPhase = ref<'verify' | 'password'>('verify')
+const otpError = ref('')
+const otpBlocked = ref(false)
+const isResending = ref(false)
+const resendCooldown = ref(0)
+let cooldownTimer: ReturnType<typeof setInterval> | null = null
+
+const {
+  sendPhoneOtp,
+  verifyPhoneAndRegister,
+  requestSignupPasswordOtp,
+  completePhoneRegistrationPassword,
+  getPhonePasswordStrategy,
+  isTooManyAttemptsError,
+} = usePhoneAuth()
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
@@ -378,9 +498,18 @@ const registerSchema = z.object({
   lastName: z
     .string('Last name is required.')
     .min(2, 'Last name must be at least 2 characters.'),
-  email: z
-    .email('Please enter a valid email address.'),
+  email: z.string(),
+  phone: z.string(),
   password: authPasswordSchema,
+}).superRefine((data, ctx) => {
+  if (authMethod.value === 'email') {
+    const emailResult = z.email().safeParse(data.email)
+    if (!emailResult.success) {
+      ctx.addIssue({ code: 'custom', message: 'Please enter a valid email address.', path: ['email'] })
+    }
+  } else if (!isValidNgPhone(data.phone)) {
+    ctx.addIssue({ code: 'custom', message: 'Please enter a valid Nigerian phone number.', path: ['phone'] })
+  }
 })
 
 const isSubmitting = ref(false)
@@ -391,6 +520,7 @@ const form = useForm({
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
   },
   validators: {
@@ -404,22 +534,37 @@ const form = useForm({
     try {
       const fullName = `${value.firstName} ${value.lastName}`.trim()
 
-      const { error: signUpError } = await authClient.signUp.email({
-        name: fullName,
-        email: value.email,
-        password: value.password,
-        userType: selectedRole.value || 'client',
-        onboarding_completed: false,
-        callbackURL: '/onboarding',
-      })
+      if (authMethod.value === 'email') {
+        const { error: signUpError } = await authClient.signUp.email({
+          name: fullName,
+          email: value.email,
+          password: value.password,
+          userType: selectedRole.value || 'client',
+          callbackURL: '/onboarding',
+        })
 
-      if (signUpError) {
-        apiError.value = signUpError.message || 'Failed to create account. Please try again.'
+        if (signUpError) {
+          apiError.value = signUpError.message || 'Failed to create account. Please try again.'
+          return
+        }
+
+        await refetchSession()
+        await navigateTo('/onboarding')
         return
       }
 
-      await refetchSession()
-      await navigateTo('/onboarding')
+      pendingPhone.value = value.phone
+      pendingPassword.value = value.password
+      pendingName.value = fullName
+
+      const { error: otpError } = await sendPhoneOtp(value.phone)
+      if (otpError) {
+        apiError.value = otpError.message || 'Failed to send verification code.'
+        return
+      }
+
+      step.value = 'verify'
+      startCooldown()
     }
     catch (err: unknown) {
       apiError.value = err instanceof Error ? err.message : 'An unexpected error occurred.'
@@ -432,9 +577,137 @@ const form = useForm({
 
 const { isInvalid } = useAuthFieldInvalid()
 
+function startCooldown(seconds = 60) {
+  resendCooldown.value = seconds
+  if (cooldownTimer) clearInterval(cooldownTimer)
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value -= 1
+    if (resendCooldown.value <= 0 && cooldownTimer) {
+      clearInterval(cooldownTimer)
+      cooldownTimer = null
+    }
+  }, 1000)
+}
+
+async function completePhoneRegistration() {
+  if (phoneOtp.value.length < 6) {
+    otpError.value = 'Please enter the full 6-digit code.'
+    return
+  }
+
+  apiError.value = ''
+  otpError.value = ''
+  isSubmitting.value = true
+
+  try {
+    if (otpPhase.value === 'password') {
+      const { error: pwdError } = await completePhoneRegistrationPassword({
+        phone: pendingPhone.value,
+        code: phoneOtp.value,
+        password: pendingPassword.value,
+      })
+
+      if (pwdError) {
+        if (isTooManyAttemptsError(pwdError)) {
+          otpBlocked.value = true
+        } else {
+          otpError.value = pwdError.message || 'Invalid code.'
+        }
+        return
+      }
+
+      await refetchSession()
+      await navigateTo('/onboarding')
+      return
+    }
+
+    const { error: verifyError } = await verifyPhoneAndRegister({
+      phone: pendingPhone.value,
+      code: phoneOtp.value,
+      name: pendingName.value,
+      userType: selectedRole.value || 'client',
+    })
+
+    if (verifyError) {
+      if (isTooManyAttemptsError(verifyError)) {
+        otpBlocked.value = true
+      } else {
+        otpError.value = verifyError.message || 'Invalid verification code.'
+      }
+      return
+    }
+
+    if (getPhonePasswordStrategy() === 'resetPassword') {
+      const { error: resetOtpError } = await requestSignupPasswordOtp(pendingPhone.value)
+      if (resetOtpError) {
+        apiError.value = resetOtpError.message || 'Failed to send password code.'
+        return
+      }
+      otpPhase.value = 'password'
+      phoneOtp.value = ''
+      startCooldown()
+      return
+    }
+
+    const { error: pwdError } = await completePhoneRegistrationPassword({
+      phone: pendingPhone.value,
+      code: phoneOtp.value,
+      password: pendingPassword.value,
+    })
+
+    if (pwdError) {
+      apiError.value = pwdError.message || 'Failed to set password.'
+      return
+    }
+
+    await refetchSession()
+    await navigateTo('/onboarding')
+  } catch (err: unknown) {
+    apiError.value = err instanceof Error ? err.message : 'Registration failed.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+async function handleOtpResend() {
+  if (resendCooldown.value > 0 || isResending.value) return
+  isResending.value = true
+  otpError.value = ''
+  otpBlocked.value = false
+  try {
+    const { error } = otpPhase.value === 'password'
+      ? await requestSignupPasswordOtp(pendingPhone.value)
+      : await sendPhoneOtp(pendingPhone.value)
+    if (error) {
+      apiError.value = error.message || 'Failed to resend code.'
+      return
+    }
+    phoneOtp.value = ''
+    startCooldown()
+  } finally {
+    isResending.value = false
+  }
+}
+
+async function handleOtpRequestNew() {
+  otpBlocked.value = false
+  phoneOtp.value = ''
+  await handleOtpResend()
+}
+
+watch(phoneOtp, (v) => {
+  if (v.length === 6 && step.value === 'verify' && !isSubmitting.value) {
+    completePhoneRegistration()
+  }
+})
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
 onMounted(() => {
   if (selectedRole.value) {
-    step.value = 'form'
+    step.value = 'method'
   }
 })
 </script>

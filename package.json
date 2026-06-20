@@ -27,7 +27,7 @@
     "@tanstack/vue-table": "^8.21.3",
     "@tanstack/zod-form-adapter": "^0.42.1",
     "@vueuse/core": "^14.3.0",
-    "better-auth": "^1.4.6",
+    "better-auth": "^1.6.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-vue": "^8.6.0",

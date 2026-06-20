@@ -8,34 +8,49 @@
         Forgot your password?
       </h1>
       <p class="text-base leading-relaxed text-muted-foreground">
-        Enter your email and we&apos;ll send you a reset code.
+        {{
+          authMethod === 'phone'
+            ? 'Enter your phone number and we\'ll send you a reset code.'
+            : 'Enter your email and we\'ll send you a reset code.'
+        }}
       </p>
     </header>
+
+    <AuthMethodTabs v-model="authMethod" class="mb-6" :disabled="isSubmitting || submitted" />
 
     <div
       v-if="submitted"
       role="status"
-      class="flex gap-3 items-start rounded-xl border border-primary/20 bg-primary/5 mb-6 p-4"
+      class="mb-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4"
     >
-      <PhCheckCircle class="mt-0.5 w-5 h-5 text-primary shrink-0" />
+      <PhCheckCircle class="mt-0.5 size-5 shrink-0 text-primary" />
       <div>
-        <p class="mb-0.5 font-medium text-foreground text-base">Check your email</p>
-        <p class="text-muted-foreground text-base leading-relaxed">
-          We&apos;ve sent a verification code to <strong class="text-foreground">{{ submittedEmail }}</strong>.
-          It may take a few minutes to arrive.
+        <p class="mb-0.5 text-base font-medium text-foreground">
+          {{ authMethod === 'phone' ? 'Check your phone' : 'Check your email' }}
+        </p>
+        <p class="text-base leading-relaxed text-muted-foreground">
+          We&apos;ve sent a verification code to
+          <strong class="text-foreground">{{ submittedIdentifier }}</strong>.
         </p>
       </div>
     </div>
 
     <div v-if="submitted" class="space-y-4">
-      <Button class="w-full h-12" size="lg" @click="goToVerifyOTP">
+      <Button class="h-12 w-full cursor-pointer" size="lg" @click="goToVerifyOTP">
         Enter verification code
       </Button>
     </div>
 
     <form v-else @submit.prevent="form.handleSubmit">
       <FieldGroup class="space-y-5">
-        <form.Field v-slot="{ field }" name="email">
+        <div
+          v-if="authMethod === 'email' && tempEmailWarning"
+          class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-100"
+        >
+          This account uses phone sign-in. Switch to the <strong>Phone</strong> tab to reset your password.
+        </div>
+
+        <form.Field v-if="authMethod === 'email'" v-slot="{ field }" name="email">
           <Field :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name">Email address</FieldLabel>
             <Input
@@ -49,6 +64,19 @@
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"
+              @update:model-value="(v) => { field.handleChange(v as any); checkTempEmail(v as string) }"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+
+        <form.Field v-else v-slot="{ field }" name="phone">
+          <Field :data-invalid="isInvalid(field)">
+            <AuthPhoneInput
+              :model-value="field.state.value"
+              :invalid="isInvalid(field)"
+              :disabled="isSubmitting"
+              @blur="field.handleBlur"
               @update:model-value="(v) => field.handleChange(v as any)"
             />
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
@@ -57,8 +85,8 @@
 
         <AuthFormError :message="apiError" />
 
-        <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
-          <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
+        <Button type="submit" class="h-12 w-full cursor-pointer gap-2" size="lg" :disabled="isSubmitting || tempEmailWarning">
+          <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Sending…' : 'Send reset code' }}</span>
         </Button>
       </FieldGroup>
@@ -82,7 +110,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
+import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'
+import { isTempPhoneEmail } from '~/lib/auth-constants'
+import { isValidNgPhone } from '~/lib/phone'
 
 definePageMeta({
   layout: 'auth',
@@ -91,35 +122,61 @@ definePageMeta({
   authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
 
+const route = useRoute()
+const router = useRouter()
+const { requestPhonePasswordReset } = usePhoneAuth()
+
+const authMethod = ref<AuthMethod>(
+  route.query.method === 'phone' ? 'phone' : 'email',
+)
+
 const forgotSchema = z.object({
-  email: z
-    .email('Please enter a valid email address.')
+  email: z.string(),
+  phone: z.string(),
+}).superRefine((data, ctx) => {
+  if (authMethod.value === 'email') {
+    const emailResult = z.email().safeParse(data.email)
+    if (!emailResult.success) {
+      ctx.addIssue({ code: 'custom', message: 'Please enter a valid email address.', path: ['email'] })
+    }
+  } else if (!isValidNgPhone(data.phone)) {
+    ctx.addIssue({ code: 'custom', message: 'Please enter a valid Nigerian phone number.', path: ['phone'] })
+  }
 })
 
 const isSubmitting = ref(false)
 const submitted = ref(false)
-const submittedEmail = ref('')
+const submittedIdentifier = ref('')
+const tempEmailWarning = ref(false)
 const apiError = ref('')
-
-const router = useRouter()
 
 const form = useForm({
   defaultValues: {
     email: '',
+    phone: (route.query.phone as string) || '',
   },
   validators: {
     onSubmit: forgotSchema,
     onBlur: forgotSchema,
   },
   onSubmit: async ({ value }) => {
+    if (authMethod.value === 'email' && isTempPhoneEmail(value.email)) {
+      tempEmailWarning.value = true
+      return
+    }
+
     apiError.value = ''
     isSubmitting.value = true
 
     try {
-      await authClient.emailOtp.requestPasswordReset({
-        email: value.email,
-      })
-      submittedEmail.value = value.email
+      if (authMethod.value === 'email') {
+        await authClient.emailOtp.requestPasswordReset({ email: value.email })
+        submittedIdentifier.value = value.email
+      } else {
+        const { error } = await requestPhonePasswordReset(value.phone)
+        if (error) throw new Error(error.message)
+        submittedIdentifier.value = value.phone
+      }
       submitted.value = true
     }
     catch (err: unknown) {
@@ -134,10 +191,21 @@ const form = useForm({
 
 const { isInvalid } = useAuthFieldInvalid()
 
+function checkTempEmail(email: string) {
+  tempEmailWarning.value = isTempPhoneEmail(email)
+}
+
 const goToVerifyOTP = () => {
-  router.push({
-    path: '/verify-otp',
-    query: { email: submittedEmail.value, type: 'password-reset' },
-  })
+  if (authMethod.value === 'phone') {
+    router.push({
+      path: '/verify-otp',
+      query: { method: 'phone', phone: submittedIdentifier.value },
+    })
+  } else {
+    router.push({
+      path: '/verify-otp',
+      query: { method: 'email', email: submittedIdentifier.value },
+    })
+  }
 }
 </script>

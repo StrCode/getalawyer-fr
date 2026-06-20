@@ -8,6 +8,7 @@ import {
   resolveLawyerOnboardingDestination,
 } from '~/composables/useLawyerOnboardingEntry'
 import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
+import { isTempPhoneEmail } from '~/lib/auth-constants'
 import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 
 definePageMeta({
@@ -102,6 +103,12 @@ watch(
       statusPayload.value,
     ] as const,
   () => {
+    if (isTempPhoneEmail(session.value?.user?.email)) {
+      hasRouted.value = true
+      void navigateTo('/onboarding/link-email', { replace: true })
+      return
+    }
+
     if (userType.value === 'client') {
       hasRouted.value = true
       void navigateTo(firstStep.value?.path || '/onboarding/location', { replace: true })
