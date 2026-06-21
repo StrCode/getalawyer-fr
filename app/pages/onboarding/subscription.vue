@@ -90,12 +90,12 @@ const applicationNotice = computed(() =>
 const noticeToneClass = computed(() => {
   const tone = applicationNotice.value?.tone
   if (tone === 'approved') {
-    return 'border-emerald-200 bg-emerald-50 text-emerald-950'
+    return 'border-primary/20 bg-primary/5 text-foreground'
   }
   if (tone === 'failed') {
-    return 'border-amber-200 bg-amber-50 text-amber-950'
+    return 'border-brass/30 bg-brass/10 text-foreground'
   }
-  return 'border-sky-200 bg-sky-50 text-sky-950'
+  return 'border-primary/20 bg-primary/5 text-foreground'
 })
 
 const submittedLabel = computed(() => {
@@ -259,7 +259,7 @@ async function retry() {
     </div>
 
     <div v-else-if="statusError" class="space-y-6 py-8 text-center">
-      <h1 class="font-heading text-2xl font-normal text-sidebar">
+      <h1 class="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
         Could not load your application
       </h1>
       <Button class="rounded-full" @click="retry">
@@ -269,10 +269,10 @@ async function retry() {
 
     <div v-else class="space-y-6 py-6 sm:py-10">
       <div class="text-center">
-        <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
+        <p class="mb-2 text-eyebrow text-brass">
           Annual membership
         </p>
-        <h1 class="font-heading text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
+        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Lawyer subscription
         </h1>
         <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -297,7 +297,7 @@ async function retry() {
         </p>
       </div>
 
-      <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+      <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div class="border-b border-border/40 px-6 py-5">
           <div class="flex items-center gap-3">
             <div
@@ -336,14 +336,14 @@ async function retry() {
 
           <div
             v-if="hasActiveSubscription"
-            class="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-900"
+            class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
           >
-            <PhCheck class="mt-0.5 size-4 shrink-0" weight="bold" />
+            <PhCheck class="mt-0.5 size-4 shrink-0 text-primary" weight="bold" />
             <div>
-              <p class="font-semibold">
+              <p class="font-semibold text-foreground">
                 Payment received
               </p>
-              <p class="mt-0.5 text-emerald-800/90">
+              <p class="mt-0.5 text-muted-foreground">
                 Your subscription is active
                 <template v-if="subscriptionEndLabel">
                   until {{ subscriptionEndLabel }}.

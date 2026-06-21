@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerProfileArticle } from '~/types/lawyer-profile-editor'
+import { PhArticle } from '@phosphor-icons/vue'
 
 defineProps<{
   articles: LawyerProfileArticle[]
@@ -29,15 +30,15 @@ function formatPublishedDate(value: string | null | undefined): string | null {
       <article
         v-for="item in articles"
         :key="item.id"
-        class="rounded-xl border border-border bg-card p-5"
+        class="rounded-2xl border border-border bg-card p-5 md:p-6"
       >
         <div class="flex flex-wrap items-start justify-between gap-3">
-          <h3 class="text-base font-semibold text-foreground">
+          <h3 class="text-base font-semibold tracking-tight text-foreground">
             {{ item.title }}
           </h3>
           <p
             v-if="formatPublishedDate(item.publishedAt)"
-            class="text-sm tabular-nums text-muted-foreground"
+            class="font-mono text-xs tabular-nums text-muted-foreground"
           >
             {{ formatPublishedDate(item.publishedAt) }}
           </p>

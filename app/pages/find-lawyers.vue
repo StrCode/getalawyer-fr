@@ -10,7 +10,7 @@ import type { Specialization } from '~/lib/api'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Checkbox } from '~/components/ui/checkbox'
 import Input from '~/components/ui/input/Input.vue'
-import { PhCaretDown, PhRows, PhSquaresFour } from '@phosphor-icons/vue'
+import { PhBriefcase, PhCaretDown, PhFaders, PhMagnifyingGlass, PhMapPin, PhRows, PhSquaresFour, PhUser, PhX } from '@phosphor-icons/vue'
 import type { LocationQuery } from 'vue-router'
 
 /** `/find-lawyers` — directory listing with landing layout (same nav/footer as homepage). */
@@ -353,272 +353,312 @@ const activeFilterCount = computed(() => {
 function clearAllFilters(): void {
   resetFilters()
 }
+
+const showMobileFilters = ref(false)
 </script>
 
 <template>
-  <div class="pb-16 font-sans text-foreground sm:pb-24">
-    <header class="border-b border-border bg-background">
-      <div class="mx-auto box-border w-full max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8 sm:pb-10">
-        <div class="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
-          <p class="mb-4 font-semibold text-3 uppercase tracking-[0.22em] text-muted-foreground">
-            Directory
-          </p>
-          <h1 class="font-heading text-balance text-4xl font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl sm:leading-[1.08] lg:text-6xl">
-            Find a lawyer
+  <div class="bg-canvas pb-16 font-sans text-foreground sm:pb-24">
+    <!-- Compact hero + unified search -->
+    <header class="relative overflow-hidden border-b border-border bg-canvas">
+      <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-linear-to-b from-brass/6 to-transparent" />
+      <div class="relative mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <div class="mb-5 inline-flex items-center gap-2.5 rounded-full border border-border bg-surface-2 px-3.5 py-2">
+            <span class="size-1.5 rounded-full bg-brass" />
+            <span class="text-eyebrow text-brass">Verified directory</span>
+          </div>
+          <h1 class="display-xl text-balance text-foreground">
+            Find a verified lawyer
           </h1>
-          <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
-            Search by topic, one or more states, and one or more specializations from our directory.
+          <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Every profile is NIN &amp; SCN verified. Filter by name, topic, state, or specialization.
           </p>
         </div>
 
+        <!-- Unified search bar (Glide / Fiverr pattern) -->
         <div
           role="search"
           aria-label="Search lawyers"
-          class="flex w-full flex-col gap-4 md:flex-row md:flex-wrap md:items-end md:gap-x-5 md:gap-y-4"
+          class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-ink/4"
         >
-          <label class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
-            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
-              Lawyer name
-            </span>
-            <span
-              class="flex items-center rounded-lg border border-border bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)]"
-            >
-              <input
-                v-model="filters.lawyerName"
-                type="search"
-                enterkeyhint="search"
-                autocomplete="off"
-                aria-label="Lawyer name"
-                class="min-w-0 flex-1 border-0 bg-transparent text-[0.9375rem] text-foreground outline-none placeholder:text-muted-foreground"
-                placeholder="Search by legal name"
-              >
-            </span>
-          </label>
-
-          <label class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
-            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
-              Topic or keywords
-            </span>
-            <span
-              class="flex items-center rounded-lg border border-border bg-background px-3.5 py-2 transition-colors focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgb(34_139_84/0.12)]"
-            >
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2">
+              <PhMagnifyingGlass class="size-4 shrink-0 text-primary" aria-hidden="true" />
               <input
                 v-model="filters.keywords"
                 type="search"
                 enterkeyhint="search"
                 autocomplete="off"
                 aria-label="Topic or keywords"
-                class="min-w-0 flex-1 border-0 bg-transparent text-[0.9375rem] text-foreground outline-none placeholder:text-muted-foreground"
-                placeholder="Search by topic or keyword"
+                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
+                placeholder="Search by topic or keyword…"
               >
-            </span>
-          </label>
-
-          <div class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[12rem] md:flex-1">
-            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
-              States
-            </span>
-            <div class="min-w-0 w-full">
-              <Popover v-model:open="statePopoverOpen">
-                <PopoverTrigger as-child>
-                  <button
-                    type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-primary/30 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none"
-                    aria-haspopup="dialog"
-                    aria-label="States"
-                    :aria-expanded="statePopoverOpen"
-                  >
-                    <span class="min-w-0 flex-1 truncate">{{ statesTriggerLabel }}</span>
-                    <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="start" class="w-[min(22rem,calc(100vw-2rem))] max-w-none p-0 sm:w-[var(--reka-popover-trigger-width)]">
-                  <div class="border-b border-border p-2">
-                    <Input
-                      v-model="stateSearchQuery"
-                      type="search"
-                      autocomplete="off"
-                      placeholder="Filter states…"
-                      class="h-9 border-border bg-transparent"
-                    />
-                  </div>
-                  <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
-                    <button
-                      type="button"
-                      class="mb-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
-                      @click="clearStatesFilter"
-                    >
-                      No filters
-                    </button>
-                    <p
-                      v-if="filteredStates.length === 0"
-                      class="px-2 py-6 text-center text-sm text-muted-foreground"
-                    >
-                      No matches.
-                    </p>
-                    <label
-                      v-for="s in filteredStates"
-                      :key="s.code"
-                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-background"
-                    >
-                      <Checkbox
-                        :checked="selectedStateCodes.includes(s.code)"
-                        @update:checked="(v: boolean | 'indeterminate') => toggleStateCode(s.code, v === true)"
-                      />
-                      <span class="min-w-0 leading-snug">{{ s.label }}</span>
-                      <span class="ml-auto shrink-0 tabular-nums text-3 font-medium text-muted-foreground">{{ s.code }}</span>
-                    </label>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-
-          <div class="flex min-w-0 w-full basis-0 flex-col gap-1.5 md:min-w-[14rem] md:flex-[1.75]">
-            <span class="ps-px font-semibold text-2.5 uppercase tracking-[0.14em] text-muted-foreground">
-              Specializations
-            </span>
-            <div
-              v-if="specsLoading"
-              class="flex h-11 min-w-0 w-full items-center rounded-lg border border-border bg-background px-3 text-sm text-muted-foreground"
-              aria-busy="true"
-            >
-              Loading specializations…
-            </div>
-            <div v-else class="min-w-0 w-full">
-              <Popover v-model:open="specPopoverOpen">
-                <PopoverTrigger as-child>
-                  <button
-                    type="button"
-                    class="flex h-11 min-w-0 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border bg-background px-3 text-left text-[0.9375rem] text-foreground transition-colors hover:border-primary/30 focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_rgb(34_139_84/0.12)] focus-visible:outline-none"
-                    aria-haspopup="dialog"
-                    aria-label="Specializations"
-                    :aria-expanded="specPopoverOpen"
-                  >
-                    <span class="min-w-0 flex-1 truncate">{{ specializationTriggerLabel }}</span>
-                    <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="start" class="w-[min(22rem,calc(100vw-2rem))] max-w-none p-0 sm:w-[var(--reka-popover-trigger-width)]">
-                  <div class="border-b border-border p-2">
-                    <Input
-                      v-model="specSearchQuery"
-                      type="search"
-                      autocomplete="off"
-                      placeholder="Filter specializations…"
-                      class="h-9 border-border bg-transparent"
-                    />
-                  </div>
-                  <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
-                    <button
-                      type="button"
-                      class="mb-3 w-full rounded-md border border-border bg-background px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
-                      @click="clearSpecializationsFilter"
-                    >
-                      No filters
-                    </button>
-                    <p
-                      v-if="filteredSpecializations.length === 0"
-                      class="px-2 py-6 text-center text-sm text-muted-foreground"
-                    >
-                      No matches.
-                    </p>
-                    <label
-                      v-for="s in filteredSpecializations"
-                      :key="s.id"
-                      class="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm hover:bg-background"
-                    >
-                      <Checkbox
-                        :checked="filters.practiceAreas.includes(s.id)"
-                        @update:checked="(v: boolean | 'indeterminate') => toggleSpecialization(s.id, v === true)"
-                      />
-                      <span class="min-w-0 leading-snug">{{ s.name }}</span>
-                    </label>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+            </label>
+            <div class="mx-2 hidden h-8 w-px bg-border sm:block" />
+            <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:max-w-[14rem]">
+              <PhUser class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <input
+                v-model="filters.lawyerName"
+                type="search"
+                enterkeyhint="search"
+                autocomplete="off"
+                aria-label="Lawyer name"
+                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
+                placeholder="Or by name…"
+              >
+            </label>
           </div>
         </div>
       </div>
     </header>
 
-    <div class="mx-auto box-border w-full max-w-7xl px-4 py-7 md:py-7 sm:px-6 lg:px-8">
-      <main class="w-full min-w-0">
-        <div
-          v-if="activeFilterCount > 0"
-          class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-3"
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <!-- Mobile filter toggle -->
+      <button
+        type="button"
+        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2 lg:hidden"
+        :aria-expanded="showMobileFilters"
+        @click="showMobileFilters = !showMobileFilters"
+      >
+        <PhFaders class="size-4" aria-hidden="true" />
+        {{ showMobileFilters ? 'Hide filters' : 'Show filters' }}
+        <Badge v-if="activeFilterCount > 0" variant="soft" class="ms-1 rounded-full px-2 py-0 text-xs tabular-nums">
+          {{ activeFilterCount }}
+        </Badge>
+      </button>
+
+      <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <!-- Sidebar filters (Webflow / Zendesk pattern) -->
+        <aside
+          class="w-full shrink-0 lg:w-72"
+          :class="showMobileFilters ? 'block' : 'hidden lg:block'"
         >
-          <div class="flex flex-wrap items-center gap-2.5">
-            <button
-              type="button"
-              class="shrink-0 cursor-pointer rounded-full border border-border bg-background px-3 py-1.5 font-semibold text-[0.8125rem] text-muted-foreground transition-colors hover:border-primary/35 hover:text-[#0f3d28] dark:bg-card dark:hover:text-primary"
-              @click="clearAllFilters"
-            >
-              Clear all
-            </button>
-
-            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground">
-              Name: {{ filters.lawyerName }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.lawyerName = ''">
-                &times;
+          <div class="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-xs">
+            <div class="mb-5 flex items-center justify-between gap-3">
+              <h2 class="text-sm font-semibold text-foreground">
+                Refine search
+              </h2>
+              <button
+                v-if="activeFilterCount > 0"
+                type="button"
+                class="cursor-pointer text-xs font-medium text-primary hover:text-primary/80"
+                @click="clearAllFilters"
+              >
+                Clear all
               </button>
             </div>
 
-            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground">
-              Keyword Search: {{ filters.keywords }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground" @click="filters.keywords = ''">
-                &times;
-              </button>
+            <div class="flex flex-col gap-5">
+              <!-- States -->
+              <div class="flex flex-col gap-2">
+                <span class="text-eyebrow text-muted-foreground">States</span>
+                <Popover v-model:open="statePopoverOpen">
+                  <PopoverTrigger as-child>
+                    <button
+                      type="button"
+                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
+                      aria-haspopup="dialog"
+                      aria-label="States"
+                      :aria-expanded="statePopoverOpen"
+                    >
+                      <PhMapPin class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <span class="min-w-0 flex-1 truncate">{{ statesTriggerLabel }}</span>
+                      <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
+                    <div class="border-b border-border p-2">
+                      <Input
+                        v-model="stateSearchQuery"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Filter states…"
+                        class="h-9 rounded-xl border-border bg-transparent"
+                      />
+                    </div>
+                    <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
+                      <button
+                        type="button"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                        @click="clearStatesFilter"
+                      >
+                        All states
+                      </button>
+                      <p
+                        v-if="filteredStates.length === 0"
+                        class="px-2 py-6 text-center text-sm text-muted-foreground"
+                      >
+                        No matches.
+                      </p>
+                      <label
+                        v-for="s in filteredStates"
+                        :key="s.code"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-surface-2"
+                      >
+                        <Checkbox
+                          :checked="selectedStateCodes.includes(s.code)"
+                          @update:checked="(v: boolean | 'indeterminate') => toggleStateCode(s.code, v === true)"
+                        />
+                        <span class="min-w-0 leading-snug">{{ s.label }}</span>
+                        <span class="ms-auto shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{{ s.code }}</span>
+                      </label>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <!-- Specializations -->
+              <div class="flex flex-col gap-2">
+                <span class="text-eyebrow text-muted-foreground">Specializations</span>
+                <div
+                  v-if="specsLoading"
+                  class="flex h-11 items-center rounded-xl border border-border bg-surface-2 px-3 text-sm text-muted-foreground"
+                  aria-busy="true"
+                >
+                  Loading…
+                </div>
+                <Popover v-else v-model:open="specPopoverOpen">
+                  <PopoverTrigger as-child>
+                    <button
+                      type="button"
+                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
+                      aria-haspopup="dialog"
+                      aria-label="Specializations"
+                      :aria-expanded="specPopoverOpen"
+                    >
+                      <PhBriefcase class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <span class="min-w-0 flex-1 truncate">{{ specializationTriggerLabel }}</span>
+                      <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
+                    <div class="border-b border-border p-2">
+                      <Input
+                        v-model="specSearchQuery"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Filter specializations…"
+                        class="h-9 rounded-xl border-border bg-transparent"
+                      />
+                    </div>
+                    <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
+                      <button
+                        type="button"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                        @click="clearSpecializationsFilter"
+                      >
+                        All specializations
+                      </button>
+                      <p
+                        v-if="filteredSpecializations.length === 0"
+                        class="px-2 py-6 text-center text-sm text-muted-foreground"
+                      >
+                        No matches.
+                      </p>
+                      <label
+                        v-for="s in filteredSpecializations"
+                        :key="s.id"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-surface-2"
+                      >
+                        <Checkbox
+                          :checked="filters.practiceAreas.includes(s.id)"
+                          @update:checked="(v: boolean | 'indeterminate') => toggleSpecialization(s.id, v === true)"
+                        />
+                        <span class="min-w-0 leading-snug">{{ s.name }}</span>
+                      </label>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
 
+            <!-- Trust callout -->
+            <div class="mt-6 rounded-xl border border-brass/20 bg-brass/5 p-4">
+              <p class="text-eyebrow text-brass">Verified only</p>
+              <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Every lawyer in this directory has passed NIN and Supreme Court number verification.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Results column -->
+        <main class="min-w-0 flex-1">
+          <!-- Active filter chips -->
+          <div
+            v-if="activeFilterCount > 0"
+            class="mb-5 flex flex-wrap items-center gap-2"
+          >
+            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
+              {{ filters.lawyerName }}
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove name filter" @click="filters.lawyerName = ''">
+                <PhX class="size-4" aria-hidden="true" />
+              </button>
+            </div>
+            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
+              {{ filters.keywords }}
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove keyword filter" @click="filters.keywords = ''">
+                <PhX class="size-4" aria-hidden="true" />
+              </button>
+            </div>
             <div
               v-for="code in selectedStateCodes"
               :key="code"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground"
             >
               <span class="truncate">{{ stateLabel(code) }}</span>
               <button
                 type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground"
+                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground"
                 :aria-label="`Remove ${stateLabel(code)}`"
                 @click="removeStateCode(code)"
               >
-                &times;
+                <PhX class="size-4" aria-hidden="true" />
               </button>
             </div>
-
             <div
               v-for="sid in filters.practiceAreas"
               :key="sid"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-medium text-foreground"
+              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground"
             >
               <span class="truncate">{{ specializationNameById(sid) }}</span>
               <button
                 type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-lg leading-none text-muted-foreground hover:text-foreground"
+                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground"
                 :aria-label="`Remove ${specializationNameById(sid)}`"
                 @click="removeSpecialization(sid)"
               >
-                &times;
+                <PhX class="size-4" aria-hidden="true" />
               </button>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <!-- Results toolbar -->
+          <div
+            v-if="!isLoading && !error"
+            class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-xs"
+          >
+            <div>
+              <p class="text-base font-semibold text-foreground">
+                <span class="font-mono tabular-nums">{{ lawyers.length }}</span>
+                {{ lawyers.length === 1 ? ' lawyer' : ' lawyers' }}
+                <span v-if="hasNextPage && lawyers.length > 0" class="text-muted-foreground">+</span>
+              </p>
+              <p class="text-eyebrow mt-0.5 text-muted-foreground">
+                {{ searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience' }}
+              </p>
+            </div>
+
             <div
-              class="inline-flex items-center rounded-lg border border-border bg-background p-0.5"
+              class="inline-flex items-center rounded-xl border border-border bg-surface-2 p-0.5"
               role="toolbar"
               aria-label="Layout"
             >
               <button
                 type="button"
-                class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
-                :class="
-                  resultsLayout === 'grid'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                "
+                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+                :class="resultsLayout === 'grid' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
                 :aria-pressed="resultsLayout === 'grid'"
                 title="Grid"
                 @click="resultsLayout = 'grid'"
@@ -628,12 +668,8 @@ function clearAllFilters(): void {
               </button>
               <button
                 type="button"
-                class="inline-flex size-9 items-center justify-center rounded-md transition-colors sm:size-10"
-                :class="
-                  resultsLayout === 'list'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-background hover:text-foreground'
-                "
+                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+                :class="resultsLayout === 'list' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
                 :aria-pressed="resultsLayout === 'list'"
                 title="List"
                 @click="resultsLayout = 'list'"
@@ -642,81 +678,78 @@ function clearAllFilters(): void {
                 <span class="sr-only">List layout</span>
               </button>
             </div>
-            <span
-              class="hidden text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground md:inline"
-              aria-hidden="true"
-            >{{
-              searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience'
-            }}</span>
           </div>
-        </div>
 
-        <div
-          v-if="isLoading"
-          aria-busy="true"
-          aria-label="Loading lawyer results"
-          :class="
-            resultsLayout === 'grid'
-              ? 'gap-[clamp(14px,2vw,20px)] grid [grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))]'
-              : 'lawyers-catalog-list flex flex-col gap-4'
-          "
-        >
-          <LawyerSearchCardSkeleton
-            v-for="i in resultsLayout === 'grid' ? 8 : 6"
-            :key="i"
-            :layout="resultsLayout"
-          />
-        </div>
-
-        <div v-else-if="error" class="rounded-xl border border-border bg-card px-6 py-12 text-center sm:px-8">
-          <EmptyState
-            title="Error loading lawyers"
-            description="There was an error loading the lawyers list. Please try again."
-            action-text="Retry"
-            @action="refetch()"
-          />
-        </div>
-
-        <div
-          v-else-if="lawyers.length === 0"
-          class="rounded-xl border border-dashed border-border bg-background px-4 py-10 sm:px-8 sm:py-12"
-        >
-          <LawyerDirectoryEmpty
-            :active-filter-count="activeFilterCount"
-            :keyword="filters.keywords"
-            @reset="clearAllFilters"
-          />
-        </div>
-
-        <div
-          v-else
-          :class="
-            resultsLayout === 'grid'
-              ? 'gap-[clamp(14px,2vw,20px)] grid lawyers-catalog-grid [grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr))]'
-              : 'lawyers-catalog-list flex w-full flex-col gap-4'
-          "
-        >
-          <LawyerSearchCard
-            v-for="lawyer in lawyers"
-            :key="lawyer.id"
-            :density="resultsLayout === 'grid' ? 'grid' : 'row'"
-            :lawyer="lawyer"
-          />
-        </div>
-
-        <div
-          v-if="hasNextPage && lawyers.length > 0"
-          class="mt-8 flex justify-center pb-8"
-        >
-          <Button
-            variant="outline"
-            :disabled="isFetchingNextPage"
-            @click="fetchNextPage()"
+          <!-- Loading -->
+          <div
+            v-if="isLoading"
+            aria-busy="true"
+            aria-label="Loading lawyer results"
+            :class="resultsLayout === 'grid'
+              ? 'lawyers-catalog-grid grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
+              : 'lawyers-catalog-list flex flex-col gap-4'"
           >
-            {{ isFetchingNextPage ? 'Loading…' : 'Load more lawyers' }}
-          </Button>
-        </div>
-      </main>
+            <LawyerSearchCardSkeleton
+              v-for="i in resultsLayout === 'grid' ? 6 : 4"
+              :key="i"
+              :layout="resultsLayout"
+            />
+          </div>
+
+          <!-- Error -->
+          <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
+            <EmptyState
+              title="Error loading lawyers"
+              description="There was an error loading the lawyers list. Please try again."
+              action-text="Retry"
+              @action="refetch()"
+            />
+          </div>
+
+          <!-- Empty -->
+          <div
+            v-else-if="lawyers.length === 0"
+            class="rounded-2xl border border-dashed border-border bg-card px-4 py-10 sm:px-8 sm:py-12"
+          >
+            <LawyerDirectoryEmpty
+              :active-filter-count="activeFilterCount"
+              :keyword="filters.keywords"
+              @reset="clearAllFilters"
+            />
+          </div>
+
+          <!-- Results grid / list -->
+          <div
+            v-else
+            :class="resultsLayout === 'grid'
+              ? 'lawyers-catalog-grid grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
+              : 'lawyers-catalog-list flex w-full flex-col gap-4'"
+          >
+            <LawyerSearchCard
+              v-for="lawyer in lawyers"
+              :key="lawyer.id"
+              :density="resultsLayout === 'grid' ? 'grid' : 'row'"
+              :lawyer="lawyer"
+            />
+          </div>
+
+          <!-- Load more -->
+          <div
+            v-if="hasNextPage && lawyers.length > 0"
+            class="mt-10 flex justify-center"
+          >
+            <Button
+              variant="outline"
+              size="lg"
+              class="min-w-[12rem] rounded-full"
+              :disabled="isFetchingNextPage"
+              @click="fetchNextPage()"
+            >
+              {{ isFetchingNextPage ? 'Loading…' : 'Load more lawyers' }}
+            </Button>
+          </div>
+        </main>
+      </div>
     </div>
   </div>
 </template>

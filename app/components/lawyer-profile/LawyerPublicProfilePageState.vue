@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 
 defineProps<{
   pending: boolean

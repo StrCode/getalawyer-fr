@@ -11,9 +11,9 @@
     color-scheme: light dark;
     --background: oklch(0.98 0.01 88);
     --foreground: oklch(0.12 0.015 145);
-    --card: oklch(0.96 0.012 85);
+    --card: oklch(0.995 0.005 95);
     --card-foreground: oklch(0.12 0.015 145);
-    --popover: oklch(0.96 0.012 85);
+    --popover: oklch(0.995 0.005 95);
     --popover-foreground: oklch(0.12 0.015 145);
     --primary: oklch(0.31 0.073 150);
     --primary-foreground: oklch(0.95 0.022 152);
@@ -41,9 +41,24 @@
     --sidebar-accent-foreground: oklch(0.95 0.022 152);
     --sidebar-border: oklch(0.31 0.073 150);
     --sidebar-ring: oklch(0.43 0.09 150);
+
+    /* Brand surfaces & accents (editorial refresh) */
+    --canvas: oklch(0.98 0.01 88);
+    --paper: oklch(0.995 0.005 95);
+    --surface-1: oklch(0.995 0.005 95);
+    --surface-2: oklch(0.97 0.01 88);
+    --surface-3: oklch(0.945 0.014 86);
+    --ink: oklch(0.17 0.032 152);
+    --ink-foreground: oklch(0.94 0.025 150);
+    --ink-muted: oklch(0.72 0.05 150);
+    --ink-border: oklch(0.28 0.04 151);
+    --brass: oklch(0.72 0.11 80);
+    --brass-foreground: oklch(0.18 0.03 152);
+
     --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
     --font-serif: 'Fraunces', ui-serif, Georgia, serif;
     --font-heading: 'Fraunces', ui-serif, Georgia, serif;
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
     --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, monospace;
     --radius: 0.625rem;
     --shadow-2xs: 0px 4px 12px 0px hsl(0 0 0 / 0.04);
@@ -90,6 +105,20 @@
     --sidebar-accent-foreground: oklch(0.95 0.022 152);
     --sidebar-border: oklch(0.38 0.022 152);
     --sidebar-ring: oklch(0.43 0.09 150);
+
+    /* Brand surfaces & accents (dark) */
+    --canvas: oklch(0.12 0.015 145);
+    --paper: oklch(0.19 0.04 150);
+    --surface-1: oklch(0.19 0.04 150);
+    --surface-2: oklch(0.16 0.03 148);
+    --surface-3: oklch(0.14 0.025 146);
+    --ink: oklch(0.1 0.02 150);
+    --ink-foreground: oklch(0.94 0.025 150);
+    --ink-muted: oklch(0.7 0.05 150);
+    --ink-border: oklch(0.3 0.04 151);
+    --brass: oklch(0.74 0.11 80);
+    --brass-foreground: oklch(0.14 0.025 150);
+
     --shadow-2xs: 0px 8px 20px 0px hsl(0 0 0 / 0.25);
     --shadow-xs: 0px 8px 20px 0px hsl(0 0 0 / 0.25);
     --shadow-sm: 0px 8px 20px 0px hsl(0 0 0 / 0.5), 0px 1px 2px -1px hsl(0 0 0 / 0.5);
@@ -134,10 +163,23 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
+    --color-canvas: var(--canvas);
+    --color-paper: var(--paper);
+    --color-surface-1: var(--surface-1);
+    --color-surface-2: var(--surface-2);
+    --color-surface-3: var(--surface-3);
+    --color-ink: var(--ink);
+    --color-ink-foreground: var(--ink-foreground);
+    --color-ink-muted: var(--ink-muted);
+    --color-ink-border: var(--ink-border);
+    --color-brass: var(--brass);
+    --color-brass-foreground: var(--brass-foreground);
+
     --font-sans: var(--font-sans);
     --font-mono: var(--font-mono);
     --font-serif: var(--font-serif);
     --font-heading: var(--font-heading);
+    --font-display: var(--font-display);
 
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -184,14 +226,25 @@
         font-synthesis: none;
     }
 
+    /*
+     * Default headings use the grotesk (Geist). Editorial serif is opt-in via
+     * .font-display / .font-heading / .font-serif so small UI headings (card
+     * titles, nav) stay clean and only true display type uses Fraunces.
+     */
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
-        font-family: var(--font-heading) !important;
-        font-variation-settings: 'SOFT' 0, 'WONK' 1 !important;
+        font-family: var(--font-sans);
+        letter-spacing: -0.02em;
+    }
+
+    .font-display,
+    .font-heading,
+    .font-serif {
+        font-variation-settings: 'SOFT' 0, 'WONK' 1;
     }
 }
 
@@ -251,4 +304,83 @@
 .layout-enter-from,
 .layout-leave-to {
     opacity: 0;
+}
+
+/* ─────────────────────────────────────────────
+   Editorial type scale
+   Compose Fraunces display type with tuned size,
+   leading and tracking. Pair with text-* color.
+   ───────────────────────────────────────────── */
+@utility text-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+@utility display-2xl {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 0, 'WONK' 1;
+    font-weight: 600;
+    font-size: clamp(2.75rem, 6vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+}
+
+@utility display-xl {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 0, 'WONK' 1;
+    font-weight: 600;
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+}
+
+@utility display-lg {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 0, 'WONK' 1;
+    font-weight: 600;
+    font-size: clamp(1.875rem, 3.2vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+@utility display-md {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 0, 'WONK' 1;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+}
+
+/* ─────────────────────────────────────────────
+   Motion — minimal & accessible
+   ───────────────────────────────────────────── */
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@utility animate-rise-in {
+    animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
 }

@@ -1,14 +1,30 @@
 <script setup lang="ts">
+import { useSlots } from 'vue'
+
 defineProps<{
   title: string
+  eyebrow?: string
 }>()
+
+const slots = useSlots()
 </script>
 
 <template>
-  <h2 class="mb-5 flex items-center gap-2 text-xl font-semibold text-foreground">
-    <span class="inline-flex shrink-0 text-muted-foreground [&>svg]:size-5">
-      <slot name="icon" />
-    </span>
-    {{ title }}
-  </h2>
+  <div class="mb-6">
+    <p
+      v-if="eyebrow"
+      class="text-eyebrow mb-2 text-brass"
+    >
+      {{ eyebrow }}
+    </p>
+    <h2 class="flex items-center gap-3 text-xl font-semibold tracking-tight text-foreground">
+      <span
+        v-if="slots.icon"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-primary ring-1 ring-border/70 [&>svg]:size-5"
+      >
+        <slot name="icon" />
+      </span>
+      {{ title }}
+    </h2>
+  </div>
 </template>

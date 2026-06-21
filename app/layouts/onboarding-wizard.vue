@@ -270,7 +270,7 @@ export default defineComponent({
             <!-- Subtle fetch indicator -->
             <transition name="fade">
               <div v-if="isFetching && !isPending" class="absolute -top-10 right-0 flex items-center gap-2">
-                 <span class="text-3 font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
+                 <span class="text-xs font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
                  <PhCircleNotch class="w-4 h-4 text-primary/40 animate-spin" />
               </div>
             </transition>
@@ -289,7 +289,7 @@ export default defineComponent({
           class="absolute -top-14 left-1/2 z-10 w-full max-w-xl -translate-x-1/2 px-4 sm:-top-16"
         >
           <div
-            class="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-red-700 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
+            class="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-destructive shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
             role="alert"
           >
             <PhWarningCircle class="mt-0.5 size-4 shrink-0 sm:size-5" />

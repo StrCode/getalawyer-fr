@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { ConsultationType } from '~/types/lawyer'
+import { PhBuildings, PhCalendar, PhPhone, PhVideoCamera } from '@phosphor-icons/vue'
 
 defineProps<{
   consultationTypes: ConsultationType[]
@@ -23,11 +24,11 @@ function formatPrice(price: string): string {
       <div
         v-for="consult in consultationTypes"
         :key="consult.id"
-        class="rounded-xl border border-border bg-card p-5"
+        class="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground/20"
       >
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0 flex-1">
-            <h3 class="font-semibold text-foreground">
+            <h3 class="font-semibold tracking-tight text-foreground">
               {{ consult.name }}
             </h3>
             <p
@@ -41,7 +42,7 @@ function formatPrice(price: string): string {
             <p class="text-xl font-semibold tabular-nums text-foreground">
               {{ formatPrice(consult.price) }}
             </p>
-            <p class="text-xs text-muted-foreground">
+            <p class="font-mono text-xs tabular-nums text-muted-foreground">
               {{ consult.durationMinutes }} min
             </p>
           </div>
@@ -49,7 +50,7 @@ function formatPrice(price: string): string {
         <div class="mt-4 flex flex-wrap gap-2">
           <Badge
             v-if="consult.meetingType === 'video' || consult.meetingType === 'any'"
-            variant="outline"
+            variant="soft"
             class="gap-1"
           >
             <PhVideoCamera class="size-3.5" />
@@ -57,7 +58,7 @@ function formatPrice(price: string): string {
           </Badge>
           <Badge
             v-if="consult.meetingType === 'phone' || consult.meetingType === 'any'"
-            variant="outline"
+            variant="soft"
             class="gap-1"
           >
             <PhPhone class="size-3.5" />
@@ -65,7 +66,7 @@ function formatPrice(price: string): string {
           </Badge>
           <Badge
             v-if="consult.meetingType === 'in_person' || consult.meetingType === 'any'"
-            variant="outline"
+            variant="soft"
             class="gap-1"
           >
             <PhBuildings class="size-3.5" />

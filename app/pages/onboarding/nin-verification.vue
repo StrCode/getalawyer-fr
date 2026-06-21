@@ -20,7 +20,7 @@ definePageMeta({
 const step = getLawyerStepDisplay('nin_verification')
 
 const inputClass =
-  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 const ninState = store.ninVerification
@@ -147,25 +147,25 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Admin verified -->
     <Card
       v-if="isAdminVerified"
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 p-8 text-center shadow-xl shadow-primary/5 backdrop-blur-xl sm:p-10"
+      class="relative w-full overflow-hidden rounded-2xl border border-primary/20 bg-card p-8 text-center shadow-sm sm:p-10"
     >
       <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-100/60 blur-3xl"
+        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl"
         aria-hidden="true"
       />
       <div class="relative z-10">
         <div
-          class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-emerald-50 text-emerald-600 shadow-sm"
+          class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-background bg-primary/5 text-primary shadow-sm"
         >
           <PhLock class="h-10 w-10" weight="fill" />
         </div>
         <div
-          class="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-800"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-eyebrow text-primary"
         >
           <PhShieldCheck class="h-4 w-4" weight="fill" />
           Verified by Getalawyer
         </div>
-        <h2 class="mb-3 text-2xl font-semibold text-sidebar">Identity verified</h2>
+        <h2 class="mb-3 text-2xl font-display font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Your National Identification Number has been verified. It cannot be changed while your
           application is active.
@@ -176,15 +176,15 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Already submitted -->
     <Card
       v-else-if="isSubmittedPending"
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-2xl border border-primary/20 bg-card shadow-sm"
     >
       <div class="relative z-10 p-6 text-center sm:p-8">
         <div
-          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50"
+          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary/20 bg-primary/5"
         >
-          <PhCheckCircle class="h-8 w-8 text-emerald-600" weight="fill" />
+          <PhCheckCircle class="h-8 w-8 text-primary" weight="fill" />
         </div>
-        <p class="mb-1 text-lg font-semibold text-sidebar">NIN already submitted</p>
+        <p class="mb-1 text-lg font-semibold text-foreground">NIN already submitted</p>
         <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
           Your NIN is saved securely. You can continue, or replace it if you made a mistake — until
           our team verifies it.
@@ -202,7 +202,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <!-- Entry form -->
     <Card
       v-else-if="showEntryForm"
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div
         class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
@@ -219,7 +219,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
               </FieldLabel>
               <div class="flex gap-2">
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-white/80 px-3 text-muted-foreground"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-muted-foreground"
                   aria-hidden="true"
                 >
                   <PhIdentificationCard class="h-5 w-5" />
@@ -238,7 +238,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   @update:model-value="(v) => onNinInput(field, v)"
                 />
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-white/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
                   :class="ninLength === 11 ? 'text-primary' : 'text-muted-foreground/60'"
                 >
                   {{ ninLength }}/11
@@ -253,7 +253,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
             <Field :data-invalid="isInvalid(field)">
               <Label
                 :for="consentFieldId"
-                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-card/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
               >
                 <Checkbox
                   :id="consentFieldId"

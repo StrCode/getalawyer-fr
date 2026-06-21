@@ -1,5 +1,24 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { toast } from 'vue-sonner'
+import {
+  PhArrowRight,
+  PhBuildings,
+  PhCheck,
+  PhCircleNotch,
+  PhClock,
+  PhLink,
+  PhMapPin,
+  PhPhone,
+  PhShieldCheck,
+  PhVideoCamera,
+} from '@phosphor-icons/vue'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { useBookings } from '~/composables/useBookings'
 import type { LawyerProfile } from '~/types/lawyer'
 
@@ -20,18 +39,18 @@ const router = useRouter()
 const { useCreateBooking } = useBookings()
 const { mutate: createBooking, isPending } = useCreateBooking()
 
-// Wizard steps
 const currentStep = ref(1)
 const totalSteps = 4
 
 const steps = [
-  { number: 1, title: 'Consultation Type', icon: 'i-heroicons-document-text' },
-  { number: 2, title: 'Date & Time', icon: 'i-heroicons-calendar' },
-  { number: 3, title: 'Meeting Details', icon: 'i-heroicons-video-camera' },
-  { number: 4, title: 'Review & Confirm', icon: 'i-heroicons-check-circle' }
+  { number: 1, title: 'Consultation' },
+  { number: 2, title: 'Date & time' },
+  { number: 3, title: 'Meeting' },
+  { number: 4, title: 'Review' },
 ]
 
-// Get active consultation types
+const todayStr = new Date().toISOString().split('T')[0]
+
 const consultationTypes = computed(() => {
   if (!props.lawyerInfo?.consultationTypes) return []
   return props.lawyerInfo.consultationTypes
@@ -43,7 +62,7 @@ const consultationTypes = computed(() => {
       durationMinutes: ct.durationMinutes,
       price: ct.price,
       currency: ct.currency,
-      meetingType: ct.meetingType
+      meetingType: ct.meetingType,
     }))
 })
 
@@ -56,7 +75,7 @@ const state = reactive({
   meetingLocation: '',
   meetingPhone: '',
   timezone: 'Africa/Lagos',
-  clientNotes: ''
+  clientNotes: '',
 })
 
 const selectedConsultationType = computed(() => {
@@ -64,7 +83,6 @@ const selectedConsultationType = computed(() => {
   return consultationTypes.value.find(ct => ct.id === state.consultationTypeId)
 })
 
-// Auto-set meeting type
 watch(() => state.consultationTypeId, (newTypeId) => {
   const consultType = consultationTypes.value.find(ct => ct.id === newTypeId)
   if (consultType && consultType.meetingType !== 'any') {
@@ -72,35 +90,27 @@ watch(() => state.consultationTypeId, (newTypeId) => {
   }
 })
 
-const meetingTypeOptions = computed(() => {
-  if (!selectedConsultationType.value) {
-    return [
-      { value: 'video', label: 'Video Call', icon: 'i-heroicons-video-camera' },
-      { value: 'phone', label: 'Phone Call', icon: 'i-heroicons-phone' },
-      { value: 'in_person', label: 'In Person', icon: 'i-heroicons-building-office' }
-    ]
-  }
+type MeetingOption = { value: 'video' | 'phone' | 'in_person', label: string, icon: Component }
 
-  const meetingType = selectedConsultationType.value.meetingType
-  
-  if (meetingType === 'any') {
-    return [
-      { value: 'video', label: 'Video Call', icon: 'i-heroicons-video-camera' },
-      { value: 'phone', label: 'Phone Call', icon: 'i-heroicons-phone' },
-      { value: 'in_person', label: 'In Person', icon: 'i-heroicons-building-office' }
-    ]
-  }
-
-  const typeMap: Record<string, { label: string; icon: string }> = {
-    video: { label: 'Video Call', icon: 'i-heroicons-video-camera' },
-    phone: { label: 'Phone Call', icon: 'i-heroicons-phone' },
-    in_person: { label: 'In Person', icon: 'i-heroicons-building-office' }
-  }
-
-  return [{ value: meetingType, ...typeMap[meetingType] }]
+const meetingTypeOptions = computed<MeetingOption[]>(() => {
+  const all: MeetingOption[] = [
+    { value: 'video', label: 'Video call', icon: PhVideoCamera },
+    { value: 'phone', label: 'Phone call', icon: PhPhone },
+    { value: 'in_person', label: 'In person', icon: PhBuildings },
+  ]
+  const meetingType = selectedConsultationType.value?.meetingType
+  if (!meetingType || meetingType === 'any') return all
+  return all.filter(option => option.value === meetingType)
 })
 
-// Step validation
+const meetingLocked = computed(() =>
+  !!selectedConsultationType.value && selectedConsultationType.value.meetingType !== 'any')
+
+function formatPrice(price: string | undefined): string {
+  if (!price) return 'Free'
+  return parseFloat(price) === 0 ? 'Free' : `₦${parseFloat(price).toLocaleString()}`
+}
+
 const canProceedToStep2 = computed(() => !!state.consultationTypeId)
 const canProceedToStep3 = computed(() => !!state.scheduledDate && !!state.scheduledStartTime)
 const canProceedToStep4 = computed(() => {
@@ -109,28 +119,34 @@ const canProceedToStep4 = computed(() => {
   return true
 })
 
+const canContinue = computed(() => {
+  if (currentStep.value === 1) return canProceedToStep2.value
+  if (currentStep.value === 2) return canProceedToStep3.value
+  if (currentStep.value === 3) return canProceedToStep4.value
+  return true
+})
+
 function goToStep(step: number) {
   if (step === 1) {
     currentStep.value = 1
-  } else if (step === 2 && canProceedToStep2.value) {
+  }
+  else if (step === 2 && canProceedToStep2.value) {
     currentStep.value = 2
-  } else if (step === 3 && canProceedToStep2.value && canProceedToStep3.value) {
+  }
+  else if (step === 3 && canProceedToStep2.value && canProceedToStep3.value) {
     currentStep.value = 3
-  } else if (step === 4 && canProceedToStep2.value && canProceedToStep3.value && canProceedToStep4.value) {
+  }
+  else if (step === 4 && canProceedToStep2.value && canProceedToStep3.value && canProceedToStep4.value) {
     currentStep.value = 4
   }
 }
 
 function nextStep() {
-  if (currentStep.value < totalSteps) {
-    currentStep.value++
-  }
+  if (currentStep.value < totalSteps) currentStep.value++
 }
 
 function prevStep() {
-  if (currentStep.value > 1) {
-    currentStep.value--
-  }
+  if (currentStep.value > 1) currentStep.value--
 }
 
 function submitBooking() {
@@ -146,7 +162,7 @@ function submitBooking() {
 
   const bookingData = {
     ...state,
-    lawyerId: props.initialLawyerId
+    lawyerId: props.initialLawyerId,
   }
 
   createBooking(bookingData as any, {
@@ -157,7 +173,7 @@ function submitBooking() {
     },
     onError: (error) => {
       toast.error('Error', { description: error.message || 'Failed to create booking' })
-    }
+    },
   })
 }
 
@@ -168,378 +184,375 @@ function close() {
 </script>
 
 <template>
-  <USlideover
-    v-model:open="isOpen"
-    :side="isDesktop ? 'right' : 'bottom'"
-    :ui="{
-      width: isDesktop ? 'w-full max-w-3xl' : 'w-full',
-      content: isDesktop ? 'overflow-y-auto' : 'rounded-t-2xl overflow-y-auto max-h-[92dvh]',
-      overlay: 'backdrop-blur-sm',
-    }"
-  >
-    <template #content>
-      <!-- Mobile drag handle -->
-      <div v-if="!isDesktop" class="flex justify-center pt-3 pb-1 shrink-0">
-        <div class="bg-gray-300 rounded-full w-10 h-1" />
+  <Sheet v-model:open="isOpen">
+    <SheetContent
+      :side="isDesktop ? 'right' : 'bottom'"
+      class="gap-0 p-0"
+      :class="isDesktop
+        ? 'w-full sm:max-w-xl'
+        : 'h-auto max-h-[92dvh] rounded-t-2xl'"
+    >
+      <!-- Header -->
+      <div class="shrink-0 border-b border-border px-6 pb-5 pt-6 md:px-8">
+        <p class="text-eyebrow text-brass">
+          Step {{ currentStep }} of {{ totalSteps }}
+        </p>
+        <h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
+          Book a consultation
+        </h2>
+
+        <!-- Step rail -->
+        <ol class="mt-5 flex items-center gap-2">
+          <li
+            v-for="(step, index) in steps"
+            :key="step.number"
+            class="flex items-center"
+            :class="{ 'flex-1': index < steps.length - 1 }"
+          >
+            <button
+              type="button"
+              class="flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums transition-colors"
+              :class="currentStep === step.number
+                ? 'bg-primary text-primary-foreground ring-4 ring-primary/15'
+                : currentStep > step.number
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-surface-3 text-muted-foreground'"
+              :aria-current="currentStep === step.number ? 'step' : undefined"
+              @click="goToStep(step.number)"
+            >
+              <PhCheck v-if="currentStep > step.number" class="size-3.5" weight="bold" />
+              <span v-else>{{ step.number }}</span>
+            </button>
+            <span
+              class="ml-2 hidden text-xs font-medium md:block"
+              :class="currentStep >= step.number ? 'text-foreground' : 'text-muted-foreground'"
+            >
+              {{ step.title }}
+            </span>
+            <span
+              v-if="index < steps.length - 1"
+              class="mx-2 h-px flex-1 transition-colors md:mx-3"
+              :class="currentStep > step.number ? 'bg-primary' : 'bg-border'"
+            />
+          </li>
+        </ol>
       </div>
 
-      <div class="flex flex-col h-full">
-        <!-- Header -->
-        <div class="p-6 border-gray-200 border-b shrink-0">
-          <h2 class="mb-1 font-bold text-gray-900 text-2xl">Book Consultation</h2>
-          <p class="text-gray-500 text-sm">Step {{ currentStep }} of {{ totalSteps }}</p>
+      <!-- Content -->
+      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-6 md:px-8">
+        <!-- Step 1: Consultation type -->
+        <div v-if="currentStep === 1" class="space-y-5">
+          <div>
+            <h3 class="text-lg font-semibold tracking-tight text-foreground">
+              Choose a consultation type
+            </h3>
+            <p class="mt-1 text-sm text-muted-foreground">
+              Select the type of legal consultation you need.
+            </p>
+          </div>
+
+          <div v-if="consultationTypes.length" class="space-y-3">
+            <button
+              v-for="type in consultationTypes"
+              :key="type.id"
+              type="button"
+              class="w-full rounded-2xl border bg-card p-4 text-left transition-colors"
+              :class="state.consultationTypeId === type.id
+                ? 'border-primary ring-1 ring-primary/30'
+                : 'border-border hover:border-foreground/20'"
+              @click="state.consultationTypeId = type.id"
+            >
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-semibold tracking-tight text-foreground">
+                    {{ type.name }}
+                  </h4>
+                  <p v-if="type.description" class="mt-1 text-sm text-muted-foreground">
+                    {{ type.description }}
+                  </p>
+                  <div class="mt-2 flex items-center gap-3 font-mono text-xs tabular-nums text-muted-foreground">
+                    <span class="inline-flex items-center gap-1">
+                      <PhClock class="size-3.5" />
+                      {{ type.durationMinutes }} min
+                    </span>
+                    <span class="inline-flex items-center gap-1 capitalize">
+                      <PhVideoCamera v-if="type.meetingType === 'video'" class="size-3.5" />
+                      <PhPhone v-else-if="type.meetingType === 'phone'" class="size-3.5" />
+                      <PhBuildings v-else-if="type.meetingType === 'in_person'" class="size-3.5" />
+                      <PhCheck v-else class="size-3.5" />
+                      {{ type.meetingType === 'any' ? 'Any type' : type.meetingType.replace('_', ' ') }}
+                    </span>
+                  </div>
+                </div>
+                <div class="shrink-0 text-right text-lg font-semibold tabular-nums text-foreground">
+                  {{ formatPrice(type.price) }}
+                </div>
+              </div>
+            </button>
+          </div>
+          <div
+            v-else
+            class="rounded-2xl border border-dashed border-border bg-surface-2 p-8 text-center text-sm text-muted-foreground"
+          >
+            This lawyer has no consultation types available right now.
+          </div>
         </div>
 
-        <!-- Progress Steps -->
-        <div class="px-6 py-4 border-gray-200 border-b shrink-0">
-          <div class="flex justify-between items-center">
-            <div 
-              v-for="(step, index) in steps" 
-              :key="step.number"
-              class="flex items-center"
-              :class="{ 'flex-1': index < steps.length - 1 }"
+        <!-- Step 2: Date & time -->
+        <div v-else-if="currentStep === 2" class="space-y-5">
+          <div>
+            <h3 class="text-lg font-semibold tracking-tight text-foreground">
+              Pick a date & time
+            </h3>
+            <p class="mt-1 text-sm text-muted-foreground">
+              Choose your preferred consultation schedule.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <Label for="booking-date">Date</Label>
+              <Input
+                id="booking-date"
+                v-model="state.scheduledDate"
+                type="date"
+                :min="todayStr"
+                class="h-11"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <Label for="booking-time">Start time</Label>
+              <Input
+                id="booking-time"
+                v-model="state.scheduledStartTime"
+                type="time"
+                class="h-11"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <Label for="booking-tz">Timezone</Label>
+              <NativeSelect id="booking-tz" v-model="state.timezone" class="h-11 w-full">
+                <NativeSelectOption value="Africa/Lagos">West Africa Time (Lagos)</NativeSelectOption>
+                <NativeSelectOption value="Europe/Paris">Central European Time (Paris)</NativeSelectOption>
+                <NativeSelectOption value="America/New_York">Eastern Time (New York)</NativeSelectOption>
+                <NativeSelectOption value="UTC">UTC</NativeSelectOption>
+              </NativeSelect>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Meeting details -->
+        <div v-else-if="currentStep === 3" class="space-y-5">
+          <div>
+            <h3 class="text-lg font-semibold tracking-tight text-foreground">
+              Meeting preferences
+            </h3>
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ meetingLocked ? 'This consultation has a fixed meeting type.' : 'How would you like to meet?' }}
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <button
+              v-for="option in meetingTypeOptions"
+              :key="option.value"
+              type="button"
+              :disabled="meetingLocked"
+              class="flex flex-col items-center justify-center gap-2 rounded-2xl border p-4 transition-colors disabled:cursor-not-allowed"
+              :class="state.meetingType === option.value
+                ? 'border-primary bg-primary/5 ring-1 ring-primary/30'
+                : 'border-border hover:border-foreground/20'"
+              @click="state.meetingType = option.value"
             >
-              <!-- Step Circle -->
-              <button
-                @click="goToStep(step.number)"
-                class="flex justify-center items-center rounded-full w-10 h-10 font-semibold text-sm transition-all"
-                :class="[
-                  currentStep === step.number 
-                    ? 'bg-primary-500 text-white ring-4 ring-primary-100' 
-                    : currentStep > step.number
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-gray-200 text-gray-500'
-                ]"
+              <component
+                :is="option.icon"
+                class="size-6"
+                :class="state.meetingType === option.value ? 'text-primary' : 'text-muted-foreground'"
+              />
+              <span
+                class="text-sm font-medium"
+                :class="state.meetingType === option.value ? 'text-foreground' : 'text-muted-foreground'"
               >
-                <PhIcon 
-                  v-if="currentStep > step.number"
-                  name="i-heroicons-check"
-                  class="w-5 h-5"
-                />
-                <span v-else>{{ step.number }}</span>
-              </button>
-
-              <!-- Step Label (desktop only) -->
-              <span 
-                class="hidden md:block ml-2 font-medium text-xs"
-                :class="currentStep >= step.number ? 'text-gray-900' : 'text-gray-400'"
-              >
-                {{ step.title }}
+                {{ option.label }}
               </span>
+            </button>
+          </div>
 
-              <!-- Connector Line -->
-              <div 
-                v-if="index < steps.length - 1"
-                class="flex-1 mx-3 h-0.5"
-                :class="currentStep > step.number ? 'bg-primary-500' : 'bg-gray-200'"
+          <div v-if="state.meetingType === 'video'" class="space-y-1.5">
+            <Label for="booking-url">Video call link</Label>
+            <div class="relative">
+              <PhLink class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="booking-url"
+                v-model="state.meetingUrl"
+                class="h-11 pl-10"
+                placeholder="Leave blank for an auto-generated link"
+              />
+            </div>
+            <p class="text-xs text-muted-foreground">Optional — we’ll generate one if left blank.</p>
+          </div>
+
+          <div v-if="state.meetingType === 'in_person'" class="space-y-1.5">
+            <Label for="booking-location">Meeting location</Label>
+            <div class="relative">
+              <PhMapPin class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="booking-location"
+                v-model="state.meetingLocation"
+                class="h-11 pl-10"
+                placeholder="Enter the meeting address"
               />
             </div>
           </div>
-        </div>
 
-        <!-- Content Area -->
-        <div class="flex-1 p-6 overflow-y-auto">
-          <!-- Step 1: Consultation Type -->
-          <div v-if="currentStep === 1" class="space-y-6">
-            <div>
-              <h3 class="mb-2 font-semibold text-gray-900 text-lg">Choose Consultation Type</h3>
-              <p class="text-gray-500 text-sm">Select the type of legal consultation you need</p>
-            </div>
-
-            <div class="space-y-3">
-              <button
-                v-for="type in consultationTypes"
-                :key="type.id"
-                @click="state.consultationTypeId = type.id"
-                class="p-4 border-2 hover:border-primary-300 rounded-xl w-full text-left transition-all"
-                :class="state.consultationTypeId === type.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200'"
-              >
-                <div class="flex justify-between items-start gap-4">
-                  <div class="flex-1">
-                    <h4 class="mb-1 font-semibold text-gray-900">{{ type.name }}</h4>
-                    <p v-if="type.description" class="mb-2 text-gray-600 text-sm">{{ type.description }}</p>
-                    <div class="flex items-center gap-3 text-gray-500 text-xs">
-                      <span class="flex items-center gap-1">
-                        <PhIcon name="i-heroicons-clock" class="w-3.5 h-3.5" />
-                        {{ type.durationMinutes }} min
-                      </span>
-                      <span class="flex items-center gap-1">
-                        <PhIcon 
-                          :name="type.meetingType === 'video' ? 'i-heroicons-video-camera' : type.meetingType === 'phone' ? 'i-heroicons-phone' : type.meetingType === 'in_person' ? 'i-heroicons-building-office' : 'i-heroicons-check-circle'" 
-                          class="w-3.5 h-3.5" 
-                        />
-                        {{ type.meetingType === 'any' ? 'Any type' : type.meetingType.replace('_', ' ') }}
-                      </span>
-                    </div>
-                  </div>
-                  <div class="text-right shrink-0">
-                    <div class="font-bold text-gray-900 text-xl">
-                      {{ parseFloat(type.price) === 0 ? 'Free' : `₦${parseFloat(type.price).toLocaleString()}` }}
-                    </div>
-                  </div>
-                </div>
-              </button>
+          <div v-if="state.meetingType === 'phone'" class="space-y-1.5">
+            <Label for="booking-phone">Phone number</Label>
+            <div class="relative">
+              <PhPhone class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="booking-phone"
+                v-model="state.meetingPhone"
+                class="h-11 pl-10"
+                placeholder="Enter your phone number"
+              />
             </div>
           </div>
 
-          <!-- Step 2: Date & Time -->
-          <div v-if="currentStep === 2" class="space-y-6">
-            <div>
-              <h3 class="mb-2 font-semibold text-gray-900 text-lg">Select Date & Time</h3>
-              <p class="text-gray-500 text-sm">Choose your preferred consultation schedule</p>
-            </div>
-
-            <div class="space-y-4">
-              <UFormField label="Date" name="scheduledDate" required size="xl">
-                <UInput 
-                  type="date" 
-                  v-model="state.scheduledDate" 
-                  size="xl"
-                  icon="i-heroicons-calendar"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField label="Start Time" name="scheduledStartTime" required size="xl">
-                <UInput 
-                  type="time" 
-                  v-model="state.scheduledStartTime" 
-                  size="xl"
-                  icon="i-heroicons-clock"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField label="Timezone" name="timezone" required size="xl">
-                <USelectMenu 
-                  v-model="state.timezone" 
-                  :items="[
-                    { label: 'West Africa Time (Lagos)', value: 'Africa/Lagos' },
-                    { label: 'Central European Time (Paris)', value: 'Europe/Paris' },
-                    { label: 'Eastern Time (New York)', value: 'America/New_York' },
-                    { label: 'UTC', value: 'UTC' }
-                  ]"
-                  size="xl"
-                  icon="i-heroicons-globe-alt"
-                  value-key="value"
-                  class="w-full"
-                />
-              </UFormField>
-            </div>
-          </div>
-
-          <!-- Step 3: Meeting Details -->
-          <div v-if="currentStep === 3" class="space-y-6">
-            <div>
-              <h3 class="mb-2 font-semibold text-gray-900 text-lg">Meeting Preferences</h3>
-              <p class="text-gray-500 text-sm">How would you like to meet?</p>
-            </div>
-
-            <div class="space-y-4">
-              <div class="gap-3 grid grid-cols-1 sm:grid-cols-3">
-                <button
-                  v-for="option in meetingTypeOptions"
-                  :key="option.value"
-                  @click="state.meetingType = option.value as any"
-                  class="flex flex-col justify-center items-center p-4 border-2 rounded-xl transition-all"
-                  :class="state.meetingType === option.value ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'"
-                  :disabled="selectedConsultationType?.meetingType !== 'any'"
-                >
-                  <PhIcon 
-                    :name="option.icon"
-                    class="mb-2 w-8 h-8"
-                    :class="state.meetingType === option.value ? 'text-primary-600' : 'text-gray-400'"
-                  />
-                  <span class="font-medium text-sm" :class="state.meetingType === option.value ? 'text-primary-900' : 'text-gray-700'">
-                    {{ option.label }}
-                  </span>
-                </button>
-              </div>
-
-              <UFormField 
-                v-if="state.meetingType === 'video'" 
-                label="Video Call Link" 
-                name="meetingUrl" 
-                size="xl"
-                hint="Optional: Leave blank for auto-generated link"
-              >
-                <UInput 
-                  v-model="state.meetingUrl" 
-                  size="xl"
-                  placeholder="Leave blank for auto-generated link"
-                  icon="i-heroicons-link"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField 
-                v-if="state.meetingType === 'in_person'" 
-                label="Meeting Location" 
-                name="meetingLocation" 
-                required
-                size="xl"
-              >
-                <UInput 
-                  v-model="state.meetingLocation" 
-                  size="xl"
-                  placeholder="Enter meeting address"
-                  icon="i-heroicons-map-pin"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField 
-                v-if="state.meetingType === 'phone'" 
-                label="Phone Number" 
-                name="meetingPhone" 
-                required
-                size="xl"
-              >
-                <UInput 
-                  v-model="state.meetingPhone" 
-                  size="xl"
-                  placeholder="Enter your phone number"
-                  icon="i-heroicons-phone"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField 
-                label="Notes for Lawyer" 
-                name="clientNotes" 
-                size="xl"
-                hint="Optional: Provide any details relevant to your case"
-              >
-                <UTextarea 
-                  v-model="state.clientNotes" 
-                  size="xl"
-                  autoresize
-                  placeholder="Provide any details relevant to your case..."
-                  :rows="4"
-                  class="w-full"
-                />
-              </UFormField>
-            </div>
-          </div>
-
-          <!-- Step 4: Review & Confirm -->
-          <div v-if="currentStep === 4" class="space-y-6">
-            <div>
-              <h3 class="mb-2 font-semibold text-gray-900 text-lg">Review Your Booking</h3>
-              <p class="text-gray-500 text-sm">Please confirm all details are correct</p>
-            </div>
-
-            <!-- Lawyer Info -->
-            <div v-if="lawyerInfo" class="bg-linear-to-r from-primary-50 to-primary-100/50 p-4 border border-primary-200 rounded-xl">
-              <div class="flex items-center gap-3">
-                <div class="bg-gray-100 rounded-lg w-12 h-12 overflow-hidden shrink-0">
-                  <img v-if="lawyerInfo.image" :src="lawyerInfo.image" class="w-full h-full object-cover" :alt="lawyerInfo.name" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="font-semibold text-gray-900">{{ lawyerInfo.name }}</h4>
-                  <p v-if="lawyerInfo.specializations?.length" class="text-gray-600 text-sm">
-                    {{ lawyerInfo.specializations[0].name }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Booking Details -->
-            <div class="space-y-3">
-              <div class="flex justify-between items-start py-3 border-gray-200 border-b">
-                <div>
-                  <p class="text-gray-500 text-sm">Consultation Type</p>
-                  <p class="font-semibold text-gray-900">{{ selectedConsultationType?.name }}</p>
-                </div>
-                <button @click="goToStep(1)" class="font-medium text-primary-600 hover:text-primary-700 text-sm">Edit</button>
-              </div>
-
-              <div class="flex justify-between items-start py-3 border-gray-200 border-b">
-                <div>
-                  <p class="text-gray-500 text-sm">Date & Time</p>
-                  <p class="font-semibold text-gray-900">{{ state.scheduledDate }} at {{ state.scheduledStartTime }}</p>
-                  <p class="text-gray-500 text-sm">{{ state.timezone }}</p>
-                </div>
-                <button @click="goToStep(2)" class="font-medium text-primary-600 hover:text-primary-700 text-sm">Edit</button>
-              </div>
-
-              <div class="flex justify-between items-start py-3 border-gray-200 border-b">
-                <div>
-                  <p class="text-gray-500 text-sm">Meeting Type</p>
-                  <p class="font-semibold text-gray-900 capitalize">{{ state.meetingType.replace('_', ' ') }}</p>
-                  <p v-if="state.meetingUrl" class="text-gray-600 text-sm truncate">{{ state.meetingUrl }}</p>
-                  <p v-if="state.meetingLocation" class="text-gray-600 text-sm">{{ state.meetingLocation }}</p>
-                  <p v-if="state.meetingPhone" class="text-gray-600 text-sm">{{ state.meetingPhone }}</p>
-                </div>
-                <button @click="goToStep(3)" class="font-medium text-primary-600 hover:text-primary-700 text-sm">Edit</button>
-              </div>
-
-              <div v-if="state.clientNotes" class="py-3">
-                <p class="mb-1 text-gray-500 text-sm">Notes</p>
-                <p class="text-gray-700 text-sm">{{ state.clientNotes }}</p>
-              </div>
-            </div>
-
-            <!-- Price Summary -->
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-xl">
-              <div class="flex justify-between items-center">
-                <span class="font-semibold text-gray-900">Total</span>
-                <span class="font-bold text-gray-900 text-2xl">
-                  {{ selectedConsultationType && parseFloat(selectedConsultationType.price) === 0 ? 'Free' : `₦${parseFloat(selectedConsultationType?.price || '0').toLocaleString()}` }}
-                </span>
-              </div>
-            </div>
+          <div class="space-y-1.5">
+            <Label for="booking-notes">Notes for the lawyer</Label>
+            <Textarea
+              id="booking-notes"
+              v-model="state.clientNotes"
+              :rows="4"
+              placeholder="Provide any details relevant to your case…"
+            />
+            <p class="text-xs text-muted-foreground">Optional — share context about your legal matter.</p>
           </div>
         </div>
 
-        <!-- Footer Actions -->
-        <div class="p-6 border-gray-200 border-t shrink-0">
-          <div class="flex gap-3">
-            <Button 
-              v-if="currentStep > 1"
-              label="Back" 
-              color="neutral" 
-              variant="outline" 
-              size="xl"
-              @click="prevStep"
-              class="flex-1"
-            />
-            <Button 
-              v-if="currentStep === 1"
-              label="Cancel" 
-              color="neutral" 
-              variant="outline" 
-              size="xl"
-              @click="close"
-              class="flex-1"
-            />
-            <Button 
-              v-if="currentStep < totalSteps"
-              label="Continue" 
-              color="primary" 
-              size="xl"
-              @click="nextStep"
-              :disabled="
-                (currentStep === 1 && !canProceedToStep2) ||
-                (currentStep === 2 && !canProceedToStep3) ||
-                (currentStep === 3 && !canProceedToStep4)
-              "
-              trailing-icon="i-heroicons-arrow-right"
-              class="flex-1"
-            />
-            <ButtonBusy 
-              v-if="currentStep === totalSteps"
-              label="Confirm Booking" 
-              color="primary" 
-              size="xl"
-              @click="submitBooking"
-              :loading="isPending"
-              icon="i-heroicons-check"
-              class="flex-1"
-            />
+        <!-- Step 4: Review -->
+        <div v-else-if="currentStep === 4" class="space-y-5">
+          <div>
+            <h3 class="text-lg font-semibold tracking-tight text-foreground">
+              Review your booking
+            </h3>
+            <p class="mt-1 text-sm text-muted-foreground">
+              Please confirm all details are correct.
+            </p>
+          </div>
+
+          <div v-if="lawyerInfo" class="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-4">
+            <div class="size-12 shrink-0 overflow-hidden rounded-xl bg-primary/10">
+              <img
+                v-if="lawyerInfo.image"
+                :src="lawyerInfo.image"
+                class="size-full object-cover"
+                :alt="lawyerInfo.name"
+              >
+              <div v-else class="flex size-full items-center justify-center text-lg font-semibold text-primary">
+                {{ lawyerInfo.name.charAt(0) }}
+              </div>
+            </div>
+            <div class="min-w-0">
+              <h4 class="font-semibold tracking-tight text-foreground">
+                {{ lawyerInfo.name }}
+              </h4>
+              <p v-if="lawyerInfo.specializations?.length" class="text-sm text-muted-foreground">
+                {{ lawyerInfo.specializations[0].name }}
+              </p>
+            </div>
+          </div>
+
+          <dl class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+            <div class="flex items-start justify-between gap-4 p-4">
+              <div class="min-w-0">
+                <dt class="text-eyebrow text-muted-foreground">Consultation</dt>
+                <dd class="mt-1 font-medium text-foreground">{{ selectedConsultationType?.name }}</dd>
+              </div>
+              <Button variant="link" size="sm" class="h-auto p-0" @click="goToStep(1)">Edit</Button>
+            </div>
+            <div class="flex items-start justify-between gap-4 p-4">
+              <div class="min-w-0">
+                <dt class="text-eyebrow text-muted-foreground">Date & time</dt>
+                <dd class="mt-1 font-medium tabular-nums text-foreground">
+                  {{ state.scheduledDate }} at {{ state.scheduledStartTime }}
+                </dd>
+                <dd class="text-sm text-muted-foreground">{{ state.timezone }}</dd>
+              </div>
+              <Button variant="link" size="sm" class="h-auto p-0" @click="goToStep(2)">Edit</Button>
+            </div>
+            <div class="flex items-start justify-between gap-4 p-4">
+              <div class="min-w-0">
+                <dt class="text-eyebrow text-muted-foreground">Meeting</dt>
+                <dd class="mt-1 font-medium capitalize text-foreground">
+                  {{ state.meetingType.replace('_', ' ') }}
+                </dd>
+                <dd v-if="state.meetingUrl" class="truncate text-sm text-muted-foreground">{{ state.meetingUrl }}</dd>
+                <dd v-if="state.meetingLocation" class="text-sm text-muted-foreground">{{ state.meetingLocation }}</dd>
+                <dd v-if="state.meetingPhone" class="text-sm text-muted-foreground">{{ state.meetingPhone }}</dd>
+              </div>
+              <Button variant="link" size="sm" class="h-auto p-0" @click="goToStep(3)">Edit</Button>
+            </div>
+            <div v-if="state.clientNotes" class="p-4">
+              <dt class="text-eyebrow text-muted-foreground">Notes</dt>
+              <dd class="mt-1 whitespace-pre-line text-sm text-muted-foreground">{{ state.clientNotes }}</dd>
+            </div>
+          </dl>
+
+          <div class="flex items-center justify-between rounded-2xl bg-ink px-5 py-4 text-ink-foreground">
+            <span class="text-sm font-medium">Total</span>
+            <span class="text-2xl font-semibold tabular-nums">
+              {{ formatPrice(selectedConsultationType?.price) }}
+            </span>
           </div>
         </div>
       </div>
-    </template>
-  </USlideover>
+
+      <!-- Footer -->
+      <div class="shrink-0 border-t border-border px-6 py-4 md:px-8">
+        <div class="flex gap-3">
+          <Button
+            v-if="currentStep > 1"
+            variant="outline"
+            size="lg"
+            class="flex-1"
+            @click="prevStep"
+          >
+            Back
+          </Button>
+          <Button
+            v-else
+            variant="outline"
+            size="lg"
+            class="flex-1"
+            @click="close"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            v-if="currentStep < totalSteps"
+            size="lg"
+            class="flex-1"
+            :disabled="!canContinue"
+            @click="nextStep"
+          >
+            Continue
+            <PhArrowRight class="size-4" />
+          </Button>
+          <Button
+            v-else
+            size="lg"
+            class="flex-1"
+            :disabled="isPending"
+            @click="submitBooking"
+          >
+            <PhCircleNotch v-if="isPending" class="size-4 animate-spin" />
+            <PhShieldCheck v-else class="size-4" weight="fill" />
+            Confirm booking
+          </Button>
+        </div>
+      </div>
+    </SheetContent>
+  </Sheet>
 </template>

@@ -106,10 +106,10 @@ const residenceDisplay = computed(() => {
 })
 
 const cardClass =
-  'relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl'
+  'relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm'
 
 const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-border/40 pb-4'
-const sectionTitleClass = 'text-base font-bold uppercase tracking-wide text-primary'
+const sectionTitleClass = 'text-eyebrow text-brass'
 const fieldLabelClass = 'text-sm font-semibold uppercase tracking-wide text-muted-foreground/70'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 </script>
@@ -126,18 +126,18 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 
     <div
       v-if="ninDisplay.variant === 'action'"
-      class="flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/90 px-4 py-4 sm:px-5"
+      class="flex gap-3 rounded-2xl border border-brass/30 bg-brass/10 px-4 py-4 sm:px-5"
       role="status"
     >
-      <PhWarningCircle class="mt-0.5 size-5 shrink-0 text-amber-600" weight="fill" />
+      <PhWarningCircle class="mt-0.5 size-5 shrink-0 text-brass" weight="fill" />
       <div class="min-w-0 flex-1 space-y-2">
-        <p class="text-base font-semibold text-amber-950">
+        <p class="text-base font-semibold text-foreground">
           Identity verification is incomplete
         </p>
-        <p class="text-base leading-relaxed text-amber-900/80">
+        <p class="text-base leading-relaxed text-muted-foreground">
           Add your NIN before submitting. Our team verifies it during application review.
         </p>
-        <Button variant="outline" size="sm" class="border-amber-300 bg-white hover:bg-amber-50" as-child>
+        <Button variant="outline" size="sm" class="border-brass/30 bg-card hover:bg-brass/10" as-child>
           <NuxtLink to="/onboarding/nin-verification">
             Complete NIN verification
           </NuxtLink>
@@ -170,7 +170,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
               as-child
             >
               <NuxtLink to="/onboarding/personal-info">
@@ -207,8 +207,8 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
                   class="text-sm"
                   :class="{
                     'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified',
-                    'border-emerald-200 bg-emerald-50 text-emerald-800': ninDisplay.variant === 'pending',
-                    'border-amber-200 bg-amber-50 text-amber-800': ninDisplay.variant === 'action',
+                    'border-primary/20 bg-primary/5 text-primary': ninDisplay.variant === 'pending',
+                    'border-brass/30 bg-brass/10 text-brass': ninDisplay.variant === 'action',
                   }"
                 >
                   <PhCheckCircle
@@ -252,7 +252,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
               as-child
             >
               <NuxtLink to="/onboarding/professional-information">
@@ -296,7 +296,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
           <Button
             variant="outline"
             size="sm"
-            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-white/80 px-3 text-sm font-semibold"
+            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
             as-child
           >
             <NuxtLink to="/onboarding/practice-information">
@@ -337,7 +337,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <p :class="fieldLabelClass">Legal specializations</p>
             <ul
               v-if="practiceAreaRows.length"
-              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-white/50"
+              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-surface-2/50"
             >
               <li
                 v-for="row in practiceAreaRows"
@@ -363,7 +363,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     </Card>
 
     <!-- Submit notice -->
-    <Card class="rounded-2xl border border-border/50 bg-white/60 shadow-sm">
+    <Card class="rounded-2xl border border-border bg-card shadow-sm">
       <div class="flex gap-3 p-5 sm:p-6">
         <PhInfo class="mt-0.5 size-5 shrink-0 text-primary" weight="fill" />
         <div class="space-y-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">

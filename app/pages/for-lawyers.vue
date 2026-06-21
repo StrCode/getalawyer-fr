@@ -50,154 +50,154 @@ const toggleFaq = (index: number) => {
 </script>
 
 <template>
-  <div class="bg-background">
-    
-    <!-- Hero Section -->
-    <section class="bg-sidebar text-sidebar-foreground py-32 relative overflow-hidden">
-      <!-- Radial glow -->
-      <div class="absolute pointer-events-none" style="top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(134,194,142,0.12) 0%,transparent 70%);" />
+  <div class="bg-canvas">
 
-      <div class="max-w-7xl mx-auto px-6 md:px-8 relative text-center">
-        <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-6">For legal professionals</p>
-        <h1 class="font-heading font-medium text-sidebar-foreground leading-[1.05] tracking-[-0.02em] mx-auto max-w-3xl" style="font-size:clamp(44px,5vw,72px);">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-ink py-24 text-ink-foreground md:py-32">
+      <div class="pointer-events-none absolute -top-48 left-1/2 size-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+
+      <div class="relative mx-auto max-w-7xl px-6 text-center md:px-8">
+        <p class="text-eyebrow mb-6 text-brass">For legal professionals</p>
+        <h1 class="display-2xl mx-auto max-w-3xl text-ink-foreground">
           Grow your practice.<br>
-          <em class="italic font-normal">Keep every naira you earn.</em>
+          <em class="font-normal italic">Keep every naira you earn.</em>
         </h1>
-        <p class="text-5 leading-[1.5] mt-8 mb-10 mx-auto" style="color:rgba(244,241,232,0.7);max-width:640px;">
+        <p class="mx-auto mt-8 mb-10 max-w-xl text-lg leading-relaxed text-ink-muted">
           Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
         </p>
 
-        <NuxtLink
-          to="/register?role=lawyer"
-          class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-background text-sidebar font-medium text-4 hover:bg-white hover:-translate-y-px transition-all duration-200 border-none cursor-pointer font-sans no-underline"
-        >
-          Register as a lawyer
-        </NuxtLink>
+        <Button size="lg" class="cursor-pointer bg-paper text-foreground hover:bg-paper/90" as-child>
+          <NuxtLink to="/register?role=lawyer">
+            Register as a lawyer
+          </NuxtLink>
+        </Button>
       </div>
     </section>
 
     <!-- Features Grid -->
-    <section class="py-24">
-      <div class="max-w-7xl mx-auto px-6 md:px-8">
-        <div class="text-center mb-16">
-          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+    <section class="bg-canvas py-24">
+      <div class="mx-auto max-w-7xl px-6 md:px-8">
+        <div class="mb-16 text-center">
+          <h2 class="display-xl mb-4 text-foreground">
             Everything you need to succeed
           </h2>
-          <p class="text-5 text-muted-foreground max-w-2xl mx-auto">
+          <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
             We provide the infrastructure and the clients. You provide the counsel. No hidden fees.
           </p>
         </div>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div
             v-for="feat in features"
             :key="feat.title"
-            class="p-8 rounded-2xl bg-white border border-border shadow-sm hover:shadow-md transition-shadow"
+            class="rounded-2xl border border-border bg-card p-8 shadow-sm transition-shadow hover:shadow-md"
           >
             <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-primary mb-6"
-              style="background:rgba(134,194,142,0.2);"
+              class="mb-6 flex size-12 items-center justify-center rounded-xl bg-surface-2 text-primary"
               v-html="feat.icon"
             />
-            <h4 class="text-5 font-semibold text-sidebar mb-3">{{ feat.title }}</h4>
-            <p class="text-4 leading-[1.5] text-muted-foreground">{{ feat.desc }}</p>
+            <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
+            <p class="text-sm leading-relaxed text-muted-foreground">{{ feat.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- How it works for lawyers -->
-    <section class="py-24 bg-sidebar text-sidebar-foreground border-t border-sidebar-accent/30">
-      <div class="max-w-7xl mx-auto px-6 md:px-8">
+    <section class="border-t border-ink-border bg-ink py-24 text-ink-foreground">
+      <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16">
-          <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4">Onboarding</p>
-          <h2 class="font-heading font-medium text-sidebar-foreground tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+          <p class="text-eyebrow mb-4 text-brass">Onboarding</p>
+          <h2 class="display-xl mb-4 text-ink-foreground">
             How to get started
           </h2>
-          <p class="text-5 text-sidebar-foreground/70 max-w-2xl">
+          <p class="max-w-2xl text-lg text-ink-muted">
             Four simple steps to start growing your digital practice.
           </p>
         </div>
-        
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div v-for="step in lawyerSteps" :key="step.num" class="relative">
-            <div class="font-heading italic font-normal text-primary leading-none mb-6" style="font-size:56px;">
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div
+            v-for="step in lawyerSteps"
+            :key="step.num"
+            class="rounded-2xl border border-ink-border bg-ink-foreground/5 p-8"
+          >
+            <div class="font-display mb-6 text-5xl leading-none text-brass italic">
               {{ step.num }}
             </div>
-            <h3 class="text-5 font-semibold text-sidebar-foreground mb-3 tracking-[-0.01em]">{{ step.title }}</h3>
-            <p class="text-4 text-sidebar-foreground/70 leading-[1.55]">{{ step.desc }}</p>
+            <h3 class="mb-3 text-base font-semibold tracking-tight text-ink-foreground">{{ step.title }}</h3>
+            <p class="text-sm leading-relaxed text-ink-muted">{{ step.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Pricing Section -->
-    <section class="py-24 bg-card border-t border-border/50">
-      <div class="max-w-7xl mx-auto px-6 md:px-8">
-        
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+    <section id="pricing" class="border-t border-border bg-surface-2 py-24">
+      <div class="mx-auto max-w-7xl px-6 md:px-8">
+
+        <div class="mx-auto mb-16 max-w-2xl text-center">
+          <h2 class="display-xl mb-4 text-foreground">
             Simple, transparent pricing.
           </h2>
-          <p class="text-5 text-muted-foreground leading-[1.5]">
+          <p class="text-lg leading-relaxed text-muted-foreground">
             Stop paying 20-30% in platform fees. Reach thousands of clients for a flat annual rate.
           </p>
         </div>
 
         <!-- Pricing Card -->
-        <div class="max-w-lg mx-auto bg-white rounded-3xl border border-border p-10 shadow-[0_12px_40px_-12px_rgba(15,46,26,0.15)] relative overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-[6px] bg-primary"></div>
-          
-          <div class="text-center mb-8 mt-2">
-            <h3 class="text-5 font-semibold text-sidebar mb-3">Annual Subscription</h3>
-            <div class="flex items-end justify-center gap-1.5 mb-2">
-              <span class="font-heading font-medium text-sidebar leading-none" style="font-size: 52px;">₦30,000</span>
-              <span class="text-4 text-muted-foreground mb-1.5">/ year</span>
+        <div class="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-10 shadow-sm ring-2 ring-brass/30">
+          <p class="text-eyebrow mb-6 text-center text-brass">Annual membership</p>
+
+          <div class="mb-8 mt-2 text-center">
+            <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
+            <div class="mb-2 flex items-end justify-center gap-1.5">
+              <span class="font-display text-5xl leading-none tabular-nums text-foreground">₦30,000</span>
+              <span class="mb-1.5 text-sm text-muted-foreground">/ year</span>
             </div>
-            <p class="text-3.5 text-muted-foreground">Billed annually. Cancel anytime.</p>
+            <p class="text-sm text-muted-foreground">Billed annually. Cancel anytime.</p>
           </div>
 
-          <NuxtLink
-            to="/register?role=lawyer"
-            class="flex w-full items-center justify-center bg-primary hover:bg-sidebar text-sidebar-foreground border-none py-4 rounded-full font-sans text-4 font-medium cursor-pointer transition-colors duration-200 no-underline"
-          >
-            Start your membership
-          </NuxtLink>
+          <Button size="lg" class="w-full cursor-pointer" as-child>
+            <NuxtLink to="/register?role=lawyer">
+              Start your membership
+            </NuxtLink>
+          </Button>
         </div>
 
       </div>
     </section>
 
     <!-- FAQ Section -->
-    <section class="py-24">
-      <div class="max-w-3xl mx-auto px-8">
-        <div class="text-center mb-16">
-          <h2 class="font-heading font-medium text-sidebar tracking-tight mb-4" style="font-size:clamp(32px,4vw,48px);">
+    <section class="bg-canvas py-24">
+      <div class="mx-auto max-w-3xl px-6 md:px-8">
+        <div class="mb-16 text-center">
+          <h2 class="display-xl text-foreground">
             Frequently asked questions
           </h2>
         </div>
-        
+
         <div class="space-y-4">
-          <div 
-            v-for="(faq, idx) in faqs" 
+          <div
+            v-for="(faq, idx) in faqs"
             :key="idx"
-            class="border border-border bg-white rounded-2xl overflow-hidden transition-all duration-200"
+            class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200"
           >
-            <button 
+            <button
               @click="toggleFaq(idx)"
-              class="w-full flex items-center justify-between p-6 text-left bg-transparent border-none cursor-pointer group"
+              class="group flex w-full cursor-pointer items-center justify-between border-none bg-transparent p-6 text-left"
             >
-              <span class="text-4 font-semibold text-sidebar pr-8">{{ faq.q }}</span>
-              <div 
-                class="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-primary shrink-0 transition-transform duration-300"
+              <span class="pr-8 text-base font-semibold text-foreground">{{ faq.q }}</span>
+              <div
+                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-primary transition-transform duration-300"
                 :class="{ 'rotate-180': faq.open }"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <PhCaretDown class="size-4" weight="bold" />
               </div>
             </button>
-            <div 
+            <div
               v-show="faq.open"
-              class="px-6 pb-6 text-4 text-muted-foreground leading-[1.6]"
+              class="px-6 pb-6 text-sm leading-relaxed text-muted-foreground"
             >
               {{ faq.a }}
             </div>
@@ -207,20 +207,19 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Bottom CTA -->
-    <section class="py-24 text-center border-t border-border/50">
-      <div class="max-w-2xl mx-auto px-8">
-        <h2 class="font-heading font-medium text-sidebar tracking-tight mb-6" style="font-size:clamp(36px,4.5vw,56px);">
+    <section class="border-t border-ink-border bg-ink py-24 text-center text-ink-foreground">
+      <div class="mx-auto max-w-2xl px-6 md:px-8">
+        <h2 class="display-xl mb-6 text-ink-foreground">
           Ready to grow your digital practice?
         </h2>
-        <p class="text-5 text-muted-foreground leading-[1.5] mb-10">
+        <p class="mb-10 text-lg leading-relaxed text-ink-muted">
           Join hundreds of verified lawyers securely acquiring clients on our platform today.
         </p>
-        <NuxtLink
-          to="/register?role=lawyer"
-          class="inline-flex items-center gap-2 px-10 py-5 rounded-full bg-sidebar text-sidebar-foreground border-none font-sans text-4 font-medium cursor-pointer hover:bg-primary transition-colors duration-200 shadow-md hover:-translate-y-0.5 no-underline"
-        >
-          Create your lawyer profile
-        </NuxtLink>
+        <Button size="lg" class="cursor-pointer" as-child>
+          <NuxtLink to="/register?role=lawyer">
+            Create your lawyer profile
+          </NuxtLink>
+        </Button>
       </div>
     </section>
 

@@ -2,54 +2,57 @@
 </script>
 
 <template>
-  <section class="bg-background py-16 md:py-32">
-    <div class="max-w-7xl mx-auto px-6 md:px-8">
-      
+  <section class="bg-canvas py-16 md:py-32">
+    <div class="mx-auto max-w-7xl px-6 md:px-8">
+
       <!-- Split Card CTA -->
-      <div class="bg-sidebar rounded-3xl overflow-hidden flex flex-col lg:flex-row relative shadow-[0_24px_64px_-16px_rgba(15,46,26,0.15)]">
-        
+      <div class="relative flex flex-col overflow-hidden rounded-2xl bg-ink shadow-lg lg:flex-row">
+
         <!-- Text Side -->
-        <div class="flex-1 p-12 lg:p-20 flex flex-col justify-center relative z-10">
-          <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4">Ready when you are</p>
-          <h2 class="font-heading font-medium text-sidebar-foreground leading-[1.05] tracking-[-0.02em] mb-6" style="font-size:clamp(36px,4vw,52px);max-width:540px;">
+        <div class="relative z-10 flex flex-1 flex-col justify-center p-10 md:p-14 lg:p-20">
+          <p class="text-eyebrow mb-4 text-brass">Ready when you are</p>
+          <h2 class="display-xl mb-6 max-w-xl text-ink-foreground">
             Get the legal help you need, from someone you can trust.
           </h2>
-          <p class="text-5 leading-normal mb-10 max-w-lg" style="color:rgba(244,241,232,0.85);">
+          <p class="mb-10 max-w-lg text-xl leading-normal text-ink-muted">
             Verified lawyers. Transparent pricing. Booking in minutes. Take the stress out of finding legal representation today.
           </p>
-          
-          <div class="flex gap-4 flex-wrap">
-            <NuxtLink
-              to="/find-lawyers"
-              class="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-background text-sidebar font-medium text-4 hover:bg-white hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer font-sans shadow-sm no-underline"
-            >Find a lawyer</NuxtLink>
-            <NuxtLink
-              to="/for-lawyers"
-              class="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full bg-transparent text-sidebar-foreground font-medium text-4 border border-sidebar-foreground/30 hover:border-sidebar-foreground transition-all duration-200 cursor-pointer font-sans no-underline"
-            >I'm a lawyer</NuxtLink>
+
+          <div class="flex flex-wrap gap-4">
+            <Button variant="brass" size="lg" as-child>
+              <NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              as-child
+              class="border-ink-border bg-transparent text-ink-foreground hover:border-ink-foreground/60 hover:bg-white/5 hover:text-ink-foreground"
+            >
+              <NuxtLink to="/for-lawyers">I'm a lawyer</NuxtLink>
+            </Button>
           </div>
         </div>
 
         <!-- Image Side -->
-        <div class="lg:w-[45%] h-96 lg:h-auto relative">
-          <NuxtImg 
-            src="/final-cta-handshake.jpg" 
-            alt="Lawyer and client shaking hands in trust" 
-            class="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-90"
+        <div class="relative h-80 lg:h-auto lg:w-[45%]">
+          <NuxtImg
+            src="/final-cta-handshake.jpg"
+            alt="Lawyer and client shaking hands in trust"
+            class="absolute inset-0 size-full object-cover opacity-90 mix-blend-luminosity"
             sizes="sm:100vw lg:800px"
             format="webp"
             loading="lazy"
           />
-          <!-- Green color wash to make the image fit the brand perfectly -->
-          <div class="absolute inset-0 bg-sidebar/20 mix-blend-multiply"></div>
-          
-          <!-- Gradient fades to blend the image seamlessly into the solid green card -->
-          <div class="absolute inset-0 bg-linear-to-r from-sidebar via-sidebar/60 to-transparent lg:block hidden"></div>
-          <div class="absolute inset-0 bg-linear-to-t from-sidebar via-sidebar/60 to-transparent lg:hidden block"></div>
+          <!-- Color wash -->
+          <div class="absolute inset-0 bg-ink/20 mix-blend-multiply" />
+
+          <!-- Gradient fades to blend the image into the ink card -->
+          <div class="absolute inset-0 hidden bg-linear-to-r from-ink via-ink/60 to-transparent lg:block" />
+          <div class="absolute inset-0 bg-linear-to-t from-ink via-ink/60 to-transparent lg:hidden" />
         </div>
 
       </div>
-      
+
     </div>
   </section>
 </template>

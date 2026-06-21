@@ -66,75 +66,75 @@ const handleRestart = async () => {
   <div class="text-center py-12">
     <!-- Header Section -->
     <div class="mb-12">
-      <div class="mx-auto w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mb-8 relative border-4 border-white shadow-lg">
-         <PhWarning class="w-10 h-10" />
+      <div class="mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-destructive/10 text-destructive shadow-lg relative">
+         <PhWarning class="size-10" />
       </div>
-      <h1 class="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Application Update Required</h1>
-      <p class="text-gray-500 max-w-md mx-auto leading-relaxed font-medium">Your application needs some revisions before it can be approved for our legal network.</p>
+      <h1 class="font-display mb-3 text-3xl font-semibold tracking-[-0.02em] text-foreground">Application Update Required</h1>
+      <p class="mx-auto max-w-md font-medium leading-relaxed text-muted-foreground">Your application needs some revisions before it can be approved for our legal network.</p>
     </div>
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center py-12">
-      <PhCircleNotch class="w-10 h-10 animate-spin text-primary" />
+      <PhCircleNotch class="size-10 animate-spin text-primary" />
     </div>
 
     <!-- Error State -->
     <div v-else-if="isError" class="text-center py-12">
-      <PhWarningCircle class="w-12 h-12 mx-auto mb-4 text-red-500" />
-      <p class="text-red-600 font-bold tracking-tight">Failed to load application details</p>
+      <PhWarningCircle class="mx-auto mb-4 size-12 text-destructive" />
+      <p class="font-bold tracking-tight text-destructive">Failed to load application details</p>
     </div>
 
     <!-- Rejection Details -->
     <div v-else class="space-y-12">
       <!-- Feedback Section -->
-      <div class="text-left bg-white rounded-2xl p-8 border border-gray-100 shadow-sm transition-all hover:shadow-md">
-        <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
-          <div class="bg-gray-100 p-2 rounded-lg">
-            <PhChatCircleDots class="w-5 h-5 text-gray-500" />
+      <div class="rounded-2xl border border-border bg-card p-8 text-left shadow-sm transition-all hover:shadow-md">
+        <h2 class="mb-4 flex items-center gap-3 text-lg font-bold text-foreground">
+          <div class="rounded-lg bg-surface-2 p-2">
+            <PhChatCircleDots class="size-5 text-muted-foreground" />
           </div>
           Feedback from Review Team
         </h2>
 
         <div class="space-y-4">
-          <div v-if="rejectionReason" class="bg-red-50/30 border border-red-100/50 rounded-xl p-6">
-            <div class="whitespace-pre-wrap text-gray-800 text-sm leading-relaxed font-medium">{{ rejectionReason }}</div>
+          <div v-if="rejectionReason" class="rounded-xl border border-destructive/30 bg-destructive/10 p-6">
+            <div class="whitespace-pre-wrap text-sm font-medium leading-relaxed text-foreground">{{ rejectionReason }}</div>
           </div>
 
         </div>
       </div>
 
       <!-- Action Section -->
-      <div class="bg-gray-50 rounded-2xl p-8 text-left border border-gray-100 transition-all hover:bg-gray-50/80">
-        <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
-           <div class="bg-gray-100 p-2 rounded-lg">
-              <PhFileText class="w-5 h-5 text-gray-500" />
+      <div class="rounded-2xl border border-border bg-surface-2 p-8 text-left transition-all">
+        <h2 class="mb-6 flex items-center gap-3 text-lg font-bold text-foreground">
+           <div class="rounded-lg bg-surface-3 p-2">
+              <PhFileText class="size-5 text-muted-foreground" />
            </div>
            Next Steps
         </h2>
 
-        <ol class="space-y-5 text-gray-700">
+        <ol class="space-y-5 text-foreground">
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">1</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span>
             <span class="text-sm font-medium">Carefully review the feedback provided above.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">2</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">2</span>
             <span class="text-sm font-medium">Update your credentials or application details as requested in the feedback.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-2.5 font-bold mt-0.5 shrink-0">3</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">3</span>
             <span class="text-sm font-medium">Click the button below to unlock your application for editing.</span>
           </li>
         </ol>
 
         <div class="mt-10">
           <Button
-            class="w-full h-14 font-bold bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+            class="flex h-14 w-full items-center justify-center gap-2 rounded-xl font-bold shadow-lg transition-all active:scale-[0.98]"
             :disabled="isRestarting"
             @click="handleRestart"
           >
-            <PhCircleNotch v-if="isRestarting" class="w-5 h-5 animate-spin" />
-            <PhCaretRight v-else class="w-5 h-5" />
+            <PhCircleNotch v-if="isRestarting" class="size-5 animate-spin" />
+            <PhCaretRight v-else class="size-5" />
             Fix and Resubmit Application
           </Button>
         </div>
@@ -142,7 +142,7 @@ const handleRestart = async () => {
 
       <!-- Help Section -->
       <div class="pt-8">
-        <p class="text-gray-500 text-sm font-medium">
+        <p class="text-sm font-medium text-muted-foreground">
           Having trouble? 
           <a href="mailto:support@getalawyer.ng" class="font-bold text-primary hover:underline">
             Contact Support

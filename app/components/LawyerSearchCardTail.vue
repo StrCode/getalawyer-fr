@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { LawyerSearchResult } from '~/lib/api'
+import { PhArrowRight } from '@phosphor-icons/vue'
 
 const props = withDefaults(
   defineProps<{
@@ -7,12 +8,14 @@ const props = withDefaults(
     snippetSource: string
     loggedIn: boolean
     isPending: boolean
+    density?: 'grid' | 'row'
     hideSnippet?: boolean
     compactFooter?: boolean
     snippetClass?: string
     footerClass?: string
   }>(),
   {
+    density: 'row',
     hideSnippet: false,
     compactFooter: false,
     snippetClass: '',
@@ -24,58 +27,63 @@ defineEmits<{ openProfile: [] }>()
 </script>
 
 <template>
-  <div class="flex min-w-0 flex-col gap-3">
+  <div class="flex min-w-0 flex-col" :class="density === 'grid' ? 'gap-3' : 'gap-2.5'">
     <blockquote
       v-if="!hideSnippet && snippetSource"
-      class="border-border/60 bg-muted/30 text-muted-foreground rounded-xl border border-l-[3px] border-l-primary/50 px-3.5 py-2.5 text-left text-sm leading-relaxed"
-      :class="snippetClass"
+      class="border-border/60 bg-surface-2/80 text-muted-foreground rounded-xl border px-3.5 py-2.5 text-left text-sm leading-relaxed"
+      :class="[
+        density === 'grid' ? 'text-center [&_p]:text-center' : '',
+        snippetClass,
+      ]"
     >
-      <p class="line-clamp-3 text-pretty">
+      <p class="line-clamp-2 text-pretty">
         {{ snippetSource }}
       </p>
     </blockquote>
 
-    <div v-if="lawyer.specializations?.length" class="flex flex-wrap gap-1.5">
-      <UBadge
-        v-for="spec in lawyer.specializations.slice(0, 4)"
+    <div
+      v-if="lawyer.specializations?.length"
+      class="flex flex-wrap gap-1.5"
+      :class="density === 'grid' ? 'justify-center' : ''"
+    >
+      <Badge
+        v-for="spec in lawyer.specializations.slice(0, density === 'grid' ? 3 : 4)"
         :key="spec.id"
-        color="neutral"
         variant="soft"
-        class="rounded-md px-2 py-px text-[0.7rem] font-medium"
+        class="rounded-full px-2.5 py-0.5 text-xs font-medium"
       >
         {{ spec.name }}
-        <span v-if="spec.yearsOfExperience" class="ms-1 tabular-nums opacity-65">
-          {{ spec.yearsOfExperience }}y
-        </span>
-      </UBadge>
-      <UBadge
-        v-if="lawyer.specializations.length > 4"
-        color="neutral"
+      </Badge>
+      <Badge
+        v-if="lawyer.specializations.length > (density === 'grid' ? 3 : 4)"
         variant="outline"
-        class="rounded-md px-2 py-px text-[0.7rem] tabular-nums"
+        class="rounded-full px-2.5 py-0.5 text-xs tabular-nums"
       >
-        +{{ lawyer.specializations.length - 4 }}
-      </UBadge>
+        +{{ lawyer.specializations.length - (density === 'grid' ? 3 : 4) }}
+      </Badge>
     </div>
 
     <footer
-      class="border-border/70 mt-auto flex flex-col gap-2 border-t border-dashed pt-4 sm:flex-row sm:items-center sm:justify-between sm:border-solid"
-      :class="[compactFooter ? 'pt-3' : '', footerClass]"
+      class="mt-auto flex flex-col gap-2 border-border/70 border-t pt-3"
+      :class="[
+        compactFooter ? 'pt-2.5' : '',
+        footerClass,
+      ]"
     >
       <p
         v-if="!loggedIn && !isPending"
-        class="text-muted-foreground text-[0.7rem] font-medium uppercase tracking-wide"
+        class="text-muted-foreground text-center text-[0.6875rem] font-medium uppercase tracking-wide"
       >
         Sign in to view profile
       </p>
       <Button
         :variant="loggedIn ? 'default' : 'outline'"
-        :size="compactFooter ? 'sm' : 'sm'"
-        class="w-full gap-2 sm:ms-auto sm:w-auto sm:justify-center"
+        size="sm"
+        class="w-full gap-2"
         @click.stop="$emit('openProfile')"
       >
         {{ loggedIn ? 'View profile' : 'Sign in & view' }}
-        <PhIcon name="i-heroicons-arrow-right" class="size-4 opacity-85" aria-hidden="true" />
+        <PhArrowRight class="size-4 opacity-85" aria-hidden="true" />
       </Button>
     </footer>
   </div>

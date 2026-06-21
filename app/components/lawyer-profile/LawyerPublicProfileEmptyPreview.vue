@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { PhPencilSimpleLine } from '@phosphor-icons/vue'
 </script>
 
 <template>
   <section
-    class="rounded-xl border border-dashed border-border bg-muted/30 p-6 text-center"
+    class="rounded-2xl border border-dashed border-border bg-surface-2 p-8 text-center"
     aria-labelledby="profile-empty-heading"
   >
     <PhPencilSimpleLine class="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />

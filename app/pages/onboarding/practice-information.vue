@@ -46,7 +46,7 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('practice_info')
 const inputClass =
-  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 const soloPractitionerFieldId = useId()
@@ -271,7 +271,7 @@ onBeforeUnmount(() => {
     />
 
     <Card
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div class="relative z-10 p-6 sm:p-8">
         <FieldGroup class="gap-8">
@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
             <Field>
               <Label
                 :for="soloPractitionerFieldId"
-                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-white/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
+                class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-card/80 p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
               >
                 <Checkbox
                   :id="soloPractitionerFieldId"
@@ -430,12 +430,12 @@ onBeforeUnmount(() => {
                 />
               </div>
 
-              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p class="mb-3 text-eyebrow text-muted-foreground">
                 Selected ({{ selectedCount }}/5)
               </p>
 
               <div
-                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-white/50 p-2"
+                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-surface-2/50 p-2"
               >
                 <div
                   v-for="spec in filtered"
@@ -445,7 +445,7 @@ onBeforeUnmount(() => {
                     ? 'border-primary/40 bg-primary/5'
                     : isDisabled(spec.id)
                       ? 'cursor-not-allowed border-transparent opacity-50'
-                      : 'cursor-pointer border-border/30 bg-white hover:border-border/60'"
+                      : 'cursor-pointer border-border/30 bg-card hover:border-border/60'"
                   @click="!isDisabled(spec.id) && toggleArea(spec.id)"
                 >
                   <div class="flex items-start justify-between gap-2">

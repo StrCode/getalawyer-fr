@@ -24,7 +24,7 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('professional_info')
 const inputClass =
-  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 
@@ -123,7 +123,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
     />
 
     <Card
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div
         class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
@@ -140,7 +140,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
               </FieldLabel>
               <div class="flex gap-2">
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-white/80 px-3 font-mono text-sm font-semibold text-foreground"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 font-mono text-sm font-semibold text-foreground"
                 >
                   SCN
                 </span>

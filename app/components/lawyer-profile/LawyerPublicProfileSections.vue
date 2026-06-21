@@ -13,7 +13,7 @@ import {
   shouldTruncateAbout,
 } from '~/lib/lawyer-public-profile'
 import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
-import { PhArrowSquareOut, PhGraduationCap } from '@phosphor-icons/vue'
+import { PhArrowSquareOut, PhBriefcase, PhGraduationCap, PhIdentificationCard, PhSealCheck, PhSparkle, PhUser } from '@phosphor-icons/vue'
 
 defineProps<{
   profile: LawyerPublicProfileSections
@@ -26,44 +26,42 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
 </script>
 
 <template>
-  <div class="space-y-12">
+  <div class="space-y-14">
     <section v-if="hasAbout(profile)">
       <LawyerProfileSectionHeading title="About">
         <template #icon>
           <PhUser />
         </template>
       </LawyerProfileSectionHeading>
-      <div class="rounded-xl border border-border bg-card p-5">
-        <p
-          v-if="profile.about.headline?.trim()"
-          class="text-lg font-semibold text-foreground"
-        >
-          {{ profile.about.headline }}
-        </p>
-        <p
-          v-if="profile.about.about?.trim()"
-          class="mt-3 whitespace-pre-line text-base leading-relaxed text-muted-foreground"
-          :class="{ 'mt-0': !profile.about.headline?.trim() }"
-        >
-          {{ getAboutPreview(profile.about.about, aboutExpanded) }}
-        </p>
-        <Button
-          v-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && !aboutExpanded"
-          variant="link"
-          class="mt-2 h-auto p-0 text-sm font-medium"
-          @click="aboutExpanded = true"
-        >
-          Show more
-        </Button>
-        <Button
-          v-else-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && aboutExpanded"
-          variant="link"
-          class="mt-2 h-auto p-0 text-sm font-medium"
-          @click="aboutExpanded = false"
-        >
-          Show less
-        </Button>
-      </div>
+      <p
+        v-if="profile.about.headline?.trim()"
+        class="font-display text-2xl leading-snug tracking-[-0.02em] text-foreground md:text-3xl"
+      >
+        {{ profile.about.headline }}
+      </p>
+      <p
+        v-if="profile.about.about?.trim()"
+        class="whitespace-pre-line text-lg leading-relaxed text-muted-foreground"
+        :class="profile.about.headline?.trim() ? 'mt-4' : 'mt-0'"
+      >
+        {{ getAboutPreview(profile.about.about, aboutExpanded) }}
+      </p>
+      <Button
+        v-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && !aboutExpanded"
+        variant="link"
+        class="mt-3 h-auto p-0 text-sm font-medium"
+        @click="aboutExpanded = true"
+      >
+        Show more
+      </Button>
+      <Button
+        v-else-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && aboutExpanded"
+        variant="link"
+        class="mt-3 h-auto p-0 text-sm font-medium"
+        @click="aboutExpanded = false"
+      >
+        Show less
+      </Button>
     </section>
 
     <section v-if="profile.experiences.length">
@@ -72,31 +70,31 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           <PhBriefcase />
         </template>
       </LawyerProfileSectionHeading>
-      <div class="space-y-4">
+      <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
         <article
           v-for="item in profile.experiences"
           :key="item.id"
-          class="rounded-xl border border-border bg-card p-5"
+          class="p-5 md:p-6"
         >
-          <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
-              <h3 class="text-lg font-bold text-foreground">
+              <h3 class="text-base font-semibold tracking-tight text-foreground">
                 {{ item.title }}
               </h3>
-              <p class="mt-1 text-sm font-medium text-muted-foreground">
+              <p class="mt-0.5 text-sm font-medium text-muted-foreground">
                 {{ item.organization }}
               </p>
             </div>
             <p
               v-if="formatExperienceRange(item) || item.location"
-              class="text-sm tabular-nums text-muted-foreground"
+              class="font-mono text-xs tabular-nums text-muted-foreground"
             >
               {{ [formatExperienceRange(item), item.location].filter(Boolean).join(' · ') }}
             </p>
           </div>
           <p
             v-if="item.description?.trim()"
-            class="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
+            class="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
           >
             {{ item.description }}
           </p>
@@ -114,15 +112,13 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         <article
           v-for="item in profile.education"
           :key="item.id"
-          class="flex items-start gap-4 rounded-xl border border-border bg-card p-5"
+          class="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
         >
-          <div
-            class="flex size-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/50"
-          >
-            <PhGraduationCap class="size-6 text-blue-600 dark:text-blue-400" />
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-primary ring-1 ring-border/70">
+            <PhGraduationCap class="size-5" />
           </div>
           <div class="min-w-0">
-            <h3 class="text-base font-bold leading-tight text-foreground">
+            <h3 class="text-base font-semibold leading-tight tracking-tight text-foreground">
               {{ item.school }}
             </h3>
             <p
@@ -133,7 +129,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
             </p>
             <p
               v-if="formatEducationYears(item)"
-              class="mt-1 text-xs font-medium uppercase tracking-wide text-muted-foreground/80"
+              class="mt-1 font-mono text-xs tabular-nums text-muted-foreground/80"
             >
               {{ formatEducationYears(item) }}
             </p>
@@ -154,40 +150,41 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           <PhIdentificationCard />
         </template>
       </LawyerProfileSectionHeading>
-      <div class="space-y-4">
+      <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
         <article
           v-for="item in profile.licenses"
           :key="item.id"
-          class="rounded-xl border border-border bg-card p-5"
+          class="p-5 md:p-6"
         >
-          <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-lg font-bold text-foreground">
+                <h3 class="text-base font-semibold tracking-tight text-foreground">
                   {{ item.name }}
                 </h3>
                 <Badge
                   v-if="item.isVerified"
-                  variant="secondary"
-                  class="text-[10px] uppercase tracking-wide"
+                  variant="verified"
+                  class="gap-1 text-[10px] uppercase tracking-wide"
                 >
+                  <PhSealCheck class="size-3" weight="fill" />
                   Verified
                 </Badge>
               </div>
-              <p class="mt-1 text-sm text-muted-foreground">
+              <p class="mt-0.5 text-sm text-muted-foreground">
                 {{ item.issuingOrganization }}
               </p>
             </div>
             <p
               v-if="formatLicenseDates(item)"
-              class="text-sm text-muted-foreground"
+              class="font-mono text-xs tabular-nums text-muted-foreground"
             >
               {{ formatLicenseDates(item) }}
             </p>
           </div>
           <p
             v-if="item.credentialId"
-            class="mt-3 text-xs text-muted-foreground"
+            class="mt-3 font-mono text-xs text-muted-foreground"
           >
             ID: {{ item.credentialId }}
           </p>
@@ -215,7 +212,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         <Badge
           v-for="skill in profile.skills"
           :key="skill.id"
-          variant="secondary"
+          variant="soft"
           class="rounded-full px-3.5 py-1.5 text-sm font-medium"
         >
           {{ skill.name }}

@@ -24,21 +24,20 @@ const trustItems = [
 </script>
 
 <template>
-  <section class="bg-sidebar text-sidebar-foreground py-6 md:py-10">
-    <div class="max-w-7xl mx-auto px-6 md:px-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 items-center">
-        <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-3.5">
+  <section class="bg-canvas pb-14 md:pb-20">
+    <div class="mx-auto max-w-5xl px-6 md:px-8">
+      <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 border-t border-border pt-10 md:pt-12">
+        <div v-for="item in trustItems" :key="item.label" class="flex items-center gap-2.5">
           <!-- Icon -->
-          <div
-            class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sidebar-primary"
-            style="background:rgba(134,194,142,0.15);"
+          <span
+            class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brass/10 text-brass"
             v-html="item.icon"
           />
           <!-- Text -->
-          <div class="text-sm leading-normal">
-            <strong class="block text-sidebar-foreground font-semibold mb-0.5">{{ item.label }}</strong>
-            <span class="text-sidebar-foreground/60">{{ item.sub }}</span>
-          </div>
+          <p class="text-sm leading-snug">
+            <strong class="font-semibold text-foreground">{{ item.label }}</strong>
+            <span class="text-muted-foreground"> · {{ item.sub }}</span>
+          </p>
         </div>
       </div>
     </div>

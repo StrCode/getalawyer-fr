@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerSpecialization } from '~/types/lawyer'
+import { PhScales } from '@phosphor-icons/vue'
 
 defineProps<{
   specializations: LawyerSpecialization[]
@@ -19,15 +20,15 @@ defineProps<{
       <div
         v-for="spec in specializations"
         :key="spec.id"
-        class="rounded-xl border border-border bg-card p-5"
+        class="rounded-2xl border border-border bg-card p-5"
       >
         <div class="mb-1 flex items-start justify-between gap-3">
-          <h3 class="text-base font-semibold text-foreground">
+          <h3 class="text-base font-semibold tracking-tight text-foreground">
             {{ spec.name }}
           </h3>
           <Badge
             v-if="spec.yearsOfExperience != null"
-            variant="secondary"
+            variant="verified"
             class="shrink-0 tabular-nums"
           >
             {{ spec.yearsOfExperience }} yrs

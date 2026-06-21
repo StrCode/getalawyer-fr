@@ -2,6 +2,15 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { LawyerProfile } from '~/types/lawyer'
+import {
+  PhArrowLeft,
+  PhBriefcase,
+  PhCalendar,
+  PhClock,
+  PhEnvelope,
+  PhMapPin,
+  PhSealCheck,
+} from '@phosphor-icons/vue'
 
 defineProps<{
   lawyer: LawyerProfile
@@ -40,7 +49,7 @@ const emit = defineEmits<{
         {{ backLinkLabel }}
       </NuxtLink>
 
-      <p class="mb-3 text-3 font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+      <p class="text-eyebrow mb-3 text-brass">
         Lawyer profile
       </p>
 
@@ -67,20 +76,22 @@ const emit = defineEmits<{
         <div class="min-w-0 flex-1">
           <div class="mb-3 flex flex-wrap items-center gap-2">
             <Badge
+              v-if="lawyer.ninVerified"
+              variant="verified"
+              class="gap-1"
+            >
+              <PhSealCheck class="size-3.5" weight="fill" />
+              NIN verified
+            </Badge>
+            <Badge
               v-if="lawyer.applicationStatus === 'approved'"
-              variant="secondary"
+              variant="soft"
             >
               Approved
             </Badge>
             <Badge
-              v-if="lawyer.ninVerified"
-              variant="outline"
-            >
-              NIN verified
-            </Badge>
-            <Badge
               v-if="lawyer.professionalInfo?.yearOfCall"
-              variant="outline"
+              variant="soft"
             >
               Called {{ lawyer.professionalInfo.yearOfCall }}
             </Badge>
@@ -94,12 +105,12 @@ const emit = defineEmits<{
           </div>
 
           <div class="mb-2 flex flex-wrap items-center gap-3">
-            <h1 class="font-heading text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+            <h1 class="font-display text-4xl font-semibold tracking-[-0.02em] text-foreground md:text-5xl">
               {{ lawyer.name }}
             </h1>
             <PhSealCheck
               v-if="lawyer.ninVerified"
-              class="size-7 text-primary"
+              class="size-7 text-brass"
               weight="fill"
             />
           </div>

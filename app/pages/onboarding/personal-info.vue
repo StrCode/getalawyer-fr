@@ -19,7 +19,7 @@ definePageMeta({
 const step = getLawyerStepDisplay('personal_info')
 
 const inputClass =
-  'h-11 rounded-xl border-border/50 bg-white/80 text-base placeholder:text-muted-foreground/50 focus:bg-white'
+  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const selectTriggerClass = `${inputClass} w-full`
 
@@ -172,7 +172,7 @@ watch(
     />
 
     <Card
-      class="relative w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-xl shadow-primary/5 backdrop-blur-xl"
+      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div
         class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
@@ -274,7 +274,7 @@ watch(
                       :id="`${field.name}-trigger`"
                       type="button"
                       variant="outline"
-                      class="h-11 w-full justify-between rounded-xl border-border/50 bg-white/80 font-normal text-foreground shadow-none hover:bg-white focus:bg-white"
+                      class="h-11 w-full justify-between rounded-xl border-border/50 bg-card/80 font-normal text-foreground shadow-none hover:bg-card focus:bg-card"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                     >
@@ -327,7 +327,7 @@ watch(
                 >
                   <SelectTrigger
                     :id="field.name"
-                    class="h-11 w-full rounded-xl border-border/50 bg-white/80 text-base focus:bg-white"
+                    class="h-11 w-full rounded-xl border-border/50 bg-card/80 text-base focus:bg-card"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select gender" />
@@ -344,7 +344,7 @@ watch(
           </div>
 
           <div class="border-t border-border/40 pt-5">
-            <p class="mb-4 text-sm font-medium text-sidebar">Location</p>
+            <p class="mb-4 text-sm font-medium text-foreground">Location</p>
             <FieldDescription class="mb-4">
               Your current state and local government area of residence.
             </FieldDescription>

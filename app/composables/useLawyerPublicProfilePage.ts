@@ -12,6 +12,7 @@ import {
 import { getSessionUserType } from '~/lib/session-user'
 
 export async function useLawyerPublicProfilePage(lawyerId: MaybeRef<string>) {
+  const nuxtApp = useNuxtApp()
   const { session } = useAuth()
   const id = computed(() => unref(lawyerId))
 
@@ -113,9 +114,11 @@ export async function useLawyerPublicProfilePage(lawyerId: MaybeRef<string>) {
     () => canBook.value && workingDays.value.length > 0,
   )
 
-  useHead({
-    title: computed(() => `${lawyer.value?.name || 'Lawyer'} - ${heroSubtitle.value} | GetaLawyer`),
-  })
+  nuxtApp.runWithContext(() =>
+    useHead({
+      title: computed(() => `${lawyer.value?.name || 'Lawyer'} - ${heroSubtitle.value} | GetaLawyer`),
+    }),
+  )
 
   return {
     lawyer,

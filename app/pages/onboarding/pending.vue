@@ -207,7 +207,7 @@ async function retryStatus() {
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
     >
       <div
-        class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-white shadow-sm"
+        class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-card shadow-sm"
       >
         <PhCircleNotch class="size-8 animate-spin text-primary" aria-hidden="true" />
       </div>
@@ -217,22 +217,22 @@ async function retryStatus() {
     <!-- Error -->
     <div v-else-if="statusUnavailable" class="space-y-8 py-8 text-center">
       <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full bg-amber-50 text-amber-600 ring-4 ring-white shadow-lg"
+        class="mx-auto flex size-20 items-center justify-center rounded-full border border-brass/30 bg-brass/10 text-brass ring-4 ring-background shadow-lg"
       >
         <PhHourglass class="size-10" weight="duotone" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-primary">
+        <p class="text-eyebrow text-brass">
           Application status
         </p>
-        <h1 class="font-heading text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
+        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Could not load status
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Check your connection and try again.
         </p>
       </div>
-      <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white text-left shadow-sm">
+      <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">
         <div class="space-y-4 p-6">
           <p class="text-sm leading-relaxed text-muted-foreground">
             We could not reach the server to confirm your application status.
@@ -247,15 +247,15 @@ async function retryStatus() {
     <!-- Verification failed — refund initiated -->
     <div v-else-if="isVerificationFailed" class="space-y-8 py-8 text-center">
       <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full bg-amber-50 text-amber-700 ring-4 ring-white shadow-lg"
+        class="mx-auto flex size-20 items-center justify-center rounded-full border border-brass/30 bg-brass/10 text-brass ring-4 ring-background shadow-lg"
       >
         <PhHourglass class="size-10" weight="duotone" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-bold uppercase tracking-widest text-primary">
+        <p class="text-eyebrow text-brass">
           Verification outcome
         </p>
-        <h1 class="font-heading text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
+        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Verification could not be completed
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -263,7 +263,7 @@ async function retryStatus() {
           admin processing fee will be returned to your payment method.
         </p>
       </div>
-      <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white text-left shadow-sm">
+      <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">
         <div class="space-y-4 p-6 text-sm text-muted-foreground">
           <p>
             Questions? Email
@@ -283,20 +283,20 @@ async function retryStatus() {
         <!-- Hero -->
         <div class="text-center">
           <div
-            class="relative mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-primary/10 ring-4 ring-white shadow-lg shadow-primary/10"
+            class="relative mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-primary/10 ring-4 ring-background shadow-lg shadow-primary/10"
           >
             <div
-              class="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-white"
+              class="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background"
             >
               <PhCheck class="size-5" weight="bold" />
             </div>
             <PhFileSearch class="size-11 text-primary" weight="duotone" />
           </div>
 
-          <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
+          <p class="mb-2 text-eyebrow text-brass">
             Step 3 of 3 · Application status
           </p>
-          <h1 class="font-heading text-balance text-3xl font-normal tracking-tight text-sidebar sm:text-4xl">
+          <h1 class="font-display text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
             Application submitted
           </h1>
           <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
@@ -306,7 +306,7 @@ async function retryStatus() {
 
         <div
           v-if="applicationNotice"
-          class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-4 text-sky-950 sm:px-5"
+          class="rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 text-foreground sm:px-5"
           role="status"
         >
           <p class="text-sm font-semibold">
@@ -318,7 +318,7 @@ async function retryStatus() {
         </div>
 
         <!-- Horizontal progress (Airwallex-style) -->
-        <div class="rounded-2xl border border-border/40 bg-white/80 px-4 py-5 shadow-sm sm:px-6">
+        <div class="rounded-2xl border border-border/40 bg-card/80 px-4 py-5 shadow-sm sm:px-6">
           <ol class="flex items-start justify-between gap-2">
             <li
               v-for="(step, index) in progressSteps"
@@ -365,7 +365,7 @@ async function retryStatus() {
         </div>
 
         <!-- Status card -->
-        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-5">
             <h2 class="text-base font-semibold text-foreground">
               We are reviewing your details
@@ -387,22 +387,22 @@ async function retryStatus() {
 
         <Card
           v-if="!subscriptionStatusPending && hasActiveSubscription"
-          class="overflow-hidden rounded-2xl border border-emerald-200/80 bg-emerald-50/40 shadow-sm"
+          class="overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
         >
           <div class="px-6 py-5">
-            <p class="text-sm font-semibold text-emerald-900">
+            <p class="text-sm font-semibold text-foreground">
               Subscription active
             </p>
-            <p class="mt-1 text-sm text-emerald-800/90">
+            <p class="mt-1 text-sm text-muted-foreground">
               Your annual membership payment is confirmed. No further payment is needed while your application is reviewed.
             </p>
           </div>
         </Card>
 
         <!-- Timeline (Mercury-style) -->
-        <Card class="overflow-hidden rounded-2xl border border-border/50 bg-white shadow-sm">
+        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-4">
-            <h2 class="text-sm font-bold uppercase tracking-wide text-primary">
+            <h2 class="text-eyebrow text-brass">
               What happens next
             </h2>
           </div>
@@ -414,7 +414,7 @@ async function retryStatus() {
             >
               <div class="flex flex-col items-center">
                 <span
-                  class="relative z-10 flex size-3 shrink-0 rounded-full ring-4 ring-white"
+                  class="relative z-10 flex size-3 shrink-0 rounded-full ring-4 ring-background"
                   :class="{
                     'bg-primary': item.status === 'done' || item.status === 'current',
                     'bg-border': item.status === 'upcoming',

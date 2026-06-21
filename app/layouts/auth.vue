@@ -1,38 +1,37 @@
 <template>
-  <div class="flex min-h-dvh w-full overflow-hidden bg-[oklch(0.98_0.008_85)]">
-    <!-- LEFT PANEL: Rich Green Editorial -->
+  <div class="flex min-h-dvh w-full overflow-hidden bg-canvas">
+    <!-- LEFT PANEL: Ink editorial -->
     <aside
-      class="hidden lg:flex lg:w-1/2 flex-col min-h-dvh justify-between bg-sidebar px-10 py-10 relative overflow-hidden text-sidebar-foreground"
+      class="relative hidden min-h-dvh flex-col justify-between overflow-hidden bg-ink px-10 py-10 text-ink-foreground lg:flex lg:w-1/2"
     >
-      <div class="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent mix-blend-overlay" />
-
       <div class="relative z-10">
-        <NuxtLink to="/" class="inline-flex items-center gap-2.5 no-underline text-sidebar-foreground">
-          <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,20 38,42 38,82 0,60" fill="currentColor"/>
-            <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55"/>
-          </svg>
-          <span class="font-sans font-bold text-xl tracking-tight lowercase text-sidebar-foreground">getalawyer</span>
+        <NuxtLink to="/" class="inline-flex items-center gap-2.5 text-ink-foreground no-underline">
+          <span class="flex size-9 items-center justify-center rounded-xl bg-white/6 ring-1 ring-white/10">
+            <svg class="size-5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <polygon points="0,20 38,42 38,82 0,60" fill="currentColor" />
+              <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55" />
+            </svg>
+          </span>
+          <span class="font-heading text-xl font-semibold lowercase tracking-tight">getalawyer</span>
         </NuxtLink>
       </div>
 
-      <div class="relative z-10 flex flex-col justify-center flex-1 w-full max-w-xl py-8">
-        <h2 class="mb-5 font-sans text-3xl font-semibold leading-tight tracking-tight lg:text-4xl">
+      <div class="relative z-10 flex w-full max-w-xl flex-1 flex-col justify-center py-10">
+        <p class="text-eyebrow mb-5 text-brass">Verified legal representation</p>
+        <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.025em] lg:text-5xl">
           {{ authTitle }}
         </h2>
-        <p class="font-sans text-base lg:text-lg leading-relaxed text-primary-foreground/80">
+        <p class="mt-6 max-w-md text-base leading-relaxed text-ink-foreground/65 lg:text-lg">
           {{ authDescription }}
         </p>
       </div>
 
-      <div
-        class="relative z-10 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-6 border-t border-sidebar-accent/50 w-full"
-      >
+      <div class="relative z-10 flex w-full flex-col gap-4 border-t border-ink-border/60 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
-          <p class="mb-1 font-semibold text-sidebar-foreground text-sm">
+          <p class="mb-1 text-sm font-semibold text-ink-foreground">
             Take GetaLawyer with you
           </p>
-          <p class="text-sidebar-foreground/70 text-sm leading-relaxed">
+          <p class="text-sm leading-relaxed text-ink-foreground/60">
             Find verified lawyers on our mobile app for iOS and Android.
           </p>
         </div>
@@ -44,30 +43,20 @@
 
     <!-- RIGHT PANEL: Form — vertically centered -->
     <main
-      class="relative flex flex-col flex-1 lg:w-1/2 w-full min-h-dvh overflow-y-auto bg-[oklch(0.98_0.008_85)] lg:border-l border-border"
+      class="relative flex min-h-dvh w-full flex-1 flex-col overflow-y-auto bg-canvas lg:w-1/2 lg:border-l lg:border-border"
     >
-      <div
-        class="pointer-events-none absolute inset-0 hidden lg:block"
-        style="background: radial-gradient(circle at 50% 30%, rgba(134,194,142,0.04) 0%, transparent 55%);"
-      />
-
-      <div class="absolute top-6 left-6 right-6 sm:top-8 sm:left-auto sm:right-8 z-10 flex justify-between sm:justify-end">
+      <div class="absolute left-6 right-6 top-6 z-10 flex justify-between sm:left-auto sm:right-8 sm:top-8 sm:justify-end">
         <NuxtLink
           to="/"
-          class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors lg:hidden"
+          class="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          ← Back
-        </NuxtLink>
-        <NuxtLink
-          to="/"
-          class="hidden lg:inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
-        >
-          <span class="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">←</span>
-          Back to website
+          <span class="transition-transform duration-300 lg:-translate-x-1 lg:group-hover:translate-x-0">←</span>
+          <span class="lg:hidden">Back</span>
+          <span class="hidden lg:inline">Back to website</span>
         </NuxtLink>
       </div>
 
-      <div class="flex flex-1 flex-col justify-center items-center px-6 sm:px-10 lg:px-14 xl:px-16 pt-14 pb-10 sm:pt-16 sm:pb-12 lg:py-14">
+      <div class="flex flex-1 flex-col items-center justify-center px-6 pb-10 pt-16 sm:px-10 lg:px-14 lg:py-14 xl:px-16">
         <div
           class="relative z-10 w-full"
           :class="authWide ? 'max-w-2xl' : 'max-w-md'"

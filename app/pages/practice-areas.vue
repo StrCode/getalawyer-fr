@@ -50,12 +50,12 @@ const hasMore = computed(() => displayedCount.value < filteredAreas.value.length
 const loadMore = () => {
   if (isLoading.value || !hasMore.value) return
   isLoading.value = true
-  
+
   // Fake network delay for a smooth UX
   setTimeout(() => {
     displayedCount.value += 12
     isLoading.value = false
-  }, 500) 
+  }, 500)
 }
 
 onMounted(() => {
@@ -76,81 +76,73 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-background min-h-screen pb-24">
-    
-    <!-- Hero / Header with Photo Background -->
-    <section class="relative py-24 border-b border-border/50 overflow-hidden">
-      <!-- Background Image -->
-      <div 
-        class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style="background-image: url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=2400');"
-      ></div>
-      
-      <!-- Overlay (Brand Green 900 gradient) -->
-      <div class="absolute inset-0 bg-sidebar/90 mix-blend-multiply"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-sidebar to-transparent opacity-80"></div>
+  <div class="min-h-screen bg-canvas pb-24">
 
-      <div class="max-w-7xl mx-auto px-6 md:px-8 text-center relative z-10">
-        <p class="text-sm font-semibold text-sidebar-primary tracking-[0.08em] uppercase mb-4 drop-shadow-sm">Directory</p>
-        <h1 class="font-heading font-medium text-sidebar-foreground tracking-[-0.02em] mb-4 drop-shadow-md" style="font-size:clamp(36px,4.5vw,56px);">
+    <!-- Hero / Header -->
+    <section class="relative overflow-hidden border-b border-ink-border bg-ink py-20 md:py-24">
+      <div class="pointer-events-none absolute -top-32 right-0 size-[480px] rounded-full bg-primary/10 blur-3xl" />
+
+      <div class="relative z-10 mx-auto max-w-7xl px-6 text-center md:px-8">
+        <p class="text-eyebrow mb-4 text-brass">Directory</p>
+        <h1 class="display-xl mb-4 text-ink-foreground">
           Practice Areas
         </h1>
-        <p class="text-5 max-w-xl mx-auto mb-10 leading-[1.5] drop-shadow-sm" style="color:rgba(244,241,232,0.85);">
+        <p class="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-ink-muted">
           Find verified specialists for any legal situation. Search our complete directory of practice areas below.
         </p>
-        
+
         <!-- Search Input -->
-        <div class="max-w-lg mx-auto relative group">
-          <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-muted-foreground z-10">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <div class="group relative mx-auto max-w-lg">
+          <div class="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4 text-muted-foreground">
+            <PhMagnifyingGlass class="size-5" weight="bold" />
           </div>
-          <input 
+          <input
             v-model="searchQuery"
-            type="text" 
+            type="text"
             placeholder="Search for a legal issue or specialty..."
-            class="w-full bg-white border-2 border-transparent rounded-full py-4.5 pl-12 pr-6 text-4 font-sans text-foreground outline-none focus:border-sidebar-primary focus:ring-4 focus:ring-sidebar-primary/30 transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] placeholder:text-muted-foreground/60"
+            class="w-full rounded-xl border border-border bg-card py-4 pr-6 pl-12 text-base text-foreground shadow-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-4 focus:ring-primary/10"
           />
         </div>
       </div>
     </section>
 
     <!-- Grid -->
-    <section class="pt-20 max-w-7xl mx-auto px-6 md:px-8">
-      
+    <section class="mx-auto max-w-7xl px-6 pt-16 md:px-8">
+
       <!-- Empty State -->
-      <div v-if="visibleAreas.length === 0" class="text-center py-20">
-        <div class="w-16 h-16 bg-muted text-primary rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div v-if="visibleAreas.length === 0" class="py-20 text-center">
+        <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-surface-2 text-primary">
+          <PhWarningCircle class="size-6" weight="bold" />
         </div>
-        <h3 class="text-5 font-semibold text-sidebar mb-2">No practice areas found</h3>
-        <p class="text-4 text-muted-foreground">We couldn't find anything matching "{{ searchQuery }}".</p>
+        <h3 class="mb-2 text-lg font-semibold text-foreground">No practice areas found</h3>
+        <p class="text-sm text-muted-foreground">We couldn't find anything matching "{{ searchQuery }}".</p>
       </div>
 
       <!-- Results Grid -->
-      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <!-- We use NuxtLink to route to the search page, passing the practice area in the query -->
         <NuxtLink
           v-for="area in visibleAreas"
           :key="area.name"
           :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
-          class="group bg-white border border-border rounded-2xl p-6 no-underline text-foreground flex flex-col gap-3.5 relative overflow-hidden transition-all duration-200 hover:border-sidebar-accent hover:-translate-y-1 hover:shadow-[0_12px_24px_-12px_rgba(15,46,26,0.12)]"
+          class="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-6 text-foreground no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
         >
-          <div class="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-primary" v-html="area.icon" />
-          <h3 class="font-semibold text-4 text-sidebar leading-tight">{{ area.name }}</h3>
-          <p class="text-3.5 text-muted-foreground leading-[1.5]">{{ area.desc }}</p>
-          
+          <div class="flex size-10 items-center justify-center rounded-xl bg-surface-2 text-primary" v-html="area.icon" />
+          <h3 class="text-base leading-tight font-semibold text-foreground">{{ area.name }}</h3>
+          <p class="text-sm leading-relaxed text-muted-foreground">{{ area.desc }}</p>
+
           <!-- Subtle arrow that appears on hover -->
-          <div class="mt-auto pt-2 flex items-center gap-1.5 text-sm font-medium text-primary opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0">
-            View lawyers <span class="text-lg leading-none">&rarr;</span>
+          <div class="mt-auto flex -translate-x-2 items-center gap-1.5 pt-2 text-sm font-medium text-primary opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+            View lawyers <PhArrowRight class="size-4" weight="bold" />
           </div>
         </NuxtLink>
       </div>
 
       <!-- Infinite Loader Sentinel -->
-      <div v-if="hasMore" ref="loaderRef" class="py-16 flex justify-center">
-        <div v-if="isLoading" class="flex gap-2 items-center text-primary">
-          <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <span class="text-3.5 font-medium">Loading more areas...</span>
+      <div v-if="hasMore" ref="loaderRef" class="flex justify-center py-16">
+        <div v-if="isLoading" class="flex items-center gap-2 text-primary">
+          <PhCircleNotch class="size-5 animate-spin" weight="bold" />
+          <span class="text-sm font-medium">Loading more areas...</span>
         </div>
       </div>
 
