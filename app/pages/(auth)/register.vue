@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background font-sans">
+  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-canvas font-sans">
     <!-- Background: clipped so blur paint cannot extend scroll width -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div
@@ -11,20 +11,7 @@
     </div>
 
     <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-6">
-      <NuxtLink to="/" class="group inline-flex min-w-0 items-center gap-2.5">
-        <svg
-          class="h-7 w-7 text-primary transition-transform group-hover:scale-105 sm:h-8 sm:w-8"
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <polygon points="0,20 38,42 38,82 0,60" fill="currentColor" />
-          <polygon points="62,42 100,20 100,60 62,82" fill="currentColor" opacity="0.55" />
-        </svg>
-        <span class="font-heading text-lg font-semibold tracking-tight text-foreground lowercase sm:text-2xl">
-          getalawyer
-        </span>
-      </NuxtLink>
+      <LandingBrandLogo to="/" />
 
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <span class="hidden text-sm font-medium text-muted-foreground sm:inline">
@@ -84,7 +71,7 @@
                     <PhCheck v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-muted transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-surface-2 ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhUser
@@ -124,7 +111,7 @@
                     <PhCheck v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-muted transition-transform sm:mx-0 sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-surface-2 ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhBriefcase

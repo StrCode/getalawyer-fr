@@ -1,21 +1,13 @@
 <template>
-  <div>
-
-    <AuthLogo class="mb-10 lg:hidden" />
-
-    <header class="mb-8">
-      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
-        Forgot your password?
-      </h1>
-      <p class="text-base leading-relaxed text-muted-foreground">
-        {{
-          authMethod === 'phone'
-            ? 'Enter your phone number and we\'ll send you a reset code.'
-            : 'Enter your email and we\'ll send you a reset code.'
-        }}
-      </p>
-    </header>
-
+  <AuthFormShell
+    eyebrow="Account recovery"
+    :title="submitted ? 'Check your inbox' : 'Forgot your password?'"
+    :description="submitted
+      ? undefined
+      : authMethod === 'phone'
+        ? 'Enter your phone number and we\'ll send you a reset code.'
+        : 'Enter your email and we\'ll send you a reset code.'"
+  >
     <div
       v-if="submitted"
       role="status"
@@ -33,7 +25,7 @@
       </div>
     </div>
 
-    <div v-if="submitted" class="space-y-4">
+    <div v-if="submitted">
       <Button class="h-12 w-full cursor-pointer" size="lg" @click="goToVerifyOTP">
         Enter verification code
       </Button>
@@ -96,14 +88,14 @@
       </FieldGroup>
     </form>
 
-    <Separator class="my-6" />
-
-    <p class="text-center text-base">
-      <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
-        Back to login
-      </NuxtLink>
-    </p>
-  </div>
+    <template #after>
+      <p class="text-center text-base">
+        <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
+          Back to login
+        </NuxtLink>
+      </p>
+    </template>
+  </AuthFormShell>
 </template>
 
 <script setup lang="ts">
@@ -114,7 +106,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { TabsContent } from '@/components/ui/tabs'
-import { Separator } from '@/components/ui/separator'
 import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'
 import { isTempPhoneEmail } from '~/lib/auth-constants'

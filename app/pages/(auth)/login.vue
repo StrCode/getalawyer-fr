@@ -1,33 +1,28 @@
 <template>
-  <div class="w-full font-sans">
-
-    <AuthLogo class="mb-8 lg:hidden" />
-
-    <header class="mb-8">
-      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
-        Welcome back
-      </h1>
-      <p class="text-base leading-relaxed text-muted-foreground">
-        Sign in to your GetaLawyer account
-      </p>
-    </header>
-
-    <div class="mb-6 flex items-stretch gap-3">
+  <AuthFormShell
+    eyebrow="Sign in"
+    title="Welcome back"
+    description="Sign in to your GetaLawyer account"
+  >
+    <div class="mb-6">
       <AuthSocialButton
         provider="google"
-        icon-only
         :disabled="isSubmitting"
         :loading="socialProvider === 'google'"
         @click="handleSocialLogin('google')"
-      />
+      >
+        Continue with Google
+      </AuthSocialButton>
     </div>
 
     <AuthDivider class="mb-6" />
 
-    <!-- Inline OTP after unverified phone login — server auto-sent OTP on 401 -->
+    <!-- Inline OTP after unverified phone login -->
     <div v-if="showPhoneOtpStep" class="space-y-6">
       <header>
-        <h2 class="text-lg font-semibold text-foreground">Verify your phone</h2>
+        <h2 class="text-lg font-semibold text-foreground">
+          Verify your phone
+        </h2>
         <p class="mt-1 text-sm text-muted-foreground">
           We sent a code to <strong class="text-foreground">{{ pendingPhone }}</strong>.
           Enter it below to complete sign-in.
@@ -99,10 +94,12 @@
         <form.Field v-slot="{ field }" name="password">
           <Field :data-invalid="isInvalid(field)">
             <div class="flex w-full items-center justify-between gap-3">
-              <FieldLabel :for="field.name" class="w-auto">Password</FieldLabel>
+              <FieldLabel :for="field.name" class="w-auto">
+                Password
+              </FieldLabel>
               <NuxtLink
                 :to="forgotPasswordLink"
-                class="shrink-0 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                class="shrink-0 text-sm font-medium text-primary hover:text-primary/80"
               >
                 Forgot password?
               </NuxtLink>
@@ -131,33 +128,35 @@
           size="lg"
           :disabled="isSubmitting"
         >
-          <PhCircleNotch v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
+          <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Signing in…' : 'Sign in' }}</span>
         </Button>
       </FieldGroup>
     </form>
 
-    <p class="mt-8 text-sm leading-relaxed text-muted-foreground">
-      By continuing, you agree to our
-      <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
-        Terms of Service
-      </NuxtLink>
-      and
-      <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
-        Privacy Policy
-      </NuxtLink>.
-    </p>
+    <template #after>
+      <p class="text-center text-sm leading-relaxed text-muted-foreground">
+        By continuing, you agree to our
+        <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
+          Terms of Service
+        </NuxtLink>
+        and
+        <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
+          Privacy Policy
+        </NuxtLink>.
+      </p>
 
-    <p class="mt-5 text-center text-base text-muted-foreground">
-      Don&apos;t have an account?
-      <NuxtLink
-        to="/register"
-        class="font-semibold text-primary underline-offset-4 hover:underline"
-      >
-        Sign up
-      </NuxtLink>
-    </p>
-  </div>
+      <p class="text-center text-base text-muted-foreground">
+        Don&apos;t have an account?
+        <NuxtLink
+          to="/register"
+          class="font-semibold text-primary underline-offset-4 hover:underline"
+        >
+          Sign up
+        </NuxtLink>
+      </p>
+    </template>
+  </AuthFormShell>
 </template>
 
 <script setup lang="ts">

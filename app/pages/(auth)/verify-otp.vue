@@ -1,23 +1,18 @@
 <template>
-  <div>
-
-    <AuthLogo class="mb-10 lg:hidden" />
-
-    <header class="mb-8">
-      <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
-        {{ isPhoneMethod ? 'Check your phone' : 'Check your email' }}
-      </h1>
-      <p class="text-base leading-relaxed text-muted-foreground">
-        We sent a 6-digit code to
-        <strong class="font-medium text-foreground">{{ identifier }}</strong>.
-        <NuxtLink
-          :to="forgotPasswordLink"
-          class="ms-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
-        >
-          Wrong {{ isPhoneMethod ? 'number' : 'email' }}?
-        </NuxtLink>
-      </p>
-    </header>
+  <AuthFormShell
+    eyebrow="Verification"
+    :title="isPhoneMethod ? 'Check your phone' : 'Check your email'"
+  >
+    <p class="mb-6 text-base leading-relaxed text-muted-foreground">
+      We sent a 6-digit code to
+      <strong class="font-medium text-foreground">{{ identifier }}</strong>.
+      <NuxtLink
+        :to="forgotPasswordLink"
+        class="ms-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
+      >
+        Wrong {{ isPhoneMethod ? 'number' : 'email' }}?
+      </NuxtLink>
+    </p>
 
     <form @submit.prevent="handleSubmit">
       <FieldGroup class="space-y-6">
@@ -47,24 +42,23 @@
       </FieldGroup>
     </form>
 
-    <Separator class="my-6" />
-
-    <p class="text-center text-base">
-      <NuxtLink
-        :to="forgotPasswordLink"
-        class="font-medium text-primary underline-offset-4 hover:underline"
-      >
-        Back to forgot password
-      </NuxtLink>
-    </p>
-  </div>
+    <template #after>
+      <p class="text-center text-base">
+        <NuxtLink
+          :to="forgotPasswordLink"
+          class="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Back to forgot password
+        </NuxtLink>
+      </p>
+    </template>
+  </AuthFormShell>
 </template>
 
 <script setup lang="ts">
 import { PhCircleNotch } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
-import { Separator } from '@/components/ui/separator'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({

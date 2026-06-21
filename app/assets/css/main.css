@@ -55,10 +55,10 @@
     --brass: oklch(0.72 0.11 80);
     --brass-foreground: oklch(0.18 0.03 152);
 
-    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-    --font-serif: 'Fraunces', ui-serif, Georgia, serif;
-    --font-heading: 'Fraunces', ui-serif, Georgia, serif;
-    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'IBM Plex Serif', ui-serif, Georgia, serif;
+    --font-heading: 'IBM Plex Serif', ui-serif, Georgia, serif;
+    --font-display: 'IBM Plex Serif', ui-serif, Georgia, serif;
     --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, monospace;
     --radius: 0.625rem;
     --shadow-2xs: 0px 4px 12px 0px hsl(0 0 0 / 0.04);
@@ -227,9 +227,9 @@
     }
 
     /*
-     * Default headings use the grotesk (Geist). Editorial serif is opt-in via
+     * Default headings use IBM Plex Sans. Serif is opt-in via
      * .font-display / .font-heading / .font-serif so small UI headings (card
-     * titles, nav) stay clean and only true display type uses Fraunces.
+     * titles, nav) stay clean and only true display type uses IBM Plex Serif.
      */
     h1,
     h2,
@@ -241,11 +241,6 @@
         letter-spacing: -0.02em;
     }
 
-    .font-display,
-    .font-heading,
-    .font-serif {
-        font-variation-settings: 'SOFT' 0, 'WONK' 1;
-    }
 }
 
 @layer components {
@@ -261,14 +256,13 @@
         @apply z-40 shrink-0 border-t border-border/60 bg-background pb-safe shadow-sm;
     }
 
-    /* Dashboard shell — Geist UI, Fraunces headings, sidebar polish */
+    /* Dashboard shell — IBM Plex Sans UI, IBM Plex Serif headings, sidebar polish */
     .dashboard-shell {
         font-family: var(--font-sans);
     }
 
     .dashboard-shell :is(h1, h2, h3, h4, .font-heading) {
         font-family: var(--font-heading) !important;
-        font-variation-settings: 'SOFT' 0, 'WONK' 1 !important;
     }
 
     .dashboard-shell [data-sidebar="menu-button"] {
@@ -308,7 +302,7 @@
 
 /* ─────────────────────────────────────────────
    Editorial type scale
-   Compose Fraunces display type with tuned size,
+   Compose IBM Plex Serif display type with tuned size,
    leading and tracking. Pair with text-* color.
    ───────────────────────────────────────────── */
 @utility text-eyebrow {
@@ -322,7 +316,6 @@
 
 @utility display-2xl {
     font-family: var(--font-display);
-    font-variation-settings: 'SOFT' 0, 'WONK' 1;
     font-weight: 600;
     font-size: clamp(2.75rem, 6vw, 5rem);
     line-height: 1.02;
@@ -331,7 +324,6 @@
 
 @utility display-xl {
     font-family: var(--font-display);
-    font-variation-settings: 'SOFT' 0, 'WONK' 1;
     font-weight: 600;
     font-size: clamp(2.25rem, 4.5vw, 3.5rem);
     line-height: 1.05;
@@ -340,7 +332,6 @@
 
 @utility display-lg {
     font-family: var(--font-display);
-    font-variation-settings: 'SOFT' 0, 'WONK' 1;
     font-weight: 600;
     font-size: clamp(1.875rem, 3.2vw, 2.5rem);
     line-height: 1.1;
@@ -349,7 +340,6 @@
 
 @utility display-md {
     font-family: var(--font-display);
-    font-variation-settings: 'SOFT' 0, 'WONK' 1;
     font-weight: 600;
     font-size: clamp(1.5rem, 2.4vw, 1.875rem);
     line-height: 1.15;

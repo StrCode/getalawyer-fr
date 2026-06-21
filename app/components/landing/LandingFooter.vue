@@ -89,7 +89,6 @@ const cols = {
       <!-- Wordmark -->
       <p
         class="font-display mt-14 select-none leading-[0.85] tracking-[-0.03em] text-ink-foreground/90 text-[clamp(2.25rem,8vw,5.5rem)]"
-        style="font-variation-settings: 'SOFT' 0, 'WONK' 1;"
         aria-hidden="true"
       >
         getalawyer

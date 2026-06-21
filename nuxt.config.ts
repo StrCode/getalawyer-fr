@@ -23,6 +23,12 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
+  image: {
+    inject: true,
+  },
+  build: {
+    transpile: ['@nuxt/image'],
+  },
   shadcn: {
     /**
      * Prefix for all the imported component.
@@ -69,14 +75,14 @@ export default defineNuxtConfig({
     },
     families: [
       {
-        name: 'Geist',
+        name: 'IBM Plex Sans',
         provider: 'google',
-        weights: [300, 400, 500, 600, 700],
-        styles: ['normal'],
+        weights: [400, 500, 600, 700],
+        styles: ['normal', 'italic'],
         subsets: ['latin'],
       },
       {
-        name: 'Fraunces',
+        name: 'IBM Plex Serif',
         provider: 'google',
         weights: [400, 500, 600, 700],
         styles: ['normal', 'italic'],

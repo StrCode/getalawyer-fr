@@ -1,21 +1,21 @@
 <template>
-  <div>
-
-    <AuthLogo class="mb-10 lg:hidden" />
-
+  <AuthFormShell
+    eyebrow="Account recovery"
+    :title="submitted ? 'Password updated' : 'Set a new password'"
+    :description="submitted
+      ? undefined
+      : `Choose a new password for ${identifierLabel}. This will end all active sessions for your account.`"
+  >
     <Transition name="fade">
-      <div v-if="submitted" key="success" class="flex flex-col items-center py-4 text-center">
-        <div
-          class="flex justify-center items-center bg-primary/10 mb-5 border border-primary/15 rounded-full w-16 h-16"
-        >
-          <PhCheckCircle class="w-8 h-8 text-primary" />
+      <div v-if="submitted" key="success" class="flex flex-col items-center py-2 text-center">
+        <div class="mb-5 flex size-16 items-center justify-center rounded-full border border-primary/15 bg-primary/10">
+          <PhCheckCircle class="size-8 text-primary" />
         </div>
-        <h1 class="mb-2 text-2xl font-semibold leading-tight tracking-tight text-foreground">Password updated</h1>
         <p class="mb-8 max-w-sm text-base leading-relaxed text-muted-foreground">
           Your password has been reset. You can now log in with your new password.
         </p>
-        <Button class="w-full max-w-sm h-12" size="lg" as-child>
-          <NuxtLink to="/login" class="inline-flex justify-center items-center w-full">
+        <Button class="h-12 w-full" size="lg" as-child>
+          <NuxtLink to="/login" class="inline-flex w-full items-center justify-center">
             Go to login
           </NuxtLink>
         </Button>
@@ -23,77 +23,67 @@
     </Transition>
 
     <Transition name="fade">
-      <div v-if="!submitted" key="form">
-        <header class="mb-6">
-          <h1 class="mb-1 text-2xl font-semibold leading-tight tracking-tight text-foreground">
-            Set a new password
-          </h1>
-          <p class="text-base leading-relaxed text-muted-foreground">
-            Choose a new password for
-            <strong class="font-medium text-foreground">{{ identifierLabel }}</strong>.
-            This will end all active sessions for your account.
-          </p>
-        </header>
+      <form v-if="!submitted" key="form" @submit.prevent="form.handleSubmit">
+        <FieldGroup class="space-y-4">
+          <form.Field v-slot="{ field }" name="password">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">New password</FieldLabel>
+              <AuthPasswordInput
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                :aria-invalid="isInvalid(field)"
+                :disabled="isSubmitting"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(v as any)"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              <AuthPasswordRequirements class="mt-2" :password="field.state.value" />
+            </Field>
+          </form.Field>
 
-        <form @submit.prevent="form.handleSubmit">
-          <FieldGroup class="space-y-4">
-            <form.Field v-slot="{ field }" name="password">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">New password</FieldLabel>
-                <AuthPasswordInput
-                  :id="field.name"
-                  :name="field.name"
-                  :model-value="field.state.value"
-                  placeholder="••••••••"
-                  autocomplete="new-password"
-                  :aria-invalid="isInvalid(field)"
-                  :disabled="isSubmitting"
-                  @blur="field.handleBlur"
-                  @update:model-value="(v) => field.handleChange(v as any)"
-                />
-                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                <AuthPasswordRequirements class="mt-2" :password="field.state.value" />
-              </Field>
-            </form.Field>
+          <form.Field v-slot="{ field }" name="confirmPassword">
+            <Field :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name">Confirm new password</FieldLabel>
+              <AuthPasswordInput
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                placeholder="••••••••"
+                autocomplete="new-password"
+                :aria-invalid="isInvalid(field)"
+                :disabled="isSubmitting"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(v as any)"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
 
-            <form.Field v-slot="{ field }" name="confirmPassword">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">Confirm new password</FieldLabel>
-                <AuthPasswordInput
-                  :id="field.name"
-                  :name="field.name"
-                  :model-value="field.state.value"
-                  placeholder="••••••••"
-                  autocomplete="new-password"
-                  :aria-invalid="isInvalid(field)"
-                  :disabled="isSubmitting"
-                  @blur="field.handleBlur"
-                  @update:model-value="(v) => field.handleChange(v as any)"
-                />
-                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-              </Field>
-            </form.Field>
+          <AuthFormError :message="apiError" />
 
-            <AuthFormError :message="apiError" />
-
-            <Button type="submit" class="w-full h-12 gap-2" size="lg" :disabled="isSubmitting">
-              <PhCircleNotch v-if="isSubmitting" class="w-4 h-4 animate-spin shrink-0" />
-              <span>{{ isSubmitting ? 'Resetting…' : 'Reset password' }}</span>
-            </Button>
-          </FieldGroup>
-        </form>
-
-        <Separator class="my-6" />
-
-        <p class="text-muted-foreground text-base text-center">
-          Need help?
-          <NuxtLink to="/contact" class="font-medium text-primary underline-offset-4 hover:underline">
-            Contact us
-          </NuxtLink>
-        </p>
-      </div>
+          <Button type="submit" class="h-12 w-full gap-2" size="lg" :disabled="isSubmitting">
+            <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+            <span>{{ isSubmitting ? 'Resetting…' : 'Reset password' }}</span>
+          </Button>
+        </FieldGroup>
+      </form>
     </Transition>
-  </div>
+
+    <template
+      v-if="!submitted"
+      #after
+    >
+      <p class="text-center text-base text-muted-foreground">
+        Need help?
+        <NuxtLink to="/contact" class="font-medium text-primary underline-offset-4 hover:underline">
+          Contact us
+        </NuxtLink>
+      </p>
+    </template>
+  </AuthFormShell>
 </template>
 
 <script setup lang="ts">
@@ -102,7 +92,6 @@ import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Separator } from '@/components/ui/separator'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
 
