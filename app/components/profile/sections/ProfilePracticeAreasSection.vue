@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PhCheckCircle, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'

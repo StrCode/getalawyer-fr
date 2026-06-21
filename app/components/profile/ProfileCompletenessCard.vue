@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PhCheckCircle, PhCircle } from '@phosphor-icons/vue'
 import type { ProfileCompletenessResult } from '~/lib/profile-completeness'
 
 const props = defineProps<{

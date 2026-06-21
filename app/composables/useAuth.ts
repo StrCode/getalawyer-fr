@@ -90,7 +90,12 @@ export function useAuth() {
     email: authClient.signUp.email,
   };
 
-  const signOut = authClient.signOut;
+  const signOut = async (
+    ...args: Parameters<typeof authClient.signOut>
+  ): ReturnType<typeof authClient.signOut> => {
+    serverSession.value = null;
+    return authClient.signOut(...args);
+  };
 
   return {
     session,

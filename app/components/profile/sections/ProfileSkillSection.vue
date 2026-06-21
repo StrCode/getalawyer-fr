@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
+import { PhPencilSimple, PhPlus, PhX } from '@phosphor-icons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

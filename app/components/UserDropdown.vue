@@ -82,9 +82,13 @@
         </NuxtLink>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem variant="destructive" @click="handleLogout">
+      <DropdownMenuItem
+        variant="destructive"
+        :disabled="isSigningOut"
+        @click="handleLogout"
+      >
         <PhSignOut class="size-4" />
-        Sign out
+        {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
@@ -103,19 +107,30 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     /** `sidebar` — full-width row + menu opens upward. `header` — avatar chip + menu opens downward. `landing` — compact avatar for marketing nav. */
     variant?: 'sidebar' | 'header' | 'landing'
     /** Icon-collapsed sidebar rail — hide name/role, center avatar */
     collapsed?: boolean
+    /** Post sign-out navigation. Defaults to `stay` on landing, `login` elsewhere. */
+    afterSignOut?: 'login' | 'stay'
   }>(),
   { variant: 'sidebar', collapsed: false },
 )
 
+const emit = defineEmits<{
+  signedOut: []
+}>()
+
 const { session, signOut } = useAuth()
 
 const router = useRouter()
+const isSigningOut = ref(false)
+
+const afterSignOutBehavior = computed(
+  () => props.afterSignOut ?? (props.variant === 'landing' ? 'stay' : 'login'),
+)
 
 const userData = computed(() => {
   if (!session.value?.user)
@@ -143,7 +158,24 @@ const userInitials = computed(() => {
 })
 
 async function handleLogout() {
-  await signOut()
-  await router.push('/login')
+  if (isSigningOut.value)
+    return
+
+  isSigningOut.value = true
+  emit('signedOut')
+
+  try {
+    const { error } = await signOut()
+    if (error) {
+      console.error('[UserDropdown] signOut failed:', error)
+      return
+    }
+
+    if (afterSignOutBehavior.value === 'login') {
+      await router.push('/login')
+    }
+  } finally {
+    isSigningOut.value = false
+  }
 }
 </script>

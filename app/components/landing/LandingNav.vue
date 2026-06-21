@@ -73,6 +73,7 @@ watch(isMobileMenuOpen, (isOpen) => {
           <UserDropdown
             v-if="isSignedIn"
             variant="landing"
+            @signed-out="isMobileMenuOpen = false"
           />
           <NuxtLink
             v-else
@@ -147,7 +148,11 @@ watch(isMobileMenuOpen, (isOpen) => {
         <div class="animate-slide-up-fade flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8" :style="{ animationDelay: `${links.length * 75 + 100}ms` }">
           <template v-if="isSignedIn">
             <div class="w-full rounded-2xl border border-border bg-background p-2">
-              <UserDropdown variant="sidebar" />
+              <UserDropdown
+                variant="sidebar"
+                after-sign-out="stay"
+                @signed-out="isMobileMenuOpen = false"
+              />
             </div>
             <NuxtLink
               to="/dashboard"

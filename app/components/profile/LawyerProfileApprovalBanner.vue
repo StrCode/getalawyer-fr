@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PhInfo, PhWarning, PhWarningCircle } from '@phosphor-icons/vue'
 import type { ProfileEditorApprovalNotice } from '~/lib/lawyerOnboardingStatus'
 
 defineProps<{

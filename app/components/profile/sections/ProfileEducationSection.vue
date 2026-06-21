@@ -3,6 +3,7 @@ import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfir
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
 import { Button } from '@/components/ui/button'
+import { PhPlus } from '@phosphor-icons/vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'

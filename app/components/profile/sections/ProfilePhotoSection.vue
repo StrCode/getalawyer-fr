@@ -2,6 +2,7 @@
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PhCamera, PhCircleNotch } from '@phosphor-icons/vue'
 
 const props = defineProps<{
   name: string
