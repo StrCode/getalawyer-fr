@@ -17,7 +17,9 @@ export interface MessageStatus {
 export const useRealTimeMessaging = (conversationId: string) => {
   const { $socket } = useNuxtApp()
   const store = useMessagingStore()
-  const { user } = useAuth()
+  const { session } = useAuth()
+  const currentUserId = computed(() => session.value?.user?.id ?? '')
+  const currentUser = computed(() => session.value?.user)
 
   // Reactive state
   const isConnected = ref(false)
@@ -35,7 +37,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
   })
 
   const isUserTyping = computed(() => {
-    return currentTypingUsers.value.some(u => u.userId !== user.value?.id)
+    return currentTypingUsers.value.some(u => u.userId !== currentUserId.value)
   })
 
   // Connection management
@@ -44,6 +46,10 @@ export const useRealTimeMessaging = (conversationId: string) => {
 
     try {
       // Join conversation room
+      console.log('[WS] client emit conversation:join', {
+        conversationId,
+        socketConnected: $socket.connected,
+      })
       $socket.emit('conversation:join', conversationId)
       isConnected.value = true
       connectionError.value = null
@@ -80,7 +86,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
       const queuedMessage: Message = {
         id: `queued-${Date.now()}`,
         conversationId,
-        senderId: user.value?.id || '',
+        senderId: currentUserId.value,
         content,
         status: 'sent',
         fileUrl: file?.url || null,
@@ -92,9 +98,9 @@ export const useRealTimeMessaging = (conversationId: string) => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         sender: {
-          id: user.value?.id || '',
-          name: user.value?.name || 'You',
-          image: user.value?.image
+          id: currentUserId.value,
+          name: currentUser.value?.name || 'You',
+          image: currentUser.value?.image
         }
       }
       messageQueue.value.push(queuedMessage)
@@ -115,7 +121,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
     return {
       id: `temp-${Date.now()}`,
       conversationId,
-      senderId: user.value?.id || '',
+      senderId: currentUserId.value,
       content,
       status: 'sent' as const,
       fileUrl: file?.url || null,
@@ -127,9 +133,9 @@ export const useRealTimeMessaging = (conversationId: string) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       sender: {
-        id: user.value?.id || '',
-        name: user.value?.name || 'You',
-        image: user.value?.image
+        id: currentUserId.value,
+        name: currentUser.value?.name || 'You',
+        image: currentUser.value?.image
       }
     }
   }
@@ -226,6 +232,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
 
     // Conversation events
     $socket.on('conversation:joined', (data: { conversationId: string }) => {
+      console.log('[WS] client received conversation:joined', data)
       if (data.conversationId === conversationId) {
         isConnected.value = true
         processMessageQueue()
@@ -242,7 +249,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
     $socket.on('message:new', (message: Message) => {
       if (message.conversationId === conversationId) {
         // Auto-mark as read if message is from another user
-        if (message.senderId !== user.value?.id) {
+        if (message.senderId !== currentUserId.value) {
           setTimeout(() => {
             markMessageAsRead(message.id)
           }, 1000)
@@ -256,7 +263,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
 
     // Typing events
     $socket.on('typing:start', (data: { userId: string; userName: string }) => {
-      if (data.userId !== user.value?.id) {
+      if (data.userId !== currentUserId.value) {
         const existingIndex = typingUsers.value.findIndex(u => u.userId === data.userId)
         const typingUser: TypingUser = {
           userId: data.userId,
@@ -394,7 +401,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
 // Composable for managing read status
 export const useMessageReadStatus = () => {
   const { $socket } = useNuxtApp()
-  const { user } = useAuth()
 
   const markAsRead = (conversationId: string, messageId: string) => {
     $socket.emit('message:read', {

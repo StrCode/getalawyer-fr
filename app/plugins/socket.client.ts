@@ -27,15 +27,15 @@ export default defineNuxtPlugin(() => {
     })
 
     socketInstance.on('connect', () => {
-      console.log('[Socket] Connected:', socketInstance?.id)
+      console.log('[WS] client connected', { socketId: socketInstance?.id, url: apiUrl })
     })
 
     socketInstance.on('disconnect', (reason) => {
-      console.log('[Socket] Disconnected:', reason)
+      console.log('[WS] client disconnected', { reason })
     })
 
     socketInstance.on('connect_error', (error) => {
-      console.error('[Socket] Connection error:', error.message)
+      console.error('[WS] client connect_error', error.message)
     })
 
     return socketInstance
@@ -56,6 +56,7 @@ export default defineNuxtPlugin(() => {
     }
 
     socket.connect()
+    console.log('[WS] connectSocket() called', { url: config.public.apiUrl, hasToken: !!token })
   }
 
   const disconnectSocket = () => {

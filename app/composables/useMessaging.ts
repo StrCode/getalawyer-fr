@@ -17,9 +17,15 @@ export const useMessaging = () => {
     socketListenersInitialized = true
 
     const socket = $socket
+    console.log('[WS] initSocketListeners — global message handlers registered')
 
     // New message received
     socket.on('message:new', (message: Message) => {
+      console.log('[WS] client received message:new', {
+        messageId: message.id,
+        conversationId: message.conversationId,
+        preview: message.content?.slice(0, 50),
+      })
       const queryKey = queryKeys.messaging.conversation(message.conversationId)
       
       // Update conversation messages
@@ -94,6 +100,11 @@ export const useMessaging = () => {
     return useMutation({
       mutationFn: (data: { conversationId: string; content: string; file?: any; replyToId?: string }) => {
         return new Promise<void>((resolve, reject) => {
+          console.log('[WS] client emit message:send', {
+            conversationId: data.conversationId,
+            preview: data.content?.slice(0, 50),
+            connected: $socket.connected,
+          })
           $socket.emit('message:send', data)
           // Resolve immediately - real update comes via socket event
           resolve()
