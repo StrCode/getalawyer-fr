@@ -3,6 +3,7 @@ import { PhChatCircle, PhChatCircleDots, PhCircleNotch } from '@phosphor-icons/v
 import { useMessaging } from '~/composables/useMessaging'
 import type { ConversationInfo, ConversationParticipant } from '~/types/messaging'
 import ConversationThreadPanel from '@/components/messaging/ConversationThreadPanel.vue'
+import { useMessagingStore } from '~/stores/messagingStore'
 
 definePageMeta({ layout: 'dashboard', middleware: 'auth' })
 
@@ -13,7 +14,9 @@ const { $connectSocket } = useNuxtApp()
 
 const currentUserId = computed(() => session.value?.user?.id ?? '')
 
-const { initSocketListeners, useConversations, useConversation } = useMessaging()
+const { initSocketListeners, useConversations, useConversation, useMarkAsRead } = useMessaging()
+const messagingStore = useMessagingStore()
+const { mutate: markConversationAsRead } = useMarkAsRead()
 const {
   data: conversations,
   isPending: isLoadingConversations,
@@ -42,6 +45,17 @@ watch(
   },
   { immediate: true },
 )
+
+watch(selectedConversationId, (conversationId) => {
+  messagingStore.setActiveConversation(conversationId)
+  if (conversationId) {
+    markConversationAsRead(conversationId)
+  }
+}, { immediate: true })
+
+onUnmounted(() => {
+  messagingStore.setActiveConversation(null)
+})
 
 watch(conversations, (list) => {
   if (!list?.length || selectedConversationId.value) return
@@ -151,7 +165,7 @@ function previewText(conversation: ConversationInfo) {
                     {{ otherParticipant(conversation)?.name || 'Conversation' }}
                   </h3>
                   <span
-                    v-if="conversation.unreadCount > 0"
+                    v-if="conversation.unreadCount > 0 && selectedConversationId !== conversation.id"
                     class="inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground"
                   >
                     {{ conversation.unreadCount }}

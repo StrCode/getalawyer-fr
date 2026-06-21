@@ -84,7 +84,7 @@ export interface FileUploadResponse {
 // Socket Event Types
 export interface ServerToClientEvents {
   'message:new': (message: Message) => void
-  'message:status': (data: { messageId: string; status: string; readBy: string }) => void
+  'message:status': (data: { conversationId: string; messageId: string; status: 'sent' | 'delivered' | 'read'; readBy: string }) => void
   'notification:new': (notification: Notification) => void
   'typing:start': (data: { userId: string; userName: string }) => void
   'typing:stop': (data: { userId: string }) => void
@@ -102,6 +102,7 @@ export interface ClientToServerEvents {
     replyToId?: string
   }) => void
   'message:read': (data: { conversationId: string; messageId: string }) => void
+  'message:delivered': (data: { conversationId: string; messageId: string }) => void
   'typing:start': (conversationId: string) => void
   'typing:stop': (conversationId: string) => void
 }

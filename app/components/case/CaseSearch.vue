@@ -1,190 +1,255 @@
 <template>
   <div class="space-y-4">
-    <!-- Global Search Bar -->
-    <UCard>
-      <div class="flex items-center gap-4">
-        <UInput
-          v-model="searchQuery"
-          icon="i-heroicons-magnifying-glass"
-          placeholder="Search cases by title, number, or description..."
-          class="flex-1"
-          size="lg"
-          @keyup.enter="performSearch"
-        />
-        
+    <Card class="rounded-xl">
+      <CardContent class="flex items-center gap-4 pt-6">
+        <div class="relative min-w-0 flex-1">
+          <PhMagnifyingGlass
+            class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
+            v-model="searchQuery"
+            placeholder="Search cases by title, number, or description..."
+            class="h-11 pl-9"
+            @keyup.enter="performSearch"
+          />
+        </div>
+
         <Button
-          icon="i-heroicons-funnel"
           variant="outline"
+          class="gap-2"
           @click="showAdvancedFilters = !showAdvancedFilters"
         >
+          <PhFunnel class="size-4" aria-hidden="true" />
           {{ showAdvancedFilters ? 'Hide' : 'Show' }} Filters
         </Button>
-        
+
         <ButtonBusy
-          @click="performSearch"
           :loading="searching"
+          @click="performSearch"
         >
           Search
         </ButtonBusy>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
 
-    <!-- Advanced Filters -->
-    <UCard v-if="showAdvancedFilters">
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="font-semibold">Advanced Filters</h3>
-          <Button
-            variant="ghost"
-            size="xs"
-            @click="clearAllFilters"
-          >
-            Clear All
-          </Button>
-        </div>
-      </template>
-      
-      <div class="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Status Filter -->
-        <div>
-          <label class="block mb-2 font-medium text-foreground text-sm">Status</label>
-          <USelectMenu
-            v-model="filters.status"
-            :options="statusOptions"
-            placeholder="All Statuses"
-            value-attribute="value"
-            option-attribute="label"
-            multiple
-          />
-        </div>
-        
-        <!-- Priority Filter -->
-        <div>
-          <label class="block mb-2 font-medium text-foreground text-sm">Priority</label>
-          <USelectMenu
-            v-model="filters.priority"
-            :options="priorityOptions"
-            placeholder="All Priorities"
-            value-attribute="value"
-            option-attribute="label"
-            multiple
-          />
-        </div>
-        
-        <!-- Date Range -->
-        <div>
-          <label class="block mb-2 font-medium text-foreground text-sm">Created Date Range</label>
-          <div class="flex gap-2">
-            <UInput
-              v-model="filters.dateFrom"
-              type="date"
-              placeholder="From"
-              size="sm"
-            />
-            <UInput
-              v-model="filters.dateTo"
-              type="date"
-              placeholder="To"
-              size="sm"
-            />
-          </div>
-        </div>
-      </div>
-      
-      <div class="flex justify-end gap-2 mt-4">
-        <Button variant="ghost" @click="clearAllFilters">
-          Clear Filters
-        </Button>
-        <Button @click="applyFilters">
-          Apply Filters
-        </Button>
-      </div>
-    </UCard>
-
-    <!-- Saved Searches -->
-    <UCard v-if="savedSearches.length > 0">
-      <template #header>
-        <h3 class="font-semibold">Saved Searches</h3>
-      </template>
-      
-      <div class="flex flex-wrap gap-2">
+    <Card
+      v-if="showAdvancedFilters"
+      class="rounded-xl"
+    >
+      <CardHeader class="flex flex-row items-center justify-between space-y-0">
+        <CardTitle class="text-base">
+          Advanced Filters
+        </CardTitle>
         <Button
-          v-for="search in savedSearches"
-          :key="search.id"
-          variant="outline"
-          size="sm"
-          @click="loadSavedSearch(search)"
-        >
-          {{ search.name }}
-          <template #trailing>
-            <PhIcon
-              name="i-heroicons-x-mark"
-              class="w-4 h-4"
-              @click.stop="removeSavedSearch(search.id)"
-            />
-          </template>
-        </Button>
-        
-        <Button
-          v-if="canSaveCurrentSearch"
-          icon="i-heroicons-bookmark"
           variant="ghost"
           size="sm"
-          @click="showSaveSearchModal = true"
+          @click="clearAllFilters"
         >
-          Save Current Search
+          Clear All
         </Button>
-      </div>
-    </UCard>
+      </CardHeader>
 
-    <!-- Search Results Summary -->
-    <div v-if="hasSearched" class="flex justify-between items-center text-muted-foreground text-sm">
+      <CardContent class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div class="space-y-2">
+            <Label for="case-search-status">Status</Label>
+            <Select
+              :model-value="filters.status ?? 'all'"
+              @update:model-value="filters.status = $event === 'all' ? undefined : $event as CaseStatus"
+            >
+              <SelectTrigger id="case-search-status">
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  All statuses
+                </SelectItem>
+                <SelectItem
+                  v-for="option in statusOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="case-search-priority">Priority</Label>
+            <Select
+              :model-value="filters.priority ?? 'all'"
+              @update:model-value="filters.priority = $event === 'all' ? undefined : $event as Priority"
+            >
+              <SelectTrigger id="case-search-priority">
+                <SelectValue placeholder="All priorities" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  All priorities
+                </SelectItem>
+                <SelectItem
+                  v-for="option in priorityOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="space-y-2">
+            <Label>Created date range</Label>
+            <div class="flex gap-2">
+              <Input
+                v-model="filters.dateFrom"
+                type="date"
+                aria-label="From date"
+                class="h-9"
+              />
+              <Input
+                v-model="filters.dateTo"
+                type="date"
+                aria-label="To date"
+                class="h-9"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            @click="clearAllFilters"
+          >
+            Clear Filters
+          </Button>
+          <Button @click="applyFilters">
+            Apply Filters
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card
+      v-if="savedSearches.length > 0"
+      class="rounded-xl"
+    >
+      <CardHeader>
+        <CardTitle class="text-base">
+          Saved Searches
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div class="flex flex-wrap gap-2">
+          <Button
+            v-for="search in savedSearches"
+            :key="search.id"
+            variant="outline"
+            size="sm"
+            class="gap-2"
+            @click="loadSavedSearch(search)"
+          >
+            {{ search.name }}
+            <PhX
+              class="size-4"
+              aria-label="Remove saved search"
+              @click.stop="removeSavedSearch(search.id)"
+            />
+          </Button>
+
+          <Button
+            v-if="canSaveCurrentSearch"
+            variant="ghost"
+            size="sm"
+            class="gap-2"
+            @click="showSaveSearchModal = true"
+          >
+            <PhBookmarkSimple class="size-4" aria-hidden="true" />
+            Save Current Search
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+
+    <div
+      v-if="hasSearched"
+      class="flex items-center justify-between text-sm text-muted-foreground"
+    >
       <span>
         Found {{ resultCount }} {{ resultCount === 1 ? 'case' : 'cases' }}
         <span v-if="searchQuery"> matching "{{ searchQuery }}"</span>
       </span>
-      
+
       <Button
         variant="ghost"
-        size="xs"
+        size="sm"
         @click="clearSearch"
       >
         Clear Search
       </Button>
     </div>
 
-    <!-- Save Search Modal -->
-    <UModal v-model:open="showSaveSearchModal">
-      <UCard>
-        <template #header>
-          <h3 class="font-semibold">Save Search</h3>
-        </template>
-        
-        <UInput
+    <Dialog v-model:open="showSaveSearchModal">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Save Search</DialogTitle>
+        </DialogHeader>
+
+        <Input
           v-model="newSearchName"
           placeholder="Enter search name..."
           @keyup.enter="saveCurrentSearch"
         />
-        
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <Button variant="ghost" @click="showSaveSearchModal = false">
-              Cancel
-            </Button>
-            <Button
-              :disabled="!newSearchName.trim()"
-              @click="saveCurrentSearch"
-            >
-              Save
-            </Button>
-          </div>
-        </template>
-      </UCard>
-    </UModal>
+
+        <DialogFooter>
+          <Button
+            variant="ghost"
+            @click="showSaveSearchModal = false"
+          >
+            Cancel
+          </Button>
+          <Button
+            :disabled="!newSearchName.trim()"
+            @click="saveCurrentSearch"
+          >
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  PhBookmarkSimple,
+  PhFunnel,
+  PhMagnifyingGlass,
+  PhX,
+} from '@phosphor-icons/vue'
+import ButtonBusy from '@/components/ButtonBusy.vue'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { CaseFilters, CaseStatus, Priority } from '~/types'
 
 interface SavedSearch {
@@ -199,15 +264,14 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  resultCount: 0
+  resultCount: 0,
 })
 
 const emit = defineEmits<{
-  'search': [query: string, filters: CaseFilters]
-  'clear': []
+  search: [query: string, filters: CaseFilters]
+  clear: []
 }>()
 
-// Reactive data
 const searchQuery = ref('')
 const showAdvancedFilters = ref(false)
 const searching = ref(false)
@@ -219,44 +283,40 @@ const filters = ref<CaseFilters>({
   status: undefined,
   priority: undefined,
   dateFrom: undefined,
-  dateTo: undefined
+  dateTo: undefined,
 })
 
-// Saved searches (stored in localStorage)
 const savedSearches = ref<SavedSearch[]>([])
 
-// Computed properties
 const canSaveCurrentSearch = computed(() => {
   return searchQuery.value.trim() !== '' || Object.values(filters.value).some(v => v !== undefined && v !== '')
 })
 
-// Filter options
 const statusOptions = [
   { label: 'Active', value: 'active' },
   { label: 'Closed', value: 'closed' },
   { label: 'Reopened', value: 'reopened' },
-  { label: 'Archived', value: 'archived' }
+  { label: 'Archived', value: 'archived' },
 ]
 
 const priorityOptions = [
   { label: 'Low', value: 'low' },
   { label: 'Medium', value: 'medium' },
   { label: 'High', value: 'high' },
-  { label: 'Urgent', value: 'urgent' }
+  { label: 'Urgent', value: 'urgent' },
 ]
 
-// Methods
 const performSearch = () => {
   searching.value = true
   hasSearched.value = true
-  
+
   const searchFilters: CaseFilters = {
     ...filters.value,
-    search: searchQuery.value || undefined
+    search: searchQuery.value || undefined,
   }
-  
+
   emit('search', searchQuery.value, searchFilters)
-  
+
   setTimeout(() => {
     searching.value = false
   }, 300)
@@ -272,7 +332,7 @@ const clearAllFilters = () => {
     status: undefined,
     priority: undefined,
     dateFrom: undefined,
-    dateTo: undefined
+    dateTo: undefined,
   }
 }
 
@@ -285,17 +345,17 @@ const clearSearch = () => {
 
 const saveCurrentSearch = () => {
   if (!newSearchName.value.trim()) return
-  
+
   const newSearch: SavedSearch = {
     id: Date.now().toString(),
     name: newSearchName.value,
     query: searchQuery.value,
-    filters: { ...filters.value }
+    filters: { ...filters.value },
   }
-  
+
   savedSearches.value.push(newSearch)
   saveSavedSearchesToStorage()
-  
+
   showSaveSearchModal.value = false
   newSearchName.value = ''
 }
@@ -312,25 +372,25 @@ const removeSavedSearch = (id: string) => {
 }
 
 const saveSavedSearchesToStorage = () => {
-  if (process.client) {
+  if (import.meta.client) {
     localStorage.setItem('case-saved-searches', JSON.stringify(savedSearches.value))
   }
 }
 
 const loadSavedSearchesFromStorage = () => {
-  if (process.client) {
+  if (import.meta.client) {
     const stored = localStorage.getItem('case-saved-searches')
     if (stored) {
       try {
         savedSearches.value = JSON.parse(stored)
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to load saved searches:', error)
       }
     }
   }
 }
 
-// Lifecycle
 onMounted(() => {
   loadSavedSearchesFromStorage()
 })

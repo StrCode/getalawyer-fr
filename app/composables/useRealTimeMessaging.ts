@@ -195,6 +195,15 @@ export const useRealTimeMessaging = (conversationId: string) => {
   }
 
   // Message status updates
+  const markMessageAsDelivered = (messageId: string) => {
+    if (!isConnected.value) return
+
+    $socket.emit('message:delivered', {
+      conversationId,
+      messageId,
+    })
+  }
+
   const markMessageAsRead = (messageId: string) => {
     if (!isConnected.value) return
 
@@ -248,11 +257,9 @@ export const useRealTimeMessaging = (conversationId: string) => {
     // Message events
     $socket.on('message:new', (message: Message) => {
       if (message.conversationId === conversationId) {
-        // Auto-mark as read if message is from another user
         if (message.senderId !== currentUserId.value) {
-          setTimeout(() => {
-            markMessageAsRead(message.id)
-          }, 1000)
+          markMessageAsDelivered(message.id)
+          markMessageAsRead(message.id)
         }
       }
     })

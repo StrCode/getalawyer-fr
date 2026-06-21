@@ -2,14 +2,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { messagingAPI } from '~/lib/api/messaging'
 import { queryKeys } from '~/lib/query-client'
 import { useMessagingStore } from '~/stores/messagingStore'
-import type { Message, Notification } from '~/types/messaging'
+import type { ConversationInfo, Message, Notification } from '~/types/messaging'
 
 let socketListenersInitialized = false
+
+function patchConversationInList(
+  queryClient: ReturnType<typeof useQueryClient>,
+  conversationId: string,
+  patch: Partial<ConversationInfo>,
+) {
+  queryClient.setQueryData(queryKeys.messaging.conversations, (old: ConversationInfo[] | undefined) => {
+    if (!old) return old
+    return old.map((c) => (c.id === conversationId ? { ...c, ...patch } : c))
+  })
+}
 
 export const useMessaging = () => {
   const { $socket } = useNuxtApp()
   const queryClient = useQueryClient()
   const store = useMessagingStore()
+  const { session } = useAuth()
 
   // Initialize socket listeners
   const initSocketListeners = () => {
@@ -31,20 +43,64 @@ export const useMessaging = () => {
       // Update conversation messages
       queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old
+        const existing = (old.messages || []) as Message[]
+        const alreadyHave = existing.some((m) => m.id === message.id)
         return {
           ...old,
-          messages: [...(old.messages || []), message]
+          messages: alreadyHave ? existing : [...existing, message],
         }
       })
 
-      // Update conversations list
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.conversations })
+      const currentUserId = session.value?.user?.id
+      const fromOther = currentUserId && message.senderId !== currentUserId
+      const isActiveConversation = store.activeConversationId === message.conversationId
+
+      const preview = {
+        content: message.content ?? '',
+        fileUrl: message.fileUrl,
+        fileName: message.fileName,
+        createdAt: message.createdAt,
+      }
+
+      if (isActiveConversation && fromOther) {
+        patchConversationInList(queryClient, message.conversationId, {
+          lastMessageAt: message.createdAt,
+          lastMessage: preview,
+          unreadCount: 0,
+        })
+        messagingAPI.markAsRead(message.conversationId).catch(() => {})
+      } else if (fromOther) {
+        const list = queryClient.getQueryData<ConversationInfo[]>(queryKeys.messaging.conversations)
+        const current = list?.find((c) => c.id === message.conversationId)
+        patchConversationInList(queryClient, message.conversationId, {
+          lastMessageAt: message.createdAt,
+          lastMessage: preview,
+          unreadCount: (current?.unreadCount ?? 0) + 1,
+        })
+      } else {
+        patchConversationInList(queryClient, message.conversationId, {
+          lastMessageAt: message.createdAt,
+          lastMessage: preview,
+        })
+      }
     })
 
-    // Message status update
-    socket.on('message:status', ({ conversationId, messageId }) => {
+    socket.on('conversation:joined', ({ conversationId }: { conversationId: string }) => {
+      patchConversationInList(queryClient, conversationId, { unreadCount: 0 })
+    })
+
+    // Message status update (sent → delivered → read ticks for sender)
+    socket.on('message:status', ({ conversationId, messageId, status }) => {
       const queryKey = queryKeys.messaging.conversation(conversationId)
-      queryClient.invalidateQueries({ queryKey })
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old) return old
+        return {
+          ...old,
+          messages: (old.messages || []).map((m: Message) =>
+            m.id === messageId ? { ...m, status } : m,
+          ),
+        }
+      })
     })
 
     // New notification
@@ -135,10 +191,13 @@ export const useMessaging = () => {
   const useMarkAsRead = () => {
     return useMutation({
       mutationFn: (conversationId: string) => messagingAPI.markAsRead(conversationId),
+      onMutate: (conversationId) => {
+        patchConversationInList(queryClient, conversationId, { unreadCount: 0 })
+      },
       onSuccess: (_, conversationId) => {
         queryClient.invalidateQueries({ queryKey: queryKeys.messaging.conversation(conversationId) })
         queryClient.invalidateQueries({ queryKey: queryKeys.messaging.conversations })
-      }
+      },
     })
   }
 

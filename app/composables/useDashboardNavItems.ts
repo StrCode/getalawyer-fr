@@ -39,6 +39,7 @@ export function useDashboardNavItems() {
       return toNavItems(lawyerMainNav, {
         '/dashboard/cases': activeCasesBadge.value,
         '/dashboard/appointments': lawyerPendingAppointmentsBadge.value,
+        '/dashboard/messages': unreadMessagesBadge.value,
       })
     }
 

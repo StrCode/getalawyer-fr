@@ -40,6 +40,7 @@ export const lawyerMainNav: DashboardNavDefinition[] = [
   { label: 'Overview', icon: 'overview', to: '/dashboard', exact: true },
   { label: 'Cases', icon: 'cases', to: '/dashboard/cases' },
   { label: 'Appointments', icon: 'appointments', to: '/dashboard/appointments' },
+  { label: 'Messages', icon: 'messages', to: '/dashboard/messages' },
   { label: 'Consultation Types', icon: 'consultationTypes', to: '/dashboard/consultation-types' },
   { label: 'Availability', icon: 'availability', to: '/dashboard/availability' },
   { label: 'Profile', icon: 'profile', to: '/dashboard/profile' },

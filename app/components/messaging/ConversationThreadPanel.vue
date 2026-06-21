@@ -4,6 +4,7 @@ import { PhCircleNotch, PhPaperPlaneRight } from '@phosphor-icons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
 import type { Message } from '~/types/messaging'
+import MessageReadTicks from '@/components/messaging/MessageReadTicks.vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -27,11 +28,23 @@ const {
 const { mutate: markAsRead } = useMarkAsRead()
 const { mutate: sendMessageMutation, isPending: isSending } = useSendMessage()
 
-const { isConnected } = useRealTimeMessaging(props.conversationId)
+const {
+  isConnected,
+  isUserTyping,
+  currentTypingUsers,
+  handleTyping,
+} = useRealTimeMessaging(props.conversationId)
 
 const messageInput = ref('')
 
 const messages = computed(() => thread.value?.messages ?? [])
+
+const typingLabel = computed(() => {
+  const users = currentTypingUsers.value
+  if (!users.length) return ''
+  if (users.length === 1) return `${users[0].userName} is typing…`
+  return 'Several people are typing…'
+})
 
 onMounted(() => {
   markAsRead(props.conversationId)
@@ -50,7 +63,7 @@ function scrollToBottom() {
 
 watch(messages, () => scrollToBottom(), { deep: true })
 
-async function handleSend() {
+function handleSend() {
   const content = messageInput.value.trim()
   if (!content || isSending.value) return
 
@@ -60,7 +73,6 @@ async function handleSend() {
       content,
     })
     messageInput.value = ''
-    await refetch()
     markAsRead(props.conversationId)
   } catch {
     toast.error('Failed to send message')
@@ -130,24 +142,35 @@ function formatMessageTime(timestamp: string) {
             <p class="whitespace-pre-wrap break-words">
               {{ message.content }}
             </p>
-            <p
-              class="mt-1 text-[10px] opacity-70"
-              :class="isOwnMessage(message) ? 'text-right' : 'text-left'"
+            <div
+              class="mt-1 flex items-center gap-1.5 text-[10px] opacity-70"
+              :class="isOwnMessage(message) ? 'justify-end' : 'justify-start'"
             >
-              {{ formatMessageTime(message.createdAt) }}
-            </p>
+              <span>{{ formatMessageTime(message.createdAt) }}</span>
+              <MessageReadTicks
+                v-if="isOwnMessage(message)"
+                :status="message.status"
+              />
+            </div>
           </div>
         </div>
       </template>
     </div>
 
     <div class="border-t bg-background p-4">
+      <p
+        v-if="isUserTyping && typingLabel"
+        class="mb-2 text-xs text-muted-foreground"
+      >
+        {{ typingLabel }}
+      </p>
       <form class="flex items-end gap-2" @submit.prevent="handleSend">
         <Textarea
           v-model="messageInput"
           rows="1"
           placeholder="Type a message…"
           class="min-h-[44px] resize-none"
+          @input="handleTyping"
           @keydown.enter.exact.prevent="handleSend"
         />
         <Button
