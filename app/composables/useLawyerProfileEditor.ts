@@ -77,6 +77,14 @@ export function useLawyerProfileEditor(options?: {
     })
   })
 
+  const directoryEligibility = computed(
+    () => profileQuery.data.value?.directoryEligibility ?? null
+  )
+
+  const profileStrength = computed(
+    () => profileQuery.data.value?.profileStrength ?? null
+  )
+
   const updateAbout = useMutation({
     mutationFn: (data: UpdateLawyerAboutInput) => lawyerProfileAPI.updateAbout(data),
     onSuccess: invalidate,
@@ -191,6 +199,8 @@ export function useLawyerProfileEditor(options?: {
   return {
     profileQuery,
     completeness,
+    directoryEligibility,
+    profileStrength,
     updateAbout,
     updateOffice,
     replacePracticeAreas,

@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import {
   formatEducationSubtitle,
   formatEducationYears,
   formatExperienceRange,
   formatLicenseDates,
 } from '~/lib/profile-list-format'
-import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
 import {
-  PhArrowSquareOut,
-  PhBriefcase,
-  PhGraduationCap,
-  PhIdentificationCard,
-  PhSparkle,
-  PhUser,
-} from '@phosphor-icons/vue'
+  getAboutPreview,
+  shouldTruncateAbout,
+} from '~/lib/lawyer-public-profile'
+import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
+import { PhArrowSquareOut, PhGraduationCap } from '@phosphor-icons/vue'
 
 defineProps<{
   profile: LawyerPublicProfileSections
 }>()
+
+const aboutExpanded = ref(false)
 
 const hasAbout = (profile: LawyerPublicProfileSections) =>
   Boolean(profile.about.headline?.trim() || profile.about.about?.trim())
@@ -27,10 +28,11 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
 <template>
   <div class="space-y-12">
     <section v-if="hasAbout(profile)">
-      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-        <PhUser class="size-6 text-muted-foreground" />
-        About
-      </h2>
+      <LawyerProfileSectionHeading title="About">
+        <template #icon>
+          <PhUser />
+        </template>
+      </LawyerProfileSectionHeading>
       <div class="rounded-xl border border-border bg-card p-5">
         <p
           v-if="profile.about.headline?.trim()"
@@ -43,21 +45,33 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           class="mt-3 whitespace-pre-line text-base leading-relaxed text-muted-foreground"
           :class="{ 'mt-0': !profile.about.headline?.trim() }"
         >
-          {{ profile.about.about }}
+          {{ getAboutPreview(profile.about.about, aboutExpanded) }}
         </p>
+        <Button
+          v-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && !aboutExpanded"
+          variant="link"
+          class="mt-2 h-auto p-0 text-sm font-medium"
+          @click="aboutExpanded = true"
+        >
+          Show more
+        </Button>
+        <Button
+          v-else-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && aboutExpanded"
+          variant="link"
+          class="mt-2 h-auto p-0 text-sm font-medium"
+          @click="aboutExpanded = false"
+        >
+          Show less
+        </Button>
       </div>
     </section>
 
-    <hr
-      v-if="hasAbout(profile) && profile.experiences.length"
-      class="border-border"
-    >
-
     <section v-if="profile.experiences.length">
-      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-        <PhBriefcase class="size-6 text-muted-foreground" />
-        Experience
-      </h2>
+      <LawyerProfileSectionHeading title="Experience">
+        <template #icon>
+          <PhBriefcase />
+        </template>
+      </LawyerProfileSectionHeading>
       <div class="space-y-4">
         <article
           v-for="item in profile.experiences"
@@ -90,16 +104,12 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </div>
     </section>
 
-    <hr
-      v-if="profile.experiences.length && profile.education.length"
-      class="border-border"
-    >
-
     <section v-if="profile.education.length">
-      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-        <PhGraduationCap class="size-6 text-muted-foreground" />
-        Education
-      </h2>
+      <LawyerProfileSectionHeading title="Education">
+        <template #icon>
+          <PhGraduationCap />
+        </template>
+      </LawyerProfileSectionHeading>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <article
           v-for="item in profile.education"
@@ -138,16 +148,12 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </div>
     </section>
 
-    <hr
-      v-if="profile.education.length && profile.licenses.length"
-      class="border-border"
-    >
-
     <section v-if="profile.licenses.length">
-      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-        <PhIdentificationCard class="size-6 text-muted-foreground" />
-        Licenses & certifications
-      </h2>
+      <LawyerProfileSectionHeading title="Licenses & certifications">
+        <template #icon>
+          <PhIdentificationCard />
+        </template>
+      </LawyerProfileSectionHeading>
       <div class="space-y-4">
         <article
           v-for="item in profile.licenses"
@@ -199,16 +205,12 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </div>
     </section>
 
-    <hr
-      v-if="profile.licenses.length && profile.skills.length"
-      class="border-border"
-    >
-
     <section v-if="profile.skills.length">
-      <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-        <PhSparkle class="size-6 text-muted-foreground" />
-        Skills
-      </h2>
+      <LawyerProfileSectionHeading title="Skills">
+        <template #icon>
+          <PhSparkle />
+        </template>
+      </LawyerProfileSectionHeading>
       <div class="flex flex-wrap gap-2">
         <Badge
           v-for="skill in profile.skills"

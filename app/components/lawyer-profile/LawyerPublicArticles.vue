@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerProfileArticle } from '~/types/lawyer-profile-editor'
 
 defineProps<{
@@ -19,10 +20,11 @@ function formatPublishedDate(value: string | null | undefined): string | null {
 
 <template>
   <section v-if="articles.length">
-    <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground">
-      <PhArticle class="size-5 text-muted-foreground" />
-      Articles
-    </h2>
+    <LawyerProfileSectionHeading title="Articles">
+      <template #icon>
+        <PhArticle />
+      </template>
+    </LawyerProfileSectionHeading>
     <div class="space-y-4">
       <article
         v-for="item in articles"

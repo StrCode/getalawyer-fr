@@ -11,7 +11,9 @@ import ProfileOfficeSection from '@/components/profile/sections/ProfileOfficeSec
 import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSection.vue'
 import ProfilePracticeAreasSection from '@/components/profile/sections/ProfilePracticeAreasSection.vue'
 import ProfileSkillSection from '@/components/profile/sections/ProfileSkillSection.vue'
-import ProfileCompletenessCard from '@/components/profile/ProfileCompletenessCard.vue'
+import LawyerPublishReadinessBanner from '@/components/profile/LawyerPublishReadinessBanner.vue'
+import ProfileStrengthChecklist from '@/components/profile/ProfileStrengthChecklist.vue'
+import LawyerDirectoryEligibilityCard from '@/components/profile/LawyerDirectoryEligibilityCard.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -24,6 +26,12 @@ import {
 } from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
 import { PhArrowSquareOut, PhWarningCircle } from '@phosphor-icons/vue'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -46,6 +54,15 @@ const canEdit = computed(() => {
   return canEditLawyerPublicProfile(onboardingApplicationStatus(onboardingStatus.value))
 })
 
+const isApproved = computed(() => {
+  if (!onboardingStatus.value) return false
+  return onboardingApplicationStatus(onboardingStatus.value) === 'approved'
+})
+
+const isDirectoryVisible = computed(
+  () => directoryEligibility.value?.isDirectoryVisible ?? false,
+)
+
 const { useConsultationTypesList } = useConsultationTypes()
 const { useAvailabilitySchedule } = useAvailability()
 
@@ -62,7 +79,8 @@ const hasAvailability = computed(
 
 const {
   profileQuery,
-  completeness,
+  directoryEligibility,
+  profileStrength,
   updateAbout,
   updateOffice,
   replacePracticeAreas,
@@ -353,23 +371,38 @@ onBeforeUnmount(() => {
         v-if="publicProfileUrl"
         #actions
       >
-        <Button
-          as-child
-          variant="outline"
-          size="sm"
-        >
-          <NuxtLink
-            :to="publicProfileUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="gap-2"
-          >
-            View public profile
-            <PhArrowSquareOut class="size-4" />
-          </NuxtLink>
-        </Button>
+        <TooltipProvider>
+          <Tooltip :disabled="isDirectoryVisible">
+            <TooltipTrigger as-child>
+              <Button
+                as-child
+                variant="outline"
+                size="sm"
+              >
+                <NuxtLink
+                  :to="publicProfileUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="gap-2"
+                >
+                  View public profile
+                  <PhArrowSquareOut class="size-4" />
+                </NuxtLink>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Preview is available, but you are not visible in search yet.
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </template>
     </AppPageHeader>
+
+    <LawyerPublishReadinessBanner
+      v-if="!isLoading && !isError && profile"
+      :eligibility="directoryEligibility"
+      :is-approved="isApproved"
+    />
 
     <LawyerProfileApprovalBanner
       v-if="approvalNotice"
@@ -413,81 +446,104 @@ onBeforeUnmount(() => {
     </Card>
 
     <template v-else-if="profile">
-      <ProfileCompletenessCard :completeness="completeness" />
-
-      <ProfilePhotoSection
-        :name="displayName"
-        :email="session?.user?.email"
-        :image-url="avatarSrc"
-        :uploading="isUploadingAvatar"
-        @upload="onAvatarUpload"
+      <LawyerDirectoryEligibilityCard
+        :eligibility="directoryEligibility"
+        :profile-strength="profileStrength"
       />
 
-      <ProfileAboutSection
-        :about="profile.about"
-        :disabled="!canEdit"
-        :saving="updateAbout.isPending.value"
-        @save="handleSaveAbout"
-      />
+      <ProfileStrengthChecklist :profile-strength="profileStrength" />
 
-      <ProfileOfficeSection
-        :practice-info="profile.practiceInfo"
-        :disabled="!canEdit"
-        :saving="updateOffice.isPending.value"
-        @save="handleSaveOffice"
-      />
+      <div id="photo">
+        <ProfilePhotoSection
+          :name="displayName"
+          :email="session?.user?.email"
+          :image-url="avatarSrc"
+          :uploading="isUploadingAvatar"
+          @upload="onAvatarUpload"
+        />
+      </div>
 
-      <ProfilePracticeAreasSection
-        :practice-areas="profile.practiceAreas"
-        :disabled="!canEdit"
-        :saving="replacePracticeAreas.isPending.value"
-        @save="handleSavePracticeAreas"
-      />
+      <div id="about">
+        <ProfileAboutSection
+          :about="profile.about"
+          :disabled="!canEdit"
+          :saving="updateAbout.isPending.value"
+          @save="handleSaveAbout"
+        />
+      </div>
 
-      <ProfileExperienceSection
-        :items="profile.experiences"
-        :disabled="!canEdit"
-        :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
-        :on-create="createExperienceItem"
-        :on-update="updateExperienceItem"
-        :on-delete="deleteExperienceItem"
-      />
+      <div id="office">
+        <ProfileOfficeSection
+          :practice-info="profile.practiceInfo"
+          :disabled="!canEdit"
+          :saving="updateOffice.isPending.value"
+          @save="handleSaveOffice"
+        />
+      </div>
 
-      <ProfileEducationSection
-        :items="profile.education"
-        :disabled="!canEdit"
-        :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
-        :on-create="createEducationItem"
-        :on-update="updateEducationItem"
-        :on-delete="deleteEducationItem"
-      />
+      <div id="practice-areas">
+        <ProfilePracticeAreasSection
+          :practice-areas="profile.practiceAreas"
+          :disabled="!canEdit"
+          :saving="replacePracticeAreas.isPending.value"
+          @save="handleSavePracticeAreas"
+        />
+      </div>
 
-      <ProfileLicenseSection
-        :items="profile.licenses"
-        :disabled="!canEdit"
-        :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
-        :on-create="createLicenseItem"
-        :on-update="updateLicenseItem"
-        :on-delete="deleteLicenseItem"
-      />
+      <div id="experience">
+        <ProfileExperienceSection
+          :items="profile.experiences"
+          :disabled="!canEdit"
+          :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
+          :on-create="createExperienceItem"
+          :on-update="updateExperienceItem"
+          :on-delete="deleteExperienceItem"
+        />
+      </div>
 
-      <ProfileSkillSection
-        :items="profile.skills"
-        :disabled="!canEdit"
-        :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
-        :on-create="createSkillItem"
-        :on-update="updateSkillItem"
-        :on-delete="deleteSkillItem"
-      />
+      <div id="education">
+        <ProfileEducationSection
+          :items="profile.education"
+          :disabled="!canEdit"
+          :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
+          :on-create="createEducationItem"
+          :on-update="updateEducationItem"
+          :on-delete="deleteEducationItem"
+        />
+      </div>
 
-      <ProfileArticlesSection
-        :items="profile.articles"
-        :disabled="!canEdit"
-        :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
-        :on-create="createArticleItem"
-        :on-update="updateArticleItem"
-        :on-delete="deleteArticleItem"
-      />
+      <div id="licenses">
+        <ProfileLicenseSection
+          :items="profile.licenses"
+          :disabled="!canEdit"
+          :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
+          :on-create="createLicenseItem"
+          :on-update="updateLicenseItem"
+          :on-delete="deleteLicenseItem"
+        />
+      </div>
+
+      <div id="skills">
+        <ProfileSkillSection
+          :items="profile.skills"
+          :disabled="!canEdit"
+          :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
+          :on-create="createSkillItem"
+          :on-update="updateSkillItem"
+          :on-delete="deleteSkillItem"
+        />
+      </div>
+
+      <div id="articles">
+        <ProfileArticlesSection
+          :items="profile.articles"
+          :disabled="!canEdit"
+          :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
+          :on-create="createArticleItem"
+          :on-update="updateArticleItem"
+          :on-delete="deleteArticleItem"
+        />
+      </div>
     </template>
 
     <Card

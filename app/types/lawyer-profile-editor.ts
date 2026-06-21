@@ -1,5 +1,12 @@
 /** Types for GET /api/lawyer/profile (editor) and profile section CRUD */
 
+import type {
+  LawyerDirectoryEligibility,
+  LawyerProfileStrengthSummary,
+} from '~/types/lawyer-directory-eligibility'
+
+export type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~/types/lawyer-directory-eligibility'
+
 export interface LawyerProfileAbout {
   headline: string | null
   about: string | null
@@ -98,6 +105,8 @@ export interface LawyerProfileEditorData {
   articles: LawyerProfileArticle[]
   practiceAreas: LawyerProfilePracticeArea[]
   practiceInfo: LawyerProfilePracticeInfo | null
+  directoryEligibility?: LawyerDirectoryEligibility
+  profileStrength?: LawyerProfileStrengthSummary
 }
 
 export interface UpdateLawyerAboutInput {

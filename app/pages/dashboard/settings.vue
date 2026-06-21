@@ -1,7 +1,17 @@
 <template>
   <div class="space-y-6">
+    <template v-if="isLawyer">
+      <AppPageHeader
+        title="Settings"
+        description="Manage your practice setup, billing, and public profile."
+        sticky
+      />
+
+      <LawyerSettingsHub />
+    </template>
+
     <Card
-      v-if="!isClient"
+      v-else-if="!isClient"
       class="border-dashed"
     >
       <CardContent class="py-12 text-center text-sm text-muted-foreground">
@@ -128,6 +138,7 @@ import SettingsLegalPreferencesSection from '@/components/settings/sections/Sett
 import SettingsNotificationsSection from '@/components/settings/sections/SettingsNotificationsSection.vue'
 import SettingsPrivacySection from '@/components/settings/sections/SettingsPrivacySection.vue'
 import SettingsSavedLawyersSection from '@/components/settings/sections/SettingsSavedLawyersSection.vue'
+import LawyerSettingsHub from '@/components/settings/LawyerSettingsHub.vue'
 import { SETTINGS_NAV, isSettingsSectionId } from '@/components/settings/settings-nav'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -158,6 +169,7 @@ const route = useRoute()
 const router = useRouter()
 const { session } = useAuth()
 const isClient = computed(() => session.value?.user.userType === 'client')
+const isLawyer = computed(() => session.value?.user.userType === 'lawyer')
 
 const draft = reactive(createDefaultAccountSettingsDraft())
 const snapshot = ref(JSON.stringify(draft))

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "totalWeight": 130,
+  "strongThresholdPercent": 80,
+  "strongThresholdWeight": 104,
+  "checks": [
+    { "id": "photo", "tier": 1, "weight": 10 },
+    { "id": "headline", "tier": 1, "weight": 10 },
+    { "id": "practiceAreas", "tier": 1, "weight": 15 },
+    { "id": "office", "tier": 1, "weight": 10 },
+    { "id": "consultationType", "tier": 1, "weight": 15 },
+    { "id": "availability", "tier": 1, "weight": 10 },
+    { "id": "aboutBio", "tier": 2, "weight": 10 },
+    { "id": "experience", "tier": 2, "weight": 10 },
+    { "id": "education", "tier": 2, "weight": 10 },
+    { "id": "firm", "tier": 2, "weight": 5 },
+    { "id": "skills", "tier": 3, "weight": 10 },
+    { "id": "licenses", "tier": 3, "weight": 10 },
+    { "id": "articles", "tier": 3, "weight": 5 }
+  ]
+}
