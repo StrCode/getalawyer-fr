@@ -424,7 +424,7 @@
       </DialogContent>
     </Dialog>
 
-    <EngagementModal
+    <BookingEngagementModal
       v-if="booking"
       v-model:open="isEngagementModalOpen"
       :booking="booking"

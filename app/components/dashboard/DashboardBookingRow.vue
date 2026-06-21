@@ -19,6 +19,11 @@ const emit = defineEmits<{
 
 const { bookingStatusBadge, formatRelativeSchedule, formatStatusLabel } = useBookingDisplay()
 
+const avatarSrc = computed(() => {
+  const src = props.personImage
+  return typeof src === 'string' && src.length > 0 ? src : null
+})
+
 const initials = computed(() => {
   const parts = props.personName.trim().split(/\s+/)
   if (parts.length >= 2) return `${parts[0]![0]}${parts[1]![0]}`.toUpperCase()
@@ -35,7 +40,7 @@ const initials = computed(() => {
         @click="emit('click')"
       >
         <Avatar class="size-11 shrink-0">
-          <AvatarImage :src="personImage ?? undefined" :alt="personName" />
+          <AvatarImage v-if="avatarSrc" :src="avatarSrc" :alt="personName" />
           <AvatarFallback class="bg-primary/10 text-primary text-sm">
             {{ initials }}
           </AvatarFallback>

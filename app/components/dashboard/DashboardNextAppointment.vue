@@ -21,7 +21,14 @@ const props = defineProps<{
 
 const { bookingStatusBadge, formatRelativeSchedule, formatStatusLabel } = useBookingDisplay()
 
-const displayName = computed(() => props.personName ?? props.booking?.lawyer?.name ?? 'Lawyer')
+const displayName = computed(
+  () => props.personName ?? props.booking?.client?.name ?? props.booking?.lawyer?.name ?? 'Participant',
+)
+
+const avatarSrc = computed(() => {
+  const src = props.personImage ?? props.booking?.lawyer?.profilePicture
+  return typeof src === 'string' && src.length > 0 ? src : null
+})
 
 const initials = computed(() => {
   const name = displayName.value
@@ -45,7 +52,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="flex items-start gap-4 min-w-0">
           <Avatar class="size-14 shrink-0 ring-2 ring-card">
-            <AvatarImage :src="personImage ?? booking.lawyer?.profilePicture" :alt="displayName" />
+            <AvatarImage v-if="avatarSrc" :src="avatarSrc" :alt="displayName" />
             <AvatarFallback class="bg-primary text-primary-foreground text-lg">
               {{ initials }}
             </AvatarFallback>

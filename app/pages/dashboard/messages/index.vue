@@ -13,7 +13,7 @@ const { $connectSocket } = useNuxtApp()
 
 const currentUserId = computed(() => session.value?.user?.id ?? '')
 
-const { initSocketListeners, useConversations } = useMessaging()
+const { initSocketListeners, useConversations, useConversation } = useMessaging()
 const {
   data: conversations,
   isPending: isLoadingConversations,
@@ -22,6 +22,16 @@ const {
 } = useConversations()
 
 const selectedConversationId = ref<string | null>(null)
+
+const selectedConversation = computed(() =>
+  conversations.value?.find((c) => c.id === selectedConversationId.value),
+)
+
+const selectedConversationIdRef = computed(() => selectedConversationId.value)
+const {
+  data: selectedThread,
+  isPending: isLoadingThread,
+} = useConversation(selectedConversationIdRef)
 
 watch(
   () => route.query.conversation,
@@ -43,18 +53,29 @@ onMounted(() => {
   initSocketListeners()
 })
 
-function otherParticipant(conversation: ConversationInfo): ConversationParticipant | undefined {
+function otherParticipant(conversation: ConversationInfo | undefined): ConversationParticipant | undefined {
+  if (!conversation?.participants) return undefined
   return conversation.participants.find((p) => p.userId !== currentUserId.value)
 }
+
+const headerParticipantName = computed(() => {
+  const fromList = otherParticipant(selectedConversation.value)
+  if (fromList?.name) return fromList.name
+
+  const threadParticipants = selectedThread.value?.participants
+  if (threadParticipants) {
+    const fromThread = threadParticipants.find((p) => p.userId !== currentUserId.value)
+    if (fromThread?.name) return fromThread.name
+  }
+
+  if (isLoadingConversations.value || isLoadingThread.value) return null
+  return 'Conversation'
+})
 
 function selectConversation(conversationId: string) {
   selectedConversationId.value = conversationId
   router.push({ query: { conversation: conversationId } })
 }
-
-const selectedConversation = computed(() =>
-  conversations.value?.find((c) => c.id === selectedConversationId.value),
-)
 
 function formatTime(timestamp: string | null | undefined) {
   if (!timestamp) return ''
@@ -163,7 +184,7 @@ function previewText(conversation: ConversationInfo) {
       <div v-else class="flex h-full min-h-0 flex-col">
         <header class="border-b bg-background px-4 py-3">
           <h3 class="font-semibold text-foreground">
-            {{ otherParticipant(selectedConversation!)?.name || 'Conversation' }}
+            {{ headerParticipantName ?? 'Loading…' }}
           </h3>
           <p class="text-xs text-muted-foreground">
             In-app messaging — contact details stay private

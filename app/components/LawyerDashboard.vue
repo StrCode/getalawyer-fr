@@ -167,8 +167,8 @@ function confirmDecline() {
     <template v-if="!isLoadingBookings">
       <DashboardNextAppointment
         :booking="nextBooking"
-        :person-name="nextBooking?.client?.name"
-        :consultation-name="nextBooking?.consultationType?.name"
+        :person-name="nextBooking?.client?.name ?? 'Client'"
+        :consultation-name="nextBooking?.consultationType?.name ?? 'Consultation'"
         :detail-path="nextBooking ? `/dashboard/appointments/${nextBooking.id}` : undefined"
         empty-title="No upcoming appointments"
         empty-description="Make sure your profile is complete and your availability is set to start receiving bookings."
