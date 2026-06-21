@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
 import { meetingTypeIcon } from '@/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types/booking'
 import { PhCalendarBlank, PhCaretRight, PhClock } from '@phosphor-icons/vue'
@@ -26,47 +27,59 @@ const initials = computed(() => {
 </script>
 
 <template>
-  <button
-    type="button"
-    class="group flex items-start gap-4 hover:border-primary/30 hover:shadow-sm p-4 border border-border rounded-xl w-full text-left bg-card transition-all"
-    @click="emit('click')"
-  >
-    <Avatar class="size-11 shrink-0">
-      <AvatarImage :src="personImage ?? undefined" :alt="personName" />
-      <AvatarFallback class="bg-primary/10 text-primary text-sm">
-        {{ initials }}
-      </AvatarFallback>
-    </Avatar>
+  <Card class="group py-0 shadow-xs transition-colors hover:border-primary/30">
+    <CardContent class="flex items-start gap-4 p-4">
+      <button
+        type="button"
+        class="flex min-w-0 flex-1 items-start gap-4 text-left cursor-pointer"
+        @click="emit('click')"
+      >
+        <Avatar class="size-11 shrink-0">
+          <AvatarImage :src="personImage ?? undefined" :alt="personName" />
+          <AvatarFallback class="bg-primary/10 text-primary text-sm">
+            {{ initials }}
+          </AvatarFallback>
+        </Avatar>
 
-    <div class="flex-1 min-w-0">
-      <div class="flex flex-wrap items-center gap-2 mb-1">
-        <Badge v-bind="bookingStatusBadge(booking.status)">
-          {{ formatStatusLabel(booking.status) }}
-        </Badge>
-        <span v-if="booking.bookingReference" class="text-muted-foreground text-xs">
-          {{ booking.bookingReference }}
-        </span>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <Badge v-bind="bookingStatusBadge(booking.status)">
+              {{ formatStatusLabel(booking.status) }}
+            </Badge>
+            <span v-if="booking.bookingReference" class="text-muted-foreground text-xs">
+              {{ booking.bookingReference }}
+            </span>
+          </div>
+
+          <h3 class="font-semibold text-foreground text-base">{{ personName }}</h3>
+          <p v-if="subtitle" class="mb-2 text-muted-foreground text-sm">{{ subtitle }}</p>
+
+          <div class="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
+            <span class="flex items-center gap-1.5">
+              <PhCalendarBlank class="size-3.5" />
+              {{ formatRelativeSchedule(booking) }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <PhClock class="size-3.5" />
+              {{ booking.scheduledStartTime.slice(0, 5) }}
+            </span>
+            <span class="flex items-center gap-1.5 capitalize">
+              <component :is="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
+              {{ booking.meetingType.replace('_', ' ') }}
+            </span>
+          </div>
+        </div>
+
+        <PhCaretRight class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
+      </button>
+
+      <div
+        v-if="$slots.actions"
+        class="flex shrink-0 flex-col gap-2"
+        @click.stop
+      >
+        <slot name="actions" />
       </div>
-
-      <h3 class="font-semibold text-foreground text-base">{{ personName }}</h3>
-      <p v-if="subtitle" class="mb-2 text-muted-foreground text-base">{{ subtitle }}</p>
-
-      <div class="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
-        <span class="flex items-center gap-1.5">
-          <PhCalendarBlank class="size-3.5" />
-          {{ formatRelativeSchedule(booking) }}
-        </span>
-        <span class="flex items-center gap-1.5">
-          <PhClock class="size-3.5" />
-          {{ booking.scheduledStartTime.slice(0, 5) }}
-        </span>
-        <span class="flex items-center gap-1.5 capitalize">
-          <component :is="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
-          {{ booking.meetingType.replace('_', ' ') }}
-        </span>
-      </div>
-    </div>
-
-    <PhCaretRight class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
-  </button>
+    </CardContent>
+  </Card>
 </template>

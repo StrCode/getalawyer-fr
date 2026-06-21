@@ -4,12 +4,14 @@ import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
 import type { DashboardQuickLink } from '@/components/dashboard/DashboardQuickLinks.vue'
+import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeader.vue'
 import DashboardConsultationTypesCard from '@/components/dashboard/ConsultationTypesCard.vue'
 import DashboardAvailabilityCard from '@/components/dashboard/AvailabilityCard.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -30,8 +32,6 @@ import {
   PhFileText,
   PhUserCircle,
 } from '@phosphor-icons/vue'
-
-const BRAND_GREEN = '#1F4D2C'
 
 const { session } = useAuth()
 const router = useRouter()
@@ -155,7 +155,7 @@ function confirmDecline() {
       description="Manage your consultations and grow your practice"
     >
       <template #actions>
-        <Button as-child variant="outline">
+        <Button as-child variant="outline" class="cursor-pointer">
           <NuxtLink to="/dashboard/profile" class="gap-2">
             <PhUserCircle class="size-4" />
             View Profile
@@ -163,8 +163,6 @@ function confirmDecline() {
         </Button>
       </template>
     </AppPageHeader>
-
-    <DashboardQuickLinks title="Quick actions" :links="quickLinks" />
 
     <template v-if="!isLoadingBookings">
       <DashboardNextAppointment
@@ -185,10 +183,10 @@ function confirmDecline() {
         description="Your consultation requests will appear here. Make sure your profile is complete and your availability is set."
       >
         <template #actions>
-          <Button as-child>
+          <Button as-child class="cursor-pointer">
             <NuxtLink to="/dashboard/profile">Complete Profile</NuxtLink>
           </Button>
-          <Button as-child variant="outline">
+          <Button as-child variant="outline" class="cursor-pointer">
             <NuxtLink to="/dashboard/availability">Set Availability</NuxtLink>
           </Button>
         </template>
@@ -204,58 +202,52 @@ function confirmDecline() {
               label="Active Bookings"
               :value="stats.active"
               :icon="PhCalendarDots"
-              :color="BRAND_GREEN"
               :subtitle="stats.active === 0 ? 'No active bookings' : 'In progress'"
             />
             <StatCard
               label="Pending Requests"
               :value="stats.pending"
               :icon="PhClock"
-              color="#b45309"
               :subtitle="stats.pending === 0 ? 'No pending requests' : 'Awaiting response'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
               :icon="PhCheckCircle"
-              :color="BRAND_GREEN"
               subtitle="This month"
             />
             <StatCard
               label="Revenue"
               value="₦0"
               :icon="PhCurrencyEur"
-              color="#2D6B3E"
               subtitle="This month"
             />
           </div>
 
           <section v-if="recentBookings.length > 0" class="space-y-3">
-            <div class="flex justify-between items-center">
-              <h2 class="font-semibold text-foreground text-lg">Recent Consultations</h2>
-              <Button as-child variant="ghost" size="sm">
-                <NuxtLink to="/dashboard/appointments">View all</NuxtLink>
-              </Button>
-            </div>
+            <DashboardSectionHeader title="Recent Consultations">
+              <template #actions>
+                <Button as-child variant="ghost" size="sm" class="cursor-pointer">
+                  <NuxtLink to="/dashboard/appointments">View all</NuxtLink>
+                </Button>
+              </template>
+            </DashboardSectionHeader>
 
-            <div
+            <DashboardBookingRow
               v-for="booking in recentBookings"
               :key="booking.id"
-              class="relative"
+              :booking="booking"
+              :person-name="booking.client?.name ?? 'Client'"
+              :subtitle="booking.consultationType?.name"
+              @click="navigateTo(`/dashboard/appointments/${booking.id}`)"
             >
-              <DashboardBookingRow
-                :booking="booking"
-                :person-name="booking.client?.name ?? 'Client'"
-                :subtitle="booking.consultationType?.name"
-                @click="navigateTo(`/dashboard/appointments/${booking.id}`)"
-              />
-              <div
+              <template
                 v-if="booking.status === 'pending'"
-                class="top-4 right-14 absolute flex flex-col gap-2"
-                @click.stop
+                #actions
               >
                 <Button
                   size="sm"
+                  class="cursor-pointer"
                   :disabled="isConfirming && confirmingBookingId === booking.id"
                   @click="handleConfirm(booking.id)"
                 >
@@ -264,34 +256,45 @@ function confirmDecline() {
                 <Button
                   size="sm"
                   variant="ghost"
+                  class="cursor-pointer"
                   @click="handleDecline(booking.id)"
                 >
                   Decline
                 </Button>
-              </div>
-            </div>
+              </template>
+            </DashboardBookingRow>
           </section>
 
           <div class="gap-4 grid grid-cols-1 lg:grid-cols-2">
-            <section class="p-5 border border-border rounded-xl bg-card">
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-foreground text-base">Consultation Types</h2>
-                <Button as-child variant="ghost" size="sm">
+            <Card class="py-0 shadow-xs">
+              <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4">
+                <CardTitle class="text-base">
+                  Consultation Types
+                </CardTitle>
+                <Button as-child variant="ghost" size="sm" class="cursor-pointer">
                   <NuxtLink to="/dashboard/consultation-types">Manage</NuxtLink>
                 </Button>
-              </div>
-              <DashboardConsultationTypesCard />
-            </section>
-            <section class="p-5 border border-border rounded-xl bg-card">
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-foreground text-base">Availability</h2>
-                <Button as-child variant="ghost" size="sm">
+              </CardHeader>
+              <CardContent class="p-5">
+                <DashboardConsultationTypesCard />
+              </CardContent>
+            </Card>
+            <Card class="py-0 shadow-xs">
+              <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4">
+                <CardTitle class="text-base">
+                  Availability
+                </CardTitle>
+                <Button as-child variant="ghost" size="sm" class="cursor-pointer">
                   <NuxtLink to="/dashboard/availability">Update</NuxtLink>
                 </Button>
-              </div>
-              <DashboardAvailabilityCard />
-            </section>
+              </CardHeader>
+              <CardContent class="p-5">
+                <DashboardAvailabilityCard />
+              </CardContent>
+            </Card>
           </div>
+
+          <DashboardQuickLinks title="Quick actions" :links="quickLinks" />
         </div>
 
         <DashboardAgendaRail
@@ -327,6 +330,7 @@ function confirmDecline() {
         <DialogFooter>
           <Button
             variant="ghost"
+            class="cursor-pointer"
             @click="isCancelModalOpen = false"
           >
             Nevermind

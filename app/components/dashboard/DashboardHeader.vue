@@ -1,16 +1,8 @@
 <template>
   <header
-    class="flex h-14 shrink-0 items-center border-b border-border/60 bg-background md:h-16"
+    class="flex h-14 shrink-0 items-center border-b border-border/60 bg-card md:h-16"
   >
     <div class="mx-auto flex w-full max-w-[1400px] min-w-0 flex-1 items-center gap-2 px-6 sm:px-8 md:gap-3 lg:px-10">
-      <SidebarTrigger
-        class="-ml-1 shrink-0"
-        aria-label="Toggle sidebar"
-      />
-      <Separator
-        orientation="vertical"
-        class="h-4 shrink-0"
-      />
       <Breadcrumb class="min-w-0 md:hidden">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -56,8 +48,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 
 const { items } = useDashboardBreadcrumb()
 

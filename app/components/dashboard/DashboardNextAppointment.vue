@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
 import { meetingTypeIcon } from '@/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types/booking'
 import { PhArrowRight, PhCalendarBlank } from '@phosphor-icons/vue'
@@ -33,65 +34,69 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
 </script>
 
 <template>
-  <section
+  <Card
     v-if="booking"
-    class="rounded-xl border border-border bg-card p-6"
+    class="border-primary/15 bg-primary/5 py-0 shadow-xs"
   >
-    <p class="mb-3 font-medium text-primary text-xs uppercase tracking-wide">
-      Next appointment
-    </p>
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="flex items-start gap-4 min-w-0">
-        <Avatar class="size-14 shrink-0 ring-2 ring-white">
-          <AvatarImage :src="personImage ?? booking.lawyer?.profilePicture" :alt="displayName" />
-          <AvatarFallback class="bg-primary text-primary-foreground text-lg">
-            {{ initials }}
-          </AvatarFallback>
-        </Avatar>
-        <div class="min-w-0">
-          <Badge v-bind="bookingStatusBadge(booking.status)" class="mb-2">
-            {{ formatStatusLabel(booking.status) }}
-          </Badge>
-          <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
-            {{ displayName }}
-          </h2>
-          <p class="mt-0.5 text-muted-foreground text-sm">
-            {{ consultationName ?? booking.consultationType?.name ?? 'Consultation' }}
-          </p>
-          <p class="flex items-center gap-1.5 mt-3 text-muted-foreground text-sm">
-            <PhCalendarBlank class="size-4 shrink-0" />
-            {{ formatRelativeSchedule(booking) }}
-            <span class="text-border">·</span>
-            <component :is="meetingTypeIcon(booking.meetingType)" class="size-4 shrink-0" />
-            <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
-          </p>
+    <CardContent class="p-6">
+      <p class="mb-3 font-medium text-primary text-xs uppercase tracking-wide">
+        Next appointment
+      </p>
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="flex items-start gap-4 min-w-0">
+          <Avatar class="size-14 shrink-0 ring-2 ring-card">
+            <AvatarImage :src="personImage ?? booking.lawyer?.profilePicture" :alt="displayName" />
+            <AvatarFallback class="bg-primary text-primary-foreground text-lg">
+              {{ initials }}
+            </AvatarFallback>
+          </Avatar>
+          <div class="min-w-0">
+            <Badge v-bind="bookingStatusBadge(booking.status)" class="mb-2">
+              {{ formatStatusLabel(booking.status) }}
+            </Badge>
+            <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
+              {{ displayName }}
+            </h2>
+            <p class="mt-0.5 text-muted-foreground text-sm">
+              {{ consultationName ?? booking.consultationType?.name ?? 'Consultation' }}
+            </p>
+            <p class="flex items-center gap-1.5 mt-3 text-muted-foreground text-sm">
+              <PhCalendarBlank class="size-4 shrink-0" />
+              {{ formatRelativeSchedule(booking) }}
+              <span class="text-border">·</span>
+              <component :is="meetingTypeIcon(booking.meetingType)" class="size-4 shrink-0" />
+              <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
+            </p>
+          </div>
         </div>
+        <Button as-child class="shrink-0 cursor-pointer">
+          <NuxtLink :to="path" class="gap-1.5">
+            View details
+            <PhArrowRight class="size-4" />
+          </NuxtLink>
+        </Button>
       </div>
-      <Button as-child class="shrink-0">
-        <NuxtLink :to="path" class="gap-1.5">
-          View details
-          <PhArrowRight class="size-4" />
+    </CardContent>
+  </Card>
+
+  <Card
+    v-else
+    class="border-dashed py-0 shadow-xs"
+  >
+    <CardContent class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
+          {{ emptyTitle ?? 'No upcoming appointments' }}
+        </h2>
+        <p class="mt-1 max-w-md text-muted-foreground text-sm">
+          {{ emptyDescription ?? 'Find a lawyer and book your first consultation online.' }}
+        </p>
+      </div>
+      <Button as-child class="cursor-pointer">
+        <NuxtLink :to="emptyCtaTo ?? '/find-lawyers'">
+          {{ emptyCtaLabel ?? 'Find a Lawyer' }}
         </NuxtLink>
       </Button>
-    </div>
-  </section>
-
-  <section
-    v-else
-    class="flex flex-col gap-4 rounded-xl border border-dashed border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between"
-  >
-    <div>
-      <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
-        {{ emptyTitle ?? 'No upcoming appointments' }}
-      </h2>
-      <p class="mt-1 max-w-md text-muted-foreground text-base">
-        {{ emptyDescription ?? 'Find a lawyer and book your first consultation online.' }}
-      </p>
-    </div>
-    <Button as-child>
-      <NuxtLink :to="emptyCtaTo ?? '/find-lawyers'">
-        {{ emptyCtaLabel ?? 'Find a Lawyer' }}
-      </NuxtLink>
-    </Button>
-  </section>
+    </CardContent>
+  </Card>
 </template>

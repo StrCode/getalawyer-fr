@@ -4,6 +4,7 @@ import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
 import type { DashboardQuickLink } from '@/components/dashboard/DashboardQuickLinks.vue'
+import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
 import { Button } from '@/components/ui/button'
@@ -16,8 +17,6 @@ import {
   PhScales,
   PhCircleNotch,
 } from '@phosphor-icons/vue'
-
-const BRAND_GREEN = '#1F4D2C'
 
 const { session } = useAuth()
 const { useClientBookings } = useBookings()
@@ -73,7 +72,7 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
       description="Here's what's happening with your legal consultations"
     >
       <template #actions>
-        <Button as-child>
+        <Button as-child class="cursor-pointer">
           <NuxtLink to="/find-lawyers" class="gap-2">
             <PhMagnifyingGlass class="size-4" />
             Find a Lawyer
@@ -96,13 +95,13 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
         description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
       >
         <template #actions>
-          <Button as-child>
+          <Button as-child class="cursor-pointer">
             <NuxtLink to="/find-lawyers" class="gap-2">
               <PhMagnifyingGlass class="size-4" />
               Browse Lawyers
             </NuxtLink>
           </Button>
-          <Button as-child variant="outline">
+          <Button as-child variant="outline" class="cursor-pointer">
             <NuxtLink to="/practice-areas" class="gap-2">
               <PhScales class="size-4" />
               View Practice Areas
@@ -121,39 +120,36 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
               label="Total Bookings"
               :value="stats.total"
               :icon="PhCalendarDots"
-              :color="BRAND_GREEN"
               :subtitle="stats.total === 0 ? 'No bookings yet' : 'All time'"
             />
             <StatCard
               label="Active Consultations"
               :value="stats.confirmed"
               :icon="PhClock"
-              color="#2D6B3E"
               :subtitle="stats.confirmed === 0 ? 'No active cases' : 'In progress'"
             />
             <StatCard
               label="Upcoming"
               :value="stats.pending"
               :icon="PhCalendarDots"
-              color="#b45309"
               :subtitle="stats.pending === 0 ? 'No upcoming' : 'Scheduled'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
               :icon="PhCheckCircle"
-              :color="BRAND_GREEN"
               :subtitle="stats.completed === 0 ? 'None yet' : 'Finished'"
             />
           </div>
 
           <section v-if="recentBookings.length > 0" class="space-y-3">
-            <div class="flex justify-between items-center">
-              <h2 class="font-semibold text-foreground text-lg">Recent Consultations</h2>
-              <Button as-child variant="ghost" size="sm">
-                <NuxtLink to="/dashboard/bookings">View all</NuxtLink>
-              </Button>
-            </div>
+            <DashboardSectionHeader title="Recent Consultations">
+              <template #actions>
+                <Button as-child variant="ghost" size="sm" class="cursor-pointer">
+                  <NuxtLink to="/dashboard/bookings">View all</NuxtLink>
+                </Button>
+              </template>
+            </DashboardSectionHeader>
             <DashboardBookingRow
               v-for="booking in recentBookings"
               :key="booking.id"

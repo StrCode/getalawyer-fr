@@ -68,7 +68,6 @@ export default defineNuxtConfig({
       ]
     },
     families: [
-      // ── Brand sans-serif (Geist on Google Fonts) ───────────
       {
         name: 'Geist',
         provider: 'google',
@@ -78,7 +77,10 @@ export default defineNuxtConfig({
       },
       {
         name: 'Fraunces',
-        provider: 'none',  // stop nuxt/fonts touching this entirely
+        provider: 'google',
+        weights: [400, 500, 600, 700],
+        styles: ['normal', 'italic'],
+        subsets: ['latin'],
       },
     ]
   },

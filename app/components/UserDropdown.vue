@@ -4,10 +4,10 @@
       <Button
         v-if="variant === 'sidebar'"
         variant="ghost"
-        class="h-auto w-full justify-start gap-2.5 rounded-lg px-2 py-2 hover:bg-background/60 data-[state=open]:bg-background"
+        class="h-auto w-full cursor-pointer justify-start gap-2.5 rounded-lg px-2 py-2 text-sidebar-foreground hover:bg-white/70 hover:text-sidebar-foreground data-[state=open]:bg-white/80"
         :class="{ 'size-10 justify-center px-0': collapsed }"
       >
-        <Avatar class="size-8 shrink-0" :class="{ 'size-7': collapsed }">
+        <Avatar class="size-8 shrink-0 ring-2 ring-white/80" :class="{ 'size-7': collapsed }">
           <AvatarImage :src="userData.avatar" :alt="userData.name" />
           <AvatarFallback class="bg-primary text-xs text-primary-foreground">
             {{ userInitials }}
@@ -15,14 +15,14 @@
         </Avatar>
         <template v-if="!collapsed">
           <div class="min-w-0 flex-1 text-left">
-            <div class="truncate text-sm font-medium text-foreground">
+            <div class="truncate text-[13px] font-semibold text-foreground">
               {{ userData.name }}
             </div>
-            <div class="truncate text-xs text-muted-foreground">
+            <div class="truncate text-[11px] text-muted-foreground">
               {{ userData.role }}
             </div>
           </div>
-          <PhCaretRight class="ms-auto size-4 shrink-0 text-muted-foreground" />
+          <PhCaretUpDown class="ms-auto size-4 shrink-0 text-muted-foreground/70" />
         </template>
       </Button>
       <Button
@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { PhCaretRight, PhGearSix, PhSignOut, PhSquaresFour, PhUserCircle } from '@phosphor-icons/vue'
+import { PhCaretUpDown, PhGearSix, PhSignOut, PhSquaresFour, PhUserCircle } from '@phosphor-icons/vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

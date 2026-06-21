@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { Card, CardContent } from '@/components/ui/card'
 import { PhCaretRight } from '@phosphor-icons/vue'
 
 export interface DashboardQuickLink {
@@ -17,26 +18,34 @@ defineProps<{
 
 <template>
   <section>
-    <h2 v-if="title" class="mb-3 font-semibold text-foreground text-base">
-      {{ title }}
-    </h2>
-    <div class="gap-2 grid grid-cols-1 sm:grid-cols-2">
+    <DashboardSectionHeader
+      v-if="title"
+      :title="title"
+    />
+    <div
+      class="gap-2 grid grid-cols-1 sm:grid-cols-2"
+      :class="title ? 'mt-3' : ''"
+    >
       <NuxtLink
         v-for="link in links"
         :key="link.to"
         :to="link.to"
-        class="group flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 transition-colors hover:border-primary/25 hover:bg-background"
+        class="group block"
       >
-        <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <component :is="link.icon" class="size-4" weight="duotone" />
-        </span>
-        <span class="flex-1 min-w-0">
-          <span class="block font-medium text-foreground text-base">{{ link.label }}</span>
-          <span v-if="link.description" class="block text-muted-foreground text-sm truncate">
-            {{ link.description }}
-          </span>
-        </span>
-        <PhCaretRight class="size-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
+        <Card class="h-full py-0 shadow-xs transition-colors hover:border-primary/25 hover:bg-muted/30">
+          <CardContent class="flex items-center gap-3 p-3">
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <component :is="link.icon" class="size-4" weight="duotone" />
+            </span>
+            <span class="flex-1 min-w-0">
+              <span class="block font-medium text-foreground text-sm">{{ link.label }}</span>
+              <span v-if="link.description" class="block text-muted-foreground text-xs truncate">
+                {{ link.description }}
+              </span>
+            </span>
+            <PhCaretRight class="size-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
+          </CardContent>
+        </Card>
       </NuxtLink>
     </div>
   </section>

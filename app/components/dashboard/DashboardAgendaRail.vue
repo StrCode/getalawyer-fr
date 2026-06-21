@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Booking } from '~/types/booking'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { PhCalendarCheck, PhCalendarX } from '@phosphor-icons/vue'
 
 const props = withDefaults(defineProps<{
@@ -18,51 +19,57 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 </script>
 
 <template>
-  <aside class="flex flex-col gap-4 bg-card p-5 border border-border rounded-xl h-fit">
-    <div>
-      <h2 class="font-semibold text-foreground text-base">Upcoming</h2>
-      <p class="mt-0.5 text-muted-foreground text-sm">
+  <Card class="sticky top-6 h-fit py-0 shadow-xs">
+    <CardHeader class="gap-1 px-5 pt-5 pb-0">
+      <CardTitle class="text-base">
+        Upcoming
+      </CardTitle>
+      <p class="text-muted-foreground text-sm">
         {{ agendaItems.length > 0 ? `${agendaItems.length} appointment${agendaItems.length === 1 ? '' : 's'}` : 'Nothing scheduled' }}
       </p>
-    </div>
+    </CardHeader>
 
-    <ul v-if="agendaItems.length > 0" class="space-y-3">
-      <li
-        v-for="booking in agendaItems"
-        :key="booking.id"
-      >
-        <NuxtLink
-          :to="`${itemPathPrefix}/${booking.id}`"
-          class="-mx-2 block rounded-lg px-2 py-2 transition-colors hover:bg-background"
+    <CardContent class="px-5 pt-4 pb-2">
+      <ul v-if="agendaItems.length > 0" class="space-y-1">
+        <li
+          v-for="booking in agendaItems"
+          :key="booking.id"
         >
-          <p class="font-medium text-foreground text-sm truncate">
-            {{ personLabel(booking) }}
-          </p>
-          <p class="text-muted-foreground text-xs">
-            {{ formatRelativeSchedule(booking) }}
-          </p>
-        </NuxtLink>
-      </li>
-    </ul>
+          <NuxtLink
+            :to="`${itemPathPrefix}/${booking.id}`"
+            class="-mx-2 block rounded-lg px-2 py-2 transition-colors hover:bg-muted/50"
+          >
+            <p class="font-medium text-foreground text-sm truncate">
+              {{ personLabel(booking) }}
+            </p>
+            <p class="text-muted-foreground text-xs">
+              {{ formatRelativeSchedule(booking) }}
+            </p>
+          </NuxtLink>
+        </li>
+      </ul>
 
-    <div
-      v-else
-      class="flex flex-col items-center gap-2 py-6 text-center"
-    >
-      <span class="flex size-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
-        <PhCalendarX class="size-5" />
-      </span>
-      <p class="text-muted-foreground text-xs leading-relaxed">
-        Your upcoming appointments will show up here.
-      </p>
-    </div>
+      <div
+        v-else
+        class="flex flex-col items-center gap-2 py-6 text-center"
+      >
+        <span class="flex size-10 items-center justify-center rounded-full border border-border bg-muted/40 text-muted-foreground">
+          <PhCalendarX class="size-5" />
+        </span>
+        <p class="text-muted-foreground text-xs leading-relaxed">
+          Your upcoming appointments will show up here.
+        </p>
+      </div>
+    </CardContent>
 
-    <NuxtLink
-      :to="listPath"
-      class="inline-flex items-center gap-1.5 mt-auto font-medium text-primary text-xs hover:underline"
-    >
-      <PhCalendarCheck class="size-3.5" />
-      View all appointments
-    </NuxtLink>
-  </aside>
+    <CardFooter class="px-5 pb-5 pt-2">
+      <NuxtLink
+        :to="listPath"
+        class="inline-flex items-center gap-1.5 font-medium text-primary text-xs hover:underline"
+      >
+        <PhCalendarCheck class="size-3.5" />
+        View all appointments
+      </NuxtLink>
+    </CardFooter>
+  </Card>
 </template>

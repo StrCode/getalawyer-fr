@@ -39,10 +39,7 @@ withDefaults(
     </span>
     <span
       v-if="showWordmark"
-      class="lowercase truncate tracking-tight"
-      :class="onDark
-        ? 'font-heading font-semibold text-[1.125rem] leading-none'
-        : 'font-sans font-bold text-xl tracking-[-0.5px]'"
+      class="font-heading font-semibold lowercase truncate tracking-tight text-[1.125rem] leading-none"
     >
       getalawyer
     </span>
