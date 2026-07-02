@@ -12,12 +12,6 @@ const pageTransition = computed(() =>
   route.path.startsWith('/dashboard') ? false : { name: 'page', mode: 'out-in' },
 )
 
-useHead({
-  link: [
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-  ],
-})
 </script>
 
 <template>

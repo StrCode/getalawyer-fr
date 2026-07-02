@@ -60,35 +60,67 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
-    defaults: {
-      weights: [200, 300, 400, 500, 600, 700],
-      styles: ['normal', 'italic'],
-      subsets: [
-        'cyrillic-ext',
-        'cyrillic',
-        'greek-ext',
-        'greek',
-        'vietnamese',
-        'latin-ext',
-        'latin',
-      ]
-    },
     families: [
+      // Neue Haas Grotesk Text — headings & display
       {
-        name: 'IBM Plex Sans',
-        provider: 'google',
-        weights: [400, 500, 600, 700],
-        styles: ['normal', 'italic'],
-        subsets: ['latin'],
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-400.woff2',
+        weight: 400,
+        style: 'normal',
+        global: true,
       },
       {
-        name: 'IBM Plex Serif',
-        provider: 'google',
-        weights: [400, 500, 600, 700],
-        styles: ['normal', 'italic'],
-        subsets: ['latin'],
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-400-italic.woff2',
+        weight: 400,
+        style: 'italic',
+        global: true,
       },
-    ]
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-500.woff2',
+        weight: 500,
+        style: 'normal',
+        global: true,
+      },
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-500-italic.woff2',
+        weight: 500,
+        style: 'italic',
+        global: true,
+      },
+
+      // CursorGothic — body copy
+      {
+        name: 'CursorGothic',
+        src: '/fonts/CursorGothic-Regular.woff2',
+        weight: 400,
+        style: 'normal',
+        global: true,
+      },
+      {
+        name: 'CursorGothic',
+        src: '/fonts/CursorGothic-Italic.woff2',
+        weight: 400,
+        style: 'italic',
+        global: true,
+      },
+      {
+        name: 'CursorGothic',
+        src: '/fonts/CursorGothic-Bold.woff2',
+        weight: 700,
+        style: 'normal',
+        global: true,
+      },
+      {
+        name: 'CursorGothic',
+        src: '/fonts/CursorGothic-BoldItalic.woff2',
+        weight: 700,
+        style: 'italic',
+        global: true,
+      },
+    ],
   },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
