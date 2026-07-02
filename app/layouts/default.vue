@@ -2,8 +2,12 @@
 </script>
 
 <template>
-    <AppLayout>
-        <AppHeader />
+  <AppLayout>
+    <div class="font-sans text-foreground bg-background antialiased">
+      <LandingNav />
+      <main>
         <slot />
-    </AppLayout>
+      </main>
+    </div>
+  </AppLayout>
 </template>

@@ -3,7 +3,11 @@
 
 <template>
   <AppLayout>
-    <AppHeader show-brand-name />
-    <slot />
+    <div class="font-sans text-foreground bg-background antialiased">
+      <LandingNav />
+      <main>
+        <slot />
+      </main>
+    </div>
   </AppLayout>
 </template>

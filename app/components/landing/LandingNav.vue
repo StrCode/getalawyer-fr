@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import { PhX } from '@phosphor-icons/vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import { getSessionUserType } from '~/lib/session-user'
-
-interface Props { isScrolled?: boolean }
-withDefaults(defineProps<Props>(), { isScrolled: false })
 
 const { session } = useAuth()
 const isSignedIn = computed(() => Boolean(session.value?.user))
@@ -14,15 +11,34 @@ const showFindLawyerCta = computed(
 )
 
 const links = [
-  { label: 'How it works',   href: '/#how'      },
+  { label: 'How it works', href: '/#how-it-works' },
   { label: 'Practice areas', href: '/practice-areas' },
-  { label: 'For lawyers',    href: '/for-lawyers'  },
-  { label: 'Contact',        href: '/contact'  },
+  { label: 'For lawyers', href: '/for-lawyers' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 const isMobileMenuOpen = ref(false)
+const isScrolled = ref(false)
 
 const route = useRoute()
+
+let scrollTicking = false
+const handleScroll = () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => {
+      isScrolled.value = window.scrollY > 20
+      scrollTicking = false
+    })
+    scrollTicking = true
+  }
+}
+
+onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (import.meta.client)
+    document.body.style.overflow = ''
+})
 
 watch(
   () => route.fullPath,
@@ -31,16 +47,28 @@ watch(
   },
 )
 
-// Prevent scrolling when the mobile menu is open
 watch(isMobileMenuOpen, (isOpen) => {
-  if (import.meta.client) {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-  }
+  if (!import.meta.client)
+    return
+
+  document.body.style.overflow = isOpen ? 'hidden' : ''
 })
+
+function isLinkActive(href: string) {
+  if (href === '/practice-areas')
+    return route.path === '/practice-areas'
+
+  if (href === '/contact')
+    return route.path === '/contact'
+
+  if (href === '/for-lawyers')
+    return route.path === '/for-lawyers'
+
+  if (href.includes('how-it-works'))
+    return route.path === '/' && route.hash === '#how-it-works'
+
+  return false
+}
 </script>
 
 <template>
@@ -63,7 +91,11 @@ watch(isMobileMenuOpen, (isOpen) => {
           <li v-for="link in links" :key="link.href">
             <NuxtLink
               :to="link.href"
-              class="cursor-pointer font-sans text-base font-medium text-foreground no-underline transition-colors duration-200 hover:text-primary"
+              class="cursor-pointer font-sans text-base font-medium no-underline transition-colors duration-200"
+              :class="isLinkActive(link.href)
+                ? 'text-primary'
+                : 'text-foreground hover:text-primary'"
+              :aria-current="isLinkActive(link.href) ? 'page' : undefined"
             >{{ link.label }}</NuxtLink>
           </li>
         </ul>
@@ -115,7 +147,7 @@ watch(isMobileMenuOpen, (isOpen) => {
         v-if="isMobileMenuOpen"
         class="fixed inset-0 z-200 flex h-dvh flex-col bg-background"
       >
-        <!-- Mobile Menu Header (Matches Main Header Layout) -->
+        <!-- Mobile Menu Header -->
         <div class="flex shrink-0 items-center justify-between border-b border-border/50 px-8 py-5">
           <LandingBrandLogo @click="isMobileMenuOpen = false" />
 
@@ -134,8 +166,10 @@ watch(isMobileMenuOpen, (isOpen) => {
             <li v-for="(link, index) in links" :key="link.href" class="overflow-hidden">
               <NuxtLink
                 :to="link.href"
-                class="animate-slide-up-fade block font-heading text-5xl font-medium leading-[1.1] text-foreground no-underline transition-colors duration-200 hover:text-primary"
+                class="animate-slide-up-fade block font-heading text-5xl font-medium leading-[1.1] no-underline transition-colors duration-200"
+                :class="isLinkActive(link.href) ? 'text-primary' : 'text-foreground hover:text-primary'"
                 :style="{ animationDelay: `${index * 75 + 100}ms` }"
+                :aria-current="isLinkActive(link.href) ? 'page' : undefined"
                 @click="isMobileMenuOpen = false"
               >
                 {{ link.label }}

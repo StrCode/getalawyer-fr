@@ -24,7 +24,7 @@ const steps = [
 </script>
 
 <template>
-  <section id="how" class="bg-canvas py-12 md:py-24">
+  <section id="how-it-works" class="scroll-mt-23 bg-canvas py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Header -->
       <p class="text-eyebrow mb-4 text-brass">How it works</p>

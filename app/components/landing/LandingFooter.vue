@@ -13,7 +13,7 @@ const cols = {
   Product: [
     { label: 'Find a lawyer', to: '/find-lawyers' },
     { label: 'Practice areas', to: '/practice-areas' },
-    { label: 'How it works', to: '/#how' },
+    { label: 'How it works', to: '/#how-it-works' },
   ],
   'For lawyers': [
     { label: 'Why join', to: '/for-lawyers' },

@@ -2,9 +2,9 @@
 definePageMeta({ layout: 'landing' })
 
 useSeoMeta({
-  title: 'getalawyer — verified Nigerian lawyers, booked in minutes',
-  description: 'Compare practice areas, fees, and availability across hundreds of bar-verified lawyers. Book your consultation online with clear pricing — no calls, no chasing.',
-  ogTitle: 'getalawyer — verified Nigerian lawyers, booked in minutes',
+  title: 'getalawyer — legal help without the runaround',
+  description: 'Search verified Nigerian lawyers by practice area and state. Compare fees and availability, then book your consultation online with clear pricing.',
+  ogTitle: 'getalawyer — legal help without the runaround',
   ogDescription: 'Find and book verified Nigerian lawyers online. NIN & SCN verified. Clear pricing. Same-day consultations.',
 })
 </script>
@@ -12,7 +12,6 @@ useSeoMeta({
 <template>
   <div class="bg-canvas">
     <LandingHero />
-    <LandingTrustBar />
     <LandingHowItWorks />
     <LandingPracticeAreas />
     <LandingForLawyers />
