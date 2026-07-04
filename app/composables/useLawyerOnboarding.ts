@@ -195,13 +195,16 @@ export const useLawyerOnboarding = () => {
     const useSubmitOnboarding = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.submitOnboarding,
-            onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
-                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
-                // Invalidate session/profile so application status gets refreshed
-                queryClient.invalidateQueries({ queryKey: ['user', 'session'] })
-                queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all })
-            }
+            onSuccess: async () => {
+                await Promise.all([
+                    queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft }),
+                    // Refetch (not only invalidate) so post-submit navigation sees submitted status
+                    // even when no status query observer is mounted on the review step.
+                    queryClient.refetchQueries({ queryKey: queryKeys.lawyerOnboarding.status }),
+                    queryClient.invalidateQueries({ queryKey: ['user', 'session'] }),
+                    queryClient.invalidateQueries({ queryKey: queryKeys.lawyers.all }),
+                ])
+            },
         })
     }
 

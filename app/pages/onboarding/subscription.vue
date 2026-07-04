@@ -53,6 +53,7 @@ await useAsyncData('onboarding-subscription-status', () =>
 const {
   data: statusPayload,
   isPending: statusPending,
+  isFetching: statusFetching,
   isError: statusError,
   refetch: refetchStatus,
 } = useLawyerOnboardingStatus({ enabled: true })
@@ -156,7 +157,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (pageLoading.value) return
+  if (pageLoading.value || statusFetching.value) return
   const st = statusPayload.value
   if (!st) return
 
