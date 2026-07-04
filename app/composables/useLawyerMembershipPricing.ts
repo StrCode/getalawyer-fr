@@ -1,24 +1,15 @@
-/** Response from `/api/marketing/lawyer-membership` */
+/** Response from `/api/marketing/subscription-pricing` (proxies law-backend public pricing). */
 export interface LawyerMembershipPricing {
-  monthlyAmountNgn: number
+  subscriptionPriceNaira: number
+  verificationAdminFeeNaira: number
   currency: 'NGN'
-  source?: 'remote' | 'config'
-}
-
-export function formatMembershipNgn(amount: number) {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    currencyDisplay: 'narrowSymbol',
-    maximumFractionDigits: 0,
-  }).format(amount)
 }
 
 /**
- * Public lawyer membership monthly price for marketing/checkout copy.
+ * Public lawyer annual subscription price for marketing pages.
  */
 export function useLawyerMembershipPricing() {
-  return useFetch<LawyerMembershipPricing>('/api/marketing/lawyer-membership', {
-    key: 'lawyer-membership-pricing',
+  return useFetch<LawyerMembershipPricing>('/api/marketing/subscription-pricing', {
+    key: 'lawyer-subscription-pricing',
   })
 }

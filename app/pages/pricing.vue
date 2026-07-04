@@ -1,11 +1,22 @@
 <script setup lang="ts">
+import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
+import { formatNairaAmount } from '~/composables/useSubscription'
+
 definePageMeta({ layout: 'landing' })
+
+const { data: pricing } = await useLawyerMembershipPricing()
+
+const subscriptionPriceLabel = computed(() =>
+  pricing.value ? formatNairaAmount(pricing.value.subscriptionPriceNaira) : '₦30,000',
+)
 
 useSeoMeta({
   title: 'Pricing — getalawyer',
-  description: 'Simple, transparent pricing for legal professionals. Keep 100% of your earnings for just ₦30,000 a year.',
+  description: () =>
+    `Simple, transparent pricing for legal professionals. Keep 100% of your earnings for just ${subscriptionPriceLabel.value} a year.`,
   ogTitle: 'Pricing — getalawyer',
-  ogDescription: 'Zero commission. Keep 100% of what you charge. Flat yearly subscription.',
+  ogDescription: () =>
+    `Zero commission. Keep 100% of what you charge. Flat ${subscriptionPriceLabel.value} yearly subscription.`,
 })
 
 const features = [
@@ -43,7 +54,7 @@ const features = [
           <p class="text-eyebrow mb-4 text-brass">Annual membership</p>
           <h2 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h2>
           <div class="mb-2 flex items-end justify-center gap-1.5">
-            <span class="font-display text-6xl leading-none tabular-nums text-foreground">₦30,000</span>
+            <span class="font-display text-6xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
             <span class="mb-2 text-base text-muted-foreground">/ year</span>
           </div>
           <p class="text-sm text-muted-foreground">Billed annually. Cancel anytime.</p>

@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { PhCaretDown } from '@phosphor-icons/vue'
+import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
+import { formatNairaAmount } from '~/composables/useSubscription'
 
 definePageMeta({ layout: 'landing' })
 
+const { data: pricing } = await useLawyerMembershipPricing()
+
+const subscriptionPriceLabel = computed(() =>
+  pricing.value ? formatNairaAmount(pricing.value.subscriptionPriceNaira) : '₦30,000',
+)
+
 useSeoMeta({
   title: 'For Lawyers — getalawyer',
-  description: 'Grow your practice. Keep every naira you earn. Join verified lawyers across Nigeria reaching clients who are ready to book.',
+  description: () =>
+    `Grow your practice. Keep every naira you earn. Join verified lawyers across Nigeria for ${subscriptionPriceLabel.value}/year.`,
 })
 
 const features = [
@@ -35,19 +44,21 @@ const features = [
 const lawyerSteps = [
   { num: '01', title: 'Create your profile', desc: 'Sign up and submit your NIN and SCN for verification. Our team reviews applications within 24 hours.' },
   { num: '02', title: 'Set your schedule', desc: 'Sync your calendar and set your availability. You have full control over when you take consultations.' },
-  { num: '03', title: 'Receive bookings', desc: 'Clients find you in our directory, book an available slot, and pay upfront. No chasing invoices.' },
-  { num: '04', title: 'Consult & get paid', desc: 'Meet with the client via our built-in tools or in person. You keep 100% of your fee.' },
+  { num: '03', title: 'Receive bookings', desc: 'Clients find you in our directory and book available slots. Use messaging to answer questions and agree consultation fees.' },
+  { num: '04', title: 'Consult & get paid', desc: 'Meet by video, phone, or in person. Clients pay your fees directly to you — GetaLawyer does not process consultation payments.' },
 ]
 
-const faqs = ref([
-  { q: 'How long does verification take?', a: 'We typically verify your NIN and Supreme Court Number within 24-48 hours. Once approved, your profile goes live immediately.', open: false },
-  { q: 'Do you take a percentage of my fees?', a: 'No. Unlike other platforms, we charge a flat ₦30,000 annual subscription. You keep 100% of the consultation fees you charge your clients.', open: false },
-  { q: 'How do I receive payments from clients?', a: 'Clients pay securely through our platform when they book a slot. The funds are routed directly to your connected bank account.', open: false },
-  { q: 'What happens if a client cancels?', a: 'You have full control over your cancellation policy. You can choose to refund them, or keep a percentage if they cancel within 24 hours of the meeting.', open: false },
+const faqItems = computed(() => [
+  { q: 'How long does verification take?', a: 'We typically verify your NIN and Supreme Court Number within 24-48 hours. Once approved, your profile goes live immediately.' },
+  { q: 'Do you take a percentage of my fees?', a: `No. We charge a flat ${subscriptionPriceLabel.value} annual subscription — the only payment processed on GetaLawyer. You keep 100% of the consultation fees you agree with clients.` },
+  { q: 'Do clients pay through GetaLawyer?', a: 'No. Client consultation fees are not processed on our site. You agree fees with clients in messaging or before your session, and they pay you directly on terms you set (for example, bank transfer).' },
+  { q: 'What happens if a client cancels?', a: 'You set your own cancellation policy. If a client cancels a booking, handle rescheduling or any refund directly with them — GetaLawyer does not hold or refund consultation fees.' },
 ])
 
+const openFaqs = ref([false, false, false, false])
+
 const toggleFaq = (index: number) => {
-  faqs.value[index].open = !faqs.value[index].open
+  openFaqs.value[index] = !openFaqs.value[index]
 }
 </script>
 
@@ -154,10 +165,10 @@ const toggleFaq = (index: number) => {
           <div class="mb-8 mt-2 text-center">
             <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
             <div class="mb-2 flex items-end justify-center gap-1.5">
-              <span class="font-display text-5xl leading-none tabular-nums text-foreground">₦30,000</span>
+              <span class="font-display text-5xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
               <span class="mb-1.5 text-sm text-muted-foreground">/ year</span>
             </div>
-            <p class="text-sm text-muted-foreground">Billed annually. Cancel anytime.</p>
+            <p class="text-sm text-muted-foreground">The only payment on GetaLawyer. Consultation fees are paid directly to you.</p>
           </div>
 
           <Button size="lg" class="w-full cursor-pointer" as-child>
@@ -181,7 +192,7 @@ const toggleFaq = (index: number) => {
 
         <div class="space-y-4">
           <div
-            v-for="(faq, idx) in faqs"
+            v-for="(faq, idx) in faqItems"
             :key="idx"
             class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200"
           >
@@ -192,13 +203,13 @@ const toggleFaq = (index: number) => {
               <span class="pr-8 text-base font-semibold text-foreground">{{ faq.q }}</span>
               <div
                 class="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-primary transition-transform duration-300"
-                :class="{ 'rotate-180': faq.open }"
+                :class="{ 'rotate-180': openFaqs[idx] }"
               >
                 <PhCaretDown class="size-4" weight="bold" />
               </div>
             </button>
             <div
-              v-show="faq.open"
+              v-show="openFaqs[idx]"
               class="px-6 pb-6 text-sm leading-relaxed text-muted-foreground"
             >
               {{ faq.a }}
