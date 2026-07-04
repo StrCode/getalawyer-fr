@@ -13,12 +13,15 @@ interface SubscriptionRecord {
   cardLast4?: string | null
   bank?: string | null
   autoRenewEnabled?: boolean
+  lastFailureReason?: string | null
 }
 
 interface SubscriptionStatusPayload {
   hasActiveSubscription: boolean
   subscription: SubscriptionRecord | null
 }
+
+export type { SubscriptionRecord, SubscriptionStatusPayload }
 
 interface InitializeSubscriptionPayload {
   redirectUrl: string
@@ -53,6 +56,40 @@ export function formatNairaAmount(amount: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount)
+}
+
+export function formatSubscriptionStatusLabel(status: string | null | undefined): string {
+  if (!status) return 'No subscription'
+  const labels: Record<string, string> = {
+    pending: 'Payment pending',
+    active: 'Active',
+    cancelled: 'Cancelled',
+    expired: 'Expired',
+    failed_renewal: 'Renewal failed',
+    verification_failed: 'Verification failed',
+    refund_processing: 'Refund processing',
+    refunded: 'Refunded',
+  }
+  return labels[status] ?? status.replace(/_/g, ' ')
+}
+
+export function getSubscriptionPaymentFailureMessage(
+  subscription: SubscriptionRecord | null | undefined,
+): string | null {
+  const reason = subscription?.lastFailureReason?.trim()
+  return reason || null
+}
+
+export function hasSubscriptionRenewalIssue(
+  subscription: SubscriptionRecord | null | undefined,
+): boolean {
+  return subscription?.status === 'failed_renewal'
+}
+
+export function hasPendingCheckoutFailure(
+  subscription: SubscriptionRecord | null | undefined,
+): boolean {
+  return subscription?.status === 'pending' && Boolean(getSubscriptionPaymentFailureMessage(subscription))
 }
 
 export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }) {

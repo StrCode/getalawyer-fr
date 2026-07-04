@@ -6,6 +6,8 @@ import {
 } from '~/composables/useLawyerOnboarding'
 import {
   formatNairaAmount,
+  getSubscriptionPaymentFailureMessage,
+  hasPendingCheckoutFailure,
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -81,6 +83,14 @@ const hasActiveSubscription = computed(
 
 const hasPendingSubscription = computed(
   () => subscriptionStatus.value?.subscription?.status === 'pending',
+)
+
+const paymentFailureMessage = computed(() =>
+  getSubscriptionPaymentFailureMessage(subscriptionStatus.value?.subscription),
+)
+
+const hasCheckoutFailure = computed(() =>
+  hasPendingCheckoutFailure(subscriptionStatus.value?.subscription),
 )
 
 const applicationNotice = computed(() =>
@@ -187,6 +197,17 @@ async function confirmPendingPayment() {
       toast.message('Payment still processing', {
         description: result.message ?? 'Please wait a moment and try again.',
       })
+      return
+    }
+    if (
+      result?.status === 'failed' ||
+      result?.status === 'abandoned' ||
+      result?.status === 'cancelled'
+    ) {
+      toast.error('Payment not completed', {
+        description: result.message ?? 'You can try again below.',
+      })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
     }
   } catch (error) {
     console.error('[Subscription] Failed to confirm pending payment', error)
@@ -335,6 +356,19 @@ async function retry() {
           </p>
 
           <div
+            v-if="hasCheckoutFailure"
+            class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
+            role="alert"
+          >
+            <p class="font-semibold">
+              Your last payment attempt did not complete
+            </p>
+            <p class="mt-1 leading-relaxed">
+              {{ paymentFailureMessage }}
+            </p>
+          </div>
+
+          <div
             v-if="hasActiveSubscription"
             class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
           >
@@ -365,7 +399,7 @@ async function retry() {
               v-if="paymentBusy"
               class="mr-2 size-4 animate-spin"
             />
-            {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : 'Pay annual subscription' }}
+            {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
           </Button>
 
           <button

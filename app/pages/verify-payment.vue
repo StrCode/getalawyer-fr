@@ -104,6 +104,14 @@ const isFailed = computed(() => {
   return s === 'failed' || s === 'abandoned' || s === 'cancelled'
 })
 
+const failureRecorded = ref(false)
+
+watch(isFailed, async (failed) => {
+  if (!failed || failureRecorded.value) return
+  failureRecorded.value = true
+  await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+})
+
 const redirectedAfterSuccess = ref(false)
 
 watch(

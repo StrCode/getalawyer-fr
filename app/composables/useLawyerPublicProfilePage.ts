@@ -102,6 +102,9 @@ export async function useLawyerPublicProfilePage(lawyerId: MaybeRef<string>) {
 
   const activeConsultationTypes = computed(() => getActiveConsultationTypes(lawyer.value))
   const canBook = computed(() => activeConsultationTypes.value.length > 0)
+  const canMessage = computed(
+    () => Boolean(lawyer.value) && !isOwnProfile.value,
+  )
   const priceRange = computed(() => getPriceRange(activeConsultationTypes.value))
   const availableMeetingTypes = computed(() =>
     getAvailableMeetingTypes(activeConsultationTypes.value),
@@ -142,6 +145,7 @@ export async function useLawyerPublicProfilePage(lawyerId: MaybeRef<string>) {
     hasProfileContent,
     activeConsultationTypes,
     canBook,
+    canMessage,
     priceRange,
     availableMeetingTypes,
     workingDays,

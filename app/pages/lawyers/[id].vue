@@ -8,6 +8,7 @@ import LawyerPublicAvailability from '@/components/lawyer-profile/LawyerPublicAv
 import LawyerPublicArticles from '@/components/lawyer-profile/LawyerPublicArticles.vue'
 import LawyerPublicProfileEmptyPreview from '@/components/lawyer-profile/LawyerPublicProfileEmptyPreview.vue'
 import LawyerPublicBookingSidebar from '@/components/lawyer-profile/LawyerPublicBookingSidebar.vue'
+import AskQuestionSheet from '@/components/lawyer-profile/AskQuestionSheet.vue'
 
 definePageMeta({
   layout: 'landing',
@@ -37,7 +38,7 @@ const {
   heroSubtitle,
   hasProfileContent,
   activeConsultationTypes,
-  canBook,
+  canMessage,
   priceRange,
   availableMeetingTypes,
   workingDays,
@@ -46,10 +47,10 @@ const {
   isAcceptingClients,
 } = await useLawyerPublicProfilePage(lawyerId)
 
-const isBookingModalOpen = ref(false)
+const isAskQuestionOpen = ref(false)
 
-function openBookingModal() {
-  isBookingModalOpen.value = true
+function openAskQuestion() {
+  isAskQuestionOpen.value = true
 }
 </script>
 
@@ -76,10 +77,10 @@ function openBookingModal() {
         :hero-subtitle="heroSubtitle"
         :display-location="displayLocation"
         :years-experience="yearsExperience"
-        :can-book="canBook"
+        :can-message="canMessage"
         :availability-summary="availabilitySummary"
         :is-accepting-clients="isAcceptingClients"
-        @book="openBookingModal"
+        @ask="openAskQuestion"
       />
 
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-10 md:px-8 lg:grid-cols-3 lg:gap-12 lg:py-12">
@@ -123,17 +124,16 @@ function openBookingModal() {
             :states-of-practice="lawyer.practiceInfo?.statesOfPractice ?? []"
             :is-authenticated="isAuthenticated"
             :is-own-profile="isOwnProfile"
-            :can-book="canBook"
+            :can-message="canMessage"
             :availability-summary="availabilitySummary"
-            @book="openBookingModal"
+            @ask="openAskQuestion"
           />
         </aside>
       </div>
 
-      <BookingWizard
+      <AskQuestionSheet
         v-if="!isOwnProfile"
-        v-model:open="isBookingModalOpen"
-        :initial-lawyer-id="lawyerId"
+        v-model:open="isAskQuestionOpen"
         :lawyer-info="lawyer"
       />
     </template>

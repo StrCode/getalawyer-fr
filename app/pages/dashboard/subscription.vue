@@ -3,6 +3,10 @@ import { toast } from 'vue-sonner'
 import { ApiError } from '~/lib/api/client'
 import {
   formatNairaAmount,
+  formatSubscriptionStatusLabel,
+  getSubscriptionPaymentFailureMessage,
+  hasPendingCheckoutFailure,
+  hasSubscriptionRenewalIssue,
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -83,10 +87,20 @@ const subscriptionEndLabel = computed(() => {
   }
 })
 
-const statusLabel = computed(() => {
+const statusLabel = computed(() => formatSubscriptionStatusLabel(subscription.value?.status))
+
+const paymentFailureMessage = computed(() =>
+  getSubscriptionPaymentFailureMessage(subscription.value),
+)
+
+const hasRenewalIssue = computed(() => hasSubscriptionRenewalIssue(subscription.value))
+
+const hasCheckoutFailure = computed(() => hasPendingCheckoutFailure(subscription.value))
+
+const canRetryPayment = computed(() => {
   const status = subscription.value?.status
-  if (!status) return 'No subscription'
-  return status.replace(/_/g, ' ')
+  if (!status) return true
+  return ['pending', 'failed_renewal', 'expired', 'cancelled', 'refunded'].includes(status)
 })
 
 const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPending.value)
@@ -156,13 +170,44 @@ async function startPayment() {
             Membership status
           </CardTitle>
           <CardDescription>
-            <span class="capitalize">{{ statusLabel }}</span>
+            <span>{{ statusLabel }}</span>
             <template v-if="hasActiveSubscription && subscriptionEndLabel">
               · active until {{ subscriptionEndLabel }}
             </template>
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
+          <div
+            v-if="hasRenewalIssue"
+            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+            role="alert"
+          >
+            <p class="font-semibold">
+              Renewal payment failed
+            </p>
+            <p class="mt-1 leading-relaxed">
+              <template v-if="paymentFailureMessage">
+                {{ paymentFailureMessage }}
+              </template>
+              <template v-else>
+                We could not charge your saved payment method. Update your card or try again.
+              </template>
+            </p>
+          </div>
+
+          <div
+            v-else-if="hasCheckoutFailure"
+            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+            role="alert"
+          >
+            <p class="font-semibold">
+              Last payment attempt did not complete
+            </p>
+            <p class="mt-1 leading-relaxed">
+              {{ paymentFailureMessage }}
+            </p>
+          </div>
+
           <template v-if="hasActiveSubscription">
             <dl class="grid gap-3 text-sm sm:grid-cols-2">
               <div v-if="subscription?.daysRemaining != null">
@@ -197,18 +242,29 @@ async function startPayment() {
 
           <template v-else>
             <p class="text-sm text-muted-foreground">
-              Pay the annual subscription to activate membership
-              <template v-if="pricing">
-                ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }})
-              </template>.
-              If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
+              <template v-if="hasRenewalIssue">
+                Your membership is inactive until renewal succeeds. Pay again to restore access and directory visibility.
+              </template>
+              <template v-else-if="subscription?.status === 'refund_processing'">
+                Your subscription refund is being processed. Contact support if you need help.
+              </template>
+              <template v-else-if="subscription?.status === 'verification_failed'">
+                Verification did not pass after payment. Check your application status or contact support.
+              </template>
+              <template v-else>
+                Pay the annual subscription to activate membership
+                <template v-if="pricing">
+                  ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }})
+                </template>.
+                If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
+              </template>
             </p>
-            <div class="flex flex-wrap gap-2">
+            <div v-if="canRetryPayment" class="flex flex-wrap gap-2">
               <ButtonBusy
                 :loading="paymentBusy"
                 @click="startPayment"
               >
-                Pay annual subscription
+                {{ hasRenewalIssue || hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
               </ButtonBusy>
               <Button
                 variant="outline"

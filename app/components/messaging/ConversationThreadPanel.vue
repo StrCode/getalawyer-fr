@@ -5,6 +5,8 @@ import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
 import type { Message } from '~/types/messaging'
 import MessageReadTicks from '@/components/messaging/MessageReadTicks.vue'
+import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRequestCard.vue'
+import ConsultationFeeRequestComposer from '@/components/messaging/ConsultationFeeRequestComposer.vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -38,6 +40,13 @@ const {
 const messageInput = ref('')
 
 const messages = computed(() => thread.value?.messages ?? [])
+
+const viewerRole = computed(() => {
+  const me = thread.value?.participants.find(p => p.userId === currentUserId.value)
+  return me?.role ?? null
+})
+
+const showFeeComposer = computed(() => viewerRole.value === 'lawyer')
 
 const typingLabel = computed(() => {
   const users = currentTypingUsers.value
@@ -101,6 +110,11 @@ function formatMessageTime(timestamp: string) {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
+    <ConsultationFeeRequestComposer
+      v-if="showFeeComposer"
+      :conversation-id="conversationId"
+    />
+
     <div
       ref="messagesContainer"
       class="flex-1 space-y-3 overflow-y-auto p-4"
@@ -128,7 +142,15 @@ function formatMessageTime(timestamp: string) {
           class="flex"
           :class="isOwnMessage(message) ? 'justify-end' : 'justify-start'"
         >
+          <ConsultationFeeRequestCard
+            v-if="message.kind === 'consultation_fee_request'"
+            :message="message"
+            :conversation-id="conversationId"
+            :viewer-role="viewerRole"
+          />
+
           <div
+            v-else
             class="max-w-[85%] rounded-2xl px-4 py-2 text-sm shadow-sm"
             :class="
               isOwnMessage(message)

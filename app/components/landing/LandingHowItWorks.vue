@@ -12,8 +12,8 @@ const steps = [
   },
   {
     num: '03',
-    title: 'Book a consultation',
-    desc: 'Pick a time that works from the lawyer\'s calendar. Pay securely. Get a confirmation with everything you need.',
+    title: 'Ask a question',
+    desc: 'Message a lawyer for free. They can answer in chat and optionally request a consultation fee if you need more help.',
   },
   {
     num: '04',

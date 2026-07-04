@@ -5,7 +5,7 @@ import type { LawyerProfile } from '~/types/lawyer'
 import {
   PhArrowLeft,
   PhBriefcase,
-  PhCalendar,
+  PhChatCircleDots,
   PhClock,
   PhEnvelope,
   PhMapPin,
@@ -21,13 +21,13 @@ defineProps<{
   heroSubtitle: string
   displayLocation: string
   yearsExperience: number
-  canBook: boolean
+  canMessage: boolean
   availabilitySummary: string | null
   isAcceptingClients: boolean
 }>()
 
 const emit = defineEmits<{
-  book: []
+  ask: []
 }>()
 </script>
 
@@ -154,11 +154,11 @@ const emit = defineEmits<{
           <Button
             size="lg"
             class="h-12 w-full gap-2 px-8 font-semibold"
-            :disabled="!canBook"
-            @click="emit('book')"
+            :disabled="!canMessage"
+            @click="emit('ask')"
           >
-            <PhCalendar class="size-5 shrink-0" />
-            Book consultation
+            <PhChatCircleDots class="size-5 shrink-0" />
+            Ask question
           </Button>
           <Button
             v-if="isAuthenticated && lawyer.email"

@@ -1,10 +1,28 @@
 // Message Types
+export type MessageKind = 'text' | 'consultation_fee_request' | 'consultation_fee_response'
+
+export type FeeRequestStatus = 'pending' | 'accepted' | 'declined' | 'cancelled'
+
+export interface FeeRequestMetadata {
+  amount: string
+  currency: string
+  description?: string
+  status: FeeRequestStatus
+}
+
+export interface FeeResponseMetadata {
+  requestMessageId: string
+  response: 'accepted' | 'declined'
+}
+
 export interface Message {
   id: string
   conversationId: string
   senderId: string
-  senderType: 'lawyer' | 'client'
-  content: string
+  senderType?: 'lawyer' | 'client'
+  content: string | null
+  kind?: MessageKind
+  metadata: FeeRequestMetadata | FeeResponseMetadata | Record<string, unknown> | null
   status: 'sent' | 'delivered' | 'read'
   fileUrl: string | null
   filePublicId: string | null
@@ -20,7 +38,7 @@ export interface Message {
     image?: string | null
   }
   replyTo?: Message | null
-  isRead: boolean
+  isRead?: boolean
 }
 
 // Conversation Types
@@ -29,6 +47,7 @@ export interface ConversationParticipant {
   name: string
   image?: string
   lastReadAt?: string
+  role?: 'client' | 'lawyer'
 }
 
 export interface ConversationInfo {
@@ -58,10 +77,16 @@ export interface ConversationDetail {
 }
 
 // Notification Types
+export type NotificationType =
+  | 'new_message'
+  | 'new_conversation'
+  | 'file_received'
+  | 'consultation_fee_request'
+
 export interface Notification {
   id: string
   userId: string
-  type: 'new_message'
+  type: NotificationType
   title: string
   body: string
   read: boolean
@@ -79,6 +104,12 @@ export interface FileUploadResponse {
   name: string
   type: string
   size: number
+}
+
+export interface StartConversationResponse {
+  conversationId: string
+  message: Message
+  created: boolean
 }
 
 // Socket Event Types
@@ -105,4 +136,13 @@ export interface ClientToServerEvents {
   'message:delivered': (data: { conversationId: string; messageId: string }) => void
   'typing:start': (conversationId: string) => void
   'typing:stop': (conversationId: string) => void
+}
+
+export function isFeeRequestMessage(message: Message): message is Message & { metadata: FeeRequestMetadata } {
+  return message.kind === 'consultation_fee_request' && message.metadata !== null
+}
+
+export function getFeeRequestMetadata(message: Message): FeeRequestMetadata | null {
+  if (message.kind !== 'consultation_fee_request' || !message.metadata) return null
+  return message.metadata as FeeRequestMetadata
 }

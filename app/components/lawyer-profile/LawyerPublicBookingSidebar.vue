@@ -5,6 +5,7 @@ import type { LawyerPriceRange, PrimaryConsultation } from '~/lib/lawyer-public-
 import type { LawyerPracticeInfo } from '~/types/lawyer'
 import {
   PhBuildings,
+  PhChatCircleDots,
   PhCheck,
   PhClock,
   PhMapPin,
@@ -20,57 +21,37 @@ defineProps<{
   practiceInfo: LawyerPracticeInfo | null
   isAuthenticated: boolean
   isOwnProfile: boolean
-  canBook: boolean
+  canMessage: boolean
   statesOfPractice: string[]
   availabilitySummary: string | null
 }>()
 
 const emit = defineEmits<{
-  book: []
+  ask: []
 }>()
 </script>
 
 <template>
   <div class="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-lg ring-1 ring-border/40">
     <div class="border-b border-border p-6 md:p-7">
-      <div
-        v-if="primaryConsultation"
-        class="mb-1 flex flex-wrap items-baseline gap-x-2 gap-y-1"
-      >
-        <span class="text-3xl font-semibold tabular-nums text-foreground">
-          <template v-if="primaryConsultation.price > 0">
-            From ₦{{ primaryConsultation.price.toLocaleString() }}
-          </template>
-          <template v-else>
-            Free
-          </template>
-        </span>
-        <span class="text-sm text-muted-foreground">
-          · {{ primaryConsultation.durationMinutes }} min
-        </span>
-      </div>
-      <div
-        v-else-if="priceRange.min > 0"
-        class="mb-1 flex flex-wrap items-baseline gap-2"
-      >
-        <span class="text-3xl font-semibold tabular-nums text-foreground">
-          ₦{{ priceRange.min.toLocaleString() }}
-        </span>
-        <span
-          v-if="priceRange.max > priceRange.min"
-          class="text-sm text-muted-foreground"
-        >
-          – ₦{{ priceRange.max.toLocaleString() }}
-        </span>
-      </div>
-      <p
-        v-else
-        class="text-2xl font-semibold text-primary"
-      >
-        Free consultation
+      <p class="mb-1 text-2xl font-semibold text-primary">
+        Free to message
       </p>
       <p class="mt-1 text-sm text-muted-foreground">
-        {{ primaryConsultation?.name || (priceRange.min > 0 ? 'Consultation rates' : 'Available to book') }}
+        Ask a question — the lawyer may request a consultation fee if needed.
+      </p>
+      <p
+        v-if="primaryConsultation"
+        class="mt-3 text-xs text-muted-foreground"
+      >
+        Consultation from
+        <template v-if="primaryConsultation.price > 0">
+          ₦{{ primaryConsultation.price.toLocaleString() }}
+        </template>
+        <template v-else>
+          free
+        </template>
+        · {{ primaryConsultation.durationMinutes }} min
       </p>
       <p
         v-if="availabilitySummary"
@@ -162,14 +143,15 @@ const emit = defineEmits<{
         <Button
           size="lg"
           class="h-12 w-full font-semibold"
-          :disabled="!canBook"
-          @click="emit('book')"
+          :disabled="!canMessage"
+          @click="emit('ask')"
         >
-          Book consultation
+          <PhChatCircleDots class="mr-2 size-5" />
+          Ask question
         </Button>
         <p class="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
           <PhShieldCheck class="size-4 text-primary" weight="fill" />
-          Secure booking · pick a time after checkout
+          Secure messaging · free to start
         </p>
       </div>
     </div>
