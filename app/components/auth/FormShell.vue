@@ -13,11 +13,11 @@ defineProps<{
     <header class="mb-6 text-center lg:text-left">
       <p
         v-if="eyebrow"
-        class="text-eyebrow mb-2 text-brass"
+        class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary"
       >
         {{ eyebrow }}
       </p>
-      <h1 class="font-display text-balance text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-3xl">
+      <h1 class="font-heading text-balance text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-3xl">
         {{ title }}
       </h1>
       <p

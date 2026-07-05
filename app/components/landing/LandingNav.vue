@@ -110,7 +110,7 @@ function isLinkActive(href: string) {
           <NuxtLink
             v-else
             to="/login"
-            class="hidden cursor-pointer items-center rounded-full px-4 py-2.5 font-sans text-base font-medium text-foreground no-underline transition-colors duration-200 hover:bg-surface-2 sm:inline-flex"
+            class="hidden cursor-pointer items-center rounded-full px-4 py-2.5 font-sans text-base font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted sm:inline-flex"
           >Sign in</NuxtLink>
           <NuxtLink
             v-if="showFindLawyerCta"
@@ -122,7 +122,7 @@ function isLinkActive(href: string) {
         <!-- Mobile Hamburger Button -->
         <div class="flex items-center lg:hidden">
           <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-full border-none bg-transparent transition-colors hover:bg-surface-2"
+            class="flex size-11 cursor-pointer items-center justify-center rounded-full border-none bg-transparent transition-colors hover:bg-muted"
             aria-label="Open mobile menu"
             @click="isMobileMenuOpen = true"
           >
@@ -152,7 +152,7 @@ function isLinkActive(href: string) {
           <LandingBrandLogo @click="isMobileMenuOpen = false" />
 
           <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-full border-none bg-surface-2 transition-colors hover:bg-surface-3"
+            class="flex size-11 cursor-pointer items-center justify-center rounded-full border-none bg-muted transition-colors hover:bg-accent"
             aria-label="Close mobile menu"
             @click="isMobileMenuOpen = false"
           >
@@ -198,7 +198,7 @@ function isLinkActive(href: string) {
             <NuxtLink
               v-if="showFindLawyerCta"
               to="/find-lawyers"
-              class="flex w-full cursor-pointer items-center justify-center rounded-full border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-surface-2"
+              class="flex w-full cursor-pointer items-center justify-center rounded-full border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
               @click="isMobileMenuOpen = false"
             >
               Find a lawyer
@@ -215,7 +215,7 @@ function isLinkActive(href: string) {
             </NuxtLink>
             <NuxtLink
               to="/login"
-              class="flex w-full cursor-pointer items-center justify-center rounded-full border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-surface-2"
+              class="flex w-full cursor-pointer items-center justify-center rounded-full border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
               @click="isMobileMenuOpen = false"
             >
               Sign in

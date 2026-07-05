@@ -5,7 +5,7 @@
     @update:model-value="onTabChange"
   >
     <TabsList
-      class="grid h-11 w-full grid-cols-2 rounded-xl border border-border bg-surface-2 p-1"
+      class="grid h-11 w-full grid-cols-2 rounded-xl border border-border bg-muted p-1"
     >
       <TabsTrigger
         value="email"

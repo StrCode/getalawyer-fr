@@ -115,7 +115,7 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
         class="gap-6 grid grid-cols-1 xl:grid-cols-[1fr_280px]"
       >
         <div class="space-y-6">
-          <div class="gap-4 grid grid-cols-2 lg:grid-cols-4">
+          <div class="dashboard-stat-grid">
             <StatCard
               label="Total Bookings"
               :value="stats.total"

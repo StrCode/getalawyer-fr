@@ -23,7 +23,7 @@ export const HERO_SPOTLIGHT_LAWYERS: HeroSpotlightLawyer[] = [
     name: 'Chidi Nwosu',
     practiceArea: 'Property & Tenancy',
     initials: 'CN',
-    avatarClass: 'bg-brass/15 text-brass',
+    avatarClass: 'bg-primary/15 text-primary',
     searchQuery: 'Property & tenancy',
   },
   {

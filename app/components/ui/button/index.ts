@@ -20,9 +20,9 @@ export const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         brass:
-          "bg-brass text-brass-foreground hover:bg-brass/90 shadow-[0_2px_4px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.25)] active:scale-[0.98]",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_2px_4px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.25)] active:scale-[0.98]",
         ink:
-          "bg-ink text-ink-foreground hover:bg-ink/90 active:scale-[0.98]",
+          "bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98]",
       },
       size: {
         "default": "h-9 px-4 py-2 has-[>svg]:px-3",

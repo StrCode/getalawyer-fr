@@ -110,7 +110,7 @@ async function handleOpenProfile() {
     @click="handleOpenProfile()"
   >
     <div class="mx-auto mb-4">
-      <div class="relative size-20 overflow-hidden rounded-full border-2 border-border bg-surface-2 ring-4 ring-surface-2">
+      <div class="relative size-20 overflow-hidden rounded-full border-2 border-border bg-muted ring-4 ring-muted">
         <img
           v-if="lawyer.image"
           :src="lawyer.image"
@@ -130,7 +130,7 @@ async function handleOpenProfile() {
     </div>
 
     <div class="text-center">
-      <h3 class="font-display text-balance text-xl font-semibold leading-snug tracking-tight text-foreground">
+      <h3 class="font-heading text-balance text-xl font-semibold leading-snug tracking-tight text-foreground">
         {{ lawyer.name }}
       </h3>
       <p class="mt-1.5 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
@@ -143,7 +143,7 @@ async function handleOpenProfile() {
       v-if="reviewsLabel || ratingPreview != null"
       class="mt-4 flex items-center justify-center gap-1.5 font-mono text-sm tabular-nums"
     >
-      <PhStar class="size-4 text-brass" weight="fill" aria-hidden="true" />
+      <PhStar class="size-4 text-primary" weight="fill" aria-hidden="true" />
       <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
       <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
       <span class="text-muted-foreground/50" aria-hidden="true">·</span>
@@ -169,7 +169,7 @@ async function handleOpenProfile() {
     @click="handleOpenProfile()"
   >
     <div class="relative shrink-0 self-start">
-      <div class="size-16 overflow-hidden rounded-2xl border border-border bg-surface-2 sm:size-20">
+      <div class="size-16 overflow-hidden rounded-2xl border border-border bg-muted sm:size-20">
         <img
           v-if="lawyer.image"
           :src="lawyer.image"
@@ -204,9 +204,9 @@ async function handleOpenProfile() {
 
         <div
           v-if="reviewsLabel || ratingPreview != null"
-          class="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 font-mono text-sm tabular-nums sm:inline-flex"
+          class="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1.5 font-mono text-sm tabular-nums sm:inline-flex"
         >
-          <PhStar class="size-3.5 text-brass" weight="fill" aria-hidden="true" />
+          <PhStar class="size-3.5 text-primary" weight="fill" aria-hidden="true" />
           <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
           <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
         </div>
@@ -242,7 +242,7 @@ async function handleOpenProfile() {
     </div>
 
     <div class="hidden shrink-0 self-center sm:flex">
-      <span class="inline-flex size-10 items-center justify-center rounded-full border border-border bg-surface-2 text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
+      <span class="inline-flex size-10 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
         <PhArrowRight class="size-4" aria-hidden="true" />
       </span>
     </div>
@@ -255,7 +255,7 @@ async function handleOpenProfile() {
     @click="handleOpenProfile()"
   >
     <div
-      class="flex shrink-0 flex-col justify-center gap-4 border-border bg-surface-2/60 p-6 md:w-[34%] md:border-e md:border-b-0 border-b px-8 py-10"
+      class="flex shrink-0 flex-col justify-center gap-4 border-border bg-muted/60 p-6 md:w-[34%] md:border-e md:border-b-0 border-b px-8 py-10"
     >
       <div class="relative mx-auto w-full max-w-[240px] overflow-hidden rounded-2xl border border-border md:mx-0 md:max-w-none">
         <img
@@ -278,7 +278,7 @@ async function handleOpenProfile() {
         <h3 class="text-pretty text-xl font-semibold tracking-tight text-foreground md:text-2xl">
           {{ lawyer.name }}
         </h3>
-        <PhSealCheck class="size-4 shrink-0 text-brass" weight="fill" aria-label="NIN verified" />
+        <PhSealCheck class="size-4 shrink-0 text-primary" weight="fill" aria-label="NIN verified" />
       </div>
       <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <span class="inline-flex min-w-0 items-center gap-1">
@@ -318,7 +318,7 @@ async function handleOpenProfile() {
   >
     <div class="flex items-center gap-3">
       <div class="relative shrink-0">
-        <div class="relative size-11 overflow-hidden rounded-xl border border-border bg-surface-2">
+        <div class="relative size-11 overflow-hidden rounded-xl border border-border bg-muted">
           <img
             v-if="lawyer.image"
             :src="lawyer.image"
@@ -339,7 +339,7 @@ async function handleOpenProfile() {
           <h3 class="truncate text-sm font-semibold tracking-tight text-foreground">
             {{ lawyer.name }}
           </h3>
-          <PhSealCheck class="size-4 shrink-0 text-brass" weight="fill" aria-label="NIN verified" />
+          <PhSealCheck class="size-4 shrink-0 text-primary" weight="fill" aria-label="NIN verified" />
         </div>
         <p class="truncate font-mono text-xs tabular-nums text-muted-foreground">
           {{ metaOneLine }}
@@ -380,7 +380,7 @@ async function handleOpenProfile() {
     <div class="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-start sm:gap-4 sm:p-5">
       <div class="relative shrink-0">
         <div
-          class="relative overflow-hidden rounded-2xl border border-border bg-surface-2"
+          class="relative overflow-hidden rounded-2xl border border-border bg-muted"
           :class="density === 'grid' ? 'size-16 sm:size-[4.5rem]' : 'size-[3.625rem] sm:size-[4.5rem]'"
         >
           <img
@@ -403,7 +403,7 @@ async function handleOpenProfile() {
           <h3 class="text-lg font-semibold leading-snug tracking-tight text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
-          <PhSealCheck class="size-4 shrink-0 text-brass" weight="fill" aria-label="NIN verified" />
+          <PhSealCheck class="size-4 shrink-0 text-primary" weight="fill" aria-label="NIN verified" />
         </div>
         <p class="font-mono text-xs tabular-nums text-muted-foreground sm:text-sm">
           {{ metaOneLine }}
@@ -432,7 +432,7 @@ async function handleOpenProfile() {
     <div
       class="absolute -top-10 left-5 z-10 sm:left-6"
     >
-      <div class="relative size-[4.5rem] overflow-hidden rounded-full border-4 border-card bg-surface-2 shadow-sm sm:size-20">
+      <div class="relative size-[4.5rem] overflow-hidden rounded-full border-4 border-card bg-muted shadow-sm sm:size-20">
         <img
           v-if="lawyer.image"
           :src="lawyer.image"
@@ -453,7 +453,7 @@ async function handleOpenProfile() {
         <h3 class="text-pretty text-lg font-semibold tracking-tight text-foreground sm:text-xl">
           {{ lawyer.name }}
         </h3>
-        <PhSealCheck class="size-4 shrink-0 text-brass" weight="fill" aria-label="NIN verified" />
+        <PhSealCheck class="size-4 shrink-0 text-primary" weight="fill" aria-label="NIN verified" />
       </div>
       <p class="font-mono text-sm tabular-nums text-muted-foreground sm:ps-1">
         {{ metaOneLine }}
@@ -480,7 +480,7 @@ async function handleOpenProfile() {
     <div class="flex min-w-0 flex-row-reverse items-start gap-3 sm:gap-4">
       <div class="relative shrink-0">
         <div
-          class="relative overflow-hidden rounded-2xl border border-border bg-surface-2"
+          class="relative overflow-hidden rounded-2xl border border-border bg-muted"
           :class="density === 'grid' ? 'size-16 sm:size-[4.5rem]' : 'size-[3.625rem] sm:size-[4.5rem]'"
         >
           <img
@@ -504,7 +504,7 @@ async function handleOpenProfile() {
             {{ lawyer.name }}
           </h3>
           <span class="inline-flex shrink-0 flex-row-reverse items-center gap-1">
-            <PhSealCheck class="size-4 text-brass" weight="fill" aria-label="NIN verified" />
+            <PhSealCheck class="size-4 text-primary" weight="fill" aria-label="NIN verified" />
           </span>
         </div>
         <p class="flex flex-row-reverse flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs text-muted-foreground sm:text-sm">
@@ -532,7 +532,7 @@ async function handleOpenProfile() {
                 <span class="opacity-50">·</span>
                 <span class="font-medium text-foreground">{{ ratingPreview.toFixed(1) }}</span>
               </template>
-              <PhStar class="size-3.5 shrink-0 text-brass" weight="fill" aria-hidden="true" />
+              <PhStar class="size-3.5 shrink-0 text-primary" weight="fill" aria-hidden="true" />
             </span>
           </template>
         </p>

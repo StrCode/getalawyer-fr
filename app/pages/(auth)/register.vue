@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-canvas font-sans">
+  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background font-sans">
     <!-- Background: clipped so blur paint cannot extend scroll width -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div
@@ -19,7 +19,7 @@
         </span>
         <NuxtLink
           to="/login"
-          class="rounded-full border border-border bg-paper px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-surface-2 sm:px-5 sm:py-2.5 sm:text-sm"
+          class="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-muted sm:px-5 sm:py-2.5 sm:text-sm"
         >
           Sign in
         </NuxtLink>
@@ -32,11 +32,11 @@
           <!-- Step 1: Role selection -->
           <div v-if="step === 'role'" key="role" class="mx-auto flex w-full flex-col items-center gap-6 sm:max-w-none sm:gap-0">
             <div class="w-full text-center sm:mb-10">
-              <p class="text-eyebrow mb-2 text-brass sm:mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
                 Account type
               </p>
               <h1
-                class="font-display text-balance text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl"
+                class="font-heading text-balance text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
@@ -71,7 +71,7 @@
                     <PhCheck v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-surface-2 ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhUser
@@ -111,7 +111,7 @@
                     <PhCheck v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
                   </span>
                   <div
-                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-surface-2 ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
+                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
                     <PhBriefcase
@@ -155,7 +155,7 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="inline-flex gap-1.5 rounded-full border border-border bg-paper px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-surface-2 hover:text-foreground sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
+              class="inline-flex gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
               @click="step = 'role'"
             >
               <PhArrowLeft class="h-4 w-4" />
@@ -163,10 +163,10 @@
             </Button>
 
             <div class="w-full text-center sm:mb-10">
-              <p class="text-eyebrow mb-2 text-brass sm:mb-3">
+              <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
                 Registration
               </p>
-              <h1 class="font-display text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl">
+              <h1 class="font-heading text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl">
                 {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
               </h1>
               <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
@@ -329,7 +329,7 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="inline-flex gap-1.5 self-start rounded-full border border-border bg-paper px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-surface-2 sm:px-4 sm:py-2 sm:text-sm"
+              class="inline-flex gap-1.5 self-start rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted sm:px-4 sm:py-2 sm:text-sm"
               @click="step = 'form'"
             >
               <PhArrowLeft class="h-4 w-4" />
@@ -337,7 +337,7 @@
             </Button>
 
             <div class="w-full text-center">
-              <h1 class="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">Verify your phone</h1>
+              <h1 class="font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">Verify your phone</h1>
               <p class="mt-2 text-sm text-muted-foreground">
                 Enter the code sent to <strong>{{ pendingPhone }}</strong>
               </p>
@@ -440,7 +440,7 @@ function roleCardClass(value: 'client' | 'lawyer') {
     'group w-full min-w-0 cursor-pointer overflow-hidden rounded-2xl border bg-card transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 sm:rounded-3xl',
     selectedRole.value === value
       ? 'border-primary shadow-lg shadow-primary/10 ring-1 ring-primary/20'
-      : 'border-border hover:border-primary/40 hover:bg-surface-2 sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
+      : 'border-border hover:border-primary/40 hover:bg-muted sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
   )
 }
 

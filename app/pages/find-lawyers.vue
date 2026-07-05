@@ -358,17 +358,17 @@ const showMobileFilters = ref(false)
 </script>
 
 <template>
-  <div class="bg-canvas pb-16 font-sans text-foreground sm:pb-24">
+  <div class="bg-background pb-16 font-sans text-foreground sm:pb-24">
     <!-- Compact hero + unified search -->
-    <header class="relative overflow-hidden border-b border-border bg-canvas">
-      <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-linear-to-b from-brass/6 to-transparent" />
+    <header class="relative overflow-hidden border-b border-border bg-background">
+      <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-linear-to-b from-primary/6 to-transparent" />
       <div class="relative mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl text-center">
-          <div class="mb-5 inline-flex items-center gap-2.5 rounded-full border border-border bg-surface-2 px-3.5 py-2">
-            <span class="size-1.5 rounded-full bg-brass" />
-            <span class="text-eyebrow text-brass">Verified directory</span>
+          <div class="mb-5 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-3.5 py-2">
+            <span class="size-1.5 rounded-full bg-primary" />
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Verified directory</span>
           </div>
-          <h1 class="display-xl text-balance text-foreground">
+          <h1 class="font-heading text-4xl font-medium tracking-tight md:text-5xl text-balance text-foreground">
             Find a verified lawyer
           </h1>
           <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -380,7 +380,7 @@ const showMobileFilters = ref(false)
         <div
           role="search"
           aria-label="Search lawyers"
-          class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-ink/4"
+          class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-foreground/4"
         >
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2">
@@ -417,7 +417,7 @@ const showMobileFilters = ref(false)
       <!-- Mobile filter toggle -->
       <button
         type="button"
-        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2 lg:hidden"
+        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted lg:hidden"
         :aria-expanded="showMobileFilters"
         @click="showMobileFilters = !showMobileFilters"
       >
@@ -452,12 +452,12 @@ const showMobileFilters = ref(false)
             <div class="flex flex-col gap-5">
               <!-- States -->
               <div class="flex flex-col gap-2">
-                <span class="text-eyebrow text-muted-foreground">States</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">States</span>
                 <Popover v-model:open="statePopoverOpen">
                   <PopoverTrigger as-child>
                     <button
                       type="button"
-                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
+                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-muted px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
                       aria-haspopup="dialog"
                       aria-label="States"
                       :aria-expanded="statePopoverOpen"
@@ -480,7 +480,7 @@ const showMobileFilters = ref(false)
                     <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                       <button
                         type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                         @click="clearStatesFilter"
                       >
                         All states
@@ -494,7 +494,7 @@ const showMobileFilters = ref(false)
                       <label
                         v-for="s in filteredStates"
                         :key="s.code"
-                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-surface-2"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-muted"
                       >
                         <Checkbox
                           :checked="selectedStateCodes.includes(s.code)"
@@ -510,10 +510,10 @@ const showMobileFilters = ref(false)
 
               <!-- Specializations -->
               <div class="flex flex-col gap-2">
-                <span class="text-eyebrow text-muted-foreground">Specializations</span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Specializations</span>
                 <div
                   v-if="specsLoading"
-                  class="flex h-11 items-center rounded-xl border border-border bg-surface-2 px-3 text-sm text-muted-foreground"
+                  class="flex h-11 items-center rounded-xl border border-border bg-muted px-3 text-sm text-muted-foreground"
                   aria-busy="true"
                 >
                   Loading…
@@ -522,7 +522,7 @@ const showMobileFilters = ref(false)
                   <PopoverTrigger as-child>
                     <button
                       type="button"
-                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
+                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-muted px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
                       aria-haspopup="dialog"
                       aria-label="Specializations"
                       :aria-expanded="specPopoverOpen"
@@ -545,7 +545,7 @@ const showMobileFilters = ref(false)
                     <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                       <button
                         type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                         @click="clearSpecializationsFilter"
                       >
                         All specializations
@@ -559,7 +559,7 @@ const showMobileFilters = ref(false)
                       <label
                         v-for="s in filteredSpecializations"
                         :key="s.id"
-                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-surface-2"
+                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-muted"
                       >
                         <Checkbox
                           :checked="filters.practiceAreas.includes(s.id)"
@@ -574,8 +574,8 @@ const showMobileFilters = ref(false)
             </div>
 
             <!-- Trust callout -->
-            <div class="mt-6 rounded-xl border border-brass/20 bg-brass/5 p-4">
-              <p class="text-eyebrow text-brass">Verified only</p>
+            <div class="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
+              <p class="text-xs font-semibold uppercase tracking-widest text-primary">Verified only</p>
               <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Every lawyer in this directory has passed NIN and Supreme Court number verification.
               </p>
@@ -645,13 +645,13 @@ const showMobileFilters = ref(false)
                 {{ lawyers.length === 1 ? ' lawyer' : ' lawyers' }}
                 <span v-if="hasNextPage && lawyers.length > 0" class="text-muted-foreground">+</span>
               </p>
-              <p class="text-eyebrow mt-0.5 text-muted-foreground">
+              <p class="text-xs font-semibold uppercase tracking-widest mt-0.5 text-muted-foreground">
                 {{ searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience' }}
               </p>
             </div>
 
             <div
-              class="inline-flex items-center rounded-xl border border-border bg-surface-2 p-0.5"
+              class="inline-flex items-center rounded-xl border border-border bg-muted p-0.5"
               role="toolbar"
               aria-label="Layout"
             >

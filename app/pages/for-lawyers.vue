@@ -63,23 +63,23 @@ const toggleFaq = (index: number) => {
 </script>
 
 <template>
-  <div class="bg-canvas">
+  <div class="bg-background">
 
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-ink py-24 text-ink-foreground md:py-32">
+    <section class="relative overflow-hidden bg-foreground py-24 text-background md:py-32">
       <div class="pointer-events-none absolute -top-48 left-1/2 size-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
 
       <div class="relative mx-auto max-w-7xl px-6 text-center md:px-8">
-        <p class="text-eyebrow mb-6 text-brass">For legal professionals</p>
-        <h1 class="display-2xl mx-auto max-w-3xl text-ink-foreground">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-primary">For legal professionals</p>
+        <h1 class="font-heading text-5xl font-medium tracking-tight md:text-6xl mx-auto max-w-3xl text-background">
           Grow your practice.<br>
           <em class="font-normal italic">Keep every naira you earn.</em>
         </h1>
-        <p class="mx-auto mt-8 mb-10 max-w-xl text-lg leading-relaxed text-ink-muted">
+        <p class="mx-auto mt-8 mb-10 max-w-xl text-lg leading-relaxed text-background/70">
           Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
         </p>
 
-        <Button size="lg" class="cursor-pointer bg-paper text-foreground hover:bg-paper/90" as-child>
+        <Button size="lg" class="cursor-pointer bg-card text-foreground hover:bg-card/90" as-child>
           <NuxtLink to="/register?role=lawyer">
             Register as a lawyer
           </NuxtLink>
@@ -88,10 +88,10 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Features Grid -->
-    <section class="bg-canvas py-24">
+    <section class="bg-background py-24">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16 text-center">
-          <h2 class="display-xl mb-4 text-foreground">
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-foreground">
             Everything you need to succeed
           </h2>
           <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -106,7 +106,7 @@ const toggleFaq = (index: number) => {
             class="rounded-2xl border border-border bg-card p-8 shadow-sm transition-shadow hover:shadow-md"
           >
             <div
-              class="mb-6 flex size-12 items-center justify-center rounded-xl bg-surface-2 text-primary"
+              class="mb-6 flex size-12 items-center justify-center rounded-xl bg-muted text-primary"
               v-html="feat.icon"
             />
             <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
@@ -117,14 +117,14 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- How it works for lawyers -->
-    <section class="border-t border-ink-border bg-ink py-24 text-ink-foreground">
+    <section class="border-t border-background/20 bg-foreground py-24 text-background">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16">
-          <p class="text-eyebrow mb-4 text-brass">Onboarding</p>
-          <h2 class="display-xl mb-4 text-ink-foreground">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Onboarding</p>
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-background">
             How to get started
           </h2>
-          <p class="max-w-2xl text-lg text-ink-muted">
+          <p class="max-w-2xl text-lg text-background/70">
             Four simple steps to start growing your digital practice.
           </p>
         </div>
@@ -133,24 +133,24 @@ const toggleFaq = (index: number) => {
           <div
             v-for="step in lawyerSteps"
             :key="step.num"
-            class="rounded-2xl border border-ink-border bg-ink-foreground/5 p-8"
+            class="rounded-2xl border border-background/20 bg-foreground-foreground/5 p-8"
           >
-            <div class="font-display mb-6 text-5xl leading-none text-brass italic">
+            <div class="font-heading mb-6 text-5xl leading-none text-primary italic">
               {{ step.num }}
             </div>
-            <h3 class="mb-3 text-base font-semibold tracking-tight text-ink-foreground">{{ step.title }}</h3>
-            <p class="text-sm leading-relaxed text-ink-muted">{{ step.desc }}</p>
+            <h3 class="mb-3 text-base font-semibold tracking-tight text-background">{{ step.title }}</h3>
+            <p class="text-sm leading-relaxed text-background/70">{{ step.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="border-t border-border bg-surface-2 py-24">
+    <section id="pricing" class="border-t border-border bg-muted py-24">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
 
         <div class="mx-auto mb-16 max-w-2xl text-center">
-          <h2 class="display-xl mb-4 text-foreground">
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-foreground">
             Simple, transparent pricing.
           </h2>
           <p class="text-lg leading-relaxed text-muted-foreground">
@@ -159,13 +159,13 @@ const toggleFaq = (index: number) => {
         </div>
 
         <!-- Pricing Card -->
-        <div class="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-10 shadow-sm ring-2 ring-brass/30">
-          <p class="text-eyebrow mb-6 text-center text-brass">Annual membership</p>
+        <div class="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-10 shadow-sm ring-2 ring-primary/30">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-center text-primary">Annual membership</p>
 
           <div class="mb-8 mt-2 text-center">
             <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
             <div class="mb-2 flex items-end justify-center gap-1.5">
-              <span class="font-display text-5xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
+              <span class="font-heading text-5xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
               <span class="mb-1.5 text-sm text-muted-foreground">/ year</span>
             </div>
             <p class="text-sm text-muted-foreground">The only payment on GetaLawyer. Consultation fees are paid directly to you.</p>
@@ -182,10 +182,10 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- FAQ Section -->
-    <section class="bg-canvas py-24">
+    <section class="bg-background py-24">
       <div class="mx-auto max-w-3xl px-6 md:px-8">
         <div class="mb-16 text-center">
-          <h2 class="display-xl text-foreground">
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl text-foreground">
             Frequently asked questions
           </h2>
         </div>
@@ -202,7 +202,7 @@ const toggleFaq = (index: number) => {
             >
               <span class="pr-8 text-base font-semibold text-foreground">{{ faq.q }}</span>
               <div
-                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-primary transition-transform duration-300"
+                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-primary transition-transform duration-300"
                 :class="{ 'rotate-180': openFaqs[idx] }"
               >
                 <PhCaretDown class="size-4" weight="bold" />
@@ -220,12 +220,12 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Bottom CTA -->
-    <section class="border-t border-ink-border bg-ink py-24 text-center text-ink-foreground">
+    <section class="border-t border-background/20 bg-foreground py-24 text-center text-background">
       <div class="mx-auto max-w-2xl px-6 md:px-8">
-        <h2 class="display-xl mb-6 text-ink-foreground">
+        <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 text-background">
           Ready to grow your digital practice?
         </h2>
-        <p class="mb-10 text-lg leading-relaxed text-ink-muted">
+        <p class="mb-10 text-lg leading-relaxed text-background/70">
           Join hundreds of verified lawyers securely acquiring clients on our platform today.
         </p>
         <Button size="lg" class="cursor-pointer" as-child>

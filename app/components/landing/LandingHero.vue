@@ -36,23 +36,23 @@ function searchFor(term: string) {
 </script>
 
 <template>
-  <section class="relative overflow-x-clip bg-canvas py-20 md:py-28 lg:min-h-[calc(100dvh-5rem)] lg:py-32">
+  <section class="relative overflow-x-clip bg-background py-20 md:py-28 lg:min-h-[calc(100dvh-5rem)] lg:py-32">
     <!-- Soft brand glow -->
-    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-linear-to-b from-brass/6 to-transparent" />
+    <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-linear-to-b from-primary/6 to-transparent" />
 
     <HeroLawyerSpotlightFloat />
 
     <div class="relative z-10 mx-auto max-w-3xl px-6 text-center md:px-8">
       <!-- Eyebrow pill -->
-      <div class="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-surface-2 px-3.5 py-2">
-        <span class="size-1.5 animate-pulse rounded-full bg-brass" />
-        <span class="text-eyebrow text-brass">Every lawyer NIN &amp; SCN verified</span>
+      <div class="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-3.5 py-2">
+        <span class="size-1.5 animate-pulse rounded-full bg-primary" />
+        <span class="text-xs font-semibold uppercase tracking-widest text-primary">Every lawyer NIN &amp; SCN verified</span>
       </div>
 
       <!-- Headline -->
-      <h1 class="display-2xl mx-auto max-w-4xl text-balance text-foreground lg:max-w-5xl">
+      <h1 class="font-heading text-5xl font-medium tracking-tight md:text-6xl mx-auto max-w-4xl text-balance text-foreground lg:max-w-5xl">
         Get legal help
-        <em class="font-display italic font-medium text-primary">without the runaround.</em>
+        <em class="font-heading italic font-medium text-primary">without the runaround.</em>
       </h1>
 
       <!-- Sub -->
@@ -63,7 +63,7 @@ function searchFor(term: string) {
       <HeroLawyerSpotlightAvatars />
 
       <!-- Search card -->
-      <div class="mx-auto mt-10 max-w-2xl rounded-[1.25rem] border border-border bg-card p-2 text-left shadow-lg shadow-ink/4 transition-all duration-300 focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/10">
+      <div class="mx-auto mt-10 max-w-2xl rounded-[1.25rem] border border-border bg-card p-2 text-left shadow-lg shadow-foreground/4 transition-all duration-300 focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/10">
         <div class="flex flex-col sm:flex-row sm:items-stretch">
           <!-- What field -->
           <div class="flex flex-1 items-center gap-3 px-4 py-2.5">
@@ -71,7 +71,7 @@ function searchFor(term: string) {
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <label for="hero-what" class="text-eyebrow text-muted-foreground">What do you need?</label>
+              <label for="hero-what" class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">What do you need?</label>
               <input
                 id="hero-what"
                 v-model="whatInput"
@@ -93,7 +93,7 @@ function searchFor(term: string) {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
             </svg>
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <label for="hero-where" class="text-eyebrow text-muted-foreground">Where?</label>
+              <label for="hero-where" class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Where?</label>
               <select
                 id="hero-where"
                 v-model="whereInput"

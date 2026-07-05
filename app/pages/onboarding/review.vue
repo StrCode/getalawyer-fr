@@ -109,7 +109,7 @@ const cardClass =
   'relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm'
 
 const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-border/40 pb-4'
-const sectionTitleClass = 'text-eyebrow text-brass'
+const sectionTitleClass = 'text-xs font-semibold uppercase tracking-widest text-primary'
 const fieldLabelClass = 'text-sm font-semibold uppercase tracking-wide text-muted-foreground/70'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 </script>
@@ -126,10 +126,10 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 
     <div
       v-if="ninDisplay.variant === 'action'"
-      class="flex gap-3 rounded-2xl border border-brass/30 bg-brass/10 px-4 py-4 sm:px-5"
+      class="flex gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5"
       role="status"
     >
-      <PhWarningCircle class="mt-0.5 size-5 shrink-0 text-brass" weight="fill" />
+      <PhWarningCircle class="mt-0.5 size-5 shrink-0 text-primary" weight="fill" />
       <div class="min-w-0 flex-1 space-y-2">
         <p class="text-base font-semibold text-foreground">
           Identity verification is incomplete
@@ -137,7 +137,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
         <p class="text-base leading-relaxed text-muted-foreground">
           Add your NIN before submitting. Our team verifies it during application review.
         </p>
-        <Button variant="outline" size="sm" class="border-brass/30 bg-card hover:bg-brass/10" as-child>
+        <Button variant="outline" size="sm" class="border-primary/30 bg-card hover:bg-primary/10" as-child>
           <NuxtLink to="/onboarding/nin-verification">
             Complete NIN verification
           </NuxtLink>
@@ -208,7 +208,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
                   :class="{
                     'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified',
                     'border-primary/20 bg-primary/5 text-primary': ninDisplay.variant === 'pending',
-                    'border-brass/30 bg-brass/10 text-brass': ninDisplay.variant === 'action',
+                    'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'action',
                   }"
                 >
                   <PhCheckCircle
@@ -337,7 +337,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <p :class="fieldLabelClass">Legal specializations</p>
             <ul
               v-if="practiceAreaRows.length"
-              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-surface-2/50"
+              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-muted/50"
             >
               <li
                 v-for="row in practiceAreaRows"

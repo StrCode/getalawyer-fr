@@ -13,14 +13,14 @@ const slots = useSlots()
   <div class="mb-6">
     <p
       v-if="eyebrow"
-      class="text-eyebrow mb-2 text-brass"
+      class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary"
     >
       {{ eyebrow }}
     </p>
     <h2 class="flex items-center gap-3 text-xl font-semibold tracking-tight text-foreground">
       <span
         v-if="slots.icon"
-        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-primary ring-1 ring-border/70 [&>svg]:size-5"
+        class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary ring-1 ring-border/70 [&>svg]:size-5"
       >
         <slot name="icon" />
       </span>

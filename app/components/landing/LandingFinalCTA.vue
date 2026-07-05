@@ -2,19 +2,19 @@
 </script>
 
 <template>
-  <section class="bg-canvas py-16 md:py-32">
+  <section class="bg-background py-16 md:py-32">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
 
       <!-- Split Card CTA -->
-      <div class="relative flex flex-col overflow-hidden rounded-2xl bg-ink shadow-lg lg:flex-row">
+      <div class="relative flex flex-col overflow-hidden rounded-2xl bg-foreground shadow-lg lg:flex-row">
 
         <!-- Text Side -->
         <div class="relative z-10 flex flex-1 flex-col justify-center p-10 md:p-14 lg:p-20">
-          <p class="text-eyebrow mb-4 text-brass">Ready when you are</p>
-          <h2 class="display-xl mb-6 max-w-xl text-ink-foreground">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Ready when you are</p>
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 max-w-xl text-background">
             Get the legal help you need, from someone you can trust.
           </h2>
-          <p class="mb-10 max-w-lg text-xl leading-normal text-ink-muted">
+          <p class="mb-10 max-w-lg text-xl leading-normal text-background/70">
             Verified lawyers. Transparent pricing. Booking in minutes. Take the stress out of finding legal representation today.
           </p>
 
@@ -26,7 +26,7 @@
               variant="outline"
               size="lg"
               as-child
-              class="border-ink-border bg-transparent text-ink-foreground hover:border-ink-foreground/60 hover:bg-white/5 hover:text-ink-foreground"
+              class="border-background/20 bg-transparent text-background hover:border-background/60 hover:bg-white/5 hover:text-background"
             >
               <NuxtLink to="/for-lawyers">I'm a lawyer</NuxtLink>
             </Button>
@@ -44,7 +44,7 @@
             loading="lazy"
           />
           <!-- Color wash -->
-          <div class="absolute inset-0 bg-ink/20 mix-blend-multiply" />
+          <div class="absolute inset-0 bg-foreground/20 mix-blend-multiply" />
 
           <!-- Gradient fades to blend the image into the ink card -->
           <div class="absolute inset-0 hidden bg-linear-to-r from-ink via-ink/60 to-transparent lg:block" />

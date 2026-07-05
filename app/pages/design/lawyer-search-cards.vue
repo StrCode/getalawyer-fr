@@ -98,7 +98,7 @@ const demos: LawyerSearchCardPreviewBlock[] = [
 
 <template>
   <div class="min-h-screen bg-background pb-20">
-    <section class="border-border border-b bg-marketing-canvas py-12 dark:bg-muted/30">
+    <section class="border-border border-b bg-background py-12 dark:bg-muted/30">
       <div class="mx-auto max-w-3xl px-4 text-center">
         <p class="font-mono text-muted-foreground text-xs uppercase tracking-[0.14em]">
           Design preview

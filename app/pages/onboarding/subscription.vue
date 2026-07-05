@@ -104,7 +104,7 @@ const noticeToneClass = computed(() => {
     return 'border-primary/20 bg-primary/5 text-foreground'
   }
   if (tone === 'failed') {
-    return 'border-brass/30 bg-brass/10 text-foreground'
+    return 'border-primary/30 bg-primary/10 text-foreground'
   }
   return 'border-primary/20 bg-primary/5 text-foreground'
 })
@@ -281,7 +281,7 @@ async function retry() {
     </div>
 
     <div v-else-if="statusError" class="space-y-6 py-8 text-center">
-      <h1 class="font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
+      <h1 class="font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground">
         Could not load your application
       </h1>
       <Button class="rounded-full" @click="retry">
@@ -291,10 +291,10 @@ async function retry() {
 
     <div v-else class="space-y-6 py-6 sm:py-10">
       <div class="text-center">
-        <p class="mb-2 text-eyebrow text-brass">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
           Annual membership
         </p>
-        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Lawyer subscription
         </h1>
         <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">

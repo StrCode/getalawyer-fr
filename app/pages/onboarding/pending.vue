@@ -217,15 +217,15 @@ async function retryStatus() {
     <!-- Error -->
     <div v-else-if="statusUnavailable" class="space-y-8 py-8 text-center">
       <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full border border-brass/30 bg-brass/10 text-brass ring-4 ring-background shadow-lg"
+        class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
         <PhHourglass class="size-10" weight="duotone" />
       </div>
       <div class="space-y-2">
-        <p class="text-eyebrow text-brass">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Application status
         </p>
-        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Could not load status
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -247,15 +247,15 @@ async function retryStatus() {
     <!-- Verification failed — refund initiated -->
     <div v-else-if="isVerificationFailed" class="space-y-8 py-8 text-center">
       <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full border border-brass/30 bg-brass/10 text-brass ring-4 ring-background shadow-lg"
+        class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
         <PhHourglass class="size-10" weight="duotone" />
       </div>
       <div class="space-y-2">
-        <p class="text-eyebrow text-brass">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Verification outcome
         </p>
-        <h1 class="font-display text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
           Verification could not be completed
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -293,10 +293,10 @@ async function retryStatus() {
             <PhFileSearch class="size-11 text-primary" weight="duotone" />
           </div>
 
-          <p class="mb-2 text-eyebrow text-brass">
+          <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
             Step 3 of 3 · Application status
           </p>
-          <h1 class="font-display text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+          <h1 class="font-heading text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
             Application submitted
           </h1>
           <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
@@ -402,7 +402,7 @@ async function retryStatus() {
         <!-- Timeline (Mercury-style) -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-4">
-            <h2 class="text-eyebrow text-brass">
+            <h2 class="text-xs font-semibold uppercase tracking-widest text-primary">
               What happens next
             </h2>
           </div>

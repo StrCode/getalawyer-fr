@@ -430,12 +430,12 @@ onBeforeUnmount(() => {
                 />
               </div>
 
-              <p class="mb-3 text-eyebrow text-muted-foreground">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Selected ({{ selectedCount }}/5)
               </p>
 
               <div
-                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-surface-2/50 p-2"
+                class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border/40 bg-muted/50 p-2"
               >
                 <div
                   v-for="spec in filtered"

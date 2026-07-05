@@ -17,11 +17,11 @@ export const badgeVariants = cva(
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         brass:
-          "border-transparent bg-brass text-brass-foreground [a&]:hover:bg-brass/90",
+          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
         verified:
-          "border-brass/30 bg-brass/15 text-brass-foreground [a&]:hover:bg-brass/20",
+          "border-primary/30 bg-primary/15 text-primary [a&]:hover:bg-primary/20",
         soft:
-          "border-border bg-surface-2 text-muted-foreground [a&]:hover:bg-surface-3",
+          "border-border bg-muted text-muted-foreground [a&]:hover:bg-accent",
       },
     },
     defaultVariants: {

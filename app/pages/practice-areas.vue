@@ -76,18 +76,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-canvas pb-24">
+  <div class="min-h-screen bg-background pb-24">
 
     <!-- Hero / Header -->
-    <section class="relative overflow-hidden border-b border-ink-border bg-ink py-20 md:py-24">
+    <section class="relative overflow-hidden border-b border-background/20 bg-foreground py-20 md:py-24">
       <div class="pointer-events-none absolute -top-32 right-0 size-[480px] rounded-full bg-primary/10 blur-3xl" />
 
       <div class="relative z-10 mx-auto max-w-7xl px-6 text-center md:px-8">
-        <p class="text-eyebrow mb-4 text-brass">Directory</p>
-        <h1 class="display-xl mb-4 text-ink-foreground">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Directory</p>
+        <h1 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-background">
           Practice Areas
         </h1>
-        <p class="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-ink-muted">
+        <p class="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-background/70">
           Find verified specialists for any legal situation. Search our complete directory of practice areas below.
         </p>
 
@@ -111,7 +111,7 @@ onMounted(() => {
 
       <!-- Empty State -->
       <div v-if="visibleAreas.length === 0" class="py-20 text-center">
-        <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-surface-2 text-primary">
+        <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
           <PhWarningCircle class="size-6" weight="bold" />
         </div>
         <h3 class="mb-2 text-lg font-semibold text-foreground">No practice areas found</h3>
@@ -127,7 +127,7 @@ onMounted(() => {
           :to="`/search?practice=${encodeURIComponent(area.name.toLowerCase().replace(/ /g, '-'))}`"
           class="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-6 text-foreground no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
         >
-          <div class="flex size-10 items-center justify-center rounded-xl bg-surface-2 text-primary" v-html="area.icon" />
+          <div class="flex size-10 items-center justify-center rounded-xl bg-muted text-primary" v-html="area.icon" />
           <h3 class="text-base leading-tight font-semibold text-foreground">{{ area.name }}</h3>
           <p class="text-sm leading-relaxed text-muted-foreground">{{ area.desc }}</p>
 

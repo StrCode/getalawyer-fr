@@ -23,6 +23,15 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
+  app: {
+    head: {
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.bunny.net', crossorigin: '' },
+      ],
+    },
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
+  },
   image: {
     inject: true,
   },
@@ -91,40 +100,7 @@ export default defineNuxtConfig({
         global: true,
       },
 
-      // CursorGothic — body copy
-      {
-        name: 'CursorGothic',
-        src: '/fonts/CursorGothic-Regular.woff2',
-        weight: 400,
-        style: 'normal',
-        global: true,
-      },
-      {
-        name: 'CursorGothic',
-        src: '/fonts/CursorGothic-Italic.woff2',
-        weight: 400,
-        style: 'italic',
-        global: true,
-      },
-      {
-        name: 'CursorGothic',
-        src: '/fonts/CursorGothic-Bold.woff2',
-        weight: 700,
-        style: 'normal',
-        global: true,
-      },
-      {
-        name: 'CursorGothic',
-        src: '/fonts/CursorGothic-BoldItalic.woff2',
-        weight: 700,
-        style: 'italic',
-        global: true,
-      },
     ],
-  },
-  app: {
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' }
   },
   runtimeConfig: {
     public: {

@@ -35,7 +35,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </LawyerProfileSectionHeading>
       <p
         v-if="profile.about.headline?.trim()"
-        class="font-display text-2xl leading-snug tracking-[-0.02em] text-foreground md:text-3xl"
+        class="font-heading text-2xl leading-snug tracking-[-0.02em] text-foreground md:text-3xl"
       >
         {{ profile.about.headline }}
       </p>
@@ -114,7 +114,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           :key="item.id"
           class="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
         >
-          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-primary ring-1 ring-border/70">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-muted text-primary ring-1 ring-border/70">
             <PhGraduationCap class="size-5" />
           </div>
           <div class="min-w-0">

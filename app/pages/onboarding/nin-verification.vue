@@ -160,12 +160,12 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           <PhLock class="h-10 w-10" weight="fill" />
         </div>
         <div
-          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-eyebrow text-primary"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary"
         >
           <PhShieldCheck class="h-4 w-4" weight="fill" />
           Verified by Getalawyer
         </div>
-        <h2 class="mb-3 text-2xl font-display font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
+        <h2 class="mb-3 text-2xl font-heading font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Your National Identification Number has been verified. It cannot be changed while your
           application is active.

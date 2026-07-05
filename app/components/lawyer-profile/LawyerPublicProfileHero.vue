@@ -49,7 +49,7 @@ const emit = defineEmits<{
         {{ backLinkLabel }}
       </NuxtLink>
 
-      <p class="text-eyebrow mb-3 text-brass">
+      <p class="text-xs font-semibold uppercase tracking-widest mb-3 text-primary">
         Lawyer profile
       </p>
 
@@ -105,12 +105,12 @@ const emit = defineEmits<{
           </div>
 
           <div class="mb-2 flex flex-wrap items-center gap-3">
-            <h1 class="font-display text-4xl font-semibold tracking-[-0.02em] text-foreground md:text-5xl">
+            <h1 class="font-heading text-4xl font-semibold tracking-[-0.02em] text-foreground md:text-5xl">
               {{ lawyer.name }}
             </h1>
             <PhSealCheck
               v-if="lawyer.ninVerified"
-              class="size-7 text-brass"
+              class="size-7 text-primary"
               weight="fill"
             />
           </div>

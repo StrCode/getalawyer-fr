@@ -1,0 +1,90 @@
+<script setup lang="ts">
+import NavMain from '@/components/NavMain.vue'
+import NavUser from '@/components/NavUser.vue'
+import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
+import { getSessionUserType } from '@/lib/session-user'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from '@/components/ui/sidebar'
+
+withDefaults(
+  defineProps<{
+    variant?: 'sidebar' | 'floating' | 'inset'
+  }>(),
+  { variant: 'inset' },
+)
+
+const { session } = useAuth()
+const role = computed(() => getSessionUserType(session.value?.user))
+
+const { data: subscriptionStatus, isFetched: subscriptionFetched } = useSubscriptionStatus({
+  enabled: computed(() => role.value === 'lawyer'),
+})
+
+const showUpgradePrompt = computed(() => {
+  return role.value === 'lawyer'
+    && subscriptionFetched.value
+    && !subscriptionStatus.value?.hasActiveSubscription
+})
+</script>
+
+<template>
+  <Sidebar
+    :variant="variant"
+    collapsible="offcanvas"
+  >
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            as-child
+            size="lg"
+            class="data-[slot=sidebar-menu-button]:p-1.5!"
+          >
+            <LandingBrandLogo
+              to="/dashboard"
+              :show-wordmark="true"
+            />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+
+    <SidebarContent>
+      <NavMain />
+    </SidebarContent>
+
+    <SidebarFooter class="border-t border-sidebar-border">
+      <NuxtLink
+        v-if="showUpgradePrompt"
+        to="/dashboard/subscription"
+        class="mb-2 block px-2"
+      >
+        <Card class="gap-0 overflow-hidden border-primary/20 bg-primary/5 py-0 shadow-none transition-colors hover:border-primary/30 hover:bg-primary/10">
+          <CardContent class="px-3 py-2.5">
+            <p class="text-xs font-semibold text-foreground">
+              Activate subscription
+            </p>
+            <p class="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+              Start receiving client bookings
+            </p>
+          </CardContent>
+        </Card>
+      </NuxtLink>
+
+      <div class="rounded-lg border border-sidebar-border bg-sidebar p-1">
+        <NavUser />
+      </div>
+    </SidebarFooter>
+
+    <SidebarRail />
+  </Sidebar>
+</template>

@@ -64,7 +64,7 @@ const emit = defineEmits<{
 
     <div class="space-y-6 p-6 md:p-7">
       <div v-if="availableMeetingTypes.length">
-        <h3 class="text-eyebrow mb-3 text-muted-foreground">
+        <h3 class="text-xs font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
           Meeting types
         </h3>
         <div class="space-y-2">
@@ -102,7 +102,7 @@ const emit = defineEmits<{
       </div>
 
       <div v-if="practiceInfo && (isAuthenticated || availableMeetingTypes.includes('in_person'))">
-        <h3 class="text-eyebrow mb-3 text-muted-foreground">
+        <h3 class="text-xs font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
           Office
         </h3>
         <div class="rounded-lg border border-border p-4">
@@ -125,7 +125,7 @@ const emit = defineEmits<{
       </div>
 
       <div v-if="statesOfPractice.length">
-        <h3 class="text-eyebrow mb-3 text-muted-foreground">
+        <h3 class="text-xs font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
           Licensed in
         </h3>
         <div class="flex flex-wrap gap-2">

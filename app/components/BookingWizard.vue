@@ -194,10 +194,10 @@ function close() {
     >
       <!-- Header -->
       <div class="shrink-0 border-b border-border px-6 pb-5 pt-6 md:px-8">
-        <p class="text-eyebrow text-brass">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Step {{ currentStep }} of {{ totalSteps }}
         </p>
-        <h2 class="mt-2 font-display text-2xl font-semibold tracking-[-0.02em] text-foreground">
+        <h2 class="mt-2 font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground">
           Book a consultation
         </h2>
 
@@ -216,7 +216,7 @@ function close() {
                 ? 'bg-primary text-primary-foreground ring-4 ring-primary/15'
                 : currentStep > step.number
                   ? 'bg-primary text-primary-foreground'
-                  : 'bg-surface-3 text-muted-foreground'"
+                  : 'bg-accent text-muted-foreground'"
               :aria-current="currentStep === step.number ? 'step' : undefined"
               @click="goToStep(step.number)"
             >
@@ -292,7 +292,7 @@ function close() {
           </div>
           <div
             v-else
-            class="rounded-2xl border border-dashed border-border bg-surface-2 p-8 text-center text-sm text-muted-foreground"
+            class="rounded-2xl border border-dashed border-border bg-muted p-8 text-center text-sm text-muted-foreground"
           >
             This lawyer has no consultation types available right now.
           </div>
@@ -441,7 +441,7 @@ function close() {
             </p>
           </div>
 
-          <div v-if="lawyerInfo" class="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-4">
+          <div v-if="lawyerInfo" class="flex items-center gap-3 rounded-2xl border border-border bg-muted p-4">
             <div class="size-12 shrink-0 overflow-hidden rounded-xl bg-primary/10">
               <img
                 v-if="lawyerInfo.image"
@@ -466,14 +466,14 @@ function close() {
           <dl class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
             <div class="flex items-start justify-between gap-4 p-4">
               <div class="min-w-0">
-                <dt class="text-eyebrow text-muted-foreground">Consultation</dt>
+                <dt class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Consultation</dt>
                 <dd class="mt-1 font-medium text-foreground">{{ selectedConsultationType?.name }}</dd>
               </div>
               <Button variant="link" size="sm" class="h-auto p-0" @click="goToStep(1)">Edit</Button>
             </div>
             <div class="flex items-start justify-between gap-4 p-4">
               <div class="min-w-0">
-                <dt class="text-eyebrow text-muted-foreground">Date & time</dt>
+                <dt class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Date & time</dt>
                 <dd class="mt-1 font-medium tabular-nums text-foreground">
                   {{ state.scheduledDate }} at {{ state.scheduledStartTime }}
                 </dd>
@@ -483,7 +483,7 @@ function close() {
             </div>
             <div class="flex items-start justify-between gap-4 p-4">
               <div class="min-w-0">
-                <dt class="text-eyebrow text-muted-foreground">Meeting</dt>
+                <dt class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Meeting</dt>
                 <dd class="mt-1 font-medium capitalize text-foreground">
                   {{ state.meetingType.replace('_', ' ') }}
                 </dd>
@@ -494,12 +494,12 @@ function close() {
               <Button variant="link" size="sm" class="h-auto p-0" @click="goToStep(3)">Edit</Button>
             </div>
             <div v-if="state.clientNotes" class="p-4">
-              <dt class="text-eyebrow text-muted-foreground">Notes</dt>
+              <dt class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Notes</dt>
               <dd class="mt-1 whitespace-pre-line text-sm text-muted-foreground">{{ state.clientNotes }}</dd>
             </div>
           </dl>
 
-          <div class="flex items-center justify-between rounded-2xl bg-ink px-5 py-4 text-ink-foreground">
+          <div class="flex items-center justify-between rounded-2xl bg-foreground px-5 py-4 text-background">
             <span class="text-sm font-medium">Total</span>
             <span class="text-2xl font-semibold tabular-nums">
               {{ formatPrice(selectedConsultationType?.price) }}

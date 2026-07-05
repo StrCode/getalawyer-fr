@@ -30,7 +30,7 @@ defineEmits<{ openProfile: [] }>()
   <div class="flex min-w-0 flex-col" :class="density === 'grid' ? 'gap-3' : 'gap-2.5'">
     <blockquote
       v-if="!hideSnippet && snippetSource"
-      class="border-border/60 bg-surface-2/80 text-muted-foreground rounded-xl border px-3.5 py-2.5 text-left text-sm leading-relaxed"
+      class="border-border/60 bg-muted/80 text-muted-foreground rounded-xl border px-3.5 py-2.5 text-left text-sm leading-relaxed"
       :class="[
         density === 'grid' ? 'text-center [&_p]:text-center' : '',
         snippetClass,

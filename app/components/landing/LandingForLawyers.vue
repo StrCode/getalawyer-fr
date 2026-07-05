@@ -24,20 +24,20 @@ const features = [
 </script>
 
 <template>
-  <section id="lawyers" class="relative overflow-hidden bg-ink py-12 text-ink-foreground md:py-24">
+  <section id="lawyers" class="relative overflow-hidden bg-foreground py-12 text-background md:py-24">
     <!-- Subtle accent glow -->
-    <div class="pointer-events-none absolute -top-48 -right-48 size-[600px] rounded-full bg-brass/5 blur-3xl" />
+    <div class="pointer-events-none absolute -top-48 -right-48 size-[600px] rounded-full bg-primary/5 blur-3xl" />
 
     <div class="relative mx-auto max-w-7xl px-6 md:px-8">
       <div class="grid grid-cols-1 items-center gap-16 lg:grid-cols-2 lg:gap-20">
 
         <!-- Left: copy -->
         <div>
-          <p class="text-eyebrow mb-4 text-brass">For legal professionals</p>
-          <h2 class="display-xl max-w-2xl text-ink-foreground">
-            Grow your practice. <em class="font-display italic font-normal text-ink-muted">Keep every naira you earn.</em>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">For legal professionals</p>
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl max-w-2xl text-background">
+            Grow your practice. <em class="font-heading italic font-normal text-background/70">Keep every naira you earn.</em>
           </h2>
-          <p class="mt-6 mb-9 max-w-lg text-xl leading-normal text-ink-muted">
+          <p class="mt-6 mb-9 max-w-lg text-xl leading-normal text-background/70">
             Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat monthly subscription. Your bar-verified credentials, displayed prominently.
           </p>
 
@@ -49,7 +49,7 @@ const features = [
               variant="outline"
               size="lg"
               as-child
-              class="border-ink-border bg-transparent text-ink-foreground hover:border-ink-foreground/60 hover:bg-white/5 hover:text-ink-foreground"
+              class="border-background/20 bg-transparent text-background hover:border-background/60 hover:bg-white/5 hover:text-background"
             >
               <NuxtLink to="/for-lawyers">Learn more</NuxtLink>
             </Button>
@@ -61,14 +61,14 @@ const features = [
           <div
             v-for="feat in features"
             :key="feat.title"
-            class="group rounded-2xl border border-ink-border bg-white/5 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-brass/30"
+            class="group rounded-2xl border border-background/20 bg-white/5 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30"
           >
             <div
-              class="mb-4 flex size-9 items-center justify-center rounded-xl bg-brass/10 text-brass transition-transform duration-300 group-hover:scale-105"
+              class="mb-4 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-105"
               v-html="feat.icon"
             />
-            <h4 class="mb-1.5 text-base font-semibold text-ink-foreground">{{ feat.title }}</h4>
-            <p class="text-sm leading-normal text-ink-muted">{{ feat.desc }}</p>
+            <h4 class="mb-1.5 text-base font-semibold text-background">{{ feat.title }}</h4>
+            <p class="text-sm leading-normal text-background/70">{{ feat.desc }}</p>
           </div>
         </div>
 

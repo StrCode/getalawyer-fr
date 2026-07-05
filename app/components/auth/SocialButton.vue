@@ -4,7 +4,7 @@
     :disabled="disabled"
     :aria-label="iconOnly ? resolvedAriaLabel : undefined"
     :class="cn(
-      'inline-flex shrink-0 items-center justify-center gap-2.5 bg-paper hover:bg-surface-2 active:scale-[0.98] disabled:opacity-50 border border-border rounded-xl font-semibold text-foreground shadow-xs transition-all duration-200 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:border-primary',
+      'inline-flex shrink-0 items-center justify-center gap-2.5 bg-card hover:bg-muted active:scale-[0.98] disabled:opacity-50 border border-border rounded-xl font-semibold text-foreground shadow-xs transition-all duration-200 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:border-primary',
       iconOnly ? 'h-11 min-w-0 flex-1 px-3' : 'h-11 w-full px-4 text-sm whitespace-nowrap',
     )"
     @click="$emit('click')"

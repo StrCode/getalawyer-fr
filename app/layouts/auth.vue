@@ -23,29 +23,29 @@ const trustPoints = [
 </script>
 
 <template>
-  <div class="flex min-h-dvh w-full overflow-hidden bg-canvas">
+  <div class="flex min-h-dvh w-full overflow-hidden bg-background">
     <!-- LEFT PANEL: Ink editorial -->
     <aside
-      class="relative hidden min-h-dvh flex-col justify-between overflow-hidden bg-ink px-10 py-10 text-ink-foreground lg:flex lg:w-[44%] xl:w-1/2"
+      class="relative hidden min-h-dvh flex-col justify-between overflow-hidden bg-foreground px-10 py-10 text-background lg:flex lg:w-[44%] xl:w-1/2"
     >
-      <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-brass/10 via-transparent to-primary/5" />
+      <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-primary/5" />
 
       <div class="relative z-10">
         <LandingBrandLogo
           to="/"
           on-dark
-          class="text-ink-foreground"
+          class="text-background"
         />
       </div>
 
       <div class="relative z-10 flex w-full max-w-xl flex-1 flex-col justify-center py-10">
-        <p class="text-eyebrow mb-5 text-brass">
+        <p class="text-xs font-semibold uppercase tracking-widest mb-5 text-primary">
           Verified legal representation
         </p>
-        <h2 class="font-display text-4xl font-semibold leading-[1.05] tracking-[-0.025em] lg:text-[2.75rem] xl:text-5xl">
+        <h2 class="font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.025em] lg:text-[2.75rem] xl:text-5xl">
           {{ authTitle }}
         </h2>
-        <p class="mt-6 max-w-md text-base leading-relaxed text-ink-foreground/65 lg:text-lg">
+        <p class="mt-6 max-w-md text-base leading-relaxed text-background/65 lg:text-lg">
           {{ authDescription }}
         </p>
 
@@ -53,22 +53,22 @@ const trustPoints = [
           <li
             v-for="point in trustPoints"
             :key="point.label"
-            class="flex items-center gap-3 text-sm text-ink-foreground/75"
+            class="flex items-center gap-3 text-sm text-background/75"
           >
             <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/6 ring-1 ring-white/10">
-              <component :is="point.icon" class="size-4 text-brass" weight="fill" aria-hidden="true" />
+              <component :is="point.icon" class="size-4 text-primary" weight="fill" aria-hidden="true" />
             </span>
             {{ point.label }}
           </li>
         </ul>
       </div>
 
-      <div class="relative z-10 flex w-full flex-col gap-4 border-t border-ink-border/60 pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <div class="relative z-10 flex w-full flex-col gap-4 border-t border-background/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
-          <p class="mb-1 text-sm font-semibold text-ink-foreground">
+          <p class="mb-1 text-sm font-semibold text-background">
             Take GetaLawyer with you
           </p>
-          <p class="text-sm leading-relaxed text-ink-foreground/60">
+          <p class="text-sm leading-relaxed text-background/60">
             Find verified lawyers on our mobile app for iOS and Android.
           </p>
         </div>
@@ -80,7 +80,7 @@ const trustPoints = [
 
     <!-- RIGHT PANEL: Form -->
     <main
-      class="relative flex min-h-dvh w-full flex-1 flex-col overflow-y-auto bg-canvas lg:w-[56%] xl:w-1/2"
+      class="relative flex min-h-dvh w-full flex-1 flex-col overflow-y-auto bg-background lg:w-[56%] xl:w-1/2"
     >
       <div class="absolute left-6 right-6 top-6 z-10 flex justify-between sm:left-8 sm:right-8 sm:top-8">
         <NuxtLink

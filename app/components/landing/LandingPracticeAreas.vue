@@ -22,13 +22,13 @@ function searchHref(term: string) {
 </script>
 
 <template>
-  <section id="practice" class="bg-surface-2 py-12 md:py-24">
+  <section id="practice" class="bg-muted py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Header row -->
       <div class="mb-12 flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
         <div>
-          <p class="text-eyebrow mb-4 text-brass">Practice areas</p>
-          <h2 class="display-xl max-w-2xl text-foreground">
+          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Practice areas</p>
+          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl max-w-2xl text-foreground">
             Find a specialist for what you're facing.
           </h2>
         </div>
@@ -46,7 +46,7 @@ function searchHref(term: string) {
         >
           <!-- Header: icon + name -->
           <div class="mb-4 flex items-start gap-3">
-            <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-primary transition-colors duration-300 group-hover:bg-primary/10" v-html="area.icon" />
+            <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-primary transition-colors duration-300 group-hover:bg-primary/10" v-html="area.icon" />
             <NuxtLink
               :to="searchHref(area.name)"
               class="mt-1 text-base font-semibold leading-snug text-foreground no-underline transition-colors hover:text-primary"
