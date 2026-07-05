@@ -26,7 +26,9 @@ const lawyerDashboardNav: DashboardNavLink[] = [
 const clientDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: appIcons.dashboardSquare, exact: true },
   { title: 'My Bookings', to: '/dashboard/bookings', icon: appIcons.calendar, clientOnly: true },
+  { title: 'My Cases', to: '/dashboard/cases', icon: appIcons.briefcase, clientOnly: true },
   { title: 'Messages', to: '/dashboard/messages', icon: appIcons.chatCircle },
+  { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: appIcons.user, clientOnly: true },
   { title: 'Profile', to: '/dashboard/profile', icon: appIcons.userCircle, clientOnly: true },
   { title: 'Settings', to: '/dashboard/settings', icon: appIcons.gearSix },
 ]
@@ -76,6 +78,7 @@ export function isDashboardNavActive(
 const ROUTE_LABELS: Record<string, string> = {
   '/dashboard': 'Overview',
   '/dashboard/bookings': 'My Bookings',
+  '/dashboard/cases': 'My Cases',
   '/dashboard/messages': 'Messages',
   '/dashboard/cases': 'Cases',
   '/dashboard/appointments': 'Appointments',

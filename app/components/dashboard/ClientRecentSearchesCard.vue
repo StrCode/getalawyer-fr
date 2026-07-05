@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
+import {
+  type RecentLawyerDirectoryEntry,
+  useRecentLawyerDirectorySearches,
+} from '~/composables/useRecentLawyerDirectorySearches'
+import { lawyersListingQueryFromParts } from '~/composables/useLawyerFilters'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+const { listStoredOnly, hasStoredSearches } = useRecentLawyerDirectorySearches()
+
+const searches = computed(() => listStoredOnly())
+const showCard = computed(() => hasStoredSearches() && searches.value.length > 0)
+
+function searchLabel(entry: RecentLawyerDirectoryEntry): string {
+  if (entry.keywords.trim()) return entry.keywords.trim()
+  if (entry.location.trim()) return entry.location.trim()
+  if (entry.practiceAreas.length > 0) return 'Practice area search'
+  return 'Directory search'
+}
+
+function searchSubtitle(entry: RecentLawyerDirectoryEntry): string {
+  const parts: string[] = []
+  if (entry.keywords.trim() && entry.location.trim()) parts.push(entry.location.trim())
+  if (entry.consultationTypes.length > 0) parts.push(entry.consultationTypes.join(', '))
+  return parts.join(' · ')
+}
+
+function searchQuery(entry: RecentLawyerDirectoryEntry) {
+  return lawyersListingQueryFromParts({
+    keywords: entry.keywords,
+    location: entry.location,
+    consultationTypes: entry.consultationTypes,
+    practiceAreas: entry.practiceAreas,
+  })
+}
+</script>
+
+<template>
+  <Card
+    v-if="showCard"
+    class="py-0 shadow-xs"
+  >
+    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/60 px-4 py-4">
+      <div>
+        <CardTitle class="text-base">
+          Recent searches
+        </CardTitle>
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          Pick up where you left off
+        </p>
+      </div>
+      <Button
+        as-child
+        variant="ghost"
+        size="sm"
+        class="cursor-pointer"
+      >
+        <NuxtLink to="/find-lawyers">
+          New search
+        </NuxtLink>
+      </Button>
+    </CardHeader>
+
+    <CardContent class="divide-y divide-border p-0">
+      <NuxtLink
+        v-for="entry in searches"
+        :key="entry.id"
+        :to="{ path: '/find-lawyers', query: searchQuery(entry) }"
+        class="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
+      >
+        <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <AppIcon
+            :icon="appIcons.magnifyingGlass"
+            class="size-4"
+          />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-sm font-medium text-foreground group-hover:text-primary">
+            {{ searchLabel(entry) }}
+          </span>
+          <span
+            v-if="searchSubtitle(entry)"
+            class="block truncate text-xs text-muted-foreground"
+          >
+            {{ searchSubtitle(entry) }}
+          </span>
+        </span>
+        <AppIcon
+          :icon="appIcons.caretRight"
+          class="size-4 shrink-0 text-muted-foreground group-hover:text-foreground"
+        />
+      </NuxtLink>
+    </CardContent>
+  </Card>
+</template>

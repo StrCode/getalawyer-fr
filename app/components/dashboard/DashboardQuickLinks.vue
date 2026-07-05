@@ -22,7 +22,7 @@ defineProps<{
       :title="title"
     />
     <div
-      class="gap-2 grid grid-cols-1 sm:grid-cols-2"
+      class="gap-2 grid grid-cols-1 min-[480px]:grid-cols-2"
       :class="title ? 'mt-3' : ''"
     >
       <NuxtLink

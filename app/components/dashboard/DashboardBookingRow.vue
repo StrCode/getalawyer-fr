@@ -73,6 +73,31 @@ const initials = computed(() => {
               {{ booking.meetingType.replace('_', ' ') }}
             </span>
           </div>
+
+          <div
+            v-if="booking.engagementOutcome === 'client_hired'"
+            class="mt-3 flex flex-wrap items-center gap-2"
+          >
+            <Badge variant="verified">
+              Case opened
+            </Badge>
+            <NuxtLink
+              v-if="booking.caseId"
+              :to="`/dashboard/cases/${booking.caseId}`"
+              class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+              @click.stop
+            >
+              View case
+            </NuxtLink>
+            <NuxtLink
+              v-else
+              to="/dashboard/cases"
+              class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+              @click.stop
+            >
+              View cases
+            </NuxtLink>
+          </div>
         </div>
 
         <AppIcon :icon="appIcons.caretRight" class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />

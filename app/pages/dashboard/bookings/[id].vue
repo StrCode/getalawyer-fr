@@ -210,7 +210,7 @@
                     as-child
                   >
                     <NuxtLink
-                      to="/dashboard/cases"
+                      :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
                       class="gap-2"
                     >
                       View case

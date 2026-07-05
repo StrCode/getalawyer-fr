@@ -82,6 +82,7 @@ export const queryKeys = {
   },
   client: {
     profile: ["client", "profile"] as const,
+    dashboard: ["dashboard", "client"] as const,
   },
   subscription: {
     status: ["subscription", "status"] as const,

@@ -52,8 +52,11 @@ export function useDashboardNavBadges() {
   })
 
   const activeCasesBadge = computed(() => {
+    if (role.value !== 'lawyer' && role.value !== 'client') return undefined
     if (!casesFetched.value) return undefined
-    const count = (casesData.value?.cases ?? []).filter(c => c.status === 'active').length
+    const count = (casesData.value?.cases ?? []).filter(
+      (c) => c.status === 'active' || c.status === 'reopened',
+    ).length
     return badgeFromCount(count)
   })
 

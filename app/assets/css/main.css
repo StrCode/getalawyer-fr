@@ -203,8 +203,11 @@
   }
 
   .dashboard-stat-grid {
-    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4;
-    @apply *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs;
+    @apply grid grid-cols-2 gap-4 lg:grid-cols-4;
+  }
+
+  .dashboard-stat-grid > [data-slot="card"] {
+    @apply bg-gradient-to-t from-primary/5 to-card shadow-xs;
   }
 }
 
