@@ -223,7 +223,7 @@ async function retryStatus() {
           Could not load status
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
-          appIcons.check your connection and try again.
+          Check your connection and try again.
         </p>
       </div>
       <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">

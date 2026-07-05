@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <!-- Task Filters and appIcons.magnifyingGlass -->
+    <!-- Task Filters and Search -->
     <UCard>
       <div class="flex md:flex-row flex-col md:items-center gap-4">
         <div class="flex flex-1 gap-3">
@@ -25,7 +25,7 @@
         
         <UInput
           v-model="searchQuery"
-          placeholder="appIcons.magnifyingGlass tasks..."
+          placeholder="Search tasks..."
           class="flex-1 md:max-w-xs"
         >
           <template #leading>

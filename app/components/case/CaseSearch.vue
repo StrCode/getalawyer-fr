@@ -9,7 +9,7 @@
           />
           <Input
             v-model="searchQuery"
-            placeholder="appIcons.magnifyingGlass cases by title, number, or description..."
+            placeholder="Search cases by title, number, or description..."
             class="h-11 pl-9"
             @keyup.enter="performSearch"
           />
@@ -28,7 +28,7 @@
           :loading="searching"
           @click="performSearch"
         >
-          appIcons.magnifyingGlass
+          Search
         </ButtonBusy>
       </CardContent>
     </Card>
@@ -169,7 +169,7 @@
             @click="showSaveSearchModal = true"
           >
             <AppIcon :icon="appIcons.bookmarkSimple" class="size-4" aria-hidden="true" />
-            Save Current appIcons.magnifyingGlass
+            Save Current Search
           </Button>
         </div>
       </CardContent>
@@ -189,14 +189,14 @@
         size="sm"
         @click="clearSearch"
       >
-        Clear appIcons.magnifyingGlass
+        Clear Search
       </Button>
     </div>
 
     <Dialog v-model:open="showSaveSearchModal">
       <DialogContent class="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Save appIcons.magnifyingGlass</DialogTitle>
+          <DialogTitle>Save Search</DialogTitle>
         </DialogHeader>
 
         <Input

@@ -157,7 +157,7 @@ function onSave() {
       <template v-else>
         <Field>
           <FieldLabel class="sr-only">
-            appIcons.magnifyingGlass practice areas
+            Search practice areas
           </FieldLabel>
           <div class="relative">
             <AppIcon :icon="appIcons.magnifyingGlass"
@@ -166,7 +166,7 @@ function onSave() {
             <Input
               v-model="query"
               :disabled="disabled"
-              placeholder="appIcons.magnifyingGlass legal areas…"
+              placeholder="Search legal areas…"
               class="pl-9"
             />
           </div>

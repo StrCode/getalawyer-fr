@@ -110,7 +110,7 @@ definePageMeta({
 useHead({
   title: 'Lawyers · GetaLawyer',
   meta: [
-    { name: 'description', content: 'appIcons.magnifyingGlass and find qualified lawyers by practice area, location, and consultation type.' },
+    { name: 'description', content: 'Search and find qualified lawyers by practice area, location, and consultation type.' },
     { name: 'robots', content: 'noindex' }
   ]
 })
@@ -381,7 +381,7 @@ const showMobileFilters = ref(false)
         <!-- Unified search bar (Glide / Fiverr pattern) -->
         <div
           role="search"
-          aria-label="appIcons.magnifyingGlass lawyers"
+          aria-label="Search lawyers"
           class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-foreground/4"
         >
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -394,7 +394,7 @@ const showMobileFilters = ref(false)
                 autocomplete="off"
                 aria-label="Topic or keywords"
                 class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
-                placeholder="appIcons.magnifyingGlass by topic or keyword…"
+                placeholder="Search by topic or keyword…"
               >
             </label>
             <div class="mx-2 hidden h-8 w-px bg-border sm:block" />

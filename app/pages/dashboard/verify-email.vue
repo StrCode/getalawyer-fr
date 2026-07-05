@@ -27,7 +27,7 @@
         v-if="sent"
         class="mb-4 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground"
       >
-        Verification link sent. appIcons.check your inbox and spam folder.
+        Verification link sent. Check your inbox and spam folder.
       </p>
 
       <Button

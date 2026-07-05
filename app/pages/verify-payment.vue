@@ -213,7 +213,7 @@ function retryVerify() {
             :disabled="verifyPending"
             @click="retryVerify"
           >
-            appIcons.check again
+            Check again
           </Button>
           <Button as-child :class="isFailed ? 'w-full' : ''">
             <NuxtLink to="/onboarding/subscription">

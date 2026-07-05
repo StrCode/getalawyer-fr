@@ -1,7 +1,7 @@
 <template>
   <AuthFormShell
     eyebrow="Verification"
-    :title="isPhoneMethod ? 'appIcons.check your phone' : 'appIcons.check your email'"
+    :title="isPhoneMethod ? 'Check your phone' : 'Check your email'"
   >
     <p class="mb-6 text-base leading-relaxed text-muted-foreground">
       We sent a 6-digit code to

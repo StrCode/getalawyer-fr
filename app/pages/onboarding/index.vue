@@ -157,7 +157,7 @@ function refresh() {
         Could not load your progress
       </h1>
       <p class="mb-6 text-sm text-muted-foreground">
-        appIcons.check your connection and try again.
+        Check your connection and try again.
       </p>
       <Button class="h-11 w-full font-semibold" @click="refresh">
         Retry

@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <!-- appIcons.magnifyingGlass -->
+    <!-- Search -->
     <div class="relative w-full">
       <AppIcon :icon="appIcons.magnifyingGlass"
         class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -52,7 +52,7 @@
       <Input
         v-model="query"
         type="search"
-        placeholder="appIcons.magnifyingGlass practice areas..."
+        placeholder="Search practice areas..."
         class="h-11 pl-9 text-base"
         autocomplete="off"
       />

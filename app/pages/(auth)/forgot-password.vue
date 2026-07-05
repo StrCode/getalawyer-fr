@@ -1,7 +1,7 @@
 <template>
   <AuthFormShell
     eyebrow="Account recovery"
-    :title="submitted ? 'appIcons.check your inbox' : 'Forgot your password?'"
+    :title="submitted ? 'Check your inbox' : 'Forgot your password?'"
     :description="submitted
       ? undefined
       : authMethod === 'phone'
@@ -16,7 +16,7 @@
       <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 shrink-0 text-primary" />
       <div>
         <p class="mb-0.5 text-base font-medium text-foreground">
-          {{ authMethod === 'phone' ? 'appIcons.check your phone' : 'appIcons.check your email' }}
+          {{ authMethod === 'phone' ? 'Check your phone' : 'Check your email' }}
         </p>
         <p class="text-base leading-relaxed text-muted-foreground">
           We&apos;ve sent a verification code to

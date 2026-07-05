@@ -72,7 +72,7 @@
         
         <UInput
           v-model="searchQuery"
-          placeholder="appIcons.magnifyingGlass tasks..."
+          placeholder="Search tasks..."
           class="flex-1"
         >
           <template #leading>

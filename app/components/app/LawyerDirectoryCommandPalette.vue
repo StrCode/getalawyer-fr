@@ -100,7 +100,7 @@ onMounted(() => {
   <CommandDialog
     v-model:open="open"
     title="Lawyer directory"
-    description="appIcons.magnifyingGlass the directory, open marketing pages, or repeat a saved search."
+    description="Search the directory, open marketing pages, or repeat a saved search."
   >
     <CommandInput placeholder="Topics, navigation, repeats…" />
     <CommandList class="max-h-[min(50vh,24rem)]">

@@ -21,7 +21,7 @@
         
         <UInput
           v-model="searchQuery"
-          placeholder="appIcons.magnifyingGlass activities..."
+          placeholder="Search activities..."
           class="flex-1"
         >
           <template #leading>

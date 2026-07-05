@@ -356,7 +356,7 @@ onBeforeUnmount(() => {
 
                       <ListboxFilter v-model="stateQuery" as-child>
                         <TagsInputInput
-                          placeholder="appIcons.magnifyingGlass or select states..."
+                          placeholder="Search or select states..."
                           class="min-h-8 text-base placeholder:text-muted-foreground/50"
                           @keydown.enter.prevent
                           @keydown.down="statesPopoverOpen = true"
@@ -426,7 +426,7 @@ onBeforeUnmount(() => {
                 <AppIcon :icon="appIcons.magnifyingGlass" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   v-model="query"
-                  placeholder="appIcons.magnifyingGlass legal areas..."
+                  placeholder="Search legal areas..."
                   :class="[inputClass, 'pl-10']"
                 />
               </div>
