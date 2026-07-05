@@ -6,10 +6,16 @@
       description="Link a real email to receive notifications and recover your account."
     >
       <p class="mb-4 text-sm text-muted-foreground">
-        Your account uses a phone-based email placeholder. Add your real email from the dashboard.
+        Your account uses a phone-based sign-in. Add your email from the dashboard.
       </p>
-      <Button as-child variant="outline" class="cursor-pointer">
-        <NuxtLink to="/dashboard/verify-email">Link email address</NuxtLink>
+      <Button
+        as-child
+        variant="outline"
+        size="sm"
+      >
+        <NuxtLink to="/dashboard/verify-email">
+          Link email address
+        </NuxtLink>
       </Button>
     </SettingsSectionCard>
 
@@ -19,65 +25,38 @@
       description="Confirm your email to receive booking and security notifications."
     >
       <p class="mb-4 text-sm text-muted-foreground">
-        Email verification is optional during onboarding. You can verify anytime from your dashboard.
+        {{ session?.user?.email }}
       </p>
-      <Button as-child variant="outline" class="cursor-pointer">
-        <NuxtLink to="/dashboard/verify-email">Verify email</NuxtLink>
+      <Button
+        as-child
+        variant="outline"
+        size="sm"
+      >
+        <NuxtLink to="/dashboard/verify-email">
+          Verify email
+        </NuxtLink>
       </Button>
     </SettingsSectionCard>
 
     <SettingsSectionCard
-      title="Verification status"
-      description="Lawyers may require verified identity before sensitive consultations."
+      v-else
+      title="Email address"
+      description="Used for sign-in and account notifications."
     >
-      <div class="grid gap-3 sm:grid-cols-3">
-        <div
-          v-for="item in statusItems"
-          :key="item.key"
-          class="rounded-lg border border-border/80 p-4"
-        >
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-sm font-medium text-foreground">
-              {{ item.label }}
-            </p>
-            <Badge :variant="badgeVariant(item.status)">
-              {{ statusLabel(item.status) }}
-            </Badge>
-          </div>
-          <p class="mt-1 text-xs text-muted-foreground">
-            {{ item.hint }}
-          </p>
-        </div>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-foreground">
+          {{ session?.user?.email }}
+        </p>
+        <Badge variant="secondary" class="font-normal">
+          <AppIcon :icon="appIcons.checkCircle" class="mr-1 size-3.5" />
+          Verified
+        </Badge>
       </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
-      title="Government-issued ID"
-      description="NIN slip, international passport, or driver's licence."
-    >
-      <SettingsUploadField
-        label="Upload ID document"
-        accept=".pdf,.jpg,.jpeg,.png"
-        :file-name="idFileName"
-        @select="onIdSelect"
-      />
-    </SettingsSectionCard>
-
-    <SettingsSectionCard
-      title="Proof of address"
-      description="Utility bill or bank statement dated within the last 3 months."
-    >
-      <SettingsUploadField
-        label="Upload proof of address"
-        accept=".pdf,.jpg,.jpeg,.png"
-        :file-name="addressFileName"
-        @select="onAddressSelect"
-      />
-    </SettingsSectionCard>
-
-    <SettingsSectionCard
       title="Phone verification"
-      description="We'll send a one-time code to confirm your number."
+      description="Verify your mobile number for sign-in and SMS notifications."
     >
       <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div class="min-w-0 flex-1">
@@ -90,11 +69,12 @@
           v-if="!phoneVerified"
           type="button"
           variant="outline"
-          class="shrink-0 cursor-pointer"
+          size="sm"
+          class="shrink-0"
           :disabled="isSendingOtp"
           @click="handleSendOtp"
         >
-          {{ isSendingOtp ? 'Sending…' : 'Send OTP' }}
+          {{ isSendingOtp ? 'Sending…' : 'Send code' }}
         </Button>
         <Badge
           v-else
@@ -105,6 +85,7 @@
           Verified
         </Badge>
       </div>
+
       <div
         v-if="otpSent && !phoneVerified"
         class="mt-4 space-y-4"
@@ -119,7 +100,32 @@
           @request-new-code="handleSendOtp"
         />
         <AuthDevOtpHint />
-        <p v-if="linkError" class="text-sm text-destructive">{{ linkError }}</p>
+        <p
+          v-if="linkError"
+          class="text-sm text-destructive"
+        >
+          {{ linkError }}
+        </p>
+      </div>
+    </SettingsSectionCard>
+
+    <SettingsSectionCard
+      title="Password"
+      description="Reset your password via email or phone verification."
+    >
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <p class="text-sm text-muted-foreground">
+          Use the secure reset flow if you need to change your password.
+        </p>
+        <Button
+          as-child
+          variant="outline"
+          size="sm"
+        >
+          <NuxtLink to="/forgot-password">
+            Reset password
+          </NuxtLink>
+        </Button>
       </div>
     </SettingsSectionCard>
   </div>
@@ -129,19 +135,13 @@
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
-import SettingsUploadField from '@/components/settings/SettingsUploadField.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { AccountSettingsDraft, VerificationStatus } from '~/types/account-settings'
-
-const draft = defineModel<AccountSettingsDraft['identity']>('draft', { required: true })
 
 const { session, refetchSession } = useAuth()
 const { sendPhoneOtp, verifyPhoneOtp, isTooManyAttemptsError } = usePhoneAuth()
 const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
 
-const idFileName = ref('')
-const addressFileName = ref('')
 const phone = ref('')
 const otpSent = ref(false)
 const otpCode = ref('')
@@ -153,53 +153,8 @@ const isVerifying = ref(false)
 
 const phoneVerified = computed(() => {
   const user = session.value?.user as { phoneNumberVerified?: boolean } | undefined
-  return Boolean(user?.phoneNumberVerified) || draft.value.phoneVerified
+  return Boolean(user?.phoneNumberVerified)
 })
-
-const statusItems = computed(() => [
-  {
-    key: 'id',
-    label: 'Government ID',
-    status: draft.value.idDocumentStatus,
-    hint: 'Passport, NIN, or licence',
-  },
-  {
-    key: 'address',
-    label: 'Proof of address',
-    status: draft.value.addressProofStatus,
-    hint: 'Utility bill or statement',
-  },
-  {
-    key: 'phone',
-    label: 'Phone OTP',
-    status: phoneVerified.value ? 'verified' as VerificationStatus : 'not_submitted',
-    hint: 'SMS verification',
-  },
-])
-
-function statusLabel(status: VerificationStatus) {
-  if (status === 'verified') return 'Verified'
-  if (status === 'pending') return 'Pending'
-  return 'Not submitted'
-}
-
-function onIdSelect(name: string) {
-  idFileName.value = name
-  if (name)
-    draft.value.idDocumentStatus = 'pending'
-}
-
-function onAddressSelect(name: string) {
-  addressFileName.value = name
-  if (name)
-    draft.value.addressProofStatus = 'pending'
-}
-
-function badgeVariant(status: VerificationStatus): 'default' | 'secondary' | 'outline' {
-  if (status === 'verified') return 'default'
-  if (status === 'pending') return 'secondary'
-  return 'outline'
-}
 
 async function handleSendOtp() {
   linkError.value = ''
@@ -237,7 +192,6 @@ async function verifyOtp() {
       }
       return
     }
-    draft.value.phoneVerified = true
     await refetchSession()
   } finally {
     isVerifying.value = false

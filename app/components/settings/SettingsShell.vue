@@ -1,57 +1,51 @@
 <template>
-  <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 lg:flex-row lg:gap-10">
-    <!-- Secondary nav (Lindy / Perplexity pattern) -->
+  <div class="flex w-full flex-col gap-6 lg:flex-row lg:gap-10">
     <nav
       class="hidden lg:block lg:w-56 lg:shrink-0"
       aria-label="Account settings"
     >
-      <div class="sticky top-20 space-y-6 rounded-xl border border-border bg-background p-3">
-        <div class="hidden px-1 lg:block">
-          <p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-            Settings
-          </p>
-          <p class="mt-1 text-sm text-foreground/80">
-            Manage your account and legal preferences.
-          </p>
-        </div>
-
-        <div class="space-y-5">
-          <div
-            v-for="group in SETTINGS_NAV_GROUPS"
-            :key="group.key"
-            class="space-y-0.5"
+      <div class="sticky top-24 space-y-1 rounded-xl border border-border bg-card p-2">
+        <ul class="space-y-0.5">
+          <li
+            v-for="item in SETTINGS_NAV"
+            :key="item.id"
           >
-            <p class="mb-1.5 px-2 text-xs font-medium tracking-wider text-muted-foreground uppercase">
-              {{ group.label }}
-            </p>
-            <ul class="space-y-0.5">
-              <li
-                v-for="item in navByGroup[group.key]"
-                :key="item.id"
-              >
-                <button
-                  type="button"
-                  class="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors"
-                  :class="activeSection === item.id
-                    ? 'bg-background font-medium text-primary shadow-sm ring-1 ring-border/80'
-                    : 'text-foreground/80 hover:bg-background/60 hover:text-foreground'"
-                  @click="$emit('update:activeSection', item.id)"
-                >
-                  <AppIcon :icon="item.icon"
-                    class="size-4 shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span class="truncate">{{ item.label }}</span>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
+            <button
+              type="button"
+              class="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors"
+              :class="activeSection === item.id
+                ? 'bg-primary/10 font-medium text-primary'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
+              @click="$emit('update:activeSection', item.id)"
+            >
+              <AppIcon :icon="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+              <span class="truncate">{{ item.label }}</span>
+            </button>
+          </li>
+        </ul>
       </div>
     </nav>
 
-    <!-- Main panel -->
-    <div class="min-w-0 flex-1">
+    <div class="min-w-0 flex-1 space-y-6">
+      <Select
+        class="lg:hidden"
+        :model-value="activeSection"
+        @update:model-value="onMobileSectionChange"
+      >
+        <SelectTrigger class="w-full">
+          <SelectValue :placeholder="activeNavItem?.label ?? 'Section'" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="item in SETTINGS_NAV"
+            :key="item.id"
+            :value="item.id"
+          >
+            {{ item.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+
       <slot />
     </div>
   </div>
@@ -59,26 +53,29 @@
 
 <script setup lang="ts">
 import AppIcon from '@/components/AppIcon.vue'
-import { SETTINGS_NAV, SETTINGS_NAV_GROUPS } from '@/components/settings/settings-nav'
+import { SETTINGS_NAV, isSettingsSectionId } from '@/components/settings/settings-nav'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { SettingsSectionId } from '~/types/account-settings'
 
-defineProps<{
+const props = defineProps<{
   activeSection: SettingsSectionId
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:activeSection': [SettingsSectionId]
 }>()
 
-const navByGroup = computed(() => {
-  const map = {
-    account: [] as typeof SETTINGS_NAV,
-    activity: [] as typeof SETTINGS_NAV,
-    preferences: [] as typeof SETTINGS_NAV,
+const activeNavItem = computed(() => SETTINGS_NAV.find(n => n.id === props.activeSection))
+
+function onMobileSectionChange(value: unknown) {
+  if (typeof value === 'string' && isSettingsSectionId(value)) {
+    emit('update:activeSection', value)
   }
-  for (const item of SETTINGS_NAV) {
-    map[item.group].push(item)
-  }
-  return map
-})
+}
 </script>

@@ -131,12 +131,15 @@ export interface ClientProfile {
   image: string | null;
   role: string;
   onboardingCompleted: boolean;
-  clientId: string;
+  clientId: string | null;
   company: string | null;
-  country: string;
-  state: string;
+  city: string | null;
+  bio: string | null;
+  country: string | null;
+  state: string | null;
   phoneNumber: string | null;
-  clientCreatedAt: string;
+  clientCreatedAt: string | null;
+  specializations?: Pick<Specialization, 'id' | 'name'>[];
 }
 
 // API namespace
@@ -176,10 +179,17 @@ export const api = {
       name?: string;
       image?: string;
       company?: string;
+      city?: string;
+      bio?: string;
       country?: string;
       state?: string;
       phoneNumber?: string;
     }) => httpClient.patch<ApiResponse>("/api/clients/me", data),
+    updateSpecializations: (data: { specializationIds: string[] }) =>
+      httpClient.put<{ specializations: Specialization[] }>(
+        "/api/clients/me/specializations",
+        data,
+      ),
     uploadAvatar: (formData: FormData) =>
       httpClient.postFormData<
         ApiResponse<{ imageUrl: string }> & { imageUrl?: string }

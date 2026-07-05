@@ -4,12 +4,22 @@ import { appIcons } from '@/lib/app-icons'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-const props = defineProps<{
-  name: string
-  email?: string | null
-  imageUrl?: string | null
-  uploading?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    name: string
+    email?: string | null
+    imageUrl?: string | null
+    uploading?: boolean
+    title?: string
+    description?: string
+    fileHint?: string
+  }>(),
+  {
+    title: 'Profile photo',
+    description: 'Shown on your public profile and in search results.',
+    fileHint: 'JPEG, PNG, GIF, or WebP · max 5 MB',
+  },
+)
 
 const emit = defineEmits<{
   upload: [file: File]
@@ -38,10 +48,10 @@ function onFileSelected(event: Event) {
   <Card>
     <CardHeader class="pb-3">
       <CardTitle class="text-base">
-        Profile photo
+        {{ title }}
       </CardTitle>
       <CardDescription>
-        Shown on your public profile and in search results.
+        {{ description }}
       </CardDescription>
     </CardHeader>
     <CardContent class="flex flex-col gap-6 sm:flex-row sm:items-center">
@@ -74,7 +84,7 @@ function onFileSelected(event: Event) {
           {{ email }}
         </p>
         <p class="mt-2 text-sm text-muted-foreground">
-          JPEG, PNG, GIF, or WebP · max 5 MB
+          {{ fileHint }}
         </p>
       </div>
 

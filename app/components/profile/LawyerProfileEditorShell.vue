@@ -14,6 +14,9 @@ import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSecti
 import ProfilePracticeAreasSection from '@/components/profile/sections/ProfilePracticeAreasSection.vue'
 import ProfileSkillSection from '@/components/profile/sections/ProfileSkillSection.vue'
 import LawyerPublishReadinessBanner from '@/components/profile/LawyerPublishReadinessBanner.vue'
+import ProfileSectionNav from '@/components/profile/ProfileSectionNav.vue'
+import ProfileMobileSectionSelect from '@/components/profile/ProfileMobileSectionSelect.vue'
+import LawyerProfilePreviewCard from '@/components/profile/LawyerProfilePreviewCard.vue'
 import ProfileStrengthChecklist from '@/components/profile/ProfileStrengthChecklist.vue'
 import LawyerDirectoryEligibilityCard from '@/components/profile/LawyerDirectoryEligibilityCard.vue'
 import { Button } from '@/components/ui/button'
@@ -36,6 +39,20 @@ import {
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
+const LAWYER_SECTIONS = [
+  { id: 'photo', label: 'Photo' },
+  { id: 'about', label: 'About' },
+  { id: 'office', label: 'Office' },
+  { id: 'practice-areas', label: 'Practice areas' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
+  { id: 'licenses', label: 'Licenses' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'articles', label: 'Articles' },
+] as const
+
+const mobileSection = ref(LAWYER_SECTIONS[0].id)
 
 const { session, isPending: authPending, refetchSession } = useAuth()
 
@@ -112,6 +129,13 @@ const profile = computed(() => profileQuery.data.value)
 const publicProfileUrl = computed(() =>
   profile.value?.lawyerId ? `/lawyers/${profile.value.lawyerId}` : null,
 )
+
+const previewOfficeLocation = computed(() => {
+  const info = profile.value?.practiceInfo
+  if (!info) return null
+  const parts = [info.officeCity, info.officeState].filter(Boolean)
+  return parts.length > 0 ? parts.join(', ') : info.primaryState
+})
 
 const displayName = computed(() => session.value?.user?.name?.trim() || 'Your profile')
 
@@ -349,7 +373,7 @@ onBeforeUnmount(() => {
 
 <template>
   <motion.div
-    class="mx-auto w-full max-w-3xl space-y-6"
+    class="mx-auto w-full max-w-5xl space-y-6"
     :initial="{ opacity: 0, y: 8 }"
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
@@ -360,13 +384,13 @@ onBeforeUnmount(() => {
     >
       <template #description>
         How clients see you on GetALawyer.
+        Practice setup and billing are in
         <NuxtLink
           to="/dashboard/settings"
           class="font-medium text-primary underline-offset-4 hover:underline"
         >
-          Account settings
-        </NuxtLink>
-        for email and security.
+          Settings
+        </NuxtLink>.
       </template>
       <template
         v-if="publicProfileUrl"
@@ -454,6 +478,31 @@ onBeforeUnmount(() => {
 
       <ProfileStrengthChecklist :profile-strength="profileStrength" />
 
+      <LawyerProfilePreviewCard
+        :name="displayName"
+        :image-url="avatarSrc"
+        :headline="profile.about.headline"
+        :about="profile.about.about"
+        :practice-areas="profile.practiceAreas"
+        :firm-name="profile.practiceInfo?.firmName"
+        :office-location="previewOfficeLocation"
+        :public-profile-url="publicProfileUrl"
+      />
+
+      <ProfileMobileSectionSelect
+        v-model="mobileSection"
+        :sections="[...LAWYER_SECTIONS]"
+        class="lg:hidden"
+      />
+
+      <div class="lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8">
+        <aside class="hidden lg:block">
+          <div class="sticky top-24">
+            <ProfileSectionNav :sections="[...LAWYER_SECTIONS]" />
+          </div>
+        </aside>
+
+        <div class="space-y-6">
       <div id="photo">
         <ProfilePhotoSection
           :name="displayName"
@@ -544,6 +593,8 @@ onBeforeUnmount(() => {
           :on-update="updateArticleItem"
           :on-delete="deleteArticleItem"
         />
+      </div>
+        </div>
       </div>
     </template>
 

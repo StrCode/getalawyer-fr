@@ -11,6 +11,8 @@ export interface UpdateClientProfileInput {
   name?: string
   image?: string
   company?: string
+  city?: string
+  bio?: string
   country?: string
   state?: string
   phoneNumber?: string
@@ -43,6 +45,11 @@ const clientProfileAPI = {
       return res.data.imageUrl
     }
     throw new ApiError('Upload failed', 500)
+  },
+
+  updateSpecializations: async (specializationIds: string[]): Promise<ClientProfile> => {
+    await api.client.updateSpecializations({ specializationIds })
+    return clientProfileAPI.getProfile()
   },
 }
 
@@ -78,9 +85,19 @@ export const useClientProfile = () => {
     })
   }
 
+  const useUpdateSpecializations = () => {
+    return useMutation({
+      mutationFn: clientProfileAPI.updateSpecializations,
+      onSuccess: async (profile) => {
+        queryClient.setQueryData(queryKeys.client.profile, profile)
+      },
+    })
+  }
+
   return {
     useProfile,
     useUpdateProfile,
     useUploadAvatar,
+    useUpdateSpecializations,
   }
 }
