@@ -26,7 +26,7 @@ import {
   onboardingSubmittedAt,
 } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 definePageMeta({
   layout: 'listing-wizard',
@@ -137,6 +137,8 @@ const subscriptionEndLabel = computed(() => {
     return null
   }
 })
+
+const nextRenewalLabel = computed(() => subscriptionEndLabel.value)
 
 const pageLoading = computed(
   () => statusPending.value || subscriptionStatusPending.value || pricingPending.value,
@@ -265,7 +267,7 @@ async function retry() {
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-xl pb-12">
+  <div class="mx-auto w-full max-w-5xl pb-12">
     <div
       v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
@@ -290,16 +292,16 @@ async function retry() {
       </Button>
     </div>
 
-    <div v-else class="space-y-6 py-6 sm:py-10">
-      <div class="text-center">
+    <div v-else class="space-y-8 py-6 sm:py-10">
+      <div class="text-center lg:text-left">
         <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
           Annual membership
         </p>
         <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
-          Lawyer subscription
+          Complete your subscription
         </h1>
-        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Pay your yearly subscription fee to activate membership once your application is approved.
+        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground lg:mx-0">
+          Pay your yearly fee while we review your application. Your membership activates once you are approved.
         </p>
       </div>
 
@@ -320,100 +322,145 @@ async function retry() {
         </p>
       </div>
 
-      <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-        <div class="border-b border-border/40 px-6 py-5">
-          <div class="flex items-center gap-3">
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+          <div class="border-b border-border/40 px-6 py-5">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
+              >
+                <AppIcon :icon="appIcons.creditCard" class="size-5" />
+              </div>
+              <div>
+                <h2 class="text-base font-semibold text-foreground">
+                  Payment
+                </h2>
+                <p class="text-xs text-muted-foreground">
+                  Secure checkout via Paystack
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <CardContent class="space-y-4 px-6 py-5">
             <div
-              class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
+              v-if="hasCheckoutFailure"
+              class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
+              role="alert"
             >
-              <AppIcon :icon="appIcons.creditCard" class="size-5" />
-            </div>
-            <div>
-              <h2 class="text-base font-semibold text-foreground">
-                Annual subscription fee
-              </h2>
-              <p class="text-xs text-muted-foreground">
-                One payment · valid for 12 months
+              <p class="font-semibold">
+                Your last payment attempt did not complete
+              </p>
+              <p class="mt-1 leading-relaxed">
+                {{ paymentFailureMessage }}
               </p>
             </div>
-          </div>
-        </div>
 
-        <div class="space-y-4 px-6 py-5">
-          <p v-if="pricing" class="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
-            {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
-            <span class="text-base font-normal text-muted-foreground">/ year</span>
-          </p>
+            <div
+              v-if="hasActiveSubscription"
+              class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
+            >
+              <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+              <div>
+                <p class="font-semibold text-foreground">
+                  Payment received
+                </p>
+                <p class="mt-0.5 text-muted-foreground">
+                  Your subscription is active
+                  <template v-if="subscriptionEndLabel">
+                    until {{ subscriptionEndLabel }}.
+                  </template>
+                  <template v-else>
+                    .
+                  </template>
+                </p>
+              </div>
+            </div>
 
-          <p class="text-sm leading-relaxed text-muted-foreground">
-            This covers platform access for one year. If identity or SCN verification fails after
-            payment, your subscription is refunded minus a
-            <template v-if="pricing">
-              {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
-            </template>
             <template v-else>
-              small
-            </template>
-            admin processing fee, as stated in the refund policy you accepted.
-          </p>
-
-          <div
-            v-if="hasCheckoutFailure"
-            class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
-            role="alert"
-          >
-            <p class="font-semibold">
-              Your last payment attempt did not complete
-            </p>
-            <p class="mt-1 leading-relaxed">
-              {{ paymentFailureMessage }}
-            </p>
-          </div>
-
-          <div
-            v-if="hasActiveSubscription"
-            class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
-          >
-            <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
-            <div>
-              <p class="font-semibold text-foreground">
-                Payment received
+              <p class="text-sm leading-relaxed text-muted-foreground">
+                You will be redirected to Paystack to pay by card or bank transfer. Your card can be saved for easy renewal next year.
               </p>
-              <p class="mt-0.5 text-muted-foreground">
-                Your subscription is active
-                <template v-if="subscriptionEndLabel">
-                  until {{ subscriptionEndLabel }}.
+
+              <Button
+                class="w-full font-semibold"
+                :disabled="paymentBusy || !pricing"
+                @click="startPayment"
+              >
+                <AppIcon
+                  v-if="paymentBusy"
+                  :icon="appIcons.circleNotch"
+                  class="mr-2 size-4 animate-spin"
+                />
+                {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
+              </Button>
+
+              <button
+                v-if="hasPendingSubscription && !paymentBusy"
+                type="button"
+                class="w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+                @click="confirmPendingPayment"
+              >
+                I already paid — confirm my payment
+              </button>
+            </template>
+          </CardContent>
+        </Card>
+
+        <aside class="space-y-4 lg:sticky lg:top-24">
+          <Card class="rounded-2xl border border-border bg-card shadow-sm">
+            <CardContent class="space-y-4 px-5 py-5">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Order summary
+                </p>
+                <p
+                  v-if="pricing"
+                  class="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-foreground"
+                >
+                  {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
+                  <span class="text-base font-normal text-muted-foreground">/ year</span>
+                </p>
+              </div>
+
+              <ul class="space-y-2 text-sm text-muted-foreground">
+                <li class="flex gap-2">
+                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  Directory listing and client bookings
+                </li>
+                <li class="flex gap-2">
+                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  Secure messaging with clients
+                </li>
+                <li class="flex gap-2">
+                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  Zero commission on your fees
+                </li>
+              </ul>
+
+              <p class="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+                <template v-if="nextRenewalLabel">
+                  Renews annually on {{ nextRenewalLabel }} unless you turn off auto-renew in your dashboard.
                 </template>
                 <template v-else>
-                  .
+                  Renews annually unless you turn off auto-renew in your dashboard.
                 </template>
               </p>
-            </div>
-          </div>
 
-          <Button
-            v-else
-            class="w-full font-semibold"
-            :disabled="paymentBusy || !pricing"
-            @click="startPayment"
-          >
-            <AppIcon :icon="appIcons.circleNotch"
-              v-if="paymentBusy"
-              class="mr-2 size-4 animate-spin"
-            />
-            {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
-          </Button>
-
-          <button
-            v-if="hasPendingSubscription && !paymentBusy"
-            type="button"
-            class="w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
-            @click="confirmPendingPayment"
-          >
-            I already paid — confirm my payment
-          </button>
-        </div>
-      </Card>
+              <p class="text-xs leading-relaxed text-muted-foreground">
+                If verification fails after payment, your subscription is refunded minus a
+                <template v-if="pricing">
+                  {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
+                </template>
+                <template v-else>
+                  small
+                </template>
+                admin fee.
+              </p>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
 
       <div class="flex flex-col items-center gap-3 pt-2">
         <p

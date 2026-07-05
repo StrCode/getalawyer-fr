@@ -138,6 +138,7 @@ export function useInitializeSubscription() {
         sessionStorage.setItem(SUBSCRIPTION_PAYMENT_REF_KEY, data.reference)
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+      queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })
     },
   })
 }
@@ -154,8 +155,141 @@ export function useUpdateSubscriptionAutoRenew() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+      queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })
     },
   })
+}
+
+export interface SubscriptionNotificationRecord {
+  id: string
+  type: string
+  message: string
+  isRead: boolean
+  sentAt: string
+  createdAt: string
+}
+
+interface SubscriptionNotificationsPayload {
+  notifications: SubscriptionNotificationRecord[]
+  unreadCount: number
+}
+
+export function useSubscriptionNotifications(options?: { enabled?: MaybeRef<boolean> }) {
+  return useQuery({
+    queryKey: queryKeys.subscription.notifications,
+    enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    queryFn: async () => {
+      const res = await httpClient.getAuth<{
+        success: boolean
+        data: SubscriptionNotificationsPayload
+      }>('/api/subscriptions/notifications?limit=20')
+      return res.data
+    },
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useMarkSubscriptionNotificationRead() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (notificationId: string) => {
+      await httpClient.patch(`/api/subscriptions/notifications/${encodeURIComponent(notificationId)}/read`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.notifications })
+    },
+  })
+}
+
+export function useMarkAllSubscriptionNotificationsRead() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      await httpClient.patch('/api/subscriptions/notifications/read-all')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.notifications })
+    },
+  })
+}
+
+export interface SubscriptionPaymentHistoryRecord {
+  id: string
+  action: string
+  amountNaira: number | null
+  paymentReference: string | null
+  paymentMethod: string | null
+  subscriptionStartDate: string | null
+  subscriptionEndDate: string | null
+  createdAt: string
+}
+
+interface SubscriptionPaymentHistoryPayload {
+  payments: SubscriptionPaymentHistoryRecord[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+export function useSubscriptionPaymentHistory(
+  page: MaybeRef<number> = 1,
+  options?: { enabled?: MaybeRef<boolean> },
+) {
+  return useQuery({
+    queryKey: computed(() => queryKeys.subscription.paymentHistory(unref(page))),
+    enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    queryFn: async () => {
+      const currentPage = unref(page)
+      const res = await httpClient.getAuth<{
+        success: boolean
+        data: SubscriptionPaymentHistoryPayload
+      }>(`/api/subscriptions/payment-history?page=${currentPage}&limit=10`)
+      return res.data
+    },
+    staleTime: 60 * 1000,
+  })
+}
+
+export type SubscriptionPaymentHistoryStatus = 'paid' | 'failed' | 'refund' | 'pending'
+
+export function formatSubscriptionHistoryAction(action: string): string {
+  const labels: Record<string, string> = {
+    created: 'Annual membership',
+    renewed: 'Membership renewal',
+    payment_failed: 'Payment failed',
+    failed_renewal: 'Renewal failed',
+    refund_initiated: 'Refund processing',
+    refunded: 'Refund',
+    refund_failed: 'Refund failed',
+  }
+  return labels[action] ?? action.replace(/_/g, ' ')
+}
+
+export function getSubscriptionHistoryStatus(
+  action: string,
+): SubscriptionPaymentHistoryStatus {
+  if (action === 'refunded') return 'refund'
+  if (action === 'refund_initiated') return 'pending'
+  if (['payment_failed', 'failed_renewal', 'refund_failed'].includes(action)) {
+    return 'failed'
+  }
+  return 'paid'
+}
+
+export function formatSubscriptionNotificationType(type: string): string {
+  const labels: Record<string, string> = {
+    expiring_soon: 'Expiring soon',
+    pre_renewal_charge: 'Upcoming charge',
+    renewal_success: 'Payment successful',
+    renewal_failed: 'Renewal issue',
+    expired: 'Expired',
+    checkout_abandoned: 'Incomplete payment',
+    price_change: 'Price update',
+  }
+  return labels[type] ?? type.replace(/_/g, ' ')
 }
 
 export function useSyncPendingSubscription() {
@@ -173,6 +307,7 @@ export function useSyncPendingSubscription() {
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
       queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
+      queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })
     },
   })
 }

@@ -18,9 +18,8 @@ import {
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Switch } from '@/components/ui/switch'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 
 definePageMeta({
@@ -65,32 +64,18 @@ const { mutateAsync: updateAutoRenew, isPending: autoRenewPending } =
 const navigatingToPayment = ref(false)
 
 const pageLoading = computed(
-  () => !isLawyer.value || statusPending.value || pricingPending.value || subscriptionPending.value
+  () => !isLawyer.value || statusPending.value || pricingPending.value || subscriptionPending.value,
 )
 
 const hasActiveSubscription = computed(
-  () => subscriptionStatus.value?.hasActiveSubscription === true
+  () => subscriptionStatus.value?.hasActiveSubscription === true,
 )
 
 const subscription = computed(() => subscriptionStatus.value?.subscription ?? null)
 
 const applicationNotice = computed(() =>
-  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null
+  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
 )
-
-const subscriptionEndLabel = computed(() => {
-  const end = subscription.value?.subscriptionEndDate
-  if (!end) return null
-  try {
-    return new Date(end).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  } catch {
-    return null
-  }
-})
 
 function formatBillingDate(iso: string | null | undefined): string | null {
   if (!iso) return null
@@ -105,6 +90,10 @@ function formatBillingDate(iso: string | null | undefined): string | null {
   }
 }
 
+const subscriptionEndLabel = computed(() =>
+  formatBillingDate(subscription.value?.subscriptionEndDate),
+)
+
 const nextBillingLabel = computed(() =>
   formatBillingDate(subscription.value?.nextBillingDate),
 )
@@ -117,7 +106,6 @@ const catalogPriceNaira = computed(
 )
 
 const lastPaidPriceNaira = computed(() => subscription.value?.priceNaira ?? null)
-
 const renewalPriceNaira = computed(() => catalogPriceNaira.value)
 
 const showPriceChangedNotice = computed(() => {
@@ -142,7 +130,6 @@ const paymentFailureMessage = computed(() =>
 )
 
 const hasRenewalIssue = computed(() => hasSubscriptionRenewalIssue(subscription.value))
-
 const hasCheckoutFailure = computed(() => hasPendingCheckoutFailure(subscription.value))
 
 const canRetryPayment = computed(() => {
@@ -194,10 +181,10 @@ async function startPayment() {
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-3xl space-y-6">
+  <div class="mx-auto w-full max-w-4xl space-y-6">
     <AppPageHeader
       title="Subscription"
-      description="Your annual GetALawyer membership — verification, directory listing, bookings, and messaging."
+      description="Manage your annual membership, billing, and payment history."
       sticky
     />
 
@@ -205,8 +192,12 @@ async function startPayment() {
       v-if="pageLoading"
       class="space-y-4"
     >
-      <Skeleton class="h-32 w-full rounded-xl" />
+      <div class="grid gap-4 sm:grid-cols-2">
+        <Skeleton class="h-36 w-full rounded-xl" />
+        <Skeleton class="h-36 w-full rounded-xl" />
+      </div>
       <Skeleton class="h-48 w-full rounded-xl" />
+      <Skeleton class="h-56 w-full rounded-xl" />
     </div>
 
     <template v-else>
@@ -229,228 +220,137 @@ async function startPayment() {
         </p>
       </div>
 
-      <Card>
+      <div
+        v-if="hasRenewalIssue"
+        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
+        role="alert"
+      >
+        <p class="font-semibold">
+          Renewal payment failed
+        </p>
+        <p class="mt-1 leading-relaxed">
+          <template v-if="paymentFailureMessage">
+            {{ paymentFailureMessage }}
+          </template>
+          <template v-else>
+            We could not charge your saved payment method. Update your card or try again.
+          </template>
+        </p>
+        <div
+          v-if="canRetryPayment"
+          class="mt-3"
+        >
+          <ButtonBusy
+            size="sm"
+            :loading="paymentBusy"
+            @click="startPayment"
+          >
+            Try payment again
+          </ButtonBusy>
+        </div>
+      </div>
+
+      <div
+        v-else-if="hasCheckoutFailure"
+        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
+        role="alert"
+      >
+        <p class="font-semibold">
+          Last payment attempt did not complete
+        </p>
+        <p class="mt-1 leading-relaxed">
+          {{ paymentFailureMessage }}
+        </p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <ButtonBusy
+            size="sm"
+            :loading="paymentBusy"
+            @click="startPayment"
+          >
+            Try payment again
+          </ButtonBusy>
+          <Button
+            variant="outline"
+            size="sm"
+            @click="() => refetchSubscription()"
+          >
+            Refresh status
+          </Button>
+        </div>
+      </div>
+
+      <SubscriptionBillingOverview
+        :subscription="subscription"
+        :has-active-subscription="hasActiveSubscription"
+        :status-label="statusLabel"
+        :subscription-end-label="subscriptionEndLabel"
+        :next-billing-label="nextBillingLabel"
+        :renewal-price-naira="renewalPriceNaira"
+        :last-paid-price-naira="lastPaidPriceNaira"
+        :show-price-changed-notice="showPriceChangedNotice"
+        :auto-renew-enabled="autoRenewEnabled"
+        :can-manage-auto-renew="canManageAutoRenew"
+        :auto-renew-pending="autoRenewPending"
+        @update:auto-renew="handleAutoRenewChange"
+      />
+
+      <Card v-if="!hasActiveSubscription && canRetryPayment && !hasRenewalIssue && !hasCheckoutFailure">
         <CardHeader>
           <CardTitle class="text-base">
-            Membership status
+            Activate membership
           </CardTitle>
-          <CardDescription>
-            <span>{{ statusLabel }}</span>
-            <template v-if="hasActiveSubscription && subscriptionEndLabel">
-              · active until {{ subscriptionEndLabel }}
-            </template>
-          </CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
-          <div
-            v-if="hasRenewalIssue"
-            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
-            role="alert"
-          >
-            <p class="font-semibold">
-              Renewal payment failed
-            </p>
-            <p class="mt-1 leading-relaxed">
-              <template v-if="paymentFailureMessage">
-                {{ paymentFailureMessage }}
-              </template>
-              <template v-else>
-                We could not charge your saved payment method. Update your card or try again.
-              </template>
-            </p>
+          <p class="text-sm text-muted-foreground">
+            <template v-if="subscription?.status === 'refund_processing'">
+              Your subscription refund is being processed. Contact support if you need help.
+            </template>
+            <template v-else-if="subscription?.status === 'verification_failed'">
+              Verification did not pass after payment. Check your application status or contact support.
+            </template>
+            <template v-else>
+              Pay the annual subscription to activate membership
+              <template v-if="catalogPriceNaira != null">
+                ({{ formatNairaAmount(catalogPriceNaira) }})
+              </template>.
+              If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
+            </template>
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <ButtonBusy
+              :loading="paymentBusy"
+              @click="startPayment"
+            >
+              Pay annual subscription
+            </ButtonBusy>
+            <Button
+              variant="outline"
+              size="sm"
+              @click="() => refetchSubscription()"
+            >
+              Refresh status
+            </Button>
           </div>
-
-          <div
-            v-else-if="hasCheckoutFailure"
-            class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
-            role="alert"
-          >
-            <p class="font-semibold">
-              Last payment attempt did not complete
-            </p>
-            <p class="mt-1 leading-relaxed">
-              {{ paymentFailureMessage }}
-            </p>
-          </div>
-
-          <template v-if="hasActiveSubscription">
-            <dl class="grid gap-3 text-sm sm:grid-cols-2">
-              <div v-if="subscription?.daysRemaining != null">
-                <dt class="text-muted-foreground">
-                  Days remaining
-                </dt>
-                <dd class="font-medium">
-                  {{ subscription.daysRemaining }}
-                </dd>
-              </div>
-              <div v-if="nextBillingLabel">
-                <dt class="text-muted-foreground">
-                  Next billing date
-                </dt>
-                <dd class="font-medium">
-                  {{ nextBillingLabel }}
-                </dd>
-              </div>
-              <div v-if="renewalPriceNaira != null">
-                <dt class="text-muted-foreground">
-                  Next renewal
-                </dt>
-                <dd class="font-medium">
-                  {{ formatNairaAmount(renewalPriceNaira) }}
-                </dd>
-              </div>
-              <div v-if="lastPaidPriceNaira != null">
-                <dt class="text-muted-foreground">
-                  Last payment
-                </dt>
-                <dd class="font-medium">
-                  {{ formatNairaAmount(lastPaidPriceNaira) }}
-                </dd>
-              </div>
-              <div v-if="subscription?.cardLast4">
-                <dt class="text-muted-foreground">
-                  Payment method
-                </dt>
-                <dd class="font-medium">
-                  {{ subscription.bank ?? 'Card' }} ···· {{ subscription.cardLast4 }}
-                </dd>
-              </div>
-            </dl>
-
-            <p
-              v-if="showPriceChangedNotice"
-              class="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
-            >
-              The annual membership price has changed since your last payment. If auto-renew is on,
-              your next charge will be
-              <span class="font-semibold text-foreground">
-                {{ formatNairaAmount(renewalPriceNaira!) }}
-              </span>.
-            </p>
-
-            <div
-              v-if="canManageAutoRenew"
-              class="flex items-start justify-between gap-4 rounded-lg border border-border px-4 py-3"
-            >
-              <div class="min-w-0 space-y-0.5">
-                <p class="text-sm font-medium text-foreground">
-                  Auto-renew
-                </p>
-                <p class="text-sm text-muted-foreground">
-                  <template v-if="autoRenewEnabled">
-                    Charge your saved card on
-                    <template v-if="nextBillingLabel">
-                      {{ nextBillingLabel }}
-                    </template>
-                    <template v-else>
-                      your renewal date
-                    </template>
-                    at the current annual rate.
-                  </template>
-                  <template v-else>
-                    Your membership stays active until
-                    <template v-if="subscriptionEndLabel">
-                      {{ subscriptionEndLabel }}
-                    </template>
-                    <template v-else>
-                      the end date
-                    </template>
-                    . Pay manually to extend it.
-                  </template>
-                </p>
-              </div>
-              <Switch
-                :model-value="autoRenewEnabled"
-                :disabled="autoRenewPending"
-                class="shrink-0"
-                aria-label="Toggle auto-renew"
-                @update:model-value="handleAutoRenewChange"
-              />
-            </div>
-          </template>
-
-          <template v-else>
-            <p class="text-sm text-muted-foreground">
-              <template v-if="hasRenewalIssue">
-                Your membership is inactive until renewal succeeds. Pay again to restore access and directory visibility.
-              </template>
-              <template v-else-if="subscription?.status === 'refund_processing'">
-                Your subscription refund is being processed. Contact support if you need help.
-              </template>
-              <template v-else-if="subscription?.status === 'verification_failed'">
-                Verification did not pass after payment. Check your application status or contact support.
-              </template>
-              <template v-else>
-                Pay the annual subscription to activate membership
-                <template v-if="catalogPriceNaira != null">
-                  ({{ formatNairaAmount(catalogPriceNaira) }})
-                </template>.
-                If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
-              </template>
-            </p>
-            <div v-if="canRetryPayment" class="flex flex-wrap gap-2">
-              <ButtonBusy
-                :loading="paymentBusy"
-                @click="startPayment"
-              >
-                {{ hasRenewalIssue || hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
-              </ButtonBusy>
-              <Button
-                variant="outline"
-                size="sm"
-                @click="() => refetchSubscription()"
-              >
-                Refresh status
-              </Button>
-            </div>
-
-            <div
-              v-if="canManageAutoRenew && !hasActiveSubscription"
-              class="flex items-start justify-between gap-4 rounded-lg border border-border px-4 py-3"
-            >
-              <div class="min-w-0 space-y-0.5">
-                <p class="text-sm font-medium text-foreground">
-                  Auto-renew
-                </p>
-                <p class="text-sm text-muted-foreground">
-                  <template v-if="autoRenewEnabled">
-                    After you fix payment, future renewals will use your saved card at the current annual rate.
-                  </template>
-                  <template v-else>
-                    Automatic renewal is off. Pay manually each year to keep your membership active.
-                  </template>
-                </p>
-              </div>
-              <Switch
-                :model-value="autoRenewEnabled"
-                :disabled="autoRenewPending"
-                class="shrink-0"
-                aria-label="Toggle auto-renew"
-                @update:model-value="handleAutoRenewChange"
-              />
-            </div>
-          </template>
         </CardContent>
       </Card>
+
+      <SubscriptionPaymentHistoryCard />
+
+      <SubscriptionNotificationsCard />
 
       <Card v-if="catalogPriceNaira != null || pricing">
         <CardHeader>
           <CardTitle class="text-base">
-            Plan details
+            What&apos;s included
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-2 text-sm text-muted-foreground">
           <p>
-            Current annual fee:
+            Annual fee:
             <span class="font-semibold text-foreground">
               {{ formatNairaAmount(catalogPriceNaira ?? pricing!.subscriptionPriceNaira) }}
             </span>
-          </p>
-          <p v-if="hasActiveSubscription && autoRenewEnabled">
-            Your next auto-renewal uses this price unless you turn auto-renew off before the billing date.
-          </p>
-          <p v-else-if="!hasActiveSubscription">
-            New subscriptions and manual renewals are charged at this rate.
+            · directory listing, bookings, and messaging.
           </p>
           <p>Zero commission on consultation fees you charge clients.</p>
           <p v-if="pricing">
