@@ -11,6 +11,7 @@ export function useAccountLinking() {
         method: "POST",
         body: { email },
         credentials: "include",
+        
       },
     );
   }
