@@ -7,13 +7,19 @@ import type { Case } from '~/types/case'
 
 const props = defineProps<{
   caseItem: Case
+  personName?: string
 }>()
 
 const emit = defineEmits<{
   click: []
 }>()
 
-const lawyerName = computed(() => props.caseItem.lawyer?.name ?? 'Lawyer')
+const counterpartyName = computed(() =>
+  props.personName
+  ?? props.caseItem.client?.name
+  ?? props.caseItem.lawyer?.name
+  ?? 'Participant',
+)
 
 const statusLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -60,7 +66,7 @@ const statusVariant = computed(() => {
             {{ (caseItem as { caseTitle?: string }).caseTitle || caseItem.title }}
           </p>
           <p class="mt-0.5 text-sm text-muted-foreground">
-            With {{ lawyerName }}
+            With {{ counterpartyName }}
           </p>
         </div>
 
