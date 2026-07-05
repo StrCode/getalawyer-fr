@@ -45,11 +45,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
     if (!conversationId) return
 
     try {
-      // Join conversation room
-      console.log('[WS] client emit conversation:join', {
-        conversationId,
-        socketConnected: $socket.connected,
-      })
       $socket.emit('conversation:join', conversationId)
       isConnected.value = true
       connectionError.value = null
@@ -241,7 +236,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
 
     // Conversation events
     $socket.on('conversation:joined', (data: { conversationId: string }) => {
-      console.log('[WS] client received conversation:joined', data)
       if (data.conversationId === conversationId) {
         isConnected.value = true
         processMessageQueue()

@@ -208,9 +208,8 @@ const createTask = async () => {
   }
 }
 
-const handleTaskStatusChange = (taskId: string, status: TaskStatus) => {
+const handleTaskStatusChange = (_taskId: string, _status: TaskStatus) => {
   // TODO: Implement task status update
-  console.log('Task status change:', taskId, status)
 }
 
 // Lifecycle

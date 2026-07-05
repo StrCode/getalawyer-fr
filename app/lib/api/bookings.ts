@@ -38,22 +38,16 @@ export const bookingsAPI = {
     const qs = params.toString()
     const url = qs ? `${BASE_PATH}?${qs}` : BASE_PATH
 
-    console.log('🔍 Fetching client bookings from:', url)
     const response = await httpClient.getAuth<{ bookings: Booking[] }>(url)
-    
-    console.log('📦 Raw response:', response)
-    console.log('📦 Has bookings key?', 'bookings' in response)
-    
+
     // API returns { bookings: [...] } directly (not wrapped in ApiResponse)
     if (response && typeof response === 'object' && 'bookings' in response) {
       const result = response.bookings || []
-      console.log('✅ Extracted bookings:', result.length, 'items')
       return result
     }
-    
+
     // Fallback: check if response is already an array
     if (Array.isArray(response)) {
-      console.log('✅ Response is already array:', response.length, 'items')
       return response
     }
     
@@ -164,19 +158,14 @@ export const bookingsAPI = {
     const qs = params.toString()
     const url = qs ? `${LAWYER_BASE_PATH}?${qs}` : LAWYER_BASE_PATH
 
-    console.log('🔍 Fetching lawyer bookings from:', url)
     const response = await httpClient.getAuth<{ bookings: Booking[] }>(url)
-    
-    console.log('📦 Raw response:', response)
-    
+
     if (response && typeof response === 'object' && 'bookings' in response) {
       const result = response.bookings || []
-      console.log('✅ Extracted bookings:', result.length, 'items')
       return result
     }
-    
+
     if (Array.isArray(response)) {
-      console.log('✅ Response is array:', response.length, 'items')
       return response
     }
     
