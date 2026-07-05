@@ -5,18 +5,19 @@
       title="Email address"
       description="Link a real email to receive notifications and recover your account."
     >
-      <p class="mb-4 text-sm text-muted-foreground">
-        Your account uses a phone-based sign-in. Add your email from the dashboard.
-      </p>
-      <Button
-        as-child
-        variant="outline"
-        size="sm"
-      >
-        <NuxtLink to="/dashboard/verify-email">
-          Link email address
-        </NuxtLink>
-      </Button>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="text-sm text-muted-foreground">
+          Your account uses phone sign-in. Add an email to unlock recovery and notifications.
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          class="cursor-pointer"
+          @click="openDialog"
+        >
+          Link email
+        </Button>
+      </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
@@ -24,18 +25,24 @@
       title="Email verification"
       description="Confirm your email to receive booking and security notifications."
     >
-      <p class="mb-4 text-sm text-muted-foreground">
-        {{ session?.user?.email }}
-      </p>
-      <Button
-        as-child
-        variant="outline"
-        size="sm"
-      >
-        <NuxtLink to="/dashboard/verify-email">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-medium text-foreground">
+            {{ session?.user?.email }}
+          </p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Waiting for confirmation
+          </p>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          class="cursor-pointer"
+          @click="openDialog"
+        >
           Verify email
-        </NuxtLink>
-      </Button>
+        </Button>
+      </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
@@ -141,6 +148,7 @@ import { Button } from '@/components/ui/button'
 const { session, refetchSession } = useAuth()
 const { sendPhoneOtp, verifyPhoneOtp, isTooManyAttemptsError } = usePhoneAuth()
 const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
+const { openDialog } = useEmailVerificationDialog()
 
 const phone = ref('')
 const otpSent = ref(false)

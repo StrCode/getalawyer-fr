@@ -89,7 +89,6 @@ const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/settings': 'Settings',
   '/dashboard/subscription': 'Subscription',
   '/dashboard/my-lawyers': 'My Lawyers',
-  '/dashboard/verify-email': 'Verify Email',
 }
 
 export function dashboardPageTitle(path: string): string {
