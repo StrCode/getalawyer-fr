@@ -10,6 +10,7 @@ import {
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
+  useUpdateSubscriptionAutoRenew,
 } from '~/composables/useSubscription'
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import {
@@ -19,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 
 definePageMeta({
@@ -57,6 +59,9 @@ const {
 const { mutateAsync: initializeSubscription, isPending: paymentInitPending } =
   useInitializeSubscription()
 
+const { mutateAsync: updateAutoRenew, isPending: autoRenewPending } =
+  useUpdateSubscriptionAutoRenew()
+
 const navigatingToPayment = ref(false)
 
 const pageLoading = computed(
@@ -87,6 +92,49 @@ const subscriptionEndLabel = computed(() => {
   }
 })
 
+function formatBillingDate(iso: string | null | undefined): string | null {
+  if (!iso) return null
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  } catch {
+    return null
+  }
+}
+
+const nextBillingLabel = computed(() =>
+  formatBillingDate(subscription.value?.nextBillingDate),
+)
+
+const catalogPriceNaira = computed(
+  () =>
+    subscription.value?.renewalPriceNaira
+    ?? pricing.value?.subscriptionPriceNaira
+    ?? null,
+)
+
+const lastPaidPriceNaira = computed(() => subscription.value?.priceNaira ?? null)
+
+const renewalPriceNaira = computed(() => catalogPriceNaira.value)
+
+const showPriceChangedNotice = computed(() => {
+  const last = lastPaidPriceNaira.value
+  const next = renewalPriceNaira.value
+  return last != null && next != null && last !== next
+})
+
+const canManageAutoRenew = computed(() => {
+  const status = subscription.value?.status
+  return status === 'active' || status === 'failed_renewal'
+})
+
+const autoRenewEnabled = computed(
+  () => subscription.value?.autoRenewEnabled ?? true,
+)
+
 const statusLabel = computed(() => formatSubscriptionStatusLabel(subscription.value?.status))
 
 const paymentFailureMessage = computed(() =>
@@ -104,6 +152,23 @@ const canRetryPayment = computed(() => {
 })
 
 const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPending.value)
+
+async function handleAutoRenewChange(enabled: boolean) {
+  try {
+    await updateAutoRenew(enabled)
+    toast.success(enabled ? 'Auto-renew turned on' : 'Auto-renew turned off', {
+      description: enabled
+        ? 'Your membership will renew automatically at the current annual rate.'
+        : 'Your membership will not renew automatically. You can pay manually before it expires.',
+    })
+  } catch (error) {
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : 'Could not update auto-renew. Please try again.'
+    toast.error('Update failed', { description: message })
+  }
+}
 
 async function startPayment() {
   navigatingToPayment.value = true
@@ -218,6 +283,30 @@ async function startPayment() {
                   {{ subscription.daysRemaining }}
                 </dd>
               </div>
+              <div v-if="nextBillingLabel">
+                <dt class="text-muted-foreground">
+                  Next billing date
+                </dt>
+                <dd class="font-medium">
+                  {{ nextBillingLabel }}
+                </dd>
+              </div>
+              <div v-if="renewalPriceNaira != null">
+                <dt class="text-muted-foreground">
+                  Next renewal
+                </dt>
+                <dd class="font-medium">
+                  {{ formatNairaAmount(renewalPriceNaira) }}
+                </dd>
+              </div>
+              <div v-if="lastPaidPriceNaira != null">
+                <dt class="text-muted-foreground">
+                  Last payment
+                </dt>
+                <dd class="font-medium">
+                  {{ formatNairaAmount(lastPaidPriceNaira) }}
+                </dd>
+              </div>
               <div v-if="subscription?.cardLast4">
                 <dt class="text-muted-foreground">
                   Payment method
@@ -226,18 +315,58 @@ async function startPayment() {
                   {{ subscription.bank ?? 'Card' }} ···· {{ subscription.cardLast4 }}
                 </dd>
               </div>
-              <div v-if="subscription?.autoRenewEnabled != null">
-                <dt class="text-muted-foreground">
-                  Auto-renew
-                </dt>
-                <dd class="font-medium">
-                  {{ subscription.autoRenewEnabled ? 'On' : 'Off' }}
-                </dd>
-              </div>
             </dl>
-            <p class="text-sm text-muted-foreground">
-              Your membership is active. Renewal and billing changes will be available here in a future update.
+
+            <p
+              v-if="showPriceChangedNotice"
+              class="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
+            >
+              The annual membership price has changed since your last payment. If auto-renew is on,
+              your next charge will be
+              <span class="font-semibold text-foreground">
+                {{ formatNairaAmount(renewalPriceNaira!) }}
+              </span>.
             </p>
+
+            <div
+              v-if="canManageAutoRenew"
+              class="flex items-start justify-between gap-4 rounded-lg border border-border px-4 py-3"
+            >
+              <div class="min-w-0 space-y-0.5">
+                <p class="text-sm font-medium text-foreground">
+                  Auto-renew
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  <template v-if="autoRenewEnabled">
+                    Charge your saved card on
+                    <template v-if="nextBillingLabel">
+                      {{ nextBillingLabel }}
+                    </template>
+                    <template v-else>
+                      your renewal date
+                    </template>
+                    at the current annual rate.
+                  </template>
+                  <template v-else>
+                    Your membership stays active until
+                    <template v-if="subscriptionEndLabel">
+                      {{ subscriptionEndLabel }}
+                    </template>
+                    <template v-else>
+                      the end date
+                    </template>
+                    . Pay manually to extend it.
+                  </template>
+                </p>
+              </div>
+              <Switch
+                :model-value="autoRenewEnabled"
+                :disabled="autoRenewPending"
+                class="shrink-0"
+                aria-label="Toggle auto-renew"
+                @update:model-value="handleAutoRenewChange"
+              />
+            </div>
           </template>
 
           <template v-else>
@@ -253,8 +382,8 @@ async function startPayment() {
               </template>
               <template v-else>
                 Pay the annual subscription to activate membership
-                <template v-if="pricing">
-                  ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }})
+                <template v-if="catalogPriceNaira != null">
+                  ({{ formatNairaAmount(catalogPriceNaira) }})
                 </template>.
                 If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
               </template>
@@ -274,11 +403,37 @@ async function startPayment() {
                 Refresh status
               </Button>
             </div>
+
+            <div
+              v-if="canManageAutoRenew && !hasActiveSubscription"
+              class="flex items-start justify-between gap-4 rounded-lg border border-border px-4 py-3"
+            >
+              <div class="min-w-0 space-y-0.5">
+                <p class="text-sm font-medium text-foreground">
+                  Auto-renew
+                </p>
+                <p class="text-sm text-muted-foreground">
+                  <template v-if="autoRenewEnabled">
+                    After you fix payment, future renewals will use your saved card at the current annual rate.
+                  </template>
+                  <template v-else>
+                    Automatic renewal is off. Pay manually each year to keep your membership active.
+                  </template>
+                </p>
+              </div>
+              <Switch
+                :model-value="autoRenewEnabled"
+                :disabled="autoRenewPending"
+                class="shrink-0"
+                aria-label="Toggle auto-renew"
+                @update:model-value="handleAutoRenewChange"
+              />
+            </div>
           </template>
         </CardContent>
       </Card>
 
-      <Card v-if="pricing">
+      <Card v-if="catalogPriceNaira != null || pricing">
         <CardHeader>
           <CardTitle class="text-base">
             Plan details
@@ -286,13 +441,19 @@ async function startPayment() {
         </CardHeader>
         <CardContent class="space-y-2 text-sm text-muted-foreground">
           <p>
-            Annual fee:
+            Current annual fee:
             <span class="font-semibold text-foreground">
-              {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
+              {{ formatNairaAmount(catalogPriceNaira ?? pricing!.subscriptionPriceNaira) }}
             </span>
           </p>
+          <p v-if="hasActiveSubscription && autoRenewEnabled">
+            Your next auto-renewal uses this price unless you turn auto-renew off before the billing date.
+          </p>
+          <p v-else-if="!hasActiveSubscription">
+            New subscriptions and manual renewals are charged at this rate.
+          </p>
           <p>Zero commission on consultation fees you charge clients.</p>
-          <p>
+          <p v-if="pricing">
             Verification admin fee (deducted on failed verification refund):
             {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
           </p>

@@ -14,6 +14,10 @@ interface SubscriptionRecord {
   bank?: string | null
   autoRenewEnabled?: boolean
   lastFailureReason?: string | null
+  /** Amount last recorded on the subscription (previous payment). */
+  priceNaira?: number | null
+  /** Current catalog price — used for the next checkout or auto-renewal. */
+  renewalPriceNaira?: number | null
 }
 
 interface SubscriptionStatusPayload {
@@ -133,6 +137,22 @@ export function useInitializeSubscription() {
       if (import.meta.client && data?.reference) {
         sessionStorage.setItem(SUBSCRIPTION_PAYMENT_REF_KEY, data.reference)
       }
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+    },
+  })
+}
+
+export function useUpdateSubscriptionAutoRenew() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const res = await httpClient.patch<{ success: boolean; data: { autoRenewEnabled: boolean } }>(
+        '/api/subscriptions/auto-renew',
+        { enabled },
+      )
+      return res.data
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
     },
   })
