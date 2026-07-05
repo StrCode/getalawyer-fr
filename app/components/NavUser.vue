@@ -76,7 +76,7 @@ async function handleLogout() {
           <DropdownMenuTrigger as-child>
             <SidebarMenuButton
               size="lg"
-              class="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              class="cursor-pointer data-[state=open]:bg-muted data-[state=open]:text-foreground"
             >
               <Avatar class="size-8 rounded-lg">
                 <AvatarImage
@@ -98,9 +98,10 @@ async function handleLogout() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            :side="isMobile ? 'bottom' : 'right'"
-            :side-offset="4"
+            :side="isMobile ? 'bottom' : 'top'"
+            :side-offset="8"
             align="end"
+            :collision-padding="12"
           >
             <DropdownMenuLabel class="p-0 font-normal">
               <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">

@@ -30,7 +30,7 @@
         variant="ghost"
         size="icon"
         aria-label="Open account menu"
-        class="size-10 shrink-0 rounded-full border border-border bg-background p-0 transition-colors hover:border-foreground/30 hover:bg-white"
+        class="size-10 shrink-0 rounded-full border border-border bg-card p-0 transition-colors hover:border-foreground/30 hover:bg-muted"
       >
         <Avatar class="size-9 shrink-0">
           <AvatarImage :src="userData.avatar" :alt="userData.name" />
@@ -57,6 +57,7 @@
       :side="variant === 'sidebar' ? 'top' : 'bottom'"
       align="end"
       :side-offset="8"
+      :collision-padding="12"
     >
       <DropdownMenuLabel class="font-normal text-muted-foreground">
         {{ userData.email }}

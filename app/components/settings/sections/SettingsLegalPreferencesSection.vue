@@ -157,12 +157,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
-import { MARKETING_PRACTICE_AREAS } from '~/data/marketing-practice-areas'
+import { useSpecializations } from '~/composables/useSpecializations'
 import type { AccountSettingsDraft } from '~/types/account-settings'
 
 const draft = defineModel<AccountSettingsDraft['legalPreferences']>('draft', { required: true })
 
-const practiceAreaOptions = MARKETING_PRACTICE_AREAS.slice(0, 12)
+const { data: specializations } = useSpecializations()
+const practiceAreaOptions = computed(() => specializations.value ?? [])
 
 const consultationOptions = [
   { value: 'in_person', label: 'In-person', hint: 'Meet at the lawyer\'s office' },

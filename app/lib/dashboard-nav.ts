@@ -144,7 +144,6 @@ const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/settings': 'Settings',
   '/dashboard/subscription': 'Subscription',
   '/dashboard/my-lawyers': 'My Lawyers',
-  '/dashboard/listings': 'Listings',
   '/dashboard/verify-email': 'Verify Email',
 }
 

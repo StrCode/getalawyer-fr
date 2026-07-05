@@ -71,13 +71,6 @@ export const queryKeys = {
   calendar: {
     connection: ["calendar", "connection"] as const,
   },
-  registration: {
-    status: ["registration", "status"] as const,
-    step2: ["registration", "step2"] as const,
-    step4: ["registration", "step4"] as const,
-    step5: ["registration", "step5"] as const,
-    summary: ["registration", "summary"] as const,
-  },
   specializations: {
     all: ["specializations"] as const,
     detail: (id: string) => ["specializations", id] as const,
@@ -110,10 +103,6 @@ export const queryKeys = {
     all: ["tasks"] as const,
     byCase: (caseId: string) => ["tasks", "case", caseId] as const,
     detail: (id: string) => ["tasks", id] as const,
-  },
-  documents: {
-    byCase: (caseId: string) => ["documents", "case", caseId] as const,
-    detail: (id: string) => ["documents", id] as const,
   },
   activities: {
     byCase: (caseId: string) => ["activities", "case", caseId] as const,

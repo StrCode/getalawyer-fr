@@ -10,6 +10,7 @@ import {
     parseOnboardingStatus,
     type OnboardingStatusPayload
 } from '~/lib/lawyerOnboardingStatus'
+import type { PracticeAreaSelection } from '~/lib/practice-areas'
 
 // --- Types ---
 
@@ -55,11 +56,6 @@ export interface ProfessionalInfoData {
     barNumber: string
     scnFullNameAtCallToBar: string
     yearOfCall?: number
-}
-
-export interface PracticeAreaSelection {
-    practiceAreaId: string
-    yearsOfExperience?: number | null
 }
 
 export interface PracticeInfoData {

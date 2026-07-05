@@ -10,7 +10,8 @@ import type { Specialization } from '~/lib/api'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Checkbox } from '~/components/ui/checkbox'
 import Input from '~/components/ui/input/Input.vue'
-import { PhBriefcase, PhCaretDown, PhFaders, PhMagnifyingGlass, PhMapPin, PhRows, PhSquaresFour, PhUser, PhX } from '@phosphor-icons/vue'
+import { PhBriefcase, PhCaretDown, PhFaders, PhMagnifyingGlass, PhMapPin, PhRows, PhSquaresFour, PhUser, PhWarning, PhX } from '@phosphor-icons/vue'
+import EmptyState from '@/components/dashboard/EmptyState.vue'
 import type { LocationQuery } from 'vue-router'
 
 /** `/find-lawyers` — directory listing with landing layout (same nav/footer as homepage). */
@@ -699,11 +700,17 @@ const showMobileFilters = ref(false)
           <!-- Error -->
           <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
             <EmptyState
+              :icon="PhWarning"
+              color="#dc2626"
               title="Error loading lawyers"
               description="There was an error loading the lawyers list. Please try again."
-              action-text="Retry"
-              @action="refetch()"
-            />
+            >
+              <template #actions>
+                <Button type="button" @click="refetch()">
+                  Retry
+                </Button>
+              </template>
+            </EmptyState>
           </div>
 
           <!-- Empty -->

@@ -117,25 +117,6 @@
           </div>
         </div>
       </UCard>
-
-      <!-- Documents Card -->
-      <UCard>
-        <template #header>
-          <h3 class="font-semibold">Documents</h3>
-        </template>
-        
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-muted-foreground text-sm">Total Files</span>
-            <span class="font-medium">{{ documentCount }}</span>
-          </div>
-          
-          <div class="flex justify-between items-center">
-            <span class="text-muted-foreground text-sm">Storage Used</span>
-            <span class="font-medium">{{ formatFileSize(totalSize) }}</span>
-          </div>
-        </div>
-      </UCard>
     </div>
 
     <!-- Case Description -->
@@ -245,20 +226,15 @@ import type { Case, CaseStatus, Priority } from '~/types'
 interface Props {
   case: Case
   role?: 'client' | 'lawyer'
-  documentCount?: number
-  totalSize?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   role: 'client',
-  documentCount: 0,
-  totalSize: 0
 })
 
 const emit = defineEmits<{
   'back': []
   'create-task': []
-  'upload-document': []
   'status-update': [status: CaseStatus, reason?: string]
   'description-update': [description: string]
 }>()
@@ -363,14 +339,6 @@ const formatDate = (date: Date | string) => {
     month: 'long',
     day: 'numeric'
   })
-}
-
-const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 // Watch for case changes to update edited description

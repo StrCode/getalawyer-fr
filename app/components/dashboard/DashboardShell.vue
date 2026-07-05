@@ -1,6 +1,6 @@
 <template>
   <AppSidebar variant="inset" />
-  <SidebarInset class="dashboard-shell">
+  <SidebarInset class="dashboard-shell bg-card">
     <SiteHeader />
     <div
       class="flex flex-1 flex-col"

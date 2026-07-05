@@ -1,14 +1,16 @@
 <script setup lang="ts">
+const route = useRoute()
+const showFooter = computed(() => route.meta.landingFooter !== false)
 </script>
 
 <template>
   <AppLayout>
-    <div class="font-sans text-foreground bg-background antialiased">
+    <div class="bg-background font-sans text-foreground antialiased">
       <LandingNav />
       <main>
         <slot />
       </main>
-      <LandingFooter />
+      <LandingFooter v-if="showFooter" />
     </div>
   </AppLayout>
 </template>

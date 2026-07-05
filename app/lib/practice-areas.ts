@@ -30,3 +30,8 @@ export function formatPracticeAreaYears(years: number | null | undefined): strin
   if (years === 0) return '0 years'
   return years === 1 ? '1 year' : `${years} years`
 }
+
+/** Directory URL pre-filtered to a backend specialization id. */
+export function specializationDirectoryHref(specializationId: string): string {
+  return `/find-lawyers?areas=${encodeURIComponent(specializationId)}`
+}

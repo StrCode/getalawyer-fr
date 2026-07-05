@@ -6,7 +6,8 @@ import type {
 import type { LawyerSearchResult } from '~/lib/api'
 
 definePageMeta({
-  layout: 'home',
+  layout: 'landing',
+  landingFooter: false,
 })
 
 useHead({

@@ -33,11 +33,8 @@
     <CaseDetails
       :case="currentCase"
       :role="role"
-      :document-count="documents.length"
-      :total-size="totalSize"
       @back="navigateTo('/dashboard/cases')"
       @create-task="showCreateTaskModal = true"
-      @upload-document="showUploadModal = true"
       @status-update="handleStatusUpdate"
       @description-update="handleDescriptionUpdate"
     />
@@ -76,13 +73,6 @@
       </TabsContent>
 
       <TabsContent
-        value="documents"
-        class="mt-6"
-      >
-        <CaseDocuments :case-id="currentCase.id" />
-      </TabsContent>
-
-      <TabsContent
         value="activity"
         class="mt-6"
       >
@@ -100,7 +90,6 @@ import {
   PhCircleNotch,
   PhClipboardText,
   PhClock,
-  PhFile,
   PhWarning,
 } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
@@ -118,7 +107,6 @@ definePageMeta({ layout: 'dashboard' })
 const route = useRoute()
 const { session } = useAuth()
 const { useCase, useUpdateCase, useUpdateCaseStatus } = useCases()
-const { documents, totalSize } = useDocuments()
 
 const caseId = computed(() => route.params.id as string)
 const { data: currentCase, isLoading: loading, error } = useCase(caseId)
@@ -129,7 +117,6 @@ const { mutateAsync: updateCase } = useUpdateCase()
 const { mutateAsync: updateCaseStatus } = useUpdateCaseStatus()
 
 const showCreateTaskModal = ref(false)
-const showUploadModal = ref(false)
 
 const role = computed(() => session.value?.user.userType)
 
@@ -143,11 +130,6 @@ const tabs: CaseTabItem[] = [
     label: 'Tasks',
     iconComponent: PhClipboardText,
     slot: 'tasks',
-  },
-  {
-    label: 'Documents',
-    iconComponent: PhFile,
-    slot: 'documents',
   },
   {
     label: 'Activity',
