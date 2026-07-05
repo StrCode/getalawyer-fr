@@ -133,7 +133,7 @@ function searchFor(term: string) {
           v-for="chip in popular"
           :key="chip"
           type="button"
-          class="cursor-pointer rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:border-primary/30 hover:text-primary"
+          class="cursor-pointer rounded-xl border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:border-primary/30 hover:text-primary"
           @click="searchFor(chip)"
         >
           {{ chip }}

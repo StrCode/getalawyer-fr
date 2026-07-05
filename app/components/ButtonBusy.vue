@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { PrimitiveProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import type { ButtonVariants } from '@/components/ui/button'
 import { Button } from '@/components/ui/button'
-import { PhCircleNotch } from '@phosphor-icons/vue'
 import { cn } from '@/lib/utils'
 import { computed, useAttrs } from 'vue'
 
@@ -40,7 +41,7 @@ const disabled = computed(() => {
     data-slot="button-busy"
     v-bind="{ ...attrs, disabled }"
   >
-    <PhCircleNotch
+    <AppIcon :icon="appIcons.circleNotch"
       v-if="loading && !asChild"
       class="size-4 shrink-0 animate-spin opacity-70"
       aria-hidden="true"

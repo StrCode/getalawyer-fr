@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { ListboxFilterProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhMagnifyingGlass } from '@phosphor-icons/vue'
 import { ListboxFilter, useForwardProps } from "reka-ui"
 import { cn } from "@/lib/utils"
 import { useCommand } from "."
@@ -27,7 +28,7 @@ const { filterState } = useCommand()
     data-slot="command-input-wrapper"
     class="flex h-9 items-center gap-2 border-b px-3"
   >
-    <PhMagnifyingGlass class="size-4 shrink-0 opacity-50" />
+    <AppIcon :icon="appIcons.magnifyingGlass" class="size-4 shrink-0 opacity-50" />
     <ListboxFilter
       v-bind="{ ...forwardedProps, ...$attrs }"
       v-model="filterState.search"

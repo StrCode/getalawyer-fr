@@ -1,42 +1,37 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  PhCalendarBlank,
-  PhCreditCard,
-  PhGlobeHemisphereWest,
-  PhUserCircle,
-} from '@phosphor-icons/vue'
-
 const links = [
   {
     title: 'Public profile',
     description: 'Photo, about, experience, and everything clients see.',
     href: '/dashboard/profile',
-    icon: PhUserCircle,
+    icon: appIcons.userCircle,
   },
   {
     title: 'Consultation types',
     description: 'Pricing, duration, and meeting formats you offer.',
     href: '/dashboard/consultation-types',
-    icon: PhCreditCard,
+    icon: appIcons.creditCard,
   },
   {
     title: 'Availability',
     description: 'Weekly schedule and date exceptions.',
     href: '/dashboard/availability',
-    icon: PhCalendarBlank,
+    icon: appIcons.calendarBlank,
   },
   {
     title: 'Subscription',
     description: 'Membership billing and payment method.',
     href: '/dashboard/subscription',
-    icon: PhCreditCard,
+    icon: appIcons.creditCard,
   },
   {
     title: 'Public profile preview',
     description: 'Open your live client-facing page in a new tab.',
     href: '/dashboard/profile',
-    icon: PhGlobeHemisphereWest,
+    icon: appIcons.globeHemisphereWest,
     hint: 'Use “View public profile” on the profile editor.',
   },
 ] as const
@@ -56,8 +51,7 @@ const links = [
             <div
               class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background"
             >
-              <component
-                :is="item.icon"
+              <AppIcon :icon="item.icon"
                 class="size-5 text-muted-foreground"
                 aria-hidden="true"
               />

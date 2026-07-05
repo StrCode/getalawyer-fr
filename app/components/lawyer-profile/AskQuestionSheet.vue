@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import { PhCircleNotch, PhPaperPlaneRight } from '@phosphor-icons/vue'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -86,8 +87,8 @@ watch(isOpen, (open) => {
           class="mt-auto h-12 w-full font-semibold"
           :disabled="!question.trim() || isAsking"
         >
-          <PhCircleNotch v-if="isAsking" class="mr-2 size-4 animate-spin" />
-          <PhPaperPlaneRight v-else class="mr-2 size-4" />
+          <AppIcon :icon="appIcons.circleNotch" v-if="isAsking" class="mr-2 size-4 animate-spin" />
+          <AppIcon :icon="appIcons.paperPlaneRight" v-else class="mr-2 size-4" />
           Send question
         </Button>
       </form>

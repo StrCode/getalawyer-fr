@@ -1,6 +1,6 @@
 <template>
   <div v-if="isLoading" class="flex justify-center py-8">
-    <PhCircleNotch class="size-6 animate-spin text-muted-foreground" />
+    <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
   </div>
 
   <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
@@ -8,7 +8,7 @@
   </div>
 
   <div v-else-if="!schedule?.length" class="py-6 text-center">
-    <PhClock class="mx-auto mb-3 size-10 text-muted-foreground/40" />
+    <AppIcon :icon="appIcons.clock" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
     <p class="text-sm font-medium text-foreground">
       No availability set
     </p>
@@ -64,8 +64,9 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
-import { PhCircleNotch, PhClock } from '@phosphor-icons/vue'
 import { useAvailability } from '~/composables/useAvailability'
 
 const { useAvailabilitySchedule, useAvailabilityExceptions } = useAvailability()

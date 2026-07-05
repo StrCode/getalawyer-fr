@@ -3,14 +3,14 @@
     v-if="loading"
     class="flex justify-center py-8"
   >
-    <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+    <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
   </div>
 
   <div
     v-else-if="error"
     class="space-y-4 py-8 text-center"
   >
-    <PhWarning class="mx-auto size-12 text-destructive" />
+    <AppIcon :icon="appIcons.warning" class="mx-auto size-12 text-destructive" />
     <h2 class="text-xl font-semibold text-foreground">
       Case not found
     </h2>
@@ -50,8 +50,8 @@
           :value="tab.slot"
           class="gap-2"
         >
-          <component
-            :is="tab.iconComponent"
+          <AppIcon
+            :icon="tab.iconComponent"
             class="size-4 shrink-0"
           />
           {{ tab.label }}
@@ -83,22 +83,16 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons, type AppIconData } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import {
-  PhChatCircle,
-  PhCircleNotch,
-  PhClipboardText,
-  PhClock,
-  PhWarning,
-} from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { CaseStatus } from '~/types'
 
 type CaseTabItem = {
   label: string
-  iconComponent: Component
+  iconComponent: AppIconData
   slot: string
 }
 
@@ -123,17 +117,17 @@ const role = computed(() => session.value?.user.userType)
 const tabs: CaseTabItem[] = [
   {
     label: 'Messages',
-    iconComponent: PhChatCircle,
+    iconComponent: appIcons.chatCircle,
     slot: 'messages',
   },
   {
     label: 'Tasks',
-    iconComponent: PhClipboardText,
+    iconComponent: appIcons.clipboardText,
     slot: 'tasks',
   },
   {
     label: 'Activity',
-    iconComponent: PhClock,
+    iconComponent: appIcons.clock,
     slot: 'activity',
   },
 ]

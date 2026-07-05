@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { ref } from 'vue'
-import { PhCaretDown } from '@phosphor-icons/vue'
-
 definePageMeta({ layout: 'landing' })
 
 useSeoMeta({
@@ -53,12 +53,12 @@ const handleSubmit = () => {
             class="group relative mb-6 block overflow-hidden rounded-2xl border border-border bg-card p-8 no-underline shadow-sm transition-all duration-300 hover:border-primary/25 hover:shadow-md"
           >
             <div class="mb-6 flex size-14 items-center justify-center rounded-xl bg-muted text-primary transition-transform duration-300 group-hover:scale-105">
-              <PhEnvelopeSimple class="size-7" />
+              <AppIcon :icon="appIcons.envelopeSimple" class="size-7" />
             </div>
             <h3 class="mb-2 text-lg font-semibold text-foreground">Email support</h3>
             <p class="mb-8 text-sm leading-relaxed text-muted-foreground">Our team usually responds within 24 hours.</p>
             <div class="inline-flex items-center gap-2 text-base font-medium text-primary transition-colors group-hover:text-foreground">
-              support@getalawyer.com.ng <PhArrowRight class="size-4" />
+              support@getalawyer.com.ng <AppIcon :icon="appIcons.arrowRight" class="size-4" />
             </div>
           </a>
 
@@ -78,7 +78,7 @@ const handleSubmit = () => {
             </div>
             <div class="px-2 pb-2">
               <div class="mb-2 flex items-center gap-2">
-                <PhMapPin class="size-5 text-primary" weight="fill" />
+                <AppIcon :icon="appIcons.mapPin" class="size-5 text-primary" />
                 <h3 class="text-lg font-semibold text-foreground">Lagos HQ</h3>
               </div>
               <p class="text-sm leading-relaxed text-muted-foreground">
@@ -96,7 +96,7 @@ const handleSubmit = () => {
 
             <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0">
               <div v-if="isSuccess" class="flex items-start gap-3 rounded-xl border border-primary/20 bg-muted p-5 text-base font-medium text-foreground">
-                <PhCheckCircle class="size-6 shrink-0 text-primary" weight="fill" />
+                <AppIcon :icon="appIcons.checkCircle" class="size-6 shrink-0 text-primary" />
                 Thanks for reaching out! Our team will get back to you shortly.
               </div>
             </Transition>
@@ -126,7 +126,7 @@ const handleSubmit = () => {
                   <option value="client">I'm a client (Booking issues)</option>
                   <option value="partnership">Partnerships</option>
                 </select>
-                <PhCaretDown class="pointer-events-none absolute top-1/2 right-5 size-5 -translate-y-1/2 text-muted-foreground" />
+                <AppIcon :icon="appIcons.caretDown" class="pointer-events-none absolute top-1/2 right-5 size-5 -translate-y-1/2 text-muted-foreground" />
               </div>
             </div>
 
@@ -144,7 +144,7 @@ const handleSubmit = () => {
               :disabled="isSubmitting"
             >
               <template v-if="isSubmitting">
-                <PhSpinnerGap class="size-5 animate-spin" />
+                <AppIcon :icon="appIcons.spinnerGap" class="size-5 animate-spin" />
                 Sending...
               </template>
               <template v-else>

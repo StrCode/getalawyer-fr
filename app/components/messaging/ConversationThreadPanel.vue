@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import { PhCircleNotch, PhPaperPlaneRight } from '@phosphor-icons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
 import type { Message } from '~/types/messaging'
@@ -120,7 +121,7 @@ function formatMessageTime(timestamp: string) {
       class="flex-1 space-y-3 overflow-y-auto p-4"
     >
       <div v-if="isPending" class="flex justify-center py-10">
-        <PhCircleNotch class="size-6 animate-spin text-muted-foreground" />
+        <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
       </div>
 
       <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
@@ -201,7 +202,7 @@ function formatMessageTime(timestamp: string) {
           class="shrink-0"
           :disabled="!messageInput.trim() || isSending || !isConnected"
         >
-          <PhPaperPlaneRight class="size-4" />
+          <AppIcon :icon="appIcons.paperPlaneRight" class="size-4" />
         </Button>
       </form>
       <p v-if="!isConnected" class="mt-2 text-xs text-muted-foreground">

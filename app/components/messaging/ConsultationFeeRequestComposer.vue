@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import { PhCurrencyNgn, PhPaperPlaneRight } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -52,7 +53,7 @@ async function submit() {
       size="sm"
       @click="isOpen = true"
     >
-      <PhCurrencyNgn class="mr-2 size-4" />
+      <AppIcon :icon="appIcons.currencyNgn" class="mr-2 size-4" />
       Request consultation fee
     </Button>
 
@@ -82,7 +83,7 @@ async function submit() {
       </div>
       <div class="flex gap-2">
         <Button type="submit" size="sm" :disabled="!amount.trim() || isSubmitting">
-          <PhPaperPlaneRight class="mr-1 size-4" />
+          <AppIcon :icon="appIcons.paperPlaneRight" class="mr-1 size-4" />
           Send request
         </Button>
         <Button type="button" size="sm" variant="ghost" @click="isOpen = false">

@@ -25,16 +25,15 @@
 
         <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <PhCalendarBlank class="size-4" />
+            <AppIcon :icon="appIcons.calendarBlank" class="size-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <PhClock class="size-4" />
+            <AppIcon :icon="appIcons.clock" class="size-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
           <div class="flex items-center gap-1.5 capitalize">
-            <component
-              :is="meetingTypeIcon(booking.meetingType)"
+            <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
               class="size-4"
             />
             <span>{{ booking.meetingType.replace('_', ' ') }}</span>
@@ -50,7 +49,7 @@
             variant="secondary"
             class="gap-1"
           >
-            <PhChatsCircle class="size-3" />
+            <AppIcon :icon="appIcons.chatsCircle" class="size-3" />
             Conversation
           </Badge>
           <Badge
@@ -58,7 +57,7 @@
             variant="secondary"
             class="gap-1 border-transparent bg-primary/10 text-primary"
           >
-            <PhBriefcase class="size-3" />
+            <AppIcon :icon="appIcons.briefcase" class="size-3" />
             Case Created
           </Badge>
           <Badge
@@ -100,7 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhBriefcase, PhCalendarBlank, PhChatsCircle, PhClock } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'

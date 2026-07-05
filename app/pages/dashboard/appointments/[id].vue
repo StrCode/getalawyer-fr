@@ -7,7 +7,7 @@
         as-child
       >
         <NuxtLink to="/dashboard/appointments">
-          <PhArrowLeft class="size-5" />
+          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
         </NuxtLink>
       </Button>
       <div class="min-w-0 flex-1">
@@ -30,7 +30,7 @@
       v-if="isLoading"
       class="flex justify-center py-12"
     >
-      <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
     </div>
 
     <div
@@ -134,7 +134,7 @@
                       rel="noopener noreferrer"
                       class="gap-2"
                     >
-                      <PhVideoCamera class="size-4" />
+                      <AppIcon :icon="appIcons.videoCamera" class="size-4" />
                       Join video call
                     </a>
                   </Button>
@@ -192,7 +192,7 @@
               class="rounded-lg border border-border bg-background p-4"
             >
               <div class="flex items-start gap-2">
-                <PhCheckCircle class="mt-0.5 size-5 text-primary" />
+                <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 text-primary" />
                 <div>
                   <p class="text-sm font-semibold text-foreground">
                     Case created
@@ -206,7 +206,7 @@
                     @click="navigateToCase"
                   >
                     View case
-                    <PhArrowRight class="size-4" />
+                    <AppIcon :icon="appIcons.arrowRight" class="size-4" />
                   </Button>
                 </div>
               </div>
@@ -235,7 +235,7 @@
                 :to="`/dashboard/messages?conversation=${booking.conversationId}`"
                 class="gap-2"
               >
-                <PhChatCircle class="size-5" />
+                <AppIcon :icon="appIcons.chatCircle" class="size-5" />
                 Open conversation
               </NuxtLink>
             </Button>
@@ -275,7 +275,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-start gap-3">
-              <PhCalendar class="mt-0.5 size-5 text-muted-foreground" />
+              <AppIcon :icon="appIcons.calendar" class="mt-0.5 size-5 text-muted-foreground" />
               <div>
                 <p class="text-sm font-medium text-foreground">
                   {{ formatBookingDateLong(booking.scheduledDate) }}
@@ -325,7 +325,7 @@
               variant="outline"
               @click="isEngagementModalOpen = true"
             >
-              <PhClipboard class="size-5" />
+              <AppIcon :icon="appIcons.clipboard" class="size-5" />
               Record engagement outcome
             </Button>
 
@@ -433,19 +433,11 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import {
-  PhArrowLeft,
-  PhArrowRight,
-  PhCalendar,
-  PhChatCircle,
-  PhCheckCircle,
-  PhCircleNotch,
-  PhClipboard,
-  PhVideoCamera,
-} from '@phosphor-icons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

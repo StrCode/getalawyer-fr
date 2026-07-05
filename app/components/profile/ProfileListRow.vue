@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { PhPencilSimple, PhTrash } from '@phosphor-icons/vue'
-
 defineProps<{
   primary: string
   secondary?: string | null
@@ -56,7 +56,7 @@ defineEmits<{
         aria-label="Edit"
         @click="$emit('edit')"
       >
-        <PhPencilSimple class="size-4" />
+        <AppIcon :icon="appIcons.pencilSimple" class="size-4" />
       </Button>
       <Button
         type="button"
@@ -66,7 +66,7 @@ defineEmits<{
         aria-label="Remove"
         @click="$emit('delete')"
       >
-        <PhTrash class="size-4 text-destructive" />
+        <AppIcon :icon="appIcons.trash" class="size-4 text-destructive" />
       </Button>
     </div>
   </div>

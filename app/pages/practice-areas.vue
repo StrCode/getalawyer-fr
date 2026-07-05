@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
-import { PhArrowRight, PhBriefcase, PhMagnifyingGlass, PhWarningCircle } from '@phosphor-icons/vue'
 import { useSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
 
@@ -16,7 +17,11 @@ const { data: specializations, isPending, isError } = useSpecializations()
 
 const sortedAreas = computed(() => {
   const list = specializations.value ?? []
-  return [...list].sort((a, b) => a.name.localeCompare(b.name))
+  return [...list].sort((a, b) => {
+    if (a.isFeatured !== b.isFeatured)
+      return a.isFeatured ? -1 : 1
+    return a.name.localeCompare(b.name)
+  })
 })
 
 const filteredAreas = computed(() => {
@@ -50,7 +55,7 @@ const filteredAreas = computed(() => {
 
         <div class="group relative mx-auto max-w-lg">
           <div class="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4 text-muted-foreground">
-            <PhMagnifyingGlass class="size-5" weight="bold" />
+            <AppIcon :icon="appIcons.magnifyingGlass" class="size-5" />
           </div>
           <input
             v-model="searchQuery"
@@ -81,7 +86,7 @@ const filteredAreas = computed(() => {
         class="py-20 text-center"
       >
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
-          <PhWarningCircle class="size-6" weight="bold" />
+          <AppIcon :icon="appIcons.warningCircle" class="size-6" />
         </div>
         <h3 class="mb-2 text-lg font-semibold text-foreground">
           Could not load practice areas
@@ -99,7 +104,7 @@ const filteredAreas = computed(() => {
         class="py-20 text-center"
       >
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
-          <PhWarningCircle class="size-6" weight="bold" />
+          <AppIcon :icon="appIcons.warningCircle" class="size-6" />
         </div>
         <h3 class="mb-2 text-lg font-semibold text-foreground">
           No practice areas found
@@ -120,11 +125,20 @@ const filteredAreas = computed(() => {
           class="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-6 text-foreground no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
         >
           <div class="flex size-10 items-center justify-center rounded-xl bg-muted text-primary">
-            <PhBriefcase class="size-5" weight="duotone" aria-hidden="true" />
+            <AppIcon :icon="appIcons.briefcase" class="size-5" aria-hidden="true" />
           </div>
-          <h3 class="text-base leading-tight font-semibold text-foreground">
-            {{ area.name }}
-          </h3>
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="text-base leading-tight font-semibold text-foreground">
+              {{ area.name }}
+            </h3>
+            <Badge
+              v-if="area.isFeatured"
+              variant="secondary"
+              class="shrink-0"
+            >
+              Featured
+            </Badge>
+          </div>
           <p
             v-if="area.description"
             class="line-clamp-3 text-sm leading-relaxed text-muted-foreground"
@@ -133,7 +147,7 @@ const filteredAreas = computed(() => {
           </p>
           <div class="mt-auto flex -translate-x-2 items-center gap-1.5 pt-2 text-sm font-medium text-primary opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
             View lawyers
-            <PhArrowRight class="size-4" weight="bold" />
+            <AppIcon :icon="appIcons.arrowRight" class="size-4" />
           </div>
         </NuxtLink>
       </div>

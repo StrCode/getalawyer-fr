@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { HTMLAttributes } from "vue"
-import { PhMinus } from '@phosphor-icons/vue'
 import { useForwardProps } from "reka-ui"
 
 const props = defineProps<{ class?: HTMLAttributes["class"] }>()
@@ -15,7 +16,7 @@ const forwarded = useForwardProps(props)
     v-bind="forwarded"
   >
     <slot>
-      <PhMinus />
+      <AppIcon :icon="appIcons.minus" />
     </slot>
   </div>
 </template>

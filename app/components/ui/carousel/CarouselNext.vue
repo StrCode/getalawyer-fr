@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { WithClassAsProps } from "./interface"
 import type { ButtonVariants } from '@/components/ui/button'
-import { PhArrowRight } from '@phosphor-icons/vue'
 import { cn } from "@/lib/utils"
 import { Button } from '@/components/ui/button'
 import { useCarousel } from "./useCarousel"
@@ -23,7 +24,7 @@ const { orientation, canScrollNext, scrollNext } = useCarousel()
     data-slot="carousel-next"
     :disabled="!canScrollNext"
     :class="cn(
-      'absolute size-8 rounded-full',
+      'absolute size-8 rounded-xl',
       orientation === 'horizontal'
         ? 'top-1/2 -right-12 -translate-y-1/2'
         : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -34,7 +35,7 @@ const { orientation, canScrollNext, scrollNext } = useCarousel()
     @click="scrollNext"
   >
     <slot>
-      <PhArrowRight />
+      <AppIcon :icon="appIcons.arrowRight" />
       <span class="sr-only">Next Slide</span>
     </slot>
   </Button>

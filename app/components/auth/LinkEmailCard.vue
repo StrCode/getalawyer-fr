@@ -41,13 +41,13 @@
       <AuthFormError :message="apiError" />
 
       <Button type="submit" class="h-11 w-full cursor-pointer" :disabled="isSubmitting">
-        <PhCircleNotch v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
+        <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
         {{ codeSent ? "Verify email" : "Send verification code" }}
       </Button>
     </form>
 
     <div v-else class="space-y-4 text-center">
-      <PhCheckCircle class="mx-auto size-12 text-primary" />
+      <AppIcon :icon="appIcons.checkCircle" class="mx-auto size-12 text-primary" />
       <p class="text-base text-muted-foreground">Your email has been linked successfully.</p>
       <Button class="cursor-pointer" @click="$emit('completed')">Continue</Button>
     </div>
@@ -55,7 +55,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhCircleNotch } from "@phosphor-icons/vue";
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

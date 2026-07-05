@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useQueryClient } from '@tanstack/vue-query'
 import { useLawyerOnboarding, useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
@@ -8,8 +10,6 @@ import {
   resolveLawyerOnboardingDestination,
 } from '~/composables/useLawyerOnboardingEntry'
 import { isLawyerAwaitingApproval } from '~/lib/lawyerOnboardingStatus'
-import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
-
 definePageMeta({
   layout: 'onboarding-draft',
   middleware: ['auth'],
@@ -140,7 +140,7 @@ function refresh() {
 <template>
   <div class="flex min-h-[calc(100dvh-5.75rem)] flex-col items-center justify-center px-6 py-12">
     <div v-if="isRouting && !isError" class="flex flex-col items-center gap-4 text-center">
-      <PhCircleNotch class="size-8 animate-spin text-primary" aria-hidden="true" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" aria-hidden="true" />
       <p class="text-sm font-medium text-muted-foreground">
         Loading your application…
       </p>
@@ -151,13 +151,13 @@ function refresh() {
       class="mx-auto w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm"
     >
       <div class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-        <PhWarningCircle class="size-8" aria-hidden="true" />
+        <AppIcon :icon="appIcons.warningCircle" class="size-8" aria-hidden="true" />
       </div>
       <h1 class="mb-2 text-xl font-semibold text-foreground">
         Could not load your progress
       </h1>
       <p class="mb-6 text-sm text-muted-foreground">
-        Check your connection and try again.
+        appIcons.check your connection and try again.
       </p>
       <Button class="h-11 w-full font-semibold" @click="refresh">
         Retry

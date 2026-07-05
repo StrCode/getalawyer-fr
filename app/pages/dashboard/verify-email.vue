@@ -27,7 +27,7 @@
         v-if="sent"
         class="mb-4 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground"
       >
-        Verification link sent. Check your inbox and spam folder.
+        Verification link sent. appIcons.check your inbox and spam folder.
       </p>
 
       <Button
@@ -36,7 +36,7 @@
         :disabled="isSending"
         @click="sendVerificationLink"
       >
-        <PhCircleNotch v-if="isSending" class="mr-2 size-4 animate-spin" />
+        <AppIcon :icon="appIcons.circleNotch" v-if="isSending" class="mr-2 size-4 animate-spin" />
         {{ sent ? 'Resend verification link' : 'Send verification link' }}
       </Button>
     </Card>
@@ -45,7 +45,7 @@
       v-else
       class="gap-0 p-6 text-center sm:p-8"
     >
-      <PhCheckCircle class="mx-auto mb-4 size-12 text-primary" />
+      <AppIcon :icon="appIcons.checkCircle" class="mx-auto mb-4 size-12 text-primary" />
       <p class="text-base text-muted-foreground">Your email is verified.</p>
       <Button as-child class="mt-6 cursor-pointer">
         <NuxtLink to="/dashboard">Back to dashboard</NuxtLink>
@@ -55,7 +55,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhCircleNotch } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { authClient } from '~/lib/auth-client'

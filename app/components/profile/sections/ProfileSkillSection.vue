@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
-import { PhPencilSimple, PhPlus, PhX } from '@phosphor-icons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -94,7 +95,7 @@ async function onDeleteConfirm() {
           :disabled="disabled"
           @click="openCreate"
         >
-          <PhPlus class="size-4" />
+          <AppIcon :icon="appIcons.plus" class="size-4" />
           Add
         </Button>
       </div>
@@ -124,7 +125,7 @@ async function onDeleteConfirm() {
             aria-label="Edit skill"
             @click="openEdit(item)"
           >
-            <PhPencilSimple class="size-3.5" />
+            <AppIcon :icon="appIcons.pencilSimple" class="size-3.5" />
           </button>
           <button
             type="button"
@@ -133,7 +134,7 @@ async function onDeleteConfirm() {
             aria-label="Remove skill"
             @click="openDelete(item.id)"
           >
-            <PhX class="size-3.5" />
+            <AppIcon :icon="appIcons.x" class="size-3.5" />
           </button>
         </Badge>
       </div>

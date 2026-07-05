@@ -10,7 +10,7 @@
           size="sm"
           @click="showUpload = true"
         >
-          <PhPlus class="size-4" />
+          <AppIcon :icon="appIcons.plus" class="size-4" />
           Upload
         </Button>
       </template>
@@ -31,7 +31,7 @@
         v-if="documents.length === 0"
         class="rounded-lg border border-dashed border-border py-12 text-center"
       >
-        <PhFileText class="mx-auto size-10 text-muted-foreground/60" />
+        <AppIcon :icon="appIcons.fileText" class="mx-auto size-10 text-muted-foreground/60" />
         <p class="mt-3 text-sm font-medium text-foreground">
           No documents yet
         </p>
@@ -51,7 +51,7 @@
         >
           <div class="flex min-w-0 items-center gap-3">
             <div class="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-background">
-              <PhFileText class="size-4 text-muted-foreground" />
+              <AppIcon :icon="appIcons.fileText" class="size-4 text-muted-foreground" />
             </div>
             <div class="min-w-0">
               <p class="truncate text-sm font-medium text-foreground">
@@ -71,7 +71,7 @@
               aria-label="Replace"
               @click="replaceDoc(doc.id)"
             >
-              <PhArrowsClockwise class="size-4" />
+              <AppIcon :icon="appIcons.arrowsClockwise" class="size-4" />
             </Button>
             <Button
               type="button"
@@ -80,7 +80,7 @@
               aria-label="Delete"
               @click="removeDoc(doc.id)"
             >
-              <PhTrash class="size-4 text-destructive" />
+              <AppIcon :icon="appIcons.trash" class="size-4 text-destructive" />
             </Button>
           </div>
         </li>
@@ -115,7 +115,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhArrowsClockwise, PhFileText, PhPlus, PhTrash } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import SettingsUploadField from '@/components/settings/SettingsUploadField.vue'
 import { Button } from '@/components/ui/button'

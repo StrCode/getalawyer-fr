@@ -19,7 +19,7 @@
         </span>
         <NuxtLink
           to="/login"
-          class="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-muted sm:px-5 sm:py-2.5 sm:text-sm"
+          class="rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-muted sm:px-5 sm:py-2.5 sm:text-sm"
         >
           Sign in
         </NuxtLink>
@@ -68,16 +68,15 @@
                         : 'scale-100 border-border bg-background'
                     "
                   >
-                    <PhCheck v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
+                    <AppIcon :icon="appIcons.check" v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" />
                   </span>
                   <div
                     class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
                   >
-                    <PhUser
+                    <AppIcon :icon="appIcons.user"
                       class="h-5 w-5 sm:h-7 sm:w-7"
                       :class="selectedRole === 'client' ? 'text-primary' : 'text-primary'"
-                      weight="duotone"
                     />
                   </div>
                   <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
@@ -108,16 +107,15 @@
                         : 'scale-100 border-border bg-background'
                     "
                   >
-                    <PhCheck v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" weight="bold" />
+                    <AppIcon :icon="appIcons.check" v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" />
                   </span>
                   <div
                     class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
                     :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
                   >
-                    <PhBriefcase
+                    <AppIcon :icon="appIcons.briefcase"
                       class="h-5 w-5 sm:h-7 sm:w-7"
                       :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-primary'"
-                      weight="duotone"
                     />
                   </div>
                   <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
@@ -155,10 +153,10 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="inline-flex gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
+              class="inline-flex gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
               @click="step = 'role'"
             >
-              <PhArrowLeft class="h-4 w-4" />
+              <AppIcon :icon="appIcons.arrowLeft" class="h-4 w-4" />
               Change selection
             </Button>
 
@@ -294,7 +292,7 @@
                     size="lg"
                     :disabled="isSubmitting"
                   >
-                    <PhCircleNotch v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
+                    <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
                     <span>
                       {{
                         isSubmitting
@@ -329,10 +327,10 @@
               type="button"
               variant="ghost"
               size="sm"
-              class="inline-flex gap-1.5 self-start rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted sm:px-4 sm:py-2 sm:text-sm"
+              class="inline-flex gap-1.5 self-start rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted sm:px-4 sm:py-2 sm:text-sm"
               @click="step = 'form'"
             >
-              <PhArrowLeft class="h-4 w-4" />
+              <AppIcon :icon="appIcons.arrowLeft" class="h-4 w-4" />
               Back
             </Button>
 
@@ -362,7 +360,7 @@
                 :disabled="isSubmitting || phoneOtp.length < 6"
                 @click="completePhoneRegistration"
               >
-                <PhCircleNotch v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
+                <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
                 Create account
               </Button>
             </Card>
@@ -375,13 +373,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhArrowLeft,
-  PhBriefcase,
-  PhUser,
-  PhCheck,
-  PhCircleNotch,
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'

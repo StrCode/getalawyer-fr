@@ -1,17 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { LawyerProfile } from '~/types/lawyer'
-import {
-  PhArrowLeft,
-  PhBriefcase,
-  PhChatCircleDots,
-  PhClock,
-  PhEnvelope,
-  PhMapPin,
-  PhSealCheck,
-} from '@phosphor-icons/vue'
-
 defineProps<{
   lawyer: LawyerProfile
   isOwnProfile: boolean
@@ -45,7 +37,7 @@ const emit = defineEmits<{
         :to="backLink"
         class="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
-        <PhArrowLeft class="size-4 shrink-0" aria-hidden="true" />
+        <AppIcon :icon="appIcons.arrowLeft" class="size-4 shrink-0" aria-hidden="true" />
         {{ backLinkLabel }}
       </NuxtLink>
 
@@ -80,7 +72,7 @@ const emit = defineEmits<{
               variant="verified"
               class="gap-1"
             >
-              <PhSealCheck class="size-3.5" weight="fill" />
+              <AppIcon :icon="appIcons.sealCheck" class="size-3.5" />
               NIN verified
             </Badge>
             <Badge
@@ -108,10 +100,9 @@ const emit = defineEmits<{
             <h1 class="font-heading text-4xl font-semibold tracking-[-0.02em] text-foreground md:text-5xl">
               {{ lawyer.name }}
             </h1>
-            <PhSealCheck
+            <AppIcon :icon="appIcons.sealCheck"
               v-if="lawyer.ninVerified"
               class="size-7 text-primary"
-              weight="fill"
             />
           </div>
 
@@ -127,21 +118,21 @@ const emit = defineEmits<{
 
           <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <span class="inline-flex items-center gap-1.5">
-              <PhMapPin class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.mapPin" class="size-4 shrink-0" />
               {{ displayLocation }}
             </span>
             <span
               v-if="yearsExperience > 0"
               class="inline-flex items-center gap-1.5"
             >
-              <PhBriefcase class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.briefcase" class="size-4 shrink-0" />
               {{ yearsExperience }} years experience
             </span>
             <span
               v-if="availabilitySummary"
               class="inline-flex items-center gap-1.5"
             >
-              <PhClock class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.clock" class="size-4 shrink-0" />
               {{ availabilitySummary }}
             </span>
           </div>
@@ -157,7 +148,7 @@ const emit = defineEmits<{
             :disabled="!canMessage"
             @click="emit('ask')"
           >
-            <PhChatCircleDots class="size-5 shrink-0" />
+            <AppIcon :icon="appIcons.chatCircleDots" class="size-5 shrink-0" />
             Ask question
           </Button>
           <Button
@@ -168,7 +159,7 @@ const emit = defineEmits<{
             as-child
           >
             <a :href="`mailto:${lawyer.email}`">
-              <PhEnvelope class="size-5 shrink-0" />
+              <AppIcon :icon="appIcons.envelope" class="size-5 shrink-0" />
               Send email
             </a>
           </Button>

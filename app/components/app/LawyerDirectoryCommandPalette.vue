@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { RecentLawyerDirectoryEntry } from '~/composables/useRecentLawyerDirectorySearches'
-import { PhArrowSquareOut } from '@phosphor-icons/vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
   CommandDialog,
@@ -99,7 +100,7 @@ onMounted(() => {
   <CommandDialog
     v-model:open="open"
     title="Lawyer directory"
-    description="Search the directory, open marketing pages, or repeat a saved search."
+    description="appIcons.magnifyingGlass the directory, open marketing pages, or repeat a saved search."
   >
     <CommandInput placeholder="Topics, navigation, repeats…" />
     <CommandList class="max-h-[min(50vh,24rem)]">
@@ -190,7 +191,7 @@ onMounted(() => {
           @select="navPracticeAreas"
         >
           Browse practice areas
-          <PhArrowSquareOut class="ml-auto opacity-60" aria-hidden="true" />
+          <AppIcon :icon="appIcons.arrowSquareOut" class="ml-auto opacity-60" aria-hidden="true" />
         </CommandItem>
         <CommandItem
           value="For Lawyers"

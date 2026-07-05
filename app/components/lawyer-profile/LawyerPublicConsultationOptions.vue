@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { ConsultationType } from '~/types/lawyer'
-import { PhBuildings, PhCalendar, PhPhone, PhVideoCamera } from '@phosphor-icons/vue'
-
 defineProps<{
   consultationTypes: ConsultationType[]
 }>()
@@ -17,7 +17,7 @@ function formatPrice(price: string): string {
   <section v-if="consultationTypes.length">
     <LawyerProfileSectionHeading title="Consultation options">
       <template #icon>
-        <PhCalendar />
+        <AppIcon :icon="appIcons.calendar" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="grid grid-cols-1 gap-4">
@@ -53,7 +53,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <PhVideoCamera class="size-3.5" />
+            <AppIcon :icon="appIcons.videoCamera" class="size-3.5" />
             Video
           </Badge>
           <Badge
@@ -61,7 +61,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <PhPhone class="size-3.5" />
+            <AppIcon :icon="appIcons.phone" class="size-3.5" />
             Phone
           </Badge>
           <Badge
@@ -69,7 +69,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <PhBuildings class="size-3.5" />
+            <AppIcon :icon="appIcons.buildings" class="size-3.5" />
             In person
           </Badge>
         </div>

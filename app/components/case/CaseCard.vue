@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import type { Case, CaseStatus, Priority } from '~/types'
 
 interface Props {

@@ -22,7 +22,7 @@
               {{ userData.role }}
             </div>
           </div>
-          <PhCaretUpDown class="ms-auto size-4 shrink-0 text-muted-foreground/70" />
+          <AppIcon :icon="appIcons.caretUpDown" class="ms-auto size-4 shrink-0 text-muted-foreground/70" />
         </template>
       </Button>
       <Button
@@ -65,20 +65,20 @@
       <DropdownMenuSeparator />
       <DropdownMenuItem v-if="variant === 'header' || variant === 'landing'" as-child>
         <NuxtLink to="/dashboard" class="cursor-pointer">
-          <PhSquaresFour class="size-4" />
+          <AppIcon :icon="appIcons.squaresFour" class="size-4" />
           Dashboard
         </NuxtLink>
       </DropdownMenuItem>
       <DropdownMenuSeparator v-if="variant === 'header' || variant === 'landing'" />
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/profile" class="cursor-pointer">
-          <PhUserCircle class="size-4" />
+          <AppIcon :icon="appIcons.userCircle" class="size-4" />
           Profile
         </NuxtLink>
       </DropdownMenuItem>
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/settings" class="cursor-pointer">
-          <PhGearSix class="size-4" />
+          <AppIcon :icon="appIcons.gearSix" class="size-4" />
           Settings
         </NuxtLink>
       </DropdownMenuItem>
@@ -88,7 +88,7 @@
         :disabled="isSigningOut"
         @click="handleLogout"
       >
-        <PhSignOut class="size-4" />
+        <AppIcon :icon="appIcons.signOut" class="size-4" />
         {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
       </DropdownMenuItem>
     </DropdownMenuContent>
@@ -96,7 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCaretUpDown, PhGearSix, PhSignOut, PhSquaresFour, PhUserCircle } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

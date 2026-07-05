@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerSpecialization } from '~/types/lawyer'
-import { PhScales } from '@phosphor-icons/vue'
-
 defineProps<{
   specializations: LawyerSpecialization[]
 }>()
@@ -13,7 +13,7 @@ defineProps<{
   <section v-if="specializations.length">
     <LawyerProfileSectionHeading title="Practice areas">
       <template #icon>
-        <PhScales />
+        <AppIcon :icon="appIcons.scales" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="grid grid-cols-1 gap-4">

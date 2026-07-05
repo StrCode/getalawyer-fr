@@ -33,7 +33,7 @@
         size="sm"
         @click="inputRef?.click()"
       >
-        <PhUploadSimple class="size-4" />
+        <AppIcon :icon="appIcons.uploadSimple" class="size-4" />
         Choose file
       </Button>
       <Button
@@ -50,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhUploadSimple } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 
 defineProps<{

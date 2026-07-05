@@ -7,7 +7,7 @@
       v-if="saved.length === 0"
       class="py-10 text-center"
     >
-      <PhBookmarkSimple class="mx-auto size-10 text-muted-foreground/50" />
+      <AppIcon :icon="appIcons.bookmarkSimple" class="mx-auto size-10 text-muted-foreground/50" />
       <p class="mt-3 text-sm text-muted-foreground">
         You haven't saved any lawyers yet.
       </p>
@@ -75,9 +75,8 @@
             aria-label="Remove bookmark"
             @click="removeSaved(lawyer.id)"
           >
-            <PhBookmarkSimple
+            <AppIcon :icon="appIcons.bookmarkSimple"
               class="size-4"
-              weight="fill"
             />
           </Button>
         </div>
@@ -87,7 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhBookmarkSimple } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'

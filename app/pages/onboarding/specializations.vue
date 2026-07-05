@@ -44,22 +44,22 @@
       </div>
     </div>
 
-    <!-- Search -->
+    <!-- appIcons.magnifyingGlass -->
     <div class="relative w-full">
-      <PhMagnifyingGlass
+      <AppIcon :icon="appIcons.magnifyingGlass"
         class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
       />
       <Input
         v-model="query"
         type="search"
-        placeholder="Search practice areas..."
+        placeholder="appIcons.magnifyingGlass practice areas..."
         class="h-11 pl-9 text-base"
         autocomplete="off"
       />
     </div>
 
     <div v-if="isLoadingSpecializations" class="flex flex-wrap justify-center gap-2 sm:justify-start">
-      <Skeleton v-for="i in 12" :key="i" class="h-10 w-28 rounded-full" />
+      <Skeleton v-for="i in 12" :key="i" class="h-10 w-28 rounded-xl" />
     </div>
 
     <div
@@ -80,7 +80,7 @@
           :key="spec.id"
           type="button"
           :disabled="isDisabled(spec.id)"
-          class="inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
           :class="
             isSelected(spec.id)
               ? 'border-primary bg-primary text-primary-foreground shadow-sm'
@@ -90,16 +90,14 @@
           @click="!isDisabled(spec.id) && toggle(spec.id)"
         >
           {{ spec.name }}
-          <PhCheck
+          <AppIcon :icon="appIcons.check"
             v-if="isSelected(spec.id)"
             class="size-4 shrink-0"
-            weight="bold"
             aria-hidden="true"
           />
-          <PhPlus
+          <AppIcon :icon="appIcons.plus"
             v-else
             class="size-4 shrink-0 opacity-50"
-            weight="bold"
             aria-hidden="true"
           />
         </button>
@@ -124,11 +122,11 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
-import { PhMagnifyingGlass, PhCheck, PhPlus } from '@phosphor-icons/vue'
-
 definePageMeta({
   middleware: ['auth'],
   layout: 'onboarding-wizard',

@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { DropdownMenuSubTriggerProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCaretRight } from '@phosphor-icons/vue'
 import {
   DropdownMenuSubTrigger,
   useForwardProps,
@@ -26,6 +27,6 @@ const forwardedProps = useForwardProps(delegatedProps)
     )"
   >
     <slot />
-    <PhCaretRight class="ml-auto size-4" />
+    <AppIcon :icon="appIcons.caretRight" class="ml-auto size-4" />
   </DropdownMenuSubTrigger>
 </template>

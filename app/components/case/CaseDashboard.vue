@@ -10,7 +10,7 @@
           class="gap-2"
           @click="$emit('create-case')"
         >
-          <PhPlus class="size-4" />
+          <AppIcon :icon="appIcons.plus" class="size-4" />
           New case
         </Button>
       </template>
@@ -33,7 +33,7 @@
               {{ statistics.total }}
             </p>
           </div>
-          <PhBriefcase class="size-8 text-primary" />
+          <AppIcon :icon="appIcons.briefcase" class="size-8 text-primary" />
         </CardContent>
       </Card>
 
@@ -47,7 +47,7 @@
               {{ statistics.active }}
             </p>
           </div>
-          <PhPlay class="size-8 text-primary" />
+          <AppIcon :icon="appIcons.play" class="size-8 text-primary" />
         </CardContent>
       </Card>
 
@@ -61,7 +61,7 @@
               {{ statistics.overdue }}
             </p>
           </div>
-          <PhWarning class="size-8 text-destructive" />
+          <AppIcon :icon="appIcons.warning" class="size-8 text-destructive" />
         </CardContent>
       </Card>
 
@@ -75,7 +75,7 @@
               {{ statistics.closed }}
             </p>
           </div>
-          <PhCheckCircle class="size-8 text-muted-foreground" />
+          <AppIcon :icon="appIcons.checkCircle" class="size-8 text-muted-foreground" />
         </CardContent>
       </Card>
     </div>
@@ -118,13 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhBriefcase,
-  PhCheckCircle,
-  PhPlay,
-  PhPlus,
-  PhWarning,
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {

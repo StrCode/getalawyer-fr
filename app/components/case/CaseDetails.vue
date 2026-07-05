@@ -11,7 +11,7 @@
             class="shrink-0 gap-2"
             @click="$emit('back')"
           >
-            <PhArrowLeft class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+            <AppIcon :icon="appIcons.arrowLeft" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
           <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
         </div>
@@ -44,7 +44,7 @@
         
         <UDropdown v-if="role === 'lawyer'" :items="caseActions">
           <Button variant="ghost" size="icon-sm" aria-label="Case actions">
-            <PhDotsThreeVertical class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+            <AppIcon :icon="appIcons.dotsThreeVertical" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
         </UDropdown>
       </div>
@@ -92,7 +92,7 @@
               class="gap-2"
               @click="$emit('create-task')"
             >
-              <PhPlus class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+              <AppIcon :icon="appIcons.plus" class="size-4 shrink-0" aria-hidden="true" />
               Add Task
             </Button>
           </div>
@@ -131,7 +131,7 @@
             class="gap-2"
             @click="showEditDescription = true"
           >
-            <PhPencilSimple class="size-4 shrink-0" aria-hidden="true" />
+            <AppIcon :icon="appIcons.pencilSimple" class="size-4 shrink-0" aria-hidden="true" />
             Edit
           </Button>
         </div>
@@ -214,12 +214,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhArrowLeft,
-  PhDotsThreeVertical,
-  PhPencilSimple,
-  PhPlus,
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import type { Case, CaseStatus, Priority } from '~/types'
 

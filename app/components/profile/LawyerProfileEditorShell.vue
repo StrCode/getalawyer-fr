@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
@@ -25,7 +27,6 @@ import {
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
-import { PhArrowSquareOut, PhWarningCircle } from '@phosphor-icons/vue'
 import {
   Tooltip,
   TooltipContent,
@@ -386,7 +387,7 @@ onBeforeUnmount(() => {
                   class="gap-2"
                 >
                   View public profile
-                  <PhArrowSquareOut class="size-4" />
+                  <AppIcon :icon="appIcons.arrowSquareOut" class="size-4" />
                 </NuxtLink>
               </Button>
             </TooltipTrigger>
@@ -422,7 +423,7 @@ onBeforeUnmount(() => {
       class="border-dashed"
     >
       <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-        <PhWarningCircle class="size-9 text-muted-foreground" />
+        <AppIcon :icon="appIcons.warningCircle" class="size-9 text-muted-foreground" />
         <p class="text-sm font-medium text-foreground">
           Couldn't load profile
         </p>

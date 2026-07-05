@@ -73,6 +73,7 @@ export const queryKeys = {
   },
   specializations: {
     all: ["specializations"] as const,
+    featured: ["specializations", "featured"] as const,
     detail: (id: string) => ["specializations", id] as const,
   },
   countries: {

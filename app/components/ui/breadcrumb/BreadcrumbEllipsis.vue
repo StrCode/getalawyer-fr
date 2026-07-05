@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
+
 import type { HTMLAttributes } from "vue"
-import { PhDotsThree } from '@phosphor-icons/vue'
 import { cn } from "@/lib/utils"
 
 const props = defineProps<{
@@ -16,7 +18,7 @@ const props = defineProps<{
     :class="cn('flex size-9 items-center justify-center', props.class)"
   >
     <slot>
-      <PhDotsThree class="size-4" />
+      <AppIcon :icon="appIcons.dotsThree" class="size-4" />
     </slot>
     <span class="sr-only">More</span>
   </span>

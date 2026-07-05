@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
@@ -18,7 +20,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
-import { PhCaretDown, PhCheck, PhCheckCircle, PhCircleNotch, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
 import { cn } from '@/lib/utils'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useSpecializations } from '~/composables/useSpecializations'
@@ -258,7 +259,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="isLoadingSpecs" class="flex justify-center py-20">
-    <PhCircleNotch class="h-12 w-12 animate-spin text-primary/20" />
+    <AppIcon :icon="appIcons.circleNotch" class="h-12 w-12 animate-spin text-primary/20" />
   </div>
 
   <div v-else class="w-full space-y-8 pb-20">
@@ -355,7 +356,7 @@ onBeforeUnmount(() => {
 
                       <ListboxFilter v-model="stateQuery" as-child>
                         <TagsInputInput
-                          placeholder="Search or select states..."
+                          placeholder="appIcons.magnifyingGlass or select states..."
                           class="min-h-8 text-base placeholder:text-muted-foreground/50"
                           @keydown.enter.prevent
                           @keydown.down="statesPopoverOpen = true"
@@ -370,7 +371,7 @@ onBeforeUnmount(() => {
                           class="order-last ml-auto shrink-0 self-center"
                           aria-label="Open states list"
                         >
-                          <PhCaretDown class="size-4 text-muted-foreground" />
+                          <AppIcon :icon="appIcons.caretDown" class="size-4 text-muted-foreground" />
                         </Button>
                       </PopoverTrigger>
                     </TagsInput>
@@ -399,7 +400,7 @@ onBeforeUnmount(() => {
                     >
                       <span class="min-w-0 leading-snug">{{ s }}</span>
                       <ListboxItemIndicator class="ml-auto inline-flex items-center justify-center">
-                        <PhCheck class="size-4 text-primary" weight="bold" />
+                        <AppIcon :icon="appIcons.check" class="size-4 text-primary" />
                       </ListboxItemIndicator>
                     </ListboxItem>
                     </ListboxContent>
@@ -422,10 +423,10 @@ onBeforeUnmount(() => {
               </FieldDescription>
 
               <div class="relative mb-4">
-                <PhMagnifyingGlass class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <AppIcon :icon="appIcons.magnifyingGlass" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   v-model="query"
-                  placeholder="Search legal areas..."
+                  placeholder="appIcons.magnifyingGlass legal areas..."
                   :class="[inputClass, 'pl-10']"
                 />
               </div>
@@ -455,10 +456,9 @@ onBeforeUnmount(() => {
                         {{ spec.description }}
                       </p>
                     </div>
-                    <PhCheckCircle
+                    <AppIcon :icon="appIcons.checkCircle"
                       v-if="isAreaSelected(spec.id)"
                       class="h-5 w-5 shrink-0 text-primary"
-                      weight="fill"
                     />
                   </div>
                   <div
@@ -494,11 +494,11 @@ onBeforeUnmount(() => {
                   v-for="row in selectedAreas"
                   :key="row.practiceAreaId"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"
+                  class="inline-flex items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"
                   @click="toggleArea(row.practiceAreaId)"
                 >
                   {{ nameById(row.practiceAreaId) }}
-                  <PhX class="h-3 w-3" />
+                  <AppIcon :icon="appIcons.x" class="h-3 w-3" />
                 </button>
               </div>
 

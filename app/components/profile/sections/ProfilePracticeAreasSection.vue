@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { PhCheckCircle, PhMagnifyingGlass, PhX } from '@phosphor-icons/vue'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -156,16 +157,16 @@ function onSave() {
       <template v-else>
         <Field>
           <FieldLabel class="sr-only">
-            Search practice areas
+            appIcons.magnifyingGlass practice areas
           </FieldLabel>
           <div class="relative">
-            <PhMagnifyingGlass
+            <AppIcon :icon="appIcons.magnifyingGlass"
               class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               v-model="query"
               :disabled="disabled"
-              placeholder="Search legal areas…"
+              placeholder="appIcons.magnifyingGlass legal areas…"
               class="pl-9"
             />
           </div>
@@ -200,10 +201,9 @@ function onSave() {
                   {{ spec.description }}
                 </p>
               </div>
-              <PhCheckCircle
+              <AppIcon :icon="appIcons.checkCircle"
                 v-if="isSelected(spec.id)"
                 class="size-5 shrink-0 text-primary"
-                weight="fill"
               />
             </div>
             <div
@@ -247,12 +247,12 @@ function onSave() {
             v-for="row in selections"
             :key="row.specializationId"
             type="button"
-            class="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:pointer-events-none disabled:opacity-50"
+            class="inline-flex items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:pointer-events-none disabled:opacity-50"
             :disabled="disabled"
             @click="toggleArea(row.specializationId)"
           >
             {{ nameById(row.specializationId) }}
-            <PhX class="size-3" />
+            <AppIcon :icon="appIcons.x" class="size-3" />
           </button>
         </div>
 

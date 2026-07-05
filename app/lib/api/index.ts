@@ -22,6 +22,8 @@ export interface Specialization {
   id: string;
   name: string;
   description: string;
+  imageUrl?: string | null;
+  isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -151,10 +153,15 @@ export const api = {
 
   // Specializations API
   specialization: {
-    getAll: () =>
-      httpClient.get<{ specializations: Specialization[] }>(
-        "/api/specializations",
-      ),
+    getAll: (params?: { featured?: boolean }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.featured)
+        searchParams.set("featured", "true");
+      const query = searchParams.toString();
+      return httpClient.get<{ specializations: Specialization[] }>(
+        `/api/specializations${query ? `?${query}` : ""}`,
+      );
+    },
     getById: (id: string) =>
       httpClient.get<{ specialization: Specialization }>(
         `/api/specializations/${id}`,

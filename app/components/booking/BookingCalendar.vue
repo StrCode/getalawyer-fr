@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { computed, ref, watch } from 'vue'
 import { useClientBooking } from '~/composables/useClientBooking'
 

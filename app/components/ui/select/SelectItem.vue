@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { SelectItemProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCheck } from '@phosphor-icons/vue'
 import {
   SelectItem,
   SelectItemIndicator,
@@ -32,7 +33,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     <span class="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectItemIndicator>
         <slot name="indicator-icon">
-          <PhCheck class="size-4" />
+          <AppIcon :icon="appIcons.check" class="size-4" />
         </slot>
       </SelectItemIndicator>
     </span>

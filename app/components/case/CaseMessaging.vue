@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-border bg-background p-4">
       <div class="flex items-center space-x-3">
-        <PhChatsCircle class="w-5 h-5 text-muted-foreground" />
+        <AppIcon :icon="appIcons.chatsCircle" class="w-5 h-5 text-muted-foreground" />
         <h3 class="font-semibold text-foreground">Case Messages</h3>
         <UBadge v-if="messages?.length" variant="soft" color="blue">
           {{ messages.length }} messages
@@ -15,18 +15,18 @@
     <div class="flex-1 space-y-4 p-4 overflow-y-auto" style="max-height: 400px;">
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center py-8">
-        <PhCircleNotch class="w-6 h-6 text-muted-foreground animate-spin" />
+        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 text-muted-foreground animate-spin" />
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="py-8 text-center">
-        <PhWarning class="mx-auto mb-2 w-8 h-8 text-red-400" />
+        <AppIcon :icon="appIcons.warning" class="mx-auto mb-2 w-8 h-8 text-red-400" />
         <p class="text-red-600 text-sm">Failed to load messages</p>
       </div>
 
       <!-- Empty State -->
       <div v-else-if="!messages?.length" class="py-8 text-center">
-        <PhChatCircleDots class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
+        <AppIcon :icon="appIcons.chatCircleDots" class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
         <p class="text-muted-foreground text-sm">No messages yet. Start the conversation!</p>
       </div>
 
@@ -63,8 +63,8 @@
             <div class="flex justify-between items-center opacity-75 mt-1 text-xs">
               <span>{{ formatMessageTime(message.createdAt) }}</span>
               <div v-if="isMessageFromCurrentUser(message)" class="flex items-center space-x-1">
-                <PhCheckCircle v-if="message.isRead" class="w-3 h-3" />
-                <PhCheck v-else class="w-3 h-3" />
+                <AppIcon :icon="appIcons.checkCircle" v-if="message.isRead" class="w-3 h-3" />
+                <AppIcon :icon="appIcons.check" v-else class="w-3 h-3" />
                 <span>{{ message.isRead ? 'Read' : 'Sent' }}</span>
               </div>
             </div>
@@ -91,7 +91,7 @@
           :loading="isSending"
         >
           <template #leading>
-            <PhPaperPlaneRight class="w-5 h-5" />
+            <AppIcon :icon="appIcons.paperPlaneRight" class="w-5 h-5" />
           </template>
         </ButtonBusy>
       </div>
@@ -105,15 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhChatCircleDots,
-  PhCheck,
-  PhCheckCircle,
-  PhChatsCircle,
-  PhCircleNotch,
-  PhPaperPlaneRight,
-  PhWarning
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
 
 const props = defineProps({

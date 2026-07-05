@@ -101,7 +101,7 @@
           variant="secondary"
           class="shrink-0"
         >
-          <PhCheckCircle class="mr-1 size-3.5" />
+          <AppIcon :icon="appIcons.checkCircle" class="mr-1 size-3.5" />
           Verified
         </Badge>
       </div>
@@ -126,7 +126,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import SettingsUploadField from '@/components/settings/SettingsUploadField.vue'
 import { Badge } from '@/components/ui/badge'

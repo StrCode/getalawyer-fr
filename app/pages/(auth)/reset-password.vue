@@ -9,7 +9,7 @@
     <Transition name="fade">
       <div v-if="submitted" key="success" class="flex flex-col items-center py-2 text-center">
         <div class="mb-5 flex size-16 items-center justify-center rounded-full border border-primary/15 bg-primary/10">
-          <PhCheckCircle class="size-8 text-primary" />
+          <AppIcon :icon="appIcons.checkCircle" class="size-8 text-primary" />
         </div>
         <p class="mb-8 max-w-sm text-base leading-relaxed text-muted-foreground">
           Your password has been reset. You can now log in with your new password.
@@ -65,7 +65,7 @@
           <AuthFormError :message="apiError" />
 
           <Button type="submit" class="h-12 w-full gap-2" size="lg" :disabled="isSubmitting">
-            <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+            <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
             <span>{{ isSubmitting ? 'Resetting…' : 'Reset password' }}</span>
           </Button>
         </FieldGroup>
@@ -87,7 +87,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhCircleNotch } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'

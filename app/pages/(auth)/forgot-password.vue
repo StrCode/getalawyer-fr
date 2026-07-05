@@ -1,7 +1,7 @@
 <template>
   <AuthFormShell
     eyebrow="Account recovery"
-    :title="submitted ? 'Check your inbox' : 'Forgot your password?'"
+    :title="submitted ? 'appIcons.check your inbox' : 'Forgot your password?'"
     :description="submitted
       ? undefined
       : authMethod === 'phone'
@@ -13,10 +13,10 @@
       role="status"
       class="mb-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4"
     >
-      <PhCheckCircle class="mt-0.5 size-5 shrink-0 text-primary" />
+      <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 shrink-0 text-primary" />
       <div>
         <p class="mb-0.5 text-base font-medium text-foreground">
-          {{ authMethod === 'phone' ? 'Check your phone' : 'Check your email' }}
+          {{ authMethod === 'phone' ? 'appIcons.check your phone' : 'appIcons.check your email' }}
         </p>
         <p class="text-base leading-relaxed text-muted-foreground">
           We&apos;ve sent a verification code to
@@ -82,7 +82,7 @@
         <AuthFormError :message="apiError" />
 
         <Button type="submit" class="h-12 w-full cursor-pointer gap-2" size="lg" :disabled="isSubmitting || tempEmailWarning">
-          <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+          <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Sending…' : 'Send reset code' }}</span>
         </Button>
       </FieldGroup>
@@ -99,7 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheckCircle, PhCircleNotch } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'

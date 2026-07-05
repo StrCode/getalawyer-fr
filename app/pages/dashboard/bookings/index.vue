@@ -38,7 +38,7 @@
           class="border-dashed"
         >
           <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-            <PhWarningCircle class="size-10 text-muted-foreground" />
+            <AppIcon :icon="appIcons.warningCircle" class="size-10 text-muted-foreground" />
             <p class="text-sm font-medium text-foreground">
               Failed to load bookings
             </p>
@@ -50,7 +50,7 @@
 
         <EmptyState
           v-else-if="tab.bookings.length === 0"
-          :icon="PhCalendar"
+          :icon="appIcons.calendar"
           :title="`No ${tab.emptyLabel} bookings`"
           :description="tab.emptyDescription"
         >
@@ -108,16 +108,15 @@
 
                 <div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                   <span class="flex items-center gap-1.5">
-                    <PhCalendar class="size-3.5" />
+                    <AppIcon :icon="appIcons.calendar" class="size-3.5" />
                     {{ formatDate(booking.scheduledDate) }}
                   </span>
                   <span class="flex items-center gap-1.5">
-                    <PhClock class="size-3.5" />
+                    <AppIcon :icon="appIcons.clock" class="size-3.5" />
                     {{ booking.scheduledStartTime }}
                   </span>
                   <span class="flex items-center gap-1.5 capitalize">
-                    <component
-                      :is="meetingTypeIcon(booking.meetingType)"
+                    <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
                       class="size-3.5"
                     />
                     {{ booking.meetingType.replace('_', ' ') }}
@@ -133,7 +132,7 @@
                     variant="secondary"
                     class="gap-1"
                   >
-                    <PhChatCircle class="size-3" />
+                    <AppIcon :icon="appIcons.chatCircle" class="size-3" />
                     Conversation
                   </Badge>
                   <Badge
@@ -141,7 +140,7 @@
                     variant="secondary"
                     class="gap-1 border-transparent bg-primary/10 text-primary"
                   >
-                    <PhBriefcase class="size-3" />
+                    <AppIcon :icon="appIcons.briefcase" class="size-3" />
                     Case Created
                   </Badge>
                   <Badge
@@ -232,16 +231,11 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import {
-  PhBriefcase,
-  PhCalendar,
-  PhChatCircle,
-  PhClock,
-  PhWarningCircle,
-} from '@phosphor-icons/vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

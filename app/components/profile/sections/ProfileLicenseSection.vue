@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
 import { Button } from '@/components/ui/button'
-import { PhPlus } from '@phosphor-icons/vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -131,7 +132,7 @@ async function onDeleteConfirm() {
           :disabled="disabled"
           @click="openCreate"
         >
-          <PhPlus class="size-4" />
+          <AppIcon :icon="appIcons.plus" class="size-4" />
           Add
         </Button>
       </div>

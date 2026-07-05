@@ -1,6 +1,8 @@
 <script lang="ts" setup>
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
+
 import type { HTMLAttributes } from "vue"
-import { PhCaretRight } from '@phosphor-icons/vue'
 import { cn } from "@/lib/utils"
 
 const props = defineProps<{
@@ -16,7 +18,7 @@ const props = defineProps<{
     :class="cn('[&>svg]:size-3.5', props.class)"
   >
     <slot>
-      <PhCaretRight />
+      <AppIcon :icon="appIcons.caretRight" />
     </slot>
   </li>
 </template>

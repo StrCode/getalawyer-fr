@@ -13,7 +13,7 @@
             v-for="area in practiceAreaOptions"
             :key="area.id"
             type="button"
-            class="rounded-full border px-3 py-1.5 text-sm transition-colors"
+            class="rounded-xl border px-3 py-1.5 text-sm transition-colors"
             :class="draft.practiceAreas.includes(area.name)
               ? 'border-primary bg-primary/10 text-primary'
               : 'border-border text-muted-foreground hover:border-primary/50'"

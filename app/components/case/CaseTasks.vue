@@ -72,11 +72,11 @@
         
         <UInput
           v-model="searchQuery"
-          placeholder="Search tasks..."
+          placeholder="appIcons.magnifyingGlass tasks..."
           class="flex-1"
         >
           <template #leading>
-            <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
+            <AppIcon :icon="appIcons.magnifyingGlass" class="w-4 h-4 shrink-0 opacity-70" />
           </template>
         </UInput>
       </div>
@@ -85,11 +85,11 @@
     <!-- Tasks List -->
     <div class="space-y-4">
       <div v-if="loading" class="flex justify-center py-8">
-        <PhCircleNotch class="w-6 h-6 animate-spin" />
+        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 animate-spin" />
       </div>
       
       <div v-else-if="filteredTasks.length === 0" class="py-8 text-muted-foreground text-center">
-        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+        <AppIcon :icon="appIcons.clipboardText" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p>No tasks found.</p>
       </div>
       
@@ -106,11 +106,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhCircleNotch,
-  PhClipboardText,
-  PhMagnifyingGlass
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { Task, TaskStatus, Priority, CreateTaskRequest } from '~/types'
 
 interface Props {

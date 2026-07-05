@@ -6,7 +6,7 @@
       class="flex items-center gap-2"
       :class="check.test(password) ? 'text-primary' : 'text-muted-foreground'"
     >
-      <PhCheck v-if="check.test(password)" class="w-3.5 h-3.5 shrink-0" weight="bold" />
+      <AppIcon :icon="appIcons.check" v-if="check.test(password)" class="w-3.5 h-3.5 shrink-0" />
       <span v-else class="w-3.5 h-3.5 shrink-0 text-center text-xs leading-none">○</span>
       {{ check.label }}
     </li>
@@ -17,7 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCheck } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { authPasswordChecks } from '~/lib/auth-password'
 
 defineProps<{

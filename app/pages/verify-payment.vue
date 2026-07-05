@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useQueryClient } from '@tanstack/vue-query'
-import { PhCheckCircle, PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
 import {
   SUBSCRIPTION_PAYMENT_REF_KEY,
@@ -146,7 +147,7 @@ function retryVerify() {
       v-if="resolvingReference || missingReference"
       class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
     >
-      <PhCircleNotch class="size-8 animate-spin text-primary" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" />
       <p>{{ resolvingReference ? 'Checking your payment status…' : 'Redirecting…' }}</p>
     </div>
 
@@ -159,19 +160,19 @@ function retryVerify() {
           v-if="verifyPending"
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary"
         >
-          <PhCircleNotch class="size-8 animate-spin" />
+          <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin" />
         </div>
         <div
           v-else-if="isSuccess"
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
         >
-          <PhCheckCircle class="size-9" weight="fill" />
+          <AppIcon :icon="appIcons.checkCircle" class="size-9" />
         </div>
         <div
           v-else
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-amber-50 text-amber-700"
         >
-          <PhWarningCircle class="size-9" weight="fill" />
+          <AppIcon :icon="appIcons.warningCircle" class="size-9" />
         </div>
 
         <div class="space-y-2">
@@ -212,7 +213,7 @@ function retryVerify() {
             :disabled="verifyPending"
             @click="retryVerify"
           >
-            Check again
+            appIcons.check again
           </Button>
           <Button as-child :class="isFailed ? 'w-full' : ''">
             <NuxtLink to="/onboarding/subscription">
@@ -231,7 +232,7 @@ function retryVerify() {
       v-else-if="redirectedAfterSuccess || (isSuccess && !verifyPending)"
       class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
     >
-      <PhCircleNotch class="size-8 animate-spin text-primary" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" />
       <p>Opening your application status…</p>
     </div>
   </div>

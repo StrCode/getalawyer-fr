@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
@@ -10,7 +12,6 @@ import type { Specialization } from '~/lib/api'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { Checkbox } from '~/components/ui/checkbox'
 import Input from '~/components/ui/input/Input.vue'
-import { PhBriefcase, PhCaretDown, PhFaders, PhMagnifyingGlass, PhMapPin, PhRows, PhSquaresFour, PhUser, PhWarning, PhX } from '@phosphor-icons/vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import type { LocationQuery } from 'vue-router'
 
@@ -109,7 +110,7 @@ definePageMeta({
 useHead({
   title: 'Lawyers · GetaLawyer',
   meta: [
-    { name: 'description', content: 'Search and find qualified lawyers by practice area, location, and consultation type.' },
+    { name: 'description', content: 'appIcons.magnifyingGlass and find qualified lawyers by practice area, location, and consultation type.' },
     { name: 'robots', content: 'noindex' }
   ]
 })
@@ -380,12 +381,12 @@ const showMobileFilters = ref(false)
         <!-- Unified search bar (Glide / Fiverr pattern) -->
         <div
           role="search"
-          aria-label="Search lawyers"
+          aria-label="appIcons.magnifyingGlass lawyers"
           class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-foreground/4"
         >
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2">
-              <PhMagnifyingGlass class="size-4 shrink-0 text-primary" aria-hidden="true" />
+              <AppIcon :icon="appIcons.magnifyingGlass" class="size-4 shrink-0 text-primary" aria-hidden="true" />
               <input
                 v-model="filters.keywords"
                 type="search"
@@ -393,12 +394,12 @@ const showMobileFilters = ref(false)
                 autocomplete="off"
                 aria-label="Topic or keywords"
                 class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
-                placeholder="Search by topic or keyword…"
+                placeholder="appIcons.magnifyingGlass by topic or keyword…"
               >
             </label>
             <div class="mx-2 hidden h-8 w-px bg-border sm:block" />
             <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:max-w-[14rem]">
-              <PhUser class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <AppIcon :icon="appIcons.user" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <input
                 v-model="filters.lawyerName"
                 type="search"
@@ -422,7 +423,7 @@ const showMobileFilters = ref(false)
         :aria-expanded="showMobileFilters"
         @click="showMobileFilters = !showMobileFilters"
       >
-        <PhFaders class="size-4" aria-hidden="true" />
+        <AppIcon :icon="appIcons.faders" class="size-4" aria-hidden="true" />
         {{ showMobileFilters ? 'Hide filters' : 'Show filters' }}
         <Badge v-if="activeFilterCount > 0" variant="soft" class="ms-1 rounded-full px-2 py-0 text-xs tabular-nums">
           {{ activeFilterCount }}
@@ -463,9 +464,9 @@ const showMobileFilters = ref(false)
                       aria-label="States"
                       :aria-expanded="statePopoverOpen"
                     >
-                      <PhMapPin class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <AppIcon :icon="appIcons.mapPin" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <span class="min-w-0 flex-1 truncate">{{ statesTriggerLabel }}</span>
-                      <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
+                      <AppIcon :icon="appIcons.caretDown" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
@@ -528,9 +529,9 @@ const showMobileFilters = ref(false)
                       aria-label="Specializations"
                       :aria-expanded="specPopoverOpen"
                     >
-                      <PhBriefcase class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <AppIcon :icon="appIcons.briefcase" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <span class="min-w-0 flex-1 truncate">{{ specializationTriggerLabel }}</span>
-                      <PhCaretDown class="size-4 shrink-0 text-muted-foreground" weight="bold" aria-hidden="true" />
+                      <AppIcon :icon="appIcons.caretDown" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
@@ -594,13 +595,13 @@ const showMobileFilters = ref(false)
             <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.lawyerName }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove name filter" @click="filters.lawyerName = ''">
-                <PhX class="size-4" aria-hidden="true" />
+                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.keywords }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove keyword filter" @click="filters.keywords = ''">
-                <PhX class="size-4" aria-hidden="true" />
+                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div
@@ -615,7 +616,7 @@ const showMobileFilters = ref(false)
                 :aria-label="`Remove ${stateLabel(code)}`"
                 @click="removeStateCode(code)"
               >
-                <PhX class="size-4" aria-hidden="true" />
+                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div
@@ -630,7 +631,7 @@ const showMobileFilters = ref(false)
                 :aria-label="`Remove ${specializationNameById(sid)}`"
                 @click="removeSpecialization(sid)"
               >
-                <PhX class="size-4" aria-hidden="true" />
+                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -664,7 +665,7 @@ const showMobileFilters = ref(false)
                 title="Grid"
                 @click="resultsLayout = 'grid'"
               >
-                <PhSquaresFour class="size-5" weight="regular" aria-hidden="true" />
+                <AppIcon :icon="appIcons.squaresFour" class="size-5" aria-hidden="true" />
                 <span class="sr-only">Grid layout</span>
               </button>
               <button
@@ -675,7 +676,7 @@ const showMobileFilters = ref(false)
                 title="List"
                 @click="resultsLayout = 'list'"
               >
-                <PhRows class="size-5" weight="regular" aria-hidden="true" />
+                <AppIcon :icon="appIcons.rows" class="size-5" aria-hidden="true" />
                 <span class="sr-only">List layout</span>
               </button>
             </div>
@@ -700,7 +701,7 @@ const showMobileFilters = ref(false)
           <!-- Error -->
           <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
             <EmptyState
-              :icon="PhWarning"
+              :icon="appIcons.warning"
               color="#dc2626"
               title="Error loading lawyers"
               description="There was an error loading the lawyers list. Please try again."
@@ -748,7 +749,7 @@ const showMobileFilters = ref(false)
             <Button
               variant="outline"
               size="lg"
-              class="min-w-[12rem] rounded-full"
+              class="min-w-[12rem]"
               :disabled="isFetchingNextPage"
               @click="fetchNextPage()"
             >

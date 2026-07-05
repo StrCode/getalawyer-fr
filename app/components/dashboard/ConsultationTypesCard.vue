@@ -1,6 +1,6 @@
 <template>
   <div v-if="isLoading" class="flex justify-center py-8">
-    <PhCircleNotch class="size-6 animate-spin text-muted-foreground" />
+    <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
   </div>
 
   <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
@@ -8,7 +8,7 @@
   </div>
 
   <div v-else-if="!consultationTypes?.length" class="py-6 text-center">
-    <PhFileText class="mx-auto mb-3 size-10 text-muted-foreground/40" />
+    <AppIcon :icon="appIcons.fileText" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
     <p class="text-sm font-medium text-foreground">
       No consultation types yet
     </p>
@@ -43,7 +43,7 @@
         </div>
         <div class="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           <span class="inline-flex items-center gap-1">
-            <PhClock class="size-3.5" />
+            <AppIcon :icon="appIcons.clock" class="size-3.5" />
             {{ type.durationMinutes }} min
           </span>
           <span>{{ formatPrice(type.price, type.currency) }}</span>
@@ -51,7 +51,7 @@
       </div>
       <Button as-child variant="ghost" size="icon-sm">
         <NuxtLink to="/dashboard/consultation-types">
-          <PhCaretRight class="size-4" />
+          <AppIcon :icon="appIcons.caretRight" class="size-4" />
         </NuxtLink>
       </Button>
     </div>
@@ -71,9 +71,10 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { PhCaretRight, PhCircleNotch, PhClock, PhFileText } from '@phosphor-icons/vue'
 import { useConsultationTypes } from '~/composables/useConsultationTypes'
 
 const { useConsultationTypesList } = useConsultationTypes()

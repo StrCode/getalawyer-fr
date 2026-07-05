@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
 import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
@@ -23,16 +25,6 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'vue-sonner'
-import {
-  PhCalendarDots,
-  PhCheckCircle,
-  PhCircleNotch,
-  PhClock,
-  PhCurrencyEur,
-  PhFileText,
-  PhUserCircle,
-} from '@phosphor-icons/vue'
-
 const { session } = useAuth()
 const router = useRouter()
 
@@ -80,25 +72,25 @@ const quickLinks: DashboardQuickLink[] = [
     label: 'Appointments',
     description: 'Manage bookings',
     to: '/dashboard/appointments',
-    icon: PhCalendarDots,
+    icon: appIcons.calendarDots,
   },
   {
     label: 'Consultation Types',
     description: 'Edit your services',
     to: '/dashboard/consultation-types',
-    icon: PhFileText,
+    icon: appIcons.fileText,
   },
   {
     label: 'Availability',
     description: 'Set your schedule',
     to: '/dashboard/availability',
-    icon: PhClock,
+    icon: appIcons.clock,
   },
   {
     label: 'Profile',
     description: 'Update your details',
     to: '/dashboard/profile',
-    icon: PhUserCircle,
+    icon: appIcons.userCircle,
   },
 ]
 
@@ -157,7 +149,7 @@ function confirmDecline() {
       <template #actions>
         <Button as-child variant="outline" class="cursor-pointer">
           <NuxtLink to="/dashboard/profile" class="gap-2">
-            <PhUserCircle class="size-4" />
+            <AppIcon :icon="appIcons.userCircle" class="size-4" />
             View Profile
           </NuxtLink>
         </Button>
@@ -178,7 +170,7 @@ function confirmDecline() {
 
       <EmptyState
         v-if="showFullEmpty"
-        :icon="PhCalendarDots"
+        :icon="appIcons.calendarDots"
         title="No consultations yet"
         description="Your consultation requests will appear here. Make sure your profile is complete and your availability is set."
       >
@@ -201,25 +193,25 @@ function confirmDecline() {
             <StatCard
               label="Active Bookings"
               :value="stats.active"
-              :icon="PhCalendarDots"
+              :icon="appIcons.calendarDots"
               :subtitle="stats.active === 0 ? 'No active bookings' : 'In progress'"
             />
             <StatCard
               label="Pending Requests"
               :value="stats.pending"
-              :icon="PhClock"
+              :icon="appIcons.clock"
               :subtitle="stats.pending === 0 ? 'No pending requests' : 'Awaiting response'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
-              :icon="PhCheckCircle"
+              :icon="appIcons.checkCircle"
               subtitle="This month"
             />
             <StatCard
               label="Revenue"
               value="₦0"
-              :icon="PhCurrencyEur"
+              :icon="appIcons.currencyEur"
               subtitle="This month"
             />
           </div>
@@ -307,7 +299,7 @@ function confirmDecline() {
     </template>
 
     <div v-else class="flex justify-center py-16">
-      <PhCircleNotch class="size-8 text-muted-foreground animate-spin" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 text-muted-foreground animate-spin" />
     </div>
 
     <Dialog v-model:open="isCancelModalOpen">

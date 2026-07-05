@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { DropdownMenuRadioItemEmits, DropdownMenuRadioItemProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCircle } from '@phosphor-icons/vue'
 import {
   DropdownMenuItemIndicator,
   DropdownMenuRadioItem,
@@ -31,7 +32,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     <span class="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuItemIndicator>
         <slot name="indicator-icon">
-          <PhCircle class="size-2 fill-current" />
+          <AppIcon :icon="appIcons.circle" class="size-2 fill-current" />
         </slot>
       </DropdownMenuItemIndicator>
     </span>

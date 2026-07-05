@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PhDotsThreeVertical, PhGearSix, PhSignOut, PhUserCircle } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import {
   Avatar,
   AvatarFallback,
@@ -20,7 +21,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { getSessionUserType } from '@/lib/session-user'
 
 const { session, signOut } = useAuth()
 const { isMobile } = useSidebar()
@@ -31,15 +31,6 @@ const user = computed(() => session.value?.user ?? null)
 const displayName = computed(() => user.value?.name || user.value?.email || 'User')
 const displayEmail = computed(() => user.value?.email || '')
 const avatarUrl = computed(() => (user.value as { image?: string } | null)?.image ?? '')
-
-const roleLabel = computed(() => {
-  const role = getSessionUserType(user.value)
-  if (role === 'lawyer')
-    return 'Lawyer'
-  if (role === 'client')
-    return 'Client'
-  return 'User'
-})
 
 const initials = computed(() => {
   const parts = displayName.value.split(/\s+/).filter(Boolean)
@@ -76,7 +67,7 @@ async function handleLogout() {
           <DropdownMenuTrigger as-child>
             <SidebarMenuButton
               size="lg"
-              class="cursor-pointer data-[state=open]:bg-muted data-[state=open]:text-foreground"
+              class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar class="size-8 rounded-lg">
                 <AvatarImage
@@ -90,18 +81,17 @@ async function handleLogout() {
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-medium">{{ displayName }}</span>
                 <span class="truncate text-xs text-muted-foreground">
-                  {{ roleLabel }}
+                  {{ displayEmail }}
                 </span>
               </div>
-              <PhDotsThreeVertical class="ml-auto size-4" />
+              <AppIcon :icon="appIcons.dotsThreeVertical" class="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            :side="isMobile ? 'bottom' : 'top'"
-            :side-offset="8"
+            :side="isMobile ? 'bottom' : 'right'"
+            :side-offset="4"
             align="end"
-            :collision-padding="12"
           >
             <DropdownMenuLabel class="p-0 font-normal">
               <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -129,7 +119,7 @@ async function handleLogout() {
                   to="/dashboard/profile"
                   class="flex cursor-pointer items-center gap-2"
                 >
-                  <PhUserCircle class="size-4" />
+                  <AppIcon :icon="appIcons.userCircle" />
                   Profile
                 </NuxtLink>
               </DropdownMenuItem>
@@ -138,7 +128,7 @@ async function handleLogout() {
                   to="/dashboard/settings"
                   class="flex cursor-pointer items-center gap-2"
                 >
-                  <PhGearSix class="size-4" />
+                  <AppIcon :icon="appIcons.gearSix" />
                   Settings
                 </NuxtLink>
               </DropdownMenuItem>
@@ -149,7 +139,7 @@ async function handleLogout() {
               :disabled="isSigningOut"
               @select="handleLogout"
             >
-              <PhSignOut class="size-4" />
+              <AppIcon :icon="appIcons.signOut" />
               {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
             </DropdownMenuItem>
           </DropdownMenuContent>

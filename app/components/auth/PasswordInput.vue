@@ -20,14 +20,15 @@
       :disabled="disabled"
       @click="visible = !visible"
     >
-      <PhEyeSlash v-if="visible" class="w-4 h-4" />
-      <PhEye v-else class="w-4 h-4" />
+      <AppIcon :icon="appIcons.eyeSlash" v-if="visible" class="w-4 h-4" />
+      <AppIcon :icon="appIcons.eye" v-else class="w-4 h-4" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { PhEye, PhEyeSlash } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 

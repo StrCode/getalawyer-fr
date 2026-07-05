@@ -1,18 +1,12 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type {
   LawyerDirectoryEligibility,
   LawyerProfileStrengthSummary,
 } from '~/types/lawyer-directory-eligibility'
 import { getTier1IncompleteItems } from '~/lib/profile-check-catalog'
-import {
-  PhCheckCircle,
-  PhCircle,
-  PhEye,
-  PhEyeSlash,
-  PhWarning,
-} from '@phosphor-icons/vue'
-
 const props = defineProps<{
   eligibility: LawyerDirectoryEligibility | null | undefined
   profileStrength: LawyerProfileStrengthSummary | null | undefined
@@ -104,8 +98,8 @@ const showTier1Details = computed(
               : 'bg-muted text-muted-foreground'
           "
         >
-          <PhEye v-if="isVisible" class="size-3.5" aria-hidden="true" />
-          <PhEyeSlash v-else class="size-3.5" aria-hidden="true" />
+          <AppIcon :icon="appIcons.eye" v-if="isVisible" class="size-3.5" aria-hidden="true" />
+          <AppIcon :icon="appIcons.eyeSlash" v-else class="size-3.5" aria-hidden="true" />
           {{ isVisible ? 'Visible in search' : 'Hidden from search' }}
         </div>
       </div>
@@ -118,17 +112,17 @@ const showTier1Details = computed(
           :key="gate.id"
           class="flex items-start gap-2 rounded-lg border border-border px-3 py-2 text-sm"
         >
-          <PhCheckCircle
+          <AppIcon :icon="appIcons.checkCircle"
             v-if="gate.passed"
             class="mt-0.5 size-4 shrink-0 text-primary"
             aria-hidden="true"
           />
-          <PhWarning
+          <AppIcon :icon="appIcons.warning"
             v-else-if="gate.soft"
             class="mt-0.5 size-4 shrink-0 text-amber-600"
             aria-hidden="true"
           />
-          <PhCircle
+          <AppIcon :icon="appIcons.circle"
             v-else
             class="mt-0.5 size-4 shrink-0 text-muted-foreground"
             aria-hidden="true"

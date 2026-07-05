@@ -7,7 +7,7 @@
         as-child
       >
         <NuxtLink :to="`/dashboard/bookings/${bookingId}`">
-          <PhArrowLeft class="size-5" />
+          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
           Back to booking
         </NuxtLink>
       </Button>
@@ -23,14 +23,14 @@
       v-if="isLoading"
       class="flex justify-center py-12"
     >
-      <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
     </div>
 
     <div
       v-else-if="isError || !booking"
       class="py-12 text-center"
     >
-      <PhWarningCircle class="mx-auto mb-4 size-12 text-destructive" />
+      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
       <p class="text-destructive">
         Failed to load booking details
       </p>
@@ -40,7 +40,7 @@
       v-else-if="!canReschedule"
       class="py-12 text-center"
     >
-      <PhCalendarX class="mx-auto mb-4 size-12 text-muted-foreground" />
+      <AppIcon :icon="appIcons.calendarX" class="mx-auto mb-4 size-12 text-muted-foreground" />
       <p class="text-muted-foreground">
         This booking cannot be rescheduled
       </p>
@@ -137,13 +137,13 @@
           </CardHeader>
           <CardContent class="space-y-2 text-sm">
             <div class="flex items-center gap-2 text-primary">
-              <PhCalendar class="size-5" />
+              <AppIcon :icon="appIcons.calendar" class="size-5" />
               <p class="font-medium">
                 {{ formatBookingDateLong(selectedSlot.date) }}
               </p>
             </div>
             <div class="flex items-center gap-2 text-primary">
-              <PhClock class="size-5" />
+              <AppIcon :icon="appIcons.clock" class="size-5" />
               <p class="font-medium">
                 {{ formatTime(selectedSlot.time) }}
               </p>
@@ -156,17 +156,11 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import {
-  PhArrowLeft,
-  PhCalendar,
-  PhCalendarX,
-  PhCircleNotch,
-  PhClock,
-  PhWarningCircle,
-} from '@phosphor-icons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'

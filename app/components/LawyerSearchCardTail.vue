@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { LawyerSearchResult } from '~/lib/api'
-import { PhArrowRight } from '@phosphor-icons/vue'
-
 const props = withDefaults(
   defineProps<{
     lawyer: LawyerSearchResult
@@ -83,7 +83,7 @@ defineEmits<{ openProfile: [] }>()
         @click.stop="$emit('openProfile')"
       >
         {{ loggedIn ? 'View profile' : 'Sign in & view' }}
-        <PhArrowRight class="size-4 opacity-85" aria-hidden="true" />
+        <AppIcon :icon="appIcons.arrowRight" class="size-4 opacity-85" aria-hidden="true" />
       </Button>
     </footer>
   </div>

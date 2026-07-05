@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { PhCheck, PhChecks } from '@phosphor-icons/vue'
-
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 const props = defineProps<{
   status: 'sent' | 'delivered' | 'read'
 }>()
@@ -17,22 +17,19 @@ const statusLabel = computed(() => {
     class="inline-flex shrink-0 items-center"
     :aria-label="statusLabel"
   >
-    <PhCheck
+    <AppIcon :icon="appIcons.check"
       v-if="status === 'sent'"
       class="size-3.5 opacity-70"
-      weight="bold"
       aria-hidden="true"
     />
-    <PhChecks
+    <AppIcon :icon="appIcons.checks"
       v-else-if="status === 'delivered'"
       class="size-3.5 opacity-70"
-      weight="bold"
       aria-hidden="true"
     />
-    <PhChecks
+    <AppIcon :icon="appIcons.checks"
       v-else
       class="size-3.5 text-sky-300"
-      weight="bold"
       aria-hidden="true"
     />
   </span>

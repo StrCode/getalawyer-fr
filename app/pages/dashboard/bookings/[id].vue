@@ -7,7 +7,7 @@
         as-child
       >
         <NuxtLink to="/dashboard/bookings">
-          <PhArrowLeft class="size-5" />
+          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
         </NuxtLink>
       </Button>
       <div class="min-w-0 flex-1">
@@ -33,14 +33,14 @@
       v-if="isLoading"
       class="flex justify-center py-12"
     >
-      <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
     </div>
 
     <div
       v-else-if="isError || !booking"
       class="py-12 text-center"
     >
-      <PhWarningCircle class="mx-auto mb-4 size-12 text-destructive" />
+      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
       <p class="text-destructive">
         Failed to load booking details
       </p>
@@ -131,7 +131,7 @@
                       rel="noopener noreferrer"
                       class="gap-2"
                     >
-                      <PhVideoCamera class="size-4" />
+                      <AppIcon :icon="appIcons.videoCamera" class="size-4" />
                       Join video call
                     </a>
                   </Button>
@@ -200,7 +200,7 @@
               class="rounded-lg border border-border bg-background p-4"
             >
               <div class="flex items-start gap-2">
-                <PhCheckCircle class="mt-0.5 size-5 text-primary" />
+                <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 text-primary" />
                 <div>
                   <p class="text-sm font-semibold text-foreground">
                     Case created
@@ -218,7 +218,7 @@
                       class="gap-2"
                     >
                       View case
-                      <PhArrowRight class="size-4" />
+                      <AppIcon :icon="appIcons.arrowRight" class="size-4" />
                     </NuxtLink>
                   </Button>
                 </div>
@@ -248,7 +248,7 @@
                 :to="`/dashboard/messages?conversation=${booking.conversationId}`"
                 class="gap-2"
               >
-                <PhChatCircle class="size-5" />
+                <AppIcon :icon="appIcons.chatCircle" class="size-5" />
                 Open conversation
               </NuxtLink>
             </Button>
@@ -289,7 +289,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-start gap-3">
-              <PhCalendar class="mt-0.5 size-5 text-muted-foreground" />
+              <AppIcon :icon="appIcons.calendar" class="mt-0.5 size-5 text-muted-foreground" />
               <div>
                 <p class="text-sm font-medium text-foreground">
                   {{ formatBookingDateLong(booking.scheduledDate) }}
@@ -385,19 +385,11 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import {
-  PhArrowLeft,
-  PhArrowRight,
-  PhCalendar,
-  PhChatCircle,
-  PhCheckCircle,
-  PhCircleNotch,
-  PhVideoCamera,
-  PhWarningCircle,
-} from '@phosphor-icons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'

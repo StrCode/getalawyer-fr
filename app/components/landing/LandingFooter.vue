@@ -62,7 +62,7 @@ const cols = {
               />
               <button
                 type="submit"
-                class="shrink-0 cursor-pointer rounded-full border-none bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                class="shrink-0 cursor-pointer rounded-xl border-none bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
               >
                 Subscribe
               </button>

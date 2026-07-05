@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { SelectScrollDownButtonProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCaretDown } from '@phosphor-icons/vue'
 import { SelectScrollDownButton, useForwardProps } from "reka-ui"
 import { cn } from "@/lib/utils"
 
@@ -20,7 +21,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     :class="cn('flex cursor-default items-center justify-center py-1', props.class)"
   >
     <slot>
-      <PhCaretDown class="size-4" />
+      <AppIcon :icon="appIcons.caretDown" class="size-4" />
     </slot>
   </SelectScrollDownButton>
 </template>

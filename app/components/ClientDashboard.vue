@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
 import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
@@ -8,16 +10,6 @@ import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeade
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
 import { Button } from '@/components/ui/button'
-import {
-  PhCalendarDots,
-  PhChatCircle,
-  PhCheckCircle,
-  PhClock,
-  PhMagnifyingGlass,
-  PhScales,
-  PhCircleNotch,
-} from '@phosphor-icons/vue'
-
 const { session } = useAuth()
 const { useClientBookings } = useBookings()
 const { data: bookingsData, isPending } = useClientBookings()
@@ -49,13 +41,13 @@ const quickLinks: DashboardQuickLink[] = [
     label: 'My Bookings',
     description: 'View and manage consultations',
     to: '/dashboard/bookings',
-    icon: PhCalendarDots,
+    icon: appIcons.calendarDots,
   },
   {
     label: 'Messages',
     description: 'Chat with your lawyers',
     to: '/dashboard/messages',
-    icon: PhChatCircle,
+    icon: appIcons.chatCircle,
   },
 ]
 
@@ -74,7 +66,7 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
       <template #actions>
         <Button as-child class="cursor-pointer">
           <NuxtLink to="/find-lawyers" class="gap-2">
-            <PhMagnifyingGlass class="size-4" />
+            <AppIcon :icon="appIcons.magnifyingGlass" class="size-4" />
             Find a Lawyer
           </NuxtLink>
         </Button>
@@ -90,20 +82,20 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
 
       <EmptyState
         v-if="showFullEmpty"
-        :icon="PhCalendarDots"
+        :icon="appIcons.calendarDots"
         title="No consultations yet"
         description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
       >
         <template #actions>
           <Button as-child class="cursor-pointer">
             <NuxtLink to="/find-lawyers" class="gap-2">
-              <PhMagnifyingGlass class="size-4" />
+              <AppIcon :icon="appIcons.magnifyingGlass" class="size-4" />
               Browse Lawyers
             </NuxtLink>
           </Button>
           <Button as-child variant="outline" class="cursor-pointer">
             <NuxtLink to="/practice-areas" class="gap-2">
-              <PhScales class="size-4" />
+              <AppIcon :icon="appIcons.scales" class="size-4" />
               View Practice Areas
             </NuxtLink>
           </Button>
@@ -119,25 +111,25 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
             <StatCard
               label="Total Bookings"
               :value="stats.total"
-              :icon="PhCalendarDots"
+              :icon="appIcons.calendarDots"
               :subtitle="stats.total === 0 ? 'No bookings yet' : 'All time'"
             />
             <StatCard
               label="Active Consultations"
               :value="stats.confirmed"
-              :icon="PhClock"
+              :icon="appIcons.clock"
               :subtitle="stats.confirmed === 0 ? 'No active cases' : 'In progress'"
             />
             <StatCard
               label="Upcoming"
               :value="stats.pending"
-              :icon="PhCalendarDots"
+              :icon="appIcons.calendarDots"
               :subtitle="stats.pending === 0 ? 'No upcoming' : 'Scheduled'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
-              :icon="PhCheckCircle"
+              :icon="appIcons.checkCircle"
               :subtitle="stats.completed === 0 ? 'None yet' : 'Finished'"
             />
           </div>
@@ -172,7 +164,7 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
     </template>
 
     <div v-else class="flex justify-center py-16">
-      <PhCircleNotch class="size-8 text-muted-foreground animate-spin" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 text-muted-foreground animate-spin" />
     </div>
   </div>
 </template>

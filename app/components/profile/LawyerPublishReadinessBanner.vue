@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PhMegaphoneSimple } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { LawyerDirectoryEligibility } from '~/types/lawyer-directory-eligibility'
 
 defineProps<{
@@ -15,7 +16,7 @@ defineProps<{
     role="status"
   >
     <div class="flex gap-3">
-      <PhMegaphoneSimple class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+      <AppIcon :icon="appIcons.megaphoneSimple" class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
       <div>
         <p class="font-medium">
           Approved — not visible in search yet

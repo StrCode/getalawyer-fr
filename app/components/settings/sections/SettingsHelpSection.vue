@@ -81,7 +81,7 @@
           size="sm"
           @click="toast.info('Export requested', { description: 'We\'ll email you when your archive is ready.' })"
         >
-          <PhDownloadSimple class="size-4" />
+          <AppIcon :icon="appIcons.downloadSimple" class="size-4" />
           Request export
         </Button>
       </div>
@@ -129,7 +129,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhDownloadSimple } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'

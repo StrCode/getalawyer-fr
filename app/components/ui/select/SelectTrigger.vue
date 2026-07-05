@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { SelectTriggerProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCaretDown } from '@phosphor-icons/vue'
 import { SelectIcon, SelectTrigger, useForwardProps } from "reka-ui"
 import { cn } from "@/lib/utils"
 
@@ -27,7 +28,7 @@ const forwardedProps = useForwardProps(delegatedProps)
   >
     <slot />
     <SelectIcon as-child>
-      <PhCaretDown class="size-4 opacity-50" />
+      <AppIcon :icon="appIcons.caretDown" class="size-4 opacity-50" />
     </SelectIcon>
   </SelectTrigger>
 </template>

@@ -1,19 +1,10 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { LawyerPriceRange, PrimaryConsultation } from '~/lib/lawyer-public-profile'
 import type { LawyerPracticeInfo } from '~/types/lawyer'
-import {
-  PhBuildings,
-  PhChatCircleDots,
-  PhCheck,
-  PhClock,
-  PhMapPin,
-  PhPhone,
-  PhShieldCheck,
-  PhVideoCamera,
-} from '@phosphor-icons/vue'
-
 defineProps<{
   priceRange: LawyerPriceRange
   primaryConsultation: PrimaryConsultation | null
@@ -57,7 +48,7 @@ const emit = defineEmits<{
         v-if="availabilitySummary"
         class="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground"
       >
-        <PhClock class="size-3.5 shrink-0" />
+        <AppIcon :icon="appIcons.clock" class="size-3.5 shrink-0" />
         {{ availabilitySummary }}
       </p>
     </div>
@@ -73,30 +64,30 @@ const emit = defineEmits<{
             class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
           >
             <div class="flex items-center gap-3">
-              <PhVideoCamera class="size-4 text-muted-foreground" />
+              <AppIcon :icon="appIcons.videoCamera" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">Video call</span>
             </div>
-            <PhCheck class="size-4 text-primary" weight="bold" />
+            <AppIcon :icon="appIcons.check" class="size-4 text-primary" />
           </div>
           <div
             v-if="availableMeetingTypes.includes('phone')"
             class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
           >
             <div class="flex items-center gap-3">
-              <PhPhone class="size-4 text-muted-foreground" />
+              <AppIcon :icon="appIcons.phone" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">Phone call</span>
             </div>
-            <PhCheck class="size-4 text-primary" weight="bold" />
+            <AppIcon :icon="appIcons.check" class="size-4 text-primary" />
           </div>
           <div
             v-if="availableMeetingTypes.includes('in_person')"
             class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
           >
             <div class="flex items-center gap-3">
-              <PhBuildings class="size-4 text-muted-foreground" />
+              <AppIcon :icon="appIcons.buildings" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">In person</span>
             </div>
-            <PhCheck class="size-4 text-primary" weight="bold" />
+            <AppIcon :icon="appIcons.check" class="size-4 text-primary" />
           </div>
         </div>
       </div>
@@ -107,7 +98,7 @@ const emit = defineEmits<{
         </h3>
         <div class="rounded-lg border border-border p-4">
           <div class="flex items-start gap-3">
-            <PhMapPin class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <AppIcon :icon="appIcons.mapPin" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             <div class="text-sm text-muted-foreground">
               <p
                 v-if="isAuthenticated && practiceInfo.officeStreet"
@@ -146,11 +137,11 @@ const emit = defineEmits<{
           :disabled="!canMessage"
           @click="emit('ask')"
         >
-          <PhChatCircleDots class="mr-2 size-5" />
+          <AppIcon :icon="appIcons.chatCircleDots" class="mr-2 size-5" />
           Ask question
         </Button>
         <p class="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-          <PhShieldCheck class="size-4 text-primary" weight="fill" />
+          <AppIcon :icon="appIcons.shieldCheck" class="size-4 text-primary" />
           Secure messaging · free to start
         </p>
       </div>

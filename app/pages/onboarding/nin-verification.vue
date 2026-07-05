@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
-import { PhShieldCheck, PhIdentificationCard, PhCheckCircle, PhLock } from '@phosphor-icons/vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { lawyerNinSchema } from '~/schemas/lawyerNin'
@@ -157,12 +158,12 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         <div
           class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-background bg-primary/5 text-primary shadow-sm"
         >
-          <PhLock class="h-10 w-10" weight="fill" />
+          <AppIcon :icon="appIcons.lock" class="h-10 w-10" />
         </div>
         <div
           class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary"
         >
-          <PhShieldCheck class="h-4 w-4" weight="fill" />
+          <AppIcon :icon="appIcons.shieldCheck" class="h-4 w-4" />
           Verified by Getalawyer
         </div>
         <h2 class="mb-3 text-2xl font-heading font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
@@ -182,7 +183,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         <div
           class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary/20 bg-primary/5"
         >
-          <PhCheckCircle class="h-8 w-8 text-primary" weight="fill" />
+          <AppIcon :icon="appIcons.checkCircle" class="h-8 w-8 text-primary" />
         </div>
         <p class="mb-1 text-lg font-semibold text-foreground">NIN already submitted</p>
         <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -222,7 +223,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-muted-foreground"
                   aria-hidden="true"
                 >
-                  <PhIdentificationCard class="h-5 w-5" />
+                  <AppIcon :icon="appIcons.identificationCard" class="h-5 w-5" />
                 </span>
                 <Input
                   :id="field.name"

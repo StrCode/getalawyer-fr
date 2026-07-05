@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
+
 import type { RangeCalendarNextProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCaretRight } from '@phosphor-icons/vue'
 import { RangeCalendarNext, useForwardProps } from "reka-ui"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from '@/components/ui/button'
@@ -26,7 +28,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     v-bind="forwardedProps"
   >
     <slot>
-      <PhCaretRight class="size-4" />
+      <AppIcon :icon="appIcons.caretRight" class="size-4" />
     </slot>
   </RangeCalendarNext>
 </template>

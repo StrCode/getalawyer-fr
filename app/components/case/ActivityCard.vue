@@ -6,8 +6,7 @@
         class="flex justify-center items-center rounded-full w-8 h-8"
         :class="`bg-${activity.color}-100`"
       >
-        <component
-          :is="activity.icon ?? PhInfo"
+        <AppIcon :icon="activity.icon ?? appIcons.info"
           class="w-4 h-4"
           :class="`text-${activity.color}-600`"
         />
@@ -66,7 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhInfo } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { Activity } from '~/types'
 
 interface Props {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -23,7 +25,6 @@ import {
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
 } from '~/lib/lawyerOnboardingStatus'
-import { PhCheck, PhCircleNotch, PhCreditCard, PhSignOut } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -269,7 +270,7 @@ async function retry() {
       v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
     >
-      <PhCircleNotch class="size-10 animate-spin text-primary" aria-hidden="true" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-10 animate-spin text-primary" aria-hidden="true" />
       <p class="text-sm font-medium text-muted-foreground">
         <template v-if="hasPendingSubscription && confirmingPendingPayment">
           Confirming your payment…
@@ -284,7 +285,7 @@ async function retry() {
       <h1 class="font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground">
         Could not load your application
       </h1>
-      <Button class="rounded-full" @click="retry">
+      <Button @click="retry">
         Try again
       </Button>
     </div>
@@ -325,7 +326,7 @@ async function retry() {
             <div
               class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
             >
-              <PhCreditCard class="size-5" weight="duotone" />
+              <AppIcon :icon="appIcons.creditCard" class="size-5" />
             </div>
             <div>
               <h2 class="text-base font-semibold text-foreground">
@@ -373,7 +374,7 @@ async function retry() {
             v-if="hasActiveSubscription"
             class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
           >
-            <PhCheck class="mt-0.5 size-4 shrink-0 text-primary" weight="bold" />
+            <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
             <div>
               <p class="font-semibold text-foreground">
                 Payment received
@@ -392,11 +393,11 @@ async function retry() {
 
           <Button
             v-else
-            class="w-full rounded-full font-semibold"
+            class="w-full font-semibold"
             :disabled="paymentBusy || !pricing"
             @click="startPayment"
           >
-            <PhCircleNotch
+            <AppIcon :icon="appIcons.circleNotch"
               v-if="paymentBusy"
               class="mr-2 size-4 animate-spin"
             />
@@ -426,7 +427,7 @@ async function retry() {
           class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           @click="signOut()"
         >
-          <PhSignOut class="size-4" />
+          <AppIcon :icon="appIcons.signOut" class="size-4" />
           Sign out
         </button>
       </div>

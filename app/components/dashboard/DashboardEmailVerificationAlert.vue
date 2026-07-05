@@ -9,7 +9,7 @@
           class="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300"
           aria-hidden="true"
         >
-          <PhEnvelopeSimple class="size-5" />
+          <AppIcon :icon="appIcons.envelopeSimple" class="size-5" />
         </div>
         <div>
           <p class="font-medium text-foreground">
@@ -40,7 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhEnvelopeSimple } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 

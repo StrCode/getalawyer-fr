@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { ref, computed } from 'vue'
-import { PhCaretDown } from '@phosphor-icons/vue'
 import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
 import { formatNairaAmount } from '~/composables/useSubscription'
 
@@ -205,7 +206,7 @@ const toggleFaq = (index: number) => {
                 class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-primary transition-transform duration-300"
                 :class="{ 'rotate-180': openFaqs[idx] }"
               >
-                <PhCaretDown class="size-4" weight="bold" />
+                <AppIcon :icon="appIcons.caretDown" class="size-4" />
               </div>
             </button>
             <div

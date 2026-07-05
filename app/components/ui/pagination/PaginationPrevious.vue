@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { PaginationPrevProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import type { ButtonVariants } from '@/components/ui/button'
 import { reactiveOmit } from "@vueuse/core"
-import { PhCaretLeft } from '@phosphor-icons/vue'
 import { PaginationPrev, useForwardProps } from "reka-ui"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from '@/components/ui/button'
@@ -26,7 +27,7 @@ const forwarded = useForwardProps(delegatedProps)
     v-bind="forwarded"
   >
     <slot>
-      <PhCaretLeft />
+      <AppIcon :icon="appIcons.caretLeft" />
       <span class="hidden sm:block">Previous</span>
     </slot>
   </PaginationPrev>

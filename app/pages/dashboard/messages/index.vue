@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PhChatCircle, PhChatCircleDots, PhCircleNotch } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useMessaging } from '~/composables/useMessaging'
 import type { ConversationInfo, ConversationParticipant } from '~/types/messaging'
 import ConversationThreadPanel from '@/components/messaging/ConversationThreadPanel.vue'
@@ -129,7 +130,7 @@ function previewText(conversation: ConversationInfo) {
 
       <div class="flex-1 overflow-y-auto">
         <div v-if="isLoadingConversations" class="flex justify-center py-8">
-          <PhCircleNotch class="size-6 animate-spin text-muted-foreground" />
+          <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
         </div>
 
         <div v-else-if="conversationsError" class="space-y-3 p-4 text-center text-sm text-muted-foreground">
@@ -140,7 +141,7 @@ function previewText(conversation: ConversationInfo) {
         </div>
 
         <div v-else-if="!conversations?.length" class="p-6 text-center text-muted-foreground">
-          <PhChatCircleDots class="mx-auto mb-3 size-12 opacity-40" />
+          <AppIcon :icon="appIcons.chatCircleDots" class="mx-auto mb-3 size-12 opacity-40" />
           <p class="text-sm">
             No conversations yet
           </p>
@@ -186,7 +187,7 @@ function previewText(conversation: ConversationInfo) {
 
     <section class="flex min-w-0 flex-1 flex-col bg-background">
       <div v-if="!selectedConversationId" class="flex flex-1 flex-col items-center justify-center text-muted-foreground">
-        <PhChatCircle class="mb-4 size-16 opacity-30" />
+        <AppIcon :icon="appIcons.chatCircle" class="mb-4 size-16 opacity-30" />
         <p class="text-lg font-medium text-foreground">
           Select a conversation
         </p>

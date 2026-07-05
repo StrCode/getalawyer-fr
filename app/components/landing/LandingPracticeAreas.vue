@@ -1,19 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { PhBriefcase } from '@phosphor-icons/vue'
-import { useSpecializations } from '~/composables/useSpecializations'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
+import { useFeaturedSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
 
-const HOMEPAGE_PREVIEW_COUNT = 8
-
-const { data: specializations, isPending, isError } = useSpecializations()
-
-const previewAreas = computed(() => {
-  const list = specializations.value ?? []
-  return [...list]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice(0, HOMEPAGE_PREVIEW_COUNT)
-})
+const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
 </script>
 
 <template>
@@ -42,7 +33,7 @@ const previewAreas = computed(() => {
         aria-label="Loading practice areas"
       >
         <div
-          v-for="i in HOMEPAGE_PREVIEW_COUNT"
+          v-for="i in 8"
           :key="i"
           class="h-48 animate-pulse rounded-2xl border border-border bg-card"
         />
@@ -60,10 +51,10 @@ const previewAreas = computed(() => {
       </p>
 
       <div
-        v-else-if="previewAreas.length === 0"
+        v-else-if="!featuredAreas?.length"
         class="rounded-2xl border border-dashed border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground"
       >
-        No practice areas are listed yet.
+        No featured practice areas are listed yet.
       </div>
 
       <div
@@ -71,36 +62,54 @@ const previewAreas = computed(() => {
         class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         <div
-          v-for="area in previewAreas"
+          v-for="area in featuredAreas"
           :key="area.id"
-          class="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
+          class="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
         >
-          <div class="mb-4 flex items-start gap-3">
-            <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-primary transition-colors duration-300 group-hover:bg-primary/10">
-              <PhBriefcase class="size-5" weight="duotone" aria-hidden="true" />
-            </div>
-            <NuxtLink
-              :to="specializationDirectoryHref(area.id)"
-              class="mt-1 text-base font-semibold leading-snug text-foreground no-underline transition-colors hover:text-primary"
-            >
-              {{ area.name }}
-            </NuxtLink>
+          <div
+            v-if="area.imageUrl"
+            class="relative h-28 overflow-hidden border-b border-border bg-muted"
+          >
+            <NuxtImg
+              :src="area.imageUrl"
+              :alt="area.name"
+              class="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
           </div>
 
-          <p
-            v-if="area.description"
-            class="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground"
-          >
-            {{ area.description }}
-          </p>
+          <div class="flex flex-1 flex-col p-6">
+            <div class="mb-4 flex items-start gap-3">
+              <div
+                v-if="!area.imageUrl"
+                class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-primary transition-colors duration-300 group-hover:bg-primary/10"
+              >
+                <AppIcon :icon="appIcons.briefcase" class="size-5" aria-hidden="true" />
+              </div>
+              <NuxtLink
+                :to="specializationDirectoryHref(area.id)"
+                class="text-base font-semibold leading-snug text-foreground no-underline transition-colors hover:text-primary"
+                :class="area.imageUrl ? '' : 'mt-1'"
+              >
+                {{ area.name }}
+              </NuxtLink>
+            </div>
 
-          <NuxtLink
-            :to="specializationDirectoryHref(area.id)"
-            class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary no-underline"
-          >
-            Find {{ area.name }} lawyers
-            <span class="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-          </NuxtLink>
+            <p
+              v-if="area.description"
+              class="mb-4 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground"
+            >
+              {{ area.description }}
+            </p>
+
+            <NuxtLink
+              :to="specializationDirectoryHref(area.id)"
+              class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary no-underline"
+            >
+              Find {{ area.name }} lawyers
+              <span class="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>

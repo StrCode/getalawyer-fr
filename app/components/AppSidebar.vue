@@ -47,7 +47,7 @@ const showUpgradePrompt = computed(() => {
           <SidebarMenuButton
             as-child
             size="lg"
-            class="data-[slot=sidebar-menu-button]:p-1.5!"
+            class="data-[slot=sidebar-menu-button]:!p-1.5"
           >
             <LandingBrandLogo
               to="/dashboard"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -12,14 +14,6 @@ import {
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
 } from '~/lib/lawyerOnboardingStatus'
-import {
-  PhCircleNotch,
-  PhCheck,
-  PhFileSearch,
-  PhHouse,
-  PhHourglass,
-  PhSignOut,
-} from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -209,7 +203,7 @@ async function retryStatus() {
       <div
         class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-card shadow-sm"
       >
-        <PhCircleNotch class="size-8 animate-spin text-primary" aria-hidden="true" />
+        <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" aria-hidden="true" />
       </div>
       <p class="text-sm font-medium text-muted-foreground">Loading your application status…</p>
     </div>
@@ -219,7 +213,7 @@ async function retryStatus() {
       <div
         class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
-        <PhHourglass class="size-10" weight="duotone" />
+        <AppIcon :icon="appIcons.hourglass" class="size-10" />
       </div>
       <div class="space-y-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -229,7 +223,7 @@ async function retryStatus() {
           Could not load status
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
-          Check your connection and try again.
+          appIcons.check your connection and try again.
         </p>
       </div>
       <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">
@@ -237,7 +231,7 @@ async function retryStatus() {
           <p class="text-sm leading-relaxed text-muted-foreground">
             We could not reach the server to confirm your application status.
           </p>
-          <Button class="w-full rounded-full font-semibold" @click="retryStatus">
+          <Button class="w-full font-semibold" @click="retryStatus">
             Try again
           </Button>
         </div>
@@ -249,7 +243,7 @@ async function retryStatus() {
       <div
         class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
-        <PhHourglass class="size-10" weight="duotone" />
+        <AppIcon :icon="appIcons.hourglass" class="size-10" />
       </div>
       <div class="space-y-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -271,7 +265,7 @@ async function retryStatus() {
               support@getalawyer.ng
             </a>
           </p>
-          <Button variant="outline" class="w-full rounded-full" @click="signOut">
+          <Button variant="outline" class="w-full" @click="signOut">
             Sign out
           </Button>
         </div>
@@ -288,9 +282,9 @@ async function retryStatus() {
             <div
               class="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background"
             >
-              <PhCheck class="size-5" weight="bold" />
+              <AppIcon :icon="appIcons.check" class="size-5" />
             </div>
-            <PhFileSearch class="size-11 text-primary" weight="duotone" />
+            <AppIcon :icon="appIcons.fileSearch" class="size-11 text-primary" />
           </div>
 
           <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
@@ -336,7 +330,7 @@ async function retryStatus() {
                         : 'bg-muted text-muted-foreground'
                   "
                 >
-                  <PhCheck v-if="step.status === 'done'" class="size-4" weight="bold" />
+                  <AppIcon :icon="appIcons.check" v-if="step.status === 'done'" class="size-4" />
                   <span v-else class="size-2 rounded-full bg-current" />
                 </span>
                 <span
@@ -444,11 +438,11 @@ async function retryStatus() {
         <!-- Actions -->
         <div class="flex flex-col items-center gap-4 pt-2">
           <Button
-            class="h-12 w-full max-w-xs rounded-full text-base font-semibold shadow-md sm:w-auto sm:min-w-52"
+            class="h-12 w-full max-w-xs text-base font-semibold shadow-md sm:w-auto sm:min-w-52"
             as-child
           >
             <NuxtLink to="/" class="inline-flex items-center justify-center gap-2">
-              <PhHouse class="size-4" />
+              <AppIcon :icon="appIcons.house" class="size-4" />
               Home
             </NuxtLink>
           </Button>
@@ -458,7 +452,7 @@ async function retryStatus() {
               class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               @click="signOut()"
             >
-              <PhSignOut class="size-4" />
+              <AppIcon :icon="appIcons.signOut" class="size-4" />
               Sign out
             </button>
             <button

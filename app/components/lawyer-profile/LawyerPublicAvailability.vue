@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerWorkingDay } from '~/lib/lawyer-public-profile'
-import { PhClock } from '@phosphor-icons/vue'
-
 defineProps<{
   workingDays: LawyerWorkingDay[]
 }>()
@@ -12,7 +12,7 @@ defineProps<{
   <section v-if="workingDays.length">
     <LawyerProfileSectionHeading title="Availability">
       <template #icon>
-        <PhClock />
+        <AppIcon :icon="appIcons.clock" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="rounded-2xl border border-border bg-card p-5 md:p-6">

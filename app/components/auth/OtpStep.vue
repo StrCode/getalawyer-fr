@@ -48,7 +48,7 @@
       </InputOTP>
 
       <p v-if="error" class="flex items-center justify-center gap-1.5 text-sm text-destructive">
-        <PhWarningCircle class="size-3.5 shrink-0" />
+        <AppIcon :icon="appIcons.warningCircle" class="size-3.5 shrink-0" />
         {{ error }}
       </p>
 
@@ -71,7 +71,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhWarningCircle } from "@phosphor-icons/vue";
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 

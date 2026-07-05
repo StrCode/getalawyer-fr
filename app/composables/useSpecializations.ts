@@ -4,16 +4,26 @@ import { useQuery } from "@tanstack/vue-query";
 import { api } from "~/lib/api";
 import { queryKeys } from "~/lib/query-client";
 
-// Query: Fetch all specializations
-export function useSpecializations() {
+type UseSpecializationsOptions = {
+  featured?: boolean;
+};
+
+// Query: Fetch specializations (all, or featured homepage subset)
+export function useSpecializations(options?: UseSpecializationsOptions) {
+  const featured = options?.featured ?? false;
+
   return useQuery({
-    queryKey: queryKeys.specializations.all,
+    queryKey: featured ? queryKeys.specializations.featured : queryKeys.specializations.all,
     queryFn: async () => {
-      const response = await api.specialization.getAll();
+      const response = await api.specialization.getAll({ featured });
       return response.specializations || [];
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes - specializations don't change often
+    staleTime: 10 * 60 * 1000,
   });
+}
+
+export function useFeaturedSpecializations() {
+  return useSpecializations({ featured: true });
 }
 
 // Query: Fetch single specialization

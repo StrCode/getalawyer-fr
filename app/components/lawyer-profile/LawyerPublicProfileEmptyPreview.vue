@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
-import { PhPencilSimpleLine } from '@phosphor-icons/vue'
 </script>
 
 <template>
@@ -8,7 +9,7 @@ import { PhPencilSimpleLine } from '@phosphor-icons/vue'
     class="rounded-2xl border border-dashed border-border bg-muted p-8 text-center"
     aria-labelledby="profile-empty-heading"
   >
-    <PhPencilSimpleLine class="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
+    <AppIcon :icon="appIcons.pencilSimpleLine" class="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
     <h2
       id="profile-empty-heading"
       class="text-base font-semibold text-foreground"

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { WithClassAsProps } from "./interface"
 import type { ButtonVariants } from '@/components/ui/button'
-import { PhArrowLeft } from '@phosphor-icons/vue'
 import { cn } from "@/lib/utils"
 import { Button } from '@/components/ui/button'
 import { useCarousel } from "./useCarousel"
@@ -23,7 +24,7 @@ const { orientation, canScrollPrev, scrollPrev } = useCarousel()
     data-slot="carousel-previous"
     :disabled="!canScrollPrev"
     :class="cn(
-      'absolute size-8 rounded-full',
+      'absolute size-8 rounded-xl',
       orientation === 'horizontal'
         ? 'top-1/2 -left-12 -translate-y-1/2'
         : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -34,7 +35,7 @@ const { orientation, canScrollPrev, scrollPrev } = useCarousel()
     @click="scrollPrev"
   >
     <slot>
-      <PhArrowLeft />
+      <AppIcon :icon="appIcons.arrowLeft" />
       <span class="sr-only">Previous Slide</span>
     </slot>
   </Button>

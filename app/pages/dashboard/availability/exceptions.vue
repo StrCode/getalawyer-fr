@@ -1,13 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import {
-  PhCalendarBlank,
-  PhCalendarX,
-  PhCircleNotch,
-  PhClock,
-  PhPlus,
-  PhTrash,
-} from '@phosphor-icons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
@@ -238,7 +232,7 @@ const minDate = new Date().toISOString().split('T')[0]
             to="/dashboard/availability"
             class="gap-2"
           >
-            <PhCalendarBlank class="size-4" />
+            <AppIcon :icon="appIcons.calendarBlank" class="size-4" />
             Weekly schedule
           </NuxtLink>
         </Button>
@@ -264,7 +258,7 @@ const minDate = new Date().toISOString().split('T')[0]
           class="gap-2"
           @click="isAddModalOpen = true"
         >
-          <PhPlus class="size-4" />
+          <AppIcon :icon="appIcons.plus" class="size-4" />
           Add exception
         </Button>
         <Button
@@ -272,7 +266,7 @@ const minDate = new Date().toISOString().split('T')[0]
           class="gap-2"
           @click="isVacationModalOpen = true"
         >
-          <PhCalendarX class="size-4" />
+          <AppIcon :icon="appIcons.calendarX" class="size-4" />
           Block vacation
         </Button>
       </div>
@@ -282,12 +276,12 @@ const minDate = new Date().toISOString().split('T')[0]
       v-if="isPending"
       class="flex justify-center py-12"
     >
-      <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
     </div>
 
     <EmptyState
       v-else-if="!exceptions || exceptions.length === 0"
-      :icon="PhCalendarBlank"
+      :icon="appIcons.calendarBlank"
       title="No exceptions yet"
       description="Add exceptions to override your weekly schedule for specific dates"
     >
@@ -323,14 +317,14 @@ const minDate = new Date().toISOString().split('T')[0]
                 v-if="exception.startTime && exception.endTime"
                 class="flex items-center gap-2"
               >
-                <PhClock class="size-4" />
+                <AppIcon :icon="appIcons.clock" class="size-4" />
                 <span>{{ formatTime(exception.startTime) }} – {{ formatTime(exception.endTime) }}</span>
               </div>
               <div
                 v-else
                 class="flex items-center gap-2"
               >
-                <PhCalendarX class="size-4" />
+                <AppIcon :icon="appIcons.calendarX" class="size-4" />
                 <span>All day</span>
               </div>
             </div>
@@ -350,7 +344,7 @@ const minDate = new Date().toISOString().split('T')[0]
             :loading="deleteMutation.isPending.value"
             @click="handleDelete(exception)"
           >
-            <PhTrash class="size-4" />
+            <AppIcon :icon="appIcons.trash" class="size-4" />
           </ButtonBusy>
         </CardContent>
       </Card>

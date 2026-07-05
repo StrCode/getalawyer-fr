@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import { PhCheck, PhX } from '@phosphor-icons/vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { messagingAPI } from '~/lib/api/messaging'
@@ -103,7 +104,7 @@ async function cancel() {
         :disabled="isResponding"
         @click="respond('accepted')"
       >
-        <PhCheck class="mr-1 size-4" />
+        <AppIcon :icon="appIcons.check" class="mr-1 size-4" />
         Accept
       </Button>
       <Button
@@ -113,7 +114,7 @@ async function cancel() {
         :disabled="isResponding"
         @click="respond('declined')"
       >
-        <PhX class="mr-1 size-4" />
+        <AppIcon :icon="appIcons.x" class="mr-1 size-4" />
         Decline
       </Button>
     </div>

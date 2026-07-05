@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerProfileArticle } from '~/types/lawyer-profile-editor'
-import { PhArticle } from '@phosphor-icons/vue'
-
 defineProps<{
   articles: LawyerProfileArticle[]
 }>()
@@ -23,7 +23,7 @@ function formatPublishedDate(value: string | null | undefined): string | null {
   <section v-if="articles.length">
     <LawyerProfileSectionHeading title="Articles">
       <template #icon>
-        <PhArticle />
+        <AppIcon :icon="appIcons.article" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="space-y-4">

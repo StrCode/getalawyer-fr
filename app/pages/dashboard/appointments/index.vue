@@ -76,7 +76,7 @@
             v-if="todayBookings.length === 0"
             class="px-6 py-12 text-center text-muted-foreground"
           >
-            <PhCalendar class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <AppIcon :icon="appIcons.calendar" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
             <p>No appointments scheduled for today</p>
           </div>
           <div
@@ -106,7 +106,7 @@
             v-if="upcomingBookings.length === 0"
             class="px-6 py-12 text-center text-muted-foreground"
           >
-            <PhCalendarCheck class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <AppIcon :icon="appIcons.calendarCheck" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
             <p>No upcoming appointments</p>
           </div>
           <div
@@ -187,9 +187,10 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
-import { PhCalendar, PhCalendarCheck } from '@phosphor-icons/vue'
 import BookingCard from '~/components/appointments/BookingCard.vue'
 import TodayBookingCard from '~/components/appointments/TodayBookingCard.vue'
 import UpcomingBookingCard from '~/components/appointments/UpcomingBookingCard.vue'

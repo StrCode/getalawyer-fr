@@ -1,19 +1,9 @@
+import { appIcons, type AppIconData } from '@/lib/app-icons'
 /**
  * Activity Timeline Composable
  * Feature: case-management-system
  */
 
-import type { Component } from 'vue'
-import {
-  PhArrowsClockwise,
-  PhChatCircle,
-  PhCheckCircle,
-  PhClipboardText,
-  PhFilePlus,
-  PhLockSimple,
-  PhLockSimpleOpen,
-  PhPlusCircle
-} from '@phosphor-icons/vue'
 import type {
   Activity,
   ActivityFilters,
@@ -30,15 +20,15 @@ export const useActivities = () => {
   const { handleApiError } = useApiErrorHandler()
 
   // Activity type configurations
-  const activityConfig: Record<ActivityType, { icon: Component; color: string }> = {
-    case_created: { icon: PhPlusCircle, color: 'green' },
-    status_changed: { icon: PhArrowsClockwise, color: 'blue' },
-    message_sent: { icon: PhChatCircle, color: 'purple' },
-    document_uploaded: { icon: PhFilePlus, color: 'orange' },
-    task_created: { icon: PhClipboardText, color: 'indigo' },
-    task_completed: { icon: PhCheckCircle, color: 'green' },
-    case_closed: { icon: PhLockSimple, color: 'red' },
-    case_reopened: { icon: PhLockSimpleOpen, color: 'yellow' }
+  const activityConfig: Record<ActivityType, { icon: AppIconData; color: string }> = {
+    case_created: { icon: appIcons.plusCircle, color: 'green' },
+    status_changed: { icon: appIcons.arrowsClockwise, color: 'blue' },
+    message_sent: { icon: appIcons.chatCircle, color: 'purple' },
+    document_uploaded: { icon: appIcons.filePlus, color: 'orange' },
+    task_created: { icon: appIcons.clipboardText, color: 'indigo' },
+    task_completed: { icon: appIcons.checkCircle, color: 'green' },
+    case_closed: { icon: appIcons.lockSimple, color: 'red' },
+    case_reopened: { icon: appIcons.lockSimpleOpen, color: 'yellow' }
   }
 
   // Helper function to enrich activity data with UI properties

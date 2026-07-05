@@ -37,8 +37,7 @@
                     : 'text-foreground/80 hover:bg-background/60 hover:text-foreground'"
                   @click="$emit('update:activeSection', item.id)"
                 >
-                  <component
-                    :is="item.icon"
+                  <AppIcon :icon="item.icon"
                     class="size-4 shrink-0"
                     aria-hidden="true"
                   />
@@ -59,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 import { SETTINGS_NAV, SETTINGS_NAV_GROUPS } from '@/components/settings/settings-nav'
 import type { SettingsSectionId } from '~/types/account-settings'
 

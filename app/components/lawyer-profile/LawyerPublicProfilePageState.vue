@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
-import { PhCircleNotch, PhWarningCircle } from '@phosphor-icons/vue'
-
 defineProps<{
   pending: boolean
   error: unknown
@@ -21,7 +21,7 @@ const emit = defineEmits<{
     v-if="pending"
     class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
   >
-    <PhCircleNotch class="mx-auto mb-4 size-8 animate-spin text-primary" />
+    <AppIcon :icon="appIcons.circleNotch" class="mx-auto mb-4 size-8 animate-spin text-primary" />
     <p class="text-muted-foreground">
       Loading profile…
     </p>
@@ -32,7 +32,7 @@ const emit = defineEmits<{
     class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
   >
     <div class="mx-auto max-w-md text-center">
-      <PhWarningCircle class="mx-auto mb-4 size-12 text-destructive" />
+      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
       <h2 class="mb-2 text-xl font-bold text-foreground">
         {{ errorStatusCode === 403 ? 'Profile unavailable' : 'Profile not found' }}
       </h2>

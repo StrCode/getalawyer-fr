@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { meetingTypeIcon } from '@/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types/booking'
-import { PhArrowRight, PhCalendarBlank } from '@phosphor-icons/vue'
-
 const props = defineProps<{
   booking: Booking | null
   personName?: string
@@ -68,10 +68,10 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
               {{ consultationName ?? booking.consultationType?.name ?? 'Consultation' }}
             </p>
             <p class="flex items-center gap-1.5 mt-3 text-muted-foreground text-sm">
-              <PhCalendarBlank class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.calendarBlank" class="size-4 shrink-0" />
               {{ formatRelativeSchedule(booking) }}
               <span class="text-border">·</span>
-              <component :is="meetingTypeIcon(booking.meetingType)" class="size-4 shrink-0" />
+              <AppIcon :icon="meetingTypeIcon(booking.meetingType)" class="size-4 shrink-0" />
               <span class="capitalize">{{ booking.meetingType.replace('_', ' ') }}</span>
             </p>
           </div>
@@ -79,7 +79,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
         <Button as-child class="shrink-0 cursor-pointer">
           <NuxtLink :to="path" class="gap-1.5">
             View details
-            <PhArrowRight class="size-4" />
+            <AppIcon :icon="appIcons.arrowRight" class="size-4" />
           </NuxtLink>
         </Button>
       </div>

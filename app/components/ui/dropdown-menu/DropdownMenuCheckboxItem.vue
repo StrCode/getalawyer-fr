@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { DropdownMenuCheckboxItemEmits, DropdownMenuCheckboxItemProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
-import { PhCheck } from '@phosphor-icons/vue'
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuItemIndicator,
@@ -30,7 +31,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     <span class="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
       <DropdownMenuItemIndicator>
         <slot name="indicator-icon">
-          <PhCheck class="size-4" />
+          <AppIcon :icon="appIcons.check" class="size-4" />
         </slot>
       </DropdownMenuItemIndicator>
     </span>

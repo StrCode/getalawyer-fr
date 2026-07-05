@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import {
-  getFilteredNavSections,
+  filterNavForRole,
+  getDashboardNavForRole,
   getNavBadgeKey,
   isDashboardNavActive,
+  isDashboardNavGroupActive,
+  type DashboardNavEntry,
   type DashboardNavLink,
 } from '@/lib/dashboard-nav'
 import { getSessionUserType } from '@/lib/session-user'
-import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -15,6 +20,9 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
 
@@ -32,10 +40,13 @@ const {
   lawyerSubscriptionBadge,
 } = useDashboardNavBadges()
 
-const navSections = computed(() => {
+const navEntries = computed(() => {
   if (!role.value)
-    return null
-  return getFilteredNavSections(role.value)
+    return []
+  const entries = getDashboardNavForRole(role.value)
+  if (!entries)
+    return []
+  return filterNavForRole(entries, role.value)
 })
 
 const badgeMap = computed<Record<string, string | undefined>>(() => ({
@@ -45,6 +56,24 @@ const badgeMap = computed<Record<string, string | undefined>>(() => ({
   '/dashboard/appointments': lawyerPendingAppointmentsBadge.value,
   '/dashboard/subscription': lawyerSubscriptionBadge.value,
 }))
+
+const groupOpen = reactive<Record<string, boolean>>({})
+
+watch(
+  () => route.fullPath,
+  () => {
+    for (const entry of navEntries.value) {
+      if (entry.type === 'group' && isDashboardNavGroupActive(route.path, entry.items))
+        groupOpen[entry.title] = true
+    }
+  },
+  { immediate: true },
+)
+
+function onNavClick() {
+  if (isMobile.value)
+    setOpenMobile(false)
+}
 
 function linkActive(link: DashboardNavLink) {
   return isDashboardNavActive(route.path, link)
@@ -61,104 +90,82 @@ function navTooltip(link: DashboardNavLink) {
   return link.title
 }
 
-function onNavClick() {
-  if (isMobile.value)
-    setOpenMobile(false)
+function groupActive(entry: Extract<DashboardNavEntry, { type: 'group' }>) {
+  return isDashboardNavGroupActive(route.path, entry.items)
+}
+
+function isGroupExpanded(entry: Extract<DashboardNavEntry, { type: 'group' }>) {
+  return groupActive(entry) || groupOpen[entry.title] === true
+}
+
+function setGroupExpanded(entry: Extract<DashboardNavEntry, { type: 'group' }>, open: boolean) {
+  groupOpen[entry.title] = open
 }
 </script>
 
 <template>
-  <template v-if="navSections">
-    <div class="px-2 pb-2">
-      <Button
-        as-child
-        size="sm"
-        class="h-9 w-full cursor-pointer justify-start gap-2 font-semibold shadow-xs"
-      >
-        <NuxtLink
-          :to="navSections.primaryCta.to"
-          @click="onNavClick"
-        >
-          <component
-            :is="navSections.primaryCta.icon"
-            class="size-4 shrink-0"
-            weight="bold"
-          />
-          <span>{{ navSections.primaryCta.label }}</span>
-        </NuxtLink>
-      </Button>
-    </div>
-
-    <SidebarGroup>
-      <SidebarGroupLabel>{{ navSections.main.label }}</SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          <SidebarMenuItem
-            v-for="item in navSections.main.items"
-            :key="item.to"
-          >
+  <SidebarGroup v-if="navEntries.length">
+    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+    <SidebarGroupContent>
+      <SidebarMenu>
+        <template v-for="entry in navEntries" :key="entry.title">
+          <SidebarMenuItem v-if="entry.type === 'link'">
             <SidebarMenuButton
               as-child
-              :tooltip="navTooltip(item)"
-              :is-active="linkActive(item)"
+              :tooltip="navTooltip(entry)"
+              :is-active="linkActive(entry)"
             >
-              <NuxtLink
-                :to="item.to"
-                @click="onNavClick"
-              >
-                <component
-                  :is="item.icon"
-                  class="size-4 shrink-0"
-                  weight="duotone"
-                />
-                <span>{{ item.title }}</span>
+              <NuxtLink :to="entry.to" @click="onNavClick">
+                <AppIcon v-if="entry.icon" :icon="entry.icon" />
+                <span>{{ entry.title }}</span>
                 <SidebarMenuBadge
-                  v-if="linkBadge(item)"
+                  v-if="linkBadge(entry)"
                   class="ml-auto rounded-full border-0 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary tabular-nums"
                 >
-                  {{ linkBadge(item) }}
+                  {{ linkBadge(entry) }}
                 </SidebarMenuBadge>
               </NuxtLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
 
-    <SidebarGroup>
-      <SidebarGroupLabel>{{ navSections.account.label }}</SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          <SidebarMenuItem
-            v-for="item in navSections.account.items"
-            :key="item.to"
-          >
-            <SidebarMenuButton
-              as-child
-              :tooltip="navTooltip(item)"
-              :is-active="linkActive(item)"
+          <SidebarMenuItem v-else>
+            <Collapsible
+              :open="isGroupExpanded(entry)"
+              class="group/collapsible"
+              @update:open="setGroupExpanded(entry, $event)"
             >
-              <NuxtLink
-                :to="item.to"
-                @click="onNavClick"
-              >
-                <component
-                  :is="item.icon"
-                  class="size-4 shrink-0"
-                  weight="duotone"
-                />
-                <span>{{ item.title }}</span>
-                <SidebarMenuBadge
-                  v-if="linkBadge(item)"
-                  class="ml-auto rounded-full border-0 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary tabular-nums"
-                >
-                  {{ linkBadge(item) }}
-                </SidebarMenuBadge>
-              </NuxtLink>
-            </SidebarMenuButton>
+              <CollapsibleTrigger as-child>
+                <SidebarMenuButton :tooltip="entry.title" :is-active="groupActive(entry)">
+                  <AppIcon :icon="entry.icon" />
+                  <span>{{ entry.title }}</span>
+                  <AppIcon
+                    :icon="appIcons.caretRight"
+                    class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                  />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem v-for="item in entry.items" :key="item.title">
+                    <SidebarMenuSubButton as-child :is-active="linkActive(item)">
+                      <NuxtLink :to="item.to" @click="onNavClick">
+                        <AppIcon v-if="item.icon" :icon="item.icon" />
+                        <span>{{ item.title }}</span>
+                        <SidebarMenuBadge
+                          v-if="linkBadge(item)"
+                          class="ml-auto rounded-full border-0 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary tabular-nums"
+                        >
+                          {{ linkBadge(item) }}
+                        </SidebarMenuBadge>
+                      </NuxtLink>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
           </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  </template>
+        </template>
+      </SidebarMenu>
+    </SidebarGroupContent>
+  </SidebarGroup>
 </template>

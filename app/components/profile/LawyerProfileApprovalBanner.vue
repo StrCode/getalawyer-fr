@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PhInfo, PhWarning, PhWarningCircle } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { ProfileEditorApprovalNotice } from '~/lib/lawyerOnboardingStatus'
 
 defineProps<{
@@ -22,17 +23,17 @@ const variantClasses: Record<ProfileEditorApprovalNotice['variant'], string> = {
     role="status"
   >
     <div class="flex gap-3">
-      <PhInfo
+      <AppIcon :icon="appIcons.info"
         v-if="notice.variant === 'info'"
         class="mt-0.5 size-5 shrink-0"
         aria-hidden="true"
       />
-      <PhWarning
+      <AppIcon :icon="appIcons.warning"
         v-else-if="notice.variant === 'warning'"
         class="mt-0.5 size-5 shrink-0"
         aria-hidden="true"
       />
-      <PhWarningCircle
+      <AppIcon :icon="appIcons.warningCircle"
         v-else
         class="mt-0.5 size-5 shrink-0 text-destructive"
         aria-hidden="true"

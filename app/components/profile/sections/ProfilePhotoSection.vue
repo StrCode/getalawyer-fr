@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { PhCamera, PhCircleNotch } from '@phosphor-icons/vue'
-
 const props = defineProps<{
   name: string
   email?: string | null
@@ -59,7 +59,7 @@ function onFileSelected(event: Event) {
           v-if="uploading"
           class="absolute inset-0 flex items-center justify-center rounded-full bg-background/70"
         >
-          <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+          <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
         </span>
       </div>
 
@@ -94,7 +94,7 @@ function onFileSelected(event: Event) {
           class="w-full sm:w-auto"
           @click="fileInputRef?.click()"
         >
-          <PhCamera class="size-4" />
+          <AppIcon :icon="appIcons.camera" class="size-4" />
           Upload photo
         </ButtonBusy>
       </div>

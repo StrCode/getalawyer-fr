@@ -74,7 +74,7 @@
         class="border-dashed"
       >
         <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-          <PhWarningCircle class="size-9 text-muted-foreground" />
+          <AppIcon :icon="appIcons.warningCircle" class="size-9 text-muted-foreground" />
           <p class="text-sm text-muted-foreground">
             We couldn't load your profile. Refresh and try again.
           </p>
@@ -110,7 +110,7 @@
                 v-if="isUploadingAvatar"
                 class="absolute inset-0 flex items-center justify-center rounded-full bg-background/70"
               >
-                <PhCircleNotch class="size-8 animate-spin text-muted-foreground" />
+                <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
               </span>
             </div>
 
@@ -125,7 +125,7 @@
                 v-if="stateLabel"
                 class="mt-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground"
               >
-                <PhMapPin class="size-4 shrink-0" />
+                <AppIcon :icon="appIcons.mapPin" class="size-4 shrink-0" />
                 {{ stateLabel }}, Nigeria
               </p>
             </motion.div>
@@ -146,7 +146,7 @@
                 class="w-full sm:w-auto"
                 @click="fileInputRef?.click()"
               >
-                <PhCamera class="size-4" />
+                <AppIcon :icon="appIcons.camera" class="size-4" />
                 Upload photo
               </ButtonBusy>
               <p class="text-center text-xs text-muted-foreground sm:text-right">
@@ -172,7 +172,7 @@
                 description="Your legal name as it appears on bookings."
               >
                 <div class="relative">
-                  <PhUser class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <AppIcon :icon="appIcons.user" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="profile-name"
                     v-model="form.name"
@@ -188,7 +188,7 @@
                 description="Contact support to change your sign-in email."
               >
                 <motion.div class="relative">
-                  <PhEnvelope class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <AppIcon :icon="appIcons.envelope" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="profile-email"
                     :model-value="profile?.email ?? ''"
@@ -240,7 +240,7 @@
                 description="Optional — shown if you book on behalf of an organization."
               >
                 <motion.div class="relative">
-                  <PhBuildings class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <AppIcon :icon="appIcons.buildings" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="profile-company"
                     v-model="form.company"
@@ -398,7 +398,7 @@
               >
                 <motion.div class="space-y-2">
                   <motion.div class="relative">
-                    <PhPhone class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <AppIcon :icon="appIcons.phone" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="profile-phone"
                       v-model="form.phoneNumber"
@@ -447,17 +447,9 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { motion } from 'motion-v'
-import {
-  PhBuildings,
-  PhCamera,
-  PhCircleNotch,
-  PhEnvelope,
-  PhMapPin,
-  PhPhone,
-  PhUser,
-  PhWarningCircle,
-} from '@phosphor-icons/vue'
 import { toast } from 'vue-sonner'
 import LawyerProfileEditorShell from '@/components/profile/LawyerProfileEditorShell.vue'
 import ProfileSettingsRow from '@/components/dashboard/ProfileSettingsRow.vue'

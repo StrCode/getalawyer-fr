@@ -6,7 +6,7 @@
     >
       <template #actions>
         <Button @click="handleCreate">
-          <PhPlus class="mr-2 size-4" />
+          <AppIcon :icon="appIcons.plus" class="mr-2 size-4" />
           Create new
         </Button>
       </template>
@@ -33,7 +33,7 @@
 
     <EmptyState
       v-else-if="!consultationTypes?.length"
-      :icon="PhFileText"
+      :icon="appIcons.fileText"
       title="No consultation types yet"
       description="Create your first consultation type to start accepting bookings"
     >
@@ -77,22 +77,22 @@
         <CardContent class="space-y-4">
           <div class="space-y-2 text-sm text-muted-foreground">
             <div class="flex items-center gap-2">
-              <PhClock class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.clock" class="size-4 shrink-0" />
               <span>{{ type.durationMinutes }} minutes</span>
             </div>
             <div class="flex items-center gap-2">
-              <PhCurrencyEur class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.currencyEur" class="size-4 shrink-0" />
               <span class="font-semibold text-foreground">{{ formatPrice(type.price, type.currency) }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <PhVideoCamera class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.videoCamera" class="size-4 shrink-0" />
               <span>{{ getMeetingTypeLabel(type.meetingType) }}</span>
             </div>
             <div
               v-if="type.bufferMinutes > 0"
               class="flex items-center gap-2"
             >
-              <PhTimer class="size-4 shrink-0" />
+              <AppIcon :icon="appIcons.timer" class="size-4 shrink-0" />
               <span>{{ type.bufferMinutes }}min buffer</span>
             </div>
           </div>
@@ -139,15 +139,9 @@
 </template>
 
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
-import {
-  PhClock,
-  PhCurrencyEur,
-  PhFileText,
-  PhPlus,
-  PhTimer,
-  PhVideoCamera,
-} from '@phosphor-icons/vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

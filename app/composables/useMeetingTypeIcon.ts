@@ -1,16 +1,14 @@
-import type { Component } from 'vue'
-import { PhCalendarBlank, PhMapPin, PhPhone, PhVideoCamera } from '@phosphor-icons/vue'
-
+import { appIcons, type AppIconData } from '@/lib/app-icons'
 /** Maps API meeting type strings to Phosphor icon components. */
-export function meetingTypeIcon(type: string): Component {
+export function meetingTypeIcon(type: string): AppIconData {
   switch (type) {
     case 'video':
-      return PhVideoCamera
+      return appIcons.videoCamera
     case 'phone':
-      return PhPhone
+      return appIcons.phone
     case 'in_person':
-      return PhMapPin
+      return appIcons.mapPin
     default:
-      return PhCalendarBlank
+      return appIcons.calendarBlank
   }
 }

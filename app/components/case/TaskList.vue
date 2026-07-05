@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <!-- Task Filters and Search -->
+    <!-- Task Filters and appIcons.magnifyingGlass -->
     <UCard>
       <div class="flex md:flex-row flex-col md:items-center gap-4">
         <div class="flex flex-1 gap-3">
@@ -25,11 +25,11 @@
         
         <UInput
           v-model="searchQuery"
-          placeholder="Search tasks..."
+          placeholder="appIcons.magnifyingGlass tasks..."
           class="flex-1 md:max-w-xs"
         >
           <template #leading>
-            <PhMagnifyingGlass class="w-4 h-4 shrink-0 opacity-70" />
+            <AppIcon :icon="appIcons.magnifyingGlass" class="w-4 h-4 shrink-0 opacity-70" />
           </template>
         </UInput>
       </div>
@@ -38,11 +38,11 @@
     <!-- Tasks Display -->
     <div class="space-y-4">
       <div v-if="loading" class="flex justify-center py-8">
-        <PhCircleNotch class="w-6 h-6 animate-spin" />
+        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 animate-spin" />
       </div>
       
       <div v-else-if="error" class="py-8 text-red-500 text-center">
-        <PhWarningCircle class="mx-auto mb-4 w-12 h-12" />
+        <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 w-12 h-12" />
         <p class="mb-4">{{ error }}</p>
         <Button variant="outline" @click="$emit('retry')">
           Try Again
@@ -50,7 +50,7 @@
       </div>
       
       <div v-else-if="filteredTasks.length === 0" class="py-12 text-muted-foreground text-center">
-        <PhClipboardText class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+        <AppIcon :icon="appIcons.clipboardText" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p class="mb-2 font-medium text-lg">No tasks found</p>
         <p class="text-sm">
           {{ getEmptyMessage() }}
@@ -63,7 +63,7 @@
           <div v-for="(statusTasks, status) in groupedTasks" :key="status" class="space-y-3">
             <div v-if="statusTasks.length > 0">
               <h4 class="flex items-center gap-2 mb-3 font-medium text-foreground">
-                <component :is="getStatusIcon(status)" class="w-4 h-4" />
+                <AppIcon :icon="getStatusIcon(status)" class="w-4 h-4" />
                 {{ getStatusLabel(status) }}
                 <UBadge :color="getStatusColor(status)" variant="subtle" size="sm">
                   {{ statusTasks.length }}
@@ -101,17 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
-import {
-  PhCheckCircle,
-  PhCircleNotch,
-  PhClipboardText,
-  PhClock,
-  PhMagnifyingGlass,
-  PhPlay,
-  PhWarning,
-  PhWarningCircle
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons, type AppIconData } from '@/lib/app-icons'
 import type { Task, TaskStatus, Priority } from '~/types'
 
 interface Props {
@@ -228,14 +219,14 @@ const priorityFilterOptions = [
 ]
 
 // Helper functions
-const getStatusIcon = (status: TaskStatus | 'overdue'): Component => {
-  const icons: Record<string, Component> = {
-    pending: PhClock,
-    in_progress: PhPlay,
-    completed: PhCheckCircle,
-    overdue: PhWarning
+const getStatusIcon = (status: TaskStatus | 'overdue'): AppIconData => {
+  const icons: Record<string, AppIconData> = {
+    pending: appIcons.clock,
+    in_progress: appIcons.play,
+    completed: appIcons.checkCircle,
+    overdue: appIcons.warning
   }
-  return icons[status] ?? PhClipboardText
+  return icons[status] ?? appIcons.clipboardText
 }
 
 const getStatusLabel = (status: TaskStatus | 'overdue') => {

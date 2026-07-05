@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { PhArrowsClockwise, PhFunnel, PhMagnifyingGlass } from '@phosphor-icons/vue'
-
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 defineProps<{
   activeFilterCount: number
   /** Current keyword for contextual copy (optional). */
@@ -37,7 +37,7 @@ const tips = [
       <div
         class="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/15 dark:bg-primary/12 dark:text-primary dark:ring-primary/25"
       >
-        <PhMagnifyingGlass class="size-8" weight="duotone" aria-hidden="true" />
+        <AppIcon :icon="appIcons.magnifyingGlass" class="size-8" aria-hidden="true" />
       </div>
 
       <p
@@ -66,14 +66,14 @@ const tips = [
         class="mx-auto mt-6 max-w-sm space-y-2.5 text-left text-muted-foreground text-sm"
       >
         <li v-for="(line, idx) in tips" :key="idx" class="flex gap-2.5 leading-snug">
-          <PhFunnel class="mt-0.5 size-4 shrink-0 text-primary/70 opacity-90" aria-hidden="true" />
+          <AppIcon :icon="appIcons.funnel" class="mt-0.5 size-4 shrink-0 text-primary/70 opacity-90" aria-hidden="true" />
           <span>{{ line }}</span>
         </li>
       </ul>
 
       <div class="relative z-10 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Button size="lg" class="min-w-[10.5rem] gap-2 font-semibold shadow-sm" @click="emit('reset')">
-          <PhArrowsClockwise class="size-4" aria-hidden="true" />
+          <AppIcon :icon="appIcons.arrowsClockwise" class="size-4" aria-hidden="true" />
           Reset filters
         </Button>
       </div>

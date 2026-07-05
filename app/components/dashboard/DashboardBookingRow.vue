@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { meetingTypeIcon } from '@/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types/booking'
-import { PhCalendarBlank, PhCaretRight, PhClock } from '@phosphor-icons/vue'
-
 const props = defineProps<{
   booking: Booking
   personName: string
@@ -61,21 +61,21 @@ const initials = computed(() => {
 
           <div class="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
             <span class="flex items-center gap-1.5">
-              <PhCalendarBlank class="size-3.5" />
+              <AppIcon :icon="appIcons.calendarBlank" class="size-3.5" />
               {{ formatRelativeSchedule(booking) }}
             </span>
             <span class="flex items-center gap-1.5">
-              <PhClock class="size-3.5" />
+              <AppIcon :icon="appIcons.clock" class="size-3.5" />
               {{ booking.scheduledStartTime.slice(0, 5) }}
             </span>
             <span class="flex items-center gap-1.5 capitalize">
-              <component :is="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
+              <AppIcon :icon="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
               {{ booking.meetingType.replace('_', ' ') }}
             </span>
           </div>
         </div>
 
-        <PhCaretRight class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
+        <AppIcon :icon="appIcons.caretRight" class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
       </button>
 
       <div

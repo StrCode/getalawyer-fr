@@ -3,13 +3,13 @@
     <Card class="rounded-xl">
       <CardContent class="flex items-center gap-4 pt-6">
         <div class="relative min-w-0 flex-1">
-          <PhMagnifyingGlass
+          <AppIcon :icon="appIcons.magnifyingGlass"
             class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
           <Input
             v-model="searchQuery"
-            placeholder="Search cases by title, number, or description..."
+            placeholder="appIcons.magnifyingGlass cases by title, number, or description..."
             class="h-11 pl-9"
             @keyup.enter="performSearch"
           />
@@ -20,7 +20,7 @@
           class="gap-2"
           @click="showAdvancedFilters = !showAdvancedFilters"
         >
-          <PhFunnel class="size-4" aria-hidden="true" />
+          <AppIcon :icon="appIcons.funnel" class="size-4" aria-hidden="true" />
           {{ showAdvancedFilters ? 'Hide' : 'Show' }} Filters
         </Button>
 
@@ -28,7 +28,7 @@
           :loading="searching"
           @click="performSearch"
         >
-          Search
+          appIcons.magnifyingGlass
         </ButtonBusy>
       </CardContent>
     </Card>
@@ -154,7 +154,7 @@
             @click="loadSavedSearch(search)"
           >
             {{ search.name }}
-            <PhX
+            <AppIcon :icon="appIcons.x"
               class="size-4"
               aria-label="Remove saved search"
               @click.stop="removeSavedSearch(search.id)"
@@ -168,8 +168,8 @@
             class="gap-2"
             @click="showSaveSearchModal = true"
           >
-            <PhBookmarkSimple class="size-4" aria-hidden="true" />
-            Save Current Search
+            <AppIcon :icon="appIcons.bookmarkSimple" class="size-4" aria-hidden="true" />
+            Save Current appIcons.magnifyingGlass
           </Button>
         </div>
       </CardContent>
@@ -189,14 +189,14 @@
         size="sm"
         @click="clearSearch"
       >
-        Clear Search
+        Clear appIcons.magnifyingGlass
       </Button>
     </div>
 
     <Dialog v-model:open="showSaveSearchModal">
       <DialogContent class="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Save Search</DialogTitle>
+          <DialogTitle>Save appIcons.magnifyingGlass</DialogTitle>
         </DialogHeader>
 
         <Input
@@ -225,12 +225,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhBookmarkSimple,
-  PhFunnel,
-  PhMagnifyingGlass,
-  PhX,
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

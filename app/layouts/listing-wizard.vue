@@ -28,7 +28,7 @@ onUnmounted(() => {
 
       <Button
         variant="outline"
-        class="h-10 shrink-0 rounded-full border-border bg-background px-4 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 sm:h-11 sm:px-5"
+        class="h-10 shrink-0 border-border bg-background px-4 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 sm:h-11 sm:px-5"
         as-child
       >
         <NuxtLink to="/">

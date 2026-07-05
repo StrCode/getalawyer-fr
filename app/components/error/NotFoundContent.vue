@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
 const quickLinks = [
   { label: 'Find lawyers', to: '/find-lawyers' },
   { label: 'Practice areas', to: '/practice-areas' },
@@ -52,14 +53,14 @@ const quickLinks = [
         <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-center">
           <NuxtLink
             to="/find-lawyers"
-            class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 font-sans text-base font-semibold text-sidebar-foreground no-underline shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)] transition-all duration-200 hover:bg-sidebar active:scale-[0.98]"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 font-sans text-base font-semibold text-sidebar-foreground no-underline shadow-[0_2px_10px_-2px_rgba(15,46,26,0.2)] transition-all duration-200 hover:bg-sidebar active:scale-[0.98]"
           >
             <PhIcon name="magnifying-glass" class="h-5 w-5 shrink-0" />
             Find a lawyer
           </NuxtLink>
           <NuxtLink
             to="/"
-            class="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-8 py-3.5 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:border-foreground/30 hover:bg-white"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-8 py-3.5 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:border-foreground/30 hover:bg-white"
           >
             <PhIcon name="house" class="h-5 w-5 shrink-0 text-muted-foreground" />
             Back to home

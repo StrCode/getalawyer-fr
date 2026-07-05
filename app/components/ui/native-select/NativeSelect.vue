@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import type { AcceptableValue } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit, useVModel } from "@vueuse/core"
-import { PhCaretDown } from '@phosphor-icons/vue'
 import { cn } from "@/lib/utils"
 
 defineOptions({
@@ -41,6 +42,6 @@ const delegatedProps = reactiveOmit(props, "class")
     >
       <slot />
     </select>
-    <PhCaretDown class="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none" aria-hidden="true" data-slot="native-select-icon" />
+    <AppIcon :icon="appIcons.caretDown" class="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none" aria-hidden="true" data-slot="native-select-icon" />
   </div>
 </template>

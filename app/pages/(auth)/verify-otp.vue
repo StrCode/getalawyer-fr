@@ -1,7 +1,7 @@
 <template>
   <AuthFormShell
     eyebrow="Verification"
-    :title="isPhoneMethod ? 'Check your phone' : 'Check your email'"
+    :title="isPhoneMethod ? 'appIcons.check your phone' : 'appIcons.check your email'"
   >
     <p class="mb-6 text-base leading-relaxed text-muted-foreground">
       We sent a 6-digit code to
@@ -36,7 +36,7 @@
           size="lg"
           :disabled="isSubmitting || otp.length < 6"
         >
-          <PhCircleNotch v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+          <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Verifying…' : 'Verify code' }}</span>
         </Button>
       </FieldGroup>
@@ -56,7 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { PhCircleNotch } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'

@@ -1,6 +1,6 @@
 <template>
   <SidebarProvider
-    class="dashboard-shell min-h-svh w-full has-data-[variant=inset]:bg-background!"
+    class="min-h-svh w-full has-data-[variant=inset]:bg-background!"
     storage-key="getalawyer-fr-sidebar"
     :style="{
       '--sidebar-width': 'calc(var(--spacing) * 72)',

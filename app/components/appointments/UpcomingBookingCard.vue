@@ -25,16 +25,15 @@
 
         <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <PhCalendarBlank class="size-4" />
+            <AppIcon :icon="appIcons.calendarBlank" class="size-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <PhClock class="size-4" />
+            <AppIcon :icon="appIcons.clock" class="size-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
           <div class="flex items-center gap-1.5 capitalize">
-            <component
-              :is="meetingTypeIcon(booking.meetingType)"
+            <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
               class="size-4"
             />
             <span>{{ booking.meetingType.replace('_', ' ') }}</span>
@@ -54,13 +53,14 @@
         </div>
       </div>
 
-      <PhArrowRight class="size-4 shrink-0 text-muted-foreground" />
+      <AppIcon :icon="appIcons.arrowRight" class="size-4 shrink-0 text-muted-foreground" />
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import { PhArrowRight, PhCalendarBlank, PhClock } from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types'

@@ -65,7 +65,7 @@
             class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
-            <PhPlay class="size-3.5 shrink-0" weight="fill" aria-hidden="true" />
+            <AppIcon :icon="appIcons.play" class="size-3.5 shrink-0" aria-hidden="true" />
             Start
           </Button>
 
@@ -76,7 +76,7 @@
             class="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
             @click="updateStatus('completed')"
           >
-            <PhCheck class="size-3.5 shrink-0" weight="bold" aria-hidden="true" />
+            <AppIcon :icon="appIcons.check" class="size-3.5 shrink-0" aria-hidden="true" />
             Complete
           </Button>
 
@@ -87,7 +87,7 @@
             class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
-            <PhArrowClockwise class="size-3.5 shrink-0" aria-hidden="true" />
+            <AppIcon :icon="appIcons.arrowClockwise" class="size-3.5 shrink-0" aria-hidden="true" />
             Reopen
           </Button>
         </div>
@@ -95,7 +95,7 @@
         <!-- Task Actions Menu -->
         <UDropdown v-if="role === 'lawyer'" :items="taskActions">
           <Button variant="ghost" size="icon-sm" class="size-8 shrink-0" aria-label="Task actions">
-            <PhDotsThreeVertical class="size-4 shrink-0" weight="bold" aria-hidden="true" />
+            <AppIcon :icon="appIcons.dotsThreeVertical" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
         </UDropdown>
       </div>
@@ -104,12 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import {
-  PhArrowClockwise,
-  PhCheck,
-  PhDotsThreeVertical,
-  PhPlay,
-} from '@phosphor-icons/vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import type { Task, TaskStatus, Priority } from '~/types'
