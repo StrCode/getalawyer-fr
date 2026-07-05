@@ -227,7 +227,7 @@
                   </div>
 
                   <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting">
-                    <TabsContent value="email" class="mt-0 space-y-0">
+                    <template #email>
                       <form.Field v-slot="{ field }" name="email">
                         <Field :data-invalid="isInvalid(field)">
                           <FieldLabel :for="field.name">Email address</FieldLabel>
@@ -247,9 +247,9 @@
                           <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                         </Field>
                       </form.Field>
-                    </TabsContent>
+                    </template>
 
-                    <TabsContent value="phone" class="mt-0 space-y-0">
+                    <template #phone>
                       <form.Field v-slot="{ field }" name="phone">
                         <Field :data-invalid="isInvalid(field)">
                           <AuthPhoneInput
@@ -262,7 +262,7 @@
                           <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                         </Field>
                       </form.Field>
-                    </TabsContent>
+                    </template>
                   </AuthMethodTabs>
 
                   <form.Field v-slot="{ field }" name="password">
@@ -383,7 +383,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { TabsContent } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'

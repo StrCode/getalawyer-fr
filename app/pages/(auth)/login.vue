@@ -53,7 +53,7 @@
     <form v-else @submit.prevent="form.handleSubmit">
       <FieldGroup class="gap-5">
         <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting">
-          <TabsContent value="email" class="mt-0">
+          <template #email>
             <form.Field v-slot="{ field }" name="email">
               <Field :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name">Email address</FieldLabel>
@@ -73,9 +73,9 @@
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
-          </TabsContent>
+          </template>
 
-          <TabsContent value="phone" class="mt-0">
+          <template #phone>
             <form.Field v-slot="{ field }" name="phone">
               <Field :data-invalid="isInvalid(field)">
                 <AuthPhoneInput
@@ -88,7 +88,7 @@
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
-          </TabsContent>
+          </template>
         </AuthMethodTabs>
 
         <form.Field v-slot="{ field }" name="password">
@@ -167,7 +167,6 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { TabsContent } from '@/components/ui/tabs'
 import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'
