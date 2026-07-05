@@ -84,8 +84,17 @@
 
     <!-- Tasks List -->
     <div class="space-y-4">
-      <div v-if="loading" class="flex justify-center py-8">
-        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 animate-spin" />
+      <div
+        v-if="loading"
+        class="space-y-3 py-4"
+        aria-busy="true"
+        aria-label="Loading tasks"
+      >
+        <Skeleton
+          v-for="i in 3"
+          :key="i"
+          class="h-20 w-full rounded-xl"
+        />
       </div>
       
       <div v-else-if="filteredTasks.length === 0" class="py-8 text-muted-foreground text-center">
@@ -108,6 +117,7 @@
 <script setup lang="ts">
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { Task, TaskStatus, Priority, CreateTaskRequest } from '~/types'
 
 interface Props {

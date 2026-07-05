@@ -1,39 +1,35 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-wrap items-center gap-4">
-      <Button
-        variant="ghost"
-        size="icon"
-        as-child
-      >
-        <NuxtLink to="/dashboard/bookings">
-          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
-        </NuxtLink>
-      </Button>
-      <div class="min-w-0 flex-1">
-        <h1 class="font-heading text-3xl font-semibold tracking-tight text-foreground">
-          Booking details
-        </h1>
-        <p
-          v-if="booking"
-          class="mt-1 text-base text-muted-foreground"
+  <div class="mx-auto w-full max-w-5xl space-y-6">
+    <AppPageHeader
+      title="Booking details"
+      :description="booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.'"
+    >
+      <template #actions>
+        <Button
+          variant="outline"
+          size="sm"
+          as-child
         >
-          Reference: {{ booking.bookingReference }}
-        </p>
-      </div>
-      <Badge
-        v-if="booking"
-        v-bind="bookingStatusBadge(booking.status)"
-      >
-        {{ formatStatusLabel(booking.status) }}
-      </Badge>
-    </div>
+          <NuxtLink to="/dashboard/bookings">
+            <AppIcon :icon="appIcons.arrowLeft" class="size-4" />
+            Back to bookings
+          </NuxtLink>
+        </Button>
+        <Badge
+          v-if="booking"
+          v-bind="bookingStatusBadge(booking.status)"
+        >
+          {{ formatStatusLabel(booking.status) }}
+        </Badge>
+      </template>
+    </AppPageHeader>
 
     <div
       v-if="isLoading"
-      class="flex justify-center py-12"
+      class="space-y-4"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
+      <Skeleton class="h-40 w-full rounded-xl" />
+      <Skeleton class="h-56 w-full rounded-xl" />
     </div>
 
     <div
@@ -404,6 +400,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 

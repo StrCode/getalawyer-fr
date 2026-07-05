@@ -1,6 +1,15 @@
 <template>
-  <div v-if="isLoading" class="flex justify-center py-8">
-    <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
+  <div
+    v-if="isLoading"
+    class="space-y-2"
+    aria-busy="true"
+    aria-label="Loading consultation types"
+  >
+    <Skeleton
+      v-for="i in 3"
+      :key="i"
+      class="h-14 w-full rounded-lg"
+    />
   </div>
 
   <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
@@ -75,6 +84,7 @@ import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useConsultationTypes } from '~/composables/useConsultationTypes'
 
 const { useConsultationTypesList } = useConsultationTypes()

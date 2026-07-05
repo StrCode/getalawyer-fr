@@ -10,6 +10,7 @@ import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRe
 import ConsultationFeeRequestComposer from '@/components/messaging/ConsultationFeeRequestComposer.vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const props = defineProps<{
   conversationId: string
@@ -120,8 +121,21 @@ function formatMessageTime(timestamp: string) {
       ref="messagesContainer"
       class="flex-1 space-y-3 overflow-y-auto p-4"
     >
-      <div v-if="isPending" class="flex justify-center py-10">
-        <AppIcon :icon="appIcons.circleNotch" class="size-6 animate-spin text-muted-foreground" />
+      <div
+        v-if="isPending"
+        class="space-y-4 p-4"
+        aria-busy="true"
+        aria-label="Loading messages"
+      >
+        <div class="flex justify-start">
+          <Skeleton class="h-16 w-[72%] rounded-xl" />
+        </div>
+        <div class="flex justify-end">
+          <Skeleton class="h-12 w-[58%] rounded-xl" />
+        </div>
+        <div class="flex justify-start">
+          <Skeleton class="h-20 w-[64%] rounded-xl" />
+        </div>
       </div>
 
       <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
@@ -152,7 +166,7 @@ function formatMessageTime(timestamp: string) {
 
           <div
             v-else
-            class="max-w-[85%] rounded-2xl px-4 py-2 text-sm shadow-sm"
+            class="max-w-[85%] rounded-xl px-4 py-2 text-sm shadow-xs"
             :class="
               isOwnMessage(message)
                 ? 'bg-primary text-primary-foreground'

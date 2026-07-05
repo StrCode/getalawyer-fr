@@ -28,9 +28,12 @@
 
     <div
       v-if="isLoading"
-      class="flex justify-center py-12"
+      class="space-y-4"
+      aria-busy="true"
+      aria-label="Loading appointment"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
+      <Skeleton class="h-40 w-full rounded-xl" />
+      <Skeleton class="h-56 w-full rounded-xl" />
     </div>
 
     <div
@@ -442,6 +445,7 @@ import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
   DialogContent,

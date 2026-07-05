@@ -1,30 +1,74 @@
 <template>
-  <div class="space-y-6">
+  <div class="mx-auto w-full max-w-5xl space-y-6">
     <AppPageHeader
       title="My Bookings"
-      description="View and manage your consultation bookings"
-    />
-
-    <Tabs v-model="selectedTab">
-      <TabsList>
-        <TabsTrigger
-          v-for="tab in tabs"
-          :key="tab.key"
-          :value="tab.key"
-        >
-          {{ tab.label }}
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent
-        v-for="tab in tabs"
-        :key="tab.key"
-        :value="tab.key"
-        class="mt-4 space-y-4"
+      description="View and manage your consultation bookings."
+    >
+      <template
+        v-if="upcomingBookings.length > 0"
+        #actions
       >
+        <Badge
+          variant="secondary"
+          class="font-normal tabular-nums"
+        >
+          {{ upcomingBookings.length }} upcoming
+        </Badge>
+      </template>
+    </AppPageHeader>
+
+    <Card class="overflow-hidden py-0">
+      <CardHeader class="space-y-4 border-b border-border/60 px-5 py-4 sm:px-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <CardTitle class="text-base">
+              Bookings
+            </CardTitle>
+            <CardDescription class="mt-1">
+              Filter by upcoming, past, or view all.
+            </CardDescription>
+          </div>
+
+          <Tabs
+            v-model="selectedTab"
+            class="hidden w-auto sm:block"
+          >
+            <TabsList>
+              <TabsTrigger
+                v-for="tab in tabs"
+                :key="tab.key"
+                :value="tab.key"
+              >
+                {{ tab.label }}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <Select
+            class="sm:hidden"
+            :model-value="selectedTab"
+            @update:model-value="onTabChange"
+          >
+            <SelectTrigger class="w-full">
+              <SelectValue :placeholder="activeTab?.label ?? 'Filter bookings'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="tab in tabs"
+                :key="tab.key"
+                :value="tab.key"
+              >
+                {{ tab.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
+
+      <CardContent class="p-0">
         <div
           v-if="isLoading"
-          class="space-y-3"
+          class="space-y-3 p-4 sm:p-6"
         >
           <Skeleton
             v-for="i in 3"
@@ -33,129 +77,58 @@
           />
         </div>
 
-        <Card
+        <div
           v-else-if="isError"
-          class="border-dashed"
+          class="flex flex-col items-center gap-3 px-6 py-14 text-center"
         >
-          <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-            <AppIcon :icon="appIcons.warningCircle" class="size-10 text-muted-foreground" />
-            <p class="text-sm font-medium text-foreground">
-              Failed to load bookings
-            </p>
-            <p class="text-sm text-muted-foreground">
-              Please try again later.
-            </p>
-          </CardContent>
-        </Card>
+          <AppIcon :icon="appIcons.warningCircle" class="size-10 text-muted-foreground" />
+          <p class="text-sm font-medium text-foreground">
+            Failed to load bookings
+          </p>
+          <p class="text-sm text-muted-foreground">
+            Please try again later.
+          </p>
+        </div>
 
-        <EmptyState
-          v-else-if="tab.bookings.length === 0"
-          :icon="appIcons.calendar"
-          :title="`No ${tab.emptyLabel} bookings`"
-          :description="tab.emptyDescription"
+        <div
+          v-else-if="activeTabBookings.length === 0"
+          class="p-4 sm:p-6"
         >
-          <template
-            v-if="tab.key === 'all'"
-            #actions
+          <EmptyState
+            :icon="appIcons.calendar"
+            :title="activeTab?.emptyTitle ?? 'No bookings'"
+            :description="activeTab?.emptyDescription ?? 'No bookings found.'"
           >
-            <Button as-child>
-              <NuxtLink to="/find-lawyers">
-                Find a Lawyer
-              </NuxtLink>
-            </Button>
-          </template>
-        </EmptyState>
+            <template
+              v-if="selectedTab === 'all'"
+              #actions
+            >
+              <Button as-child>
+                <NuxtLink to="/find-lawyers">
+                  Find a lawyer
+                </NuxtLink>
+              </Button>
+            </template>
+          </EmptyState>
+        </div>
 
         <div
           v-else
-          class="space-y-3"
+          class="divide-y divide-border/60 p-4 sm:p-6 sm:pt-5"
         >
-          <Card
-            v-for="booking in tab.bookings"
-            :key="booking.id"
-            class="cursor-pointer rounded-xl transition-shadow hover:shadow-sm"
-            @click="navigateToBooking(booking.id)"
-          >
-            <CardContent class="flex items-start gap-4 p-4 sm:p-5">
-              <Avatar class="size-11 shrink-0">
-                <AvatarImage
-                  :src="booking.lawyer?.profilePicture ?? undefined"
-                  :alt="booking.lawyer?.name"
-                />
-                <AvatarFallback class="bg-primary/10 text-sm text-primary">
-                  {{ lawyerInitials(booking.lawyer?.name) }}
-                </AvatarFallback>
-              </Avatar>
-
-              <div class="min-w-0 flex-1 space-y-2">
-                <div class="flex flex-wrap items-center gap-2">
-                  <Badge v-bind="bookingStatusBadge(booking.status)">
-                    {{ formatStatusLabel(booking.status) }}
-                  </Badge>
-                  <span class="text-xs text-muted-foreground">
-                    {{ booking.bookingReference }}
-                  </span>
-                </div>
-
-                <div>
-                  <h3 class="font-semibold text-foreground">
-                    {{ booking.lawyer?.name || 'Lawyer' }}
-                  </h3>
-                  <p class="text-sm text-muted-foreground">
-                    {{ booking.consultationType?.name || 'Consultation' }}
-                  </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                  <span class="flex items-center gap-1.5">
-                    <AppIcon :icon="appIcons.calendar" class="size-3.5" />
-                    {{ formatDate(booking.scheduledDate) }}
-                  </span>
-                  <span class="flex items-center gap-1.5">
-                    <AppIcon :icon="appIcons.clock" class="size-3.5" />
-                    {{ booking.scheduledStartTime }}
-                  </span>
-                  <span class="flex items-center gap-1.5 capitalize">
-                    <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
-                      class="size-3.5"
-                    />
-                    {{ booking.meetingType.replace('_', ' ') }}
-                  </span>
-                </div>
-
-                <div
-                  v-if="booking.conversationId || booking.engagementOutcome"
-                  class="flex flex-wrap items-center gap-2"
-                >
-                  <Badge
-                    v-if="booking.conversationId"
-                    variant="secondary"
-                    class="gap-1"
-                  >
-                    <AppIcon :icon="appIcons.chatCircle" class="size-3" />
-                    Conversation
-                  </Badge>
-                  <Badge
-                    v-if="booking.caseId"
-                    variant="secondary"
-                    class="gap-1 border-transparent bg-primary/10 text-primary"
-                  >
-                    <AppIcon :icon="appIcons.briefcase" class="size-3" />
-                    Case Created
-                  </Badge>
-                  <Badge
-                    v-else-if="booking.engagementOutcome === 'consultation_only'"
-                    variant="outline"
-                  >
-                    Consultation Only
-                  </Badge>
-                </div>
-              </div>
-
-              <div
+          <div class="space-y-3">
+            <DashboardBookingRow
+              v-for="booking in activeTabBookings"
+              :key="booking.id"
+              :booking="booking"
+              :person-name="booking.lawyer?.name || 'Lawyer'"
+              :person-image="booking.lawyer?.profilePicture"
+              :subtitle="booking.consultationType?.name || 'Consultation'"
+              @click="navigateToBooking(booking.id)"
+            >
+              <template
                 v-if="canTakeAction(booking)"
-                class="flex shrink-0 flex-col gap-2"
-                @click.stop
+                #actions
               >
                 <Button
                   v-if="booking.status === 'confirmed' && booking.meetingType === 'video' && booking.meetingUrl"
@@ -171,7 +144,7 @@
                 </Button>
                 <Button
                   v-if="booking.status === 'pending' || booking.status === 'confirmed'"
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   @click="handleReschedule(booking.id)"
                 >
@@ -186,12 +159,12 @@
                 >
                   Cancel
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </template>
+            </DashboardBookingRow>
+          </div>
         </div>
-      </TabsContent>
-    </Tabs>
+      </CardContent>
+    </Card>
 
     <Dialog v-model:open="isCancelModalOpen">
       <DialogContent class="sm:max-w-md">
@@ -236,12 +209,12 @@ import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
+import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -251,10 +224,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
 
@@ -264,14 +243,13 @@ definePageMeta({
 })
 
 useHead({
-  title: 'My Bookings - GetaLawyer',
+  title: 'My Bookings - GetALawyer',
   meta: [
     { name: 'description', content: 'View and manage your consultation bookings' },
   ],
 })
 
 const router = useRouter()
-const { bookingStatusBadge, formatStatusLabel } = useBookingDisplay()
 const { useClientBookings, useCancelBooking } = useBookings()
 
 const { data: bookings, isLoading, isError } = useClientBookings()
@@ -303,39 +281,38 @@ const tabs = computed(() => [
     key: 'all',
     label: `All (${allBookings.value.length})`,
     bookings: allBookings.value,
-    emptyLabel: '',
+    emptyTitle: 'No bookings yet',
     emptyDescription: "You haven't made any bookings yet.",
   },
   {
     key: 'upcoming',
     label: `Upcoming (${upcomingBookings.value.length})`,
     bookings: upcomingBookings.value,
-    emptyLabel: 'upcoming',
+    emptyTitle: 'No upcoming bookings',
     emptyDescription: 'No upcoming bookings found.',
   },
   {
     key: 'past',
     label: `Past (${pastBookings.value.length})`,
     bookings: pastBookings.value,
-    emptyLabel: 'past',
+    emptyTitle: 'No past bookings',
     emptyDescription: 'No past bookings found.',
   },
 ])
+
+const activeTab = computed(() => tabs.value.find(tab => tab.key === selectedTab.value))
+const activeTabBookings = computed(() => activeTab.value?.bookings ?? [])
+
+function onTabChange(value: unknown) {
+  if (typeof value === 'string')
+    selectedTab.value = value
+}
 
 const isCancelModalOpen = ref(false)
 const cancelReason = ref('')
 const bookingToCancel = ref<string | null>(null)
 
 const { mutate: cancelBooking, isPending: isCanceling } = useCancelBooking()
-
-function lawyerInitials(name?: string | null) {
-  if (!name)
-    return 'LA'
-  const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2)
-    return `${parts[0]![0]}${parts[1]![0]}`.toUpperCase()
-  return name.slice(0, 2).toUpperCase()
-}
 
 function handleCancelBooking(bookingId: string) {
   bookingToCancel.value = bookingId
@@ -373,13 +350,5 @@ function navigateToBooking(bookingId: string) {
 
 function canTakeAction(booking: Booking) {
   return ['pending', 'confirmed'].includes(booking.status)
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 </script>

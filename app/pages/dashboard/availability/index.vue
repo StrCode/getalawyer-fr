@@ -2,6 +2,7 @@
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability'
 
 definePageMeta({

@@ -10,6 +10,7 @@ import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeade
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import StatCard from '@/components/dashboard/StatCard.vue'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 const { session } = useAuth()
 const { useClientBookings } = useBookings()
 const { data: bookingsData, isPending } = useClientBookings()
@@ -163,8 +164,27 @@ const showFullEmpty = computed(() => !isPending.value && !hasBookings.value)
       </div>
     </template>
 
-    <div v-else class="flex justify-center py-16">
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 text-muted-foreground animate-spin" />
+    <div
+      v-else
+      class="space-y-6"
+      aria-busy="true"
+      aria-label="Loading dashboard"
+    >
+      <Skeleton class="h-32 w-full rounded-xl" />
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Skeleton
+          v-for="i in 4"
+          :key="i"
+          class="h-24 rounded-xl"
+        />
+      </div>
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div class="space-y-4">
+          <Skeleton class="h-48 w-full rounded-xl" />
+          <Skeleton class="h-56 w-full rounded-xl" />
+        </div>
+        <Skeleton class="h-80 w-full rounded-xl" />
+      </div>
     </div>
   </div>
 </template>

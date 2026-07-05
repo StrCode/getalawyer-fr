@@ -4,6 +4,7 @@ import { appIcons } from '@/lib/app-icons'
 import { computed, ref } from 'vue'
 import { useSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
+import { Skeleton } from '@/components/ui/skeleton'
 
 definePageMeta({ layout: 'landing' })
 
@@ -74,10 +75,10 @@ const filteredAreas = computed(() => {
         aria-busy="true"
         aria-label="Loading practice areas"
       >
-        <div
+        <Skeleton
           v-for="i in 8"
           :key="i"
-          class="h-44 animate-pulse rounded-2xl border border-border bg-card"
+          class="h-44 rounded-2xl"
         />
       </div>
 

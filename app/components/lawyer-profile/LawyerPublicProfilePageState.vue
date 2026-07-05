@@ -2,6 +2,8 @@
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+
 defineProps<{
   pending: boolean
   error: unknown
@@ -19,12 +21,18 @@ const emit = defineEmits<{
 <template>
   <div
     v-if="pending"
-    class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
+    class="mx-auto w-full max-w-5xl space-y-6 px-4 py-10"
+    aria-busy="true"
+    aria-label="Loading profile"
   >
-    <AppIcon :icon="appIcons.circleNotch" class="mx-auto mb-4 size-8 animate-spin text-primary" />
-    <p class="text-muted-foreground">
-      Loading profile…
-    </p>
+    <Skeleton class="h-56 w-full rounded-xl" />
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div class="space-y-4">
+        <Skeleton class="h-40 w-full rounded-xl" />
+        <Skeleton class="h-48 w-full rounded-xl" />
+      </div>
+      <Skeleton class="h-64 w-full rounded-xl" />
+    </div>
   </div>
 
   <div

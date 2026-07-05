@@ -14,8 +14,18 @@
     <!-- Messages Container -->
     <div class="flex-1 space-y-4 p-4 overflow-y-auto" style="max-height: 400px;">
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center py-8">
-        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 text-muted-foreground animate-spin" />
+      <div
+        v-if="isLoading"
+        class="space-y-3 py-4"
+        aria-busy="true"
+        aria-label="Loading messages"
+      >
+        <div class="flex justify-start">
+          <Skeleton class="h-14 w-[70%] rounded-xl" />
+        </div>
+        <div class="flex justify-end">
+          <Skeleton class="h-12 w-[55%] rounded-xl" />
+        </div>
       </div>
 
       <!-- Error State -->
@@ -108,6 +118,7 @@
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const props = defineProps({
   caseId: {

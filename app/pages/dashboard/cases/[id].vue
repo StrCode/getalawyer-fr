@@ -1,9 +1,13 @@
 <template>
   <div
     v-if="loading"
-    class="flex justify-center py-8"
+    class="space-y-4"
+    aria-busy="true"
+    aria-label="Loading case"
   >
-    <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
+    <Skeleton class="h-10 w-48 rounded-lg" />
+    <Skeleton class="h-64 w-full rounded-xl" />
+    <Skeleton class="h-48 w-full rounded-xl" />
   </div>
 
   <div
@@ -87,6 +91,7 @@ import AppIcon from '@/components/AppIcon.vue'
 import { appIcons, type AppIconData } from '@/lib/app-icons'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { CaseStatus } from '~/types'
 

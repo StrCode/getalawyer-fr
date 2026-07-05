@@ -59,8 +59,17 @@
     <div v-if="selectedDate && availableSlots" class="space-y-3">
       <h4 class="text-sm font-semibold text-gray-900">Available Times</h4>
       
-      <div v-if="isLoadingSlots" class="flex justify-center py-8">
-        <PhIcon name="i-hugeicons-loading-03" class="w-6 h-6 animate-spin text-gray-400" />
+      <div
+        v-if="isLoadingSlots"
+        class="grid grid-cols-3 gap-2"
+        aria-busy="true"
+        aria-label="Loading time slots"
+      >
+        <Skeleton
+          v-for="i in 9"
+          :key="i"
+          class="h-10 rounded-lg"
+        />
       </div>
 
       <div v-else-if="availableTimeSlots.length === 0" class="text-center py-8 text-gray-500">
@@ -90,6 +99,7 @@
 <script setup lang="ts">
 import AppIcon from '@/components/AppIcon.vue'
 import { computed, ref, watch } from 'vue'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useClientBooking } from '~/composables/useClientBooking'
 
 const props = defineProps<{

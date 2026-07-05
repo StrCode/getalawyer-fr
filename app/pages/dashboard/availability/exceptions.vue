@@ -7,6 +7,7 @@ import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
   DialogContent,
@@ -274,9 +275,15 @@ const minDate = new Date().toISOString().split('T')[0]
 
     <div
       v-if="isPending"
-      class="flex justify-center py-12"
+      class="space-y-3"
+      aria-busy="true"
+      aria-label="Loading exceptions"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
+      <Skeleton
+        v-for="i in 4"
+        :key="i"
+        class="h-20 w-full rounded-xl"
+      />
     </div>
 
     <EmptyState

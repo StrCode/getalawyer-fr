@@ -68,8 +68,17 @@
         <h3 class="font-semibold">Activity Timeline</h3>
       </template>
       
-      <div v-if="loading" class="flex justify-center py-8">
-        <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 animate-spin" />
+      <div
+        v-if="loading"
+        class="space-y-3 py-4"
+        aria-busy="true"
+        aria-label="Loading activities"
+      >
+        <Skeleton
+          v-for="i in 4"
+          :key="i"
+          class="h-16 w-full rounded-lg"
+        />
       </div>
       
       <div v-else-if="filteredActivities.length === 0" class="py-8 text-muted-foreground text-center">
@@ -104,6 +113,7 @@
 <script setup lang="ts">
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { ActivityType } from '~/types'
 
 interface Props {

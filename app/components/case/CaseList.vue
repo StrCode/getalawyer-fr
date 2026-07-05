@@ -1,8 +1,17 @@
 <template>
   <div class="space-y-4">
-    <div v-if="loading" class="flex justify-center py-8">
-      <AppIcon :icon="appIcons.circleNotch" class="w-6 h-6 animate-spin" />
-    </div>
+      <div
+        v-if="loading"
+        class="space-y-3"
+        aria-busy="true"
+        aria-label="Loading cases"
+      >
+        <Skeleton
+          v-for="i in 3"
+          :key="i"
+          class="h-28 w-full rounded-xl"
+        />
+      </div>
 
     <div v-else-if="error" class="py-8 text-red-500 text-center">
       <p>{{ error.message || 'Failed to load cases' }}</p>
@@ -33,6 +42,8 @@
 <script setup lang="ts">
 import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { Case } from '~/types'
 
 interface Props {

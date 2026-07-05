@@ -3,6 +3,7 @@ import AppIcon from '@/components/AppIcon.vue'
 import { appIcons } from '@/lib/app-icons'
 import { useFeaturedSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
 </script>
@@ -32,10 +33,10 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
         aria-busy="true"
         aria-label="Loading practice areas"
       >
-        <div
+        <Skeleton
           v-for="i in 8"
           :key="i"
-          class="h-48 animate-pulse rounded-2xl border border-border bg-card"
+          class="h-48 rounded-2xl"
         />
       </div>
 
