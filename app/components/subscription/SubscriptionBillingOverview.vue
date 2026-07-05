@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch'
 const props = defineProps<{
   subscription: SubscriptionRecord | null
   hasActiveSubscription: boolean
+  isMembershipRenewal?: boolean
   statusLabel: string
   subscriptionEndLabel: string | null
   nextBillingLabel: string | null
@@ -38,7 +39,15 @@ const paymentMethodLabel = computed(() => {
       <CardHeader class="pb-3">
         <div class="flex items-start justify-between gap-3">
           <CardTitle class="text-base font-medium">
-            Upcoming bill
+            <template v-if="hasActiveSubscription">
+              Upcoming bill
+            </template>
+            <template v-else-if="isMembershipRenewal">
+              Renewal due
+            </template>
+            <template v-else>
+              Upcoming bill
+            </template>
           </CardTitle>
           <Badge
             v-if="hasActiveSubscription"
@@ -96,7 +105,12 @@ const paymentMethodLabel = computed(() => {
             </template>
           </p>
           <p class="text-sm text-muted-foreground">
-            Annual membership fee due to activate or restore your listing.
+            <template v-if="isMembershipRenewal">
+              Pay to restore your directory listing, bookings, and messaging.
+            </template>
+            <template v-else>
+              Annual membership fee due to activate your listing.
+            </template>
           </p>
         </template>
       </CardContent>

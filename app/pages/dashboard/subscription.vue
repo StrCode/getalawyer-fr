@@ -7,6 +7,9 @@ import {
   getSubscriptionPaymentFailureMessage,
   hasPendingCheckoutFailure,
   hasSubscriptionRenewalIssue,
+  hadPriorMembership,
+  isExpiredMembership,
+  needsMembershipRenewal,
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -132,6 +135,39 @@ const paymentFailureMessage = computed(() =>
 const hasRenewalIssue = computed(() => hasSubscriptionRenewalIssue(subscription.value))
 const hasCheckoutFailure = computed(() => hasPendingCheckoutFailure(subscription.value))
 
+const isRenewal = computed(() => hadPriorMembership(subscription.value))
+const isExpired = computed(() => isExpiredMembership(subscription.value))
+const showExpiredBanner = computed(
+  () => needsMembershipRenewal(subscription.value) || isExpired.value,
+)
+
+const membershipActionTitle = computed(() =>
+  isRenewal.value ? 'Renew membership' : 'Activate membership',
+)
+
+const membershipActionDescription = computed(() => {
+  const price =
+    catalogPriceNaira.value != null ? formatNairaAmount(catalogPriceNaira.value) : null
+
+  if (subscription.value?.status === 'refund_processing') {
+    return 'Your subscription refund is being processed. Contact support if you need help.'
+  }
+  if (subscription.value?.status === 'verification_failed') {
+    return 'Verification did not pass after payment. Check your application status or contact support.'
+  }
+  if (isExpired.value && subscriptionEndLabel.value) {
+    return `Your membership ended on ${subscriptionEndLabel.value}. Pay ${price ?? 'the annual fee'} to restore your directory listing, bookings, and messaging.`
+  }
+  if (isRenewal.value) {
+    return `Pay ${price ?? 'the annual subscription'} to restore your GetALawyer membership and directory visibility.`
+  }
+  return `Pay the annual subscription to activate membership${price ? ` (${price})` : ''}. If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.`
+})
+
+const membershipActionButtonLabel = computed(() =>
+  isRenewal.value ? 'Renew membership' : 'Pay annual subscription',
+)
+
 const canRetryPayment = computed(() => {
   const status = subscription.value?.status
   if (!status) return true
@@ -221,6 +257,52 @@ async function startPayment() {
       </div>
 
       <div
+        v-if="showExpiredBanner"
+        class="rounded-xl border border-primary/25 bg-primary/5 px-4 py-4 sm:px-5"
+        role="status"
+      >
+        <p class="text-sm font-semibold text-foreground">
+          <template v-if="isExpired">
+            Your membership has expired
+          </template>
+          <template v-else-if="subscription?.status === 'cancelled'">
+            Your membership was cancelled
+          </template>
+          <template v-else>
+            Renew your membership
+          </template>
+        </p>
+        <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <template v-if="isExpired && subscriptionEndLabel">
+            Your listing and booking tools were paused when your plan ended on {{ subscriptionEndLabel }}.
+          </template>
+          <template v-else>
+            Your listing and booking tools are paused until you renew.
+          </template>
+          Pay
+          <template v-if="catalogPriceNaira != null">
+            {{ formatNairaAmount(catalogPriceNaira) }}
+          </template>
+          <template v-else>
+            the annual fee
+          </template>
+          to get back on GetALawyer.
+        </p>
+        <div
+          v-if="canRetryPayment"
+          class="mt-4"
+        >
+          <ButtonBusy
+            size="sm"
+            :loading="paymentBusy"
+            @click="startPayment"
+          >
+            Renew membership
+          </ButtonBusy>
+        </div>
+      </div>
+
+      <div
         v-if="hasRenewalIssue"
         class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
         role="alert"
@@ -233,7 +315,7 @@ async function startPayment() {
             {{ paymentFailureMessage }}
           </template>
           <template v-else>
-            We could not charge your saved payment method. Update your card or try again.
+            We could not charge your saved payment method. Pay again to renew your membership.
           </template>
         </p>
         <div
@@ -245,7 +327,7 @@ async function startPayment() {
             :loading="paymentBusy"
             @click="startPayment"
           >
-            Try payment again
+            Renew membership
           </ButtonBusy>
         </div>
       </div>
@@ -282,6 +364,7 @@ async function startPayment() {
       <SubscriptionBillingOverview
         :subscription="subscription"
         :has-active-subscription="hasActiveSubscription"
+        :is-membership-renewal="isRenewal"
         :status-label="statusLabel"
         :subscription-end-label="subscriptionEndLabel"
         :next-billing-label="nextBillingLabel"
@@ -294,34 +377,22 @@ async function startPayment() {
         @update:auto-renew="handleAutoRenewChange"
       />
 
-      <Card v-if="!hasActiveSubscription && canRetryPayment && !hasRenewalIssue && !hasCheckoutFailure">
+      <Card v-if="!hasActiveSubscription && canRetryPayment && !hasRenewalIssue && !hasCheckoutFailure && !showExpiredBanner">
         <CardHeader>
           <CardTitle class="text-base">
-            Activate membership
+            {{ membershipActionTitle }}
           </CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
           <p class="text-sm text-muted-foreground">
-            <template v-if="subscription?.status === 'refund_processing'">
-              Your subscription refund is being processed. Contact support if you need help.
-            </template>
-            <template v-else-if="subscription?.status === 'verification_failed'">
-              Verification did not pass after payment. Check your application status or contact support.
-            </template>
-            <template v-else>
-              Pay the annual subscription to activate membership
-              <template v-if="catalogPriceNaira != null">
-                ({{ formatNairaAmount(catalogPriceNaira) }})
-              </template>.
-              If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.
-            </template>
+            {{ membershipActionDescription }}
           </p>
           <div class="flex flex-wrap gap-2">
             <ButtonBusy
               :loading="paymentBusy"
               @click="startPayment"
             >
-              Pay annual subscription
+              {{ membershipActionButtonLabel }}
             </ButtonBusy>
             <Button
               variant="outline"

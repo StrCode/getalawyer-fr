@@ -96,6 +96,34 @@ export function hasPendingCheckoutFailure(
   return subscription?.status === 'pending' && Boolean(getSubscriptionPaymentFailureMessage(subscription))
 }
 
+/** Lawyer previously had (or almost had) paid membership — show renew copy, not first-time activate. */
+export function hadPriorMembership(
+  subscription: SubscriptionRecord | null | undefined,
+): boolean {
+  if (!subscription) return false
+  if (
+    ['expired', 'cancelled', 'failed_renewal', 'refunded', 'refund_processing'].includes(
+      subscription.status,
+    )
+  ) {
+    return true
+  }
+  return Boolean(subscription.subscriptionStartDate)
+}
+
+export function isExpiredMembership(
+  subscription: SubscriptionRecord | null | undefined,
+): boolean {
+  return subscription?.status === 'expired'
+}
+
+export function needsMembershipRenewal(
+  subscription: SubscriptionRecord | null | undefined,
+): boolean {
+  if (!subscription) return false
+  return ['expired', 'cancelled'].includes(subscription.status)
+}
+
 export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }) {
   return useQuery({
     queryKey: queryKeys.subscription.pricing,
