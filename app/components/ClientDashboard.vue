@@ -251,9 +251,10 @@ const showFullEmpty = computed(
 
     <template v-if="!isOverviewLoading">
       <DashboardNextAppointment
+        v-if="nextBooking"
         :booking="nextBooking"
-        :person-name="nextBooking?.lawyer?.name"
-        :person-image="nextBooking?.lawyer?.profilePicture"
+        :person-name="nextBooking.lawyer?.name"
+        :person-image="nextBooking.lawyer?.profilePicture"
       />
 
       <div
