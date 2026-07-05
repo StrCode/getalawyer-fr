@@ -212,12 +212,6 @@ const hasEngagement = computed(
 const showFullEmpty = computed(
   () => !isOverviewLoading.value && !hasEngagement.value,
 )
-
-const showDashboardContent = computed(
-  () => !isOverviewLoading.value && hasEngagement.value,
-)
-
-const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
 </script>
 
 <template>
@@ -262,105 +256,11 @@ const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
         :person-image="nextBooking?.lawyer?.profilePicture"
       />
 
-      <EmptyState
-        v-if="showFullEmpty"
-        :icon="appIcons.calendarDots"
-        title="No consultations yet"
-        description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
-      >
-        <template #actions>
-          <Button
-            as-child
-            class="cursor-pointer"
-          >
-            <NuxtLink
-              to="/find-lawyers"
-              class="gap-2"
-            >
-              <AppIcon
-                :icon="appIcons.magnifyingGlass"
-                class="size-4"
-              />
-              Browse Lawyers
-            </NuxtLink>
-          </Button>
-          <Button
-            v-if="showLegalInterests"
-            as-child
-            variant="outline"
-            class="cursor-pointer"
-          >
-            <NuxtLink
-              :to="{ path: '/find-lawyers', query: legalInterestsQuery }"
-              class="gap-2"
-            >
-              <AppIcon
-                :icon="appIcons.scales"
-                class="size-4"
-              />
-              Match my interests
-            </NuxtLink>
-          </Button>
-          <Button
-            v-else
-            as-child
-            variant="outline"
-            class="cursor-pointer"
-          >
-            <NuxtLink
-              to="/practice-areas"
-              class="gap-2"
-            >
-              <AppIcon
-                :icon="appIcons.scales"
-                class="size-4"
-              />
-              View Practice Areas
-            </NuxtLink>
-          </Button>
-        </template>
-      </EmptyState>
-
-      <ClientLegalInterestsCard
-        v-if="showFullEmpty && showLegalInterests"
-        :specializations="profileSpecializations"
-      />
-
-      <ClientRecommendedLawyersCard
-        v-if="showFullEmpty && showRecommendedLawyers"
-        :lawyers="recommendedLawyers"
-        :listing-query="legalInterestsQuery"
-      />
-
-      <ClientRecentSearchesCard v-if="showFullEmpty" />
-
       <div
-        v-if="showFullEmpty"
-        class="space-y-6"
-      >
-        <DashboardMessagesPreview
-          v-if="hasConversations && !conversationsPending"
-          :conversations="conversations ?? []"
-          :current-user-id="userId"
-        />
-
-        <DashboardNotificationsPreview
-          v-if="allNotifications.length > 0"
-          :notifications="allNotifications"
-        />
-
-        <DashboardMyLawyersPreview
-          v-if="showMyLawyers"
-          :lawyers="myLawyers"
-        />
-      </div>
-
-      <div
-        v-if="showDashboardContent"
-        class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(260px,280px)]"
+        class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]"
       >
         <div class="min-w-0 space-y-6">
-          <div class="dashboard-stat-grid">
+          <div class="dashboard-stat-grid grid">
             <StatCard
               label="Upcoming"
               :value="stats.upcoming"
@@ -386,6 +286,65 @@ const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
               :subtitle="stats.activeCases === 0 ? 'No open cases' : 'Ongoing matters'"
             />
           </div>
+
+          <EmptyState
+            v-if="showFullEmpty"
+            :icon="appIcons.calendarDots"
+            title="No consultations yet"
+            description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
+          >
+            <template #actions>
+              <Button
+                as-child
+                class="cursor-pointer"
+              >
+                <NuxtLink
+                  to="/find-lawyers"
+                  class="gap-2"
+                >
+                  <AppIcon
+                    :icon="appIcons.magnifyingGlass"
+                    class="size-4"
+                  />
+                  Browse Lawyers
+                </NuxtLink>
+              </Button>
+              <Button
+                v-if="showLegalInterests"
+                as-child
+                variant="outline"
+                class="cursor-pointer"
+              >
+                <NuxtLink
+                  :to="{ path: '/find-lawyers', query: legalInterestsQuery }"
+                  class="gap-2"
+                >
+                  <AppIcon
+                    :icon="appIcons.scales"
+                    class="size-4"
+                  />
+                  Match my interests
+                </NuxtLink>
+              </Button>
+              <Button
+                v-else
+                as-child
+                variant="outline"
+                class="cursor-pointer"
+              >
+                <NuxtLink
+                  to="/practice-areas"
+                  class="gap-2"
+                >
+                  <AppIcon
+                    :icon="appIcons.scales"
+                    class="size-4"
+                  />
+                  View Practice Areas
+                </NuxtLink>
+              </Button>
+            </template>
+          </EmptyState>
 
           <section
             v-if="recentBookings.length > 0"
@@ -461,8 +420,9 @@ const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
           <ClientRecentSearchesCard />
         </div>
 
-        <div class="min-w-0 space-y-6">
+        <aside class="min-w-0 space-y-6">
           <DashboardAgendaRail
+            v-if="bookings.length > 0"
             :bookings="bookings"
             :person-label="(b) => b.lawyer?.name ?? 'Lawyer'"
           />
@@ -486,28 +446,24 @@ const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
             v-if="showMyLawyers"
             :lawyers="myLawyers"
           />
-        </div>
-      </div>
 
-      <ClientProfileCompletenessAside
-        v-if="showProfileCompleteness"
-        :percent="profileCompleteness.percent"
-        :items="profileCompleteness.items"
-      />
-      <div
-        v-if="showProfileCompleteness"
-        class="-mt-3"
-      >
-        <Button
-          as-child
-          variant="outline"
-          size="sm"
-          class="cursor-pointer"
-        >
-          <NuxtLink to="/dashboard/profile">
-            Complete profile
-          </NuxtLink>
-        </Button>
+          <template v-if="showProfileCompleteness">
+            <ClientProfileCompletenessAside
+              :percent="profileCompleteness.percent"
+              :items="profileCompleteness.items"
+            />
+            <Button
+              as-child
+              variant="outline"
+              size="sm"
+              class="w-full cursor-pointer"
+            >
+              <NuxtLink to="/dashboard/profile">
+                Complete profile
+              </NuxtLink>
+            </Button>
+          </template>
+        </aside>
       </div>
     </template>
 
@@ -525,7 +481,7 @@ const hasConversations = computed(() => (conversations.value?.length ?? 0) > 0)
           class="h-24 rounded-xl"
         />
       </div>
-      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
         <div class="space-y-4">
           <Skeleton class="h-48 w-full rounded-xl" />
           <Skeleton class="h-56 w-full rounded-xl" />
