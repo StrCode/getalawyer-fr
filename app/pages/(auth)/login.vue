@@ -20,7 +20,7 @@
     <!-- Inline OTP after unverified phone login -->
     <div v-if="showPhoneOtpStep" class="space-y-6">
       <header>
-        <h2 class="text-lg font-semibold text-foreground">
+       <h2 class="text-lg font-semibold text-foreground">
           Verify your phone
         </h2>
         <p class="mt-1 text-sm text-muted-foreground">
@@ -64,7 +64,6 @@
                   type="email"
                   placeholder="alex@example.com"
                   autocomplete="email"
-                  class="h-11 text-base"
                   :aria-invalid="isInvalid(field)"
                   :disabled="isSubmitting"
                   @blur="field.handleBlur"
@@ -110,7 +109,6 @@
               :model-value="field.state.value"
               placeholder="••••••••"
               autocomplete="current-password"
-              input-class="h-11 text-base"
               :aria-invalid="isInvalid(field)"
               :disabled="isSubmitting"
               @blur="field.handleBlur"

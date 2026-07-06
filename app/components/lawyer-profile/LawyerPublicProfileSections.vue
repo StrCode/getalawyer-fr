@@ -78,7 +78,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         >
           <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
-              <h3 class="text-base font-semibold tracking-tight text-foreground">
+             <h3 class="text-base font-semibold text-foreground">
                 {{ item.title }}
               </h3>
               <p class="mt-0.5 text-sm font-medium text-muted-foreground">
@@ -118,7 +118,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
             <HugeiconsIcon :icon="GraduationScrollIcon" class="size-5" />
           </div>
           <div class="min-w-0">
-            <h3 class="text-base font-semibold leading-tight tracking-tight text-foreground">
+           <h3 class="text-base font-semibold leading-tight text-foreground">
               {{ item.school }}
             </h3>
             <p
@@ -159,7 +159,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-base font-semibold tracking-tight text-foreground">
+               <h3 class="text-base font-semibold text-foreground">
                   {{ item.name }}
                 </h3>
                 <Badge

@@ -16,7 +16,7 @@ const pageTitle = computed(() => dashboardPageTitle(route.path))
         orientation="vertical"
         class="mx-2 data-[orientation=vertical]:h-4"
       />
-      <h1 class="font-heading text-base font-medium tracking-tight">
+     <h1 class="text-base font-medium ">
         {{ pageTitle }}
       </h1>
     </div>

@@ -61,7 +61,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
             <Badge v-bind="bookingStatusBadge(booking.status)" class="mb-2">
               {{ formatStatusLabel(booking.status) }}
             </Badge>
-            <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
+           <h2 class="font-medium text-foreground text-xl ">
               {{ displayName }}
             </h2>
             <p class="mt-0.5 text-muted-foreground text-sm">
@@ -92,7 +92,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
   >
     <CardContent class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h2 class="font-heading font-semibold text-foreground text-xl tracking-tight">
+       <h2 class="font-medium text-foreground text-xl ">
           {{ emptyTitle ?? 'No upcoming appointments' }}
         </h2>
         <p class="mt-1 max-w-md text-muted-foreground text-sm">

@@ -42,7 +42,7 @@ const trustPoints = [
         <p class="text-xs font-semibold uppercase tracking-widest mb-5 text-primary">
           Verified legal representation
         </p>
-        <h2 class="font-heading text-4xl font-semibold leading-[1.05] tracking-[-0.025em] lg:text-[2.75rem] xl:text-5xl">
+       <h2 class="text-4xl font-medium leading-[1.05] tracking-[-0.025em] lg:text-[2.75rem] xl:text-5xl">
           {{ authTitle }}
         </h2>
         <p class="mt-6 max-w-md text-base leading-relaxed text-background/65 lg:text-lg">

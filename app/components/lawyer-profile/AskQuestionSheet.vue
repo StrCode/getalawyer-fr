@@ -57,7 +57,7 @@ watch(isOpen, (open) => {
       class="flex w-full flex-col gap-0 p-0 sm:max-w-md"
     >
       <div class="border-b border-border px-6 py-5">
-        <h2 class="text-lg font-semibold text-foreground">
+       <h2 class="text-lg font-semibold text-foreground">
           Ask {{ lawyerInfo.name }} a question
         </h2>
         <p class="mt-1 text-sm text-muted-foreground">

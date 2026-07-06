@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between gap-3">
-    <h2 class="font-semibold text-foreground text-lg">
+   <h2 class="font-semibold text-foreground text-lg">
       {{ title }}
     </h2>
     <div

@@ -73,7 +73,7 @@ const cols = {
         <!-- Link columns -->
         <div class="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div v-for="(links, group) in cols" :key="group">
-            <h5 class="text-xs font-semibold uppercase tracking-widest text-background/70">{{ group }}</h5>
+           <h5 class="text-xs font-semibold uppercase tracking-widest text-background/70">{{ group }}</h5>
             <ul class="m-0 mt-5 flex list-none flex-col gap-3 p-0">
               <li v-for="link in links" :key="link.label">
                 <NuxtLink

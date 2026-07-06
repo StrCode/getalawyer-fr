@@ -7,7 +7,7 @@
       <HugeiconsIcon :icon="icon" class="size-12" :style="{ color }" />
     </span>
 
-    <h3 class="mb-2 font-semibold text-foreground text-xl">{{ title }}</h3>
+   <h3 class="mb-2 font-semibold text-foreground text-xl">{{ title }}</h3>
     <p class="mb-6 max-w-md text-muted-foreground text-base leading-relaxed">{{ description }}</p>
 
     <div v-if="$slots.actions" class="flex flex-wrap justify-center gap-3">

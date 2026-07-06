@@ -24,7 +24,7 @@
         </div>
 
         <div>
-          <h4 class="font-semibold text-foreground">
+         <h4 class="font-semibold text-foreground">
             {{ booking.client?.name || 'Client' }}
           </h4>
           <p class="text-sm text-muted-foreground">

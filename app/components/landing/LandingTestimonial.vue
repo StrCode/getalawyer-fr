@@ -21,7 +21,7 @@ const secondary = [
       <!-- Section header -->
       <div class="mb-10 max-w-2xl">
         <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Trusted across Nigeria</p>
-        <h2 class="font-heading text-3xl font-medium tracking-tight md:text-4xl text-foreground">
+       <h2 class="text-3xl font-medium md:text-4xl text-foreground">
           Real clients, real outcomes.
         </h2>
       </div>
@@ -34,7 +34,7 @@ const secondary = [
         </blockquote>
 
         <div class="relative z-10 mt-10 inline-flex items-center gap-4">
-          <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 font-heading font-semibold text-primary ring-2 ring-primary/30">
+          <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 font-heading font-medium text-primary ring-2 ring-primary/30">
             TA
           </div>
           <div>
@@ -56,7 +56,7 @@ const secondary = [
             "{{ t.quote }}"
           </blockquote>
           <figcaption class="mt-6 flex items-center gap-3">
-            <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-heading text-sm font-semibold text-primary">
+            <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-heading text-sm font-medium text-primary">
               {{ t.initials }}
             </div>
             <div>

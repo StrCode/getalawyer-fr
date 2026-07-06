@@ -63,7 +63,7 @@
                 <AvatarFallback>{{ booking.lawyer?.name?.charAt(0) || 'L' }}</AvatarFallback>
               </Avatar>
               <div>
-                <h4 class="text-lg font-semibold text-foreground">
+               <h4 class="text-lg font-semibold text-foreground">
                   {{ booking.lawyer?.name || 'Lawyer' }}
                 </h4>
                 <p class="text-sm text-muted-foreground">

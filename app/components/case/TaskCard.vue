@@ -3,7 +3,7 @@
     <div class="flex justify-between items-start">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3 mb-2">
-          <h4 class="font-medium text-foreground truncate">
+         <h4 class="font-medium text-foreground truncate">
             {{ task.title }}
           </h4>
           

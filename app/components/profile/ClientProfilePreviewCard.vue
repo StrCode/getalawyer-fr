@@ -68,7 +68,7 @@ const locationLabel = computed(() => {
           </Avatar>
 
           <div class="min-w-0 flex-1">
-            <p class="font-heading text-lg font-semibold tracking-tight text-foreground">
+            <p class="font-heading text-lg font-medium tracking-tight text-foreground">
               {{ name || 'Your name' }}
             </p>
             <p

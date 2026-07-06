@@ -41,7 +41,7 @@ const emit = defineEmits<{
   >
     <div class="mx-auto max-w-md text-center">
       <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
-      <h2 class="mb-2 text-xl font-bold text-foreground">
+     <h2 class="mb-2 text-xl font-bold text-foreground">
         {{ errorStatusCode === 403 ? 'Profile unavailable' : 'Profile not found' }}
       </h2>
       <p class="mb-6 text-sm text-muted-foreground">

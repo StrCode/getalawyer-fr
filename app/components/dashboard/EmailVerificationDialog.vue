@@ -125,7 +125,7 @@ function handleOpenChange(value: boolean) {
           />
         </div>
 
-        <h2 class="font-heading text-xl font-semibold tracking-tight text-foreground">
+       <h2 class="text-xl font-medium text-foreground">
           {{ title }}
         </h2>
         <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">

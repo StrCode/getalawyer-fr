@@ -220,7 +220,7 @@ async function retryStatus() {
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Application status
         </p>
-        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
           Could not load status
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -250,7 +250,7 @@ async function retryStatus() {
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Verification outcome
         </p>
-        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
           Verification could not be completed
         </h1>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -296,7 +296,7 @@ async function retryStatus() {
           <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
             Step 3 of 3 · Application status
           </p>
-          <h1 class="font-heading text-balance text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+         <h1 class="text-balance text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
             Application submitted
           </h1>
           <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
@@ -367,7 +367,7 @@ async function retryStatus() {
         <!-- Status card -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-5">
-            <h2 class="text-base font-semibold text-foreground">
+           <h2 class="text-base font-semibold text-foreground">
               We are reviewing your details
             </h2>
           </div>
@@ -402,7 +402,7 @@ async function retryStatus() {
         <!-- Timeline (Mercury-style) -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-4">
-            <h2 class="text-xs font-semibold uppercase tracking-widest text-primary">
+           <h2 class="text-xs font-semibold uppercase tracking-widest text-primary">
               What happens next
             </h2>
           </div>

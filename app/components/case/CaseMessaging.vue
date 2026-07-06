@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between border-b border-border bg-background p-4">
       <div class="flex items-center space-x-3">
         <HugeiconsIcon :icon="MessageMultiple01Icon" class="w-5 h-5 text-muted-foreground" />
-        <h3 class="font-semibold text-foreground">Case Messages</h3>
+       <h3 class="font-semibold text-foreground">Case Messages</h3>
         <UBadge v-if="messages?.length" variant="soft" color="blue">
           {{ messages.length }} messages
         </UBadge>

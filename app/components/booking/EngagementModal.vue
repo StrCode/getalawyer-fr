@@ -126,7 +126,7 @@ function close() {
       <template #header>
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="font-bold text-gray-900 text-xl">Record Engagement Outcome</h3>
+           <h3 class="font-bold text-gray-900 text-xl">Record Engagement Outcome</h3>
             <p class="mt-1 text-gray-500 text-sm">
               What happened after the consultation with {{ booking.client?.name }}?
             </p>
@@ -195,7 +195,7 @@ function close() {
           <div class="flex items-start gap-2">
             <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-blue-600" />
             <div>
-              <h4 class="font-semibold text-blue-900 text-sm">Case Details Required</h4>
+             <h4 class="font-semibold text-blue-900 text-sm">Case Details Required</h4>
               <p class="mt-0.5 text-blue-700 text-xs">
                 A new case will be created with these fee details
               </p>
@@ -253,7 +253,7 @@ function close() {
           <div class="flex items-start gap-2">
             <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-gray-600" />
             <div>
-              <h4 class="font-semibold text-gray-900 text-sm">Consultation Only</h4>
+             <h4 class="font-semibold text-gray-900 text-sm">Consultation Only</h4>
               <p class="mt-0.5 text-gray-600 text-xs">
                 This booking will be marked as completed without creating a case
               </p>

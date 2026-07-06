@@ -38,7 +38,7 @@ const features = [
       <!-- Header -->
       <div class="mx-auto mb-16 max-w-2xl text-center">
         <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Pricing for Lawyers</p>
-        <h1 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 text-foreground">
+       <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
           Simple, transparent pricing.
         </h1>
         <p class="text-lg leading-relaxed text-muted-foreground">
@@ -54,7 +54,7 @@ const features = [
 
         <div class="mb-8 mt-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Annual membership</p>
-          <h2 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h2>
+         <h2 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h2>
           <div class="mb-2 flex items-end justify-center gap-1.5">
             <span class="font-heading text-6xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
             <span class="mb-2 text-base text-muted-foreground">/ year</span>

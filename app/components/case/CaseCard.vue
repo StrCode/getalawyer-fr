@@ -8,7 +8,7 @@
       <!-- Case Info -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3 mb-2">
-          <h3 class="font-semibold text-foreground text-lg truncate">
+         <h3 class="font-semibold text-foreground text-lg truncate">
             {{ props.case.caseTitle || props.case.title }}
           </h3>
           <UBadge 

@@ -47,7 +47,7 @@ const filteredAreas = computed(() => {
         <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-primary">
           Directory
         </p>
-        <h1 class="mb-4 font-heading text-4xl font-medium tracking-tight text-background md:text-5xl">
+       <h1 class="mb-4 text-4xl font-medium text-background md:text-5xl">
           Practice Areas
         </h1>
         <p class="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-background/70">
@@ -89,7 +89,7 @@ const filteredAreas = computed(() => {
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
           <HugeiconsIcon :icon="AlertCircleIcon" class="size-6" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-foreground">
+       <h3 class="mb-2 text-lg font-semibold text-foreground">
           Could not load practice areas
         </h3>
         <p class="text-sm text-muted-foreground">
@@ -107,7 +107,7 @@ const filteredAreas = computed(() => {
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
           <HugeiconsIcon :icon="AlertCircleIcon" class="size-6" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-foreground">
+       <h3 class="mb-2 text-lg font-semibold text-foreground">
           No practice areas found
         </h3>
         <p class="text-sm text-muted-foreground">
@@ -129,7 +129,7 @@ const filteredAreas = computed(() => {
             <HugeiconsIcon :icon="Briefcase01Icon" class="size-5" aria-hidden="true" />
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-base leading-tight font-semibold text-foreground">
+           <h3 class="text-base leading-tight font-semibold text-foreground">
               {{ area.name }}
             </h3>
             <Badge

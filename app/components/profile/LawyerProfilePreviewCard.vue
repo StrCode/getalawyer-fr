@@ -85,7 +85,7 @@ const aboutPreview = computed(() => {
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="font-heading text-lg font-semibold tracking-tight text-foreground">
+            <p class="font-heading text-lg font-medium tracking-tight text-foreground">
               {{ name }}
             </p>
             <p class="mt-0.5 text-sm text-primary">

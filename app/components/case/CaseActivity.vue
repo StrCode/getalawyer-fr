@@ -65,7 +65,7 @@
     <!-- Activity Timeline -->
     <UCard>
       <template #header>
-        <h3 class="font-semibold">Activity Timeline</h3>
+       <h3 class="font-semibold">Activity Timeline</h3>
       </template>
       
       <div
@@ -93,7 +93,7 @@
           :key="date"
           class="space-y-3"
         >
-          <h4 class="top-0 sticky bg-card py-2 font-medium text-foreground">
+         <h4 class="top-0 sticky bg-card py-2 font-medium text-foreground">
             {{ formatDateHeader(date) }}
           </h4>
           

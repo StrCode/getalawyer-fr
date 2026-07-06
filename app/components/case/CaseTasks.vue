@@ -3,7 +3,7 @@
     <!-- Task Creation (Lawyers only) -->
     <UCard v-if="role === 'lawyer'">
       <template #header>
-        <h3 class="font-semibold">Create New Task</h3>
+       <h3 class="font-semibold">Create New Task</h3>
       </template>
       
       <div class="space-y-4">

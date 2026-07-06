@@ -50,7 +50,7 @@ function searchFor(term: string) {
       </div>
 
       <!-- Headline -->
-      <h1 class="font-heading text-5xl font-medium tracking-tight md:text-6xl mx-auto max-w-4xl text-balance text-foreground lg:max-w-5xl">
+     <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-4xl text-balance text-foreground lg:max-w-5xl">
         Get legal help
         <em class="font-heading italic font-medium text-primary">without the runaround.</em>
       </h1>

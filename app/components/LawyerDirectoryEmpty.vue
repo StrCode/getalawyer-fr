@@ -45,7 +45,7 @@ const tips = [
       >
         No matches
       </p>
-      <h3 id="lawyer-directory-empty-title" class="mt-2 text-balance text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+     <h3 id="lawyer-directory-empty-title" class="mt-2 text-balance text-xl font-semibold text-foreground sm:text-2xl">
         We couldn’t find lawyers for this search
       </h3>
       <p class="mx-auto mt-3 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed sm:text-base">

@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Calendar Header -->
     <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold text-gray-900">Select Date & Time</h3>
+     <h3 class="text-lg font-semibold text-gray-900">Select Date & Time</h3>
       <div class="flex items-center gap-2">
         <Button
           icon="i-hugeicons-arrow-left-01"
@@ -57,7 +57,7 @@
 
     <!-- Time Slots -->
     <div v-if="selectedDate && availableSlots" class="space-y-3">
-      <h4 class="text-sm font-semibold text-gray-900">Available Times</h4>
+     <h4 class="text-sm font-semibold text-gray-900">Available Times</h4>
       
       <div
         v-if="isLoadingSlots"

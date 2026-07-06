@@ -370,7 +370,7 @@ const showMobileFilters = ref(false)
             <span class="size-1.5 rounded-full bg-primary" />
             <span class="text-xs font-semibold uppercase tracking-widest text-primary">Verified directory</span>
           </div>
-          <h1 class="font-heading text-4xl font-medium tracking-tight md:text-5xl text-balance text-foreground">
+         <h1 class="text-4xl font-medium md:text-5xl text-balance text-foreground">
             Find a verified lawyer
           </h1>
           <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -438,7 +438,7 @@ const showMobileFilters = ref(false)
         >
           <div class="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-xs">
             <div class="mb-5 flex items-center justify-between gap-3">
-              <h2 class="text-sm font-semibold text-foreground">
+             <h2 class="text-sm font-semibold text-foreground">
                 Refine search
               </h2>
               <button

@@ -39,8 +39,8 @@ const quickLinks = [
           <ErrorNotFoundIllustration />
         </div>
 
-        <h1
-          class="font-heading text-balance font-medium leading-[1.1] tracking-[-0.02em] text-sidebar"
+       <h1
+          class="text-balance font-medium leading-[1.1] tracking-[-0.02em] text-sidebar"
           style="font-size: clamp(1.75rem, 4.5vw, 2.5rem);"
         >
           This page isn’t in our

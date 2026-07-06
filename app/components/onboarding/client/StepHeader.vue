@@ -13,8 +13,8 @@ defineProps<{
     <p class="text-xs font-semibold uppercase tracking-widest mb-3 text-primary">
       Step {{ step }} of {{ total }} · {{ label }}
     </p>
-    <h1
-      class="font-heading text-balance text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl"
+   <h1
+      class="text-balance text-3xl font-medium leading-tight tracking-[-0.02em] text-foreground sm:text-4xl"
     >
       {{ title }}
     </h1>

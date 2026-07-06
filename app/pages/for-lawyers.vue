@@ -72,7 +72,7 @@ const toggleFaq = (index: number) => {
 
       <div class="relative mx-auto max-w-7xl px-6 text-center md:px-8">
         <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-primary">For legal professionals</p>
-        <h1 class="font-heading text-5xl font-medium tracking-tight md:text-6xl mx-auto max-w-3xl text-background">
+       <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-3xl text-background">
           Grow your practice.<br>
           <em class="font-normal italic">Keep every naira you earn.</em>
         </h1>
@@ -92,7 +92,7 @@ const toggleFaq = (index: number) => {
     <section class="bg-background py-24">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16 text-center">
-          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-foreground">
+         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-foreground">
             Everything you need to succeed
           </h2>
           <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -110,7 +110,7 @@ const toggleFaq = (index: number) => {
               class="mb-6 flex size-12 items-center justify-center rounded-xl bg-muted text-primary"
               v-html="feat.icon"
             />
-            <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
+           <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
             <p class="text-sm leading-relaxed text-muted-foreground">{{ feat.desc }}</p>
           </div>
         </div>
@@ -122,7 +122,7 @@ const toggleFaq = (index: number) => {
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16">
           <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Onboarding</p>
-          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-background">
+         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-background">
             How to get started
           </h2>
           <p class="max-w-2xl text-lg text-background/70">
@@ -139,7 +139,7 @@ const toggleFaq = (index: number) => {
             <div class="font-heading mb-6 text-5xl leading-none text-primary italic">
               {{ step.num }}
             </div>
-            <h3 class="mb-3 text-base font-semibold tracking-tight text-background">{{ step.title }}</h3>
+           <h3 class="mb-3 text-base font-semibold text-background">{{ step.title }}</h3>
             <p class="text-sm leading-relaxed text-background/70">{{ step.desc }}</p>
           </div>
         </div>
@@ -151,7 +151,7 @@ const toggleFaq = (index: number) => {
       <div class="mx-auto max-w-7xl px-6 md:px-8">
 
         <div class="mx-auto mb-16 max-w-2xl text-center">
-          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-4 text-foreground">
+         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-foreground">
             Simple, transparent pricing.
           </h2>
           <p class="text-lg leading-relaxed text-muted-foreground">
@@ -164,7 +164,7 @@ const toggleFaq = (index: number) => {
           <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-center text-primary">Annual membership</p>
 
           <div class="mb-8 mt-2 text-center">
-            <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
+           <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
             <div class="mb-2 flex items-end justify-center gap-1.5">
               <span class="font-heading text-5xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
               <span class="mb-1.5 text-sm text-muted-foreground">/ year</span>
@@ -186,7 +186,7 @@ const toggleFaq = (index: number) => {
     <section class="bg-background py-24">
       <div class="mx-auto max-w-3xl px-6 md:px-8">
         <div class="mb-16 text-center">
-          <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl text-foreground">
+         <h2 class="text-4xl font-medium md:text-5xl text-foreground">
             Frequently asked questions
           </h2>
         </div>
@@ -223,7 +223,7 @@ const toggleFaq = (index: number) => {
     <!-- Bottom CTA -->
     <section class="border-t border-background/20 bg-foreground py-24 text-center text-background">
       <div class="mx-auto max-w-2xl px-6 md:px-8">
-        <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 text-background">
+       <h2 class="text-4xl font-medium md:text-5xl mb-6 text-background">
           Ready to grow your digital practice?
         </h2>
         <p class="mb-10 text-lg leading-relaxed text-background/70">

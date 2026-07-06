@@ -35,8 +35,8 @@
               <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
                 Account type
               </p>
-              <h1
-                class="font-heading text-balance text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl"
+             <h1
+                class="text-balance text-3xl font-medium leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl"
               >
                 How would you like to use GetaLawyer?
               </h1>
@@ -79,7 +79,7 @@
                       :class="selectedRole === 'client' ? 'text-primary' : 'text-primary'"
                     />
                   </div>
-                  <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
+                 <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
                     I am a Client
                   </h2>
                   <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
@@ -118,7 +118,7 @@
                       :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-primary'"
                     />
                   </div>
-                  <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
+                 <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
                     I am a Lawyer
                   </h2>
                   <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
@@ -164,7 +164,7 @@
               <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
                 Registration
               </p>
-              <h1 class="font-heading text-3xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl">
+             <h1 class="text-3xl font-medium leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl">
                 {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
               </h1>
               <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
@@ -196,7 +196,6 @@
                           :model-value="field.state.value"
                           placeholder="Alex"
                           autocomplete="given-name"
-                          class="h-11 text-base"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -215,7 +214,6 @@
                           :model-value="field.state.value"
                           placeholder="Smith"
                           autocomplete="family-name"
-                          class="h-11 text-base"
                           :aria-invalid="isInvalid(field)"
                           :disabled="isSubmitting"
                           @blur="field.handleBlur"
@@ -238,7 +236,6 @@
                             type="email"
                             placeholder="alex@example.com"
                             autocomplete="email"
-                            class="h-11 text-base"
                             :aria-invalid="isInvalid(field)"
                             :disabled="isSubmitting"
                             @blur="field.handleBlur"
@@ -274,7 +271,6 @@
                         :model-value="field.state.value"
                         placeholder="••••••••"
                         autocomplete="new-password"
-                        input-class="h-11 text-base"
                         :aria-invalid="isInvalid(field)"
                         :disabled="isSubmitting"
                         @blur="field.handleBlur"
@@ -335,7 +331,7 @@
             </Button>
 
             <div class="w-full text-center">
-              <h1 class="font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">Verify your phone</h1>
+             <h1 class="text-2xl font-medium tracking-[-0.02em] text-foreground sm:text-3xl">Verify your phone</h1>
               <p class="mt-2 text-sm text-muted-foreground">
                 Enter the code sent to <strong>{{ pendingPhone }}</strong>
               </p>

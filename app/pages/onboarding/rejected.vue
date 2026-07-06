@@ -62,7 +62,7 @@ const handleRestart = async () => {
       <div class="mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-destructive/10 text-destructive shadow-lg relative">
          <HugeiconsIcon :icon="Alert01Icon" class="size-10" />
       </div>
-      <h1 class="font-heading mb-3 text-3xl font-semibold tracking-[-0.02em] text-foreground">Application Update Required</h1>
+     <h1 class="mb-3 text-3xl font-medium tracking-[-0.02em] text-foreground">Application Update Required</h1>
       <p class="mx-auto max-w-md font-medium leading-relaxed text-muted-foreground">Your application needs some revisions before it can be approved for our legal network.</p>
     </div>
 
@@ -81,7 +81,7 @@ const handleRestart = async () => {
     <div v-else class="space-y-12">
       <!-- Feedback Section -->
       <div class="rounded-2xl border border-border bg-card p-8 text-left shadow-sm transition-all hover:shadow-md">
-        <h2 class="mb-4 flex items-center gap-3 text-lg font-bold text-foreground">
+       <h2 class="mb-4 flex items-center gap-3 text-lg font-bold text-foreground">
           <div class="rounded-lg bg-muted p-2">
             <HugeiconsIcon :icon="Message02Icon" class="size-5 text-muted-foreground" />
           </div>
@@ -98,7 +98,7 @@ const handleRestart = async () => {
 
       <!-- Action Section -->
       <div class="rounded-2xl border border-border bg-muted p-8 text-left transition-all">
-        <h2 class="mb-6 flex items-center gap-3 text-lg font-bold text-foreground">
+       <h2 class="mb-6 flex items-center gap-3 text-lg font-bold text-foreground">
            <div class="rounded-lg bg-accent p-2">
               <HugeiconsIcon :icon="File01Icon" class="size-5 text-muted-foreground" />
            </div>

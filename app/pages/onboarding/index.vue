@@ -153,7 +153,7 @@ function refresh() {
       <div class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
         <HugeiconsIcon :icon="AlertCircleIcon" class="size-8" aria-hidden="true" />
       </div>
-      <h1 class="mb-2 text-xl font-semibold text-foreground">
+     <h1 class="mb-2 text-xl font-semibold text-foreground">
         Could not load your progress
       </h1>
       <p class="mb-6 text-sm text-muted-foreground">

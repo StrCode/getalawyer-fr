@@ -6,7 +6,7 @@
     )"
   >
     <div class="min-w-0 flex-1">
-      <h1 class="font-heading text-2xl font-semibold tracking-tight text-foreground">
+     <h1 class="text-2xl font-medium text-foreground">
         <slot name="title">
           {{ title }}
         </slot>

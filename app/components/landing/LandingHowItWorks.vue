@@ -28,7 +28,7 @@ const steps = [
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Header -->
       <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">How it works</p>
-      <h2 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 max-w-2xl text-foreground">
+     <h2 class="text-4xl font-medium md:text-5xl mb-6 max-w-2xl text-foreground">
         From your first search to your first consultation.
       </h2>
       <p class="max-w-xl text-xl leading-normal text-muted-foreground">
@@ -83,7 +83,7 @@ const steps = [
             <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-semibold tabular-nums text-primary">
               {{ step.num }}
             </span>
-            <h3 class="text-lg font-semibold tracking-tight text-foreground">{{ step.title }}</h3>
+           <h3 class="text-lg font-semibold text-foreground">{{ step.title }}</h3>
           </div>
           <p class="text-sm leading-[1.55] text-muted-foreground">{{ step.desc }}</p>
         </div>

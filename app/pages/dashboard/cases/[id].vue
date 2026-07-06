@@ -15,7 +15,7 @@
     class="space-y-4 py-8 text-center"
   >
     <HugeiconsIcon :icon="Alert01Icon" class="mx-auto size-12 text-destructive" />
-    <h2 class="text-xl font-semibold text-foreground">
+   <h2 class="text-xl font-semibold text-foreground">
       Case not found
     </h2>
     <p class="text-muted-foreground">

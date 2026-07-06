@@ -166,7 +166,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           <HugeiconsIcon :icon="SecurityCheckIcon" class="h-4 w-4" />
           Verified by Getalawyer
         </div>
-        <h2 class="mb-3 text-2xl font-heading font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
+       <h2 class="mb-3 text-2xl font-medium tracking-[-0.02em] text-foreground">Identity verified</h2>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
           Your National Identification Number has been verified. It cannot be changed while your
           application is active.

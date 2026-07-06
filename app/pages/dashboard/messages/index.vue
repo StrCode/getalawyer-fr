@@ -281,7 +281,7 @@ function previewText(conversation: ConversationInfo) {
               </Button>
 
               <div class="min-w-0 flex-1">
-                <h2 class="truncate text-sm font-semibold text-foreground">
+               <h2 class="truncate text-sm font-semibold text-foreground">
                   {{ headerParticipantName ?? 'Loading…' }}
                 </h2>
                 <p class="text-xs text-muted-foreground">

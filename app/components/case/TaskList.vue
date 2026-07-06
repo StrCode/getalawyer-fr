@@ -71,7 +71,7 @@
         <div v-if="statusFilter === 'all'" class="space-y-6">
           <div v-for="(statusTasks, status) in groupedTasks" :key="status" class="space-y-3">
             <div v-if="statusTasks.length > 0">
-              <h4 class="flex items-center gap-2 mb-3 font-medium text-foreground">
+             <h4 class="flex items-center gap-2 mb-3 font-medium text-foreground">
                 <HugeiconsIcon :icon="getStatusIcon(status)" class="w-4 h-4" />
                 {{ getStatusLabel(status) }}
                 <UBadge :color="getStatusColor(status)" variant="subtle" size="sm">

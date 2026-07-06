@@ -16,7 +16,7 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
           <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-primary">
             Practice areas
           </p>
-          <h2 class="max-w-2xl font-heading text-4xl font-medium tracking-tight text-foreground md:text-5xl">
+         <h2 class="max-w-2xl text-4xl font-medium text-foreground md:text-5xl">
             Find a specialist for what you're facing.
           </h2>
         </div>

@@ -160,7 +160,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
         />
         <div class="relative z-10 space-y-6 p-6 sm:p-8">
           <div :class="sectionHeaderClass">
-            <h2 :class="sectionTitleClass">About you</h2>
+           <h2 :class="sectionTitleClass">About you</h2>
             <Button
               variant="outline"
               size="sm"
@@ -240,7 +240,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
         />
         <div class="relative z-10 space-y-6 p-6 sm:p-8">
           <div :class="sectionHeaderClass">
-            <h2 :class="sectionTitleClass">Bar credentials</h2>
+           <h2 :class="sectionTitleClass">Bar credentials</h2>
             <Button
               variant="outline"
               size="sm"
@@ -284,7 +284,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     <Card :class="cardClass">
       <div class="relative z-10 space-y-6 p-6 sm:p-8">
         <div :class="sectionHeaderClass">
-          <h2 :class="sectionTitleClass">Practice</h2>
+         <h2 :class="sectionTitleClass">Practice</h2>
           <Button
             variant="outline"
             size="sm"

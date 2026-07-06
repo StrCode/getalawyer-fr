@@ -17,7 +17,7 @@ const slots = useSlots()
     >
       {{ eyebrow }}
     </p>
-    <h2 class="flex items-center gap-3 text-xl font-semibold tracking-tight text-foreground">
+   <h2 class="flex items-center gap-3 text-xl font-semibold text-foreground">
       <span
         v-if="slots.icon"
         class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary ring-1 ring-border/70 [&>svg]:size-5"

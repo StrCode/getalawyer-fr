@@ -33,7 +33,7 @@ function formatPublishedDate(value: string | null | undefined): string | null {
         class="rounded-2xl border border-border bg-card p-5 md:p-6"
       >
         <div class="flex flex-wrap items-start justify-between gap-3">
-          <h3 class="text-base font-semibold tracking-tight text-foreground">
+         <h3 class="text-base font-semibold text-foreground">
             {{ item.title }}
           </h3>
           <p

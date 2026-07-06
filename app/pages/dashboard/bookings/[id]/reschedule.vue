@@ -11,7 +11,7 @@
           Back to booking
         </NuxtLink>
       </Button>
-      <h1 class="font-heading text-3xl font-semibold tracking-tight text-foreground">
+     <h1 class="text-3xl font-medium text-foreground">
         Reschedule booking
       </h1>
       <p class="mt-1 text-base text-muted-foreground">

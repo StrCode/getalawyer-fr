@@ -23,7 +23,7 @@ defineProps<{
         class="rounded-2xl border border-border bg-card p-5"
       >
         <div class="mb-1 flex items-start justify-between gap-3">
-          <h3 class="text-base font-semibold tracking-tight text-foreground">
+         <h3 class="text-base font-semibold text-foreground">
             {{ spec.name }}
           </h3>
           <Badge

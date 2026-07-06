@@ -4,7 +4,7 @@
       v-if="!embedded"
       class="mb-6 text-center"
     >
-      <h2 class="text-xl font-semibold text-sidebar sm:text-2xl">
+     <h2 class="text-xl font-semibold text-sidebar sm:text-2xl">
         Link your email
       </h2>
       <p class="mt-2 text-sm text-muted-foreground sm:text-base">

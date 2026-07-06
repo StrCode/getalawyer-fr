@@ -13,7 +13,7 @@
           >
             <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
-          <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
+         <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
         </div>
         
         <div class="flex items-center gap-4 text-muted-foreground text-sm">
@@ -55,7 +55,7 @@
       <!-- Case Info -->
       <UCard>
         <template #header>
-          <h3 class="font-semibold">Case Information</h3>
+         <h3 class="font-semibold">Case Information</h3>
         </template>
         
         <div class="space-y-4">
@@ -85,7 +85,7 @@
       <UCard>
         <template #header>
           <div class="flex justify-between items-center">
-            <h3 class="font-semibold">Tasks</h3>
+           <h3 class="font-semibold">Tasks</h3>
             <Button
               v-if="role === 'lawyer'"
               size="sm"
@@ -123,7 +123,7 @@
     <UCard v-if="props.case.description">
       <template #header>
         <div class="flex justify-between items-center">
-          <h3 class="font-semibold">Description</h3>
+         <h3 class="font-semibold">Description</h3>
           <Button
             v-if="role === 'lawyer'"
             variant="ghost"

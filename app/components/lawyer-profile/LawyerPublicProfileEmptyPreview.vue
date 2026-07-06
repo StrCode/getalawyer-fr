@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
     aria-labelledby="profile-empty-heading"
   >
     <HugeiconsIcon :icon="PencilEdit01Icon" class="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
-    <h2
+   <h2
       id="profile-empty-heading"
       class="text-base font-semibold text-foreground"
     >

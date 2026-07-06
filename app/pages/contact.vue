@@ -40,7 +40,7 @@ const handleSubmit = () => {
         <!-- Left: copy & trust -->
         <div class="lg:col-span-5">
           <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Contact</p>
-          <h1 class="font-heading text-4xl font-medium tracking-tight md:text-5xl mb-6 text-foreground">
+         <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
             Get in touch.
           </h1>
           <p class="mb-12 text-lg leading-relaxed text-muted-foreground">
@@ -55,7 +55,7 @@ const handleSubmit = () => {
             <div class="mb-6 flex size-14 items-center justify-center rounded-xl bg-muted text-primary transition-transform duration-300 group-hover:scale-105">
               <HugeiconsIcon :icon="Mail01Icon" class="size-7" />
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-foreground">Email support</h3>
+           <h3 class="mb-2 text-lg font-semibold text-foreground">Email support</h3>
             <p class="mb-8 text-sm leading-relaxed text-muted-foreground">Our team usually responds within 24 hours.</p>
             <div class="inline-flex items-center gap-2 text-base font-medium text-primary transition-colors group-hover:text-foreground">
               support@getalawyer.com.ng <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
@@ -79,7 +79,7 @@ const handleSubmit = () => {
             <div class="px-2 pb-2">
               <div class="mb-2 flex items-center gap-2">
                 <HugeiconsIcon :icon="Location01Icon" class="size-5 text-primary" />
-                <h3 class="text-lg font-semibold text-foreground">Lagos HQ</h3>
+               <h3 class="text-lg font-semibold text-foreground">Lagos HQ</h3>
               </div>
               <p class="text-sm leading-relaxed text-muted-foreground">
                 14a Admiralty Way<br>Lekki Phase 1, Lagos, Nigeria
@@ -90,7 +90,7 @@ const handleSubmit = () => {
 
         <!-- Right: contact form -->
         <div class="rounded-2xl border border-border bg-card p-8 shadow-sm md:p-12 lg:col-span-7">
-          <h2 class="font-heading text-2xl font-medium tracking-tight md:text-3xl mb-8 text-foreground">Send a message</h2>
+         <h2 class="text-2xl font-medium md:text-3xl mb-8 text-foreground">Send a message</h2>
 
           <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
 

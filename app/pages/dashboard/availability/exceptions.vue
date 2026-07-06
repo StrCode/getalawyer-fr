@@ -311,7 +311,7 @@ const minDate = new Date().toISOString().split('T')[0]
         <CardContent class="flex items-start justify-between gap-4 pt-6">
           <div class="min-w-0 flex-1 space-y-2">
             <div class="flex flex-wrap items-center gap-3">
-              <h3 class="text-lg font-semibold text-foreground">
+             <h3 class="text-lg font-semibold text-foreground">
                 {{ formatDate(exception.date) }}
               </h3>
               <Badge v-bind="exceptionStatusBadge(exception)">

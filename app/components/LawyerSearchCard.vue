@@ -123,7 +123,7 @@ async function handleOpenProfile() {
     </div>
 
     <div class="text-center">
-      <h3 class="font-heading text-balance text-xl font-semibold leading-snug tracking-tight text-foreground">
+     <h3 class="text-balance text-xl font-medium leading-snug text-foreground">
         {{ lawyer.name }}
       </h3>
       <p class="mt-1.5 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
@@ -184,7 +184,7 @@ async function handleOpenProfile() {
     <div class="flex min-w-0 flex-1 flex-col gap-2">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="min-w-0">
-          <h3 class="text-balance text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl">
+         <h3 class="text-balance text-lg font-semibold leading-snug text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <p
@@ -268,7 +268,7 @@ async function handleOpenProfile() {
     </div>
     <div class="flex min-w-0 min-h-0 flex-1 flex-col gap-3 p-4 sm:p-5 md:justify-between">
       <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
-        <h3 class="text-pretty text-xl font-semibold tracking-tight text-foreground md:text-2xl">
+       <h3 class="text-pretty text-xl font-semibold text-foreground md:text-2xl">
           {{ lawyer.name }}
         </h3>
         <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -329,7 +329,7 @@ async function handleOpenProfile() {
       </div>
       <div class="min-w-0 flex-1 overflow-hidden">
         <div class="flex items-center gap-2">
-          <h3 class="truncate text-sm font-semibold tracking-tight text-foreground">
+         <h3 class="truncate text-sm font-semibold text-foreground">
             {{ lawyer.name }}
           </h3>
           <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -393,7 +393,7 @@ async function handleOpenProfile() {
       </div>
       <div class="flex min-w-0 flex-1 flex-col gap-1.5 text-left">
         <div class="flex flex-wrap items-baseline gap-2">
-          <h3 class="text-lg font-semibold leading-snug tracking-tight text-balance text-foreground sm:text-xl">
+         <h3 class="text-lg font-semibold leading-snug text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -443,7 +443,7 @@ async function handleOpenProfile() {
     </div>
     <div class="flex flex-col gap-3 pt-12 ps-5 pe-5 sm:pt-14 sm:ps-6 sm:pe-6">
       <div class="flex flex-wrap items-center gap-2 sm:ps-1">
-        <h3 class="text-pretty text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+       <h3 class="text-pretty text-lg font-semibold text-foreground sm:text-xl">
           {{ lawyer.name }}
         </h3>
         <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -493,7 +493,7 @@ async function handleOpenProfile() {
       </div>
       <div class="flex min-w-0 flex-1 flex-col items-end gap-1.5 text-end sm:gap-2">
         <div class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-x-2 gap-y-1">
-          <h3 class="text-lg font-semibold leading-snug tracking-tight text-balance text-foreground sm:text-xl">
+         <h3 class="text-lg font-semibold leading-snug text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <span class="inline-flex shrink-0 flex-row-reverse items-center gap-1">

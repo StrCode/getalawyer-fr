@@ -285,7 +285,7 @@ async function retry() {
     </div>
 
     <div v-else-if="statusError" class="space-y-6 py-8 text-center">
-      <h1 class="font-heading text-2xl font-semibold tracking-[-0.02em] text-foreground">
+     <h1 class="text-2xl font-medium tracking-[-0.02em] text-foreground">
         Could not load your application
       </h1>
       <Button @click="retry">
@@ -298,7 +298,7 @@ async function retry() {
         <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
           Annual membership
         </p>
-        <h1 class="font-heading text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">
+       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
           Complete your subscription
         </h1>
         <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground lg:mx-0">
@@ -333,7 +333,7 @@ async function retry() {
                 <HugeiconsIcon :icon="CreditCardIcon" class="size-5" />
               </div>
               <div>
-                <h2 class="text-base font-semibold text-foreground">
+               <h2 class="text-base font-semibold text-foreground">
                   Payment
                 </h2>
                 <p class="text-xs text-muted-foreground">

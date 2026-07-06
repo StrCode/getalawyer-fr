@@ -36,7 +36,7 @@ function clearAndGo(path: string) {
         <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-600">
           <HugeiconsIcon :icon="AlertCircleIcon" class="h-8 w-8" />
         </div>
-        <h1 class="font-heading text-3xl font-medium tracking-tight text-sidebar">
+       <h1 class="text-3xl font-medium text-sidebar">
           Something went wrong
         </h1>
         <p class="mt-3 text-muted-foreground">
