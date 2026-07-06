@@ -46,8 +46,6 @@ definePageMeta({
 })
 
 const step = getLawyerStepDisplay('practice_info')
-const inputClass =
-  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 const soloPractitionerFieldId = useId()
@@ -274,10 +272,7 @@ onBeforeUnmount(() => {
       :description="step.description"
     />
 
-    <Card
-      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-    >
-      <div class="relative z-10 p-6 sm:p-8">
+    <Card class="p-6 sm:p-8">
         <FieldGroup class="gap-8">
           <form.Field v-slot="{ field }" name="soloPractitioner">
             <Field>
@@ -314,7 +309,7 @@ onBeforeUnmount(() => {
                 :id="field.name"
                 :model-value="field.state.value"
                 placeholder="e.g. Adeyemi & Partners"
-                :class="inputClass"
+               
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
                 @update:model-value="field.handleChange"
@@ -342,7 +337,7 @@ onBeforeUnmount(() => {
                       :model-value="selectedStates"
                       :aria-invalid="isInvalid(field)"
                       :class="[
-                        inputClass,
+                        
                         'h-auto min-h-11 w-full gap-1.5 px-2 py-1.5 shadow-none',
                       ]"
                       @update:model-value="(v) => syncStates(v, field)"
@@ -430,7 +425,7 @@ onBeforeUnmount(() => {
                 <Input
                   v-model="query"
                   placeholder="Search legal areas..."
-                  :class="[inputClass, 'pl-10']"
+                  class="pl-10"
                 />
               </div>
 
@@ -520,7 +515,7 @@ onBeforeUnmount(() => {
                 :disabled="selectedStates.length === 0"
                 @update:model-value="(v) => onPrimaryStateChange(v, field)"
               >
-                <SelectTrigger :id="field.name" :class="inputClass" :aria-invalid="isInvalid(field)">
+                <SelectTrigger class="w-full" :id="field.name" :aria-invalid="isInvalid(field)">
                   <SelectValue placeholder="Select primary state" />
                 </SelectTrigger>
                 <SelectContent>
@@ -550,7 +545,6 @@ onBeforeUnmount(() => {
             Accept the Terms and refund policy to continue.
           </p>
         </FieldGroup>
-      </div>
-    </Card>
+      </Card>
   </div>
 </template>

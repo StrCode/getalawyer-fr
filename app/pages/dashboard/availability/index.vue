@@ -278,46 +278,48 @@ const handleSaveAll = async () => {
     </div>
   </div>
 
-    <Card class="rounded-xl">
-      <CardHeader>
-        <CardTitle class="text-lg">
-          Quick setup
-        </CardTitle>
-        <CardDescription>
-          Apply common schedule templates
-        </CardDescription>
-      </CardHeader>
-      <CardContent class="flex flex-wrap gap-3">
-        <ButtonBusy
-          :loading="bulkSetMutation.isPending.value"
-          @click="handleQuickSetup('weekdays')"
-        >
-          Mon–Fri 9am–5pm
-        </ButtonBusy>
-        <ButtonBusy
-          variant="outline"
-          :loading="bulkSetMutation.isPending.value"
-          @click="handleQuickSetup('weekdays-sat')"
-        >
-          Mon–Fri 9am–5pm, Sat 9am–2pm
-        </ButtonBusy>
-      </CardContent>
-    </Card>
-
     <div
       v-if="isPending"
-      class="space-y-3"
+      class="space-y-6"
     >
-      <Skeleton
-        v-for="i in 4"
-        :key="i"
-        class="h-16 w-full rounded-xl"
-      />
+      <Skeleton class="h-32 w-full rounded-xl" />
+      <div class="space-y-3">
+        <Skeleton
+          v-for="i in 4"
+          :key="i"
+          class="h-16 w-full rounded-xl"
+        />
+      </div>
     </div>
 
-    <Card
-      v-else
-      class="rounded-xl"
+    <template v-else>
+      <Card class="rounded-xl">
+        <CardHeader>
+          <CardTitle class="text-lg">
+            Quick setup
+          </CardTitle>
+          <CardDescription>
+            Apply common schedule templates
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="flex flex-wrap gap-3">
+          <ButtonBusy
+            :loading="bulkSetMutation.isPending.value"
+            @click="handleQuickSetup('weekdays')"
+          >
+            Mon–Fri 9am–5pm
+          </ButtonBusy>
+          <ButtonBusy
+            variant="outline"
+            :loading="bulkSetMutation.isPending.value"
+            @click="handleQuickSetup('weekdays-sat')"
+          >
+            Mon–Fri 9am–5pm, Sat 9am–2pm
+          </ButtonBusy>
+        </CardContent>
+      </Card>
+
+      <Card class="rounded-xl"
     >
       <CardHeader class="flex flex-row items-center justify-between gap-4">
         <CardTitle class="text-lg">
@@ -402,5 +404,6 @@ const handleSaveAll = async () => {
         </div>
       </CardContent>
     </Card>
+    </template>
   </div>
 </template>

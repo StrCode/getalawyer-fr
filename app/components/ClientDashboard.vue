@@ -218,8 +218,8 @@ const showFullEmpty = computed(
   <div class="space-y-6">
     <DashboardEmailVerificationAlert />
 
-    <ClientDashboardActionRequired
-      v-if="!isOverviewLoading"
+    <template v-if="!isOverviewLoading">
+      <ClientDashboardActionRequired
       :pending-bookings="pendingBookings"
       :soon-bookings="soonBookings"
       :unread-message-count="unreadMessageCount"
@@ -254,7 +254,6 @@ const showFullEmpty = computed(
     </div>
   </div>
 
-    <template v-if="!isOverviewLoading">
       <DashboardNextAppointment
         v-if="nextBooking"
         :booking="nextBooking"
@@ -479,6 +478,10 @@ const showFullEmpty = computed(
       aria-busy="true"
       aria-label="Loading dashboard"
     >
+      <div class="space-y-2">
+        <Skeleton class="h-8 w-64 rounded-lg" />
+        <Skeleton class="h-4 w-96 rounded-lg" />
+      </div>
       <Skeleton class="h-32 w-full rounded-xl" />
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Skeleton

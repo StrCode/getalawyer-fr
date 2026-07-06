@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
 definePageMeta({
-  layout: 'listing-wizard',
+  layout: 'onboarding-draft',
   middleware: ['auth'],
 })
 

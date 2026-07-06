@@ -23,8 +23,6 @@ definePageMeta({
 })
 
 const step = getLawyerStepDisplay('professional_info')
-const inputClass =
-  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 
@@ -122,15 +120,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
       :description="step.description"
     />
 
-    <Card
-      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-    >
-      <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
-        aria-hidden="true"
-      />
-
-      <div class="relative z-10 p-6 sm:p-8">
+    <Card class="p-6 sm:p-8">
         <FieldGroup class="gap-6">
           <form.Field v-slot="{ field }" name="barNumber">
             <Field :data-invalid="isInvalid(field)">
@@ -152,7 +142,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                   autocomplete="off"
                   inputmode="numeric"
                   :maxlength="SCN_MAX_DIGITS"
-                  :class="[inputClass, 'flex-1 font-mono tabular-nums']"
+                  class="flex-1 font-mono tabular-nums"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="(v) => onScnInput(field, v)"
@@ -184,7 +174,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                 :model-value="field.state.value"
                 placeholder="Exactly as on your call-to-bar records"
                 autocomplete="name"
-                :class="inputClass"
+               
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
                 @update:model-value="field.handleChange"
@@ -209,9 +199,9 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                   field.handleBlur()
                 }"
               >
-                <SelectTrigger
+                <SelectTrigger class="w-full"
                   :id="field.name"
-                  :class="inputClass"
+                 
                   :aria-invalid="isInvalid(field)"
                 >
                   <SelectValue placeholder="Select year" />
@@ -229,7 +219,6 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
             </Field>
           </form.Field>
         </FieldGroup>
-      </div>
-    </Card>
+      </Card>
   </div>
 </template>

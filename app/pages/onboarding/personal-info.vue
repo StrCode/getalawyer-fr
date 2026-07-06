@@ -19,10 +19,7 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('personal_info')
 
-const inputClass =
-  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
-const selectTriggerClass = `${inputClass} w-full`
 
 const store = useLawyerOnboardingStore()
 
@@ -172,15 +169,7 @@ watch(
       :description="step.description"
     />
 
-    <Card
-      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-    >
-      <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
-        aria-hidden="true"
-      />
-
-      <div class="relative z-10 p-6 sm:p-8">
+    <Card class="p-6 sm:p-8">
         <FieldGroup class="gap-5">
           <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
             <form.Field v-slot="{ field }" name="firstName">
@@ -192,7 +181,7 @@ watch(
                   :model-value="field.state.value"
                   placeholder="First name"
                   autocomplete="given-name"
-                  :class="inputClass"
+                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -213,7 +202,7 @@ watch(
                   :model-value="field.state.value"
                   placeholder="Middle name"
                   autocomplete="additional-name"
-                  :class="inputClass"
+                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -231,7 +220,7 @@ watch(
                   :model-value="field.state.value"
                   placeholder="Last name"
                   autocomplete="family-name"
-                  :class="inputClass"
+                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -253,7 +242,7 @@ watch(
                 :model-value="field.state.value"
                 placeholder="As shown on NIN, passport, or driver licence"
                 autocomplete="name"
-                :class="inputClass"
+               
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
                 @update:model-value="field.handleChange"
@@ -362,7 +351,7 @@ watch(
                   >
                     <SelectTrigger
                       :id="field.name"
-                      :class="selectTriggerClass"
+                      class="w-full"
                       :aria-invalid="isInvalid(field)"
                     >
                       <SelectValue placeholder="Select state" />
@@ -395,7 +384,7 @@ watch(
                   >
                     <SelectTrigger
                       :id="field.name"
-                      :class="selectTriggerClass"
+                      class="w-full"
                       :aria-invalid="isInvalid(field)"
                       :disabled="!selectedState"
                     >
@@ -423,7 +412,6 @@ watch(
             All fields except middle name are required for identity verification.
           </p>
         </FieldGroup>
-      </div>
-    </Card>
+      </Card>
   </div>
 </template>

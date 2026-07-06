@@ -242,8 +242,8 @@ function confirmDecline() {
   <div class="space-y-6">
     <DashboardEmailVerificationAlert />
 
-    <LawyerDashboardActionRequired
-      v-if="!isOverviewLoading"
+    <template v-if="!isOverviewLoading">
+      <LawyerDashboardActionRequired
       :pending-bookings="pendingBookings"
       :soon-bookings="soonBookings"
       :follow-up-bookings="followUpBookings"
@@ -283,7 +283,6 @@ function confirmDecline() {
     </div>
   </div>
 
-    <template v-if="!isOverviewLoading">
       <DashboardNextAppointment
         v-if="nextBooking"
         :booking="nextBooking"
@@ -525,6 +524,10 @@ function confirmDecline() {
       aria-busy="true"
       aria-label="Loading dashboard"
     >
+      <div class="space-y-2">
+        <Skeleton class="h-8 w-64 rounded-lg" />
+        <Skeleton class="h-4 w-96 rounded-lg" />
+      </div>
       <Skeleton class="h-32 w-full rounded-xl" />
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Skeleton

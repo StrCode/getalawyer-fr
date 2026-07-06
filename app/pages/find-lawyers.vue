@@ -638,7 +638,6 @@ const showMobileFilters = ref(false)
 
           <!-- Results toolbar -->
           <div
-            v-if="!isLoading && !error"
             class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-xs"
           >
             <div>

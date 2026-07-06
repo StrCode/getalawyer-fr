@@ -59,7 +59,7 @@ const handleRestart = async () => {
   <div class="text-center py-12">
     <!-- Header Section -->
     <div class="mb-12">
-      <div class="mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-destructive/10 text-destructive shadow-lg relative">
+      <div class="mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-amber-500/10 text-amber-500 shadow-lg relative">
          <HugeiconsIcon :icon="Alert01Icon" class="size-10" />
       </div>
      <h1 class="mb-3 text-3xl font-medium tracking-[-0.02em] text-foreground">Application Update Required</h1>
@@ -91,7 +91,7 @@ const handleRestart = async () => {
         </h2>
 
         <div class="space-y-4">
-          <div v-if="rejectionReason" class="rounded-xl border border-destructive/30 bg-destructive/10 p-6">
+          <div v-if="rejectionReason" class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-6">
             <div class="whitespace-pre-wrap text-sm font-medium leading-relaxed text-foreground">{{ rejectionReason }}</div>
           </div>
 

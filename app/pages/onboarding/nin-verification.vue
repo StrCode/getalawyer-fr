@@ -20,8 +20,6 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('nin_verification')
 
-const inputClass =
-  'h-11 rounded-xl border-border/50 bg-card/80 text-base placeholder:text-muted-foreground/50 focus:bg-card'
 
 const store = useLawyerOnboardingStore()
 const ninState = store.ninVerification
@@ -149,12 +147,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <Card
       v-if="isAdminVerified"
       class="relative w-full overflow-hidden rounded-2xl border border-primary/20 bg-card p-8 text-center shadow-sm sm:p-10"
-    >
-      <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-primary/10 blur-3xl"
-        aria-hidden="true"
-      />
-      <div class="relative z-10">
+    ><div class="relative z-10">
         <div
           class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-background bg-primary/5 text-primary shadow-sm"
         >
@@ -201,16 +194,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     </Card>
 
     <!-- Entry form -->
-    <Card
-      v-else-if="showEntryForm"
-      class="relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-    >
-      <div
-        class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
-        aria-hidden="true"
-      />
-
-      <div class="relative z-10 p-6 sm:p-8">
+    <Card class="p-6 sm:p-8">
         <FieldGroup class="gap-6">
           <form.Field v-slot="{ field }" name="nin">
             <Field :data-invalid="isInvalid(field)">
@@ -233,7 +217,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   autocomplete="off"
                   inputmode="numeric"
                   maxlength="11"
-                  :class="[inputClass, 'flex-1 font-mono tabular-nums']"
+                  class="flex-1 font-mono tabular-nums"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="(v) => onNinInput(field, v)"
@@ -279,7 +263,6 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
             </Field>
           </form.Field>
         </FieldGroup>
-      </div>
-    </Card>
+      </Card>
   </div>
 </template>

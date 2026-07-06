@@ -24,7 +24,7 @@ onUnmounted(() => {
       class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
       :class="isScrolled ? 'shadow-sm' : ''"
     >
-      <AuthLogo class="min-w-0 shrink" />
+      <LandingBrandLogo class="min-w-0 shrink" />
 
       <Button
         variant="outline"

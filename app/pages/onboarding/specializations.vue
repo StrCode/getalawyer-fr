@@ -63,8 +63,8 @@
     </div>
 
     <div
-      v-else-if="filtered.length === 0"
-      class="rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
+      v-else-if="visibleSpecializations.length === 0"
+      class="rounded-lg border border-dashed border-border px-6 py-14 text-center"
     >
       <p class="text-sm text-muted-foreground">
         No practice areas match
@@ -76,15 +76,15 @@
       <!-- Centered pill cloud (Kit / Care.com) -->
       <div class="flex flex-wrap justify-center gap-2 sm:justify-start">
         <button
-          v-for="spec in filtered"
+          v-for="spec in visibleSpecializations"
           :key="spec.id"
           type="button"
           :disabled="isDisabled(spec.id)"
-          class="inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex items-center gap-1.5 rounded-md border h-8 px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           :class="
             isSelected(spec.id)
               ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-              : 'border-border bg-background text-foreground hover:border-primary/40 hover:bg-muted/50'
+              : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground'
           "
           :title="spec.description"
           @click="!isDisabled(spec.id) && toggle(spec.id)"
@@ -92,14 +92,23 @@
           {{ spec.name }}
           <HugeiconsIcon :icon="Tick01Icon"
             v-if="isSelected(spec.id)"
-            class="size-4 shrink-0"
+            class="size-3.5 shrink-0"
             aria-hidden="true"
           />
           <HugeiconsIcon :icon="Add01Icon"
             v-else
-            class="size-4 shrink-0 opacity-50"
+            class="size-3.5 shrink-0 opacity-50"
             aria-hidden="true"
           />
+        </button>
+
+        <button
+          v-if="hiddenCount > 0"
+          type="button"
+          class="inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-input bg-muted/30 h-8 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          @click="showAllSpecs = true"
+        >
+          +{{ hiddenCount }} more
         </button>
       </div>
 
@@ -142,13 +151,38 @@ const { data: specializationsData, isPending: isLoadingSpecializations } = useSp
 
 const specializations = computed(() => specializationsData.value?.specializations || [])
 
-const filtered = computed(() => {
+const showAllSpecs = ref(false)
+const FEATURED_LIMIT = 10
+
+const visibleSpecializations = computed(() => {
   const q = query.value.trim().toLowerCase()
-  if (!q) return specializations.value
-  return specializations.value.filter(
-    (s: { name: string; description?: string }) =>
-      s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q),
-  )
+  if (q) {
+    return specializations.value.filter(
+      (s: { name: string; description?: string }) =>
+        s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q),
+    )
+  }
+
+  if (showAllSpecs.value) {
+    return specializations.value
+  }
+
+  const selectedSpecs = specializations.value.filter((s: { id: string }) => storeState.specializationIds.includes(s.id))
+  const firstN = specializations.value.slice(0, FEATURED_LIMIT)
+  
+  const combined = [...firstN]
+  selectedSpecs.forEach((s: { id: string }) => {
+    if (!combined.some((c: { id: string }) => c.id === s.id)) {
+      combined.push(s)
+    }
+  })
+  
+  return combined
+})
+
+const hiddenCount = computed(() => {
+  if (query.value.trim() || showAllSpecs.value) return 0
+  return Math.max(0, specializations.value.length - visibleSpecializations.value.length)
 })
 
 const selectedCount = computed(() => storeState.specializationIds.length)

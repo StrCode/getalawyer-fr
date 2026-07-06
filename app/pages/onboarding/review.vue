@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircleIcon, CancelCircleIcon, CheckmarkCircle01Icon, Clock01Icon, InformationCircleIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, CancelCircleIcon, CheckmarkCircle01Icon, Clock01Icon, InformationCircleIcon, PencilEdit01Icon, ArrowDown01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { formatScnForDisplay } from '~/lib/scn'
@@ -8,6 +8,7 @@ import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 definePageMeta({
   layout: 'onboarding-wizard',
@@ -100,12 +101,15 @@ const residenceDisplay = computed(() => {
 })
 
 const cardClass =
-  'relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm'
+  'relative w-full rounded-2xl border border-border bg-card shadow-sm'
 
-const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-border/40 pb-4'
-const sectionTitleClass = 'text-xs font-medium uppercase tracking-widest text-primary'
+const sectionTitleClass = 'text-base font-medium text-foreground'
 const fieldLabelClass = 'text-sm font-medium uppercase tracking-wide text-muted-foreground/70'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
+
+const isAboutExpanded = ref(true)
+const isCredentialsExpanded = ref(true)
+const isPracticeExpanded = ref(true)
 </script>
 
 <template>
@@ -151,208 +155,177 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
       </p>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="space-y-4">
       <!-- About you -->
-      <Card :class="cardClass">
-        <div
-          class="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-muted/40 blur-3xl"
-          aria-hidden="true"
-        />
-        <div class="relative z-10 space-y-6 p-6 sm:p-8">
-          <div :class="sectionHeaderClass">
-           <h2 :class="sectionTitleClass">About you</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
-              as-child
-            >
+      <Collapsible v-model:open="isAboutExpanded" class="w-full">
+        <Card :class="cardClass">
+          <div class="flex items-center justify-between p-4 sm:p-6">
+            <div class="flex items-center gap-4">
+              <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full hover:bg-muted">
+                  <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 transition-transform duration-200" :class="{ 'rotate-180': isAboutExpanded }" />
+                  <span class="sr-only">Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+              <h2 :class="sectionTitleClass">About you</h2>
+            </div>
+            <Button variant="outline" size="sm" class="h-8 gap-1.5 rounded-lg" as-child>
               <NuxtLink to="/onboarding/personal-info">
-                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
-                Edit
+                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" /> Edit
               </NuxtLink>
             </Button>
           </div>
-
-          <div class="grid gap-5 sm:grid-cols-2">
-            <div class="space-y-1 sm:col-span-2">
-              <p :class="fieldLabelClass">Name on government ID</p>
-              <p :class="fieldValueClass">{{ publicLegalName }}</p>
-            </div>
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">Gender</p>
-              <p :class="[fieldValueClass, 'capitalize']">
-                {{ summary.personal?.gender || 'Not provided' }}
-              </p>
-            </div>
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">Date of birth</p>
-              <p :class="fieldValueClass">{{ formatDate(summary.personal?.dateOfBirth) }}</p>
-            </div>
-            <div class="space-y-1 sm:col-span-2">
-              <p :class="fieldLabelClass">Residence</p>
-              <p :class="fieldValueClass">{{ residenceDisplay }}</p>
-            </div>
-            <div class="space-y-2 sm:col-span-2">
-              <p :class="fieldLabelClass">NIN verification</p>
-              <div class="flex flex-wrap items-center gap-2">
-                <Badge
-                  :variant="ninDisplay.variant === 'verified' ? 'default' : 'outline'"
-                  class="text-sm"
-                  :class="{
-                    'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified',
-                    'border-primary/20 bg-primary/5 text-primary': ninDisplay.variant === 'pending',
-                    'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'action',
-                  }"
-                >
-                  <HugeiconsIcon :icon="CheckmarkCircle01Icon"
-                    v-if="ninDisplay.variant === 'verified'"
-                    class="mr-1 size-3.5"
-                  />
-                  <HugeiconsIcon :icon="Clock01Icon"
-                    v-else-if="ninDisplay.variant === 'pending'"
-                    class="mr-1 size-3.5"
-                  />
-                  <HugeiconsIcon :icon="CancelCircleIcon" v-else class="mr-1 size-3.5" />
-                  {{ ninDisplay.label }}
-                </Badge>
-                <Button
-                  v-if="ninDisplay.variant !== 'verified'"
-                  variant="link"
-                  class="h-auto px-0 text-sm font-medium"
-                  as-child
-                >
-                  <NuxtLink to="/onboarding/nin-verification">
-                    {{ ninDisplay.variant === 'action' ? 'Add NIN' : 'View' }}
-                  </NuxtLink>
-                </Button>
+          <CollapsibleContent>
+            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8">
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-1 sm:col-span-2">
+                  <p :class="fieldLabelClass">Name on government ID</p>
+                  <p :class="fieldValueClass">{{ publicLegalName }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">Gender</p>
+                  <p :class="[fieldValueClass, 'capitalize']">{{ summary.personal?.gender || 'Not provided' }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">Date of birth</p>
+                  <p :class="fieldValueClass">{{ formatDate(summary.personal?.dateOfBirth) }}</p>
+                </div>
+                <div class="space-y-1 sm:col-span-2">
+                  <p :class="fieldLabelClass">Residence</p>
+                  <p :class="fieldValueClass">{{ residenceDisplay }}</p>
+                </div>
+                <div class="space-y-2 sm:col-span-2">
+                  <p :class="fieldLabelClass">NIN verification</p>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <Badge
+                      :variant="ninDisplay.variant === 'verified' ? 'default' : 'outline'"
+                      class="text-sm"
+                      :class="{
+                        'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified',
+                        'border-primary/20 bg-primary/5 text-primary': ninDisplay.variant === 'pending',
+                        'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'action',
+                      }"
+                    >
+                      <HugeiconsIcon :icon="CheckmarkCircle01Icon" v-if="ninDisplay.variant === 'verified'" class="mr-1 size-3.5" />
+                      <HugeiconsIcon :icon="Clock01Icon" v-else-if="ninDisplay.variant === 'pending'" class="mr-1 size-3.5" />
+                      <HugeiconsIcon :icon="CancelCircleIcon" v-else class="mr-1 size-3.5" />
+                      {{ ninDisplay.label }}
+                    </Badge>
+                    <Button v-if="ninDisplay.variant !== 'verified'" variant="link" class="h-auto px-0 text-sm font-medium" as-child>
+                      <NuxtLink to="/onboarding/nin-verification">
+                        {{ ninDisplay.variant === 'action' ? 'Add NIN' : 'View' }}
+                      </NuxtLink>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </Card>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <!-- Bar credentials -->
-      <Card :class="cardClass">
-        <div
-          class="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-primary/5 blur-3xl"
-          aria-hidden="true"
-        />
-        <div class="relative z-10 space-y-6 p-6 sm:p-8">
-          <div :class="sectionHeaderClass">
-           <h2 :class="sectionTitleClass">Bar credentials</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
-              as-child
-            >
+      <Collapsible v-model:open="isCredentialsExpanded" class="w-full">
+        <Card :class="cardClass">
+          <div class="flex items-center justify-between p-4 sm:p-6">
+            <div class="flex items-center gap-4">
+              <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full hover:bg-muted">
+                  <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 transition-transform duration-200" :class="{ 'rotate-180': isCredentialsExpanded }" />
+                  <span class="sr-only">Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+              <h2 :class="sectionTitleClass">Bar credentials</h2>
+            </div>
+            <Button variant="outline" size="sm" class="h-8 gap-1.5 rounded-lg" as-child>
               <NuxtLink to="/onboarding/professional-information">
-                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
-                Edit
+                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" /> Edit
               </NuxtLink>
             </Button>
           </div>
+          <CollapsibleContent>
+            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8">
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">SCN</p>
+                  <p :class="[fieldValueClass, 'font-mono tabular-nums']">{{ formatScn(summary.professional?.barNumber) }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">Year of call</p>
+                  <p :class="fieldValueClass">{{ summary.professional?.yearOfCall ?? 'Not provided' }}</p>
+                </div>
+                <div class="space-y-1 sm:col-span-2">
+                  <p :class="fieldLabelClass">Name on SCN</p>
+                  <p :class="fieldValueClass">{{ scnLegalName }}</p>
+                </div>
+                <div class="space-y-1 sm:col-span-2">
+                  <p :class="fieldLabelClass">Practice arrangement</p>
+                  <p :class="fieldValueClass">{{ firmDisplay }}</p>
+                </div>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-          <div class="grid gap-5 sm:grid-cols-2">
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">SCN</p>
-              <p :class="[fieldValueClass, 'font-mono tabular-nums']">
-                {{ formatScn(summary.professional?.barNumber) }}
-              </p>
+      <!-- Practice -->
+      <Collapsible v-model:open="isPracticeExpanded" class="w-full">
+        <Card :class="cardClass">
+          <div class="flex items-center justify-between p-4 sm:p-6">
+            <div class="flex items-center gap-4">
+              <CollapsibleTrigger as-child>
+                <Button variant="ghost" size="icon" class="h-8 w-8 rounded-full hover:bg-muted">
+                  <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 transition-transform duration-200" :class="{ 'rotate-180': isPracticeExpanded }" />
+                  <span class="sr-only">Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+              <h2 :class="sectionTitleClass">Practice</h2>
             </div>
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">Year of call</p>
-              <p :class="fieldValueClass">
-                {{ summary.professional?.yearOfCall ?? 'Not provided' }}
-              </p>
-            </div>
-            <div class="space-y-1 sm:col-span-2">
-              <p :class="fieldLabelClass">Name on SCN</p>
-              <p :class="fieldValueClass">{{ scnLegalName }}</p>
-            </div>
-            <div class="space-y-1 sm:col-span-2">
-              <p :class="fieldLabelClass">Practice arrangement</p>
-              <p :class="fieldValueClass">{{ firmDisplay }}</p>
-            </div>
+            <Button variant="outline" size="sm" class="h-8 gap-1.5 rounded-lg" as-child>
+              <NuxtLink to="/onboarding/practice-information">
+                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" /> Edit
+              </NuxtLink>
+            </Button>
           </div>
-        </div>
-      </Card>
+          <CollapsibleContent>
+            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8 space-y-6">
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">Primary state</p>
+                  <p :class="fieldValueClass">{{ primaryStateDisplay }}</p>
+                </div>
+                <div class="space-y-1">
+                  <p :class="fieldLabelClass">Additional states</p>
+                  <p :class="fieldValueClass">{{ additionalStatesDisplay }}</p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p :class="fieldLabelClass">States of practice</p>
+                <div v-if="statesList.length" class="flex flex-wrap gap-2">
+                  <Badge v-for="state in statesList" :key="state" variant="outline" class="rounded-md border-primary/25 bg-primary/5 px-2.5 py-1 text-sm font-medium text-primary">
+                    {{ state }}
+                  </Badge>
+                </div>
+                <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
+              </div>
+
+              <div class="space-y-3">
+                <p :class="fieldLabelClass">Legal specializations</p>
+                <ul v-if="practiceAreaRows.length" class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-muted/50">
+                  <li v-for="row in practiceAreaRows" :key="row.id" class="flex items-center justify-between gap-4 px-4 py-3">
+                    <span class="text-base font-medium text-foreground">{{ row.name }}</span>
+                    <span class="shrink-0 text-sm font-medium text-muted-foreground tabular-nums">{{ row.yearsLabel }}</span>
+                  </li>
+                </ul>
+                <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
+                <p v-if="isLoadingSpecs && practiceAreaRows.length" class="text-xs text-muted-foreground">Loading specialization names…</p>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
     </div>
-
-    <!-- Practice (full width) -->
-    <Card :class="cardClass">
-      <div class="relative z-10 space-y-6 p-6 sm:p-8">
-        <div :class="sectionHeaderClass">
-         <h2 :class="sectionTitleClass">Practice</h2>
-          <Button
-            variant="outline"
-            size="sm"
-            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
-            as-child
-          >
-            <NuxtLink to="/onboarding/practice-information">
-              <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
-              Edit
-            </NuxtLink>
-          </Button>
-        </div>
-
-        <div class="space-y-6">
-          <div class="grid gap-5 sm:grid-cols-2">
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">Primary state</p>
-              <p :class="fieldValueClass">{{ primaryStateDisplay }}</p>
-            </div>
-            <div class="space-y-1">
-              <p :class="fieldLabelClass">Additional states</p>
-              <p :class="fieldValueClass">{{ additionalStatesDisplay }}</p>
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <p :class="fieldLabelClass">States of practice</p>
-            <div v-if="statesList.length" class="flex flex-wrap gap-2">
-              <Badge
-                v-for="state in statesList"
-                :key="state"
-                variant="outline"
-                class="rounded-md border-primary/25 bg-primary/5 px-2.5 py-1 text-sm font-medium text-primary"
-              >
-                {{ state }}
-              </Badge>
-            </div>
-            <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
-          </div>
-
-          <div class="space-y-3">
-            <p :class="fieldLabelClass">Legal specializations</p>
-            <ul
-              v-if="practiceAreaRows.length"
-              class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-muted/50"
-            >
-              <li
-                v-for="row in practiceAreaRows"
-                :key="row.id"
-                class="flex items-center justify-between gap-4 px-4 py-3"
-              >
-                <span class="text-base font-medium text-foreground">{{ row.name }}</span>
-                <span class="shrink-0 text-sm font-medium text-muted-foreground tabular-nums">
-                  {{ row.yearsLabel }}
-                </span>
-              </li>
-            </ul>
-            <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
-            <p
-              v-if="isLoadingSpecs && practiceAreaRows.length"
-              class="text-xs text-muted-foreground"
-            >
-              Loading specialization names…
-            </p>
-          </div>
-        </div>
-      </div>
-    </Card>
 
     <!-- Submit notice -->
     <Card class="rounded-2xl border border-border bg-card shadow-sm">

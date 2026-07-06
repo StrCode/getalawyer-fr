@@ -23,52 +23,42 @@
       </p>
     </div>
 
-    <div v-else class="space-y-8">
-      <section class="space-y-3">
-        <p class="text-sm font-medium text-foreground">Country</p>
-        <div
-          class="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3.5"
-        >
-          <div class="flex min-w-0 items-center gap-3">
-            <span
-              class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-background text-lg shadow-sm ring-1 ring-border"
-              aria-hidden="true"
-            >
-              🇳🇬
-            </span>
-            <div class="min-w-0">
-              <p class="font-medium text-foreground">Nigeria</p>
-              <p class="text-sm text-muted-foreground">
-                GetaLawyer is available in Nigeria for now.
-              </p>
-            </div>
-          </div>
-          <Badge variant="secondary" class="shrink-0 font-normal">
-            Fixed
-          </Badge>
-        </div>
-      </section>
+    <div v-else class="w-full">
+      <FieldGroup class="gap-6">
+        <Field>
+          <FieldLabel>Country</FieldLabel>
+          <Select disabled model-value="NG">
+            <SelectTrigger>
+              <SelectValue>
+                <div class="flex items-center gap-2">
+                  <span>🇳🇬</span> Nigeria
+                </div>
+              </SelectValue>
+            </SelectTrigger>
+          </Select>
+          <p class="text-xs text-muted-foreground mt-1">
+            GetaLawyer is available in Nigeria for now.
+          </p>
+        </Field>
 
-      <section class="space-y-3">
-        <p class="text-sm font-medium text-foreground">State or region</p>
-
-        <Select v-model="storeState.state">
-          <SelectTrigger
-            class="h-auto min-h-14 w-full rounded-xl border-border bg-muted/40 px-4 py-3.5 text-base shadow-sm data-[size=default]:h-auto"
-          >
-            <SelectValue placeholder="Select state or region" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="s in availableStates"
-              :key="s.value"
-              :value="s.value"
-            >
-              {{ s.label }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </section>
+        <Field>
+          <FieldLabel>State or region</FieldLabel>
+          <Select v-model="storeState.state">
+            <SelectTrigger>
+              <SelectValue placeholder="Select state or region" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="s in availableStates"
+                :key="s.value"
+                :value="s.value"
+              >
+                {{ s.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </Field>
+      </FieldGroup>
     </div>
   </div>
 </template>
@@ -76,6 +66,7 @@
 <script setup lang="ts">
 import { AlertCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 definePageMeta({

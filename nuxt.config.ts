@@ -81,39 +81,6 @@ export default defineNuxtConfig({
     },
     fallbackBreakpoint: 'lg',
   },
-  fonts: {
-    families: [
-      // Neue Haas Grotesk Text — headings & display
-      {
-        name: 'Neue Haas Grotesk Text',
-        src: '/fonts/neue-haas-grotesk-text-400.woff2',
-        weight: 400,
-        style: 'normal',
-        global: true,
-      },
-      {
-        name: 'Neue Haas Grotesk Text',
-        src: '/fonts/neue-haas-grotesk-text-400-italic.woff2',
-        weight: 400,
-        style: 'italic',
-        global: true,
-      },
-      {
-        name: 'Neue Haas Grotesk Text',
-        src: '/fonts/neue-haas-grotesk-text-500.woff2',
-        weight: 500,
-        style: 'normal',
-        global: true,
-      },
-      {
-        name: 'Neue Haas Grotesk Text',
-        src: '/fonts/neue-haas-grotesk-text-500-italic.woff2',
-        weight: 500,
-        style: 'italic',
-        global: true,
-      },
-    ],
-  },
   runtimeConfig: {
     public: {
       apiUrl,
