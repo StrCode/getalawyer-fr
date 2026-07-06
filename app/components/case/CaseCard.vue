@@ -34,25 +34,25 @@
         <div class="flex items-center gap-4 text-muted-foreground text-sm">
           <!-- Client/Lawyer Info -->
           <div v-if="getPersonName()" class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-user" class="w-4 h-4" />
+            <HugeiconsIcon :icon="UserIcon" class="w-4 h-4" />
             <span>{{ getPersonName() }}</span>
           </div>
           
           <!-- Last Updated -->
           <div class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-clock" class="w-4 h-4" />
+            <HugeiconsIcon :icon="Clock01Icon" class="w-4 h-4" />
             <span>{{ formatDate(props.case.updatedAt) }}</span>
           </div>
           
           <!-- Due Date (if exists and not overdue) -->
           <div v-if="props.case.dueDate && !isOverdue" class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-calendar" class="w-4 h-4" />
+            <HugeiconsIcon :icon="Calendar01Icon" class="w-4 h-4" />
             <span>Due {{ formatDate(props.case.dueDate) }}</span>
           </div>
           
           <!-- Overdue indicator -->
           <div v-if="isOverdue" class="flex items-center gap-1 text-red-500">
-            <PhIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
+            <HugeiconsIcon :icon="Alert01Icon" class="w-4 h-4" />
             <span>Overdue</span>
           </div>
         </div>
@@ -75,7 +75,7 @@
         
         <!-- Unread Messages -->
         <div v-if="props.case.unreadMessageCount && props.case.unreadMessageCount > 0" class="flex items-center gap-1">
-          <PhIcon name="i-heroicons-chat-bubble-left" class="w-4 h-4 text-blue-500" />
+          <HugeiconsIcon :icon="Message01Icon" class="w-4 h-4 text-blue-500" />
           <UBadge color="blue" size="sm">
             {{ props.case.unreadMessageCount }}
           </UBadge>
@@ -96,7 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import { Alert01Icon, Calendar01Icon, Clock01Icon, Message01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Case, CaseStatus, Priority } from '~/types'
 
 interface Props {
@@ -169,12 +170,3 @@ const getPersonName = () => {
   }
 }
 </script>
-
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Delete01Icon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 defineProps<{
@@ -56,7 +56,7 @@ defineEmits<{
         aria-label="Edit"
         @click="$emit('edit')"
       >
-        <AppIcon :icon="appIcons.pencilSimple" class="size-4" />
+        <HugeiconsIcon :icon="PencilEdit01Icon" class="size-4" />
       </Button>
       <Button
         type="button"
@@ -66,7 +66,7 @@ defineEmits<{
         aria-label="Remove"
         @click="$emit('delete')"
       >
-        <AppIcon :icon="appIcons.trash" class="size-4 text-destructive" />
+        <HugeiconsIcon :icon="Delete01Icon" class="size-4 text-destructive" />
       </Button>
     </div>
   </div>

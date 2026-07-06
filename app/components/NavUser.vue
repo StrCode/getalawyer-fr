@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Logout01Icon, MoreVerticalIcon, Settings01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   Avatar,
   AvatarFallback,
@@ -22,9 +22,9 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-const { session, signOut } = useAuth()
+const { session } = useAuth()
 const { isMobile } = useSidebar()
-const router = useRouter()
+const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
 const user = computed(() => session.value?.user ?? null)
 
@@ -39,23 +39,8 @@ const initials = computed(() => {
   return displayName.value.slice(0, 2).toUpperCase() || '?'
 })
 
-const isSigningOut = ref(false)
-
 async function handleLogout() {
-  if (isSigningOut.value)
-    return
-
-  isSigningOut.value = true
-  try {
-    const { error } = await signOut()
-    if (error) {
-      console.error('[NavUser] signOut failed:', error)
-      return
-    }
-    await router.push('/login')
-  } finally {
-    isSigningOut.value = false
-  }
+  await handleSignOut()
 }
 </script>
 
@@ -84,7 +69,7 @@ async function handleLogout() {
                   {{ displayEmail }}
                 </span>
               </div>
-              <AppIcon :icon="appIcons.dotsThreeVertical" class="ml-auto" />
+              <HugeiconsIcon :icon="MoreVerticalIcon" class="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -119,7 +104,7 @@ async function handleLogout() {
                   to="/dashboard/profile"
                   class="flex cursor-pointer items-center gap-2"
                 >
-                  <AppIcon :icon="appIcons.userCircle" />
+                  <HugeiconsIcon :icon="UserCircleIcon" />
                   Profile
                 </NuxtLink>
               </DropdownMenuItem>
@@ -128,7 +113,7 @@ async function handleLogout() {
                   to="/dashboard/settings"
                   class="flex cursor-pointer items-center gap-2"
                 >
-                  <AppIcon :icon="appIcons.gearSix" />
+                  <HugeiconsIcon :icon="Settings01Icon" />
                   Settings
                 </NuxtLink>
               </DropdownMenuItem>
@@ -139,7 +124,7 @@ async function handleLogout() {
               :disabled="isSigningOut"
               @select="handleLogout"
             >
-              <AppIcon :icon="appIcons.signOut" />
+              <HugeiconsIcon :icon="Logout01Icon" />
               {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
             </DropdownMenuItem>
           </DropdownMenuContent>

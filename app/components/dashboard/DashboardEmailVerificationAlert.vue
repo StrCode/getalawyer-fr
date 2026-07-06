@@ -8,8 +8,8 @@
         class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
         aria-hidden="true"
       >
-        <AppIcon
-          :icon="appIcons.envelopeSimple"
+        <HugeiconsIcon
+          :icon="Mail01Icon"
           class="size-5"
         />
       </div>
@@ -46,8 +46,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Mail01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 
 const { user, needsLinkEmail, needsEmailAction } = useEmailVerificationPrompt()

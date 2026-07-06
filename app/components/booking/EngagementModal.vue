@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons, type AppIconData } from '@/lib/app-icons'
+import type { Hugeicon } from '@/lib/icon-types'
+import { Briefcase01Icon, Cancel01Icon, Dollar01Icon, InformationCircleIcon, MessageMultiple01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import * as z from 'zod'
 import { toast } from 'vue-sonner'
 import type { FormSubmitEvent } from '#ui/types'
@@ -47,19 +48,19 @@ const outcomeOptions: {
   value: 'consultation_only' | 'client_hired'
   label: string
   description: string
-  icon: AppIconData
+  icon: Hugeicon
 }[] = [
   {
     value: 'consultation_only',
     label: 'Consultation Only',
     description: 'Client did not hire me for ongoing representation',
-    icon: appIcons.chatsCircle
+    icon: MessageMultiple01Icon
   },
   {
     value: 'client_hired',
     label: 'Client Hired',
     description: 'Client hired me and we will proceed with a case',
-    icon: appIcons.briefcase
+    icon: Briefcase01Icon
   }
 ]
 
@@ -137,7 +138,7 @@ function close() {
             aria-label="Close dialog"
             @click="close"
           >
-            <AppIcon :icon="appIcons.x" class="size-5" aria-hidden="true" />
+            <HugeiconsIcon :icon="Cancel01Icon" class="size-5" aria-hidden="true" />
           </Button>
         </div>
       </template>
@@ -166,7 +167,7 @@ function close() {
                     : 'bg-gray-100 text-gray-400'
                 "
               >
-                <AppIcon :icon="option.icon" class="w-5 h-5" />
+                <HugeiconsIcon :icon="option.icon" class="w-5 h-5" />
               </div>
               <div class="flex-1">
                 <div class="font-semibold text-gray-900">{{ option.label }}</div>
@@ -192,7 +193,7 @@ function close() {
         <!-- Fee Details (shown only when client hired) -->
         <div v-if="showFeeDetails" class="space-y-4 bg-blue-50 p-4 border border-blue-200 rounded-lg">
           <div class="flex items-start gap-2">
-            <AppIcon :icon="appIcons.info" class="mt-0.5 w-5 h-5 text-blue-600" />
+            <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-blue-600" />
             <div>
               <h4 class="font-semibold text-blue-900 text-sm">Case Details Required</h4>
               <p class="mt-0.5 text-blue-700 text-xs">
@@ -210,7 +211,7 @@ function close() {
               size="lg"
             >
               <template #leading>
-                <AppIcon :icon="appIcons.currencyDollar" class="w-5 h-5 shrink-0 opacity-70" />
+                <HugeiconsIcon :icon="Dollar01Icon" class="w-5 h-5 shrink-0 opacity-70" />
               </template>
             </UInput>
             <template #hint>
@@ -250,7 +251,7 @@ function close() {
         <!-- Consultation Only Info -->
         <div v-else class="bg-gray-50 p-4 border border-gray-200 rounded-lg">
           <div class="flex items-start gap-2">
-            <AppIcon :icon="appIcons.info" class="mt-0.5 w-5 h-5 text-gray-600" />
+            <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-gray-600" />
             <div>
               <h4 class="font-semibold text-gray-900 text-sm">Consultation Only</h4>
               <p class="mt-0.5 text-gray-600 text-xs">
@@ -271,7 +272,7 @@ function close() {
             :loading="isPending"
             @click="onSubmit"
           >
-            <AppIcon :icon="appIcons.check" class="size-4 shrink-0" aria-hidden="true" />
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4 shrink-0" aria-hidden="true" />
             Record Outcome
           </ButtonBusy>
         </div>

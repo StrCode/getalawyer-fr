@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { CheckboxRootEmits, CheckboxRootProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -29,7 +29,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       class="grid place-content-center text-current transition-none"
     >
       <slot v-bind="slotProps">
-        <AppIcon :icon="appIcons.check" class="size-3.5" />
+        <HugeiconsIcon :icon="Tick01Icon" class="size-3.5" />
       </slot>
     </CheckboxIndicator>
   </CheckboxRoot>

@@ -14,7 +14,7 @@
     v-else-if="error"
     class="space-y-4 py-8 text-center"
   >
-    <AppIcon :icon="appIcons.warning" class="mx-auto size-12 text-destructive" />
+    <HugeiconsIcon :icon="Alert01Icon" class="mx-auto size-12 text-destructive" />
     <h2 class="text-xl font-semibold text-foreground">
       Case not found
     </h2>
@@ -54,7 +54,7 @@
           :value="tab.slot"
           class="gap-2"
         >
-          <AppIcon
+          <HugeiconsIcon
             :icon="tab.iconComponent"
             class="size-4 shrink-0"
           />
@@ -87,8 +87,9 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons, type AppIconData } from '@/lib/app-icons'
+import type { Hugeicon } from '@/lib/icon-types'
+import { Alert01Icon, ClipboardIcon, Clock01Icon, Message01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -97,7 +98,7 @@ import type { CaseStatus } from '~/types'
 
 type CaseTabItem = {
   label: string
-  iconComponent: AppIconData
+  iconComponent: Hugeicon
   slot: string
 }
 
@@ -122,17 +123,17 @@ const role = computed(() => session.value?.user.userType)
 const tabs: CaseTabItem[] = [
   {
     label: 'Messages',
-    iconComponent: appIcons.chatCircle,
+    iconComponent: Message01Icon,
     slot: 'messages',
   },
   {
     label: 'Tasks',
-    iconComponent: appIcons.clipboardText,
+    iconComponent: ClipboardIcon,
     slot: 'tasks',
   },
   {
     label: 'Activity',
-    iconComponent: appIcons.clock,
+    iconComponent: Clock01Icon,
     slot: 'activity',
   },
 ]

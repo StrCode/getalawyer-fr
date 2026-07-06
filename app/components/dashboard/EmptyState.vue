@@ -4,7 +4,7 @@
       class="flex justify-center items-center mb-6 rounded-xl size-20"
       :style="{ backgroundColor: `${color}15` }"
     >
-      <AppIcon :icon="icon" class="size-12" :style="{ color }" />
+      <HugeiconsIcon :icon="icon" class="size-12" :style="{ color }" />
     </span>
 
     <h3 class="mb-2 font-semibold text-foreground text-xl">{{ title }}</h3>
@@ -17,11 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import type { Component } from 'vue'
+import type { Hugeicon } from '@/lib/icon-types'
+import { HugeiconsIcon } from '@hugeicons/vue'
 
 interface Props {
-  icon: Component
+  icon: Hugeicon
   title: string
   description: string
   color?: string

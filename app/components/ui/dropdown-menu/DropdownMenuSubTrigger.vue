@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { DropdownMenuSubTriggerProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -27,6 +27,6 @@ const forwardedProps = useForwardProps(delegatedProps)
     )"
   >
     <slot />
-    <AppIcon :icon="appIcons.caretRight" class="ml-auto size-4" />
+    <HugeiconsIcon :icon="ArrowRight01Icon" class="ml-auto size-4" />
   </DropdownMenuSubTrigger>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Megaphone01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerDirectoryEligibility } from '~/types/lawyer-directory-eligibility'
 
 defineProps<{
@@ -16,7 +16,7 @@ defineProps<{
     role="status"
   >
     <div class="flex gap-3">
-      <AppIcon :icon="appIcons.megaphoneSimple" class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+      <HugeiconsIcon :icon="Megaphone01Icon" class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
       <div>
         <p class="font-medium">
           Approved — not visible in search yet

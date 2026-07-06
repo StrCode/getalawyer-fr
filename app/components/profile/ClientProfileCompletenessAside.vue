@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 
 const props = defineProps<{
@@ -49,8 +49,8 @@ const incompleteCount = computed(
         :key="item.label"
         class="flex items-center gap-2 text-xs"
       >
-        <AppIcon
-          :icon="item.done ? appIcons.checkCircle : appIcons.circle"
+        <HugeiconsIcon
+          :icon="item.done ? CheckmarkCircle01Icon : CircleIcon"
           class="size-3.5 shrink-0"
           :class="item.done ? 'text-primary' : 'text-muted-foreground/50'"
         />

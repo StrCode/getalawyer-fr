@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, Calendar01Icon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability'
@@ -266,7 +266,7 @@ const handleSaveAll = async () => {
             to="/dashboard/availability/exceptions"
             class="gap-2"
           >
-            <AppIcon :icon="appIcons.calendarBlank" class="size-4" />
+            <HugeiconsIcon :icon="Calendar01Icon" class="size-4" />
             Manage exceptions
           </NuxtLink>
         </Button>
@@ -381,7 +381,7 @@ const handleSaveAll = async () => {
             v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled"
             class="mt-2 flex items-center gap-1 text-sm text-destructive"
           >
-            <AppIcon :icon="appIcons.warningCircle" class="size-4" />
+            <HugeiconsIcon :icon="AlertCircleIcon" class="size-4" />
             {{ validationErrors[day as DayOfWeek] }}
           </p>
         </div>
@@ -390,7 +390,7 @@ const handleSaveAll = async () => {
 
     <Card class="rounded-xl">
       <CardContent class="flex gap-4 p-5">
-        <AppIcon :icon="appIcons.info" class="size-6 shrink-0 text-primary" />
+        <HugeiconsIcon :icon="InformationCircleIcon" class="size-6 shrink-0 text-primary" />
         <div class="space-y-2 text-sm text-muted-foreground">
           <p>Your weekly schedule sets your default availability. You can override specific dates using exceptions.</p>
           <p>Changes take effect immediately and will be visible to clients when booking consultations.</p>

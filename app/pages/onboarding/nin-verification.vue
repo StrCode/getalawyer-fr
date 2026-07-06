@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, IdentityCardIcon, SecurityCheckIcon, SquareLock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
@@ -158,12 +158,12 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         <div
           class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4 border-background bg-primary/5 text-primary shadow-sm"
         >
-          <AppIcon :icon="appIcons.lock" class="h-10 w-10" />
+          <HugeiconsIcon :icon="SquareLock01Icon" class="h-10 w-10" />
         </div>
         <div
           class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary"
         >
-          <AppIcon :icon="appIcons.shieldCheck" class="h-4 w-4" />
+          <HugeiconsIcon :icon="SecurityCheckIcon" class="h-4 w-4" />
           Verified by Getalawyer
         </div>
         <h2 class="mb-3 text-2xl font-heading font-semibold tracking-[-0.02em] text-foreground">Identity verified</h2>
@@ -183,7 +183,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         <div
           class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary/20 bg-primary/5"
         >
-          <AppIcon :icon="appIcons.checkCircle" class="h-8 w-8 text-primary" />
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="h-8 w-8 text-primary" />
         </div>
         <p class="mb-1 text-lg font-semibold text-foreground">NIN already submitted</p>
         <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -223,7 +223,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-muted-foreground"
                   aria-hidden="true"
                 >
-                  <AppIcon :icon="appIcons.identificationCard" class="h-5 w-5" />
+                  <HugeiconsIcon :icon="IdentityCardIcon" class="h-5 w-5" />
                 </span>
                 <Input
                   :id="field.name"

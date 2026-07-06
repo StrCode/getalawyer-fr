@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 
 import type { RangeCalendarPrevProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
@@ -28,7 +28,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     v-bind="forwardedProps"
   >
     <slot>
-      <AppIcon :icon="appIcons.caretLeft" class="size-4" />
+      <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
     </slot>
   </RangeCalendarPrev>
 </template>

@@ -34,11 +34,11 @@
 
         <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <AppIcon :icon="appIcons.clock" class="size-4" />
+            <HugeiconsIcon :icon="Clock01Icon" class="size-4" />
             <span class="font-medium">{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
           <div class="flex items-center gap-1.5 capitalize">
-            <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
+            <HugeiconsIcon :icon="meetingTypeIcon(booking.meetingType)"
               class="size-4"
             />
             <span>{{ booking.meetingType.replace('_', ' ') }}</span>
@@ -58,7 +58,7 @@
               target="_blank"
               class="gap-2"
             >
-              <AppIcon :icon="appIcons.videoCamera" class="size-4" />
+              <HugeiconsIcon :icon="Video01Icon" class="size-4" />
               Join meeting
             </NuxtLink>
           </Button>
@@ -111,8 +111,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Clock01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

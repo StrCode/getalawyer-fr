@@ -18,7 +18,7 @@
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
               @click="$emit('update:activeSection', item.id)"
             >
-              <AppIcon :icon="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+              <HugeiconsIcon :icon="item.icon" class="size-4 shrink-0" aria-hidden="true" />
               <span class="truncate">{{ item.label }}</span>
             </button>
           </li>
@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { SETTINGS_NAV, isSettingsSectionId } from '@/components/settings/settings-nav'
 import {
   Select,

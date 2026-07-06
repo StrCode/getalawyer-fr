@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, AlertCircleIcon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { ProfileEditorApprovalNotice } from '~/lib/lawyerOnboardingStatus'
 
 defineProps<{
@@ -23,17 +23,17 @@ const variantClasses: Record<ProfileEditorApprovalNotice['variant'], string> = {
     role="status"
   >
     <div class="flex gap-3">
-      <AppIcon :icon="appIcons.info"
+      <HugeiconsIcon :icon="InformationCircleIcon"
         v-if="notice.variant === 'info'"
         class="mt-0.5 size-5 shrink-0"
         aria-hidden="true"
       />
-      <AppIcon :icon="appIcons.warning"
+      <HugeiconsIcon :icon="Alert01Icon"
         v-else-if="notice.variant === 'warning'"
         class="mt-0.5 size-5 shrink-0"
         aria-hidden="true"
       />
-      <AppIcon :icon="appIcons.warningCircle"
+      <HugeiconsIcon :icon="AlertCircleIcon"
         v-else
         class="mt-0.5 size-5 shrink-0 text-destructive"
         aria-hidden="true"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { SentIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
@@ -216,7 +216,7 @@ function formatMessageTime(timestamp: string) {
           class="shrink-0"
           :disabled="!messageInput.trim() || isSending || !isConnected"
         >
-          <AppIcon :icon="appIcons.paperPlaneRight" class="size-4" />
+          <HugeiconsIcon :icon="SentIcon" class="size-4" />
         </Button>
       </form>
       <p v-if="!isConnected" class="mt-2 text-xs text-muted-foreground">

@@ -1,6 +1,8 @@
-import { appIcons, type AppIconData } from '@/lib/app-icons'
+import type { Hugeicon } from '@/lib/icon-types'
+import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Search01Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
 
-export type DashboardIcon = AppIconData
+
+export type DashboardIcon = Hugeicon
 
 export interface DashboardNavLink {
   title: string
@@ -12,25 +14,25 @@ export interface DashboardNavLink {
 }
 
 const lawyerDashboardNav: DashboardNavLink[] = [
-  { title: 'Overview', to: '/dashboard', icon: appIcons.dashboardSquare, exact: true },
-  { title: 'Cases', to: '/dashboard/cases', icon: appIcons.briefcase, lawyerOnly: true },
-  { title: 'Appointments', to: '/dashboard/appointments', icon: appIcons.calendar, lawyerOnly: true },
-  { title: 'Messages', to: '/dashboard/messages', icon: appIcons.chatCircle },
-  { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: appIcons.legalDocument, lawyerOnly: true },
-  { title: 'Availability', to: '/dashboard/availability', icon: appIcons.clock, lawyerOnly: true },
-  { title: 'Profile', to: '/dashboard/profile', icon: appIcons.userCircle, lawyerOnly: true },
-  { title: 'Subscription', to: '/dashboard/subscription', icon: appIcons.creditCard, lawyerOnly: true },
-  { title: 'Settings', to: '/dashboard/settings', icon: appIcons.gearSix },
+  { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
+  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true },
+  { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true },
+  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon },
+  { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true },
+  { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true },
+  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true },
+  { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true },
+  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon },
 ]
 
 const clientDashboardNav: DashboardNavLink[] = [
-  { title: 'Overview', to: '/dashboard', icon: appIcons.dashboardSquare, exact: true },
-  { title: 'My Bookings', to: '/dashboard/bookings', icon: appIcons.calendar, clientOnly: true },
-  { title: 'My Cases', to: '/dashboard/cases', icon: appIcons.briefcase, clientOnly: true },
-  { title: 'Messages', to: '/dashboard/messages', icon: appIcons.chatCircle },
-  { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: appIcons.user, clientOnly: true },
-  { title: 'Profile', to: '/dashboard/profile', icon: appIcons.userCircle, clientOnly: true },
-  { title: 'Settings', to: '/dashboard/settings', icon: appIcons.gearSix },
+  { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
+  { title: 'My Bookings', to: '/dashboard/bookings', icon: Calendar01Icon, clientOnly: true },
+  { title: 'My Cases', to: '/dashboard/cases', icon: Briefcase01Icon, clientOnly: true },
+  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon },
+  { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: UserIcon, clientOnly: true },
+  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, clientOnly: true },
+  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon },
 ]
 
 export const dashboardNavByRole = {
@@ -142,7 +144,7 @@ export function getFilteredNavSections(role: 'lawyer' | 'client') {
       items: items.filter(link => ACCOUNT_PATHS.has(link.to)),
     },
     primaryCta: role === 'lawyer'
-      ? { label: 'Set availability', to: '/dashboard/availability', icon: appIcons.clock }
-      : { label: 'Find a lawyer', to: '/find-lawyers', icon: appIcons.magnifyingGlass },
+      ? { label: 'Set availability', to: '/dashboard/availability', icon: Clock01Icon }
+      : { label: 'Find a lawyer', to: '/find-lawyers', icon: Search01Icon },
   }
 }

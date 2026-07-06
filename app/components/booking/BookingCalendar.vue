@@ -73,7 +73,7 @@
       </div>
 
       <div v-else-if="availableTimeSlots.length === 0" class="text-center py-8 text-gray-500">
-        <PhIcon name="i-hugeicons-calendar-remove-01" class="w-12 h-12 mx-auto mb-2 text-gray-300" />
+        <HugeiconsIcon :icon="CalendarRemove01Icon" class="w-12 h-12 mx-auto mb-2 text-gray-300" />
         <p>No available time slots for this date</p>
       </div>
 
@@ -97,7 +97,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import { CalendarRemove01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref, watch } from 'vue'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useClientBooking } from '~/composables/useClientBooking'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Cancel01Icon, CheckmarkCircle01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
@@ -160,7 +160,7 @@ function onSave() {
             Search practice areas
           </FieldLabel>
           <div class="relative">
-            <AppIcon :icon="appIcons.magnifyingGlass"
+            <HugeiconsIcon :icon="Search01Icon"
               class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
@@ -201,7 +201,7 @@ function onSave() {
                   {{ spec.description }}
                 </p>
               </div>
-              <AppIcon :icon="appIcons.checkCircle"
+              <HugeiconsIcon :icon="CheckmarkCircle01Icon"
                 v-if="isSelected(spec.id)"
                 class="size-5 shrink-0 text-primary"
               />
@@ -252,7 +252,7 @@ function onSave() {
             @click="toggleArea(row.specializationId)"
           >
             {{ nameById(row.specializationId) }}
-            <AppIcon :icon="appIcons.x" class="size-3" />
+            <HugeiconsIcon :icon="Cancel01Icon" class="size-3" />
           </button>
         </div>
 

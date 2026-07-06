@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkBadge01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { HeroSpotlightLawyer } from '~/lib/hero-spotlight-lawyers'
 import { heroSpotlightLawyerHref } from '~/lib/hero-spotlight-lawyers'
 const props = defineProps<{
@@ -47,7 +47,7 @@ function onAvatarError() {
         class="absolute -bottom-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full border border-card bg-primary text-primary-foreground"
         aria-hidden="true"
       >
-        <AppIcon :icon="appIcons.sealCheck" class="size-2.5" />
+        <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-2.5" />
       </span>
     </div>
 

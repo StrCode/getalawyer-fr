@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Cancel01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import { getSessionUserType } from '~/lib/session-user'
@@ -92,7 +92,7 @@ function isLinkActive(href: string) {
           <li v-for="link in links" :key="link.href">
             <NuxtLink
               :to="link.href"
-              class="cursor-pointer font-sans text-base font-medium no-underline transition-colors duration-200"
+              class="cursor-pointer font-sans text-sm font-medium no-underline transition-colors duration-200"
               :class="isLinkActive(link.href)
                 ? 'text-primary'
                 : 'text-foreground hover:text-primary'"
@@ -111,12 +111,12 @@ function isLinkActive(href: string) {
           <NuxtLink
             v-else
             to="/login"
-            class="hidden cursor-pointer items-center rounded-xl px-4 py-2.5 font-sans text-base font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted sm:inline-flex"
+            class="hidden cursor-pointer items-center rounded-xl px-4 py-2 font-sans text-sm font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted sm:inline-flex"
           >Sign in</NuxtLink>
           <NuxtLink
             v-if="showFindLawyerCta"
             to="/find-lawyers"
-            class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-5 py-2.5 font-sans text-base font-medium text-primary-foreground no-underline transition-all duration-200 hover:-translate-y-px hover:bg-primary/90"
+            class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2 font-sans text-sm font-medium text-primary-foreground no-underline transition-all duration-200 hover:-translate-y-px hover:bg-primary/90"
           >Find a lawyer →</NuxtLink>
         </div>
 
@@ -157,7 +157,7 @@ function isLinkActive(href: string) {
             aria-label="Close mobile menu"
             @click="isMobileMenuOpen = false"
           >
-            <AppIcon :icon="appIcons.x" class="size-5 text-foreground" />
+            <HugeiconsIcon :icon="Cancel01Icon" class="size-5 text-foreground" />
           </button>
         </div>
 
@@ -167,7 +167,7 @@ function isLinkActive(href: string) {
             <li v-for="(link, index) in links" :key="link.href" class="overflow-hidden">
               <NuxtLink
                 :to="link.href"
-                class="animate-slide-up-fade block font-heading text-5xl font-medium leading-[1.1] no-underline transition-colors duration-200"
+                class="block font-sans text-3xl font-medium leading-tight no-underline transition-colors duration-200"
                 :class="isLinkActive(link.href) ? 'text-primary' : 'text-foreground hover:text-primary'"
                 :style="{ animationDelay: `${index * 75 + 100}ms` }"
                 :aria-current="isLinkActive(link.href) ? 'page' : undefined"
@@ -180,7 +180,7 @@ function isLinkActive(href: string) {
         </div>
 
         <!-- Mobile Menu Footer CTAs -->
-        <div class="animate-slide-up-fade flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8" :style="{ animationDelay: `${links.length * 75 + 100}ms` }">
+        <div class="flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8">
           <template v-if="isSignedIn">
             <div class="w-full rounded-2xl border border-border bg-background p-2">
               <UserDropdown
@@ -191,7 +191,7 @@ function isLinkActive(href: string) {
             </div>
             <NuxtLink
               to="/dashboard"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-5 font-sans text-lg font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
+              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-4 font-sans text-base font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
               @click="isMobileMenuOpen = false"
             >
               Go to dashboard
@@ -199,7 +199,7 @@ function isLinkActive(href: string) {
             <NuxtLink
               v-if="showFindLawyerCta"
               to="/find-lawyers"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
+              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-4 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
               @click="isMobileMenuOpen = false"
             >
               Find a lawyer
@@ -209,14 +209,14 @@ function isLinkActive(href: string) {
             <NuxtLink
               v-if="showFindLawyerCta"
               to="/find-lawyers"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-5 font-sans text-lg font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
+              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-4 font-sans text-base font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
               @click="isMobileMenuOpen = false"
             >
               Find a lawyer
             </NuxtLink>
             <NuxtLink
               to="/login"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-5 font-sans text-lg font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
+              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-4 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
               @click="isMobileMenuOpen = false"
             >
               Sign in
@@ -229,20 +229,3 @@ function isLinkActive(href: string) {
   </div>
 </template>
 
-<style scoped>
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up-fade {
-  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-}
-</style>

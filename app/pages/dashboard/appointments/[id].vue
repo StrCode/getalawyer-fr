@@ -7,7 +7,7 @@
         as-child
       >
         <NuxtLink to="/dashboard/appointments">
-          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
+          <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-5" />
         </NuxtLink>
       </Button>
       <div class="min-w-0 flex-1">
@@ -137,7 +137,7 @@
                       rel="noopener noreferrer"
                       class="gap-2"
                     >
-                      <AppIcon :icon="appIcons.videoCamera" class="size-4" />
+                      <HugeiconsIcon :icon="Video01Icon" class="size-4" />
                       Join video call
                     </a>
                   </Button>
@@ -195,7 +195,7 @@
               class="rounded-lg border border-border bg-background p-4"
             >
               <div class="flex items-start gap-2">
-                <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 text-primary" />
+                <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 text-primary" />
                 <div>
                   <p class="text-sm font-semibold text-foreground">
                     Case created
@@ -209,7 +209,7 @@
                     @click="navigateToCase"
                   >
                     View case
-                    <AppIcon :icon="appIcons.arrowRight" class="size-4" />
+                    <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
                   </Button>
                 </div>
               </div>
@@ -238,7 +238,7 @@
                 :to="`/dashboard/messages?conversation=${booking.conversationId}`"
                 class="gap-2"
               >
-                <AppIcon :icon="appIcons.chatCircle" class="size-5" />
+                <HugeiconsIcon :icon="Message01Icon" class="size-5" />
                 Open conversation
               </NuxtLink>
             </Button>
@@ -278,7 +278,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-start gap-3">
-              <AppIcon :icon="appIcons.calendar" class="mt-0.5 size-5 text-muted-foreground" />
+              <HugeiconsIcon :icon="Calendar01Icon" class="mt-0.5 size-5 text-muted-foreground" />
               <div>
                 <p class="text-sm font-medium text-foreground">
                   {{ formatBookingDateLong(booking.scheduledDate) }}
@@ -328,7 +328,7 @@
               variant="outline"
               @click="isEngagementModalOpen = true"
             >
-              <AppIcon :icon="appIcons.clipboard" class="size-5" />
+              <HugeiconsIcon :icon="ClipboardIcon" class="size-5" />
               Record engagement outcome
             </Button>
 
@@ -436,8 +436,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowLeft01Icon, ArrowRight01Icon, Calendar01Icon, CheckmarkCircle01Icon, ClipboardIcon, Message01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'

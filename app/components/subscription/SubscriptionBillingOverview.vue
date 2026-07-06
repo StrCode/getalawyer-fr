@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { CreditCardIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { SubscriptionRecord } from '~/composables/useSubscription'
 import { formatNairaAmount } from '~/composables/useSubscription'
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
@@ -127,7 +127,7 @@ const paymentMethodLabel = computed(() => {
           <div
             class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50"
           >
-            <AppIcon :icon="appIcons.creditCard" class="size-5 text-muted-foreground" />
+            <HugeiconsIcon :icon="CreditCardIcon" class="size-5 text-muted-foreground" />
           </div>
           <div class="min-w-0">
             <p class="text-sm font-medium text-foreground">

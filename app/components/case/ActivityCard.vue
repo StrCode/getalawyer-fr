@@ -6,7 +6,7 @@
         class="flex justify-center items-center rounded-full w-8 h-8"
         :class="`bg-${activity.color}-100`"
       >
-        <AppIcon :icon="activity.icon ?? appIcons.info"
+        <HugeiconsIcon :icon="activity.icon ?? InformationCircleIcon"
           class="w-4 h-4"
           :class="`text-${activity.color}-600`"
         />
@@ -65,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Activity } from '~/types'
 
 interface Props {

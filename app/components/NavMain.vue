@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   filterNavForRole,
   getDashboardNavForRole,
@@ -86,7 +86,7 @@ function navTooltip(link: DashboardNavLink) {
             :is-active="linkActive(link)"
           >
             <NuxtLink :to="link.to" @click="onNavClick">
-              <AppIcon v-if="link.icon" :icon="link.icon" />
+              <HugeiconsIcon v-if="link.icon" :icon="link.icon" />
               <span>{{ link.title }}</span>
               <SidebarMenuBadge
                 v-if="linkBadge(link)"

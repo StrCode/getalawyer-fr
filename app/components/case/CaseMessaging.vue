@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-border bg-background p-4">
       <div class="flex items-center space-x-3">
-        <AppIcon :icon="appIcons.chatsCircle" class="w-5 h-5 text-muted-foreground" />
+        <HugeiconsIcon :icon="MessageMultiple01Icon" class="w-5 h-5 text-muted-foreground" />
         <h3 class="font-semibold text-foreground">Case Messages</h3>
         <UBadge v-if="messages?.length" variant="soft" color="blue">
           {{ messages.length }} messages
@@ -30,13 +30,13 @@
 
       <!-- Error State -->
       <div v-else-if="error" class="py-8 text-center">
-        <AppIcon :icon="appIcons.warning" class="mx-auto mb-2 w-8 h-8 text-red-400" />
+        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-red-400" />
         <p class="text-red-600 text-sm">Failed to load messages</p>
       </div>
 
       <!-- Empty State -->
       <div v-else-if="!messages?.length" class="py-8 text-center">
-        <AppIcon :icon="appIcons.chatCircleDots" class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
+        <HugeiconsIcon :icon="Message02Icon" class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
         <p class="text-muted-foreground text-sm">No messages yet. Start the conversation!</p>
       </div>
 
@@ -73,8 +73,8 @@
             <div class="flex justify-between items-center opacity-75 mt-1 text-xs">
               <span>{{ formatMessageTime(message.createdAt) }}</span>
               <div v-if="isMessageFromCurrentUser(message)" class="flex items-center space-x-1">
-                <AppIcon :icon="appIcons.checkCircle" v-if="message.isRead" class="w-3 h-3" />
-                <AppIcon :icon="appIcons.check" v-else class="w-3 h-3" />
+                <HugeiconsIcon :icon="CheckmarkCircle01Icon" v-if="message.isRead" class="w-3 h-3" />
+                <HugeiconsIcon :icon="Tick01Icon" v-else class="w-3 h-3" />
                 <span>{{ message.isRead ? 'Read' : 'Sent' }}</span>
               </div>
             </div>
@@ -101,7 +101,7 @@
           :loading="isSending"
         >
           <template #leading>
-            <AppIcon :icon="appIcons.paperPlaneRight" class="w-5 h-5" />
+            <HugeiconsIcon :icon="SentIcon" class="w-5 h-5" />
           </template>
         </ButtonBusy>
       </div>
@@ -115,8 +115,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, CheckmarkCircle01Icon, Message02Icon, MessageMultiple01Icon, SentIcon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 

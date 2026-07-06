@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -40,7 +40,7 @@ const emit = defineEmits<{
     class="flex min-h-[50vh] flex-1 flex-col items-center justify-center px-4 py-20"
   >
     <div class="mx-auto max-w-md text-center">
-      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
       <h2 class="mb-2 text-xl font-bold text-foreground">
         {{ errorStatusCode === 403 ? 'Profile unavailable' : 'Profile not found' }}
       </h2>

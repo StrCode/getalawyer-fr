@@ -46,7 +46,7 @@
 
     <!-- Search -->
     <div class="relative w-full">
-      <AppIcon :icon="appIcons.magnifyingGlass"
+      <HugeiconsIcon :icon="Search01Icon"
         class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
       />
       <Input
@@ -90,12 +90,12 @@
           @click="!isDisabled(spec.id) && toggle(spec.id)"
         >
           {{ spec.name }}
-          <AppIcon :icon="appIcons.check"
+          <HugeiconsIcon :icon="Tick01Icon"
             v-if="isSelected(spec.id)"
             class="size-4 shrink-0"
             aria-hidden="true"
           />
-          <AppIcon :icon="appIcons.plus"
+          <HugeiconsIcon :icon="Add01Icon"
             v-else
             class="size-4 shrink-0 opacity-50"
             aria-hidden="true"
@@ -122,8 +122,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon, Search01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'

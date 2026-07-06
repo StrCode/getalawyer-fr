@@ -61,9 +61,9 @@
         class="h-11 w-full cursor-pointer"
         :disabled="isSubmitting"
       >
-        <AppIcon
+        <HugeiconsIcon
           v-if="isSubmitting"
-          :icon="appIcons.circleNotch"
+          :icon="Loading03Icon"
           class="mr-2 size-4 animate-spin"
         />
         {{ codeSent ? 'Verify email' : 'Send verification code' }}
@@ -74,8 +74,8 @@
       v-else
       class="space-y-4 text-center"
     >
-      <AppIcon
-        :icon="appIcons.checkCircle"
+      <HugeiconsIcon
+        :icon="CheckmarkCircle01Icon"
         class="mx-auto size-12 text-primary"
       />
       <p class="text-base text-muted-foreground">
@@ -92,8 +92,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'

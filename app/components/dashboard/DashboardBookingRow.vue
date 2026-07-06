@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Calendar01Icon, Clock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
@@ -61,15 +61,15 @@ const initials = computed(() => {
 
           <div class="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
             <span class="flex items-center gap-1.5">
-              <AppIcon :icon="appIcons.calendarBlank" class="size-3.5" />
+              <HugeiconsIcon :icon="Calendar01Icon" class="size-3.5" />
               {{ formatRelativeSchedule(booking) }}
             </span>
             <span class="flex items-center gap-1.5">
-              <AppIcon :icon="appIcons.clock" class="size-3.5" />
+              <HugeiconsIcon :icon="Clock01Icon" class="size-3.5" />
               {{ booking.scheduledStartTime.slice(0, 5) }}
             </span>
             <span class="flex items-center gap-1.5 capitalize">
-              <AppIcon :icon="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
+              <HugeiconsIcon :icon="meetingTypeIcon(booking.meetingType)" class="size-3.5" />
               {{ booking.meetingType.replace('_', ' ') }}
             </span>
           </div>
@@ -100,7 +100,7 @@ const initials = computed(() => {
           </div>
         </div>
 
-        <AppIcon :icon="appIcons.caretRight" class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
+        <HugeiconsIcon :icon="ArrowRight01Icon" class="size-5 text-muted-foreground/50 group-hover:text-muted-foreground shrink-0 mt-1" />
       </button>
 
       <div

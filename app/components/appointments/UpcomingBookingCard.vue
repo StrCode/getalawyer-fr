@@ -25,15 +25,15 @@
 
         <div class="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div class="flex items-center gap-1.5">
-            <AppIcon :icon="appIcons.calendarBlank" class="size-4" />
+            <HugeiconsIcon :icon="Calendar01Icon" class="size-4" />
             <span>{{ formatDate(booking.scheduledDate) }}</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <AppIcon :icon="appIcons.clock" class="size-4" />
+            <HugeiconsIcon :icon="Clock01Icon" class="size-4" />
             <span>{{ booking.scheduledStartTime }} - {{ booking.scheduledEndTime }}</span>
           </div>
           <div class="flex items-center gap-1.5 capitalize">
-            <AppIcon :icon="meetingTypeIcon(booking.meetingType)"
+            <HugeiconsIcon :icon="meetingTypeIcon(booking.meetingType)"
               class="size-4"
             />
             <span>{{ booking.meetingType.replace('_', ' ') }}</span>
@@ -53,14 +53,14 @@
         </div>
       </div>
 
-      <AppIcon :icon="appIcons.arrowRight" class="size-4 shrink-0 text-muted-foreground" />
+      <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4 shrink-0 text-muted-foreground" />
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Calendar01Icon, Clock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { meetingTypeIcon } from '~/composables/useMeetingTypeIcon'
 import type { Booking } from '~/types'

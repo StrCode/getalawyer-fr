@@ -33,7 +33,7 @@
         size="sm"
         @click="inputRef?.click()"
       >
-        <AppIcon :icon="appIcons.uploadSimple" class="size-4" />
+        <HugeiconsIcon :icon="Upload01Icon" class="size-4" />
         Choose file
       </Button>
       <Button
@@ -50,8 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Upload01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 
 defineProps<{

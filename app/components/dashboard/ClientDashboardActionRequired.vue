@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Booking } from '~/types/booking'
 import type { Notification } from '~/types/messaging'
 import { Button } from '@/components/ui/button'
@@ -85,7 +85,7 @@ const hasActions = computed(() => actionItems.value.length > 0)
         class="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100"
         aria-hidden="true"
       >
-        <AppIcon :icon="appIcons.warningCircle" class="size-5" />
+        <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" />
       </div>
       <div class="min-w-0 flex-1 space-y-3">
         <div>

@@ -22,7 +22,7 @@
               {{ userData.role }}
             </div>
           </div>
-          <AppIcon :icon="appIcons.caretUpDown" class="ms-auto size-4 shrink-0 text-muted-foreground/70" />
+          <HugeiconsIcon :icon="ArrowUpDownIcon" class="ms-auto size-4 shrink-0 text-muted-foreground/70" />
         </template>
       </Button>
       <Button
@@ -65,20 +65,20 @@
       <DropdownMenuSeparator />
       <DropdownMenuItem v-if="variant === 'header' || variant === 'landing'" as-child>
         <NuxtLink to="/dashboard" class="cursor-pointer">
-          <AppIcon :icon="appIcons.squaresFour" class="size-4" />
+          <HugeiconsIcon :icon="LayoutGridIcon" class="size-4" />
           Dashboard
         </NuxtLink>
       </DropdownMenuItem>
       <DropdownMenuSeparator v-if="variant === 'header' || variant === 'landing'" />
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/profile" class="cursor-pointer">
-          <AppIcon :icon="appIcons.userCircle" class="size-4" />
+          <HugeiconsIcon :icon="UserCircleIcon" class="size-4" />
           Profile
         </NuxtLink>
       </DropdownMenuItem>
       <DropdownMenuItem as-child>
         <NuxtLink to="/dashboard/settings" class="cursor-pointer">
-          <AppIcon :icon="appIcons.gearSix" class="size-4" />
+          <HugeiconsIcon :icon="Settings01Icon" class="size-4" />
           Settings
         </NuxtLink>
       </DropdownMenuItem>
@@ -88,7 +88,7 @@
         :disabled="isSigningOut"
         @click="handleLogout"
       >
-        <AppIcon :icon="appIcons.signOut" class="size-4" />
+        <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
         {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
       </DropdownMenuItem>
     </DropdownMenuContent>
@@ -96,8 +96,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowUpDownIcon, LayoutGridIcon, Logout01Icon, Settings01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -125,14 +125,13 @@ const emit = defineEmits<{
   signedOut: []
 }>()
 
-const { session, signOut } = useAuth()
-
-const router = useRouter()
-const isSigningOut = ref(false)
+const { session } = useAuth()
 
 const afterSignOutBehavior = computed(
   () => props.afterSignOut ?? (props.variant === 'landing' ? 'stay' : 'login'),
 )
+
+const { handleSignOut, isSigningOut } = useSignOut()
 
 const userData = computed(() => {
   if (!session.value?.user)
@@ -163,21 +162,7 @@ async function handleLogout() {
   if (isSigningOut.value)
     return
 
-  isSigningOut.value = true
   emit('signedOut')
-
-  try {
-    const { error } = await signOut()
-    if (error) {
-      console.error('[UserDropdown] signOut failed:', error)
-      return
-    }
-
-    if (afterSignOutBehavior.value === 'login') {
-      await router.push('/login')
-    }
-  } finally {
-    isSigningOut.value = false
-  }
+  await handleSignOut(afterSignOutBehavior.value)
 }
 </script>

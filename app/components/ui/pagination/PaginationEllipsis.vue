@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { MoreHorizontalIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { PaginationEllipsisProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -19,7 +19,7 @@ const delegatedProps = reactiveOmit(props, "class")
     :class="cn('flex size-9 items-center justify-center', props.class)"
   >
     <slot>
-      <AppIcon :icon="appIcons.dotsThree" class="size-4" />
+      <HugeiconsIcon :icon="MoreHorizontalIcon" class="size-4" />
       <span class="sr-only">More pages</span>
     </slot>
   </PaginationEllipsis>

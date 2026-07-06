@@ -21,7 +21,7 @@
     </div>
 
     <div v-else-if="cases.length === 0" class="py-12 text-muted-foreground text-center">
-      <AppIcon :icon="appIcons.briefcase" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+      <HugeiconsIcon :icon="Briefcase01Icon" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
       <p class="mb-2 font-medium text-lg">No cases found</p>
       <p class="text-sm">
         {{ emptyMessage }}
@@ -40,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Briefcase01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Case } from '~/types'

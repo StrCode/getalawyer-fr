@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Briefcase01Icon, Calendar03Icon, CheckmarkCircle01Icon, Clock01Icon, JusticeScale01Icon, Message01Icon, Search01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ClientDashboardActionRequired from '@/components/dashboard/ClientDashboardActionRequired.vue'
 import ClientLegalInterestsCard from '@/components/dashboard/ClientLegalInterestsCard.vue'
 import ClientRecommendedLawyersCard from '@/components/dashboard/ClientRecommendedLawyersCard.vue'
@@ -160,7 +160,7 @@ const quickLinks = computed((): DashboardQuickLink[] => {
       label: 'My Bookings',
       description: 'View and manage consultations',
       to: '/dashboard/bookings',
-      icon: appIcons.calendarDots,
+      icon: Calendar03Icon,
     },
     {
       label: 'Messages',
@@ -169,7 +169,7 @@ const quickLinks = computed((): DashboardQuickLink[] => {
           ? `${unreadMessageCount.value} unread`
           : 'Chat with your lawyers',
       to: '/dashboard/messages',
-      icon: appIcons.chatCircle,
+      icon: Message01Icon,
     },
   ]
 
@@ -178,7 +178,7 @@ const quickLinks = computed((): DashboardQuickLink[] => {
       label: 'My Lawyers',
       description: `${myLawyers.value.length} connected`,
       to: '/dashboard/my-lawyers',
-      icon: appIcons.user,
+      icon: UserIcon,
     })
   }
 
@@ -187,7 +187,7 @@ const quickLinks = computed((): DashboardQuickLink[] => {
       label: 'My Cases',
       description: `${activeCases.value.length} active`,
       to: '/dashboard/cases',
-      icon: appIcons.briefcase,
+      icon: Briefcase01Icon,
     })
   }
 
@@ -195,7 +195,7 @@ const quickLinks = computed((): DashboardQuickLink[] => {
     label: 'Find a Lawyer',
     description: 'Browse verified professionals',
     to: '/find-lawyers',
-    icon: appIcons.magnifyingGlass,
+    icon: Search01Icon,
   })
 
   return links
@@ -239,8 +239,8 @@ const showFullEmpty = computed(
             to="/find-lawyers"
             class="gap-2"
           >
-            <AppIcon
-              :icon="appIcons.magnifyingGlass"
+            <HugeiconsIcon
+              :icon="Search01Icon"
               class="size-4"
             />
             Find a Lawyer
@@ -265,32 +265,32 @@ const showFullEmpty = computed(
             <StatCard
               label="Upcoming"
               :value="stats.upcoming"
-              :icon="appIcons.calendarDots"
+              :icon="Calendar03Icon"
               :subtitle="stats.upcoming === 0 ? 'No upcoming' : 'Confirmed consultations'"
             />
             <StatCard
               label="Pending confirmation"
               :value="stats.pending"
-              :icon="appIcons.clock"
+              :icon="Clock01Icon"
               :subtitle="stats.pending === 0 ? 'None waiting' : 'Awaiting lawyer'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
-              :icon="appIcons.checkCircle"
+              :icon="CheckmarkCircle01Icon"
               :subtitle="stats.completed === 0 ? 'None yet' : 'Past consultations'"
             />
             <StatCard
               label="Active cases"
               :value="stats.activeCases"
-              :icon="appIcons.briefcase"
+              :icon="Briefcase01Icon"
               :subtitle="stats.activeCases === 0 ? 'No open cases' : 'Ongoing matters'"
             />
           </div>
 
           <EmptyState
             v-if="showFullEmpty"
-            :icon="appIcons.calendarDots"
+            :icon="Calendar03Icon"
             title="No consultations yet"
             description="Start by finding a qualified lawyer for your legal needs. Browse our directory of verified legal professionals."
           >
@@ -303,8 +303,8 @@ const showFullEmpty = computed(
                   to="/find-lawyers"
                   class="gap-2"
                 >
-                  <AppIcon
-                    :icon="appIcons.magnifyingGlass"
+                  <HugeiconsIcon
+                    :icon="Search01Icon"
                     class="size-4"
                   />
                   Browse Lawyers
@@ -320,8 +320,8 @@ const showFullEmpty = computed(
                   :to="{ path: '/find-lawyers', query: legalInterestsQuery }"
                   class="gap-2"
                 >
-                  <AppIcon
-                    :icon="appIcons.scales"
+                  <HugeiconsIcon
+                    :icon="JusticeScale01Icon"
                     class="size-4"
                   />
                   Match my interests
@@ -337,8 +337,8 @@ const showFullEmpty = computed(
                   to="/practice-areas"
                   class="gap-2"
                 >
-                  <AppIcon
-                    :icon="appIcons.scales"
+                  <HugeiconsIcon
+                    :icon="JusticeScale01Icon"
                     class="size-4"
                   />
                   View Practice Areas

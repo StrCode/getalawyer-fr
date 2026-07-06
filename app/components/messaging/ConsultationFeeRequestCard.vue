@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -104,7 +104,7 @@ async function cancel() {
         :disabled="isResponding"
         @click="respond('accepted')"
       >
-        <AppIcon :icon="appIcons.check" class="mr-1 size-4" />
+        <HugeiconsIcon :icon="Tick01Icon" class="mr-1 size-4" />
         Accept
       </Button>
       <Button
@@ -114,7 +114,7 @@ async function cancel() {
         :disabled="isResponding"
         @click="respond('declined')"
       >
-        <AppIcon :icon="appIcons.x" class="mr-1 size-4" />
+        <HugeiconsIcon :icon="Cancel01Icon" class="mr-1 size-4" />
         Decline
       </Button>
     </div>

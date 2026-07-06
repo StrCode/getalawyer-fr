@@ -25,7 +25,7 @@
           class="flex-1"
         >
           <template #leading>
-            <AppIcon :icon="appIcons.magnifyingGlass" class="w-4 h-4 shrink-0 opacity-70" />
+            <HugeiconsIcon :icon="Search01Icon" class="w-4 h-4 shrink-0 opacity-70" />
           </template>
         </UInput>
       </div>
@@ -82,7 +82,7 @@
       </div>
       
       <div v-else-if="filteredActivities.length === 0" class="py-8 text-muted-foreground text-center">
-        <AppIcon :icon="appIcons.clock" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+        <HugeiconsIcon :icon="Clock01Icon" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
         <p>No activities found.</p>
       </div>
       
@@ -111,8 +111,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Clock01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { ActivityType } from '~/types'
 

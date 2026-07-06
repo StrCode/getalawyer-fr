@@ -393,12 +393,4 @@ export const api = {
       );
     },
   },
-
-  // Onboarding Check API
-  checks: {
-    onboardingStatus: () =>
-      httpClient.getAuth<ApiResponse<{ onboarding_completed: boolean }>>(
-        "/api/boards",
-      ),
-  },
 };

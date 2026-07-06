@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, Cancel01Icon, CancelCircleIcon, CheckmarkCircle01Icon, InformationCircleIcon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 
 import type { ToasterProps } from "vue-sonner"
 import { Toaster as Sonner } from "vue-sonner"
@@ -21,24 +21,24 @@ const props = defineProps<ToasterProps>()
     v-bind="props"
   >
     <template #success-icon>
-      <AppIcon :icon="appIcons.checkCircle" class="size-4" />
+      <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-4" />
     </template>
     <template #info-icon>
-      <AppIcon :icon="appIcons.info" class="size-4" />
+      <HugeiconsIcon :icon="InformationCircleIcon" class="size-4" />
     </template>
     <template #warning-icon>
-      <AppIcon :icon="appIcons.warning" class="size-4" />
+      <HugeiconsIcon :icon="Alert01Icon" class="size-4" />
     </template>
     <template #error-icon>
-      <AppIcon :icon="appIcons.xCircle" class="size-4" />
+      <HugeiconsIcon :icon="CancelCircleIcon" class="size-4" />
     </template>
     <template #loading-icon>
       <div>
-        <AppIcon :icon="appIcons.circleNotch" class="size-4 animate-spin" />
+        <HugeiconsIcon :icon="Loading03Icon" class="size-4 animate-spin" />
       </div>
     </template>
     <template #close-icon>
-      <AppIcon :icon="appIcons.x" class="size-4" />
+      <HugeiconsIcon :icon="Cancel01Icon" class="size-4" />
     </template>
   </Sonner>
 </template>

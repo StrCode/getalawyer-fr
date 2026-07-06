@@ -15,9 +15,8 @@ const floatSlots = [
     <div
       v-for="(lawyer, index) in HERO_SPOTLIGHT_LAWYERS"
       :key="lawyer.id"
-      class="hero-spotlight-enter pointer-events-none absolute"
+      class="pointer-events-none absolute"
       :class="floatSlots[index]?.positionClass"
-      :style="{ animationDelay: `${120 + index * 90}ms` }"
     >
       <HeroLawyerSpotlightCard
         :lawyer="lawyer"
@@ -27,25 +26,3 @@ const floatSlots = [
   </div>
 </template>
 
-<style scoped>
-@keyframes heroSpotlightEnter {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.hero-spotlight-enter {
-  animation: heroSpotlightEnter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-spotlight-enter {
-    animation: none;
-  }
-}
-</style>

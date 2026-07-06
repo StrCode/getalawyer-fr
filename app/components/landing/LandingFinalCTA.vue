@@ -36,19 +36,18 @@
         <!-- Image Side -->
         <div class="relative h-80 lg:h-auto lg:w-[45%]">
           <NuxtImg
-            src="/final-cta-handshake.jpg"
+            src="/hero-handshake.png"
             alt="Lawyer and client shaking hands in trust"
             class="absolute inset-0 size-full object-cover opacity-90 mix-blend-luminosity"
             sizes="sm:100vw lg:800px"
-            format="webp"
             loading="lazy"
           />
           <!-- Color wash -->
           <div class="absolute inset-0 bg-foreground/20 mix-blend-multiply" />
 
-          <!-- Gradient fades to blend the image into the ink card -->
-          <div class="absolute inset-0 hidden bg-linear-to-r from-ink via-ink/60 to-transparent lg:block" />
-          <div class="absolute inset-0 bg-linear-to-t from-ink via-ink/60 to-transparent lg:hidden" />
+          <!-- Gradient fades to blend the image into the foreground card -->
+          <div class="absolute inset-0 hidden bg-linear-to-r from-foreground via-foreground/60 to-transparent lg:block" />
+          <div class="absolute inset-0 bg-linear-to-t from-foreground via-foreground/60 to-transparent lg:hidden" />
         </div>
 
       </div>

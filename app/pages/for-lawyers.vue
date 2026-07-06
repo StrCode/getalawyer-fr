@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref, computed } from 'vue'
 import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
 import { formatNairaAmount } from '~/composables/useSubscription'
@@ -206,7 +206,7 @@ const toggleFaq = (index: number) => {
                 class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-primary transition-transform duration-300"
                 :class="{ 'rotate-180': openFaqs[idx] }"
               >
-                <AppIcon :icon="appIcons.caretDown" class="size-4" />
+                <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4" />
               </div>
             </button>
             <div

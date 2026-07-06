@@ -20,15 +20,15 @@
       :disabled="disabled"
       @click="visible = !visible"
     >
-      <AppIcon :icon="appIcons.eyeSlash" v-if="visible" class="w-4 h-4" />
-      <AppIcon :icon="appIcons.eye" v-else class="w-4 h-4" />
+      <HugeiconsIcon :icon="ViewOffIcon" v-if="visible" class="w-4 h-4" />
+      <HugeiconsIcon :icon="ViewIcon" v-else class="w-4 h-4" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 

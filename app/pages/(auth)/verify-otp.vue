@@ -36,7 +36,7 @@
           size="lg"
           :disabled="isSubmitting || otp.length < 6"
         >
-          <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+          <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Verifying…' : 'Verify code' }}</span>
         </Button>
       </FieldGroup>
@@ -56,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'

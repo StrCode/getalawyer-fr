@@ -1,4 +1,6 @@
-import { appIcons, type AppIconData } from '@/lib/app-icons'
+import type { Hugeicon } from '@/lib/icon-types'
+import { AddCircleIcon, ArrowReloadHorizontalIcon, CheckmarkCircle01Icon, ClipboardIcon, FileAddIcon, Message01Icon, SquareLock01Icon, SquareUnlock01Icon } from '@hugeicons/core-free-icons'
+
 /**
  * Activity Timeline Composable
  * Feature: case-management-system
@@ -20,15 +22,15 @@ export const useActivities = () => {
   const { handleApiError } = useApiErrorHandler()
 
   // Activity type configurations
-  const activityConfig: Record<ActivityType, { icon: AppIconData; color: string }> = {
-    case_created: { icon: appIcons.plusCircle, color: 'green' },
-    status_changed: { icon: appIcons.arrowsClockwise, color: 'blue' },
-    message_sent: { icon: appIcons.chatCircle, color: 'purple' },
-    document_uploaded: { icon: appIcons.filePlus, color: 'orange' },
-    task_created: { icon: appIcons.clipboardText, color: 'indigo' },
-    task_completed: { icon: appIcons.checkCircle, color: 'green' },
-    case_closed: { icon: appIcons.lockSimple, color: 'red' },
-    case_reopened: { icon: appIcons.lockSimpleOpen, color: 'yellow' }
+  const activityConfig: Record<ActivityType, { icon: Hugeicon; color: string }> = {
+    case_created: { icon: AddCircleIcon, color: 'green' },
+    status_changed: { icon: ArrowReloadHorizontalIcon, color: 'blue' },
+    message_sent: { icon: Message01Icon, color: 'purple' },
+    document_uploaded: { icon: FileAddIcon, color: 'orange' },
+    task_created: { icon: ClipboardIcon, color: 'indigo' },
+    task_completed: { icon: CheckmarkCircle01Icon, color: 'green' },
+    case_closed: { icon: SquareLock01Icon, color: 'red' },
+    case_reopened: { icon: SquareUnlock01Icon, color: 'yellow' }
   }
 
   // Helper function to enrich activity data with UI properties

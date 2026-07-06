@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, AlertCircleIcon, ArrowRight01Icon, File01Icon, Loading03Icon, Message02Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import { httpClient } from '~/lib/api/client'
@@ -60,7 +60,7 @@ const handleRestart = async () => {
     <!-- Header Section -->
     <div class="mb-12">
       <div class="mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-destructive/10 text-destructive shadow-lg relative">
-         <AppIcon :icon="appIcons.warning" class="size-10" />
+         <HugeiconsIcon :icon="Alert01Icon" class="size-10" />
       </div>
       <h1 class="font-heading mb-3 text-3xl font-semibold tracking-[-0.02em] text-foreground">Application Update Required</h1>
       <p class="mx-auto max-w-md font-medium leading-relaxed text-muted-foreground">Your application needs some revisions before it can be approved for our legal network.</p>
@@ -68,12 +68,12 @@ const handleRestart = async () => {
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center py-12">
-      <AppIcon :icon="appIcons.circleNotch" class="size-10 animate-spin text-primary" />
+      <HugeiconsIcon :icon="Loading03Icon" class="size-10 animate-spin text-primary" />
     </div>
 
     <!-- Error State -->
     <div v-else-if="isError" class="text-center py-12">
-      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
       <p class="font-bold tracking-tight text-destructive">Failed to load application details</p>
     </div>
 
@@ -83,7 +83,7 @@ const handleRestart = async () => {
       <div class="rounded-2xl border border-border bg-card p-8 text-left shadow-sm transition-all hover:shadow-md">
         <h2 class="mb-4 flex items-center gap-3 text-lg font-bold text-foreground">
           <div class="rounded-lg bg-muted p-2">
-            <AppIcon :icon="appIcons.chatCircleDots" class="size-5 text-muted-foreground" />
+            <HugeiconsIcon :icon="Message02Icon" class="size-5 text-muted-foreground" />
           </div>
           Feedback from Review Team
         </h2>
@@ -100,7 +100,7 @@ const handleRestart = async () => {
       <div class="rounded-2xl border border-border bg-muted p-8 text-left transition-all">
         <h2 class="mb-6 flex items-center gap-3 text-lg font-bold text-foreground">
            <div class="rounded-lg bg-accent p-2">
-              <AppIcon :icon="appIcons.fileText" class="size-5 text-muted-foreground" />
+              <HugeiconsIcon :icon="File01Icon" class="size-5 text-muted-foreground" />
            </div>
            Next Steps
         </h2>
@@ -126,8 +126,8 @@ const handleRestart = async () => {
             :disabled="isRestarting"
             @click="handleRestart"
           >
-            <AppIcon :icon="appIcons.circleNotch" v-if="isRestarting" class="size-5 animate-spin" />
-            <AppIcon :icon="appIcons.caretRight" v-else class="size-5" />
+            <HugeiconsIcon :icon="Loading03Icon" v-if="isRestarting" class="size-5 animate-spin" />
+            <HugeiconsIcon :icon="ArrowRight01Icon" v-else class="size-5" />
             Fix and Resubmit Application
           </Button>
         </div>

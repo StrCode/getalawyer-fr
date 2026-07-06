@@ -17,7 +17,7 @@
   </div>
 
   <div v-else-if="!consultationTypes?.length" class="py-6 text-center">
-    <AppIcon :icon="appIcons.fileText" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
+    <HugeiconsIcon :icon="File01Icon" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
     <p class="text-sm font-medium text-foreground">
       No consultation types yet
     </p>
@@ -52,7 +52,7 @@
         </div>
         <div class="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           <span class="inline-flex items-center gap-1">
-            <AppIcon :icon="appIcons.clock" class="size-3.5" />
+            <HugeiconsIcon :icon="Clock01Icon" class="size-3.5" />
             {{ type.durationMinutes }} min
           </span>
           <span>{{ formatPrice(type.price, type.currency) }}</span>
@@ -60,7 +60,7 @@
       </div>
       <Button as-child variant="ghost" size="icon-sm">
         <NuxtLink to="/dashboard/consultation-types">
-          <AppIcon :icon="appIcons.caretRight" class="size-4" />
+          <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
         </NuxtLink>
       </Button>
     </div>
@@ -80,8 +80,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Clock01Icon, File01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'

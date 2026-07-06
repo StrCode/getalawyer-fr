@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { ListboxFilterProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -28,7 +28,7 @@ const { filterState } = useCommand()
     data-slot="command-input-wrapper"
     class="flex h-9 items-center gap-2 border-b px-3"
   >
-    <AppIcon :icon="appIcons.magnifyingGlass" class="size-4 shrink-0 opacity-50" />
+    <HugeiconsIcon :icon="Search01Icon" class="size-4 shrink-0 opacity-50" />
     <ListboxFilter
       v-bind="{ ...forwardedProps, ...$attrs }"
       v-model="filterState.search"

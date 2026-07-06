@@ -1,75 +1,39 @@
-# Nuxt Minimal Starter
+# getalawyer-fr
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Nuxt 4 client app for [getalawyer.ng](https://getalawyer.ng). Talks to the Law-Backend API (`api.getalawyer.ng`).
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
 bun install
+cp .env.example .env
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Development
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
 bun run dev
 ```
 
+Runs at `http://localhost:3000` and expects the API at `http://localhost:3001`.
+
 ## Production
 
-Build the application for production:
-
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
 bun run build
+bun run start
 ```
 
-Locally preview production build:
+Set on the host:
+
+```env
+NUXT_PUBLIC_API_URL=https://api.getalawyer.ng
+NUXT_PUBLIC_BETTER_AUTH_URL=https://api.getalawyer.ng/api/auth
+NUXT_SITE_URL=https://getalawyer.ng
+```
+
+## Tests
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+bun run test:run
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

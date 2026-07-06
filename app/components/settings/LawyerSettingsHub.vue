@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Calendar01Icon, CreditCardIcon, LegalDocument01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const links = [
@@ -8,25 +8,25 @@ const links = [
     title: 'Public profile',
     description: 'Photo, about, experience, and everything clients see in search.',
     href: '/dashboard/profile',
-    icon: appIcons.userCircle,
+    icon: UserCircleIcon,
   },
   {
     title: 'Consultation types',
     description: 'Pricing, duration, and meeting formats you offer.',
     href: '/dashboard/consultation-types',
-    icon: appIcons.legalDocument,
+    icon: LegalDocument01Icon,
   },
   {
     title: 'Availability',
     description: 'Weekly schedule and date exceptions.',
     href: '/dashboard/availability',
-    icon: appIcons.calendarBlank,
+    icon: Calendar01Icon,
   },
   {
     title: 'Subscription',
     description: 'Membership billing and payment method.',
     href: '/dashboard/subscription',
-    icon: appIcons.creditCard,
+    icon: CreditCardIcon,
   },
 ] as const
 </script>
@@ -51,7 +51,7 @@ const links = [
         <div
           class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card"
         >
-          <AppIcon
+          <HugeiconsIcon
             :icon="item.icon"
             class="size-5 text-muted-foreground"
             aria-hidden="true"

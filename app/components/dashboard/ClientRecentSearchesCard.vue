@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import {
   type RecentLawyerDirectoryEntry,
   useRecentLawyerDirectorySearches,
@@ -72,8 +72,8 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
         class="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
       >
         <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <AppIcon
-            :icon="appIcons.magnifyingGlass"
+          <HugeiconsIcon
+            :icon="Search01Icon"
             class="size-4"
           />
         </span>
@@ -88,8 +88,8 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
             {{ searchSubtitle(entry) }}
           </span>
         </span>
-        <AppIcon
-          :icon="appIcons.caretRight"
+        <HugeiconsIcon
+          :icon="ArrowRight01Icon"
           class="size-4 shrink-0 text-muted-foreground group-hover:text-foreground"
         />
       </NuxtLink>

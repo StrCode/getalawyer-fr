@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Briefcase01Icon, CheckmarkBadge01Icon, Location01Icon, StarIcon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerSearchResult } from '~/lib/api'
-/** Layout explorations (+ `default`, directory grid/list). Preview at `/design/lawyer-search-cards`. */
+/** Layout variants for directory grid/list views on `/find-lawyers`. */
 export type LawyerSearchCardLayout =
   | 'default'
   | 'split'
@@ -127,7 +127,7 @@ async function handleOpenProfile() {
         {{ lawyer.name }}
       </h3>
       <p class="mt-1.5 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-        <AppIcon :icon="appIcons.mapPin" class="size-3.5 shrink-0" aria-hidden="true" />
+        <HugeiconsIcon :icon="Location01Icon" class="size-3.5 shrink-0" aria-hidden="true" />
         {{ lawyer.state }}, {{ lawyer.country }}
       </p>
     </div>
@@ -136,7 +136,7 @@ async function handleOpenProfile() {
       v-if="reviewsLabel || ratingPreview != null"
       class="mt-4 flex items-center justify-center gap-1.5 font-mono text-sm tabular-nums"
     >
-      <AppIcon :icon="appIcons.star" class="size-4 text-primary" aria-hidden="true" />
+      <HugeiconsIcon :icon="StarIcon" class="size-4 text-primary" aria-hidden="true" />
       <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
       <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
       <span class="text-muted-foreground/50" aria-hidden="true">·</span>
@@ -199,7 +199,7 @@ async function handleOpenProfile() {
           v-if="reviewsLabel || ratingPreview != null"
           class="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1.5 font-mono text-sm tabular-nums sm:inline-flex"
         >
-          <AppIcon :icon="appIcons.star" class="size-3.5 text-primary" aria-hidden="true" />
+          <HugeiconsIcon :icon="StarIcon" class="size-3.5 text-primary" aria-hidden="true" />
           <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
           <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
         </div>
@@ -207,18 +207,18 @@ async function handleOpenProfile() {
 
       <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
         <span class="inline-flex max-w-full min-w-0 items-center gap-1.5">
-          <AppIcon :icon="appIcons.mapPin" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+          <HugeiconsIcon :icon="Location01Icon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
           <span class="min-w-0 truncate">{{ lawyer.state }}, {{ lawyer.country }}</span>
         </span>
         <span class="inline-flex shrink-0 items-center gap-1.5 font-mono tabular-nums">
-          <AppIcon :icon="appIcons.briefcase" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+          <HugeiconsIcon :icon="Briefcase01Icon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
           {{ lawyer.yearsOfExperience }} yrs
         </span>
         <span
           v-if="genderLabel"
           class="inline-flex items-center gap-1.5"
         >
-          <AppIcon :icon="appIcons.user" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+          <HugeiconsIcon :icon="UserIcon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
           {{ genderLabel }}
         </span>
       </div>
@@ -236,7 +236,7 @@ async function handleOpenProfile() {
 
     <div class="hidden shrink-0 self-center sm:flex">
       <span class="inline-flex size-10 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground">
-        <AppIcon :icon="appIcons.arrowRight" class="size-4" aria-hidden="true" />
+        <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" aria-hidden="true" />
       </span>
     </div>
   </article>
@@ -271,11 +271,11 @@ async function handleOpenProfile() {
         <h3 class="text-pretty text-xl font-semibold tracking-tight text-foreground md:text-2xl">
           {{ lawyer.name }}
         </h3>
-        <AppIcon :icon="appIcons.sealCheck" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
+        <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
       </div>
       <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <span class="inline-flex min-w-0 items-center gap-1">
-          <AppIcon :icon="appIcons.mapPin" class="size-3.5 opacity-80" aria-hidden="true" />
+          <HugeiconsIcon :icon="Location01Icon" class="size-3.5 opacity-80" aria-hidden="true" />
           {{ lawyer.state }}, {{ lawyer.country }}
         </span>
         <span class="opacity-45">·</span>
@@ -332,13 +332,13 @@ async function handleOpenProfile() {
           <h3 class="truncate text-sm font-semibold tracking-tight text-foreground">
             {{ lawyer.name }}
           </h3>
-          <AppIcon :icon="appIcons.sealCheck" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
+          <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
         </div>
         <p class="truncate font-mono text-xs tabular-nums text-muted-foreground">
           {{ metaOneLine }}
         </p>
       </div>
-      <AppIcon :icon="appIcons.arrowRight" class="size-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
+      <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4 shrink-0 text-muted-foreground/70" aria-hidden="true" />
     </div>
     <blockquote
       v-if="snippetSource"
@@ -396,7 +396,7 @@ async function handleOpenProfile() {
           <h3 class="text-lg font-semibold leading-snug tracking-tight text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
-          <AppIcon :icon="appIcons.sealCheck" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
+          <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
         </div>
         <p class="font-mono text-xs tabular-nums text-muted-foreground sm:text-sm">
           {{ metaOneLine }}
@@ -446,7 +446,7 @@ async function handleOpenProfile() {
         <h3 class="text-pretty text-lg font-semibold tracking-tight text-foreground sm:text-xl">
           {{ lawyer.name }}
         </h3>
-        <AppIcon :icon="appIcons.sealCheck" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
+        <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
       </div>
       <p class="font-mono text-sm tabular-nums text-muted-foreground sm:ps-1">
         {{ metaOneLine }}
@@ -497,24 +497,24 @@ async function handleOpenProfile() {
             {{ lawyer.name }}
           </h3>
           <span class="inline-flex shrink-0 flex-row-reverse items-center gap-1">
-            <AppIcon :icon="appIcons.sealCheck" class="size-4 text-primary" aria-label="NIN verified" />
+            <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 text-primary" aria-label="NIN verified" />
           </span>
         </div>
         <p class="flex flex-row-reverse flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs text-muted-foreground sm:text-sm">
           <span class="inline-flex max-w-full min-w-0 items-center gap-1 truncate flex-row-reverse">
-            <AppIcon :icon="appIcons.mapPin" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+            <HugeiconsIcon :icon="Location01Icon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
             <span class="truncate">{{ lawyer.state }}, {{ lawyer.country }}</span>
           </span>
           <span class="hidden sm:inline opacity-55" aria-hidden="true">·</span>
           <span class="inline-flex items-center gap-1 whitespace-nowrap flex-row-reverse font-mono tabular-nums">
             {{ lawyer.yearsOfExperience }} yrs
-            <AppIcon :icon="appIcons.briefcase" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+            <HugeiconsIcon :icon="Briefcase01Icon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
           </span>
           <template v-if="genderLabel">
             <span class="hidden sm:inline opacity-55" aria-hidden="true">·</span>
             <span class="inline-flex items-center gap-1 whitespace-nowrap flex-row-reverse">
               {{ genderLabel }}
-              <AppIcon :icon="appIcons.user" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+              <HugeiconsIcon :icon="UserIcon" class="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
             </span>
           </template>
           <template v-if="reviewsLabel">
@@ -525,7 +525,7 @@ async function handleOpenProfile() {
                 <span class="opacity-50">·</span>
                 <span class="font-medium text-foreground">{{ ratingPreview.toFixed(1) }}</span>
               </template>
-              <AppIcon :icon="appIcons.star" class="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+              <HugeiconsIcon :icon="StarIcon" class="size-3.5 shrink-0 text-primary" aria-hidden="true" />
             </span>
           </template>
         </p>

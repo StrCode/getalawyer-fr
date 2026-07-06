@@ -17,7 +17,7 @@
   </div>
 
   <div v-else-if="!schedule?.length" class="py-6 text-center">
-    <AppIcon :icon="appIcons.clock" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
+    <HugeiconsIcon :icon="Clock01Icon" class="mx-auto mb-3 size-10 text-muted-foreground/40" />
     <p class="text-sm font-medium text-foreground">
       No availability set
     </p>
@@ -73,8 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Clock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAvailability } from '~/composables/useAvailability'

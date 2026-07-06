@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowDown01Icon, Cancel01Icon, CheckmarkCircle01Icon, Loading03Icon, Search01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
@@ -259,7 +259,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="isLoadingSpecs" class="flex justify-center py-20">
-    <AppIcon :icon="appIcons.circleNotch" class="h-12 w-12 animate-spin text-primary/20" />
+    <HugeiconsIcon :icon="Loading03Icon" class="h-12 w-12 animate-spin text-primary/20" />
   </div>
 
   <div v-else class="w-full space-y-8 pb-20">
@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
                           class="order-last ml-auto shrink-0 self-center"
                           aria-label="Open states list"
                         >
-                          <AppIcon :icon="appIcons.caretDown" class="size-4 text-muted-foreground" />
+                          <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 text-muted-foreground" />
                         </Button>
                       </PopoverTrigger>
                     </TagsInput>
@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
                     >
                       <span class="min-w-0 leading-snug">{{ s }}</span>
                       <ListboxItemIndicator class="ml-auto inline-flex items-center justify-center">
-                        <AppIcon :icon="appIcons.check" class="size-4 text-primary" />
+                        <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-primary" />
                       </ListboxItemIndicator>
                     </ListboxItem>
                     </ListboxContent>
@@ -423,7 +423,7 @@ onBeforeUnmount(() => {
               </FieldDescription>
 
               <div class="relative mb-4">
-                <AppIcon :icon="appIcons.magnifyingGlass" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <HugeiconsIcon :icon="Search01Icon" class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   v-model="query"
                   placeholder="Search legal areas..."
@@ -456,7 +456,7 @@ onBeforeUnmount(() => {
                         {{ spec.description }}
                       </p>
                     </div>
-                    <AppIcon :icon="appIcons.checkCircle"
+                    <HugeiconsIcon :icon="CheckmarkCircle01Icon"
                       v-if="isAreaSelected(spec.id)"
                       class="h-5 w-5 shrink-0 text-primary"
                     />
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
                   @click="toggleArea(row.practiceAreaId)"
                 >
                   {{ nameById(row.practiceAreaId) }}
-                  <AppIcon :icon="appIcons.x" class="h-3 w-3" />
+                  <HugeiconsIcon :icon="Cancel01Icon" class="h-3 w-3" />
                 </button>
               </div>
 

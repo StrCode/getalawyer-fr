@@ -11,7 +11,7 @@
           as-child
         >
           <NuxtLink to="/dashboard/bookings">
-            <AppIcon :icon="appIcons.arrowLeft" class="size-4" />
+            <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
             Back to bookings
           </NuxtLink>
         </Button>
@@ -36,7 +36,7 @@
       v-else-if="isError || !booking"
       class="py-12 text-center"
     >
-      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
       <p class="text-destructive">
         Failed to load booking details
       </p>
@@ -127,7 +127,7 @@
                       rel="noopener noreferrer"
                       class="gap-2"
                     >
-                      <AppIcon :icon="appIcons.videoCamera" class="size-4" />
+                      <HugeiconsIcon :icon="Video01Icon" class="size-4" />
                       Join video call
                     </a>
                   </Button>
@@ -196,7 +196,7 @@
               class="rounded-lg border border-border bg-background p-4"
             >
               <div class="flex items-start gap-2">
-                <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 text-primary" />
+                <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 text-primary" />
                 <div>
                   <p class="text-sm font-semibold text-foreground">
                     Case created
@@ -214,7 +214,7 @@
                       class="gap-2"
                     >
                       View case
-                      <AppIcon :icon="appIcons.arrowRight" class="size-4" />
+                      <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
                     </NuxtLink>
                   </Button>
                 </div>
@@ -244,7 +244,7 @@
                 :to="`/dashboard/messages?conversation=${booking.conversationId}`"
                 class="gap-2"
               >
-                <AppIcon :icon="appIcons.chatCircle" class="size-5" />
+                <HugeiconsIcon :icon="Message01Icon" class="size-5" />
                 Open conversation
               </NuxtLink>
             </Button>
@@ -285,7 +285,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-start gap-3">
-              <AppIcon :icon="appIcons.calendar" class="mt-0.5 size-5 text-muted-foreground" />
+              <HugeiconsIcon :icon="Calendar01Icon" class="mt-0.5 size-5 text-muted-foreground" />
               <div>
                 <p class="text-sm font-medium text-foreground">
                   {{ formatBookingDateLong(booking.scheduledDate) }}
@@ -381,8 +381,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, ArrowLeft01Icon, ArrowRight01Icon, Calendar01Icon, CheckmarkCircle01Icon, Message01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'

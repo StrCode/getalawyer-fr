@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Briefcase01Icon, CheckmarkBadge01Icon, GraduationScrollIcon, IdentityCardIcon, LinkSquare01Icon, SparklesIcon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
@@ -30,7 +30,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     <section v-if="hasAbout(profile)">
       <LawyerProfileSectionHeading title="About">
         <template #icon>
-          <AppIcon :icon="appIcons.user" />
+          <HugeiconsIcon :icon="UserIcon" />
         </template>
       </LawyerProfileSectionHeading>
       <p
@@ -67,7 +67,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     <section v-if="profile.experiences.length">
       <LawyerProfileSectionHeading title="Experience">
         <template #icon>
-          <AppIcon :icon="appIcons.briefcase" />
+          <HugeiconsIcon :icon="Briefcase01Icon" />
         </template>
       </LawyerProfileSectionHeading>
       <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
@@ -105,7 +105,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     <section v-if="profile.education.length">
       <LawyerProfileSectionHeading title="Education">
         <template #icon>
-          <AppIcon :icon="appIcons.graduationCap" />
+          <HugeiconsIcon :icon="GraduationScrollIcon" />
         </template>
       </LawyerProfileSectionHeading>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -115,7 +115,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           class="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
         >
           <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-muted text-primary ring-1 ring-border/70">
-            <AppIcon :icon="appIcons.graduationCap" class="size-5" />
+            <HugeiconsIcon :icon="GraduationScrollIcon" class="size-5" />
           </div>
           <div class="min-w-0">
             <h3 class="text-base font-semibold leading-tight tracking-tight text-foreground">
@@ -147,7 +147,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     <section v-if="profile.licenses.length">
       <LawyerProfileSectionHeading title="Licenses & certifications">
         <template #icon>
-          <AppIcon :icon="appIcons.identificationCard" />
+          <HugeiconsIcon :icon="IdentityCardIcon" />
         </template>
       </LawyerProfileSectionHeading>
       <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
@@ -167,7 +167,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
                   variant="verified"
                   class="gap-1 text-[10px] uppercase tracking-wide"
                 >
-                  <AppIcon :icon="appIcons.sealCheck" class="size-3" />
+                  <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-3" />
                   Verified
                 </Badge>
               </div>
@@ -196,7 +196,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
             class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
           >
             View credential
-            <AppIcon :icon="appIcons.arrowSquareOut" class="size-3.5" />
+            <HugeiconsIcon :icon="LinkSquare01Icon" class="size-3.5" />
           </a>
         </article>
       </div>
@@ -205,7 +205,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
     <section v-if="profile.skills.length">
       <LawyerProfileSectionHeading title="Skills">
         <template #icon>
-          <AppIcon :icon="appIcons.sparkle" />
+          <HugeiconsIcon :icon="SparklesIcon" />
         </template>
       </LawyerProfileSectionHeading>
       <div class="flex flex-wrap gap-2">

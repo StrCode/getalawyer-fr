@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { lawyersListingQueryFromParts } from '~/composables/useLawyerFilters'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -54,8 +54,8 @@ function areaQuery(id: string) {
           :to="{ path: '/find-lawyers', query: allAreasQuery }"
           class="gap-2"
         >
-          <AppIcon
-            :icon="appIcons.magnifyingGlass"
+          <HugeiconsIcon
+            :icon="Search01Icon"
             class="size-4"
           />
           Browse matching lawyers

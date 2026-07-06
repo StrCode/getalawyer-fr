@@ -5,7 +5,7 @@
         <span
           class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10"
         >
-          <AppIcon :icon="icon" class="size-5 text-primary" />
+          <HugeiconsIcon :icon="icon" class="size-5 text-primary" />
         </span>
         <Badge
           v-if="trend && trend !== 'neutral' && change"
@@ -13,7 +13,7 @@
           class="border-transparent text-xs"
           :class="trend === 'up' ? 'border-transparent bg-primary/10 text-primary' : ''"
         >
-          <AppIcon :icon="trendIconComponent" class="size-3" />
+          <HugeiconsIcon :icon="trendIconComponent" class="size-3" />
           {{ change }}
         </Badge>
       </div>
@@ -32,14 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons, type AppIconData } from '@/lib/app-icons'
+import type { Hugeicon } from '@/lib/icon-types'
+import { ArrowDownRight01Icon, ArrowUpRight01Icon, MinusSignIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 interface Props {
   label: string
   value: string | number
-  icon: AppIconData
+  icon: Hugeicon
   change?: string
   trend?: 'up' | 'down' | 'neutral'
   subtitle?: string
@@ -49,9 +50,9 @@ const props = withDefaults(defineProps<Props>(), {
   trend: 'neutral',
 })
 
-const trendIconComponent = computed<AppIconData>(() => {
-  if (props.trend === 'up') return appIcons.trendUp
-  if (props.trend === 'down') return appIcons.trendDown
-  return appIcons.minus
+const trendIconComponent = computed<Hugeicon>(() => {
+  if (props.trend === 'up') return ArrowUpRight01Icon
+  if (props.trend === 'down') return ArrowDownRight01Icon
+  return MinusSignIcon
 })
 </script>

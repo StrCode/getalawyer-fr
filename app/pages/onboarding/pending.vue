@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { FileSearchIcon, Home01Icon, HourglassIcon, Loading03Icon, Logout01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -33,7 +33,8 @@ useHead({
 })
 
 const router = useRouter()
-const { session, signOut } = useAuth()
+const { session } = useAuth()
+const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 const queryClient = useQueryClient()
 
 await useAsyncData('onboarding-pending-status', () =>
@@ -203,7 +204,7 @@ async function retryStatus() {
       <div
         class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-card shadow-sm"
       >
-        <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" aria-hidden="true" />
+        <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" aria-hidden="true" />
       </div>
       <p class="text-sm font-medium text-muted-foreground">Loading your application status…</p>
     </div>
@@ -213,7 +214,7 @@ async function retryStatus() {
       <div
         class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
-        <AppIcon :icon="appIcons.hourglass" class="size-10" />
+        <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -243,7 +244,7 @@ async function retryStatus() {
       <div
         class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
       >
-        <AppIcon :icon="appIcons.hourglass" class="size-10" />
+        <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
         <p class="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -265,8 +266,13 @@ async function retryStatus() {
               support@getalawyer.ng
             </a>
           </p>
-          <Button variant="outline" class="w-full" @click="signOut">
-            Sign out
+          <Button
+            variant="outline"
+            class="w-full"
+            :disabled="isSigningOut"
+            @click="handleSignOut()"
+          >
+            {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
           </Button>
         </div>
       </Card>
@@ -282,9 +288,9 @@ async function retryStatus() {
             <div
               class="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background"
             >
-              <AppIcon :icon="appIcons.check" class="size-5" />
+              <HugeiconsIcon :icon="Tick01Icon" class="size-5" />
             </div>
-            <AppIcon :icon="appIcons.fileSearch" class="size-11 text-primary" />
+            <HugeiconsIcon :icon="FileSearchIcon" class="size-11 text-primary" />
           </div>
 
           <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
@@ -330,7 +336,7 @@ async function retryStatus() {
                         : 'bg-muted text-muted-foreground'
                   "
                 >
-                  <AppIcon :icon="appIcons.check" v-if="step.status === 'done'" class="size-4" />
+                  <HugeiconsIcon :icon="Tick01Icon" v-if="step.status === 'done'" class="size-4" />
                   <span v-else class="size-2 rounded-full bg-current" />
                 </span>
                 <span
@@ -442,18 +448,19 @@ async function retryStatus() {
             as-child
           >
             <NuxtLink to="/" class="inline-flex items-center justify-center gap-2">
-              <AppIcon :icon="appIcons.house" class="size-4" />
+              <HugeiconsIcon :icon="Home01Icon" class="size-4" />
               Home
             </NuxtLink>
           </Button>
           <div class="flex flex-wrap items-center justify-center gap-4">
             <button
               type="button"
-              class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              @click="signOut()"
+              class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
+              :disabled="isSigningOut"
+              @click="handleSignOut()"
             >
-              <AppIcon :icon="appIcons.signOut" class="size-4" />
-              Sign out
+              <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+              {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
             </button>
             <button
               v-if="statusError"

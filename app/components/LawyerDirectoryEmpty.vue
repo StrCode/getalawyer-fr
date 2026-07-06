@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowReloadHorizontalIcon, FilterIcon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 defineProps<{
   activeFilterCount: number
   /** Current keyword for contextual copy (optional). */
@@ -37,7 +37,7 @@ const tips = [
       <div
         class="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/15 dark:bg-primary/12 dark:text-primary dark:ring-primary/25"
       >
-        <AppIcon :icon="appIcons.magnifyingGlass" class="size-8" aria-hidden="true" />
+        <HugeiconsIcon :icon="Search01Icon" class="size-8" aria-hidden="true" />
       </div>
 
       <p
@@ -66,14 +66,14 @@ const tips = [
         class="mx-auto mt-6 max-w-sm space-y-2.5 text-left text-muted-foreground text-sm"
       >
         <li v-for="(line, idx) in tips" :key="idx" class="flex gap-2.5 leading-snug">
-          <AppIcon :icon="appIcons.funnel" class="mt-0.5 size-4 shrink-0 text-primary/70 opacity-90" aria-hidden="true" />
+          <HugeiconsIcon :icon="FilterIcon" class="mt-0.5 size-4 shrink-0 text-primary/70 opacity-90" aria-hidden="true" />
           <span>{{ line }}</span>
         </li>
       </ul>
 
       <div class="relative z-10 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Button size="lg" class="min-w-[10.5rem] gap-2 font-semibold shadow-sm" @click="emit('reset')">
-          <AppIcon :icon="appIcons.arrowsClockwise" class="size-4" aria-hidden="true" />
+          <HugeiconsIcon :icon="ArrowReloadHorizontalIcon" class="size-4" aria-hidden="true" />
           Reset filters
         </Button>
       </div>

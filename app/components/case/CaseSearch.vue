@@ -3,7 +3,7 @@
     <Card class="rounded-xl">
       <CardContent class="flex items-center gap-4 pt-6">
         <div class="relative min-w-0 flex-1">
-          <AppIcon :icon="appIcons.magnifyingGlass"
+          <HugeiconsIcon :icon="Search01Icon"
             class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
@@ -20,7 +20,7 @@
           class="gap-2"
           @click="showAdvancedFilters = !showAdvancedFilters"
         >
-          <AppIcon :icon="appIcons.funnel" class="size-4" aria-hidden="true" />
+          <HugeiconsIcon :icon="FilterIcon" class="size-4" aria-hidden="true" />
           {{ showAdvancedFilters ? 'Hide' : 'Show' }} Filters
         </Button>
 
@@ -154,7 +154,7 @@
             @click="loadSavedSearch(search)"
           >
             {{ search.name }}
-            <AppIcon :icon="appIcons.x"
+            <HugeiconsIcon :icon="Cancel01Icon"
               class="size-4"
               aria-label="Remove saved search"
               @click.stop="removeSavedSearch(search.id)"
@@ -168,7 +168,7 @@
             class="gap-2"
             @click="showSaveSearchModal = true"
           >
-            <AppIcon :icon="appIcons.bookmarkSimple" class="size-4" aria-hidden="true" />
+            <HugeiconsIcon :icon="Bookmark01Icon" class="size-4" aria-hidden="true" />
             Save Current Search
           </Button>
         </div>
@@ -225,8 +225,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Bookmark01Icon, Cancel01Icon, FilterIcon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

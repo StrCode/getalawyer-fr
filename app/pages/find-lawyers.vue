@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, ArrowDown01Icon, Briefcase01Icon, Cancel01Icon, LayoutGridIcon, LayoutTwoRowIcon, Location01Icon, Search01Icon, Settings01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
@@ -386,7 +386,7 @@ const showMobileFilters = ref(false)
         >
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2">
-              <AppIcon :icon="appIcons.magnifyingGlass" class="size-4 shrink-0 text-primary" aria-hidden="true" />
+              <HugeiconsIcon :icon="Search01Icon" class="size-4 shrink-0 text-primary" aria-hidden="true" />
               <input
                 v-model="filters.keywords"
                 type="search"
@@ -399,7 +399,7 @@ const showMobileFilters = ref(false)
             </label>
             <div class="mx-2 hidden h-8 w-px bg-border sm:block" />
             <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:max-w-[14rem]">
-              <AppIcon :icon="appIcons.user" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+              <HugeiconsIcon :icon="UserIcon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <input
                 v-model="filters.lawyerName"
                 type="search"
@@ -423,7 +423,7 @@ const showMobileFilters = ref(false)
         :aria-expanded="showMobileFilters"
         @click="showMobileFilters = !showMobileFilters"
       >
-        <AppIcon :icon="appIcons.faders" class="size-4" aria-hidden="true" />
+        <HugeiconsIcon :icon="Settings01Icon" class="size-4" aria-hidden="true" />
         {{ showMobileFilters ? 'Hide filters' : 'Show filters' }}
         <Badge v-if="activeFilterCount > 0" variant="soft" class="ms-1 rounded-full px-2 py-0 text-xs tabular-nums">
           {{ activeFilterCount }}
@@ -464,9 +464,9 @@ const showMobileFilters = ref(false)
                       aria-label="States"
                       :aria-expanded="statePopoverOpen"
                     >
-                      <AppIcon :icon="appIcons.mapPin" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <HugeiconsIcon :icon="Location01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <span class="min-w-0 flex-1 truncate">{{ statesTriggerLabel }}</span>
-                      <AppIcon :icon="appIcons.caretDown" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
@@ -529,9 +529,9 @@ const showMobileFilters = ref(false)
                       aria-label="Specializations"
                       :aria-expanded="specPopoverOpen"
                     >
-                      <AppIcon :icon="appIcons.briefcase" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <HugeiconsIcon :icon="Briefcase01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       <span class="min-w-0 flex-1 truncate">{{ specializationTriggerLabel }}</span>
-                      <AppIcon :icon="appIcons.caretDown" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                     </button>
                   </PopoverTrigger>
                   <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
@@ -595,13 +595,13 @@ const showMobileFilters = ref(false)
             <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.lawyerName }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove name filter" @click="filters.lawyerName = ''">
-                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
+                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.keywords }}
               <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove keyword filter" @click="filters.keywords = ''">
-                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
+                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div
@@ -616,7 +616,7 @@ const showMobileFilters = ref(false)
                 :aria-label="`Remove ${stateLabel(code)}`"
                 @click="removeStateCode(code)"
               >
-                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
+                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div
@@ -631,7 +631,7 @@ const showMobileFilters = ref(false)
                 :aria-label="`Remove ${specializationNameById(sid)}`"
                 @click="removeSpecialization(sid)"
               >
-                <AppIcon :icon="appIcons.x" class="size-4" aria-hidden="true" />
+                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -665,7 +665,7 @@ const showMobileFilters = ref(false)
                 title="Grid"
                 @click="resultsLayout = 'grid'"
               >
-                <AppIcon :icon="appIcons.squaresFour" class="size-5" aria-hidden="true" />
+                <HugeiconsIcon :icon="LayoutGridIcon" class="size-5" aria-hidden="true" />
                 <span class="sr-only">Grid layout</span>
               </button>
               <button
@@ -676,7 +676,7 @@ const showMobileFilters = ref(false)
                 title="List"
                 @click="resultsLayout = 'list'"
               >
-                <AppIcon :icon="appIcons.rows" class="size-5" aria-hidden="true" />
+                <HugeiconsIcon :icon="LayoutTwoRowIcon" class="size-5" aria-hidden="true" />
                 <span class="sr-only">List layout</span>
               </button>
             </div>
@@ -701,7 +701,7 @@ const showMobileFilters = ref(false)
           <!-- Error -->
           <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
             <EmptyState
-              :icon="appIcons.warning"
+              :icon="Alert01Icon"
               color="#dc2626"
               title="Error loading lawyers"
               description="There was an error loading the lawyers list. Please try again."

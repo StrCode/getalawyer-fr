@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, Building01Icon, CallIcon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import ClientProfileShell from '@/components/profile/ClientProfileShell.vue'
@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
       class="border-dashed"
     >
       <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-        <AppIcon :icon="appIcons.warningCircle" class="size-9 text-muted-foreground" />
+        <HugeiconsIcon :icon="AlertCircleIcon" class="size-9 text-muted-foreground" />
         <p class="text-sm text-muted-foreground">
           We couldn't load your profile. Refresh and try again.
         </p>
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
                   description="Your legal name as it appears on bookings."
                 >
                   <div class="relative">
-                    <AppIcon :icon="appIcons.user" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <HugeiconsIcon :icon="UserIcon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="profile-name"
                       v-model="form.name"
@@ -357,7 +357,7 @@ onBeforeUnmount(() => {
                   description="Managed in Account settings — contact support to change your sign-in email."
                 >
                   <div class="relative">
-                    <AppIcon :icon="appIcons.envelope" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <HugeiconsIcon :icon="Mail01Icon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="profile-email"
                       :model-value="profile?.email ?? ''"
@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
                   description="Optional — shown if you book on behalf of an organization."
                 >
                   <div class="relative">
-                    <AppIcon :icon="appIcons.buildings" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <HugeiconsIcon :icon="Building01Icon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       id="profile-company"
                       v-model="form.company"
@@ -515,7 +515,7 @@ onBeforeUnmount(() => {
                 >
                   <div class="space-y-2">
                     <div class="relative">
-                      <AppIcon :icon="appIcons.phone" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                      <HugeiconsIcon :icon="CallIcon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="profile-phone"
                         v-model="form.phoneNumber"

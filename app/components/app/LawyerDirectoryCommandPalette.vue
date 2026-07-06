@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { LinkSquare01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { RecentLawyerDirectoryEntry } from '~/composables/useRecentLawyerDirectorySearches'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import {
@@ -191,7 +191,7 @@ onMounted(() => {
           @select="navPracticeAreas"
         >
           Browse practice areas
-          <AppIcon :icon="appIcons.arrowSquareOut" class="ml-auto opacity-60" aria-hidden="true" />
+          <HugeiconsIcon :icon="LinkSquare01Icon" class="ml-auto opacity-60" aria-hidden="true" />
         </CommandItem>
         <CommandItem
           value="For Lawyers"

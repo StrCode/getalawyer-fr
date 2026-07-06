@@ -1,10 +1,26 @@
 import tailwindcss from "@tailwindcss/vite";
-import { DEV_API_URL, DEV_BETTER_AUTH_URL } from "./app/lib/api-config";
+import {
+  DEV_API_URL,
+  DEV_BETTER_AUTH_URL,
+  PROD_API_URL,
+  PROD_BETTER_AUTH_URL,
+} from "./app/lib/api-config";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const apiUrl = process.env.NUXT_PUBLIC_API_URL || (isProduction ? PROD_API_URL : DEV_API_URL);
+const betterAuthUrl =
+  process.env.NUXT_PUBLIC_BETTER_AUTH_URL || (isProduction ? PROD_BETTER_AUTH_URL : DEV_BETTER_AUTH_URL);
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: !isProduction },
+
+  site: {
+    url: process.env.NUXT_SITE_URL || 'https://getalawyer.ng',
+    name: 'getalawyer',
+  },
 
   css: ['~/assets/css/main.css'],
   vite: {
@@ -16,10 +32,10 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
     define: {
-      'import.meta.env.VITE_NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || DEV_API_URL),
-      'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(process.env.NUXT_PUBLIC_API_URL || DEV_API_URL),
-      'import.meta.env.VITE_NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL),
-      'import.meta.env.NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL),
+      'import.meta.env.VITE_NUXT_PUBLIC_API_URL': JSON.stringify(apiUrl),
+      'import.meta.env.NUXT_PUBLIC_API_URL': JSON.stringify(apiUrl),
+      'import.meta.env.VITE_NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(betterAuthUrl),
+      'import.meta.env.NUXT_PUBLIC_BETTER_AUTH_URL': JSON.stringify(betterAuthUrl),
     },
   },
   modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
@@ -99,13 +115,16 @@ export default defineNuxtConfig({
         style: 'italic',
         global: true,
       },
-
+      {
+        name: 'Inter',
+        provider: 'fontsource',
+      },
     ],
   },
   runtimeConfig: {
     public: {
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || DEV_API_URL,
-      betterAuthUrl: process.env.NUXT_PUBLIC_BETTER_AUTH_URL || DEV_BETTER_AUTH_URL,
+      apiUrl,
+      betterAuthUrl,
     },
   },
 })

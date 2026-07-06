@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { buildProfileChecklist } from '~/lib/profile-check-catalog'
@@ -65,12 +65,12 @@ const hasStrength = computed(() => Boolean(props.profileStrength))
             :key="item.id"
             class="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm"
           >
-            <AppIcon :icon="appIcons.checkCircle"
+            <HugeiconsIcon :icon="CheckmarkCircle01Icon"
               v-if="item.complete"
               class="size-4 shrink-0 text-primary"
               aria-hidden="true"
             />
-            <AppIcon :icon="appIcons.circle"
+            <HugeiconsIcon :icon="CircleIcon"
               v-else
               class="size-4 shrink-0 text-muted-foreground"
               aria-hidden="true"

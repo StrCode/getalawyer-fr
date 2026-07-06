@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon, Briefcase01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Case } from '~/types/case'
@@ -50,7 +50,7 @@ const statusVariant = computed(() => {
         <span
           class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
         >
-          <AppIcon :icon="appIcons.briefcase" class="size-5" />
+          <HugeiconsIcon :icon="Briefcase01Icon" class="size-5" />
         </span>
 
         <div class="min-w-0 flex-1">
@@ -70,8 +70,8 @@ const statusVariant = computed(() => {
           </p>
         </div>
 
-        <AppIcon
-          :icon="appIcons.caretRight"
+        <HugeiconsIcon
+          :icon="ArrowRight01Icon"
           class="mt-2 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
         />
       </button>

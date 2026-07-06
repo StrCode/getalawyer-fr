@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { JusticeScale01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerSpecialization } from '~/types/lawyer'
@@ -13,7 +13,7 @@ defineProps<{
   <section v-if="specializations.length">
     <LawyerProfileSectionHeading title="Practice areas">
       <template #icon>
-        <AppIcon :icon="appIcons.scales" />
+        <HugeiconsIcon :icon="JusticeScale01Icon" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="grid grid-cols-1 gap-4">

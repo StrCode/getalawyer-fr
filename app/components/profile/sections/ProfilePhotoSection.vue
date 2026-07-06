@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Camera01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -69,7 +69,7 @@ function onFileSelected(event: Event) {
           v-if="uploading"
           class="absolute inset-0 flex items-center justify-center rounded-full bg-background/70"
         >
-          <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-muted-foreground" />
+          <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-muted-foreground" />
         </span>
       </div>
 
@@ -104,7 +104,7 @@ function onFileSelected(event: Event) {
           class="w-full sm:w-auto"
           @click="fileInputRef?.click()"
         >
-          <AppIcon :icon="appIcons.camera" class="size-4" />
+          <HugeiconsIcon :icon="Camera01Icon" class="size-4" />
           Upload photo
         </ButtonBusy>
       </div>

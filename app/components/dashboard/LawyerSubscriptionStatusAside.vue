@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CreditCardIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -101,8 +101,8 @@ const showPrice = computed(
           to="/dashboard/subscription"
           class="gap-2"
         >
-          <AppIcon
-            :icon="appIcons.creditCard"
+          <HugeiconsIcon
+            :icon="CreditCardIcon"
             class="size-4"
           />
           {{ renewalLabel }}

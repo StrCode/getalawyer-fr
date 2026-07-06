@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Briefcase01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useFeaturedSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -85,7 +85,7 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
                 v-if="!area.imageUrl"
                 class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-primary transition-colors duration-300 group-hover:bg-primary/10"
               >
-                <AppIcon :icon="appIcons.briefcase" class="size-5" aria-hidden="true" />
+                <HugeiconsIcon :icon="Briefcase01Icon" class="size-5" aria-hidden="true" />
               </div>
               <NuxtLink
                 :to="specializationDirectoryHref(area.id)"

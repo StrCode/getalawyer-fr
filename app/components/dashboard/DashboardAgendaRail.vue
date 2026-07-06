@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CalendarCheckIn01Icon, CalendarRemove01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Booking } from '~/types/booking'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 const props = withDefaults(defineProps<{
@@ -54,7 +54,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
         class="flex flex-col items-center gap-2 py-6 text-center"
       >
         <span class="flex size-10 items-center justify-center rounded-full border border-border bg-muted/40 text-muted-foreground">
-          <AppIcon :icon="appIcons.calendarX" class="size-5" />
+          <HugeiconsIcon :icon="CalendarRemove01Icon" class="size-5" />
         </span>
         <p class="text-muted-foreground text-xs leading-relaxed">
           Your upcoming appointments will show up here.
@@ -67,7 +67,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
         :to="listPath"
         class="inline-flex items-center gap-1.5 font-medium text-primary text-xs hover:underline"
       >
-        <AppIcon :icon="appIcons.calendarCheck" class="size-3.5" />
+        <HugeiconsIcon :icon="CalendarCheckIn01Icon" class="size-3.5" />
         View all appointments
       </NuxtLink>
     </CardFooter>

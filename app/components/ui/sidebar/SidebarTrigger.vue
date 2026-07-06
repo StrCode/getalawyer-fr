@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { SidebarLeftIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ const { toggleSidebar } = useSidebar()
     :class="cn('h-7 w-7', props.class)"
     @click="toggleSidebar"
   >
-    <AppIcon :icon="appIcons.sidebarSimple" />
+    <HugeiconsIcon :icon="SidebarLeftIcon" />
     <span class="sr-only">Toggle Sidebar</span>
   </Button>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { PrimitiveProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import type { ButtonVariants } from '@/components/ui/button'
@@ -41,7 +41,7 @@ const disabled = computed(() => {
     data-slot="button-busy"
     v-bind="{ ...attrs, disabled }"
   >
-    <AppIcon :icon="appIcons.circleNotch"
+    <HugeiconsIcon :icon="Loading03Icon"
       v-if="loading && !asChild"
       class="size-4 shrink-0 animate-spin opacity-70"
       aria-hidden="true"

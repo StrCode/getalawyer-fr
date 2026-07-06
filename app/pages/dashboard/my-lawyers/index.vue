@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Search01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ClientMyLawyersList from '@/components/dashboard/ClientMyLawyersList.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { deriveClientLawyers } from '~/lib/client-derived-lawyers'
@@ -44,8 +44,8 @@ const isLoading = computed(() => bookingsPending.value || conversationsPending.v
             to="/find-lawyers"
             class="gap-2"
           >
-            <AppIcon
-              :icon="appIcons.magnifyingGlass"
+            <HugeiconsIcon
+              :icon="Search01Icon"
               class="size-4"
             />
             Find a lawyer
@@ -67,7 +67,7 @@ const isLoading = computed(() => bookingsPending.value || conversationsPending.v
 
     <EmptyState
       v-else-if="lawyers.length === 0"
-      :icon="appIcons.userCircle"
+      :icon="UserCircleIcon"
       title="No lawyers yet"
       description="After you book a consultation or message a lawyer, they will appear here for quick access."
     >

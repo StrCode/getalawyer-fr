@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="not-found-illustration mx-auto h-auto w-full max-w-[260px]"
+    class="mx-auto h-auto w-full max-w-[260px]"
     viewBox="0 0 260 200"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -45,24 +45,3 @@
   </svg>
 </template>
 
-<style scoped>
-.not-found-illustration {
-  animation: not-found-float 5s ease-in-out infinite;
-}
-
-@keyframes not-found-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .not-found-illustration {
-    animation: none;
-  }
-}
-</style>

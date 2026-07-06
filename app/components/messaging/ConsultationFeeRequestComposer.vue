@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CurrencyIcon, SentIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,7 +53,7 @@ async function submit() {
       size="sm"
       @click="isOpen = true"
     >
-      <AppIcon :icon="appIcons.currencyNgn" class="mr-2 size-4" />
+      <HugeiconsIcon :icon="CurrencyIcon" class="mr-2 size-4" />
       Request consultation fee
     </Button>
 
@@ -83,7 +83,7 @@ async function submit() {
       </div>
       <div class="flex gap-2">
         <Button type="submit" size="sm" :disabled="!amount.trim() || isSubmitting">
-          <AppIcon :icon="appIcons.paperPlaneRight" class="mr-1 size-4" />
+          <HugeiconsIcon :icon="SentIcon" class="mr-1 size-4" />
           Send request
         </Button>
         <Button type="button" size="sm" variant="ghost" @click="isOpen = false">

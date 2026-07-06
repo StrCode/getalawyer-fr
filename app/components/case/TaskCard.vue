@@ -39,17 +39,17 @@
         
         <div class="flex items-center gap-4 text-muted-foreground text-sm">
           <div v-if="task.assignee" class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-user" class="w-4 h-4" />
+            <HugeiconsIcon :icon="UserIcon" class="w-4 h-4" />
             <span>{{ task.assignee.name }}</span>
           </div>
           
           <div v-if="task.dueDate" class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-calendar" class="w-4 h-4" />
+            <HugeiconsIcon :icon="Calendar01Icon" class="w-4 h-4" />
             <span>Due {{ formatDate(task.dueDate) }}</span>
           </div>
           
           <div class="flex items-center gap-1">
-            <PhIcon name="i-heroicons-clock" class="w-4 h-4" />
+            <HugeiconsIcon :icon="Clock01Icon" class="w-4 h-4" />
             <span>Created {{ formatDate(task.createdAt) }}</span>
           </div>
         </div>
@@ -65,7 +65,7 @@
             class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
-            <AppIcon :icon="appIcons.play" class="size-3.5 shrink-0" aria-hidden="true" />
+            <HugeiconsIcon :icon="PlayIcon" class="size-3.5 shrink-0" aria-hidden="true" />
             Start
           </Button>
 
@@ -76,7 +76,7 @@
             class="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
             @click="updateStatus('completed')"
           >
-            <AppIcon :icon="appIcons.check" class="size-3.5 shrink-0" aria-hidden="true" />
+            <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 shrink-0" aria-hidden="true" />
             Complete
           </Button>
 
@@ -87,7 +87,7 @@
             class="gap-1.5"
             @click="updateStatus('in_progress')"
           >
-            <AppIcon :icon="appIcons.arrowClockwise" class="size-3.5 shrink-0" aria-hidden="true" />
+            <HugeiconsIcon :icon="ArrowReloadHorizontalIcon" class="size-3.5 shrink-0" aria-hidden="true" />
             Reopen
           </Button>
         </div>
@@ -95,7 +95,7 @@
         <!-- Task Actions Menu -->
         <UDropdown v-if="role === 'lawyer'" :items="taskActions">
           <Button variant="ghost" size="icon-sm" class="size-8 shrink-0" aria-label="Task actions">
-            <AppIcon :icon="appIcons.dotsThreeVertical" class="size-4 shrink-0" aria-hidden="true" />
+            <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
         </UDropdown>
       </div>
@@ -104,8 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowReloadHorizontalIcon, Calendar01Icon, Clock01Icon, MoreVerticalIcon, PlayIcon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import type { Task, TaskStatus, Priority } from '~/types'

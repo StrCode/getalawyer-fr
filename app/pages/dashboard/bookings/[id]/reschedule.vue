@@ -7,7 +7,7 @@
         as-child
       >
         <NuxtLink :to="`/dashboard/bookings/${bookingId}`">
-          <AppIcon :icon="appIcons.arrowLeft" class="size-5" />
+          <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-5" />
           Back to booking
         </NuxtLink>
       </Button>
@@ -33,7 +33,7 @@
       v-else-if="isError || !booking"
       class="py-12 text-center"
     >
-      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-4 size-12 text-destructive" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
       <p class="text-destructive">
         Failed to load booking details
       </p>
@@ -43,7 +43,7 @@
       v-else-if="!canReschedule"
       class="py-12 text-center"
     >
-      <AppIcon :icon="appIcons.calendarX" class="mx-auto mb-4 size-12 text-muted-foreground" />
+      <HugeiconsIcon :icon="CalendarRemove01Icon" class="mx-auto mb-4 size-12 text-muted-foreground" />
       <p class="text-muted-foreground">
         This booking cannot be rescheduled
       </p>
@@ -140,13 +140,13 @@
           </CardHeader>
           <CardContent class="space-y-2 text-sm">
             <div class="flex items-center gap-2 text-primary">
-              <AppIcon :icon="appIcons.calendar" class="size-5" />
+              <HugeiconsIcon :icon="Calendar01Icon" class="size-5" />
               <p class="font-medium">
                 {{ formatBookingDateLong(selectedSlot.date) }}
               </p>
             </div>
             <div class="flex items-center gap-2 text-primary">
-              <AppIcon :icon="appIcons.clock" class="size-5" />
+              <HugeiconsIcon :icon="Clock01Icon" class="size-5" />
               <p class="font-medium">
                 {{ formatTime(selectedSlot.time) }}
               </p>
@@ -159,8 +159,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, ArrowLeft01Icon, Calendar01Icon, CalendarRemove01Icon, Clock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'

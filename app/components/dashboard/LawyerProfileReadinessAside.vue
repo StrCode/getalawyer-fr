@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~/types/lawyer-directory-eligibility'
 import { getTier1IncompleteItems } from '~/lib/profile-check-catalog'
 import { Badge } from '@/components/ui/badge'
@@ -62,8 +62,8 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
           :key="item.id"
           class="flex items-center gap-2 text-xs"
         >
-          <AppIcon
-            :icon="appIcons.circle"
+          <HugeiconsIcon
+            :icon="CircleIcon"
             class="size-3.5 shrink-0 text-muted-foreground/50"
           />
           <NuxtLink

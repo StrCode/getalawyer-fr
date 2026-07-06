@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
@@ -18,7 +18,7 @@ const props = defineProps<{
     :class="cn('[&>svg]:size-3.5', props.class)"
   >
     <slot>
-      <AppIcon :icon="appIcons.caretRight" />
+      <HugeiconsIcon :icon="ArrowRight01Icon" />
     </slot>
   </li>
 </template>

@@ -128,7 +128,7 @@
           size="lg"
           :disabled="isSubmitting"
         >
-          <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+          <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Signing in…' : 'Sign in' }}</span>
         </Button>
       </FieldGroup>
@@ -160,8 +160,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'

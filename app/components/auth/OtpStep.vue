@@ -48,7 +48,7 @@
       </InputOTP>
 
       <p v-if="error" class="flex items-center justify-center gap-1.5 text-sm text-destructive">
-        <AppIcon :icon="appIcons.warningCircle" class="size-3.5 shrink-0" />
+        <HugeiconsIcon :icon="AlertCircleIcon" class="size-3.5 shrink-0" />
         {{ error }}
       </p>
 
@@ -71,8 +71,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 

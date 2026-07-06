@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { AcceptableValue } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit, useVModel } from "@vueuse/core"
@@ -42,6 +42,6 @@ const delegatedProps = reactiveOmit(props, "class")
     >
       <slot />
     </select>
-    <AppIcon :icon="appIcons.caretDown" class="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none" aria-hidden="true" data-slot="native-select-icon" />
+    <HugeiconsIcon :icon="ArrowDown01Icon" class="text-muted-foreground pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 opacity-50 select-none" aria-hidden="true" data-slot="native-select-icon" />
   </div>
 </template>

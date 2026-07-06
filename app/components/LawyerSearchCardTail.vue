@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerSearchResult } from '~/lib/api'
 const props = withDefaults(
   defineProps<{
@@ -83,7 +83,7 @@ defineEmits<{ openProfile: [] }>()
         @click.stop="$emit('openProfile')"
       >
         {{ loggedIn ? 'View profile' : 'Sign in & view' }}
-        <AppIcon :icon="appIcons.arrowRight" class="size-4 opacity-85" aria-hidden="true" />
+        <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4 opacity-85" aria-hidden="true" />
       </Button>
     </footer>
   </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Tick01Icon, TickDouble01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 const props = defineProps<{
   status: 'sent' | 'delivered' | 'read'
 }>()
@@ -17,17 +17,17 @@ const statusLabel = computed(() => {
     class="inline-flex shrink-0 items-center"
     :aria-label="statusLabel"
   >
-    <AppIcon :icon="appIcons.check"
+    <HugeiconsIcon :icon="Tick01Icon"
       v-if="status === 'sent'"
       class="size-3.5 opacity-70"
       aria-hidden="true"
     />
-    <AppIcon :icon="appIcons.checks"
+    <HugeiconsIcon :icon="TickDouble01Icon"
       v-else-if="status === 'delivered'"
       class="size-3.5 opacity-70"
       aria-hidden="true"
     />
-    <AppIcon :icon="appIcons.checks"
+    <HugeiconsIcon :icon="TickDouble01Icon"
       v-else
       class="size-3.5 text-sky-300"
       aria-hidden="true"

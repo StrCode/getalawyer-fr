@@ -13,7 +13,7 @@
       role="status"
       class="mb-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4"
     >
-      <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 shrink-0 text-primary" />
+      <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 shrink-0 text-primary" />
       <div>
         <p class="mb-0.5 text-base font-medium text-foreground">
           {{ authMethod === 'phone' ? 'Check your phone' : 'Check your email' }}
@@ -84,7 +84,7 @@
         <AuthFormError :message="apiError" />
 
         <Button type="submit" class="h-12 w-full cursor-pointer gap-2" size="lg" :disabled="isSubmitting || tempEmailWarning">
-          <AppIcon :icon="appIcons.circleNotch" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
+          <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
           <span>{{ isSubmitting ? 'Sending…' : 'Send reset code' }}</span>
         </Button>
       </FieldGroup>
@@ -101,8 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'

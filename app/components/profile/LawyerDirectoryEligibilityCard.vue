@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Alert01Icon, CheckmarkCircle01Icon, CircleIcon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type {
   LawyerDirectoryEligibility,
@@ -98,8 +98,8 @@ const showTier1Details = computed(
               : 'bg-muted text-muted-foreground'
           "
         >
-          <AppIcon :icon="appIcons.eye" v-if="isVisible" class="size-3.5" aria-hidden="true" />
-          <AppIcon :icon="appIcons.eyeSlash" v-else class="size-3.5" aria-hidden="true" />
+          <HugeiconsIcon :icon="ViewIcon" v-if="isVisible" class="size-3.5" aria-hidden="true" />
+          <HugeiconsIcon :icon="ViewOffIcon" v-else class="size-3.5" aria-hidden="true" />
           {{ isVisible ? 'Visible in search' : 'Hidden from search' }}
         </div>
       </div>
@@ -112,17 +112,17 @@ const showTier1Details = computed(
           :key="gate.id"
           class="flex items-start gap-2 rounded-lg border border-border px-3 py-2 text-sm"
         >
-          <AppIcon :icon="appIcons.checkCircle"
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon"
             v-if="gate.passed"
             class="mt-0.5 size-4 shrink-0 text-primary"
             aria-hidden="true"
           />
-          <AppIcon :icon="appIcons.warning"
+          <HugeiconsIcon :icon="Alert01Icon"
             v-else-if="gate.soft"
             class="mt-0.5 size-4 shrink-0 text-amber-600"
             aria-hidden="true"
           />
-          <AppIcon :icon="appIcons.circle"
+          <HugeiconsIcon :icon="CircleIcon"
             v-else
             class="mt-0.5 size-4 shrink-0 text-muted-foreground"
             aria-hidden="true"

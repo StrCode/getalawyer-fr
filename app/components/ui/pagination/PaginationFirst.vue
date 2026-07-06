@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowLeft01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { PaginationFirstProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import type { ButtonVariants } from '@/components/ui/button'
@@ -27,7 +27,7 @@ const forwarded = useForwardProps(delegatedProps)
     v-bind="forwarded"
   >
     <slot>
-      <AppIcon :icon="appIcons.caretLeft" />
+      <HugeiconsIcon :icon="ArrowLeft01Icon" />
       <span class="hidden sm:block">First</span>
     </slot>
   </PaginationFirst>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowLeft01Icon, Calendar01Icon, CheckmarkBadge01Icon, SecurityCheckIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 const route = useRoute()
@@ -16,9 +16,9 @@ const authDescription = computed(() => {
 const authWide = computed(() => route.meta.authWide === true)
 
 const trustPoints = [
-  { icon: appIcons.sealCheck, label: 'Every lawyer NIN & SCN verified' },
-  { icon: appIcons.calendarBlank, label: 'Book consultations in minutes' },
-  { icon: appIcons.shieldCheck, label: 'Secure, encrypted sign-in' },
+  { icon: CheckmarkBadge01Icon, label: 'Every lawyer NIN & SCN verified' },
+  { icon: Calendar01Icon, label: 'Book consultations in minutes' },
+  { icon: SecurityCheckIcon, label: 'Secure, encrypted sign-in' },
 ] as const
 </script>
 
@@ -56,7 +56,7 @@ const trustPoints = [
             class="flex items-center gap-3 text-sm text-background/75"
           >
             <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/6 ring-1 ring-white/10">
-              <AppIcon :icon="point.icon" class="size-4 text-primary" aria-hidden="true" />
+              <HugeiconsIcon :icon="point.icon" class="size-4 text-primary" aria-hidden="true" />
             </span>
             {{ point.label }}
           </li>
@@ -87,7 +87,7 @@ const trustPoints = [
           to="/"
           class="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
-          <AppIcon :icon="appIcons.arrowLeft" class="size-4 shrink-0 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
+          <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4 shrink-0 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
           <span class="lg:hidden">Back</span>
           <span class="hidden lg:inline">Back to website</span>
         </NuxtLink>

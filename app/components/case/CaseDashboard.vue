@@ -10,7 +10,7 @@
           class="gap-2"
           @click="$emit('create-case')"
         >
-          <AppIcon :icon="appIcons.plus" class="size-4" />
+          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
           New case
         </Button>
       </template>
@@ -33,7 +33,7 @@
               {{ statistics.total }}
             </p>
           </div>
-          <AppIcon :icon="appIcons.briefcase" class="size-8 text-primary" />
+          <HugeiconsIcon :icon="Briefcase01Icon" class="size-8 text-primary" />
         </CardContent>
       </Card>
 
@@ -47,7 +47,7 @@
               {{ statistics.active }}
             </p>
           </div>
-          <AppIcon :icon="appIcons.play" class="size-8 text-primary" />
+          <HugeiconsIcon :icon="PlayIcon" class="size-8 text-primary" />
         </CardContent>
       </Card>
 
@@ -61,7 +61,7 @@
               {{ statistics.overdue }}
             </p>
           </div>
-          <AppIcon :icon="appIcons.warning" class="size-8 text-destructive" />
+          <HugeiconsIcon :icon="Alert01Icon" class="size-8 text-destructive" />
         </CardContent>
       </Card>
 
@@ -75,7 +75,7 @@
               {{ statistics.closed }}
             </p>
           </div>
-          <AppIcon :icon="appIcons.checkCircle" class="size-8 text-muted-foreground" />
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-8 text-muted-foreground" />
         </CardContent>
       </Card>
     </div>
@@ -118,8 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon, Alert01Icon, Briefcase01Icon, CheckmarkCircle01Icon, PlayIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {

@@ -19,7 +19,7 @@
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
                 @click="scrollToSection(section.id)"
               >
-                <AppIcon
+                <HugeiconsIcon
                   v-if="section.icon"
                   :icon="section.icon"
                   class="size-4 shrink-0"
@@ -48,14 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
+import type { Hugeicon } from '@/lib/icon-types'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ProfileMobileSectionSelect from '@/components/profile/ProfileMobileSectionSelect.vue'
-import type { AppIconData } from '@/lib/app-icons'
 
 export interface ClientProfileShellSection {
   id: string
   label: string
-  icon?: AppIconData
+  icon?: Hugeicon
 }
 
 const props = defineProps<{

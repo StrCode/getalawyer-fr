@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, ArrowRight01Icon, Briefcase01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { useSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
@@ -56,7 +56,7 @@ const filteredAreas = computed(() => {
 
         <div class="group relative mx-auto max-w-lg">
           <div class="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4 text-muted-foreground">
-            <AppIcon :icon="appIcons.magnifyingGlass" class="size-5" />
+            <HugeiconsIcon :icon="Search01Icon" class="size-5" />
           </div>
           <input
             v-model="searchQuery"
@@ -87,7 +87,7 @@ const filteredAreas = computed(() => {
         class="py-20 text-center"
       >
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
-          <AppIcon :icon="appIcons.warningCircle" class="size-6" />
+          <HugeiconsIcon :icon="AlertCircleIcon" class="size-6" />
         </div>
         <h3 class="mb-2 text-lg font-semibold text-foreground">
           Could not load practice areas
@@ -105,7 +105,7 @@ const filteredAreas = computed(() => {
         class="py-20 text-center"
       >
         <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted text-primary">
-          <AppIcon :icon="appIcons.warningCircle" class="size-6" />
+          <HugeiconsIcon :icon="AlertCircleIcon" class="size-6" />
         </div>
         <h3 class="mb-2 text-lg font-semibold text-foreground">
           No practice areas found
@@ -126,7 +126,7 @@ const filteredAreas = computed(() => {
           class="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card p-6 text-foreground no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md"
         >
           <div class="flex size-10 items-center justify-center rounded-xl bg-muted text-primary">
-            <AppIcon :icon="appIcons.briefcase" class="size-5" aria-hidden="true" />
+            <HugeiconsIcon :icon="Briefcase01Icon" class="size-5" aria-hidden="true" />
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <h3 class="text-base leading-tight font-semibold text-foreground">
@@ -148,7 +148,7 @@ const filteredAreas = computed(() => {
           </p>
           <div class="mt-auto flex -translate-x-2 items-center gap-1.5 pt-2 text-sm font-medium text-primary opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
             View lawyers
-            <AppIcon :icon="appIcons.arrowRight" class="size-4" />
+            <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
           </div>
         </NuxtLink>
       </div>

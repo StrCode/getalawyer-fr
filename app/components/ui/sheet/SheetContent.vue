@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Cancel01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { DialogContentEmits, DialogContentProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -57,7 +57,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
         v-if="showCloseButton"
         class="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
       >
-        <AppIcon :icon="appIcons.x" class="size-4" />
+        <HugeiconsIcon :icon="Cancel01Icon" class="size-4" />
         <span class="sr-only">Close</span>
       </DialogClose>
     </DialogContent>

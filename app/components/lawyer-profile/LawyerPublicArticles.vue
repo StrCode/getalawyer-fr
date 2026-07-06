@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { News01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerProfileArticle } from '~/types/lawyer-profile-editor'
 defineProps<{
@@ -23,7 +23,7 @@ function formatPublishedDate(value: string | null | undefined): string | null {
   <section v-if="articles.length">
     <LawyerProfileSectionHeading title="Articles">
       <template #icon>
-        <AppIcon :icon="appIcons.article" />
+        <HugeiconsIcon :icon="News01Icon" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="space-y-4">

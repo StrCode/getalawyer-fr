@@ -55,7 +55,7 @@
           {{ session?.user?.email }}
         </p>
         <Badge variant="secondary" class="font-normal">
-          <AppIcon :icon="appIcons.checkCircle" class="mr-1 size-3.5" />
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mr-1 size-3.5" />
           Verified
         </Badge>
       </div>
@@ -88,7 +88,7 @@
           variant="secondary"
           class="shrink-0"
         >
-          <AppIcon :icon="appIcons.checkCircle" class="mr-1 size-3.5" />
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mr-1 size-3.5" />
           Verified
         </Badge>
       </div>
@@ -139,8 +139,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

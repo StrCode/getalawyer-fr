@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerSearchResult } from '~/lib/api'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -92,8 +92,8 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
             </Badge>
           </div>
 
-          <AppIcon
-            :icon="appIcons.caretRight"
+          <HugeiconsIcon
+            :icon="ArrowRight01Icon"
             class="size-4 shrink-0 text-muted-foreground group-hover:text-foreground"
           />
         </NuxtLink>

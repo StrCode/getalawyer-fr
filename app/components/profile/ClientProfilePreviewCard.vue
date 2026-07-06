@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CallIcon, Location01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -89,7 +89,7 @@ const locationLabel = computed(() => {
                 variant="soft"
                 class="gap-1 font-normal"
               >
-                <AppIcon :icon="appIcons.mapPin" class="size-3.5" />
+                <HugeiconsIcon :icon="Location01Icon" class="size-3.5" />
                 {{ locationLabel }}
               </Badge>
               <Badge
@@ -97,7 +97,7 @@ const locationLabel = computed(() => {
                 variant="outline"
                 class="gap-1 font-normal"
               >
-                <AppIcon :icon="appIcons.phone" class="size-3.5" />
+                <HugeiconsIcon :icon="CallIcon" class="size-3.5" />
                 {{ phoneNumber }}
               </Badge>
             </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Loading03Icon, SentIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -87,8 +87,8 @@ watch(isOpen, (open) => {
           class="mt-auto h-12 w-full font-semibold"
           :disabled="!question.trim() || isAsking"
         >
-          <AppIcon :icon="appIcons.circleNotch" v-if="isAsking" class="mr-2 size-4 animate-spin" />
-          <AppIcon :icon="appIcons.paperPlaneRight" v-else class="mr-2 size-4" />
+          <HugeiconsIcon :icon="Loading03Icon" v-if="isAsking" class="mr-2 size-4 animate-spin" />
+          <HugeiconsIcon :icon="SentIcon" v-else class="mr-2 size-4" />
           Send question
         </Button>
       </form>

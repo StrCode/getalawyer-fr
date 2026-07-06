@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { MinusSignIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { HTMLAttributes } from "vue"
 import { useForwardProps } from "reka-ui"
 
@@ -16,7 +16,7 @@ const forwarded = useForwardProps(props)
     v-bind="forwarded"
   >
     <slot>
-      <AppIcon :icon="appIcons.minus" />
+      <HugeiconsIcon :icon="MinusSignIcon" />
     </slot>
   </div>
 </template>

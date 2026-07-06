@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CheckmarkCircle01Icon, Loading03Icon, Mail01Icon, SentIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -119,8 +119,8 @@ function handleOpenChange(value: boolean) {
           class="mx-auto mb-5 flex size-16 items-center justify-center rounded-full"
           :class="sent ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary/10 text-primary'"
         >
-          <AppIcon
-            :icon="sent ? appIcons.checkCircle : appIcons.paperPlaneRight"
+          <HugeiconsIcon
+            :icon="sent ? CheckmarkCircle01Icon : SentIcon"
             class="size-8"
           />
         </div>
@@ -136,8 +136,8 @@ function handleOpenChange(value: boolean) {
           v-if="user?.email && !needsLinkEmail"
           class="mx-auto mt-4 inline-flex max-w-full items-center rounded-full border border-border/60 bg-muted/40 px-3 py-1.5"
         >
-          <AppIcon
-            :icon="appIcons.envelopeSimple"
+          <HugeiconsIcon
+            :icon="Mail01Icon"
             class="mr-2 size-4 shrink-0 text-muted-foreground"
           />
           <span class="truncate text-sm font-medium text-foreground">
@@ -188,9 +188,9 @@ function handleOpenChange(value: boolean) {
               :disabled="isSending"
               @click="sendVerificationLink"
             >
-              <AppIcon
+              <HugeiconsIcon
                 v-if="isSending"
-                :icon="appIcons.circleNotch"
+                :icon="Loading03Icon"
                 class="mr-2 size-4 animate-spin"
               />
               {{ sent ? 'Resend verification link' : 'Send verification link' }}

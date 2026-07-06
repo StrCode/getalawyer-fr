@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { SelectItemProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -33,7 +33,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     <span class="absolute right-2 flex size-3.5 items-center justify-center">
       <SelectItemIndicator>
         <slot name="indicator-icon">
-          <AppIcon :icon="appIcons.check" class="size-4" />
+          <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
         </slot>
       </SelectItemIndicator>
     </span>

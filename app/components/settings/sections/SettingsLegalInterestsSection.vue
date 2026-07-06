@@ -85,8 +85,8 @@
       </div>
 
       <div class="relative mb-5">
-        <AppIcon
-          :icon="appIcons.magnifyingGlass"
+        <HugeiconsIcon
+          :icon="Search01Icon"
           class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
         />
         <Input
@@ -128,15 +128,15 @@
             @click="!isDisabled(spec.id) && toggle(spec.id)"
           >
             {{ spec.name }}
-            <AppIcon
+            <HugeiconsIcon
               v-if="isSelected(spec.id)"
-              :icon="appIcons.check"
+              :icon="Tick01Icon"
               class="size-4 shrink-0"
               aria-hidden="true"
             />
-            <AppIcon
+            <HugeiconsIcon
               v-else
-              :icon="appIcons.plus"
+              :icon="Add01Icon"
               class="size-4 shrink-0 opacity-50"
               aria-hidden="true"
             />
@@ -156,8 +156,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon, Search01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'

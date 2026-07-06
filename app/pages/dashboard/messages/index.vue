@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, ArrowLeft01Icon, Message01Icon, Message02Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import type { ConversationInfo, ConversationParticipant } from '~/types/messaging'
 import ConversationThreadPanel from '@/components/messaging/ConversationThreadPanel.vue'
@@ -205,7 +205,7 @@ function previewText(conversation: ConversationInfo) {
               v-else-if="conversationsError"
               class="flex flex-col items-center gap-3 px-4 py-10 text-center"
             >
-              <AppIcon :icon="appIcons.warningCircle" class="size-8 text-muted-foreground" />
+              <HugeiconsIcon :icon="AlertCircleIcon" class="size-8 text-muted-foreground" />
               <p class="text-sm text-muted-foreground">
                 Could not load conversations.
               </p>
@@ -222,7 +222,7 @@ function previewText(conversation: ConversationInfo) {
               v-else-if="!conversations?.length"
               class="flex flex-col items-center px-4 py-14 text-center"
             >
-              <AppIcon :icon="appIcons.chatCircleDots" class="mb-3 size-12 text-muted-foreground/40" />
+              <HugeiconsIcon :icon="Message02Icon" class="mb-3 size-12 text-muted-foreground/40" />
               <p class="text-sm font-medium text-foreground">
                 No conversations yet
               </p>
@@ -258,7 +258,7 @@ function previewText(conversation: ConversationInfo) {
             v-if="!selectedConversationId"
             class="flex flex-1 flex-col items-center justify-center px-6 text-center text-muted-foreground"
           >
-            <AppIcon :icon="appIcons.chatCircle" class="mb-4 size-14 text-muted-foreground/30" />
+            <HugeiconsIcon :icon="Message01Icon" class="mb-4 size-14 text-muted-foreground/30" />
             <p class="text-base font-medium text-foreground">
               Select a conversation
             </p>
@@ -277,7 +277,7 @@ function previewText(conversation: ConversationInfo) {
                 aria-label="Back to conversations"
                 @click="clearConversationSelection"
               >
-                <AppIcon :icon="appIcons.arrowLeft" class="size-4" />
+                <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
               </Button>
 
               <div class="min-w-0 flex-1">

@@ -1,6 +1,6 @@
 <script lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, Cancel01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
@@ -15,7 +15,7 @@ import { useLawyerOnboarding } from '~/composables/useLawyerOnboarding'
 
 export default defineComponent({
   components: {
-    AppIcon,
+    HugeiconsIcon,
   },
   setup() {
     const lawyerStore = useLawyerOnboardingStore()
@@ -193,7 +193,9 @@ export default defineComponent({
     })
 
     return {
-      appIcons,
+      AlertCircleIcon,
+      Cancel01Icon,
+      Loading03Icon,
       validationErrorBanner,
       isPending,
       isFetching,
@@ -234,7 +236,7 @@ export default defineComponent({
         :aria-busy="isExiting"
         @click="handleExit"
       >
-        <AppIcon :icon="appIcons.circleNotch"
+        <HugeiconsIcon :icon="Loading03Icon"
           v-if="isExiting"
           class="size-4 shrink-0 animate-spin text-muted-foreground"
           aria-hidden="true"
@@ -243,7 +245,7 @@ export default defineComponent({
         <template v-else>
           <span class="hidden sm:inline">Save &amp; exit</span>
           <span class="sm:hidden">Save</span>
-          <AppIcon :icon="appIcons.x" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <HugeiconsIcon :icon="Cancel01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         </template>
       </Button>
     </header>
@@ -252,7 +254,7 @@ export default defineComponent({
     <main ref="scrollContainer" class="relative flex-1 overflow-y-auto bg-card">
       <div class="relative mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 md:px-12 lg:py-16">
          <div v-if="isPending" class="flex flex-col items-center justify-center py-32">
-            <AppIcon :icon="appIcons.circleNotch" class="w-10 h-10 text-primary animate-spin mb-4" />
+            <HugeiconsIcon :icon="Loading03Icon" class="w-10 h-10 text-primary animate-spin mb-4" />
             <p class="font-medium tracking-tight text-muted-foreground">Syncing your progress...</p>
          </div>
          
@@ -261,7 +263,7 @@ export default defineComponent({
             <transition name="fade">
               <div v-if="isFetching && !isPending" class="absolute -top-10 right-0 flex items-center gap-2">
                  <span class="text-xs font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
-                 <AppIcon :icon="appIcons.circleNotch" class="w-4 h-4 text-primary/40 animate-spin" />
+                 <HugeiconsIcon :icon="Loading03Icon" class="w-4 h-4 text-primary/40 animate-spin" />
               </div>
             </transition>
             
@@ -282,7 +284,7 @@ export default defineComponent({
             class="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-destructive shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
             role="alert"
           >
-            <AppIcon :icon="appIcons.warningCircle" class="mt-0.5 size-4 shrink-0 sm:size-5" />
+            <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-4 shrink-0 sm:size-5" />
             <span class="whitespace-pre-line">{{ validationErrorBanner }}</span>
           </div>
         </div>
@@ -323,7 +325,7 @@ export default defineComponent({
                 :disabled="isSaving"
                 @click="handleNext"
               >
-                <AppIcon :icon="appIcons.circleNotch"
+                <HugeiconsIcon :icon="Loading03Icon"
                   v-if="isSaving && !isExiting"
                   class="mr-2 h-4 w-4 shrink-0 animate-spin"
                 />

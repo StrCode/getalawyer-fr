@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
 import { formatNairaAmount } from '~/composables/useSubscription'
 
@@ -74,7 +74,7 @@ const features = [
           <ul class="m-0 list-none space-y-4 p-0">
             <li v-for="feat in features" :key="feat" class="flex items-start gap-3 text-base text-foreground">
               <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-primary">
-                <AppIcon :icon="appIcons.check" class="size-3" />
+                <HugeiconsIcon :icon="Tick01Icon" class="size-3" />
               </span>
               {{ feat }}
             </li>

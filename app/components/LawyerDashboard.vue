@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Briefcase01Icon, Calendar03Icon, CheckmarkCircle01Icon, Clock01Icon, CreditCardIcon, File01Icon, Message01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
 import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
@@ -148,7 +148,7 @@ const quickLinks = computed((): DashboardQuickLink[] => [
     label: 'Appointments',
     description: 'Manage bookings',
     to: '/dashboard/appointments',
-    icon: appIcons.calendarDots,
+    icon: Calendar03Icon,
   },
   {
     label: 'Messages',
@@ -157,7 +157,7 @@ const quickLinks = computed((): DashboardQuickLink[] => [
         ? `${unreadMessageCount.value} unread`
         : 'Chat with clients',
     to: '/dashboard/messages',
-    icon: appIcons.chatCircle,
+    icon: Message01Icon,
   },
   {
     label: 'Cases',
@@ -166,25 +166,25 @@ const quickLinks = computed((): DashboardQuickLink[] => [
         ? `${activeCases.value.length} active`
         : 'Client matters',
     to: '/dashboard/cases',
-    icon: appIcons.briefcase,
+    icon: Briefcase01Icon,
   },
   {
     label: 'Availability',
     description: 'Set your schedule',
     to: '/dashboard/availability',
-    icon: appIcons.clock,
+    icon: Clock01Icon,
   },
   {
     label: 'Consultation Types',
     description: 'Edit your services',
     to: '/dashboard/consultation-types',
-    icon: appIcons.fileText,
+    icon: File01Icon,
   },
   {
     label: 'Subscription',
     description: 'Membership & billing',
     to: '/dashboard/subscription',
-    icon: appIcons.creditCard,
+    icon: CreditCardIcon,
   },
 ])
 
@@ -268,8 +268,8 @@ function confirmDecline() {
             to="/dashboard/profile"
             class="gap-2"
           >
-            <AppIcon
-              :icon="appIcons.userCircle"
+            <HugeiconsIcon
+              :icon="UserCircleIcon"
               class="size-4"
             />
             View Profile
@@ -293,32 +293,32 @@ function confirmDecline() {
             <StatCard
               label="Pending requests"
               :value="stats.pending"
-              :icon="appIcons.clock"
+              :icon="Clock01Icon"
               :subtitle="stats.pending === 0 ? 'No pending requests' : 'Awaiting your response'"
             />
             <StatCard
               label="Upcoming"
               :value="stats.upcoming"
-              :icon="appIcons.calendarDots"
+              :icon="Calendar03Icon"
               :subtitle="stats.upcoming === 0 ? 'No upcoming' : 'Confirmed consultations'"
             />
             <StatCard
               label="Completed"
               :value="stats.completed"
-              :icon="appIcons.checkCircle"
+              :icon="CheckmarkCircle01Icon"
               :subtitle="stats.completed === 0 ? 'None yet' : 'Past consultations'"
             />
             <StatCard
               label="Active cases"
               :value="stats.activeCases"
-              :icon="appIcons.briefcase"
+              :icon="Briefcase01Icon"
               :subtitle="stats.activeCases === 0 ? 'No open cases' : 'Ongoing matters'"
             />
           </div>
 
           <EmptyState
             v-if="showFullEmpty"
-            :icon="appIcons.calendarDots"
+            :icon="Calendar03Icon"
             title="No consultations yet"
             description="Your consultation requests will appear here. Make sure your profile is complete and your availability is set."
           >

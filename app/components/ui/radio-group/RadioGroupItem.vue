@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import type { RadioGroupItemProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
 import { reactiveOmit } from "@vueuse/core"
@@ -34,7 +34,7 @@ const forwardedProps = useForwardProps(delegatedProps)
       class="relative flex items-center justify-center"
     >
       <slot>
-        <AppIcon :icon="appIcons.circle" class="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
+        <HugeiconsIcon :icon="CircleIcon" class="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
       </slot>
     </RadioGroupIndicator>
   </RadioGroupItem>

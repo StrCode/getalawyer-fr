@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { CreditCardIcon, Loading03Icon, Logout01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -44,7 +44,8 @@ useHead({
 })
 
 const router = useRouter()
-const { session, signOut } = useAuth()
+const { session } = useAuth()
+const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 const queryClient = useQueryClient()
 
 await useAsyncData('onboarding-subscription-status', () =>
@@ -272,7 +273,7 @@ async function retry() {
       v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
       class="flex flex-col items-center justify-center gap-4 py-28 text-center"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-10 animate-spin text-primary" aria-hidden="true" />
+      <HugeiconsIcon :icon="Loading03Icon" class="size-10 animate-spin text-primary" aria-hidden="true" />
       <p class="text-sm font-medium text-muted-foreground">
         <template v-if="hasPendingSubscription && confirmingPendingPayment">
           Confirming your payment…
@@ -329,7 +330,7 @@ async function retry() {
               <div
                 class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
               >
-                <AppIcon :icon="appIcons.creditCard" class="size-5" />
+                <HugeiconsIcon :icon="CreditCardIcon" class="size-5" />
               </div>
               <div>
                 <h2 class="text-base font-semibold text-foreground">
@@ -360,7 +361,7 @@ async function retry() {
               v-if="hasActiveSubscription"
               class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
             >
-              <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+              <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
               <div>
                 <p class="font-semibold text-foreground">
                   Payment received
@@ -387,9 +388,9 @@ async function retry() {
                 :disabled="paymentBusy || !pricing"
                 @click="startPayment"
               >
-                <AppIcon
+                <HugeiconsIcon
                   v-if="paymentBusy"
-                  :icon="appIcons.circleNotch"
+                  :icon="Loading03Icon"
                   class="mr-2 size-4 animate-spin"
                 />
                 {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
@@ -425,15 +426,15 @@ async function retry() {
 
               <ul class="space-y-2 text-sm text-muted-foreground">
                 <li class="flex gap-2">
-                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
                   Directory listing and client bookings
                 </li>
                 <li class="flex gap-2">
-                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
                   Secure messaging with clients
                 </li>
                 <li class="flex gap-2">
-                  <AppIcon :icon="appIcons.check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
                   Zero commission on your fees
                 </li>
               </ul>
@@ -471,11 +472,12 @@ async function retry() {
         </p>
         <button
           type="button"
-          class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          @click="signOut()"
+          class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
+          :disabled="isSigningOut"
+          @click="handleSignOut()"
         >
-          <AppIcon :icon="appIcons.signOut" class="size-4" />
-          Sign out
+          <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+          {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
         </button>
       </div>
     </div>

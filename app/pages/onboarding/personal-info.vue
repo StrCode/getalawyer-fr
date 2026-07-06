@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, inject, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
@@ -290,7 +290,7 @@ watch(
                             : 'Select your date of birth'
                         }}
                       </span>
-                      <AppIcon :icon="appIcons.caretDown" class="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <HugeiconsIcon :icon="ArrowDown01Icon" class="h-4 w-4 shrink-0 text-muted-foreground" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent class="w-auto overflow-hidden p-0" align="start">

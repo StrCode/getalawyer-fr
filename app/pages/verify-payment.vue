@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, CheckmarkCircle01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import {
@@ -147,7 +147,7 @@ function retryVerify() {
       v-if="resolvingReference || missingReference"
       class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" />
+      <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" />
       <p>{{ resolvingReference ? 'Checking your payment status…' : 'Redirecting…' }}</p>
     </div>
 
@@ -160,19 +160,19 @@ function retryVerify() {
           v-if="verifyPending"
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary"
         >
-          <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin" />
+          <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin" />
         </div>
         <div
           v-else-if="isSuccess"
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
         >
-          <AppIcon :icon="appIcons.checkCircle" class="size-9" />
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-9" />
         </div>
         <div
           v-else
           class="mx-auto flex size-16 items-center justify-center rounded-full bg-amber-50 text-amber-700"
         >
-          <AppIcon :icon="appIcons.warningCircle" class="size-9" />
+          <HugeiconsIcon :icon="AlertCircleIcon" class="size-9" />
         </div>
 
         <div class="space-y-2">
@@ -232,7 +232,7 @@ function retryVerify() {
       v-else-if="redirectedAfterSuccess || (isSuccess && !verifyPending)"
       class="flex flex-col items-center gap-3 py-20 text-center text-sm text-muted-foreground"
     >
-      <AppIcon :icon="appIcons.circleNotch" class="size-8 animate-spin text-primary" />
+      <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" />
       <p>Opening your application status…</p>
     </div>
   </div>

@@ -6,7 +6,7 @@
       class="flex items-center gap-2"
       :class="check.test(password) ? 'text-primary' : 'text-muted-foreground'"
     >
-      <AppIcon :icon="appIcons.check" v-if="check.test(password)" class="w-3.5 h-3.5 shrink-0" />
+      <HugeiconsIcon :icon="Tick01Icon" v-if="check.test(password)" class="w-3.5 h-3.5 shrink-0" />
       <span v-else class="w-3.5 h-3.5 shrink-0 text-center text-xs leading-none">○</span>
       {{ check.label }}
     </li>
@@ -17,8 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Tick01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { authPasswordChecks } from '~/lib/auth-password'
 
 defineProps<{

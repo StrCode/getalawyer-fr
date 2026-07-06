@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Building01Icon, Calendar01Icon, CallIcon, Video01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { ConsultationType } from '~/types/lawyer'
@@ -17,7 +17,7 @@ function formatPrice(price: string): string {
   <section v-if="consultationTypes.length">
     <LawyerProfileSectionHeading title="Consultation options">
       <template #icon>
-        <AppIcon :icon="appIcons.calendar" />
+        <HugeiconsIcon :icon="Calendar01Icon" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="grid grid-cols-1 gap-4">
@@ -53,7 +53,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <AppIcon :icon="appIcons.videoCamera" class="size-3.5" />
+            <HugeiconsIcon :icon="Video01Icon" class="size-3.5" />
             Video
           </Badge>
           <Badge
@@ -61,7 +61,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <AppIcon :icon="appIcons.phone" class="size-3.5" />
+            <HugeiconsIcon :icon="CallIcon" class="size-3.5" />
             Phone
           </Badge>
           <Badge
@@ -69,7 +69,7 @@ function formatPrice(price: string): string {
             variant="soft"
             class="gap-1"
           >
-            <AppIcon :icon="appIcons.buildings" class="size-3.5" />
+            <HugeiconsIcon :icon="Building01Icon" class="size-3.5" />
             In person
           </Badge>
         </div>

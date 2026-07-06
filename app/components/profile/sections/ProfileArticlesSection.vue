@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
@@ -143,7 +143,7 @@ async function onDeleteConfirm() {
           :disabled="disabled"
           @click="openCreate"
         >
-          <AppIcon :icon="appIcons.plus" class="size-4" />
+          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
           Add
         </Button>
       </div>

@@ -81,7 +81,7 @@
           v-else-if="isError"
           class="flex flex-col items-center gap-3 px-6 py-14 text-center"
         >
-          <AppIcon :icon="appIcons.warningCircle" class="size-10 text-muted-foreground" />
+          <HugeiconsIcon :icon="AlertCircleIcon" class="size-10 text-muted-foreground" />
           <p class="text-sm font-medium text-foreground">
             Failed to load bookings
           </p>
@@ -95,7 +95,7 @@
           class="p-4 sm:p-6"
         >
           <EmptyState
-            :icon="appIcons.calendar"
+            :icon="Calendar01Icon"
             :title="activeTab?.emptyTitle ?? 'No bookings'"
             :description="activeTab?.emptyDescription ?? 'No bookings found.'"
           >
@@ -204,8 +204,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, Calendar01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'

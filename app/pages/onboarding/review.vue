@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon, CancelCircleIcon, CheckmarkCircle01Icon, Clock01Icon, InformationCircleIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { formatScnForDisplay } from '~/lib/scn'
 import { formatPracticeAreaYears } from '~/lib/practice-areas'
@@ -123,7 +123,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
       class="flex gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5"
       role="status"
     >
-      <AppIcon :icon="appIcons.warningCircle" class="mt-0.5 size-5 shrink-0 text-primary" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
       <div class="min-w-0 flex-1 space-y-2">
         <p class="text-base font-semibold text-foreground">
           Identity verification is incomplete
@@ -144,7 +144,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
       class="flex gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-4 sm:px-5"
       role="status"
     >
-      <AppIcon :icon="appIcons.checkCircle" class="mt-0.5 size-5 shrink-0 text-primary" />
+      <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 shrink-0 text-primary" />
       <p class="text-base leading-relaxed text-foreground">
         <span class="font-semibold">You’re ready to submit.</span>
         Review each section below. Use Edit to change anything before our team reviews your application.
@@ -168,7 +168,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
               as-child
             >
               <NuxtLink to="/onboarding/personal-info">
-                <AppIcon :icon="appIcons.pencilSimple" class="size-3.5" aria-hidden="true" />
+                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
                 Edit
               </NuxtLink>
             </Button>
@@ -205,15 +205,15 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
                     'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'action',
                   }"
                 >
-                  <AppIcon :icon="appIcons.checkCircle"
+                  <HugeiconsIcon :icon="CheckmarkCircle01Icon"
                     v-if="ninDisplay.variant === 'verified'"
                     class="mr-1 size-3.5"
                   />
-                  <AppIcon :icon="appIcons.clock"
+                  <HugeiconsIcon :icon="Clock01Icon"
                     v-else-if="ninDisplay.variant === 'pending'"
                     class="mr-1 size-3.5"
                   />
-                  <AppIcon :icon="appIcons.xCircle" v-else class="mr-1 size-3.5" />
+                  <HugeiconsIcon :icon="CancelCircleIcon" v-else class="mr-1 size-3.5" />
                   {{ ninDisplay.label }}
                 </Badge>
                 <Button
@@ -248,7 +248,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
               as-child
             >
               <NuxtLink to="/onboarding/professional-information">
-                <AppIcon :icon="appIcons.pencilSimple" class="size-3.5" aria-hidden="true" />
+                <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
                 Edit
               </NuxtLink>
             </Button>
@@ -292,7 +292,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             as-child
           >
             <NuxtLink to="/onboarding/practice-information">
-              <AppIcon :icon="appIcons.pencilSimple" class="size-3.5" aria-hidden="true" />
+              <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" aria-hidden="true" />
               Edit
             </NuxtLink>
           </Button>
@@ -357,7 +357,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     <!-- Submit notice -->
     <Card class="rounded-2xl border border-border bg-card shadow-sm">
       <div class="flex gap-3 p-5 sm:p-6">
-        <AppIcon :icon="appIcons.info" class="mt-0.5 size-5 shrink-0 text-primary" />
+        <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
         <div class="space-y-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
           <p class="font-semibold text-foreground">What happens after you submit</p>
           <p>

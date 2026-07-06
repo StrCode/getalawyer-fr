@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon, Cancel01Icon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import { Badge } from '@/components/ui/badge'
@@ -95,7 +95,7 @@ async function onDeleteConfirm() {
           :disabled="disabled"
           @click="openCreate"
         >
-          <AppIcon :icon="appIcons.plus" class="size-4" />
+          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
           Add
         </Button>
       </div>
@@ -125,7 +125,7 @@ async function onDeleteConfirm() {
             aria-label="Edit skill"
             @click="openEdit(item)"
           >
-            <AppIcon :icon="appIcons.pencilSimple" class="size-3.5" />
+            <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" />
           </button>
           <button
             type="button"
@@ -134,7 +134,7 @@ async function onDeleteConfirm() {
             aria-label="Remove skill"
             @click="openDelete(item.id)"
           >
-            <AppIcon :icon="appIcons.x" class="size-3.5" />
+            <HugeiconsIcon :icon="Cancel01Icon" class="size-3.5" />
           </button>
         </Badge>
       </div>

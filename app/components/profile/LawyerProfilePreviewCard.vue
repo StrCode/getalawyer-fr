@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { LinkSquare01Icon, Location01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -59,7 +59,7 @@ const aboutPreview = computed(() => {
             class="gap-2"
           >
             Full preview
-            <AppIcon :icon="appIcons.arrowSquareOut" class="size-4" />
+            <HugeiconsIcon :icon="LinkSquare01Icon" class="size-4" />
           </NuxtLink>
         </Button>
       </div>
@@ -95,9 +95,9 @@ const aboutPreview = computed(() => {
               v-if="firmName || officeLocation"
               class="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground"
             >
-              <AppIcon
+              <HugeiconsIcon
                 v-if="officeLocation"
-                :icon="appIcons.mapPin"
+                :icon="Location01Icon"
                 class="size-3.5 shrink-0"
               />
               <span>

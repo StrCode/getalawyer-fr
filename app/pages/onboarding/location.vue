@@ -17,7 +17,7 @@
       v-else-if="isError"
       class="rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
     >
-      <AppIcon :icon="appIcons.warningCircle" class="mx-auto mb-3 size-8 text-muted-foreground" />
+      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-3 size-8 text-muted-foreground" />
       <p class="text-sm font-medium text-muted-foreground">
         We couldn't load location data. Refresh the page and try again.
       </p>
@@ -74,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { AlertCircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 definePageMeta({

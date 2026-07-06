@@ -76,7 +76,7 @@
             v-if="todayBookings.length === 0"
             class="px-6 py-12 text-center text-muted-foreground"
           >
-            <AppIcon :icon="appIcons.calendar" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <HugeiconsIcon :icon="Calendar01Icon" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
             <p>No appointments scheduled for today</p>
           </div>
           <div
@@ -106,7 +106,7 @@
             v-if="upcomingBookings.length === 0"
             class="px-6 py-12 text-center text-muted-foreground"
           >
-            <AppIcon :icon="appIcons.calendarCheck" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
+            <HugeiconsIcon :icon="CalendarCheckIn01Icon" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
             <p>No upcoming appointments</p>
           </div>
           <div
@@ -187,8 +187,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Calendar01Icon, CalendarCheckIn01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import BookingCard from '~/components/appointments/BookingCard.vue'

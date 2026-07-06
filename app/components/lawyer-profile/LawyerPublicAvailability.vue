@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Clock01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
 import type { LawyerWorkingDay } from '~/lib/lawyer-public-profile'
 defineProps<{
@@ -12,7 +12,7 @@ defineProps<{
   <section v-if="workingDays.length">
     <LawyerProfileSectionHeading title="Availability">
       <template #icon>
-        <AppIcon :icon="appIcons.clock" />
+        <HugeiconsIcon :icon="Clock01Icon" />
       </template>
     </LawyerProfileSectionHeading>
     <div class="rounded-2xl border border-border bg-card p-5 md:p-6">

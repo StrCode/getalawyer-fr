@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Location01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -111,7 +111,7 @@ function onSave() {
 
         <div class="space-y-4 rounded-xl border border-border bg-background p-4">
           <div class="flex items-start gap-2">
-            <AppIcon :icon="appIcons.mapPin" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <HugeiconsIcon :icon="Location01Icon" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             <div class="min-w-0">
               <p class="text-sm font-medium text-foreground">
                 Office address

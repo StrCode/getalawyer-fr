@@ -6,7 +6,7 @@
     >
       <template #actions>
         <Button @click="handleCreate">
-          <AppIcon :icon="appIcons.plus" class="mr-2 size-4" />
+          <HugeiconsIcon :icon="Add01Icon" class="mr-2 size-4" />
           Create new
         </Button>
       </template>
@@ -33,7 +33,7 @@
 
     <EmptyState
       v-else-if="!consultationTypes?.length"
-      :icon="appIcons.fileText"
+      :icon="File01Icon"
       title="No consultation types yet"
       description="Create your first consultation type to start accepting bookings"
     >
@@ -77,22 +77,22 @@
         <CardContent class="space-y-4">
           <div class="space-y-2 text-sm text-muted-foreground">
             <div class="flex items-center gap-2">
-              <AppIcon :icon="appIcons.clock" class="size-4 shrink-0" />
+              <HugeiconsIcon :icon="Clock01Icon" class="size-4 shrink-0" />
               <span>{{ type.durationMinutes }} minutes</span>
             </div>
             <div class="flex items-center gap-2">
-              <AppIcon :icon="appIcons.currencyEur" class="size-4 shrink-0" />
+              <HugeiconsIcon :icon="EuroIcon" class="size-4 shrink-0" />
               <span class="font-semibold text-foreground">{{ formatPrice(type.price, type.currency) }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <AppIcon :icon="appIcons.videoCamera" class="size-4 shrink-0" />
+              <HugeiconsIcon :icon="Video01Icon" class="size-4 shrink-0" />
               <span>{{ getMeetingTypeLabel(type.meetingType) }}</span>
             </div>
             <div
               v-if="type.bufferMinutes > 0"
               class="flex items-center gap-2"
             >
-              <AppIcon :icon="appIcons.timer" class="size-4 shrink-0" />
+              <HugeiconsIcon :icon="Timer01Icon" class="size-4 shrink-0" />
               <span>{{ type.bufferMinutes }}min buffer</span>
             </div>
           </div>
@@ -139,8 +139,8 @@
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/AppIcon.vue'
-import { appIcons } from '@/lib/app-icons'
+import { Add01Icon, Clock01Icon, EuroIcon, File01Icon, Timer01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
