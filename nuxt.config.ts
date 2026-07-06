@@ -87,13 +87,14 @@ export default defineNuxtConfig({
       styles: ['normal', 'italic'],
       fallbacks: {
         'Neue Haas Grotesk Text': ['ui-sans-serif', 'system-ui', 'sans-serif'],
-        'Inter Variable': ['ui-sans-serif', 'system-ui', 'sans-serif'],
+        Inter: ['ui-sans-serif', 'system-ui', 'sans-serif'],
       },
     },
     families: [
       {
-        name: 'Inter Variable',
+        name: 'Inter',
         provider: 'fontsource',
+        weights: ['100 900'],
         global: true,
       },
       {
