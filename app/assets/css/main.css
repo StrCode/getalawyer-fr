@@ -1,15 +1,46 @@
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/dm-sans";
 @import "vue-sonner/style.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Neue Haas Grotesk Text";
+  src: url("/fonts/neue-haas-grotesk-text-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neue Haas Grotesk Text";
+  src: url("/fonts/neue-haas-grotesk-text-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neue Haas Grotesk Text";
+  src: url("/fonts/neue-haas-grotesk-text-500.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neue Haas Grotesk Text";
+  src: url("/fonts/neue-haas-grotesk-text-500-italic.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme inline {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Neue Haas Grotesk Text", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -179,12 +210,39 @@
   .layout-leave-active {
     transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
+
   .page-enter-from,
   .page-leave-to,
   .layout-enter-from,
   .layout-leave-to {
     opacity: 0;
+  }
+}
+
+@layer utilities {
+  .app-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--foreground) 18%, transparent) transparent;
+  }
+
+  .app-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+    background-color: color-mix(in srgb, var(--foreground) 18%, transparent);
+  }
+
+  .app-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--foreground) 28%, transparent);
   }
 }
 
@@ -198,5 +256,3 @@
     scroll-behavior: auto !important;
   }
 }
-
-

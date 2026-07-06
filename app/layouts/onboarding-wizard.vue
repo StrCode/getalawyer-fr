@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AlertCircleIcon, Cancel01Icon, Loading03Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, Home01Icon, Loading03Icon, Logout01Icon, MoreVerticalIcon, Tick01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { LAWYER_UX_STEP_LABELS, LAWYER_STEP_UX_NUMBER } from '~/lib/lawyer-onboarding-steps'
 
@@ -40,10 +40,10 @@ export default defineComponent({
 
     const router = useRouter()
     const queryClient = useQueryClient()
-    const { refetchSession } = useAuth()
+    const { refetchSession, session } = useAuth()
+    const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
-    const canSaveAndExit = computed(() => userType.value === 'lawyer')
 
     // Layout loading indicators (clients have instantaneous local renders, lawyers fetch remote status)
     const isPending = computed(
@@ -65,6 +65,9 @@ export default defineComponent({
 
     const isSaving = ref(false)
     const isExiting = ref(false)
+
+    const accountName = computed(() => session.value?.user?.name || session.value?.user?.email || 'Account')
+    const accountEmail = computed(() => session.value?.user?.email || '')
 
     /** Lawyer step pages (e.g. professional info) can register async validation before save. */
     const lawyerStepValidate = ref<(() => Promise<boolean>) | null>(null)
@@ -122,36 +125,62 @@ export default defineComponent({
       }
     }
 
-    const handleExit = async () => {
-      if (isSaving.value || !canSaveAndExit.value) return
+    const saveCurrentProgress = async () => {
+      if (!currentStep.value || userType.value !== 'lawyer') return true
+      const saved = await store.value.saveStep(currentStep.value.key)
+      if (saved) {
+        toast.success('Progress saved', { duration: 1800 })
+        return true
+      }
+      toast.warning('Could not save progress', {
+        description: 'Please check this step and try again.',
+      })
+      return false
+    }
+
+    const handleSaveProgress = async () => {
+      if (isSaving.value) return
+      isSaving.value = true
+      try {
+        await saveCurrentProgress()
+      } finally {
+        isSaving.value = false
+      }
+    }
+
+    const handleExitToHome = async () => {
+      if (isSaving.value) return
 
       isExiting.value = true
       isSaving.value = true
       try {
-        if (currentStep.value) {
-          const saved = await store.value.saveStep(currentStep.value.key)
-          if (saved) {
-            toast.success('Progress saved', {
-              description: 'You can pick up onboarding again from your dashboard.',
-            })
-          } else {
-            toast.warning('Changes may not be saved', {
-              description:
-                'We could not sync your latest edits. You can return to onboarding from the dashboard.',
-            })
-          }
+        if (userType.value === 'lawyer') {
+          const saved = await saveCurrentProgress()
+          if (!saved) return
         }
-        await router.push('/dashboard')
+        await router.push('/')
       } catch (e) {
-        console.error('[Wizard] Save failed on exit:', e)
+        console.error('[Wizard] Exit failed:', e)
         toast.warning('Changes may not be saved', {
-          description:
-            'We could not sync your latest edits. You can return to onboarding from the dashboard.',
+          description: 'We could not sync your latest edits.',
         })
-        await router.push('/dashboard')
       } finally {
         isSaving.value = false
         isExiting.value = false
+      }
+    }
+
+    const handleSaveAndSignOut = async () => {
+      if (isSaving.value || isSigningOut.value) return
+      isSaving.value = true
+      try {
+        if (userType.value === 'lawyer') {
+          const saved = await saveCurrentProgress()
+          if (!saved) return
+        }
+        await handleSignOut('login')
+      } finally {
+        isSaving.value = false
       }
     }
 
@@ -232,28 +261,26 @@ export default defineComponent({
       })
     })
 
-    const progressSegments = computed(() => {
-      const total = progressStepTotal.value
-      if (total <= 0) return []
-      return Array.from({ length: total }, (_, i) => i + 1)
-    })
-
     return {
       AlertCircleIcon,
-      Cancel01Icon,
+      Home01Icon,
       Loading03Icon,
+      Logout01Icon,
+      MoreVerticalIcon,
       Tick01Icon,
+      UserCircleIcon,
       validationErrorBanner,
       isPending,
       isFetching,
       isSaving,
       isExiting,
+      isSigningOut,
+      accountName,
+      accountEmail,
       currentStep,
-      canSaveAndExit,
       steps,
       progressStepNumber,
       progressStepTotal,
-      progressSegments,
       sidebarSteps,
       isFirst,
       isLast,
@@ -262,7 +289,10 @@ export default defineComponent({
       scrollContainer,
       handleBack,
       handleNext,
-      handleExit
+      handleSaveProgress,
+      handleExitToHome,
+      handleSaveAndSignOut,
+      handleSignOut
     }
   }
 })
@@ -272,88 +302,182 @@ export default defineComponent({
   <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
     <!-- Header -->
     <header
-      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-3 transition-all duration-200 sm:px-8 sm:py-3 md:px-12"
+      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-3 transition-all duration-200 sm:px-8 sm:py-3 lg:hidden"
       :class="isScrolled ? 'shadow-sm' : ''"
     >
       <LandingBrandLogo class="min-w-0 shrink" />
 
-      <Button
-        v-if="canSaveAndExit"
-        type="button"
-        variant="outline"
-        class="h-8 shrink-0 gap-2 border-border bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:h-9 sm:px-4"
-        :disabled="isSaving"
-        :aria-busy="isExiting"
-        @click="handleExit"
-      >
-        <HugeiconsIcon :icon="Loading03Icon"
-          v-if="isExiting"
-          class="size-4 shrink-0 animate-spin text-muted-foreground"
-          aria-hidden="true"
-        />
-        <span v-if="isExiting" class="hidden sm:inline">Saving…</span>
-        <template v-else>
-          <span class="hidden sm:inline">Save &amp; exit</span>
-          <span class="sm:hidden">Save</span>
-          <HugeiconsIcon :icon="Cancel01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-        </template>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            class="size-9 shrink-0 cursor-pointer rounded-full border-border bg-background shadow-sm transition-all hover:border-foreground/20 hover:bg-muted hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring/30 data-[state=open]:border-foreground/30 data-[state=open]:bg-muted data-[state=open]:shadow-md"
+            aria-label="Open account menu"
+          >
+            <HugeiconsIcon :icon="UserCircleIcon" class="size-4" aria-hidden="true" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-60" :side-offset="8">
+          <DropdownMenuLabel class="font-normal">
+            <div class="truncate text-sm font-medium text-foreground">{{ accountName }}</div>
+            <div v-if="accountEmail" class="truncate text-xs text-muted-foreground">{{ accountEmail }}</div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
+            Save progress
+          </DropdownMenuItem>
+          <DropdownMenuItem :disabled="isSaving" @click="handleExitToHome">
+            <HugeiconsIcon :icon="Home01Icon" class="size-4" />
+            {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            :disabled="isSaving || isSigningOut"
+            @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
+          >
+            <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+            {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
 
     <!-- Flex container for Sidebar + Main -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar (lg+ only) -->
-      <aside class="hidden lg:flex w-64 flex-col overflow-y-auto border-r border-border/40 bg-background px-6 py-8">
-        <nav aria-label="Progress">
-          <ol role="list" class="overflow-hidden">
-            <li v-for="(step, stepIdx) in sidebarSteps" :key="step.label" class="relative pb-10">
-              <!-- Connecting line -->
-              <div v-if="stepIdx !== sidebarSteps.length - 1"
-                   class="absolute left-3 top-3 -ml-px mt-0.5 h-full w-px"
-                   :class="step.isCompleted ? 'bg-primary' : 'bg-border/60'"
-                   aria-hidden="true" />
-                   
-              <div class="relative flex items-start group">
-                <span class="h-9 flex items-center" aria-hidden="true">
-                  <span v-if="step.isCompleted" class="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary hover:bg-primary/90 transition-colors">
-                    <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 text-primary-foreground" />
+      <aside class="app-scrollbar hidden w-80 shrink-0 flex-col overflow-y-auto border-r border-border/50 bg-card/35 lg:flex">
+        <div class="border-b border-border/40 px-8 py-7">
+          <LandingBrandLogo class="min-w-0" />
+        </div>
+
+        <nav aria-label="Progress" class="px-8 py-10">
+          <Stepper
+            orientation="vertical"
+            :model-value="progressStepNumber"
+            class="flex flex-col gap-0"
+          >
+            <StepperItem
+              v-for="(step, stepIdx) in sidebarSteps"
+              :key="step.label"
+              v-slot="{ state }"
+              :step="step.stepNum"
+              class="relative flex w-full items-start gap-4"
+              :class="stepIdx === sidebarSteps.length - 1 ? 'pb-1' : 'pb-9'"
+            >
+              <StepperSeparator
+                v-if="stepIdx !== sidebarSteps.length - 1"
+                class="absolute left-[13px] top-8 block h-[calc(100%-1rem)] w-px shrink-0 rounded-full bg-border/70 group-data-[state=completed]:bg-primary"
+              />
+
+              <StepperTrigger as-child>
+                <Button
+                  type="button"
+                  :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
+                  size="icon"
+                  class="z-10 size-7 shrink-0 rounded-full"
+                  :class="state === 'active' ? 'ring-1 ring-primary ring-offset-2 ring-offset-card' : ''"
+                >
+                  <HugeiconsIcon
+                    v-if="state === 'completed'"
+                    :icon="Tick01Icon"
+                    class="size-3.5"
+                  />
+                  <span
+                    v-else
+                    class="size-2.5 rounded-full"
+                    :class="state === 'active' ? 'bg-primary-foreground' : 'bg-muted-foreground/30'"
+                  />
+                </Button>
+              </StepperTrigger>
+
+              <div class="min-w-0 flex-1 pt-0.5">
+                <StepperTitle
+                  class="text-sm font-medium tracking-normal whitespace-normal"
+                  :class="[
+                    state === 'active' || state === 'completed' ? 'text-foreground' : 'text-muted-foreground',
+                    state === 'active' ? 'font-semibold text-primary' : ''
+                  ]"
+                >
+                  {{ step.label }}
+                </StepperTitle>
+
+                <StepperDescription
+                  v-if="step.isActive && step.subRoutes.length > 1"
+                  class="mt-2.5 flex flex-col gap-2 text-xs"
+                >
+                  <span
+                    v-for="sub in step.subRoutes"
+                    :key="sub.label"
+                    class="flex items-center gap-2"
+                    :class="sub.isCurrent ? 'font-medium text-primary' : (sub.isDone ? 'text-foreground' : 'text-muted-foreground')"
+                  >
+                    <span
+                      class="size-1.5 rounded-full"
+                      :class="sub.isCurrent ? 'bg-primary' : (sub.isDone ? 'bg-foreground/40' : 'bg-muted-foreground/30')"
+                    />
+                    {{ sub.label }}
                   </span>
-                  <span v-else-if="step.isActive" class="relative z-10 flex size-6 items-center justify-center rounded-full bg-primary/15 ring-1 ring-primary ring-offset-1 ring-offset-background">
-                    <span class="size-2.5 rounded-full bg-primary" />
-                  </span>
-                  <span v-else class="relative z-10 flex size-6 items-center justify-center rounded-full bg-muted/60 ring-1 ring-inset ring-border">
-                    <span class="size-2.5 rounded-full bg-transparent" />
-                  </span>
-                </span>
-                <span class="ml-4 flex min-w-0 flex-col w-full">
-                  <span class="text-sm font-medium tracking-tight mt-1.5"
-                        :class="[
-                          step.isActive || step.isCompleted ? 'text-foreground' : 'text-muted-foreground',
-                          step.isActive ? 'text-primary font-semibold' : ''
-                        ]">
-                    {{ step.label }}
-                  </span>
-                  
-                  <!-- Sub routes (lawyer flow) -->
-                  <div v-if="step.isActive && step.subRoutes.length > 1" class="mt-2 flex flex-col gap-2">
-                    <div v-for="sub in step.subRoutes" :key="sub.label" 
-                         class="flex items-center gap-2 text-xs"
-                         :class="sub.isCurrent ? 'text-primary font-medium' : (sub.isDone ? 'text-foreground' : 'text-muted-foreground')">
-                      <div class="size-1.5 rounded-full" :class="sub.isCurrent ? 'bg-primary' : (sub.isDone ? 'bg-foreground/40' : 'bg-muted-foreground/30')" />
-                      {{ sub.label }}
-                    </div>
-                  </div>
-                </span>
+                </StepperDescription>
               </div>
-            </li>
-          </ol>
+            </StepperItem>
+          </Stepper>
         </nav>
+
+        <div class="mt-auto border-t border-border/40 px-8 py-6">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button
+                type="button"
+                variant="ghost"
+                class="group h-auto w-full cursor-pointer justify-start gap-3 rounded-lg border border-transparent px-2 py-2 text-left transition-all hover:border-border hover:bg-background hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring/30 data-[state=open]:border-border data-[state=open]:bg-background data-[state=open]:shadow-sm"
+              >
+                <span class="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors group-hover:border-foreground/20 group-hover:text-foreground">
+                  <HugeiconsIcon :icon="UserCircleIcon" class="size-4 text-muted-foreground transition-colors group-hover:text-foreground" aria-hidden="true" />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate text-sm font-medium text-foreground">{{ accountName }}</span>
+                  <span v-if="accountEmail" class="block truncate text-xs text-muted-foreground">{{ accountEmail }}</span>
+                </span>
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors group-hover:bg-muted group-hover:text-foreground">
+                  <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4" aria-hidden="true" />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent class="w-64" side="top" align="end" :side-offset="8">
+              <DropdownMenuLabel class="font-normal text-muted-foreground">
+                Account
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
+                <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
+                Save progress
+              </DropdownMenuItem>
+              <DropdownMenuItem :disabled="isSaving" @click="handleExitToHome">
+                <HugeiconsIcon :icon="Home01Icon" class="size-4" />
+                {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                :disabled="isSaving || isSigningOut"
+                @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
+              >
+                <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+                {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </aside>
 
       <!-- Main Content -->
-      <main ref="scrollContainer" class="relative flex-1 overflow-y-auto bg-background flex flex-col">
-        <div class="relative mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 md:px-8 lg:py-12 flex flex-1 flex-col">
-           <div class="w-full relative min-h-[400px] flex-1">
+      <main ref="scrollContainer" class="app-scrollbar relative flex flex-1 flex-col overflow-y-auto bg-background">
+        <div class="relative mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 md:px-8 lg:py-12">
+           <div class="relative w-full">
             <!-- Subtle fetch indicator -->
             <transition name="fade">
               <div v-if="isFetching || isPending" class="absolute -top-10 right-0 flex items-center gap-2">
@@ -381,7 +505,7 @@ export default defineComponent({
 
           <!-- Integrated Footer / Navigation -->
           <template v-if="progressStepTotal > 0 && progressStepNumber > 0">
-            <div class="mt-12 flex flex-col gap-6 pt-6 border-t border-border/40 sm:flex-row sm:items-center sm:justify-between">
+            <div class="mt-6 flex flex-col gap-4 pt-5 border-t border-border/40 sm:flex-row sm:items-center sm:justify-between">
               <p class="text-center text-sm font-medium tabular-nums text-muted-foreground sm:text-left lg:hidden">
                 Step {{ progressStepNumber }} of {{ progressStepTotal }}
               </p>
