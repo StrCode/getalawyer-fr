@@ -41,9 +41,6 @@ export default defineNuxtConfig({
   modules: ['@nuxt/image', '@nuxtjs/seo', '@peterbud/nuxt-query', '@pinia/nuxt', 'nuxt-viewport', 'shadcn-nuxt', '@nuxt/fonts'],
   app: {
     head: {
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.bunny.net', crossorigin: '' },
-      ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
