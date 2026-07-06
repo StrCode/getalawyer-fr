@@ -92,7 +92,7 @@ function isLinkActive(href: string) {
           <li v-for="link in links" :key="link.href">
             <NuxtLink
               :to="link.href"
-              class="cursor-pointer font-sans text-sm font-medium no-underline transition-colors duration-200"
+              class="cursor-pointer font-heading text-sm font-medium no-underline transition-colors duration-200"
               :class="isLinkActive(link.href)
                 ? 'text-primary'
                 : 'text-foreground hover:text-primary'"
@@ -167,7 +167,7 @@ function isLinkActive(href: string) {
             <li v-for="(link, index) in links" :key="link.href" class="overflow-hidden">
               <NuxtLink
                 :to="link.href"
-                class="block font-sans text-3xl font-medium leading-tight no-underline transition-colors duration-200"
+                class="block font-heading text-3xl font-medium leading-tight no-underline transition-colors duration-200"
                 :class="isLinkActive(link.href) ? 'text-primary' : 'text-foreground hover:text-primary'"
                 :style="{ animationDelay: `${index * 75 + 100}ms` }"
                 :aria-current="isLinkActive(link.href) ? 'page' : undefined"
