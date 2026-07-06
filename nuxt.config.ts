@@ -81,6 +81,51 @@ export default defineNuxtConfig({
     },
     fallbackBreakpoint: 'lg',
   },
+  fonts: {
+    defaults: {
+      weights: [400, 500, 700],
+      styles: ['normal', 'italic'],
+      fallbacks: {
+        'Neue Haas Grotesk Text': ['ui-sans-serif', 'system-ui', 'sans-serif'],
+        'Inter Variable': ['ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+    },
+    families: [
+      {
+        name: 'Inter Variable',
+        provider: 'npm',
+        global: true,
+      },
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-400.woff2',
+        weight: 400,
+        style: 'normal',
+        global: true,
+      },
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-400-italic.woff2',
+        weight: 400,
+        style: 'italic',
+        global: true,
+      },
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-500.woff2',
+        weight: 500,
+        style: 'normal',
+        global: true,
+      },
+      {
+        name: 'Neue Haas Grotesk Text',
+        src: '/fonts/neue-haas-grotesk-text-500-italic.woff2',
+        weight: 500,
+        style: 'italic',
+        global: true,
+      },
+    ],
+  },
   runtimeConfig: {
     public: {
       apiUrl,

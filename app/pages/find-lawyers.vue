@@ -641,13 +641,22 @@ const showMobileFilters = ref(false)
             class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-xs"
           >
             <div>
-              <p class="text-base font-semibold text-foreground">
+              <p
+                v-if="isLoading"
+                class="text-base font-semibold text-muted-foreground"
+              >
+                Searching lawyers…
+              </p>
+              <p
+                v-else
+                class="text-base font-semibold text-foreground"
+              >
                 <span class="font-mono tabular-nums">{{ lawyers.length }}</span>
                 {{ lawyers.length === 1 ? ' lawyer' : ' lawyers' }}
                 <span v-if="hasNextPage && lawyers.length > 0" class="text-muted-foreground">+</span>
               </p>
               <p class="text-xs font-semibold uppercase tracking-widest mt-0.5 text-muted-foreground">
-                {{ searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience' }}
+                {{ isLoading ? 'Updating results' : (searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience') }}
               </p>
             </div>
 
