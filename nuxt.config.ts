@@ -115,10 +115,6 @@ export default defineNuxtConfig({
         style: 'italic',
         global: true,
       },
-      {
-        name: 'Inter',
-        provider: 'fontsource',
-      },
     ],
   },
   runtimeConfig: {
