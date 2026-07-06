@@ -93,7 +93,7 @@ export default defineNuxtConfig({
     families: [
       {
         name: 'Inter Variable',
-        provider: 'npm',
+        provider: 'fontsource',
         global: true,
       },
       {
