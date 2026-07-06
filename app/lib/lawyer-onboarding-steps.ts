@@ -41,9 +41,9 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
   },
   nin_verification: {
     label: 'About you',
-    title: 'Verify your identity',
+    title: 'Submit your NIN for verification',
     description:
-      'Enter your National Identification Number. We store it securely and verify it during application review.',
+      'Enter your National Identification Number. We store it securely and review it during application verification.',
   },
   professional_info: {
     label: 'Credentials & practice',

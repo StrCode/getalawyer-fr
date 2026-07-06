@@ -27,7 +27,10 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
 
         switch (stepKey) {
             case 'location':
-                if (!clientState.country || !clientState.state) return false
+                if (!clientState.country || !clientState.state) {
+                    validationError.value = 'Select your state to continue.'
+                    return false
+                }
                 return true
 
             case 'specializations':

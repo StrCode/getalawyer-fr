@@ -43,6 +43,7 @@ export default defineComponent({
     const { refetchSession } = useAuth()
 
     const store = computed(() => userType.value === 'client' ? clientStore : lawyerStore)
+    const canSaveAndExit = computed(() => userType.value === 'lawyer')
 
     // Layout loading indicators (clients have instantaneous local renders, lawyers fetch remote status)
     const isPending = computed(
@@ -122,7 +123,7 @@ export default defineComponent({
     }
 
     const handleExit = async () => {
-      if (isSaving.value) return
+      if (isSaving.value || !canSaveAndExit.value) return
 
       isExiting.value = true
       isSaving.value = true
@@ -248,6 +249,7 @@ export default defineComponent({
       isSaving,
       isExiting,
       currentStep,
+      canSaveAndExit,
       steps,
       progressStepNumber,
       progressStepTotal,
@@ -276,6 +278,7 @@ export default defineComponent({
       <LandingBrandLogo class="min-w-0 shrink" />
 
       <Button
+        v-if="canSaveAndExit"
         type="button"
         variant="outline"
         class="h-8 shrink-0 gap-2 border-border bg-background px-3 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-muted sm:h-9 sm:px-4"

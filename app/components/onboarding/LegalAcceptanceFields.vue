@@ -39,7 +39,7 @@ const refundId = useId()
           <FieldLabel :for="termsId" class="cursor-pointer font-normal leading-snug">
             I accept the
             <NuxtLink
-              to="/privacy"
+              to="/terms"
               class="font-semibold text-primary underline underline-offset-2"
               target="_blank"
             >

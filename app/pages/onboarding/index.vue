@@ -185,7 +185,7 @@ function refresh() {
           Welcome, {{ firstName }} 👋
         </h1>
         <p class="text-base text-muted-foreground">
-          {{ isLawyer ? "Let's get your practice listed. This takes about 10 minutes." : "Let's personalize your experience. This takes about 2 minutes." }}
+          {{ isLawyer ? "Let's get your practice ready for review. This takes about 10 minutes." : "Let's personalize your lawyer recommendations. This takes about 2 minutes." }}
         </p>
       </div>
 

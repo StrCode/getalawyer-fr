@@ -4,8 +4,8 @@
       :step="2"
       :total="2"
       label="Legal needs"
-      title="What do you need help with?"
-      description="Choose up to three practice areas. We'll use them to recommend lawyers who fit your situation."
+      title="Choose your legal interests"
+      description="Pick up to three areas. We'll use them to recommend lawyers who fit your situation."
     />
 
     <!-- Selection status (Medium / Kit pattern) -->

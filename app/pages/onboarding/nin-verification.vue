@@ -157,7 +157,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-widest text-primary"
         >
           <HugeiconsIcon :icon="SecurityCheckIcon" class="h-4 w-4" />
-          Verified by Getalawyer
+          Verified by GetaLawyer
         </div>
        <h2 class="mb-3 text-2xl font-medium tracking-[-0.02em] text-foreground">Identity verified</h2>
         <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
@@ -178,10 +178,10 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         >
           <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="h-8 w-8 text-primary" />
         </div>
-        <p class="mb-1 text-lg font-medium text-foreground">NIN already submitted</p>
+        <p class="mb-1 text-lg font-medium text-foreground">NIN submitted for review</p>
         <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
           Your NIN is saved securely. You can continue, or replace it if you made a mistake — until
-          our team verifies it.
+          our team verifies it from the backend.
         </p>
         <Button type="button" variant="outline" class="rounded-xl" @click="store.beginChangeNin()">
           Change NIN
@@ -194,7 +194,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     </Card>
 
     <!-- Entry form -->
-    <Card class="p-6 sm:p-8">
+    <Card v-if="showEntryForm" class="p-6 sm:p-8">
         <FieldGroup class="gap-6">
           <form.Field v-slot="{ field }" name="nin">
             <Field :data-invalid="isInvalid(field)">
@@ -229,7 +229,9 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   {{ ninLength }}/11
                 </span>
               </div>
-              <FieldDescription>Enter your 11-digit National Identity Number.</FieldDescription>
+              <FieldDescription>
+                Enter your 11-digit National Identity Number. We will submit it securely for backend verification.
+              </FieldDescription>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
@@ -251,7 +253,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                 />
                 <span class="grid min-w-0 flex-1 gap-1">
                   <span class="text-sm font-medium leading-snug text-foreground">
-                    I consent to Getalawyer verifying my identity with the National Identity
+                    I consent to GetaLawyer verifying my identity with the National Identity
                     Management Commission (NIMC) for professional background checks.
                   </span>
                   <span class="text-xs leading-relaxed text-muted-foreground">

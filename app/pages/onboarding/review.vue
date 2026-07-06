@@ -201,9 +201,8 @@ const isPracticeExpanded = ref(true)
                       :variant="ninDisplay.variant === 'verified' ? 'default' : 'outline'"
                       class="text-sm"
                       :class="{
-                        'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified',
+                        'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'verified' || ninDisplay.variant === 'action',
                         'border-primary/20 bg-primary/5 text-primary': ninDisplay.variant === 'pending',
-                        'border-primary/30 bg-primary/10 text-primary': ninDisplay.variant === 'action',
                       }"
                     >
                       <HugeiconsIcon :icon="CheckmarkCircle01Icon" v-if="ninDisplay.variant === 'verified'" class="mr-1 size-3.5" />

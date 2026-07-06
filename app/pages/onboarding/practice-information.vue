@@ -118,14 +118,41 @@ watch(
     if (solo && formValues.value.firmName) {
       form.setFieldValue('firmName', '')
     }
+    if (solo) clearValidationMessage('firmName')
   },
 )
 
 const submitAttempted = ref(false)
+const validationMessages = ref<Record<string, string>>({})
 
 function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
   if (submitAttempted.value) return !field.state.meta.isValid
   return field.state.meta.isTouched && !field.state.meta.isValid
+}
+
+function fieldMessage(name: string) {
+  return validationMessages.value[name]
+}
+
+function hasFieldError(name: string) {
+  return submitAttempted.value && Boolean(fieldMessage(name))
+}
+
+function setValidationMessages(issues: Array<{ path: PropertyKey[]; message: string }>) {
+  const next: Record<string, string> = {}
+  for (const issue of issues) {
+    const key = String(issue.path[0] ?? 'form')
+    if (!next[key]) next[key] = issue.message
+  }
+  validationMessages.value = next
+  store.validationError = issues[0]?.message ?? 'Please check your practice details.'
+}
+
+function clearValidationMessage(name: string) {
+  if (!validationMessages.value[name]) return
+  const { [name]: _removed, ...rest } = validationMessages.value
+  validationMessages.value = rest
+  store.validationError = Object.values(rest)[0] ?? null
 }
 
 const { data: specData, isPending: isLoadingSpecs } = useSpecializations()
@@ -155,6 +182,7 @@ const { contains } = useFilter({ sensitivity: 'base' })
 
 function syncStates(value: string[], field?: { handleBlur: () => void }) {
   form.setFieldValue('statesOfPractice', value)
+  if (value.length > 0) clearValidationMessage('statesOfPractice')
   syncPrimaryAndAdditional(value, formValues.value.primaryState)
   syncFormToStore()
   field?.handleBlur()
@@ -167,6 +195,7 @@ function onPrimaryStateChange(
   const primary = String(value ?? '')
   field.handleChange(primary)
   field.handleBlur()
+  if (primary) clearValidationMessage('primaryState')
   const list = Array.isArray(formValues.value.statesOfPractice)
     ? [...formValues.value.statesOfPractice]
     : []
@@ -193,6 +222,7 @@ function toggleArea(id: string) {
     current.push({ practiceAreaId: id, yearsOfExperience: null })
   }
   form.setFieldValue('practiceAreas', current)
+  if (current.length > 0) clearValidationMessage('practiceAreas')
   syncFormToStore()
 }
 
@@ -239,9 +269,11 @@ onMounted(() => {
     Object.assign(store.practiceInfo, { ...formValues.value })
     const parsed = practiceSchema.value.safeParse(formValues.value)
     if (!parsed.success) {
-      await form.validateAllFields('submit')
+      setValidationMessages(parsed.error.issues)
       return false
     }
+    validationMessages.value = {}
+    store.validationError = null
     Object.assign(store.practiceInfo, parsed.data)
     syncFormToStore()
     submitAttempted.value = false
@@ -300,7 +332,7 @@ onBeforeUnmount(() => {
           </form.Field>
 
           <form.Field v-if="!formValues.soloPractitioner" v-slot="{ field }" name="firmName">
-            <Field :data-invalid="isInvalid(field)">
+            <Field :data-invalid="isInvalid(field) || hasFieldError('firmName')">
               <FieldLabel :for="field.name">
                 Firm or practice name
                 <span class="font-normal text-muted-foreground">(optional if solo)</span>
@@ -312,14 +344,20 @@ onBeforeUnmount(() => {
                
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
-                @update:model-value="field.handleChange"
+                @update:model-value="(v) => {
+                  field.handleChange(v)
+                  if (String(v ?? '').trim()) clearValidationMessage('firmName')
+                }"
               />
+              <p v-if="hasFieldError('firmName')" class="text-sm text-destructive" role="alert">
+                {{ fieldMessage('firmName') }}
+              </p>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
 
           <form.Field v-slot="{ field }" name="statesOfPractice">
-            <Field :data-invalid="isInvalid(field)">
+            <Field :data-invalid="isInvalid(field) || hasFieldError('statesOfPractice')">
               <FieldLabel>
                 States of practice
                 <span class="text-primary">*</span>
@@ -406,12 +444,15 @@ onBeforeUnmount(() => {
                 </ListboxRoot>
               </Popover>
               <FieldDescription>Select all states where you are licensed or actively practising.</FieldDescription>
+              <p v-if="hasFieldError('statesOfPractice')" class="text-sm text-destructive" role="alert">
+                {{ fieldMessage('statesOfPractice') }}
+              </p>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
 
           <form.Field v-slot="{ field }" name="practiceAreas">
-            <Field :data-invalid="isInvalid(field)">
+            <Field :data-invalid="isInvalid(field) || hasFieldError('practiceAreas')">
               <FieldLabel>
                 Legal specializations
                 <span class="text-primary">*</span>
@@ -500,12 +541,15 @@ onBeforeUnmount(() => {
                 </button>
               </div>
 
+              <p v-if="hasFieldError('practiceAreas')" class="text-sm text-destructive" role="alert">
+                {{ fieldMessage('practiceAreas') }}
+              </p>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
 
           <form.Field v-slot="{ field }" name="primaryState">
-            <Field :data-invalid="isInvalid(field)">
+            <Field :data-invalid="isInvalid(field) || hasFieldError('primaryState')">
               <FieldLabel :for="field.name">
                 Primary state of practice
                 <span class="text-primary">*</span>
@@ -527,6 +571,9 @@ onBeforeUnmount(() => {
               <FieldDescription>
                 Your main base — other selected states are listed as additional practice locations.
               </FieldDescription>
+              <p v-if="hasFieldError('primaryState')" class="text-sm text-destructive" role="alert">
+                {{ fieldMessage('primaryState') }}
+              </p>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
@@ -534,15 +581,21 @@ onBeforeUnmount(() => {
           <LegalAcceptanceFields
             :terms-accepted="formValues.termsAccepted === true"
             :refund-policy-accepted="formValues.refundPolicyAccepted === true"
-            @update:terms-accepted="(v) => form.setFieldValue('termsAccepted', v)"
-            @update:refund-policy-accepted="(v) => form.setFieldValue('refundPolicyAccepted', v)"
+            @update:terms-accepted="(v) => {
+              form.setFieldValue('termsAccepted', v)
+              if (v) clearValidationMessage('termsAccepted')
+            }"
+            @update:refund-policy-accepted="(v) => {
+              form.setFieldValue('refundPolicyAccepted', v)
+              if (v) clearValidationMessage('refundPolicyAccepted')
+            }"
           />
           <p
             v-if="submitAttempted && (!formValues.termsAccepted || !formValues.refundPolicyAccepted)"
             class="text-sm text-destructive"
             role="alert"
           >
-            Accept the Terms and refund policy to continue.
+            {{ fieldMessage('termsAccepted') || fieldMessage('refundPolicyAccepted') || 'Accept the Terms and refund policy to continue.' }}
           </p>
         </FieldGroup>
       </Card>

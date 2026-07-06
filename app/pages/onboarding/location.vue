@@ -4,8 +4,8 @@
       :step="1"
       :total="2"
       label="Location"
-      title="Where are you based?"
-      description="We'll use your state to surface lawyers who practice in your region and understand local rules."
+      title="Where do you need legal help?"
+      description="Choose your state so we can surface lawyers who practise in your region and understand local rules."
     />
 
     <div v-if="isLoading" class="space-y-6">
@@ -42,16 +42,16 @@
         </Field>
 
         <Field>
-          <FieldLabel>State or region</FieldLabel>
+          <FieldLabel>State</FieldLabel>
           <Select v-model="storeState.state">
             <SelectTrigger>
-              <SelectValue placeholder="Select state or region" />
+              <SelectValue placeholder="Select state" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem
                 v-for="s in availableStates"
                 :key="s.value"
-                :value="s.value"
+                :value="s.label"
               >
                 {{ s.label }}
               </SelectItem>
@@ -86,7 +86,14 @@ const availableStates = computed(() => {
   const states = selected?.states || []
   return states.map((s: { code: string; name: string }) => ({
     label: s.name,
-    value: s.code,
+    value: s.name,
   }))
 })
+
+watch(
+  () => storeState.state,
+  (state) => {
+    if (state) store.validationError = null
+  },
+)
 </script>
