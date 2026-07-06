@@ -46,7 +46,7 @@ function searchFor(term: string) {
       <!-- Eyebrow pill -->
       <div class="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-3.5 py-2">
         <span class="size-1.5 animate-pulse rounded-full bg-primary" />
-        <span class="text-xs font-semibold uppercase tracking-widest text-primary">Every lawyer NIN &amp; SCN verified</span>
+        <span class="text-xs font-medium uppercase tracking-widest text-primary">Every lawyer NIN &amp; SCN verified</span>
       </div>
 
       <!-- Headline -->
@@ -71,7 +71,7 @@ function searchFor(term: string) {
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <label for="hero-what" class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">What do you need?</label>
+              <label for="hero-what" class="text-xs font-medium uppercase tracking-widest text-muted-foreground">What do you need?</label>
               <input
                 id="hero-what"
                 v-model="whatInput"
@@ -93,7 +93,7 @@ function searchFor(term: string) {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
             </svg>
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <label for="hero-where" class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Where?</label>
+              <label for="hero-where" class="text-xs font-medium uppercase tracking-widest text-muted-foreground">Where?</label>
               <select
                 id="hero-where"
                 v-model="whereInput"
@@ -115,7 +115,7 @@ function searchFor(term: string) {
           <!-- Search button -->
           <button
             type="button"
-            class="mt-2 flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl border-none bg-primary px-7 py-3.5 font-sans text-base font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 active:scale-[0.98] sm:mt-0"
+            class="mt-2 flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl border-none bg-primary px-7 py-3.5 font-sans text-base font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 active:scale-[0.98] sm:mt-0"
             @click="onSearch"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

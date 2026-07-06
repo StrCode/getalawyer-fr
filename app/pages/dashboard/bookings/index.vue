@@ -21,7 +21,7 @@
   </div>
 
     <Card class="overflow-hidden py-0">
-      <CardHeader class="space-y-4 border-b border-border/60 px-5 py-4 sm:px-6">
+      <CardHeader class="space-y-4 border-b border-border/40 px-5 py-4 sm:px-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle class="text-base">

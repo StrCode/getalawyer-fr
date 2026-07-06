@@ -35,7 +35,7 @@ function close() {
     @update:open="emit('update:open', $event)"
   >
     <DialogContent class="max-h-[min(90svh,720px)] gap-0 overflow-hidden p-0 sm:max-w-lg">
-      <DialogHeader class="border-b border-border/60 px-6 py-4">
+      <DialogHeader class="border-b border-border/40 px-6 py-4">
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
           {{ description }}
@@ -46,7 +46,7 @@ function close() {
         <slot />
       </div>
 
-      <DialogFooter class="border-t border-border/60 px-6 py-4">
+      <DialogFooter class="border-t border-border/40 px-6 py-4">
         <Button
           type="button"
           variant="outline"

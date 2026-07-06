@@ -258,8 +258,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="isLoadingSpecs" class="flex justify-center py-20">
-    <HugeiconsIcon :icon="Loading03Icon" class="h-12 w-12 animate-spin text-primary/20" />
+  <div v-if="isLoadingSpecs" class="space-y-6 py-8">
+    <Skeleton class="h-10 w-full rounded-lg" />
+    <div class="grid gap-4 sm:grid-cols-2">
+      <Skeleton v-for="i in 4" :key="i" class="h-24 rounded-xl" />
+    </div>
   </div>
 
   <div v-else class="w-full space-y-8 pb-20">
@@ -350,7 +353,7 @@ onBeforeUnmount(() => {
                         :value="item"
                         class="rounded-md border border-primary/25 bg-primary/10 text-primary"
                       >
-                        <TagsInputItemText class="text-xs font-semibold" />
+                        <TagsInputItemText class="text-xs font-medium" />
                         <TagsInputItemDelete />
                       </TagsInputItem>
 
@@ -431,7 +434,7 @@ onBeforeUnmount(() => {
                 />
               </div>
 
-              <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              <p class="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 Selected ({{ selectedCount }}/5)
               </p>
 
@@ -446,12 +449,12 @@ onBeforeUnmount(() => {
                     ? 'border-primary/40 bg-primary/5'
                     : isDisabled(spec.id)
                       ? 'cursor-not-allowed border-transparent opacity-50'
-                      : 'cursor-pointer border-border/30 bg-card hover:border-border/60'"
+                      : 'cursor-pointer border-border/30 bg-card hover:border-border/40'"
                   @click="!isDisabled(spec.id) && toggleArea(spec.id)"
                 >
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0 flex-1">
-                      <p class="text-sm font-semibold text-foreground">{{ spec.name }}</p>
+                      <p class="text-sm font-medium text-foreground">{{ spec.name }}</p>
                       <p v-if="spec.description" class="line-clamp-1 text-xs text-muted-foreground">
                         {{ spec.description }}
                       </p>
@@ -494,7 +497,7 @@ onBeforeUnmount(() => {
                   v-for="row in selectedAreas"
                   :key="row.practiceAreaId"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"
+                  class="inline-flex items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
                   @click="toggleArea(row.practiceAreaId)"
                 >
                   {{ nameById(row.practiceAreaId) }}

@@ -1,5 +1,5 @@
 <template>
-  <CardFooter class="flex flex-wrap items-center justify-end gap-2 border-t border-border/60 bg-muted/20 px-6 py-4">
+  <CardFooter class="flex flex-wrap items-center justify-end gap-2 border-t border-border/40 bg-muted/20 px-6 py-4">
     <Button
       type="button"
       variant="outline"

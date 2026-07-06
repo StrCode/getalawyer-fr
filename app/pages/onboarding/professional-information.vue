@@ -140,7 +140,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
               </FieldLabel>
               <div class="flex gap-2">
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 font-mono text-sm font-semibold text-foreground"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 font-mono text-sm font-medium text-foreground"
                 >
                   SCN
                 </span>
@@ -160,7 +160,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
               </div>
               <FieldDescription>
                 Digits only (4–6), e.g. for SCN12345 enter
-                <span class="font-mono font-semibold">12345</span>.
+                <span class="font-mono font-medium">12345</span>.
                 <span
                   class="ml-2 tabular-nums"
                   :class="isValidScnDigits(barNumberStr) ? 'text-primary' : 'text-muted-foreground'"

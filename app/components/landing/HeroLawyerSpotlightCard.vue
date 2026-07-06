@@ -37,7 +37,7 @@ function onAvatarError() {
       >
       <div
         v-else
-        class="flex size-full items-center justify-center text-xs font-semibold"
+        class="flex size-full items-center justify-center text-xs font-medium"
         :class="lawyer.avatarClass"
         aria-hidden="true"
       >
@@ -52,7 +52,7 @@ function onAvatarError() {
     </div>
 
     <div class="min-w-0 flex-1">
-      <p class="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+      <p class="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
         {{ lawyer.name }}
       </p>
       <p class="mt-0.5 truncate text-xs text-muted-foreground">

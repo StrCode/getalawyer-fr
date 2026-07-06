@@ -12,7 +12,7 @@
       <label
         v-for="channel in channels"
         :key="channel.key"
-        class="flex cursor-pointer items-center justify-between gap-2 rounded-md border border-border/60 bg-background px-3 py-2.5 text-sm"
+        class="flex cursor-pointer items-center justify-between gap-2 rounded-md border border-border/40 bg-background px-3 py-2.5 text-sm"
       >
         <span class="text-muted-foreground">{{ channel.label }}</span>
         <Switch

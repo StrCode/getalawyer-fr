@@ -139,11 +139,10 @@ function refresh() {
 
 <template>
   <div class="flex min-h-[calc(100dvh-5.75rem)] flex-col items-center justify-center px-6 py-12">
-    <div v-if="isRouting && !isError" class="flex flex-col items-center gap-4 text-center">
-      <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" aria-hidden="true" />
-      <p class="text-sm font-medium text-muted-foreground">
-        Loading your application…
-      </p>
+    <div v-if="isRouting && !isError" class="mx-auto w-full max-w-md space-y-6 rounded-2xl p-8 text-center">
+      <Skeleton class="mx-auto size-16 rounded-full" />
+      <Skeleton class="mx-auto h-6 w-3/4 rounded-lg" />
+      <Skeleton class="mx-auto h-4 w-1/2 rounded-lg" />
     </div>
 
     <div
@@ -153,13 +152,13 @@ function refresh() {
       <div class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
         <HugeiconsIcon :icon="AlertCircleIcon" class="size-8" aria-hidden="true" />
       </div>
-     <h1 class="mb-2 text-xl font-semibold text-foreground">
+     <h1 class="mb-2 text-xl font-medium text-foreground">
         Could not load your progress
       </h1>
       <p class="mb-6 text-sm text-muted-foreground">
         Check your connection and try again.
       </p>
-      <Button class="h-11 w-full font-semibold" @click="refresh">
+      <Button class="h-11 w-full font-medium" @click="refresh">
         Retry
       </Button>
     </div>

@@ -103,8 +103,8 @@ const cardClass =
   'relative w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm'
 
 const sectionHeaderClass = 'flex items-start justify-between gap-4 border-b border-border/40 pb-4'
-const sectionTitleClass = 'text-xs font-semibold uppercase tracking-widest text-primary'
-const fieldLabelClass = 'text-sm font-semibold uppercase tracking-wide text-muted-foreground/70'
+const sectionTitleClass = 'text-xs font-medium uppercase tracking-widest text-primary'
+const fieldLabelClass = 'text-sm font-medium uppercase tracking-wide text-muted-foreground/70'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 </script>
 
@@ -125,7 +125,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     >
       <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
       <div class="min-w-0 flex-1 space-y-2">
-        <p class="text-base font-semibold text-foreground">
+        <p class="text-base font-medium text-foreground">
           Identity verification is incomplete
         </p>
         <p class="text-base leading-relaxed text-muted-foreground">
@@ -146,7 +146,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
     >
       <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 shrink-0 text-primary" />
       <p class="text-base leading-relaxed text-foreground">
-        <span class="font-semibold">You’re ready to submit.</span>
+        <span class="font-medium">You’re ready to submit.</span>
         Review each section below. Use Edit to change anything before our team reviews your application.
       </p>
     </div>
@@ -164,7 +164,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
               as-child
             >
               <NuxtLink to="/onboarding/personal-info">
@@ -219,7 +219,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
                 <Button
                   v-if="ninDisplay.variant !== 'verified'"
                   variant="link"
-                  class="h-auto px-0 text-sm font-semibold"
+                  class="h-auto px-0 text-sm font-medium"
                   as-child
                 >
                   <NuxtLink to="/onboarding/nin-verification">
@@ -244,7 +244,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
             <Button
               variant="outline"
               size="sm"
-              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
+              class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
               as-child
             >
               <NuxtLink to="/onboarding/professional-information">
@@ -288,7 +288,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
           <Button
             variant="outline"
             size="sm"
-            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-semibold"
+            class="h-9 shrink-0 gap-1.5 rounded-lg border-border/50 bg-card/80 px-3 text-sm font-medium"
             as-child
           >
             <NuxtLink to="/onboarding/practice-information">
@@ -359,7 +359,7 @@ const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
       <div class="flex gap-3 p-5 sm:p-6">
         <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
         <div class="space-y-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          <p class="font-semibold text-foreground">What happens after you submit</p>
+          <p class="font-medium text-foreground">What happens after you submit</p>
           <p>
             Your application goes into a pending state while our team manually reviews your credentials.
             This usually takes one to two business days. You’ll be notified when a decision is made.

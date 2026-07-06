@@ -151,7 +151,7 @@ async function onDeleteConfirm() {
     <CardContent>
       <p
         v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/60 py-8 text-center text-sm text-muted-foreground"
+        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
       >
         No articles yet. Publish legal insights for clients visiting your profile.
       </p>

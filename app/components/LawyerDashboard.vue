@@ -428,7 +428,7 @@ function confirmDecline() {
 
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card class="py-0 shadow-xs">
-              <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4">
+              <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
                 <CardTitle class="text-base">
                   Consultation Types
                 </CardTitle>
@@ -448,7 +448,7 @@ function confirmDecline() {
               </CardContent>
             </Card>
             <Card class="py-0 shadow-xs">
-              <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4">
+              <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
                 <CardTitle class="text-base">
                   Availability
                 </CardTitle>

@@ -161,7 +161,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           <HugeiconsIcon :icon="SquareLock01Icon" class="h-10 w-10" />
         </div>
         <div
-          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-widest text-primary"
         >
           <HugeiconsIcon :icon="SecurityCheckIcon" class="h-4 w-4" />
           Verified by Getalawyer
@@ -185,7 +185,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         >
           <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="h-8 w-8 text-primary" />
         </div>
-        <p class="mb-1 text-lg font-semibold text-foreground">NIN already submitted</p>
+        <p class="mb-1 text-lg font-medium text-foreground">NIN already submitted</p>
         <p class="mx-auto mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
           Your NIN is saved securely. You can continue, or replace it if you made a mistake — until
           our team verifies it.
@@ -194,7 +194,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           Change NIN
         </Button>
         <p class="mt-6 text-sm text-muted-foreground">
-          Use <span class="font-semibold text-foreground">Continue</span> to move on without
+          Use <span class="font-medium text-foreground">Continue</span> to move on without
           changing your NIN.
         </p>
       </div>
@@ -239,7 +239,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                   @update:model-value="(v) => onNinInput(field, v)"
                 />
                 <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-xs font-bold uppercase tracking-wider tabular-nums"
+                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 text-xs font-medium uppercase tracking-wider tabular-nums"
                   :class="ninLength === 11 ? 'text-primary' : 'text-muted-foreground/60'"
                 >
                   {{ ninLength }}/11

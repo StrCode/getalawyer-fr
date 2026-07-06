@@ -43,7 +43,7 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
     v-if="showCard"
     class="py-0 shadow-xs"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/60 px-4 py-4">
+    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
         <CardTitle class="text-base">
           Recent searches

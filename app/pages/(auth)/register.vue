@@ -19,7 +19,7 @@
       </header>
 
       <main class="flex flex-1 flex-col items-center justify-center px-4 pb-8 sm:px-8 lg:px-14 xl:px-16">
-        <div class="w-full max-w-md">
+        <motion.div class="w-full max-w-md" :initial="{ opacity: 0, y: 8 }" :animate="{ opacity: 1, y: 0 }" :transition="{ duration: 0.25 }">
           <Transition name="slide-fade" mode="out-in">
             <!-- Step 1: Role selection -->
             <div v-if="step === 'role'" key="role" class="flex w-full flex-col">
@@ -430,7 +430,7 @@
               </div>
             </div>
           </Transition>
-        </div>
+        </motion.div>
       </main>
     </div>
 
@@ -461,6 +461,7 @@
 </template>
 
 <script setup lang="ts">
+import { motion } from 'motion-v'
 import { ArrowLeft01Icon, Briefcase01Icon, Loading03Icon, Tick01Icon, UserIcon, AlertCircleIcon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'

@@ -2,7 +2,7 @@
   <Card class="overflow-hidden border-border bg-card shadow-none">
     <CardHeader
       v-if="title || description || $slots.action"
-      class="flex flex-row flex-wrap items-start justify-between gap-4 border-b border-border/60"
+      class="flex flex-row flex-wrap items-start justify-between gap-4 border-b border-border/40"
     >
       <div class="space-y-1">
         <CardTitle class="text-base">

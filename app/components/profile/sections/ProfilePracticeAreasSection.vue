@@ -186,7 +186,7 @@ function onSave() {
               ? 'border-primary/40 bg-primary/5'
               : isDisabled(spec.id)
                 ? 'cursor-not-allowed border-transparent opacity-50'
-                : 'cursor-pointer border-border/30 bg-background hover:border-border/60'"
+                : 'cursor-pointer border-border/30 bg-background hover:border-border/40'"
             @click="!disabled && !isDisabled(spec.id) && toggleArea(spec.id)"
           >
             <div class="flex items-start justify-between gap-2">

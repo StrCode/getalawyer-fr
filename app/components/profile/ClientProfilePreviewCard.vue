@@ -106,13 +106,13 @@ const locationLabel = computed(() => {
 
         <p
           v-if="bio?.trim()"
-          class="mt-4 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground"
+          class="mt-4 border-t border-border/40 pt-4 text-sm leading-relaxed text-muted-foreground"
         >
           {{ bio.trim() }}
         </p>
         <p
           v-else
-          class="mt-4 border-t border-border/60 pt-4 text-sm italic text-muted-foreground"
+          class="mt-4 border-t border-border/40 pt-4 text-sm italic text-muted-foreground"
         >
           Add a short bio to give lawyers context before your consultation.
         </p>

@@ -273,7 +273,7 @@ export default defineComponent({
     </main>
 
     <!-- Footer: unified progress + navigation -->
-    <footer class="z-40 shrink-0 border-t border-border/60 bg-background pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-sm">
+    <footer class="z-40 shrink-0 border-t border-border/40 bg-background pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-sm">
       <div class="relative mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-5 md:px-12">
         <!-- Validation error (client-only: avoids SSR/client DOM mismatch on Pinia) -->
         <div

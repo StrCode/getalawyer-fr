@@ -217,7 +217,7 @@ async function retryStatus() {
         <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
+        <p class="text-xs font-medium uppercase tracking-widest text-primary">
           Application status
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -232,7 +232,7 @@ async function retryStatus() {
           <p class="text-sm leading-relaxed text-muted-foreground">
             We could not reach the server to confirm your application status.
           </p>
-          <Button class="w-full font-semibold" @click="retryStatus">
+          <Button class="w-full font-medium" @click="retryStatus">
             Try again
           </Button>
         </div>
@@ -247,7 +247,7 @@ async function retryStatus() {
         <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
+        <p class="text-xs font-medium uppercase tracking-widest text-primary">
           Verification outcome
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -262,7 +262,7 @@ async function retryStatus() {
         <div class="space-y-4 p-6 text-sm text-muted-foreground">
           <p>
             Questions? Email
-            <a href="mailto:support@getalawyer.ng" class="font-semibold text-primary underline">
+            <a href="mailto:support@getalawyer.ng" class="font-medium text-primary underline">
               support@getalawyer.ng
             </a>
           </p>
@@ -293,7 +293,7 @@ async function retryStatus() {
             <HugeiconsIcon :icon="FileSearchIcon" class="size-11 text-primary" />
           </div>
 
-          <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
+          <p class="mb-2 text-xs font-medium uppercase tracking-widest text-primary">
             Step 3 of 3 · Application status
           </p>
          <h1 class="text-balance text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -309,7 +309,7 @@ async function retryStatus() {
           class="rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 text-foreground sm:px-5"
           role="status"
         >
-          <p class="text-sm font-semibold">
+          <p class="text-sm font-medium">
             {{ applicationNotice.title }}
           </p>
           <p class="mt-1 text-sm leading-relaxed opacity-90">
@@ -327,7 +327,7 @@ async function retryStatus() {
             >
               <div class="flex w-full items-center">
                 <span
-                  class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors"
+                  class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-colors"
                   :class="
                     step.status === 'done'
                       ? 'bg-primary text-primary-foreground'
@@ -345,7 +345,7 @@ async function retryStatus() {
                   :class="step.status === 'done' ? 'bg-primary' : 'bg-border/60'"
                 />
               </div>
-              <p class="mt-2 text-[11px] font-semibold leading-tight text-foreground sm:text-xs">
+              <p class="mt-2 text-[11px] font-medium leading-tight text-foreground sm:text-xs">
                 {{ step.label }}
               </p>
               <p
@@ -367,12 +367,12 @@ async function retryStatus() {
         <!-- Status card -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-5">
-           <h2 class="text-base font-semibold text-foreground">
+           <h2 class="text-base font-medium text-foreground">
               We are reviewing your details
             </h2>
           </div>
           <div class="space-y-1 px-6 py-5">
-            <p class="text-sm font-semibold text-foreground">You are all set for now</p>
+            <p class="text-sm font-medium text-foreground">You are all set for now</p>
             <p class="text-sm leading-relaxed text-muted-foreground">
               <template v-if="formatSubmitted(submittedAt)">
                 Submitted on {{ formatSubmitted(submittedAt) }}.
@@ -390,7 +390,7 @@ async function retryStatus() {
           class="overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
         >
           <div class="px-6 py-5">
-            <p class="text-sm font-semibold text-foreground">
+            <p class="text-sm font-medium text-foreground">
               Subscription active
             </p>
             <p class="mt-1 text-sm text-muted-foreground">
@@ -402,7 +402,7 @@ async function retryStatus() {
         <!-- Timeline (Mercury-style) -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-4">
-           <h2 class="text-xs font-semibold uppercase tracking-widest text-primary">
+           <h2 class="text-xs font-medium uppercase tracking-widest text-primary">
               What happens next
             </h2>
           </div>
@@ -428,7 +428,7 @@ async function retryStatus() {
               </div>
               <div class="min-w-0 flex-1 pt-0">
                 <p
-                  class="text-sm font-semibold"
+                  class="text-sm font-medium"
                   :class="item.status === 'upcoming' ? 'text-muted-foreground' : 'text-foreground'"
                 >
                   {{ item.label }}
@@ -444,7 +444,7 @@ async function retryStatus() {
         <!-- Actions -->
         <div class="flex flex-col items-center gap-4 pt-2">
           <Button
-            class="h-12 w-full max-w-xs text-base font-semibold shadow-md sm:w-auto sm:min-w-52"
+            class="h-12 w-full max-w-xs text-base font-medium shadow-md sm:w-auto sm:min-w-52"
             as-child
           >
             <NuxtLink to="/" class="inline-flex items-center justify-center gap-2">

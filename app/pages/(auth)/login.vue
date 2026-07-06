@@ -270,6 +270,7 @@
 </template>
 
 <script setup lang="ts">
+import { motion } from 'motion-v'
 import { AlertCircleIcon, Loading03Icon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'

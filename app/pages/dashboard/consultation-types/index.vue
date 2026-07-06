@@ -102,7 +102,7 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2 border-t border-border/60 pt-4">
+          <div class="flex flex-wrap gap-2 border-t border-border/40 pt-4">
             <Button
               variant="outline"
               size="sm"

@@ -27,7 +27,7 @@ const steps = [
   <section id="how-it-works" class="scroll-mt-23 bg-background py-12 md:py-24">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Header -->
-      <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">How it works</p>
+      <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">How it works</p>
      <h2 class="text-4xl font-medium md:text-5xl mb-6 max-w-2xl text-foreground">
         From your first search to your first consultation.
       </h2>
@@ -80,10 +80,10 @@ const steps = [
 
           <!-- Numbered badge + title -->
           <div class="mb-2 flex items-center gap-3">
-            <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-semibold tabular-nums text-primary">
+            <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-medium tabular-nums text-primary">
               {{ step.num }}
             </span>
-           <h3 class="text-lg font-semibold text-foreground">{{ step.title }}</h3>
+           <h3 class="text-lg font-medium text-foreground">{{ step.title }}</h3>
           </div>
           <p class="text-sm leading-[1.55] text-muted-foreground">{{ step.desc }}</p>
         </div>

@@ -32,7 +32,7 @@ function onAvatarError(id: string) {
         >
         <span
           v-else
-          class="text-[10px] font-semibold"
+          class="text-[10px] font-medium"
           :class="lawyer.avatarClass"
         >{{ lawyer.initials }}</span>
         <span

@@ -33,7 +33,7 @@ const features = [
 
         <!-- Left: copy -->
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">For legal professionals</p>
+          <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">For legal professionals</p>
          <h2 class="text-4xl font-medium md:text-5xl max-w-2xl text-background">
             Grow your practice. <em class="font-heading italic font-normal text-background/70">Keep every naira you earn.</em>
           </h2>
@@ -67,7 +67,7 @@ const features = [
               class="mb-4 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-105"
               v-html="feat.icon"
             />
-           <h4 class="mb-1.5 text-base font-semibold text-background">{{ feat.title }}</h4>
+           <h4 class="mb-1.5 text-base font-medium text-background">{{ feat.title }}</h4>
             <p class="text-sm leading-normal text-background/70">{{ feat.desc }}</p>
           </div>
         </div>

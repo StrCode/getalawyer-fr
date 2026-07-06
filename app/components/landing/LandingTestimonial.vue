@@ -20,7 +20,7 @@ const secondary = [
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Section header -->
       <div class="mb-10 max-w-2xl">
-        <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Trusted across Nigeria</p>
+        <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">Trusted across Nigeria</p>
        <h2 class="text-3xl font-medium md:text-4xl text-foreground">
           Real clients, real outcomes.
         </h2>
@@ -38,7 +38,7 @@ const secondary = [
             TA
           </div>
           <div>
-            <strong class="block font-semibold text-background">Tobi Adeyemi</strong>
+            <strong class="block font-medium text-background">Tobi Adeyemi</strong>
             <span class="text-sm text-background/70">Client · Lekki, Lagos</span>
           </div>
         </div>
@@ -60,7 +60,7 @@ const secondary = [
               {{ t.initials }}
             </div>
             <div>
-              <strong class="block text-sm font-semibold text-foreground">{{ t.name }}</strong>
+              <strong class="block text-sm font-medium text-foreground">{{ t.name }}</strong>
               <span class="text-xs text-muted-foreground">{{ t.meta }}</span>
             </div>
           </figcaption>

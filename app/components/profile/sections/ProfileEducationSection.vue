@@ -150,7 +150,7 @@ async function onDeleteConfirm() {
     <CardContent class="space-y-2">
       <p
         v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/60 py-8 text-center text-sm text-muted-foreground"
+        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
       >
         No schools added yet.
       </p>

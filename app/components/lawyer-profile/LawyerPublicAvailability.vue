@@ -20,7 +20,7 @@ defineProps<{
         <div
           v-for="schedule in workingDays"
           :key="schedule.day"
-          class="flex items-center justify-between border-b border-border/60 py-2.5 last:border-0"
+          class="flex items-center justify-between border-b border-border/40 py-2.5 last:border-0"
         >
           <span class="text-sm font-medium text-foreground">{{ schedule.day }}</span>
           <span class="font-mono text-sm tabular-nums text-muted-foreground">

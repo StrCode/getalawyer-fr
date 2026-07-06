@@ -36,7 +36,7 @@
         v-if="pendingBookings.length > 0"
         class="overflow-hidden rounded-xl py-0"
       >
-        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">
             <CardTitle class="text-lg">
               Pending confirmations
@@ -61,7 +61,7 @@
       </Card>
 
       <Card class="overflow-hidden rounded-xl py-0">
-        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">
             <CardTitle class="text-lg">
               Today's appointments
@@ -102,7 +102,7 @@
       </Card>
 
       <Card class="overflow-hidden rounded-xl py-0">
-        <CardHeader class="border-b border-border/60 px-5 py-4 sm:px-6">
+        <CardHeader class="border-b border-border/40 px-5 py-4 sm:px-6">
           <CardTitle class="text-lg">
             Upcoming appointments
           </CardTitle>
@@ -133,7 +133,7 @@
         v-if="completedBookings.length > 0"
         class="overflow-hidden rounded-xl py-0"
       >
-        <CardHeader class="flex flex-row items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
+        <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">
             <CardTitle class="text-lg">
               Completed appointments

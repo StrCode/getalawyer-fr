@@ -10,7 +10,7 @@
 
         <!-- Text Side -->
         <div class="relative z-10 flex flex-1 flex-col justify-center p-10 md:p-14 lg:p-20">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Ready when you are</p>
+          <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">Ready when you are</p>
          <h2 class="text-4xl font-medium md:text-5xl mb-6 max-w-xl text-background">
             Get the legal help you need, from someone you can trust.
           </h2>

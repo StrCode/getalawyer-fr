@@ -27,7 +27,7 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
 
 <template>
   <Card class="py-0 shadow-xs">
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/60 px-4 py-4">
+    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
         <CardTitle class="text-base">
           Recommended for you
@@ -55,7 +55,7 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
           v-for="lawyer in previewLawyers"
           :key="lawyer.id"
           :to="`/lawyers/${lawyer.id}`"
-          class="group flex min-w-0 items-center gap-3 rounded-lg border border-border/60 p-3 transition-colors hover:border-primary/25 hover:bg-muted/30"
+          class="group flex min-w-0 items-center gap-3 rounded-lg border border-border/40 p-3 transition-colors hover:border-primary/25 hover:bg-muted/30"
         >
           <Avatar class="size-10 shrink-0">
             <AvatarImage

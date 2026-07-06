@@ -130,7 +130,7 @@ const aboutPreview = computed(() => {
           </Badge>
         </div>
 
-        <p class="mt-4 border-t border-border/60 pt-4 text-sm leading-relaxed text-muted-foreground">
+        <p class="mt-4 border-t border-border/40 pt-4 text-sm leading-relaxed text-muted-foreground">
           {{ aboutPreview }}
         </p>
       </div>

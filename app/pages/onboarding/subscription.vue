@@ -269,19 +269,13 @@ async function retry() {
 
 <template>
   <div class="mx-auto w-full max-w-5xl pb-12">
-    <div
-      v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
-      class="flex flex-col items-center justify-center gap-4 py-28 text-center"
-    >
-      <HugeiconsIcon :icon="Loading03Icon" class="size-10 animate-spin text-primary" aria-hidden="true" />
-      <p class="text-sm font-medium text-muted-foreground">
-        <template v-if="hasPendingSubscription && confirmingPendingPayment">
-          Confirming your payment…
-        </template>
-        <template v-else>
-          Loading subscription details…
-        </template>
-      </p>
+    <div v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)" class="mx-auto w-full max-w-2xl space-y-8 py-28 text-center">
+      <Skeleton class="mx-auto size-16 rounded-full" />
+      <Skeleton class="mx-auto h-8 w-1/2 rounded-xl" />
+      <div class="grid gap-6 sm:grid-cols-2 mt-8">
+        <Skeleton class="h-64 rounded-2xl" />
+        <Skeleton class="h-64 rounded-2xl" />
+      </div>
     </div>
 
     <div v-else-if="statusError" class="space-y-6 py-8 text-center">
@@ -295,7 +289,7 @@ async function retry() {
 
     <div v-else class="space-y-8 py-6 sm:py-10">
       <div class="text-center lg:text-left">
-        <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
+        <p class="mb-2 text-xs font-medium uppercase tracking-widest text-primary">
           Annual membership
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -312,7 +306,7 @@ async function retry() {
         :class="noticeToneClass"
         role="status"
       >
-        <p class="text-sm font-semibold">
+        <p class="text-sm font-medium">
           {{ applicationNotice.title }}
         </p>
         <p class="mt-1 text-sm leading-relaxed opacity-90">
@@ -333,7 +327,7 @@ async function retry() {
                 <HugeiconsIcon :icon="CreditCardIcon" class="size-5" />
               </div>
               <div>
-               <h2 class="text-base font-semibold text-foreground">
+               <h2 class="text-base font-medium text-foreground">
                   Payment
                 </h2>
                 <p class="text-xs text-muted-foreground">
@@ -349,7 +343,7 @@ async function retry() {
               class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
               role="alert"
             >
-              <p class="font-semibold">
+              <p class="font-medium">
                 Your last payment attempt did not complete
               </p>
               <p class="mt-1 leading-relaxed">
@@ -363,7 +357,7 @@ async function retry() {
             >
               <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
               <div>
-                <p class="font-semibold text-foreground">
+                <p class="font-medium text-foreground">
                   Payment received
                 </p>
                 <p class="mt-0.5 text-muted-foreground">
@@ -384,7 +378,7 @@ async function retry() {
               </p>
 
               <Button
-                class="w-full font-semibold"
+                class="w-full font-medium"
                 :disabled="paymentBusy || !pricing"
                 @click="startPayment"
               >
@@ -412,12 +406,12 @@ async function retry() {
           <Card class="rounded-2xl border border-border bg-card shadow-sm">
             <CardContent class="space-y-4 px-5 py-5">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Order summary
                 </p>
                 <p
                   v-if="pricing"
-                  class="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-foreground"
+                  class="mt-2 text-3xl font-medium tabular-nums tracking-tight text-foreground"
                 >
                   {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
                   <span class="text-base font-normal text-muted-foreground">/ year</span>

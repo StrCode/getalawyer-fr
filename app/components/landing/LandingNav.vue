@@ -82,7 +82,7 @@ function isLinkActive(href: string) {
         class="mx-auto flex items-center justify-between gap-4 bg-transparent transition-all duration-300"
         :class="isScrolled
           ? 'max-w-6xl rounded-2xl border border-border/70 px-4 py-3 shadow-sm md:px-5'
-          : 'max-w-7xl rounded-none border-b border-border/60 px-6 py-4 md:px-8'"
+          : 'max-w-7xl rounded-none border-b border-border/40 px-6 py-4 md:px-8'"
       >
         <!-- Logo -->
         <LandingBrandLogo class="z-110" />

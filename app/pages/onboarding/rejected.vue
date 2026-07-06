@@ -67,21 +67,23 @@ const handleRestart = async () => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center py-12">
-      <HugeiconsIcon :icon="Loading03Icon" class="size-10 animate-spin text-primary" />
+    <div v-if="isLoading" class="mx-auto w-full max-w-2xl space-y-8 py-12 text-center">
+      <Skeleton class="mx-auto size-12 rounded-full" />
+      <Skeleton class="mx-auto h-8 w-2/3 rounded-xl" />
+      <Skeleton class="mx-auto h-32 w-full rounded-2xl" />
     </div>
 
     <!-- Error State -->
     <div v-else-if="isError" class="text-center py-12">
       <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
-      <p class="font-bold tracking-tight text-destructive">Failed to load application details</p>
+      <p class="font-medium tracking-tight text-destructive">Failed to load application details</p>
     </div>
 
     <!-- Rejection Details -->
     <div v-else class="space-y-12">
       <!-- Feedback Section -->
       <div class="rounded-2xl border border-border bg-card p-8 text-left shadow-sm transition-all hover:shadow-md">
-       <h2 class="mb-4 flex items-center gap-3 text-lg font-bold text-foreground">
+       <h2 class="mb-4 flex items-center gap-3 text-lg font-medium text-foreground">
           <div class="rounded-lg bg-muted p-2">
             <HugeiconsIcon :icon="Message02Icon" class="size-5 text-muted-foreground" />
           </div>
@@ -98,7 +100,7 @@ const handleRestart = async () => {
 
       <!-- Action Section -->
       <div class="rounded-2xl border border-border bg-muted p-8 text-left transition-all">
-       <h2 class="mb-6 flex items-center gap-3 text-lg font-bold text-foreground">
+       <h2 class="mb-6 flex items-center gap-3 text-lg font-medium text-foreground">
            <div class="rounded-lg bg-accent p-2">
               <HugeiconsIcon :icon="File01Icon" class="size-5 text-muted-foreground" />
            </div>
@@ -107,22 +109,22 @@ const handleRestart = async () => {
 
         <ol class="space-y-5 text-foreground">
           <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">1</span>
             <span class="text-sm font-medium">Carefully review the feedback provided above.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">2</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">2</span>
             <span class="text-sm font-medium">Update your credentials or application details as requested in the feedback.</span>
           </li>
           <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">3</span>
+            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">3</span>
             <span class="text-sm font-medium">Click the button below to unlock your application for editing.</span>
           </li>
         </ol>
 
         <div class="mt-10">
           <Button
-            class="flex h-14 w-full items-center justify-center gap-2 rounded-xl font-bold shadow-lg transition-all active:scale-[0.98]"
+            class="flex h-14 w-full items-center justify-center gap-2 rounded-xl font-medium shadow-lg transition-all active:scale-[0.98]"
             :disabled="isRestarting"
             @click="handleRestart"
           >
@@ -137,7 +139,7 @@ const handleRestart = async () => {
       <div class="pt-8">
         <p class="text-sm font-medium text-muted-foreground">
           Having trouble? 
-          <a href="mailto:support@getalawyer.ng" class="font-bold text-primary hover:underline">
+          <a href="mailto:support@getalawyer.ng" class="font-medium text-primary hover:underline">
             Contact Support
           </a>
         </p>
