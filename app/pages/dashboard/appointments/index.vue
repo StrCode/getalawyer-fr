@@ -1,9 +1,15 @@
 <template>
   <div class="space-y-6">
-    <AppPageHeader
-      title="Appointments"
-      description="Manage your consultation bookings and appointments."
-    />
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Appointments
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Manage your consultation bookings and appointments.
+      </p>
+    </div>
+  </div>
 
     <div
       v-if="isLoading"

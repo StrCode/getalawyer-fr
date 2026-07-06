@@ -254,12 +254,17 @@ function confirmDecline() {
       :is-approved="isApproved"
     />
 
-    <AppPageHeader
-      :title="`Welcome back, ${firstName}!`"
-      description="Manage your consultations and grow your practice"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        {{ `Welcome back, ${firstName}!` }}
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Manage your consultations and grow your practice
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           as-child
           variant="outline"
           class="cursor-pointer"
@@ -275,8 +280,8 @@ function confirmDecline() {
             View Profile
           </NuxtLink>
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <template v-if="!isOverviewLoading">
       <DashboardNextAppointment

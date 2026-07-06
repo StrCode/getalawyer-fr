@@ -226,12 +226,17 @@ const showFullEmpty = computed(
       :fee-request-notifications="feeRequestNotifications"
     />
 
-    <AppPageHeader
-      :title="`Welcome back, ${firstName}!`"
-      description="Here's what's happening with your legal consultations"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        {{ `Welcome back, ${firstName}!` }}
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Here's what's happening with your legal consultations
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           as-child
           class="cursor-pointer"
         >
@@ -246,8 +251,8 @@ const showFullEmpty = computed(
             Find a Lawyer
           </NuxtLink>
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <template v-if="!isOverviewLoading">
       <DashboardNextAppointment

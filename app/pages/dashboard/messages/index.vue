@@ -157,22 +157,25 @@ function previewText(conversation: ConversationInfo) {
 
 <template>
   <div class="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-6">
-    <AppPageHeader
-      title="Messages"
-      :description="pageDescription"
-    >
-      <template
-        v-if="totalUnread > 0"
-        #actions
-      >
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Messages
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        {{ pageDescription }}
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
         <Badge
+          v-if="totalUnread > 0"
           variant="secondary"
           class="font-normal tabular-nums"
         >
           {{ totalUnread }} unread
         </Badge>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <Card class="flex min-h-0 flex-1 overflow-hidden py-0">
       <div class="flex min-h-0 flex-1 flex-col lg:flex-row lg:min-h-[min(40rem,calc(100svh-14rem))]">

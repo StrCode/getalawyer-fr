@@ -264,10 +264,16 @@ onBeforeUnmount(() => {
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
   >
-    <AppPageHeader
-      title="Profile"
-      description="Your photo, contact details, and how you appear to lawyers."
-    />
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Profile
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Your photo, contact details, and how you appear to lawyers.
+      </p>
+    </div>
+  </div>
 
     <motion.div
       v-if="isLoading"

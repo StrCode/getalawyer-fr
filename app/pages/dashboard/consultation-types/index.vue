@@ -1,16 +1,21 @@
 <template>
   <div class="space-y-6">
-    <AppPageHeader
-      title="Consultation types"
-      description="Manage the services you offer to clients"
-    >
-      <template #actions>
-        <Button @click="handleCreate">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Consultation types
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Manage the services you offer to clients
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button @click="handleCreate">
           <HugeiconsIcon :icon="Add01Icon" class="mr-2 size-4" />
           Create new
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <div class="flex items-center gap-2">
       <Switch

@@ -1,11 +1,16 @@
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6">
-    <AppPageHeader
-      title="Booking details"
-      :description="booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.'"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Booking details
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        {{ booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.' }}
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           variant="outline"
           size="sm"
           as-child
@@ -21,8 +26,8 @@
         >
           {{ formatStatusLabel(booking.status) }}
         </Badge>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <div
       v-if="isLoading"

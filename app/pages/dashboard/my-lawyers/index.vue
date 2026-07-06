@@ -31,12 +31,17 @@ const isLoading = computed(() => bookingsPending.value || conversationsPending.v
 
 <template>
   <div class="mx-auto w-full max-w-4xl space-y-6">
-    <AppPageHeader
-      title="My lawyers"
-      description="Lawyers you have booked or messaged on GetALawyer."
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        My lawyers
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Lawyers you have booked or messaged on GetALawyer.
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           as-child
           class="cursor-pointer"
         >
@@ -51,8 +56,8 @@ const isLoading = computed(() => bookingsPending.value || conversationsPending.v
             Find a lawyer
           </NuxtLink>
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <div
       v-if="isLoading"

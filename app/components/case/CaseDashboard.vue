@@ -1,11 +1,16 @@
 <template>
   <div class="space-y-6">
-    <AppPageHeader
-      :title="role === 'lawyer' ? 'Case management' : 'My cases'"
-      :description="role === 'lawyer' ? 'Manage and track all your legal cases.' : 'Track and manage your legal cases.'"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        {{ role === 'lawyer' ? 'Case management' : 'My cases' }}
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        {{ role === 'lawyer' ? 'Manage and track all your legal cases.' : 'Track and manage your legal cases.' }}
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           v-if="role === 'lawyer'"
           class="gap-2"
           @click="$emit('create-case')"
@@ -13,8 +18,8 @@
           <HugeiconsIcon :icon="Add01Icon" class="size-4" />
           New case
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <CaseSearch
       :result-count="filteredCases.length"

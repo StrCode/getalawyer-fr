@@ -5,7 +5,7 @@
       <header class="flex shrink-0 items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-6">
         <LandingBrandLogo to="/" class="lg:hidden" />
 
-        <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <span class="hidden text-sm text-muted-foreground sm:inline">
             Already have an account?
           </span>

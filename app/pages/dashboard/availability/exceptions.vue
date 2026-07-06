@@ -220,12 +220,17 @@ const minDate = new Date().toISOString().split('T')[0]
 
 <template>
   <div class="space-y-6">
-    <AppPageHeader
-      title="Availability exceptions"
-      description="Override your weekly schedule for specific dates"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Availability exceptions
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Override your weekly schedule for specific dates
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           variant="outline"
           as-child
         >
@@ -237,8 +242,8 @@ const minDate = new Date().toISOString().split('T')[0]
             Weekly schedule
           </NuxtLink>
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-2">

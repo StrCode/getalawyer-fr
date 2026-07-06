@@ -2,6 +2,14 @@
 import { dashboardPageTitle } from '@/lib/dashboard-nav'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 const route = useRoute()
 
@@ -16,9 +24,19 @@ const pageTitle = computed(() => dashboardPageTitle(route.path))
         orientation="vertical"
         class="mx-2 data-[orientation=vertical]:h-4"
       />
-     <h1 class="text-base font-medium ">
-        {{ pageTitle }}
-      </h1>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem class="hidden md:block">
+            <BreadcrumbLink href="/dashboard">
+              Dashboard
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator class="hidden md:block" />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{{ pageTitle }}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </div>
   </header>
 </template>

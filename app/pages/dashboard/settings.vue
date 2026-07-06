@@ -1,10 +1,16 @@
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6">
     <template v-if="isLawyer">
-      <AppPageHeader
-        title="Settings"
-        description="Practice setup, billing, and account security."
-      />
+      <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Settings
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Practice setup, billing, and account security.
+      </p>
+    </div>
+  </div>
 
       <LawyerSettingsHub />
       <SettingsAccountSecuritySection />
@@ -21,10 +27,16 @@
     </Card>
 
     <template v-else>
-      <AppPageHeader
-        title="Account settings"
-        description="Legal interests, security, and help."
-      />
+      <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Account settings
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Legal interests, security, and help.
+      </p>
+    </div>
+  </div>
 
       <SettingsShell
         :active-section="activeSection"

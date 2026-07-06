@@ -253,12 +253,17 @@ const handleSaveAll = async () => {
 
 <template>
   <div class="space-y-6">
-    <AppPageHeader
-      title="Weekly availability"
-      description="Set your recurring weekly schedule for client bookings"
-    >
-      <template #actions>
-        <Button
+    <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-medium text-foreground">
+        Weekly availability
+      </h1>
+      <p class="mt-1 font-sans text-base text-muted-foreground">
+        Set your recurring weekly schedule for client bookings
+      </p>
+    </div>
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <Button
           variant="outline"
           as-child
         >
@@ -270,8 +275,8 @@ const handleSaveAll = async () => {
             Manage exceptions
           </NuxtLink>
         </Button>
-      </template>
-    </AppPageHeader>
+    </div>
+  </div>
 
     <Card class="rounded-xl">
       <CardHeader>

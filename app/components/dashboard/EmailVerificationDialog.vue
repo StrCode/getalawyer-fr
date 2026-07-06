@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { CheckmarkCircle01Icon, Loading03Icon, Mail01Icon, SentIcon } from '@hugeicons/core-free-icons'
+import { CheckmarkCircle01Icon, Loading03Icon, Mail01Icon, SentIcon, AlertCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
@@ -147,11 +149,53 @@ function handleOpenChange(value: boolean) {
       </div>
 
       <div class="border-t border-border/60 px-6 py-5">
-        <AuthLinkEmailCard
-          v-if="needsLinkEmail"
-          embedded
-          @completed="onLinkCompleted"
-        />
+        <div v-if="needsLinkEmail" class="space-y-4">
+          <form @submit.prevent="async () => {
+            isSending = true
+            apiError = ''
+            const formElement = $event.target as HTMLFormElement
+            const formData = new FormData(formElement)
+            const email = formData.get('email') as string
+            try {
+              const { error } = await authClient.updateUser({ email })
+              if (error) throw error
+              await onLinkCompleted()
+            } catch (err: any) {
+              apiError = err.message || 'Failed to update email'
+            } finally {
+              isSending = false
+            }
+          }" class="space-y-3">
+            <div class="space-y-2 text-left">
+              <Label for="link-email">Email address</Label>
+              <Input
+                id="link-email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            
+            <div v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+              <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+              {{ apiError }}
+            </div>
+
+            <Button
+              type="submit"
+              class="h-11 w-full"
+              :disabled="isSending"
+            >
+              <HugeiconsIcon
+                v-if="isSending"
+                :icon="Loading03Icon"
+                class="mr-2 size-4 animate-spin"
+              />
+              Update email
+            </Button>
+          </form>
+        </div>
 
         <div
           v-else-if="needsVerifyEmail"
@@ -169,7 +213,10 @@ function handleOpenChange(value: boolean) {
             </p>
           </div>
 
-          <AuthFormError :message="apiError" />
+          <div v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+            <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+            {{ apiError }}
+          </div>
 
           <div class="space-y-2">
             <Button

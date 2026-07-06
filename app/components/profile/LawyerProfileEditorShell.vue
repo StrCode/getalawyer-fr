@@ -378,23 +378,25 @@ onBeforeUnmount(() => {
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
   >
-    <AppPageHeader
-      title="Profile"
-      sticky
-    >
-      <template #description>
-        How clients see you on GetALawyer.
-        Practice setup and billing are in
-        <NuxtLink
-          to="/dashboard/settings"
-          class="font-medium text-primary underline-offset-4 hover:underline"
-        >
-          Settings
-        </NuxtLink>.
-      </template>
-      <template
+    <div class="sticky top-0 z-10 -mx-1 flex flex-wrap items-start justify-between gap-4 border-b border-border/60 bg-background px-1 pb-5">
+      <div class="min-w-0 flex-1">
+        <h1 class="text-2xl font-medium text-foreground">
+          Profile
+        </h1>
+        <p class="mt-1 font-sans text-base text-muted-foreground">
+          How clients see you on GetALawyer.
+          Practice setup and billing are in
+          <NuxtLink
+            to="/dashboard/settings"
+            class="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Settings
+          </NuxtLink>.
+        </p>
+      </div>
+      <div
         v-if="publicProfileUrl"
-        #actions
+        class="flex shrink-0 flex-wrap items-center gap-2"
       >
         <TooltipProvider>
           <Tooltip :disabled="isDirectoryVisible">
@@ -420,8 +422,8 @@ onBeforeUnmount(() => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </template>
-    </AppPageHeader>
+      </div>
+    </div>
 
     <LawyerPublishReadinessBanner
       v-if="!isLoading && !isError && profile"
