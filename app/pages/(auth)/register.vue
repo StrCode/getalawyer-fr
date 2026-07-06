@@ -1,241 +1,179 @@
 <template>
-  <div class="relative flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background font-sans">
-    <!-- Background: clipped so blur paint cannot extend scroll width -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div
-        class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-muted/60 blur-3xl sm:h-96 sm:w-96"
-      />
-      <div
-        class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-muted/40 blur-3xl sm:h-96 sm:w-96"
-      />
-    </div>
+  <div class="flex min-h-dvh w-full bg-background font-sans">
+    <!-- LEFT SIDE: Content -->
+    <div class="flex min-h-dvh w-full flex-1 flex-col lg:w-[60%]">
+      <header class="flex shrink-0 items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-6">
+        <LandingBrandLogo to="/" class="lg:hidden" />
 
-    <header class="relative z-20 flex min-w-0 shrink-0 items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-8 sm:py-6">
-      <LandingBrandLogo to="/" />
+        <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+          <span class="hidden text-sm text-muted-foreground sm:inline">
+            Already have an account?
+          </span>
+          <NuxtLink
+            to="/login"
+            class="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground shadow-xs transition-colors hover:bg-muted sm:px-4 sm:py-2 sm:text-sm"
+          >
+            Sign in
+          </NuxtLink>
+        </div>
+      </header>
 
-      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-        <span class="hidden text-sm font-medium text-muted-foreground sm:inline">
-          Already have an account?
-        </span>
-        <NuxtLink
-          to="/login"
-          class="rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-muted sm:px-5 sm:py-2.5 sm:text-sm"
-        >
-          Sign in
-        </NuxtLink>
-      </div>
-    </header>
+      <main class="flex flex-1 flex-col items-center justify-center px-4 pb-8 sm:px-8 lg:px-14 xl:px-16">
+        <div class="w-full max-w-md">
+          <Transition name="slide-fade" mode="out-in">
+            <!-- Step 1: Role selection -->
+            <div v-if="step === 'role'" key="role" class="flex w-full flex-col">
+              <header class="mb-8 text-center">
+                <h1
+                  class="text-2xl font-medium leading-tight text-foreground sm:text-3xl"
+                >
+                  How would you like to use GetaLawyer?
+                </h1>
+                <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  Select the option that best describes you.
+                </p>
+              </header>
 
-    <main class="relative z-10 flex min-w-0 flex-1 flex-col items-center justify-start px-2 pt-6 pb-8 sm:justify-start sm:px-8 sm:py-12 lg:py-16">
-      <div class="mx-auto w-full min-w-0 sm:max-w-3xl">
-        <Transition name="slide-fade" mode="out-in">
-          <!-- Step 1: Role selection -->
-          <div v-if="step === 'role'" key="role" class="mx-auto flex w-full flex-col items-center gap-6 sm:max-w-none sm:gap-0">
-            <div class="w-full text-center sm:mb-10">
-              <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
-                Account type
-              </p>
-             <h1
-                class="text-balance text-3xl font-medium leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl"
+              <RadioGroup
+                v-model="selectedRole"
+                class="grid w-full grid-cols-1 gap-3 sm:gap-4"
               >
-                How would you like to use GetaLawyer?
-              </h1>
-              <p class="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:max-w-xl sm:text-base">
-                Select the path that matches your needs today.
-              </p>
+                <Label
+                  :for="clientRoleId"
+                  :class="roleCardClass('client')"
+                  class="cursor-pointer"
+                >
+                  <RadioGroupItem
+                    :id="clientRoleId"
+                    value="client"
+                    class="sr-only"
+                  />
+                  <div class="flex items-start gap-4 p-4 sm:p-5">
+                    <div
+                      class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted"
+                    >
+                      <HugeiconsIcon :icon="UserIcon"
+                        class="size-5 text-foreground/70"
+                      />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <h2 class="text-base font-medium leading-tight text-foreground sm:text-lg">
+                        I need a lawyer
+                      </h2>
+                      <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        Find and book a verified Nigerian lawyer for legal assistance.
+                      </p>
+                    </div>
+                    <span
+                      class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                      :class="
+                        selectedRole === 'client'
+                          ? 'border-primary bg-primary'
+                          : 'border-border'
+                      "
+                    >
+                      <HugeiconsIcon :icon="Tick01Icon" v-if="selectedRole === 'client'" class="size-3 text-white" />
+                    </span>
+                  </div>
+                </Label>
+
+                <Label
+                  :for="lawyerRoleId"
+                  :class="roleCardClass('lawyer')"
+                  class="cursor-pointer"
+                >
+                  <RadioGroupItem
+                    :id="lawyerRoleId"
+                    value="lawyer"
+                    class="sr-only"
+                  />
+                  <div class="flex items-start gap-4 p-4 sm:p-5">
+                    <div
+                      class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted"
+                    >
+                      <HugeiconsIcon :icon="Briefcase01Icon"
+                        class="size-5 text-foreground/70"
+                      />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <h2 class="text-base font-medium leading-tight text-foreground sm:text-lg">
+                        I am a lawyer
+                      </h2>
+                      <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        List your services and grow your client base on our network.
+                      </p>
+                    </div>
+                    <span
+                      class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                      :class="
+                        selectedRole === 'lawyer'
+                          ? 'border-primary bg-primary'
+                          : 'border-border'
+                      "
+                    >
+                      <HugeiconsIcon :icon="Tick01Icon" v-if="selectedRole === 'lawyer'" class="size-3 text-white" />
+                    </span>
+                  </div>
+                </Label>
+              </RadioGroup>
+
+              <div class="mt-8 flex flex-col gap-4">
+                <Button
+                  type="button"
+                  class="w-full"
+                  :disabled="!selectedRole"
+                  @click="step = 'form'"
+                >
+                  Continue
+                </Button>
+                <p class="text-center text-sm text-muted-foreground sm:hidden">
+                  Already have an account?
+                  <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
+                    Sign in
+                  </NuxtLink>
+                </p>
+              </div>
             </div>
 
-            <RadioGroup
-              v-model="selectedRole"
-              class="grid w-full min-w-0 grid-cols-1 gap-3 sm:mb-8 sm:grid-cols-2 sm:gap-5"
-            >
-              <Label
-                :for="clientRoleId"
-                :class="roleCardClass('client')"
-                class="group cursor-pointer"
-              >
-                <RadioGroupItem
-                  :id="clientRoleId"
-                  value="client"
-                  class="sr-only"
-                />
-                <div class="relative px-5 py-6 text-center sm:p-7 sm:text-left">
-                  <span
-                    class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6 sm:h-6 sm:w-6"
-                    :class="
-                      selectedRole === 'client'
-                        ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
-                        : 'scale-100 border-border bg-background'
-                    "
-                  >
-                    <HugeiconsIcon :icon="Tick01Icon" v-if="selectedRole === 'client'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" />
-                  </span>
-                  <div
-                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
-                    :class="selectedRole === 'client' ? 'sm:group-hover:scale-105' : ''"
-                  >
-                    <HugeiconsIcon :icon="UserIcon"
-                      class="h-5 w-5 sm:h-7 sm:w-7"
-                      :class="selectedRole === 'client' ? 'text-primary' : 'text-primary'"
-                    />
-                  </div>
-                 <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
-                    I am a Client
-                  </h2>
-                  <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
-                    Find and book a verified Nigerian lawyer for legal assistance.
-                  </p>
-                </div>
-              </Label>
-
-              <Label
-                :for="lawyerRoleId"
-                :class="roleCardClass('lawyer')"
-                class="group cursor-pointer"
-              >
-                <RadioGroupItem
-                  :id="lawyerRoleId"
-                  value="lawyer"
-                  class="sr-only"
-                />
-                <div class="relative px-5 py-6 text-center sm:p-7 sm:text-left">
-                  <span
-                    class="absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all sm:top-6 sm:right-6 sm:h-6 sm:w-6"
-                    :class="
-                      selectedRole === 'lawyer'
-                        ? 'scale-100 border-primary bg-primary shadow-md shadow-primary/25'
-                        : 'scale-100 border-border bg-background'
-                    "
-                  >
-                    <HugeiconsIcon :icon="Tick01Icon" v-if="selectedRole === 'lawyer'" class="h-3 w-3 text-white sm:h-3.5 sm:w-3.5" />
-                  </span>
-                  <div
-                    class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-muted ring-1 ring-border transition-transform sm:mx-0 sm:mb-6 sm:size-14 sm:rounded-2xl"
-                    :class="selectedRole === 'lawyer' ? 'sm:group-hover:scale-105' : ''"
-                  >
-                    <HugeiconsIcon :icon="Briefcase01Icon"
-                      class="h-5 w-5 sm:h-7 sm:w-7"
-                      :class="selectedRole === 'lawyer' ? 'text-primary' : 'text-primary'"
-                    />
-                  </div>
-                 <h2 class="mb-1 text-xl font-semibold leading-tight text-foreground sm:mb-2 sm:text-2xl">
-                    I am a Lawyer
-                  </h2>
-                  <p class="text-base font-normal leading-relaxed text-muted-foreground sm:text-base">
-                    List your services and grow your client base on our network.
-                  </p>
-                </div>
-              </Label>
-            </RadioGroup>
-
-            <div class="flex w-full flex-col items-center gap-4 sm:gap-6">
+            <!-- Step 2: Registration form (email or phone tabs) -->
+            <div v-else-if="step === 'form'" key="form" class="flex w-full flex-col">
               <Button
                 type="button"
-                class="inline-flex h-10 w-full items-center justify-center rounded-xl text-sm font-semibold sm:h-11 sm:max-w-xs sm:rounded-2xl sm:text-base"
-                size="lg"
-                :disabled="!selectedRole"
-                @click="step = 'form'"
+                variant="ghost"
+                size="sm"
+                class="mb-6 inline-flex w-fit gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                @click="step = 'role'"
               >
-                Continue
+                <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
+                Change selection
               </Button>
-              <p class="text-center text-sm text-muted-foreground sm:hidden">
-                Already have an account?
-                <NuxtLink to="/login" class="font-semibold text-primary underline-offset-4 hover:underline">
-                  Sign in
-                </NuxtLink>
-              </p>
-            </div>
-          </div>
 
-          <!-- Step 2: Registration form (email or phone tabs) -->
-          <div v-else-if="step === 'form'" key="form" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6 sm:items-stretch sm:gap-0">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="inline-flex gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:mb-6 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm sm:self-start"
-              @click="step = 'role'"
-            >
-              <HugeiconsIcon :icon="ArrowLeft01Icon" class="h-4 w-4" />
-              Change selection
-            </Button>
+              <header class="mb-6 text-center">
+                <h1 class="text-2xl font-medium leading-tight text-foreground sm:text-3xl">
+                  {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
+                </h1>
+                <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {{
+                    selectedRole === 'lawyer'
+                      ? 'Join Nigeria\'s most trusted legal network.'
+                      : 'Get started with GetaLawyer today.'
+                  }}
+                </p>
+              </header>
 
-            <div class="w-full text-center sm:mb-10">
-              <p class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary sm:mb-3">
-                Registration
-              </p>
-             <h1 class="text-3xl font-medium leading-[1.05] tracking-[-0.025em] text-foreground sm:text-4xl">
-                {{ selectedRole === 'lawyer' ? 'Apply as a Lawyer' : 'Create your account' }}
-              </h1>
-              <p class="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
-                {{
-                  selectedRole === 'lawyer'
-                    ? 'Join Nigeria\'s most trusted legal network.'
-                    : 'Get started with GetaLawyer today.'
-                }}
-              </p>
-            </div>
-
-            <Card
-              class="relative w-full gap-0 overflow-hidden rounded-2xl border border-border bg-card px-5 py-5 shadow-lg sm:rounded-3xl sm:px-10 sm:py-10 sm:shadow-xl lg:px-12 lg:py-12"
-            >
-              <div
-                class="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-muted/50 blur-3xl"
-                aria-hidden="true"
-              />
-
-              <form class="relative z-10" @submit.prevent="form.handleSubmit">
-                <FieldGroup class="gap-4 sm:gap-6">
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-                    <form.Field v-slot="{ field }" name="firstName">
-                      <Field :data-invalid="isInvalid(field)">
-                        <FieldLabel :for="field.name">First name</FieldLabel>
-                        <Input
-                          :id="field.name"
-                          :name="field.name"
-                          :model-value="field.state.value"
-                          placeholder="Alex"
-                          autocomplete="given-name"
-                          :aria-invalid="isInvalid(field)"
-                          :disabled="isSubmitting"
-                          @blur="field.handleBlur"
-                          @update:model-value="(v) => field.handleChange(v as any)"
-                        />
-                        <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                      </Field>
-                    </form.Field>
-
-                    <form.Field v-slot="{ field }" name="lastName">
-                      <Field :data-invalid="isInvalid(field)">
-                        <FieldLabel :for="field.name">Last name</FieldLabel>
-                        <Input
-                          :id="field.name"
-                          :name="field.name"
-                          :model-value="field.state.value"
-                          placeholder="Smith"
-                          autocomplete="family-name"
-                          :aria-invalid="isInvalid(field)"
-                          :disabled="isSubmitting"
-                          @blur="field.handleBlur"
-                          @update:model-value="(v) => field.handleChange(v as any)"
-                        />
-                        <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                      </Field>
-                    </form.Field>
-                  </div>
-
-                  <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting">
-                    <template #email>
-                      <form.Field v-slot="{ field }" name="email">
+              <div class="rounded-xl border border-border/40 bg-card p-5 shadow-none sm:p-7">
+                <form @submit.prevent="form.handleSubmit">
+                  <FieldGroup class="gap-4 sm:gap-5">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+                      <form.Field v-slot="{ field }" name="firstName">
                         <Field :data-invalid="isInvalid(field)">
-                          <FieldLabel :for="field.name">Email address</FieldLabel>
+                          <FieldLabel :for="field.name">First name</FieldLabel>
                           <Input
                             :id="field.name"
                             :name="field.name"
                             :model-value="field.state.value"
-                            type="email"
-                            placeholder="alex@example.com"
-                            autocomplete="email"
+                            placeholder="Alex"
+                            autocomplete="given-name"
                             :aria-invalid="isInvalid(field)"
                             :disabled="isSubmitting"
                             @blur="field.handleBlur"
@@ -244,14 +182,17 @@
                           <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                         </Field>
                       </form.Field>
-                    </template>
 
-                    <template #phone>
-                      <form.Field v-slot="{ field }" name="phone">
+                      <form.Field v-slot="{ field }" name="lastName">
                         <Field :data-invalid="isInvalid(field)">
-                          <AuthPhoneInput
+                          <FieldLabel :for="field.name">Last name</FieldLabel>
+                          <Input
+                            :id="field.name"
+                            :name="field.name"
                             :model-value="field.state.value"
-                            :invalid="isInvalid(field)"
+                            placeholder="Smith"
+                            autocomplete="family-name"
+                            :aria-invalid="isInvalid(field)"
                             :disabled="isSubmitting"
                             @blur="field.handleBlur"
                             @update:model-value="(v) => field.handleChange(v as any)"
@@ -259,131 +200,283 @@
                           <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                         </Field>
                       </form.Field>
-                    </template>
-                  </AuthMethodTabs>
+                    </div>
 
-                  <form.Field v-slot="{ field }" name="password">
-                    <Field :data-invalid="isInvalid(field)">
-                      <FieldLabel :for="field.name">Password</FieldLabel>
-                      <AuthPasswordInput
-                        :id="field.name"
-                        :name="field.name"
-                        :model-value="field.state.value"
-                        placeholder="••••••••"
-                        autocomplete="new-password"
-                        :aria-invalid="isInvalid(field)"
-                        :disabled="isSubmitting"
-                        @blur="field.handleBlur"
-                        @update:model-value="(v) => field.handleChange(v as any)"
-                      />
-                      <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                    </Field>
-                  </form.Field>
+                    <Tabs :model-value="authMethod" @update:model-value="(v) => authMethod = v as 'email' | 'phone'" class="w-full">
+                      <TabsList class="grid w-full grid-cols-2">
+                        <TabsTrigger value="email" :disabled="isSubmitting">Email</TabsTrigger>
+                        <TabsTrigger value="phone" :disabled="isSubmitting">Phone</TabsTrigger>
+                      </TabsList>
+                      
+                      <div v-show="authMethod === 'email'" class="mt-4">
+                        <form.Field v-slot="{ field }" name="email">
+                          <Field :data-invalid="isInvalid(field)">
+                            <FieldLabel :for="field.name">Email address</FieldLabel>
+                            <Input
+                              :id="field.name"
+                              :name="field.name"
+                              :model-value="field.state.value"
+                              type="email"
+                              placeholder="alex@example.com"
+                              autocomplete="email"
+                              :aria-invalid="isInvalid(field)"
+                              :disabled="isSubmitting"
+                              @blur="field.handleBlur"
+                              @update:model-value="(v) => field.handleChange(v as any)"
+                            />
+                            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                          </Field>
+                        </form.Field>
+                      </div>
 
-                  <AuthFormError :message="apiError" />
+                      <div v-show="authMethod === 'phone'" class="mt-4">
+                        <form.Field v-slot="{ field }" name="phone">
+                          <Field :data-invalid="isInvalid(field)">
+                            <FieldLabel :for="field.name">Phone number</FieldLabel>
+                            <div class="flex gap-2">
+                              <div
+                                class="flex h-10 shrink-0 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium text-muted-foreground"
+                                aria-hidden="true"
+                              >
+                                +234
+                              </div>
+                              <Input
+                                :id="field.name"
+                                :model-value="getPhoneLocalDigits(field.state.value)"
+                                type="tel"
+                                inputmode="numeric"
+                                placeholder="801 234 5678"
+                                autocomplete="tel"
+                                :disabled="isSubmitting"
+                                :aria-invalid="isInvalid(field)"
+                                class="flex-1"
+                                @update:model-value="(v) => handlePhoneInput(v as string, field.handleChange)"
+                                @blur="field.handleBlur"
+                              />
+                            </div>
+                            <p v-if="getPhoneDisplayValue(field.state.value) && !isInvalid(field)" class="mt-1 text-xs text-muted-foreground">
+                              {{ getPhoneDisplayValue(field.state.value) }}
+                            </p>
+                            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                          </Field>
+                        </form.Field>
+                      </div>
+                    </Tabs>
 
-                  <Button
-                    type="submit"
-                    class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold sm:h-11 sm:rounded-2xl sm:text-base"
-                    size="lg"
-                    :disabled="isSubmitting"
-                  >
-                    <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="h-4 w-4 shrink-0 animate-spin" />
-                    <span>
-                      {{
-                        isSubmitting
-                          ? (authMethod === 'phone' ? 'Sending code…' : 'Creating account…')
-                          : authMethod === 'phone'
-                            ? 'Send verification code'
-                            : selectedRole === 'lawyer'
-                              ? 'Apply as Lawyer'
-                              : 'Create account'
-                      }}
-                    </span>
-                  </Button>
-                </FieldGroup>
-              </form>
-            </Card>
+                    <form.Field v-slot="{ field }" name="password">
+                      <Field :data-invalid="isInvalid(field)">
+                        <FieldLabel :for="field.name">Password</FieldLabel>
+                        <div class="relative">
+                          <Input
+                            :id="field.name"
+                            :name="field.name"
+                            :model-value="field.state.value"
+                            :type="passwordVisible ? 'text' : 'password'"
+                            placeholder="••••••••"
+                            autocomplete="new-password"
+                            class="pr-10"
+                            :aria-invalid="isInvalid(field)"
+                            :disabled="isSubmitting"
+                            @blur="field.handleBlur"
+                            @update:model-value="(v) => field.handleChange(v as any)"
+                          />
+                          <button
+                            type="button"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                            :aria-label="passwordVisible ? 'Hide password' : 'Show password'"
+                            :disabled="isSubmitting"
+                            @click="passwordVisible = !passwordVisible"
+                          >
+                            <HugeiconsIcon :icon="ViewOffIcon" v-if="passwordVisible" class="h-4 w-4" />
+                            <HugeiconsIcon :icon="ViewIcon" v-else class="h-4 w-4" />
+                          </button>
+                        </div>
+                        <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                      </Field>
+                    </form.Field>
 
-            <p class="mx-auto w-full text-center text-xs leading-relaxed text-muted-foreground sm:mt-6 sm:max-w-xl sm:text-sm">
-              By continuing, you agree to our
-              <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
-                Terms of Service
-              </NuxtLink>
-              and
-              <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
-                Privacy Policy
-              </NuxtLink>.
-            </p>
-          </div>
+                    <p v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+                      <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+                      {{ apiError }}
+                    </p>
 
-          <!-- Step 4: Phone OTP verify -->
-          <div v-else key="verify" class="mx-auto flex w-full min-w-0 flex-col items-center gap-6">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              class="inline-flex gap-1.5 self-start rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted sm:px-4 sm:py-2 sm:text-sm"
-              @click="step = 'form'"
-            >
-              <HugeiconsIcon :icon="ArrowLeft01Icon" class="h-4 w-4" />
-              Back
-            </Button>
+                    <Button
+                      type="submit"
+                      class="w-full"
+                      :disabled="isSubmitting"
+                    >
+                      <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
+                      <span>
+                        {{
+                          isSubmitting
+                            ? (authMethod === 'phone' ? 'Sending code…' : 'Creating account…')
+                            : authMethod === 'phone'
+                              ? 'Send verification code'
+                              : selectedRole === 'lawyer'
+                                ? 'Apply as Lawyer'
+                                : 'Create account'
+                        }}
+                      </span>
+                    </Button>
+                  </FieldGroup>
+                </form>
+              </div>
 
-            <div class="w-full text-center">
-             <h1 class="text-2xl font-medium tracking-[-0.02em] text-foreground sm:text-3xl">Verify your phone</h1>
-              <p class="mt-2 text-sm text-muted-foreground">
-                Enter the code sent to <strong>{{ pendingPhone }}</strong>
+              <p class="mt-6 text-center text-sm leading-relaxed text-muted-foreground">
+                By continuing, you agree to our
+                <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
+                  Terms of Service
+                </NuxtLink>
+                and
+                <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
+                  Privacy Policy
+                </NuxtLink>.
               </p>
             </div>
 
-            <Card class="w-full rounded-2xl border border-border bg-card p-6 shadow-lg sm:p-8">
-              <AuthOtpStep
-                v-model="phoneOtp"
-                :error="otpError"
-                :blocked="otpBlocked"
-                :is-submitting="isSubmitting"
-                :is-resending="isResending"
-                :resend-cooldown="resendCooldown"
-                @resend="handleOtpResend"
-                @request-new-code="handleOtpRequestNew"
-              />
-              <AuthDevOtpHint class="mt-4" />
-              <AuthFormError :message="apiError" class="mt-4" />
+            <!-- Step 3: Phone OTP verify -->
+            <div v-else key="verify" class="flex w-full flex-col">
               <Button
                 type="button"
-                class="mt-6 h-11 w-full cursor-pointer rounded-xl font-semibold"
-                :disabled="isSubmitting || phoneOtp.length < 6"
-                @click="completePhoneRegistration"
+                variant="ghost"
+                size="sm"
+                class="mb-6 inline-flex w-fit gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                @click="step = 'form'"
               >
-                <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
-                Create account
+                <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
+                Back
               </Button>
-            </Card>
-          </div>
-        </Transition>
-      </div>
-    </main>
 
+              <header class="mb-6 text-center">
+                <h1 class="text-2xl font-medium leading-tight text-foreground sm:text-3xl">Verify your phone</h1>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  Enter the code sent to <strong class="text-foreground">{{ pendingPhone }}</strong>
+                </p>
+              </header>
+
+              <div class="flex flex-col gap-4 rounded-xl border border-border/40 bg-card p-5 shadow-none sm:p-7">
+                <div v-if="otpBlocked" class="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-center">
+                  <p class="text-sm font-medium text-destructive">Too many attempts</p>
+                  <p class="mt-1 text-sm text-muted-foreground">Please request a new verification code to continue.</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    class="mt-4"
+                    :disabled="resendCooldown > 0 || isResending"
+                    @click="handleOtpRequestNew"
+                  >
+                    <template v-if="isResending">Sending…</template>
+                    <template v-else-if="resendCooldown > 0">Request new code in {{ resendCooldown }}s</template>
+                    <template v-else>Request new code</template>
+                  </Button>
+                </div>
+                <template v-else>
+                  <InputOTP
+                    v-model="phoneOtp"
+                    :maxlength="6"
+                    :disabled="isSubmitting"
+                    class="w-full justify-center gap-2"
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot v-for="i in 3" :key="i" :index="i - 1" :class="otpError ? 'border-destructive' : ''" />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot v-for="i in 3" :key="i + 3" :index="i + 2" :class="otpError ? 'border-destructive' : ''" />
+                    </InputOTPGroup>
+                  </InputOTP>
+
+                  <p v-if="otpError" class="flex items-center justify-center gap-1.5 text-sm text-destructive">
+                    <HugeiconsIcon :icon="AlertCircleIcon" class="size-3.5 shrink-0" />
+                    {{ otpError }}
+                  </p>
+
+                  <p class="text-center text-sm text-muted-foreground">
+                    Code expires in a few minutes.
+                    <Button
+                      type="button"
+                      variant="link"
+                      class="h-auto p-0 font-medium"
+                      :disabled="isResending || resendCooldown > 0"
+                      @click="handleOtpResend"
+                    >
+                      <template v-if="isResending">Sending…</template>
+                      <template v-else-if="resendCooldown > 0">Resend in {{ resendCooldown }}s</template>
+                      <template v-else>Resend code</template>
+                    </Button>
+                  </p>
+                </template>
+
+                <!-- Dev Hint -->
+                <div v-if="process.dev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
+                  <p class="font-medium">Development Mode</p>
+                  <p class="mt-1">Check your terminal or browser console for the verification code.</p>
+                </div>
+
+                <p v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+                  <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+                  {{ apiError }}
+                </p>
+
+                <Button
+                  type="button"
+                  class="mt-2 w-full"
+                  :disabled="isSubmitting || phoneOtp.length < 6"
+                  @click="completePhoneRegistration"
+                >
+                  <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="mr-2 size-4 animate-spin" />
+                  Create account
+                </Button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </main>
+    </div>
+
+    <!-- RIGHT SIDE: Brand image panel (desktop only) -->
+    <aside
+      class="relative hidden min-h-dvh overflow-hidden bg-[url('/auth-register-bg.jpg')] bg-cover bg-center lg:flex lg:w-[40%]"
+    >
+      <div class="pointer-events-none absolute inset-0 bg-black/60" />
+      <div class="relative z-10 flex h-full w-full flex-col justify-between p-10">
+        <LandingBrandLogo to="/" on-dark class="text-background drop-shadow-md" />
+        <div class="max-w-md">
+          <p class="text-sm text-background/50">
+            Trusted legal marketplace
+          </p>
+          <h2 class="mt-3 text-3xl font-medium leading-tight text-background xl:text-4xl">
+            Connect with Nigeria's most trusted legal professionals.
+          </h2>
+          <p class="mt-4 text-base leading-relaxed text-background/60">
+            Every lawyer is NIN & SCN verified. Book consultations in minutes, not days.
+          </p>
+        </div>
+        <p class="text-sm text-background/30">
+          © {{ new Date().getFullYear() }} GetaLawyer
+        </p>
+      </div>
+    </aside>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft01Icon, Briefcase01Icon, Loading03Icon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, Briefcase01Icon, Loading03Icon, Tick01Icon, UserIcon, AlertCircleIcon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
+import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
-import { isValidNgPhone } from '~/lib/phone'
-import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
+import { isValidNgPhone, normalizeNgPhone, toE164Plus, formatNgPhoneDisplay } from '~/lib/phone'
 
 definePageMeta({
   layout: false,
@@ -405,7 +498,9 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
       : undefined,
 )
 const step = ref<'role' | 'form' | 'verify'>('role')
-const authMethod = ref<AuthMethod>('email')
+const authMethod = ref<'email' | 'phone'>('email')
+const passwordVisible = ref(false)
+
 const pendingPhone = ref('')
 const pendingPassword = ref('')
 const pendingName = ref('')
@@ -425,10 +520,10 @@ const {
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
-    'group w-full min-w-0 cursor-pointer overflow-hidden rounded-2xl border bg-card transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 sm:rounded-3xl',
+    'w-full overflow-hidden rounded-xl border bg-card transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     selectedRole.value === value
-      ? 'border-primary shadow-lg shadow-primary/10 ring-1 ring-primary/20'
-      : 'border-border hover:border-primary/40 hover:bg-muted sm:hover:-translate-y-0.5 sm:hover:shadow-lg',
+      ? 'border-primary bg-primary/5'
+      : 'border-border hover:border-foreground/20',
   )
 }
 
@@ -517,6 +612,29 @@ const form = useForm({
 })
 
 const { isInvalid } = useAuthFieldInvalid()
+
+// Phone formatting logic
+function getPhoneLocalDigits(value: string) {
+  const normalized = normalizeNgPhone(value)
+  if (!normalized) return value.replace(/\D/g, '').replace(/^234/, '').replace(/^0/, '')
+  return normalized.startsWith('234') ? normalized.slice(3) : normalized
+}
+
+function getPhoneDisplayValue(value: string) {
+  const normalized = normalizeNgPhone(value || `0${getPhoneLocalDigits(value)}`)
+  if (!normalized) return ''
+  return formatNgPhoneDisplay(normalized)
+}
+
+function handlePhoneInput(rawValue: string, handleChange: (v: string) => void) {
+  const digits = String(rawValue).replace(/\D/g, '').slice(0, 10)
+  const normalized = normalizeNgPhone(digits.length === 10 ? digits : `0${digits}`)
+  if (normalized) {
+    handleChange(toE164Plus(normalized))
+  } else {
+    handleChange(digits)
+  }
+}
 
 function startCooldown(seconds = 60) {
   resendCooldown.value = seconds
