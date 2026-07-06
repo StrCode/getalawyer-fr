@@ -13,6 +13,6 @@ export default {
     if (from && to.path === from.path && !to.hash) {
       return false
     }
-    return { top: 0 }
+    return { top: 0, behavior: 'smooth' }
   },
 } satisfies RouterConfig

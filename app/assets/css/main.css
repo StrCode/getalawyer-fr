@@ -141,7 +141,6 @@
   h5,
   h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.02em;
   }
 }
 
@@ -173,9 +172,21 @@
   .dashboard-stat-grid {
     @apply grid grid-cols-2 gap-4 lg:grid-cols-4;
   }
+
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .page-enter-from,
+  .page-leave-to,
+  .layout-enter-from,
+  .layout-leave-to {
+    opacity: 0;
+  }
 }
-
-
 
 @media (prefers-reduced-motion: reduce) {
   *,
