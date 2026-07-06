@@ -19,10 +19,5 @@ import DashboardShell from '@/components/dashboard/DashboardShell.vue'
 import EmailVerificationDialog from '@/components/dashboard/EmailVerificationDialog.vue'
 import { SidebarProvider } from '@/components/ui/sidebar'
 
-const { refetchSession } = useAuth()
 const { open: emailVerificationOpen } = useEmailVerificationDialog()
-
-onMounted(async () => {
-  await refetchSession()
-})
 </script>
