@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar'
 
 withDefaults(
@@ -24,6 +25,10 @@ withDefaults(
 
 const { session } = useAuth()
 const role = computed(() => getSessionUserType(session.value?.user))
+
+const { state, isMobile } = useSidebar()
+// Hide the wordmark when the sidebar is collapsed to the icon rail (but keep it in the mobile sheet).
+const showWordmark = computed(() => isMobile.value || state.value !== 'collapsed')
 
 const { data: subscriptionStatus, isFetched: subscriptionFetched } = useSubscriptionStatus({
   enabled: computed(() => role.value === 'lawyer'),
@@ -39,7 +44,7 @@ const showUpgradePrompt = computed(() => {
 <template>
   <Sidebar
     :variant="variant"
-    collapsible="offcanvas"
+    collapsible="icon"
   >
     <SidebarHeader>
       <SidebarMenu>
@@ -51,7 +56,7 @@ const showUpgradePrompt = computed(() => {
           >
             <LandingBrandLogo
               to="/dashboard"
-              :show-wordmark="true"
+              :show-wordmark="showWordmark"
             />
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -66,7 +71,7 @@ const showUpgradePrompt = computed(() => {
       <NuxtLink
         v-if="showUpgradePrompt"
         to="/dashboard/subscription"
-        class="mb-2 block px-2"
+        class="mb-2 block px-2 group-data-[collapsible=icon]:hidden"
       >
         <Card class="gap-0 overflow-hidden border-primary/20 bg-primary/5 py-0 shadow-none transition-colors hover:border-primary/30 hover:bg-primary/10">
           <CardContent class="px-3 py-2.5">

@@ -22,6 +22,12 @@ export const badgeVariants = cva(
           "border-primary/30 bg-primary/15 text-primary [a&]:hover:bg-primary/20",
         soft:
           "border-border bg-muted text-muted-foreground [a&]:hover:bg-accent",
+        success:
+          "border-success-border bg-success-subtle text-success-subtle-foreground",
+        warning:
+          "border-warning-border bg-warning-subtle text-warning-subtle-foreground",
+        info:
+          "border-info-border bg-info-subtle text-info-subtle-foreground",
       },
     },
     defaultVariants: {
