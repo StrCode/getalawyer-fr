@@ -21,6 +21,7 @@ import {
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import ButtonBusy from '@/components/ButtonBusy.vue'
@@ -218,16 +219,11 @@ async function startPayment() {
 
 <template>
   <div class="mx-auto w-full max-w-4xl space-y-6">
-    <div class="sticky top-0 z-10 -mx-1 flex flex-wrap items-start justify-between gap-4 border-b border-border/40 bg-background px-1 pb-5">
-      <div class="min-w-0 flex-1">
-        <h1 class="text-2xl font-medium text-foreground">
-          Subscription
-        </h1>
-        <p class="mt-1 font-sans text-base text-muted-foreground">
-          Manage your annual membership, billing, and payment history.
-        </p>
-      </div>
-    </div>
+    <DashboardPageHeader
+      class="sticky top-0 z-10 -mx-1 border-b border-border/40 bg-background px-1 pb-5"
+      title="Subscription"
+      description="Manage your annual membership, billing, and payment history."
+    />
 
     <div
       v-if="pageLoading"

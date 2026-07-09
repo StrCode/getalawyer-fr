@@ -7,6 +7,7 @@ import ConversationThreadPanel from '@/components/messaging/ConversationThreadPa
 import ConversationListItem from '@/components/messaging/ConversationListItem.vue'
 import { useMessagingStore } from '~/stores/messagingStore'
 import { Badge } from '@/components/ui/badge'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -157,16 +158,11 @@ function previewText(conversation: ConversationInfo) {
 
 <template>
   <div class="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Messages
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        {{ pageDescription }}
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
+    <DashboardPageHeader
+      title="Messages"
+      :description="pageDescription"
+    >
+      <template #actions>
         <Badge
           v-if="totalUnread > 0"
           variant="secondary"
@@ -174,8 +170,8 @@ function previewText(conversation: ConversationInfo) {
         >
           {{ totalUnread }} unread
         </Badge>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
     <Card class="flex min-h-0 flex-1 overflow-hidden py-0">
       <div class="flex min-h-0 flex-1 flex-col lg:flex-row lg:min-h-[min(40rem,calc(100svh-14rem))]">

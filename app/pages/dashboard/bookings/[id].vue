@@ -1,16 +1,11 @@
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Booking details
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        {{ booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.' }}
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      title="Booking details"
+      :description="booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.'"
+    >
+      <template #actions>
+        <Button
           variant="outline"
           size="sm"
           as-child
@@ -26,8 +21,8 @@
         >
           {{ formatStatusLabel(booking.status) }}
         </Badge>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
     <div
       v-if="isLoading"
@@ -388,6 +383,7 @@
 <script setup lang="ts">
 import { AlertCircleIcon, ArrowLeft01Icon, ArrowRight01Icon, Calendar01Icon, CheckmarkCircle01Icon, Message01Icon, Video01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'

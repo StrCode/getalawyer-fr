@@ -1,16 +1,10 @@
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6">
     <template v-if="isLawyer">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Settings
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Practice setup, billing, and account security.
-      </p>
-    </div>
-  </div>
+      <DashboardPageHeader
+        title="Settings"
+        description="Practice setup, billing, and account security."
+      />
 
       <LawyerSettingsHub />
       <SettingsAccountSecuritySection />
@@ -27,16 +21,10 @@
     </Card>
 
     <template v-else>
-      <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Account settings
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Legal interests, security, and help.
-      </p>
-    </div>
-  </div>
+      <DashboardPageHeader
+        title="Account settings"
+        description="Legal interests, security, and help."
+      />
 
       <SettingsShell
         :active-section="activeSection"
@@ -57,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import SettingsShell from '@/components/settings/SettingsShell.vue'
 import SettingsAccountSecuritySection from '@/components/settings/sections/SettingsAccountSecuritySection.vue'
 import SettingsHelpSection from '@/components/settings/sections/SettingsHelpSection.vue'
