@@ -49,7 +49,7 @@
             :subtitle="booking.consultationType?.name || 'Consultation'"
           >
             <template #body>
-              <div class="space-y-3">
+              <div class="flex flex-col gap-3">
                 <div
                   v-if="booking.conversationId || booking.engagementOutcome"
                   class="flex flex-wrap items-center gap-2"
@@ -159,7 +159,7 @@
                 </span>
               </template>
               <template #body>
-                <div class="space-y-3">
+                <div class="flex flex-col gap-3">
                   <div
                     v-if="booking.meetingType === 'video' && booking.meetingUrl"
                     class="flex items-center gap-2"
