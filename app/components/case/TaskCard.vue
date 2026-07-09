@@ -73,7 +73,7 @@
             v-if="task.status === 'in_progress'"
             size="sm"
             variant="default"
-            class="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+            class="gap-1.5 bg-success text-success-foreground hover:bg-success/90"
             @click="updateStatus('completed')"
           >
             <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 shrink-0" aria-hidden="true" />

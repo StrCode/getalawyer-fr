@@ -50,7 +50,7 @@
         />
       </div>
       
-      <div v-else-if="error" class="py-8 text-red-500 text-center">
+      <div v-else-if="error" class="py-8 text-destructive text-center">
         <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 w-12 h-12" />
         <p class="mb-4">{{ error }}</p>
         <Button variant="outline" @click="$emit('retry')">

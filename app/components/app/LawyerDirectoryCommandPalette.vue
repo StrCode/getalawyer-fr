@@ -107,7 +107,7 @@ onMounted(() => {
       <CommandEmpty>No matches.</CommandEmpty>
 
       <p
-        class="flex items-center gap-3 border-neutral-900/15 border-b px-3 py-2.5 dark:border-border"
+        class="flex items-center gap-3 border-border border-b px-3 py-2.5"
       >
         <span class="grow text-muted-foreground text-xs leading-snug">
           <span class="font-medium text-foreground">Designer sample data</span>

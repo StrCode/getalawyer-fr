@@ -340,7 +340,7 @@ async function retry() {
           <CardContent class="space-y-4 px-6 py-5">
             <div
               v-if="hasCheckoutFailure"
-              class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950"
+              class="rounded-lg border border-warning-border bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground"
               role="alert"
             >
               <p class="font-medium">

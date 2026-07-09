@@ -20,6 +20,7 @@ import {
   getLawyerApplicationStatusNotice,
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -238,24 +239,19 @@ async function startPayment() {
     </div>
 
     <template v-else>
-      <div
+      <Alert
         v-if="applicationNotice && statusPayload && onboardingApplicationStatus(statusPayload) !== 'approved'"
-        class="rounded-xl border px-4 py-3 text-sm"
-        :class="
+        :variant="
           applicationNotice.tone === 'approved'
-            ? 'border-emerald-200 bg-emerald-50 text-emerald-950'
+            ? 'success'
             : applicationNotice.tone === 'failed'
-              ? 'border-amber-200 bg-amber-50 text-amber-950'
-              : 'border-sky-200 bg-sky-50 text-sky-950'
+              ? 'warning'
+              : 'info'
         "
       >
-        <p class="font-semibold">
-          {{ applicationNotice.title }}
-        </p>
-        <p class="mt-1 leading-relaxed opacity-90">
-          {{ applicationNotice.description }}
-        </p>
-      </div>
+        <AlertTitle>{{ applicationNotice.title }}</AlertTitle>
+        <AlertDescription>{{ applicationNotice.description }}</AlertDescription>
+      </Alert>
 
       <div
         v-if="showExpiredBanner"
@@ -303,25 +299,23 @@ async function startPayment() {
         </div>
       </div>
 
-      <div
+      <Alert
         v-if="hasRenewalIssue"
-        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
-        role="alert"
+        variant="warning"
+        class="px-4 py-4"
       >
-        <p class="font-semibold">
-          Renewal payment failed
-        </p>
-        <p class="mt-1 leading-relaxed">
+        <AlertTitle>Renewal payment failed</AlertTitle>
+        <AlertDescription>
           <template v-if="paymentFailureMessage">
             {{ paymentFailureMessage }}
           </template>
           <template v-else>
             We could not charge your saved payment method. Pay again to renew your membership.
           </template>
-        </p>
+        </AlertDescription>
         <div
           v-if="canRetryPayment"
-          class="mt-3"
+          class="col-start-2 mt-2"
         >
           <ButtonBusy
             size="sm"
@@ -331,20 +325,16 @@ async function startPayment() {
             Renew membership
           </ButtonBusy>
         </div>
-      </div>
+      </Alert>
 
-      <div
+      <Alert
         v-else-if="hasCheckoutFailure"
-        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950"
-        role="alert"
+        variant="warning"
+        class="px-4 py-4"
       >
-        <p class="font-semibold">
-          Last payment attempt did not complete
-        </p>
-        <p class="mt-1 leading-relaxed">
-          {{ paymentFailureMessage }}
-        </p>
-        <div class="mt-3 flex flex-wrap gap-2">
+        <AlertTitle>Last payment attempt did not complete</AlertTitle>
+        <AlertDescription>{{ paymentFailureMessage }}</AlertDescription>
+        <div class="col-start-2 mt-2 flex flex-wrap gap-2">
           <ButtonBusy
             size="sm"
             :loading="paymentBusy"
@@ -360,7 +350,7 @@ async function startPayment() {
             Refresh status
           </Button>
         </div>
-      </div>
+      </Alert>
 
       <SubscriptionBillingOverview
         :subscription="subscription"
