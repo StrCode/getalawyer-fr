@@ -39,8 +39,8 @@ export function useBookingDisplay() {
         }
       case 'pending':
         return {
-          variant: 'outline',
-          class: 'border-amber-200 bg-amber-50 text-amber-800 capitalize',
+          variant: 'warning',
+          class: 'capitalize',
         }
       case 'cancelled':
       case 'no_show':

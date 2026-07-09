@@ -1,14 +1,17 @@
 <template>
-  <div class="flex flex-col items-center justify-center text-center px-6 py-12 border border-border rounded-xl bg-card">
+  <div
+    class="flex flex-col items-center justify-center rounded-xl border bg-card px-6 py-12 text-center"
+    :class="variant === 'error' ? 'border-destructive-border' : 'border-border'"
+  >
     <span
-      class="flex justify-center items-center mb-6 rounded-xl size-20"
-      :style="{ backgroundColor: `${color}15` }"
+      class="mb-6 flex size-20 items-center justify-center rounded-xl"
+      :class="variant === 'error' ? 'bg-destructive-subtle text-destructive' : 'bg-primary/10 text-primary'"
     >
-      <HugeiconsIcon :icon="icon" class="size-12" :style="{ color }" />
+      <HugeiconsIcon :icon="icon" class="size-12" />
     </span>
 
-   <h3 class="mb-2 font-semibold text-foreground text-xl">{{ title }}</h3>
-    <p class="mb-6 max-w-md text-muted-foreground text-base leading-relaxed">{{ description }}</p>
+   <h3 class="mb-2 text-xl font-semibold text-foreground">{{ title }}</h3>
+    <p class="mb-6 max-w-md text-base leading-relaxed text-muted-foreground">{{ description }}</p>
 
     <div v-if="$slots.actions" class="flex flex-wrap justify-center gap-3">
       <slot name="actions" />
@@ -24,10 +27,10 @@ interface Props {
   icon: Hugeicon
   title: string
   description: string
-  color?: string
+  variant?: 'default' | 'error'
 }
 
 withDefaults(defineProps<Props>(), {
-  color: '#1F4D2C',
+  variant: 'default',
 })
 </script>

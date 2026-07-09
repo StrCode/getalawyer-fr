@@ -710,7 +710,7 @@ const showMobileFilters = ref(false)
           <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
             <EmptyState
               :icon="Alert01Icon"
-              color="#dc2626"
+              variant="error"
               title="Error loading lawyers"
               description="There was an error loading the lawyers list. Please try again."
             >

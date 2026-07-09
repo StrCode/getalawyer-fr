@@ -2,7 +2,7 @@
 import { Cancel01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
-import UserDropdown from '@/components/UserDropdown.vue'
+import UserMenu from '@/components/UserMenu.vue'
 import { getSessionUserType } from '~/lib/session-user'
 
 const { session } = useAuth()
@@ -103,9 +103,9 @@ function isLinkActive(href: string) {
 
         <!-- Desktop CTAs -->
         <div class="hidden items-center gap-2 lg:flex">
-          <UserDropdown
+          <UserMenu
             v-if="isSignedIn"
-            variant="landing"
+            variant="nav"
             @signed-out="isMobileMenuOpen = false"
           />
           <NuxtLink
@@ -182,9 +182,9 @@ function isLinkActive(href: string) {
         <!-- Mobile Menu Footer CTAs -->
         <div class="flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8">
           <template v-if="isSignedIn">
-            <div class="w-full rounded-2xl border border-border bg-background p-2">
-              <UserDropdown
-                variant="sidebar"
+            <div class="flex w-full items-center rounded-2xl border border-border bg-background p-3">
+              <UserMenu
+                variant="nav"
                 after-sign-out="stay"
                 @signed-out="isMobileMenuOpen = false"
               />
