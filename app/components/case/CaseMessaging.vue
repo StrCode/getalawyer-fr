@@ -30,8 +30,8 @@
 
       <!-- Error State -->
       <div v-else-if="error" class="py-8 text-center">
-        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-red-400" />
-        <p class="text-red-600 text-sm">Failed to load messages</p>
+        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-destructive/70" />
+        <p class="text-destructive text-sm">Failed to load messages</p>
       </div>
 
       <!-- Empty State -->

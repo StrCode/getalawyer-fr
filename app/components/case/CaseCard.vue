@@ -51,7 +51,7 @@
           </div>
           
           <!-- Overdue indicator -->
-          <div v-if="isOverdue" class="flex items-center gap-1 text-red-500">
+          <div v-if="isOverdue" class="flex items-center gap-1 text-destructive">
             <HugeiconsIcon :icon="Alert01Icon" class="w-4 h-4" />
             <span>Overdue</span>
           </div>
@@ -67,7 +67,7 @@
           </div>
           <div class="bg-muted mt-1 rounded-full w-20 h-2">
             <div 
-              class="bg-green-500 rounded-full h-2 transition-all duration-300"
+              class="bg-success rounded-full h-2 transition-all duration-300"
               :style="{ width: `${completedTaskCount / props.case.tasks.length * 100}%` }"
             />
           </div>
@@ -75,7 +75,7 @@
         
         <!-- Unread Messages -->
         <div v-if="props.case.unreadMessageCount && props.case.unreadMessageCount > 0" class="flex items-center gap-1">
-          <HugeiconsIcon :icon="Message01Icon" class="w-4 h-4 text-blue-500" />
+          <HugeiconsIcon :icon="Message01Icon" class="w-4 h-4 text-info" />
           <UBadge color="blue" size="sm">
             {{ props.case.unreadMessageCount }}
           </UBadge>

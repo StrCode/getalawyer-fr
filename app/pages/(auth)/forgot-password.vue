@@ -38,7 +38,7 @@
             <div class="space-y-5">
               <div
                 v-if="tempEmailWarning"
-                class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-100"
+                class="rounded-xl border border-warning/30 bg-warning/5 p-4 text-sm text-warning-subtle-foreground"
               >
                 This account uses phone sign-in. Switch to the <strong>Phone</strong> tab to reset your password.
               </div>

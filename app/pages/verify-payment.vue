@@ -164,13 +164,13 @@ function retryVerify() {
         </div>
         <div
           v-else-if="isSuccess"
-          class="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
+          class="mx-auto flex size-16 items-center justify-center rounded-full bg-success-subtle text-success"
         >
           <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-9" />
         </div>
         <div
           v-else
-          class="mx-auto flex size-16 items-center justify-center rounded-full bg-amber-50 text-amber-700"
+          class="mx-auto flex size-16 items-center justify-center rounded-full bg-warning-subtle text-warning"
         >
           <HugeiconsIcon :icon="AlertCircleIcon" class="size-9" />
         </div>

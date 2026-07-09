@@ -208,8 +208,8 @@ function exceptionStatusBadge(exception: AvailabilityException) {
   }
   if (exception.startTime) {
     return {
-      variant: 'outline' as const,
-      class: 'border-amber-200 bg-amber-50 text-amber-800',
+      variant: 'warning' as const,
+      class: '',
     }
   }
   return { variant: 'destructive' as const, class: '' }

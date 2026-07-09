@@ -106,12 +106,12 @@
           
           <div class="flex justify-between items-center">
             <span class="text-muted-foreground text-sm">Completed</span>
-            <span class="font-medium text-green-600">{{ props.case.completedTaskCount || 0 }}</span>
+            <span class="font-medium text-success">{{ props.case.completedTaskCount || 0 }}</span>
           </div>
           
           <div class="bg-muted rounded-full w-full h-2">
             <div 
-              class="bg-green-500 rounded-full h-2 transition-all duration-300"
+              class="bg-success rounded-full h-2 transition-all duration-300"
               :style="{ width: `${taskCompletionRate}%` }"
             />
           </div>

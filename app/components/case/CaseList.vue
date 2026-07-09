@@ -13,7 +13,7 @@
         />
       </div>
 
-    <div v-else-if="error" class="py-8 text-red-500 text-center">
+    <div v-else-if="error" class="py-8 text-destructive text-center">
       <p>{{ error.message || 'Failed to load cases' }}</p>
       <Button variant="outline" @click="$emit('retry')" class="mt-4">
         Try Again

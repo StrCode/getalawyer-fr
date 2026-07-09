@@ -42,14 +42,14 @@
       
       <UCard>
         <div class="text-center">
-          <p class="font-semibold text-blue-600 text-2xl">{{ activityStats.recent }}</p>
+          <p class="font-semibold text-info text-2xl">{{ activityStats.recent }}</p>
           <p class="text-muted-foreground text-sm">Recent (24h)</p>
         </div>
       </UCard>
       
       <UCard>
         <div class="text-center">
-          <p class="font-semibold text-green-600 text-2xl">{{ activityStats.byType.message_sent || 0 }}</p>
+          <p class="font-semibold text-success text-2xl">{{ activityStats.byType.message_sent || 0 }}</p>
           <p class="text-muted-foreground text-sm">Messages</p>
         </div>
       </UCard>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Megaphone01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import type { LawyerDirectoryEligibility } from '~/types/lawyer-directory-eligibility'
 
 defineProps<{
@@ -10,22 +11,15 @@ defineProps<{
 </script>
 
 <template>
-  <div
+  <Alert
     v-if="isApproved && eligibility && !eligibility.isDirectoryVisible"
-    class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100"
-    role="status"
+    variant="warning"
   >
-    <div class="flex gap-3">
-      <HugeiconsIcon :icon="Megaphone01Icon" class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-      <div>
-        <p class="font-medium">
-          Approved — not visible in search yet
-        </p>
-        <p class="mt-1 text-amber-900/80 dark:text-amber-100/80">
-          Your profile is approved but clients cannot find you in the directory until all
-          visibility gates pass. Complete the checklist below to go live.
-        </p>
-      </div>
-    </div>
-  </div>
+    <HugeiconsIcon :icon="Megaphone01Icon" aria-hidden="true" />
+    <AlertTitle>Approved — not visible in search yet</AlertTitle>
+    <AlertDescription>
+      Your profile is approved but clients cannot find you in the directory until all
+      visibility gates pass. Complete the checklist below to go live.
+    </AlertDescription>
+  </Alert>
 </template>
