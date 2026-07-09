@@ -112,18 +112,30 @@
 
         <div
           v-else
-          class="divide-y divide-border/60 p-4 sm:p-6 sm:pt-5"
+          class="divide-y divide-border"
         >
-          <div class="space-y-3">
-            <DashboardBookingRow
+            <BookingRow
               v-for="booking in activeTabBookings"
               :key="booking.id"
               :booking="booking"
-              :person-name="booking.lawyer?.name || 'Lawyer'"
-              :person-image="booking.lawyer?.profilePicture"
+              :title="booking.lawyer?.name || 'Lawyer'"
+              :avatar-name="booking.lawyer?.name || 'Lawyer'"
+              :avatar-image="booking.lawyer?.profilePicture"
               :subtitle="booking.consultationType?.name || 'Consultation'"
               @click="navigateToBooking(booking.id)"
             >
+              <template v-if="booking.engagementOutcome === 'client_hired'" #body>
+                <div class="flex flex-wrap items-center gap-2">
+                  <Badge variant="verified">Case opened</Badge>
+                  <NuxtLink
+                    :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
+                    class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                    @click.stop
+                  >
+                    {{ booking.caseId ? 'View case' : 'View cases' }}
+                  </NuxtLink>
+                </div>
+              </template>
               <template
                 v-if="canTakeAction(booking)"
                 #actions
@@ -158,8 +170,7 @@
                   Cancel
                 </Button>
               </template>
-            </DashboardBookingRow>
-          </div>
+            </BookingRow>
         </div>
       </CardContent>
     </Card>
@@ -207,7 +218,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
+import BookingRow from '@/components/booking/BookingRow.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
