@@ -142,7 +142,7 @@ const hasActions = computed(() => actionItems.value.length > 0)
       >
         <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" />
       </div>
-      <div class="min-w-0 flex-1 space-y-3">
+      <div class="flex min-w-0 flex-1 flex-col gap-3">
         <div>
           <p class="text-sm font-semibold">
             Action required
@@ -152,7 +152,7 @@ const hasActions = computed(() => actionItems.value.length > 0)
           </p>
         </div>
 
-        <ul class="space-y-2">
+        <ul class="flex flex-col gap-2">
           <li
             v-for="item in actionItems"
             :key="item.id"
