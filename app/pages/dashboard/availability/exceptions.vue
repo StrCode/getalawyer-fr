@@ -3,6 +3,7 @@ import { Add01Icon, Calendar01Icon, CalendarRemove01Icon, Clock01Icon, Delete01I
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import ButtonBusy from '@/components/ButtonBusy.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -220,17 +221,12 @@ const minDate = new Date().toISOString().split('T')[0]
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Availability exceptions
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Override your weekly schedule for specific dates
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      title="Availability exceptions"
+      description="Override your weekly schedule for specific dates"
+    >
+      <template #actions>
+        <Button
           variant="outline"
           as-child
         >
@@ -242,8 +238,8 @@ const minDate = new Date().toISOString().split('T')[0]
             Weekly schedule
           </NuxtLink>
         </Button>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-2">

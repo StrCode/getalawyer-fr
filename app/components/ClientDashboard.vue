@@ -6,6 +6,7 @@ import ClientLegalInterestsCard from '@/components/dashboard/ClientLegalInterest
 import ClientRecommendedLawyersCard from '@/components/dashboard/ClientRecommendedLawyersCard.vue'
 import ClientRecentSearchesCard from '@/components/dashboard/ClientRecentSearchesCard.vue'
 import DashboardMyLawyersPreview from '@/components/dashboard/DashboardMyLawyersPreview.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import DashboardNotificationsPreview from '@/components/dashboard/DashboardNotificationsPreview.vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
 import BookingRow from '@/components/booking/BookingRow.vue'
@@ -227,17 +228,12 @@ const showFullEmpty = computed(
       :fee-request-notifications="feeRequestNotifications"
     />
 
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        {{ `Welcome back, ${firstName}!` }}
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Here's what's happening with your legal consultations
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      :title="`Welcome back, ${firstName}!`"
+      description="Here's what's happening with your legal consultations"
+    >
+      <template #actions>
+        <Button
           as-child
           class="cursor-pointer"
         >
@@ -252,8 +248,8 @@ const showFullEmpty = computed(
             Find a Lawyer
           </NuxtLink>
         </Button>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
       <DashboardNextAppointment
         v-if="nextBooking"

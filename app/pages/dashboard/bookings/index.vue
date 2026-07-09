@@ -1,15 +1,10 @@
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        My Bookings
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        View and manage your consultation bookings.
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
+    <DashboardPageHeader
+      title="My Bookings"
+      description="View and manage your consultation bookings."
+    >
+      <template #actions>
         <Badge
           v-if="upcomingBookings.length > 0"
           variant="secondary"
@@ -17,8 +12,8 @@
         >
           {{ upcomingBookings.length }} upcoming
         </Badge>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
     <Card class="overflow-hidden py-0">
       <CardHeader class="space-y-4 border-b border-border/40 px-5 py-4 sm:px-6">
@@ -224,6 +219,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
 import BookingRow from '@/components/booking/BookingRow.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Badge } from '@/components/ui/badge'

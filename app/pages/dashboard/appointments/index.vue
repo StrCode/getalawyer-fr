@@ -1,15 +1,9 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Appointments
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Manage your consultation bookings and appointments.
-      </p>
-    </div>
-  </div>
+    <DashboardPageHeader
+      title="Appointments"
+      description="Manage your consultation bookings and appointments."
+    />
 
     <div
       v-if="isLoading"
@@ -55,7 +49,7 @@
             :subtitle="booking.consultationType?.name || 'Consultation'"
           >
             <template #body>
-              <div class="space-y-3">
+              <div class="flex flex-col gap-3">
                 <div
                   v-if="booking.conversationId || booking.engagementOutcome"
                   class="flex flex-wrap items-center gap-2"
@@ -165,7 +159,7 @@
                 </span>
               </template>
               <template #body>
-                <div class="space-y-3">
+                <div class="flex flex-col gap-3">
                   <div
                     v-if="booking.meetingType === 'video' && booking.meetingUrl"
                     class="flex items-center gap-2"
@@ -352,6 +346,7 @@ import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import BookingRow from '~/components/booking/BookingRow.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

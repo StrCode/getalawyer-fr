@@ -82,7 +82,7 @@ const timeRange = computed(() => {
       </AvatarFallback>
     </Avatar>
 
-    <div class="min-w-0 flex-1 space-y-3">
+    <div class="flex min-w-0 flex-1 flex-col gap-3">
       <div class="flex flex-wrap items-center gap-2">
         <Badge v-bind="bookingStatusBadge(booking.status)">
           {{ formatStatusLabel(booking.status) }}

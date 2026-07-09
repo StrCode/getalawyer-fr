@@ -6,6 +6,7 @@ import BookingRow from '@/components/booking/BookingRow.vue'
 import { Badge } from '@/components/ui/badge'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
 import DashboardMessagesPreview from '@/components/dashboard/DashboardMessagesPreview.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
 import DashboardNotificationsPreview from '@/components/dashboard/DashboardNotificationsPreview.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
@@ -255,17 +256,12 @@ function confirmDecline() {
       :is-approved="isApproved"
     />
 
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        {{ `Welcome back, ${firstName}!` }}
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Manage your consultations and grow your practice
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      :title="`Welcome back, ${firstName}!`"
+      description="Manage your consultations and grow your practice"
+    >
+      <template #actions>
+        <Button
           as-child
           variant="outline"
           class="cursor-pointer"
@@ -281,8 +277,8 @@ function confirmDecline() {
             View Profile
           </NuxtLink>
         </Button>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
       <DashboardNextAppointment
         v-if="nextBooking"
