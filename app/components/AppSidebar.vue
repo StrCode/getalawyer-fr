@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NavMain from '@/components/NavMain.vue'
-import NavUser from '@/components/NavUser.vue'
+import UserMenu from '@/components/UserMenu.vue'
 import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
 import { getSessionUserType } from '@/lib/session-user'
 import { Card, CardContent } from '@/components/ui/card'
@@ -86,7 +86,7 @@ const showUpgradePrompt = computed(() => {
       </NuxtLink>
 
       <div class="rounded-lg border border-sidebar-border bg-sidebar p-1">
-        <NavUser />
+        <UserMenu variant="sidebar" />
       </div>
     </SidebarFooter>
 
