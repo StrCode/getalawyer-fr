@@ -8,7 +8,8 @@ import ClientRecentSearchesCard from '@/components/dashboard/ClientRecentSearche
 import DashboardMyLawyersPreview from '@/components/dashboard/DashboardMyLawyersPreview.vue'
 import DashboardNotificationsPreview from '@/components/dashboard/DashboardNotificationsPreview.vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
-import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
+import BookingRow from '@/components/booking/BookingRow.vue'
+import { Badge } from '@/components/ui/badge'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
 import DashboardMessagesPreview from '@/components/dashboard/DashboardMessagesPreview.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
@@ -369,15 +370,31 @@ const showFullEmpty = computed(
                 </Button>
               </template>
             </DashboardSectionHeader>
-            <DashboardBookingRow
-              v-for="booking in recentBookings"
-              :key="booking.id"
-              :booking="booking"
-              :person-name="booking.lawyer?.name ?? 'Lawyer'"
-              :person-image="booking.lawyer?.profilePicture"
-              :subtitle="booking.consultationType?.name"
-              @click="navigateTo(`/dashboard/bookings/${booking.id}`)"
-            />
+            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+              <BookingRow
+                v-for="booking in recentBookings"
+                :key="booking.id"
+                :booking="booking"
+                :title="booking.lawyer?.name ?? 'Lawyer'"
+                :avatar-name="booking.lawyer?.name ?? 'Lawyer'"
+                :avatar-image="booking.lawyer?.profilePicture"
+                :subtitle="booking.consultationType?.name"
+                @click="navigateTo(`/dashboard/bookings/${booking.id}`)"
+              >
+                <template v-if="booking.engagementOutcome === 'client_hired'" #body>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <Badge variant="verified">Case opened</Badge>
+                    <NuxtLink
+                      :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
+                      class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                      @click.stop
+                    >
+                      {{ booking.caseId ? 'View case' : 'View cases' }}
+                    </NuxtLink>
+                  </div>
+                </template>
+              </BookingRow>
+            </div>
           </section>
 
           <section
