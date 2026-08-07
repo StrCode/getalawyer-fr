@@ -55,7 +55,7 @@
             <HugeiconsIcon :icon="Clock01Icon" class="size-3.5" />
             {{ type.durationMinutes }} min
           </span>
-          <span>{{ formatPrice(type.price, type.currency) }}</span>
+          <span class="tabular-nums">{{ formatPrice(type.price, type.currency) }}</span>
         </div>
       </div>
       <Button as-child variant="ghost" size="icon-sm">

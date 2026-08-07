@@ -18,7 +18,7 @@
         </Badge>
       </div>
 
-      <p class="font-bold text-foreground text-3xl leading-none tracking-tight">
+      <p class="font-bold text-foreground text-3xl leading-none tracking-tight tabular-nums">
         {{ value }}
       </p>
       <p class="mt-1 font-medium text-muted-foreground text-sm">
