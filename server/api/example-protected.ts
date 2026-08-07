@@ -3,9 +3,9 @@
  * This demonstrates how to use the requireAuth utility
  * instead of relying on global middleware
  */
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   // Explicitly require authentication for this route
-  const session = requireAuth(event);
+  const session = await requireAuth(event);
 
   return {
     message: 'This is a protected route',

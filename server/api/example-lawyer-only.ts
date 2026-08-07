@@ -2,9 +2,9 @@
  * Example lawyer-only API route
  * This demonstrates how to use the requireRole utility
  */
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   // Explicitly require lawyer role for this route
-  const session = requireRole(event, 'lawyer');
+  const session = await requireRole(event, 'lawyer');
 
   return {
     message: 'This is a lawyer-only route',
