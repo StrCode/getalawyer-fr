@@ -1,19 +1,28 @@
 import type { H3Event } from 'h3';
+import { getSessionFromBackend } from './getSession';
 
 /**
  * Utility to require authentication in server routes
  * Throws a 401 error if the user is not authenticated
- * 
+ *
+ * The session middleware skips `/api` paths for performance, so
+ * `event.context.session` is `undefined` there. We populate it on demand:
+ * only routes that actually call requireAuth pay the backend round-trip,
+ * and the result is cached on the event context for the rest of the request.
+ *
  * Usage:
  * ```typescript
- * export default defineEventHandler((event) => {
- *   const session = requireAuth(event);
+ * export default defineEventHandler(async (event) => {
+ *   const session = await requireAuth(event);
  *   // Your protected route logic here
  *   return { user: session.user };
  * });
  * ```
  */
-export function requireAuth(event: H3Event) {
+export async function requireAuth(event: H3Event) {
+  if (event.context.session === undefined) {
+    event.context.session = await getSessionFromBackend(event);
+  }
   const session = event.context.session;
 
   if (!session || !session.user) {
@@ -39,8 +48,8 @@ export function requireAuth(event: H3Event) {
  * });
  * ```
  */
-export function requireRole(event: H3Event, role: string) {
-  const session = requireAuth(event);
+export async function requireRole(event: H3Event, role: string) {
+  const session = await requireAuth(event);
 
   if (session.user.role !== role) {
     throw createError({
@@ -57,8 +66,8 @@ export function requireRole(event: H3Event, role: string) {
  * Utility to check if user has completed onboarding
  * Throws a 403 error if onboarding is not completed
  */
-export function requireOnboarding(event: H3Event) {
-  const session = requireAuth(event);
+export async function requireOnboarding(event: H3Event) {
+  const session = await requireAuth(event);
 
   if (!session.user.onboarding_completed) {
     throw createError({
