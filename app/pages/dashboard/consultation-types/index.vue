@@ -82,7 +82,7 @@
             </div>
             <div class="flex items-center gap-2">
               <HugeiconsIcon :icon="EuroIcon" class="size-4 shrink-0" />
-              <span class="font-semibold text-foreground">{{ formatPrice(type.price, type.currency) }}</span>
+              <span class="font-semibold text-foreground tabular-nums">{{ formatPrice(type.price, type.currency) }}</span>
             </div>
             <div class="flex items-center gap-2">
               <HugeiconsIcon :icon="Video01Icon" class="size-4 shrink-0" />

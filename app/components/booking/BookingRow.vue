@@ -112,7 +112,7 @@ const timeRange = computed(() => {
           <HugeiconsIcon :icon="Calendar01Icon" class="size-4" />
           {{ formatBookingDate(booking.scheduledDate) }}
         </span>
-        <span class="flex items-center gap-1.5">
+        <span class="flex items-center gap-1.5 tabular-nums">
           <HugeiconsIcon :icon="Clock01Icon" class="size-4" />
           {{ timeRange }}
         </span>

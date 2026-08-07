@@ -25,7 +25,7 @@ const emit = defineEmits<{
 <template>
   <div class="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-lg ring-1 ring-border/40">
     <div class="border-b border-border p-6 md:p-7">
-      <p class="mb-1 text-2xl font-semibold text-primary">
+      <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
         Free to message
       </p>
       <p class="mt-1 text-sm text-muted-foreground">
