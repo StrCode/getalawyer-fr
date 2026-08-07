@@ -3,10 +3,11 @@ import { ref } from 'vue'
 
 const year = new Date().getFullYear()
 const email = ref('')
+const showComingSoon = ref(false)
 
+// No newsletter endpoint yet — say so instead of silently discarding the email.
 function onSubscribe() {
-  // Placeholder — wire to the newsletter endpoint when available.
-  email.value = ''
+  showComingSoon.value = true
 }
 
 const cols = {
@@ -67,6 +68,9 @@ const cols = {
                 Subscribe
               </button>
             </div>
+            <p v-if="showComingSoon" class="mt-2 text-xs text-background/70" role="status">
+              The newsletter isn't live yet — signups open soon.
+            </p>
           </form>
         </div>
 

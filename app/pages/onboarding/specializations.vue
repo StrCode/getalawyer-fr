@@ -122,11 +122,14 @@
       </p>
     </div>
 
-    <LegalAcceptanceFields
-      variant="client"
-      :terms-accepted="storeState.termsAccepted"
-      @update:terms-accepted="(v) => { storeState.termsAccepted = v }"
-    />
+    <div ref="legalFieldsEl">
+      <LegalAcceptanceFields
+        variant="client"
+        :terms-accepted="storeState.termsAccepted"
+        :error="store.termsError"
+        @update:terms-accepted="(v) => { storeState.termsAccepted = v }"
+      />
+    </div>
   </div>
 </template>
 
@@ -143,6 +146,13 @@ definePageMeta({
 
 const store = useClientOnboardingStore()
 const storeState = store.clientState
+
+const legalFieldsEl = ref<HTMLElement | null>(null)
+watch(() => store.termsError, (error) => {
+  if (error) {
+    nextTick(() => legalFieldsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+  }
+})
 
 const query = ref('')
 

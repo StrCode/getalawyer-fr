@@ -6,7 +6,7 @@ import { LAWYER_UX_STEP_LABELS, LAWYER_STEP_UX_NUMBER } from '~/lib/lawyer-onboa
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useOnboardingNavigation } from '~/composables/useOnboardingNavigation'
-import { provide } from 'vue'
+import { nextTick, provide } from 'vue'
 import { useRouter } from '#imports'
 import { useQueryClient } from '@tanstack/vue-query'
 import { queryKeys } from '~/lib/query-client'
@@ -65,6 +65,13 @@ export default defineComponent({
 
     const isSaving = ref(false)
     const isExiting = ref(false)
+    const showLeaveConfirm = ref(false)
+    // Deferred past the dropdown's close/refocus so the dialog keeps focus.
+    const openLeaveConfirm = () => nextTick(() => { showLeaveConfirm.value = true })
+    const confirmLeave = async () => {
+      showLeaveConfirm.value = false
+      await handleExitToHome()
+    }
 
     const accountName = computed(() => session.value?.user?.name || session.value?.user?.email || 'Account')
     const accountEmail = computed(() => session.value?.user?.email || '')
@@ -115,11 +122,18 @@ export default defineComponent({
             toast.success('Saved', { duration: 1500 })
             router.push(nextStep.value.path)
           }
-        } else {
-          console.warn('[Wizard] saveStep returned false')
+        } else if (!validationErrorBanner.value && !(store.value as { termsError?: string | null }).termsError) {
+          // Validation failures surface in the banner (or inline for terms);
+          // a false with neither is a failed draft save.
+          toast.error("Couldn't save your progress", {
+            description: 'Check your connection and try again.',
+          })
         }
       } catch (e) {
         console.error('[Wizard] Save failed on Next:', e)
+        toast.error("Couldn't save your progress", {
+          description: 'Check your connection and try again.',
+        })
       } finally {
         isSaving.value = false
       }
@@ -261,6 +275,16 @@ export default defineComponent({
       })
     })
 
+    // Mobile disambiguation: consecutive sub-screens of one perceived step
+    // otherwise both read "Step N of M".
+    const currentSubStep = computed(() => {
+      const active = sidebarSteps.value.find(step => step.isActive)
+      if (!active || active.subRoutes.length <= 1) return null
+      const idx = active.subRoutes.findIndex(sub => sub.isCurrent)
+      if (idx === -1) return null
+      return { label: active.subRoutes[idx]!.label, index: idx + 1, total: active.subRoutes.length }
+    })
+
     return {
       AlertCircleIcon,
       Home01Icon,
@@ -282,6 +306,7 @@ export default defineComponent({
       progressStepNumber,
       progressStepTotal,
       sidebarSteps,
+      currentSubStep,
       isFirst,
       isLast,
       userType,
@@ -291,6 +316,8 @@ export default defineComponent({
       handleNext,
       handleSaveProgress,
       handleExitToHome,
+      showLeaveConfirm,
+      confirmLeave,
       handleSaveAndSignOut,
       handleSignOut
     }
@@ -329,7 +356,7 @@ export default defineComponent({
             <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
             Save progress
           </DropdownMenuItem>
-          <DropdownMenuItem :disabled="isSaving" @click="handleExitToHome">
+          <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
             <HugeiconsIcon :icon="Home01Icon" class="size-4" />
             {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
           </DropdownMenuItem>
@@ -456,7 +483,7 @@ export default defineComponent({
                 <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
                 Save progress
               </DropdownMenuItem>
-              <DropdownMenuItem :disabled="isSaving" @click="handleExitToHome">
+              <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
                 <HugeiconsIcon :icon="Home01Icon" class="size-4" />
                 {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
               </DropdownMenuItem>
@@ -507,7 +534,7 @@ export default defineComponent({
           <template v-if="progressStepTotal > 0 && progressStepNumber > 0">
             <div class="mt-6 flex flex-col gap-4 pt-5 border-t border-border/40 sm:flex-row sm:items-center sm:justify-between">
               <p class="text-center text-sm font-medium tabular-nums text-muted-foreground sm:text-left lg:hidden">
-                Step {{ progressStepNumber }} of {{ progressStepTotal }}
+                Step {{ progressStepNumber }} of {{ progressStepTotal }}<template v-if="currentSubStep"> · {{ currentSubStep.label }} ({{ currentSubStep.index }}/{{ currentSubStep.total }})</template>
               </p>
 
               <div class="flex items-center justify-end w-full sm:w-auto gap-3">
@@ -546,6 +573,20 @@ export default defineComponent({
         </div>
       </main>
     </div>
+    <AlertDialog v-model:open="showLeaveConfirm">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Leave onboarding?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Your progress is saved — you can pick up where you left off.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Stay</AlertDialogCancel>
+          <AlertDialogAction @click="confirmLeave">Leave</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     <Toaster position="top-right" />
   </div>
 </template>

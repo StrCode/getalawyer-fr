@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown01Icon, ArrowRight01Icon, CheckmarkCircle01Icon, Loading03Icon, Location01Icon, Mail01Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, ArrowRight01Icon, Location01Icon, Mail01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref } from 'vue'
 definePageMeta({ layout: 'landing' })
@@ -16,17 +16,20 @@ const form = ref({
   message: ''
 })
 
-const isSubmitting = ref(false)
-const isSuccess = ref(false)
+const showUnavailableNotice = ref(false)
 
+const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
+
+const mailtoHref = computed(() => {
+  const subject = encodeURIComponent(`[${form.value.subject || 'support'}] Message from ${form.value.name || 'the contact form'}`)
+  const body = encodeURIComponent(form.value.message)
+  return `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`
+})
+
+// No sending endpoint exists yet — never fake a success. The draft is kept
+// and handed to the user's mail client instead.
 const handleSubmit = () => {
-  isSubmitting.value = true
-  setTimeout(() => {
-    isSubmitting.value = false
-    isSuccess.value = true
-    form.value = { name: '', email: '', subject: '', message: '' }
-    setTimeout(() => { isSuccess.value = false }, 5000)
-  }, 1000)
+  showUnavailableNotice.value = true
 }
 </script>
 
@@ -95,10 +98,18 @@ const handleSubmit = () => {
           <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
 
             <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0">
-              <div v-if="isSuccess" class="flex items-start gap-3 rounded-xl border border-primary/20 bg-muted p-5 text-base font-medium text-foreground">
-                <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-6 shrink-0 text-primary" />
-                Thanks for reaching out! Our team will get back to you shortly.
-              </div>
+              <Alert v-if="showUnavailableNotice" variant="info">
+                <HugeiconsIcon :icon="Mail01Icon" class="size-4" aria-hidden="true" />
+                <AlertTitle>Direct sending isn't available yet</AlertTitle>
+                <AlertDescription>
+                  <p>
+                    Your message hasn't been sent. Email us instead — we usually respond within 24 hours.
+                  </p>
+                  <Button as-child variant="outline" size="sm" class="mt-2 w-fit">
+                    <a :href="mailtoHref">Open in your email app</a>
+                  </Button>
+                </AlertDescription>
+              </Alert>
             </Transition>
 
             <div class="grid gap-6 md:grid-cols-2">
@@ -141,15 +152,8 @@ const handleSubmit = () => {
               type="submit"
               size="lg"
               class="mt-2 w-full cursor-pointer"
-              :disabled="isSubmitting"
             >
-              <template v-if="isSubmitting">
-                <HugeiconsIcon :icon="Loading03Icon" class="size-5 animate-spin" />
-                Sending...
-              </template>
-              <template v-else>
-                Send message
-              </template>
+              Send message
             </Button>
           </form>
         </div>

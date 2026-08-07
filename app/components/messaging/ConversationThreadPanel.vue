@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { SentIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { toast } from 'vue-sonner'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
+import { useMessagingStore } from '~/stores/messagingStore'
 import type { Message } from '~/types/messaging'
 import MessageReadTicks from '@/components/messaging/MessageReadTicks.vue'
 import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRequestCard.vue'
@@ -19,7 +19,8 @@ const props = defineProps<{
 const { session } = useAuth()
 const currentUserId = computed(() => session.value?.user?.id ?? '')
 
-const { useConversation, useMarkAsRead, useSendMessage } = useMessaging()
+const { useConversation, useMarkAsRead, sendMessage, retryMessage } = useMessaging()
+const messagingStore = useMessagingStore()
 const conversationIdRef = toRef(props, 'conversationId')
 
 const {
@@ -30,7 +31,6 @@ const {
 } = useConversation(conversationIdRef)
 
 const { mutate: markAsRead } = useMarkAsRead()
-const { mutate: sendMessageMutation, isPending: isSending } = useSendMessage()
 
 const {
   isConnected,
@@ -42,6 +42,11 @@ const {
 const messageInput = ref('')
 
 const messages = computed(() => thread.value?.messages ?? [])
+
+// Optimistic sends render after the server-confirmed messages (they are the newest).
+const optimisticMessages = computed(() =>
+  messagingStore.optimisticForConversation(props.conversationId),
+)
 
 const viewerRole = computed(() => {
   const me = thread.value?.participants.find(p => p.userId === currentUserId.value)
@@ -73,21 +78,19 @@ function scrollToBottom() {
 }
 
 watch(messages, () => scrollToBottom(), { deep: true })
+watch(optimisticMessages, () => scrollToBottom(), { deep: true })
 
 function handleSend() {
   const content = messageInput.value.trim()
-  if (!content || isSending.value) return
+  if (!content) return
 
-  try {
-    sendMessageMutation({
-      conversationId: props.conversationId,
-      content,
-    })
-    messageInput.value = ''
-    markAsRead(props.conversationId)
-  } catch {
-    toast.error('Failed to send message')
-  }
+  // Composer clears optimistically; delivery feedback lives on the bubble.
+  sendMessage({
+    conversationId: props.conversationId,
+    content,
+  })
+  messageInput.value = ''
+  markAsRead(props.conversationId)
 }
 
 function isOwnMessage(message: Message) {
@@ -146,7 +149,10 @@ function formatMessageTime(timestamp: string) {
       </div>
 
       <template v-else>
-        <div v-if="messages.length === 0" class="py-12 text-center text-sm text-muted-foreground">
+        <div
+          v-if="messages.length === 0 && optimisticMessages.length === 0"
+          class="py-12 text-center text-sm text-muted-foreground"
+        >
           No messages yet. Say hello to start the conversation.
         </div>
 
@@ -191,6 +197,35 @@ function formatMessageTime(timestamp: string) {
             </div>
           </div>
         </div>
+
+        <!-- Optimistic sends: pending/queued/failed bubbles (#5 taxonomy) -->
+        <div
+          v-for="optimistic in optimisticMessages"
+          :key="optimistic.clientId"
+          class="flex justify-end"
+        >
+          <div
+            class="max-w-[85%] rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground shadow-xs"
+            :class="optimistic.state === 'failed' ? 'opacity-90' : 'opacity-60'"
+          >
+            <p class="whitespace-pre-wrap break-words">
+              {{ optimistic.content }}
+            </p>
+            <div class="mt-1 flex items-center justify-end gap-1.5 text-2xs">
+              <template v-if="optimistic.state === 'failed'">
+                <span role="alert">Not delivered</span>
+                <button
+                  type="button"
+                  class="font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/40"
+                  @click="retryMessage(optimistic.clientId)"
+                >
+                  Retry
+                </button>
+              </template>
+              <span v-else class="opacity-80">Sending…</span>
+            </div>
+          </div>
+        </div>
       </template>
     </div>
 
@@ -214,13 +249,14 @@ function formatMessageTime(timestamp: string) {
           type="submit"
           size="icon"
           class="shrink-0"
-          :disabled="!messageInput.trim() || isSending || !isConnected"
+          aria-label="Send message"
+          :disabled="!messageInput.trim()"
         >
           <HugeiconsIcon :icon="SentIcon" class="size-4" />
         </Button>
       </form>
       <p v-if="!isConnected" class="mt-2 text-xs text-muted-foreground">
-        Connecting to live chat…
+        You're offline — messages will send when reconnected.
       </p>
     </div>
   </div>

@@ -12,7 +12,7 @@
     </header>
 
     <div class="rounded-xl border border-border/40 bg-card p-5 shadow-none sm:p-7">
-      <div class="mb-6">
+      <div v-if="!showPhoneOtpStep" class="mb-6">
         <Button
           type="button"
           variant="outline"
@@ -31,7 +31,7 @@
         </Button>
       </div>
 
-      <div class="relative mb-6 flex items-center gap-4">
+      <div v-if="!showPhoneOtpStep" class="relative mb-6 flex items-center gap-4">
         <div class="h-px flex-1 bg-border" />
         <span class="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Or continue with

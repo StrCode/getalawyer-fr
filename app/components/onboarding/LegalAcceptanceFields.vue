@@ -8,8 +8,10 @@ withDefaults(
     refundPolicyAccepted?: boolean
     /** Clients only accept T&C; lawyers also accept the verification refund policy. */
     variant?: 'client' | 'lawyer'
+    /** Validation message rendered inline under the terms checkbox. */
+    error?: string | null
   }>(),
-  { variant: 'lawyer' },
+  { variant: 'lawyer', error: null },
 )
 
 const emit = defineEmits<{
@@ -50,6 +52,9 @@ const refundId = useId()
           <FieldDescription>
             Required to complete registration on GetaLawyer.
           </FieldDescription>
+          <p v-if="error" class="text-sm font-medium text-destructive" role="alert">
+            {{ error }}
+          </p>
         </div>
       </div>
     </Field>

@@ -11,6 +11,8 @@ export interface ClientOnboardingData {
     termsVersion: string
 }
 
+const STORAGE_KEY = 'client-onboarding-draft'
+
 export const useClientOnboardingStore = defineStore('client-onboarding', () => {
     const clientState = reactive<ClientOnboardingData>({
         country: 'NG',
@@ -20,10 +22,37 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
         termsVersion: CURRENT_TERMS_VERSION,
     })
 
+    if (import.meta.client) {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY)
+            if (raw) {
+                const saved = JSON.parse(raw) as Partial<ClientOnboardingData>
+                // Stale consent must not survive a terms-version bump.
+                const sameTerms = saved.termsVersion === CURRENT_TERMS_VERSION
+                Object.assign(clientState, {
+                    country: saved.country ?? 'NG',
+                    state: saved.state ?? '',
+                    specializationIds: Array.isArray(saved.specializationIds) ? saved.specializationIds : [],
+                    termsAccepted: sameTerms ? Boolean(saved.termsAccepted) : false,
+                    termsVersion: CURRENT_TERMS_VERSION,
+                })
+            }
+        } catch {
+            localStorage.removeItem(STORAGE_KEY)
+        }
+
+        watch(clientState, () => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(clientState))
+        }, { deep: true })
+    }
+
     const validationError = ref<string | null>(null)
+    // Rendered inline next to the terms checkbox, not in the layout banner.
+    const termsError = ref<string | null>(null)
 
     const saveStep = async (stepKey: string): Promise<boolean> => {
         validationError.value = null
+        termsError.value = null
 
         switch (stepKey) {
             case 'location':
@@ -39,11 +68,12 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
                     return false
                 }
                 if (!clientState.termsAccepted) {
-                    validationError.value = 'Accept the Terms and Conditions to continue.'
+                    termsError.value = 'Accept the Terms and Conditions to continue.'
                     return false
                 }
                 try {
                     await completeClientOnboarding(toRaw(clientState) as ClientOnboardingData)
+                    if (import.meta.client) localStorage.removeItem(STORAGE_KEY)
                     return true
                 } catch (e) {
                     console.error('[Store] Failed to complete client onboarding', e)
@@ -58,6 +88,7 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
     return {
         clientState,
         validationError,
+        termsError,
         saveStep,
     }
 })
