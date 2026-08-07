@@ -4,13 +4,29 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
 import { useMessagingStore } from '~/stores/messagingStore'
-import type { Message } from '~/types/messaging'
+import type { Message as ThreadMessage } from '~/types/messaging'
 import MessageReadTicks from '@/components/messaging/MessageReadTicks.vue'
 import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRequestCard.vue'
 import ConsultationFeeRequestComposer from '@/components/messaging/ConsultationFeeRequestComposer.vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Bubble, BubbleContent } from '@/components/ui/bubble'
+import { Marker, MarkerContent } from '@/components/ui/marker'
+import {
+  Message,
+  MessageContent,
+  MessageFooter,
+  MessageHeader,
+} from '@/components/ui/message'
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from '@/components/ui/message-scroller'
 
 const props = defineProps<{
   conversationId: string
@@ -66,20 +82,6 @@ onMounted(() => {
   markAsRead(props.conversationId)
 })
 
-const messagesContainer = ref<HTMLElement | null>(null)
-
-function scrollToBottom() {
-  nextTick(() => {
-    const el = messagesContainer.value
-    if (el) {
-      el.scrollTop = el.scrollHeight
-    }
-  })
-}
-
-watch(messages, () => scrollToBottom(), { deep: true })
-watch(optimisticMessages, () => scrollToBottom(), { deep: true })
-
 function handleSend() {
   const content = messageInput.value.trim()
   if (!content) return
@@ -93,24 +95,82 @@ function handleSend() {
   markAsRead(props.conversationId)
 }
 
-function isOwnMessage(message: Message) {
+function isOwnMessage(message: ThreadMessage) {
   return message.senderId === currentUserId.value
 }
 
 function formatMessageTime(timestamp: string) {
   if (!timestamp) return ''
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-
-  if (diffInHours < 24) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  }
-  if (diffInHours < 168) {
-    return date.toLocaleDateString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })
-  }
-  return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
+
+function dayLabel(timestamp: string) {
+  const date = new Date(timestamp)
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  if (today.getTime() - date.getTime() < 6 * 24 * 60 * 60 * 1000)
+    return date.toLocaleDateString([], { weekday: 'long' })
+  return date.toLocaleDateString([], { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+type TimelineEntry
+  = | { type: 'day', key: string, label: string }
+    | {
+      type: 'message'
+      key: string
+      message: ThreadMessage
+      /** First message of a same-sender run — carries the sender name. */
+      startsRun: boolean
+      /** Last message of a run — carries the timestamp + read ticks. */
+      endsRun: boolean
+    }
+
+// Flatten messages into a render timeline: day separators between calendar
+// days, and same-sender runs so name/time chrome appears once per run
+// instead of on every bubble. Fee requests always break a run — they render
+// as cards, not bubbles.
+const timeline = computed<TimelineEntry[]>(() => {
+  const entries: TimelineEntry[] = []
+  const list = messages.value
+
+  for (let i = 0; i < list.length; i++) {
+    const message = list[i]!
+    const previous = list[i - 1]
+    const next = list[i + 1]
+
+    const day = new Date(message.createdAt).toDateString()
+    if (!previous || new Date(previous.createdAt).toDateString() !== day) {
+      entries.push({ type: 'day', key: `day-${day}`, label: dayLabel(message.createdAt) })
+    }
+
+    const sameRunAsPrevious
+      = !!previous
+        && previous.senderId === message.senderId
+        && new Date(previous.createdAt).toDateString() === day
+        && previous.kind !== 'consultation_fee_request'
+        && message.kind !== 'consultation_fee_request'
+    const sameRunAsNext
+      = !!next
+        && next.senderId === message.senderId
+        && new Date(next.createdAt).toDateString() === day
+        && next.kind !== 'consultation_fee_request'
+        && message.kind !== 'consultation_fee_request'
+
+    entries.push({
+      type: 'message',
+      key: message.id,
+      message,
+      startsRun: !sameRunAsPrevious,
+      endsRun: !sameRunAsNext,
+    })
+  }
+
+  return entries
+})
 </script>
 
 <template>
@@ -121,113 +181,146 @@ function formatMessageTime(timestamp: string) {
     />
 
     <div
-      ref="messagesContainer"
-      class="flex-1 space-y-3 overflow-y-auto p-4"
+      v-if="isPending"
+      class="flex-1 space-y-4 overflow-hidden p-4"
+      aria-busy="true"
+      aria-label="Loading messages"
     >
-      <div
-        v-if="isPending"
-        class="space-y-4 p-4"
-        aria-busy="true"
-        aria-label="Loading messages"
-      >
-        <div class="flex justify-start">
-          <Skeleton class="h-16 w-[72%] rounded-xl" />
-        </div>
-        <div class="flex justify-end">
-          <Skeleton class="h-12 w-[58%] rounded-xl" />
-        </div>
-        <div class="flex justify-start">
-          <Skeleton class="h-20 w-[64%] rounded-xl" />
-        </div>
+      <div class="flex justify-start">
+        <Skeleton class="h-16 w-[72%] rounded-xl" />
       </div>
-
-      <div v-else-if="isError" class="py-8 text-center text-sm text-destructive">
-        Could not load messages.
-        <Button variant="link" class="h-auto p-0" @click="refetch()">
-          Retry
-        </Button>
+      <div class="flex justify-end">
+        <Skeleton class="h-12 w-[58%] rounded-xl" />
       </div>
-
-      <template v-else>
-        <div
-          v-if="messages.length === 0 && optimisticMessages.length === 0"
-          class="py-12 text-center text-sm text-muted-foreground"
-        >
-          No messages yet. Say hello to start the conversation.
-        </div>
-
-        <div
-          v-for="message in messages"
-          v-else
-          :key="message.id"
-          class="flex"
-          :class="isOwnMessage(message) ? 'justify-end' : 'justify-start'"
-        >
-          <ConsultationFeeRequestCard
-            v-if="message.kind === 'consultation_fee_request'"
-            :message="message"
-            :conversation-id="conversationId"
-            :viewer-role="viewerRole"
-          />
-
-          <div
-            v-else
-            class="max-w-[85%] rounded-xl px-4 py-2 text-sm shadow-xs"
-            :class="
-              isOwnMessage(message)
-                ? 'bg-primary text-primary-foreground'
-                : 'border border-border bg-card text-foreground'
-            "
-          >
-            <p v-if="!isOwnMessage(message) && message.sender?.name" class="mb-1 text-xs font-medium opacity-80">
-              {{ message.sender.name }}
-            </p>
-            <p class="whitespace-pre-wrap break-words">
-              {{ message.content }}
-            </p>
-            <div
-              class="mt-1 flex items-center gap-1.5 text-2xs opacity-70"
-              :class="isOwnMessage(message) ? 'justify-end' : 'justify-start'"
-            >
-              <span>{{ formatMessageTime(message.createdAt) }}</span>
-              <MessageReadTicks
-                v-if="isOwnMessage(message)"
-                :status="message.status"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Optimistic sends: pending/queued/failed bubbles (#5 taxonomy) -->
-        <div
-          v-for="optimistic in optimisticMessages"
-          :key="optimistic.clientId"
-          class="flex justify-end"
-        >
-          <div
-            class="max-w-[85%] rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground shadow-xs"
-            :class="optimistic.state === 'failed' ? 'opacity-90' : 'opacity-60'"
-          >
-            <p class="whitespace-pre-wrap break-words">
-              {{ optimistic.content }}
-            </p>
-            <div class="mt-1 flex items-center justify-end gap-1.5 text-2xs">
-              <template v-if="optimistic.state === 'failed'">
-                <span role="alert">Not delivered</span>
-                <button
-                  type="button"
-                  class="font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground/40"
-                  @click="retryMessage(optimistic.clientId)"
-                >
-                  Retry
-                </button>
-              </template>
-              <span v-else class="opacity-80">Sending…</span>
-            </div>
-          </div>
-        </div>
-      </template>
+      <div class="flex justify-start">
+        <Skeleton class="h-20 w-[64%] rounded-xl" />
+      </div>
     </div>
+
+    <div v-else-if="isError" class="flex-1 py-8 text-center text-sm text-destructive">
+      Could not load messages.
+      <Button variant="link" class="h-auto p-0" @click="refetch()">
+        Retry
+      </Button>
+    </div>
+
+    <MessageScrollerProvider
+      v-else
+      auto-scroll
+      default-scroll-position="end"
+    >
+      <MessageScroller class="min-h-0 flex-1">
+        <MessageScrollerViewport class="app-scrollbar">
+          <MessageScrollerContent class="gap-1 p-4">
+            <div
+              v-if="messages.length === 0 && optimisticMessages.length === 0"
+              class="py-12 text-center text-sm text-muted-foreground"
+            >
+              No messages yet. Say hello to start the conversation.
+            </div>
+
+            <template v-for="entry in timeline" :key="entry.key">
+              <MessageScrollerItem v-if="entry.type === 'day'" class="py-3">
+                <Marker variant="separator">
+                  <MarkerContent class="text-2xs uppercase tracking-widest">
+                    {{ entry.label }}
+                  </MarkerContent>
+                </Marker>
+              </MessageScrollerItem>
+
+              <MessageScrollerItem
+                v-else-if="entry.message.kind === 'consultation_fee_request'"
+                :message-id="entry.message.id"
+                class="flex py-2"
+                :class="isOwnMessage(entry.message) ? 'justify-end' : 'justify-start'"
+              >
+                <ConsultationFeeRequestCard
+                  :message="entry.message"
+                  :conversation-id="conversationId"
+                  :viewer-role="viewerRole"
+                />
+              </MessageScrollerItem>
+
+              <MessageScrollerItem
+                v-else
+                :message-id="entry.message.id"
+                :class="entry.startsRun ? 'pt-2' : 'pt-0.5'"
+              >
+                <Message :align="isOwnMessage(entry.message) ? 'end' : 'start'">
+                  <MessageContent class="gap-1">
+                    <MessageHeader
+                      v-if="entry.startsRun && !isOwnMessage(entry.message) && entry.message.sender?.name"
+                      class="text-xs font-medium text-muted-foreground"
+                    >
+                      {{ entry.message.sender.name }}
+                    </MessageHeader>
+                    <Bubble
+                      :align="isOwnMessage(entry.message) ? 'end' : 'start'"
+                      :variant="isOwnMessage(entry.message) ? 'default' : 'outline'"
+                      class="max-w-[85%]"
+                    >
+                      <BubbleContent>
+                        <p class="whitespace-pre-wrap break-words">
+                          {{ entry.message.content }}
+                        </p>
+                      </BubbleContent>
+                    </Bubble>
+                    <MessageFooter
+                      v-if="entry.endsRun"
+                      class="gap-1.5 px-0 text-2xs"
+                    >
+                      <span>{{ formatMessageTime(entry.message.createdAt) }}</span>
+                      <MessageReadTicks
+                        v-if="isOwnMessage(entry.message)"
+                        :status="entry.message.status"
+                      />
+                    </MessageFooter>
+                  </MessageContent>
+                </Message>
+              </MessageScrollerItem>
+            </template>
+
+            <!-- Optimistic sends: pending/queued/failed bubbles (#5 taxonomy) -->
+            <MessageScrollerItem
+              v-for="optimistic in optimisticMessages"
+              :key="optimistic.clientId"
+              class="pt-0.5"
+            >
+              <Message align="end">
+                <MessageContent class="gap-1">
+                  <Bubble
+                    align="end"
+                    variant="default"
+                    class="max-w-[85%]"
+                    :class="optimistic.state === 'failed' ? 'opacity-90' : 'opacity-60'"
+                  >
+                    <BubbleContent>
+                      <p class="whitespace-pre-wrap break-words">
+                        {{ optimistic.content }}
+                      </p>
+                    </BubbleContent>
+                  </Bubble>
+                  <MessageFooter class="gap-1.5 px-0 text-2xs">
+                    <template v-if="optimistic.state === 'failed'">
+                      <span role="alert" class="text-destructive">Not delivered</span>
+                      <button
+                        type="button"
+                        class="font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                        @click="retryMessage(optimistic.clientId)"
+                      >
+                        Retry
+                      </button>
+                    </template>
+                    <span v-else>Sending…</span>
+                  </MessageFooter>
+                </MessageContent>
+              </Message>
+            </MessageScrollerItem>
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
 
     <div class="border-t bg-background p-4">
       <p

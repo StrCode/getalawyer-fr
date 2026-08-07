@@ -12,76 +12,69 @@
     </div>
 
     <!-- Messages Container -->
-    <div class="max-h-[400px] flex-1 space-y-4 overflow-y-auto p-4">
-      <!-- Loading State -->
-      <div
-        v-if="isLoading"
-        class="space-y-3 py-4"
-        aria-busy="true"
-        aria-label="Loading messages"
-      >
-        <div class="flex justify-start">
-          <Skeleton class="h-14 w-[70%] rounded-xl" />
-        </div>
-        <div class="flex justify-end">
-          <Skeleton class="h-12 w-[55%] rounded-xl" />
-        </div>
+    <div v-if="isLoading" class="max-h-[400px] space-y-3 p-4 py-4" aria-busy="true" aria-label="Loading messages">
+      <div class="flex justify-start">
+        <Skeleton class="h-14 w-[70%] rounded-xl" />
       </div>
-
-      <!-- Error State -->
-      <div v-else-if="error" class="py-8 text-center">
-        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-destructive/70" aria-hidden="true" />
-        <p class="text-destructive text-sm">Failed to load messages</p>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="!messages?.length" class="py-8 text-center">
-        <HugeiconsIcon :icon="Message02Icon" class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
-        <p class="text-muted-foreground text-sm">No messages yet. Start the conversation!</p>
-      </div>
-
-      <!-- Messages List -->
-      <div v-else class="space-y-4">
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          :class="[
-            'flex',
-            isMessageFromCurrentUser(message) ? 'justify-end' : 'justify-start'
-          ]"
-        >
-          <div
-            :class="[
-              'max-w-xs lg:max-w-md px-4 py-2 rounded-lg',
-              isMessageFromCurrentUser(message)
-                ? 'bg-primary text-primary-foreground'
-                : 'border border-border bg-background text-foreground'
-            ]"
-          >
-            <!-- Sender name (for received messages) -->
-            <div
-              v-if="!isMessageFromCurrentUser(message)"
-              class="opacity-75 mb-1 text-xs"
-            >
-              {{ message.senderType === 'lawyer' ? 'Lawyer' : 'Client' }}
-            </div>
-
-            <!-- Message content -->
-            <div class="break-words">{{ message.content }}</div>
-
-            <!-- Message metadata -->
-            <div class="flex justify-between items-center opacity-75 mt-1 text-xs">
-              <span>{{ formatMessageTime(message.createdAt) }}</span>
-              <div v-if="isMessageFromCurrentUser(message)" class="flex items-center space-x-1">
-                <HugeiconsIcon :icon="CheckmarkCircle01Icon" v-if="message.isRead" class="w-3 h-3" />
-                <HugeiconsIcon :icon="Tick01Icon" v-else class="w-3 h-3" />
-                <span>{{ message.isRead ? 'Read' : 'Sent' }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="flex justify-end">
+        <Skeleton class="h-12 w-[55%] rounded-xl" />
       </div>
     </div>
+
+    <div v-else-if="error" class="py-8 text-center">
+      <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-destructive/70" aria-hidden="true" />
+      <p class="text-destructive text-sm">Failed to load messages</p>
+    </div>
+
+    <div v-else-if="!messages?.length" class="py-8 text-center">
+      <HugeiconsIcon :icon="Message02Icon" class="mx-auto mb-3 w-12 h-12 text-muted-foreground/40" />
+      <p class="text-muted-foreground text-sm">No messages yet. Start the conversation!</p>
+    </div>
+
+    <MessageScrollerProvider
+      v-else
+      auto-scroll
+      default-scroll-position="end"
+    >
+      <MessageScroller class="max-h-[400px] min-h-0 flex-1">
+        <MessageScrollerViewport class="app-scrollbar">
+          <MessageScrollerContent class="gap-2 p-4">
+            <MessageScrollerItem
+              v-for="message in messages"
+              :key="message.id"
+              :message-id="message.id"
+            >
+              <Message :align="isMessageFromCurrentUser(message) ? 'end' : 'start'">
+                <MessageContent class="gap-1">
+                  <MessageHeader
+                    v-if="!isMessageFromCurrentUser(message)"
+                    class="text-xs font-medium text-muted-foreground"
+                  >
+                    {{ message.senderType === 'lawyer' ? 'Lawyer' : 'Client' }}
+                  </MessageHeader>
+                  <Bubble
+                    :align="isMessageFromCurrentUser(message) ? 'end' : 'start'"
+                    :variant="isMessageFromCurrentUser(message) ? 'default' : 'outline'"
+                  >
+                    <BubbleContent>
+                      <p class="whitespace-pre-wrap break-words">{{ message.content }}</p>
+                    </BubbleContent>
+                  </Bubble>
+                  <MessageFooter class="gap-1.5 px-0 text-2xs">
+                    <span>{{ formatMessageTime(message.createdAt) }}</span>
+                    <template v-if="isMessageFromCurrentUser(message)">
+                      <HugeiconsIcon :icon="message.isRead ? CheckmarkCircle01Icon : Tick01Icon" class="size-3" aria-hidden="true" />
+                      <span>{{ message.isRead ? 'Read' : 'Sent' }}</span>
+                    </template>
+                  </MessageFooter>
+                </MessageContent>
+              </Message>
+            </MessageScrollerItem>
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
 
     <!-- Message Input -->
     <div v-if="!readonly" class="border-t border-border p-4">
@@ -120,6 +113,21 @@ import { toast } from 'vue-sonner'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { Bubble, BubbleContent } from '@/components/ui/bubble'
+import {
+  Message,
+  MessageContent,
+  MessageFooter,
+  MessageHeader,
+} from '@/components/ui/message'
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from '@/components/ui/message-scroller'
 
 const props = defineProps({
   caseId: {
