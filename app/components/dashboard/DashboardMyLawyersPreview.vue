@@ -22,7 +22,7 @@ function initials(name: string): string {
   <Card class="py-0 shadow-xs">
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle class="text-base">
+        <CardTitle>
           My lawyers
         </CardTitle>
         <p class="mt-0.5 text-xs text-muted-foreground">

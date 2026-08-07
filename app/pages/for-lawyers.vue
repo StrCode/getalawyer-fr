@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, Calendar01Icon, Message01Icon, Money01Icon, Shield01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import type { Hugeicon } from '@/lib/icon-types'
 import { ref, computed } from 'vue'
 import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
 import { formatNairaAmount } from '~/composables/useSubscription'
@@ -19,26 +20,26 @@ useSeoMeta({
     `Grow your practice. Keep every naira you earn. Join verified lawyers across Nigeria for ${subscriptionPriceLabel.value}/year.`,
 })
 
-const features = [
+const features: { title: string, desc: string, icon: Hugeicon }[] = [
   {
     title: 'Bar-verified credentials',
     desc: 'NIN and SCN verified. Build instant trust with clients before they even message you.',
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    icon: Shield01Icon,
   },
   {
     title: 'Smart booking',
     desc: 'Calendar that syncs with yours. Clients book directly into your available slots.',
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>`,
+    icon: Calendar01Icon,
   },
   {
     title: 'Direct messaging',
     desc: 'Built-in secure messaging. Talk to clients, exchange files, and manage your pipeline.',
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    icon: Message01Icon,
   },
   {
     title: 'Zero commission',
     desc: 'We do not take a cut of your consultation fees. You keep 100% of what you earn.',
-    icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+    icon: Money01Icon,
   }
 ]
 
@@ -67,11 +68,11 @@ const toggleFaq = (index: number) => {
   <div class="bg-background">
 
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-foreground py-24 text-background md:py-32">
+    <section class="relative overflow-hidden bg-foreground text-background section-y-lg">
       <div class="pointer-events-none absolute -top-48 left-1/2 size-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
 
       <div class="relative mx-auto max-w-7xl px-6 text-center md:px-8">
-        <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-primary">For legal professionals</p>
+        <p class="eyebrow mb-6 text-primary">For legal professionals</p>
        <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-3xl text-background">
           Grow your practice.<br>
           <em class="font-normal italic">Keep every naira you earn.</em>
@@ -89,7 +90,7 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Features Grid -->
-    <section class="bg-background py-24">
+    <section class="bg-background section-y">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16 text-center">
          <h2 class="text-4xl font-medium md:text-5xl mb-4 text-foreground">
@@ -108,8 +109,9 @@ const toggleFaq = (index: number) => {
           >
             <div
               class="mb-6 flex size-12 items-center justify-center rounded-xl bg-muted text-primary"
-              v-html="feat.icon"
-            />
+            >
+              <HugeiconsIcon :icon="feat.icon" class="size-6" aria-hidden="true" />
+            </div>
            <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
             <p class="text-sm leading-relaxed text-muted-foreground">{{ feat.desc }}</p>
           </div>
@@ -118,10 +120,10 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- How it works for lawyers -->
-    <section class="border-t border-background/20 bg-foreground py-24 text-background">
+    <section class="border-t border-background/20 bg-foreground text-background section-y">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
         <div class="mb-16">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Onboarding</p>
+          <p class="eyebrow mb-4 text-primary">Onboarding</p>
          <h2 class="text-4xl font-medium md:text-5xl mb-4 text-background">
             How to get started
           </h2>
@@ -147,7 +149,7 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Pricing Section -->
-    <section id="pricing" class="border-t border-border bg-muted py-24">
+    <section id="pricing" class="border-t border-border bg-muted section-y">
       <div class="mx-auto max-w-7xl px-6 md:px-8">
 
         <div class="mx-auto mb-16 max-w-2xl text-center">
@@ -161,7 +163,7 @@ const toggleFaq = (index: number) => {
 
         <!-- Pricing Card -->
         <div class="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-10 shadow-sm ring-2 ring-primary/30">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-6 text-center text-primary">Annual membership</p>
+          <p class="eyebrow mb-6 text-center text-primary-strong">Annual membership</p>
 
           <div class="mb-8 mt-2 text-center">
            <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
@@ -183,7 +185,7 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- FAQ Section -->
-    <section class="bg-background py-24">
+    <section class="bg-background section-y">
       <div class="mx-auto max-w-3xl px-6 md:px-8">
         <div class="mb-16 text-center">
          <h2 class="text-4xl font-medium md:text-5xl text-foreground">
@@ -221,7 +223,7 @@ const toggleFaq = (index: number) => {
     </section>
 
     <!-- Bottom CTA -->
-    <section class="border-t border-background/20 bg-foreground py-24 text-center text-background">
+    <section class="border-t border-background/20 bg-foreground text-center text-background section-y-lg">
       <div class="mx-auto max-w-2xl px-6 md:px-8">
        <h2 class="text-4xl font-medium md:text-5xl mb-6 text-background">
           Ready to grow your digital practice?

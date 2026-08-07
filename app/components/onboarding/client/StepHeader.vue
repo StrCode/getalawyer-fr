@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <header class="mb-2 w-full text-center sm:mb-4 sm:text-left">
-    <p class="text-xs font-semibold uppercase tracking-widest mb-3 text-primary">
+    <p class="eyebrow mb-3 text-primary-strong">
       Step {{ step }} of {{ total }} · {{ label }}
     </p>
    <h1

@@ -165,7 +165,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
                 <Badge
                   v-if="item.isVerified"
                   variant="verified"
-                  class="gap-1 text-[10px] uppercase tracking-wide"
+                  class="gap-1 text-2xs uppercase tracking-wide"
                 >
                   <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-3" />
                   Verified

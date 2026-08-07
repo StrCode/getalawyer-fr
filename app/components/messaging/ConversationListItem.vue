@@ -63,7 +63,7 @@ const initials = computed(() => {
         </p>
         <Badge
           v-if="unreadCount && unreadCount > 0 && !selected"
-          class="size-5 shrink-0 justify-center rounded-full px-0 text-[10px]"
+          class="size-5 shrink-0 justify-center rounded-full px-0 text-2xs"
         >
           {{ unreadCount > 9 ? '9+' : unreadCount }}
         </Badge>

@@ -6,6 +6,11 @@ import type { ConversationInfo, Message, Notification } from '~/types/messaging'
 
 let socketListenersInitialized = false
 
+// Backstop for sends whose echo/error never arrives (module-level: the socket
+// and its listeners are app singletons).
+const SEND_TIMEOUT_MS = 10_000
+const sendTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
 function patchConversationInList(
   queryClient: ReturnType<typeof useQueryClient>,
   conversationId: string,
@@ -32,8 +37,15 @@ export const useMessaging = () => {
 
     // New message received
     socket.on('message:new', (message: Message) => {
+      // Our own send echoed back — the optimistic bubble hands over to the
+      // real message.
+      if (message.clientId) {
+        clearSendTimeout(message.clientId)
+        store.resolveOptimisticMessage(message.clientId)
+      }
+
       const queryKey = queryKeys.messaging.conversation(message.conversationId)
-      
+
       // Update conversation messages
       queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old
@@ -115,6 +127,81 @@ export const useMessaging = () => {
         store.removeTypingUser(store.activeConversationId, userId)
       }
     })
+
+    // Send failures correlated by clientId (backend echoes it on error)
+    socket.on('error', (payload: { clientId?: string } | undefined) => {
+      if (payload?.clientId) {
+        clearSendTimeout(payload.clientId)
+        store.setOptimisticState(payload.clientId, 'failed')
+      }
+    })
+
+    // Reconnect → flush messages queued while offline
+    socket.on('connect', () => {
+      flushQueuedMessages()
+    })
+  }
+
+  function clearSendTimeout(clientId: string) {
+    const timeout = sendTimeouts.get(clientId)
+    if (timeout) {
+      clearTimeout(timeout)
+      sendTimeouts.delete(clientId)
+    }
+  }
+
+  function emitOptimistic(entry: { clientId: string; conversationId: string; content: string; replyToId: string | null }) {
+    store.setOptimisticState(entry.clientId, 'pending')
+    $socket.emit('message:send', {
+      conversationId: entry.conversationId,
+      content: entry.content,
+      replyToId: entry.replyToId ?? undefined,
+      clientId: entry.clientId,
+    })
+    clearSendTimeout(entry.clientId)
+    sendTimeouts.set(entry.clientId, setTimeout(() => {
+      sendTimeouts.delete(entry.clientId)
+      store.setOptimisticState(entry.clientId, 'failed')
+    }, SEND_TIMEOUT_MS))
+  }
+
+  /**
+   * Optimistic send (#5): bubble appears immediately as pending (or queued
+   * while offline), reconciles to the real message when the backend echoes
+   * the clientId, and flips to failed on a correlated error or timeout.
+   */
+  const sendMessage = (data: { conversationId: string; content: string; replyToId?: string }) => {
+    const clientId = crypto.randomUUID()
+    store.addOptimisticMessage({
+      clientId,
+      conversationId: data.conversationId,
+      content: data.content,
+      replyToId: data.replyToId ?? null,
+      senderId: session.value?.user?.id ?? '',
+      createdAt: new Date().toISOString(),
+      state: 'queued',
+    })
+    if ($socket.connected) {
+      emitOptimistic({ clientId, conversationId: data.conversationId, content: data.content, replyToId: data.replyToId ?? null })
+    }
+    return clientId
+  }
+
+  /** Re-send a failed (or still-queued) optimistic message with its original clientId. */
+  const retryMessage = (clientId: string) => {
+    const entry = store.optimisticMessages[clientId]
+    if (!entry) return
+    if ($socket.connected) {
+      emitOptimistic(entry)
+    } else {
+      store.setOptimisticState(clientId, 'queued')
+    }
+  }
+
+  const flushQueuedMessages = () => {
+    for (const entry of store.queuedOptimisticMessages()) {
+      emitOptimistic(entry)
+    }
   }
 
   // Query: Get all conversations
@@ -145,15 +232,13 @@ export const useMessaging = () => {
     })
   }
 
-  // Mutation: Send message
+  // Mutation wrapper kept for API compatibility; delivery feedback lives on
+  // the optimistic bubble, not the mutation result.
   const useSendMessage = () => {
     return useMutation({
-      mutationFn: (data: { conversationId: string; content: string; file?: any; replyToId?: string }) => {
-        return new Promise<void>((resolve) => {
-          $socket.emit('message:send', data)
-          // Resolve immediately - real update comes via socket event
-          resolve()
-        })
+      mutationFn: (data: { conversationId: string; content: string; replyToId?: string }) => {
+        sendMessage(data)
+        return Promise.resolve()
       }
     })
   }
@@ -196,6 +281,9 @@ export const useMessaging = () => {
     useConversation,
     useNotifications,
     useSendMessage,
+    sendMessage,
+    retryMessage,
+    flushQueuedMessages,
     useUploadFile,
     useCreateConversation,
     useMarkAsRead

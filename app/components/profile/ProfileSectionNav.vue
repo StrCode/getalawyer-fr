@@ -54,7 +54,7 @@ onUnmounted(() => {
     aria-label="Profile sections"
     class="space-y-1"
   >
-    <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <p class="mb-3 eyebrow text-muted-foreground">
       Sections
     </p>
     <button

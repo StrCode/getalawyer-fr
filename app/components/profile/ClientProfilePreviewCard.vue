@@ -44,7 +44,7 @@ const locationLabel = computed(() => {
       : 'overflow-hidden border-primary/15 bg-linear-to-br from-primary/5 via-card to-card'"
   >
     <CardHeader class="pb-3">
-      <CardTitle class="text-base">
+      <CardTitle>
         How lawyers see you
       </CardTitle>
       <CardDescription>

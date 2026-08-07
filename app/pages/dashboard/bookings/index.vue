@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto w-full max-w-5xl space-y-6">
+  <div class="space-y-6">
     <DashboardPageHeader
       title="My Bookings"
       description="View and manage your consultation bookings."
@@ -19,7 +19,7 @@
       <CardHeader class="space-y-4 border-b border-border/40 px-5 py-4 sm:px-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle class="text-base">
+            <CardTitle>
               Bookings
             </CardTitle>
             <CardDescription class="mt-1">

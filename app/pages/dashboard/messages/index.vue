@@ -17,6 +17,7 @@ definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
   dashboardScroll: 'contained',
+  dashboardWidth: 'full',
 })
 
 const route = useRoute()
@@ -88,8 +89,12 @@ onUnmounted(() => {
   messagingStore.setActiveConversation(null)
 })
 
+// Auto-select only where the thread pane is visible beside the list (lg+).
+// On mobile the user lands on the list; deep links still select directly.
+const viewport = useViewport()
 watch(conversations, (list) => {
   if (!list?.length || selectedConversationId.value) return
+  if (!viewport.isGreaterOrEquals('lg')) return
   selectConversation(list[0].id)
 }, { immediate: true })
 

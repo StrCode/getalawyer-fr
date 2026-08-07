@@ -219,7 +219,7 @@ async function startPayment() {
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-4xl space-y-6">
+  <div class="space-y-6">
     <DashboardPageHeader
       class="sticky top-0 z-10 -mx-1 border-b border-border/40 bg-background px-1 pb-5"
       title="Subscription"
@@ -370,7 +370,7 @@ async function startPayment() {
 
       <Card v-if="!hasActiveSubscription && canRetryPayment && !hasRenewalIssue && !hasCheckoutFailure && !showExpiredBanner">
         <CardHeader>
-          <CardTitle class="text-base">
+          <CardTitle>
             {{ membershipActionTitle }}
           </CardTitle>
         </CardHeader>
@@ -402,7 +402,7 @@ async function startPayment() {
 
       <Card v-if="catalogPriceNaira != null || pricing">
         <CardHeader>
-          <CardTitle class="text-base">
+          <CardTitle>
             What&apos;s included
           </CardTitle>
         </CardHeader>

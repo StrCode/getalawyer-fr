@@ -94,7 +94,7 @@
       <div class="space-y-6">
         <Card class="rounded-xl">
           <CardHeader>
-            <CardTitle class="text-base">
+            <CardTitle>
               Current booking
             </CardTitle>
           </CardHeader>

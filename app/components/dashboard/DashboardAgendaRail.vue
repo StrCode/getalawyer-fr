@@ -21,7 +21,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 <template>
   <Card class="sticky top-6 h-fit py-0 shadow-xs">
     <CardHeader class="gap-1 px-5 pt-5 pb-0">
-      <CardTitle class="text-base">
+      <CardTitle>
         Upcoming
       </CardTitle>
       <p class="text-muted-foreground text-sm">

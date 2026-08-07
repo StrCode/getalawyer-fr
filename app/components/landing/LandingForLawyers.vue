@@ -1,30 +1,34 @@
 <script setup lang="ts">
-const features = [
+import type { Hugeicon } from '@/lib/icon-types'
+import { Calendar01Icon, Message01Icon, Money01Icon, Shield01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
+
+const features: { title: string, desc: string, icon: Hugeicon }[] = [
   {
     title: 'Bar-verified credentials',
     desc: 'NIN and SCN verified. Build instant trust with clients.',
-    icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    icon: Shield01Icon,
   },
   {
     title: 'Smart booking',
     desc: 'Calendar that syncs with yours. Reduce no-shows.',
-    icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>`,
+    icon: Calendar01Icon,
   },
   {
     title: 'Direct messaging',
     desc: 'Talk to clients before and after consultations.',
-    icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    icon: Message01Icon,
   },
   {
     title: 'Zero commission',
     desc: 'Keep 100% of what you charge. Flat subscription only.',
-    icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+    icon: Money01Icon,
   },
 ]
 </script>
 
 <template>
-  <section id="lawyers" class="relative overflow-hidden bg-foreground py-12 text-background md:py-24">
+  <section id="lawyers" class="relative overflow-hidden bg-foreground text-background section-y">
     <!-- Subtle accent glow -->
     <div class="pointer-events-none absolute -top-48 -right-48 size-[600px] rounded-full bg-primary/5 blur-3xl" />
 
@@ -33,7 +37,7 @@ const features = [
 
         <!-- Left: copy -->
         <div>
-          <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">For legal professionals</p>
+          <p class="eyebrow mb-4 text-primary">For legal professionals</p>
          <h2 class="text-4xl font-medium md:text-5xl max-w-2xl text-background">
             Grow your practice. <em class="font-heading italic font-normal text-background/70">Keep every naira you earn.</em>
           </h2>
@@ -65,8 +69,9 @@ const features = [
           >
             <div
               class="mb-4 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-105"
-              v-html="feat.icon"
-            />
+            >
+              <HugeiconsIcon :icon="feat.icon" class="size-[18px]" aria-hidden="true" />
+            </div>
            <h4 class="mb-1.5 text-base font-medium text-background">{{ feat.title }}</h4>
             <p class="text-sm leading-normal text-background/70">{{ feat.desc }}</p>
           </div>

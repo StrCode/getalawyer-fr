@@ -19,7 +19,7 @@ const hasStrength = computed(() => Boolean(props.profileStrength))
     <CardHeader class="pb-3">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <CardTitle class="text-base">
+          <CardTitle>
             Profile checklist
           </CardTitle>
           <CardDescription>

@@ -41,7 +41,7 @@ const emit = defineEmits<{
         {{ backLinkLabel }}
       </NuxtLink>
 
-      <p class="text-xs font-semibold uppercase tracking-widest mb-3 text-primary">
+      <p class="eyebrow mb-3 text-primary-strong">
         Lawyer profile
       </p>
 

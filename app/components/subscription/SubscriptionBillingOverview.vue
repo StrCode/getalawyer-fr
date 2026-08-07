@@ -38,7 +38,7 @@ const paymentMethodLabel = computed(() => {
     <Card>
       <CardHeader class="pb-3">
         <div class="flex items-start justify-between gap-3">
-          <CardTitle class="text-base font-medium">
+          <CardTitle class="font-medium">
             <template v-if="hasActiveSubscription">
               Upcoming bill
             </template>
@@ -118,7 +118,7 @@ const paymentMethodLabel = computed(() => {
 
     <Card>
       <CardHeader class="pb-3">
-        <CardTitle class="text-base font-medium">
+        <CardTitle class="font-medium">
           Payment method
         </CardTitle>
       </CardHeader>

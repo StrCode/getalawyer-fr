@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
 
 <template>
   <motion.div
-    class="mx-auto w-full max-w-5xl space-y-6"
+    class="space-y-6"
     :initial="{ opacity: 0, y: 8 }"
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"

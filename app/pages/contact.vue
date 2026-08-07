@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown01Icon, ArrowRight01Icon, CheckmarkCircle01Icon, Loading03Icon, Location01Icon, Mail01Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, ArrowRight01Icon, Location01Icon, Mail01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref } from 'vue'
 definePageMeta({ layout: 'landing' })
@@ -16,17 +16,20 @@ const form = ref({
   message: ''
 })
 
-const isSubmitting = ref(false)
-const isSuccess = ref(false)
+const showUnavailableNotice = ref(false)
 
+const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
+
+const mailtoHref = computed(() => {
+  const subject = encodeURIComponent(`[${form.value.subject || 'support'}] Message from ${form.value.name || 'the contact form'}`)
+  const body = encodeURIComponent(form.value.message)
+  return `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`
+})
+
+// No sending endpoint exists yet — never fake a success. The draft is kept
+// and handed to the user's mail client instead.
 const handleSubmit = () => {
-  isSubmitting.value = true
-  setTimeout(() => {
-    isSubmitting.value = false
-    isSuccess.value = true
-    form.value = { name: '', email: '', subject: '', message: '' }
-    setTimeout(() => { isSuccess.value = false }, 5000)
-  }, 1000)
+  showUnavailableNotice.value = true
 }
 </script>
 
@@ -39,7 +42,7 @@ const handleSubmit = () => {
 
         <!-- Left: copy & trust -->
         <div class="lg:col-span-5">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Contact</p>
+          <p class="eyebrow mb-4 text-primary-strong">Contact</p>
          <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
             Get in touch.
           </h1>
@@ -95,31 +98,39 @@ const handleSubmit = () => {
           <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
 
             <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0">
-              <div v-if="isSuccess" class="flex items-start gap-3 rounded-xl border border-primary/20 bg-muted p-5 text-base font-medium text-foreground">
-                <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-6 shrink-0 text-primary" />
-                Thanks for reaching out! Our team will get back to you shortly.
-              </div>
+              <Alert v-if="showUnavailableNotice" variant="info">
+                <HugeiconsIcon :icon="Mail01Icon" class="size-4" aria-hidden="true" />
+                <AlertTitle>Direct sending isn't available yet</AlertTitle>
+                <AlertDescription>
+                  <p>
+                    Your message hasn't been sent. Email us instead — we usually respond within 24 hours.
+                  </p>
+                  <Button as-child variant="outline" size="sm" class="mt-2 w-fit">
+                    <a :href="mailtoHref">Open in your email app</a>
+                  </Button>
+                </AlertDescription>
+              </Alert>
             </Transition>
 
             <div class="grid gap-6 md:grid-cols-2">
               <!-- Name -->
               <div class="flex flex-col gap-2.5">
-                <label class="text-sm font-medium text-foreground">Full name</label>
-                <input v-model="form.name" required type="text" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="Jane Doe" />
+                <label for="contact-name" class="text-sm font-medium text-foreground">Full name</label>
+                <input id="contact-name" v-model="form.name" required type="text" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="Jane Doe" />
               </div>
 
               <!-- Email -->
               <div class="flex flex-col gap-2.5">
-                <label class="text-sm font-medium text-foreground">Email address</label>
-                <input v-model="form.email" required type="email" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="jane@example.com" />
+                <label for="contact-email" class="text-sm font-medium text-foreground">Email address</label>
+                <input id="contact-email" v-model="form.email" required type="email" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="jane@example.com" />
               </div>
             </div>
 
             <!-- Subject -->
             <div class="flex flex-col gap-2.5">
-              <label class="text-sm font-medium text-foreground">Subject</label>
+              <label for="contact-subject" class="text-sm font-medium text-foreground">Subject</label>
               <div class="relative">
-                <select v-model="form.subject" required class="w-full cursor-pointer appearance-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10">
+                <select id="contact-subject" v-model="form.subject" required class="w-full cursor-pointer appearance-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10">
                   <option value="" disabled selected>Select a topic</option>
                   <option value="support">General Support</option>
                   <option value="lawyer">I'm a lawyer (Registration/Billing)</option>
@@ -132,8 +143,8 @@ const handleSubmit = () => {
 
             <!-- Message -->
             <div class="flex flex-col gap-2.5">
-              <label class="text-sm font-medium text-foreground">Message</label>
-              <textarea v-model="form.message" required rows="5" class="w-full resize-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="How can we help you?"></textarea>
+              <label for="contact-message" class="text-sm font-medium text-foreground">Message</label>
+              <textarea id="contact-message" v-model="form.message" required rows="5" class="w-full resize-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="How can we help you?"></textarea>
             </div>
 
             <!-- Submit -->
@@ -141,15 +152,8 @@ const handleSubmit = () => {
               type="submit"
               size="lg"
               class="mt-2 w-full cursor-pointer"
-              :disabled="isSubmitting"
             >
-              <template v-if="isSubmitting">
-                <HugeiconsIcon :icon="Loading03Icon" class="size-5 animate-spin" />
-                Sending...
-              </template>
-              <template v-else>
-                Send message
-              </template>
+              Send message
             </Button>
           </form>
         </div>

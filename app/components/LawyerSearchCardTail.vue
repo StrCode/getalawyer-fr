@@ -72,7 +72,7 @@ defineEmits<{ openProfile: [] }>()
     >
       <p
         v-if="!loggedIn && !isPending"
-        class="text-muted-foreground text-center text-[0.6875rem] font-medium uppercase tracking-wide"
+        class="text-muted-foreground text-center text-2xs font-medium uppercase tracking-wide"
       >
         Sign in to view profile
       </p>

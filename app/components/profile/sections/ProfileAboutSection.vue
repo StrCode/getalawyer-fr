@@ -48,7 +48,7 @@ async function onSave() {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-base">
+      <CardTitle>
         About & headline
       </CardTitle>
       <CardDescription>

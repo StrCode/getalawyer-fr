@@ -29,7 +29,7 @@ defineEmits<{
         <Badge
           v-if="badge"
           variant="secondary"
-          class="text-[10px]"
+          class="text-2xs"
         >
           {{ badge }}
         </Badge>

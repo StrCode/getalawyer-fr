@@ -34,7 +34,7 @@ const links = [
 <template>
   <Card>
     <CardHeader class="pb-3">
-      <CardTitle class="text-base">
+      <CardTitle>
         Practice setup
       </CardTitle>
       <CardDescription>

@@ -9,11 +9,11 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
 </script>
 
 <template>
-  <section id="practice" class="bg-muted py-12 md:py-24">
+  <section id="practice" class="bg-muted section-y">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <div class="mb-12 flex flex-col items-start gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
         <div>
-          <p class="mb-4 text-xs font-medium uppercase tracking-widest text-primary">
+          <p class="mb-4 eyebrow text-primary-strong">
             Practice areas
           </p>
          <h2 class="max-w-2xl text-4xl font-medium text-foreground md:text-5xl">

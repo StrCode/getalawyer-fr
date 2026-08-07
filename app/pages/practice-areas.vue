@@ -40,11 +40,11 @@ const filteredAreas = computed(() => {
 
 <template>
   <div class="min-h-screen bg-background pb-24">
-    <section class="relative overflow-hidden border-b border-background/20 bg-foreground py-20 md:py-24">
+    <section class="relative overflow-hidden border-b border-background/20 bg-foreground section-y-lg">
       <div class="pointer-events-none absolute -top-32 right-0 size-[480px] rounded-full bg-primary/10 blur-3xl" />
 
       <div class="relative z-10 mx-auto max-w-7xl px-6 text-center md:px-8">
-        <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-primary">
+        <p class="mb-4 eyebrow text-primary">
           Directory
         </p>
        <h1 class="mb-4 text-4xl font-medium text-background md:text-5xl">
@@ -62,7 +62,7 @@ const filteredAreas = computed(() => {
             v-model="searchQuery"
             type="text"
             placeholder="Search for a legal issue or specialty..."
-            class="w-full rounded-xl border border-border bg-card py-4 pr-6 pl-12 text-base text-foreground shadow-sm outline-none transition-all placeholder:text-muted-foreground/60 focus:border-primary focus:ring-4 focus:ring-primary/10"
+            class="w-full rounded-xl border border-border bg-card py-4 pr-6 pl-12 text-base text-foreground shadow-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10"
           >
         </div>
       </div>

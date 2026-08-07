@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto w-full max-w-5xl space-y-6">
+  <div class="space-y-6">
     <template v-if="isLawyer">
       <DashboardPageHeader
         title="Settings"

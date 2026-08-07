@@ -3,10 +3,11 @@ import { ref } from 'vue'
 
 const year = new Date().getFullYear()
 const email = ref('')
+const showComingSoon = ref(false)
 
+// No newsletter endpoint yet — say so instead of silently discarding the email.
 function onSubscribe() {
-  // Placeholder — wire to the newsletter endpoint when available.
-  email.value = ''
+  showComingSoon.value = true
 }
 
 const cols = {
@@ -51,7 +52,7 @@ const cols = {
 
           <!-- Newsletter -->
           <form class="mt-7" @submit.prevent="onSubscribe">
-            <label for="footer-email" class="text-xs font-medium uppercase tracking-widest text-background/70">Stay in the loop</label>
+            <label for="footer-email" class="eyebrow text-background/70">Stay in the loop</label>
             <div class="mt-3 flex items-center gap-2 rounded-full border border-background/20 bg-white/5 p-1.5 transition-colors focus-within:border-primary/50">
               <input
                 id="footer-email"
@@ -62,18 +63,21 @@ const cols = {
               />
               <button
                 type="submit"
-                class="shrink-0 cursor-pointer rounded-xl border-none bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
+                class="shrink-0 cursor-pointer rounded-xl border-none bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
               >
                 Subscribe
               </button>
             </div>
+            <p v-if="showComingSoon" class="mt-2 text-xs text-background/70" role="status">
+              The newsletter isn't live yet — signups open soon.
+            </p>
           </form>
         </div>
 
         <!-- Link columns -->
         <div class="grid grid-cols-2 gap-8 sm:grid-cols-4">
           <div v-for="(links, group) in cols" :key="group">
-           <h5 class="text-xs font-medium uppercase tracking-widest text-background/70">{{ group }}</h5>
+           <h5 class="eyebrow text-background/70">{{ group }}</h5>
             <ul class="m-0 mt-5 flex list-none flex-col gap-3 p-0">
               <li v-for="link in links" :key="link.label">
                 <NuxtLink

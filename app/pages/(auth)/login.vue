@@ -12,7 +12,7 @@
     </header>
 
     <div class="rounded-xl border border-border/40 bg-card p-5 shadow-none sm:p-7">
-      <div class="mb-6">
+      <div v-if="!showPhoneOtpStep" class="mb-6">
         <Button
           type="button"
           variant="outline"
@@ -31,7 +31,7 @@
         </Button>
       </div>
 
-      <div class="relative mb-6 flex items-center gap-4">
+      <div v-if="!showPhoneOtpStep" class="relative mb-6 flex items-center gap-4">
         <div class="h-px flex-1 bg-border" />
         <span class="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Or continue with
@@ -104,7 +104,7 @@
         </template>
         
         <!-- Dev Hint -->
-        <div v-if="process.dev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
+        <div v-if="isDev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
           <p class="font-medium">Development Mode</p>
           <p class="mt-1">Check your terminal or browser console for the verification code.</p>
         </div>
@@ -311,6 +311,8 @@ const pendingPhone = ref('')
 const phoneOtp = ref('')
 const otpError = ref('')
 const otpBlocked = ref(false)
+// Bound in setup: `process.dev` is not reachable from templates in production builds.
+const isDev = import.meta.dev
 const isResending = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null

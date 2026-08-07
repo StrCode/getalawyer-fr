@@ -27,9 +27,12 @@ const statusLabel = computed(() => {
       class="size-3.5 opacity-70"
       aria-hidden="true"
     />
+    <!-- Read state distinguishes by brightness: no hue stays legible on the
+         primary bubble in both themes, so full-strength foreground vs the
+         dimmed sent/delivered ticks. -->
     <HugeiconsIcon :icon="TickDouble01Icon"
       v-else
-      class="size-3.5 text-sky-300"
+      class="size-3.5 text-primary-foreground"
       aria-hidden="true"
     />
   </span>

@@ -78,7 +78,7 @@ const showUpgradePrompt = computed(() => {
             <p class="text-xs font-semibold text-foreground">
               Activate subscription
             </p>
-            <p class="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+            <p class="mt-0.5 text-2xs leading-snug text-muted-foreground">
               Start receiving client bookings
             </p>
           </CardContent>

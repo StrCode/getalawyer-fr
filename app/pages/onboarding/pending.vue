@@ -217,7 +217,7 @@ async function retryStatus() {
         <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-medium uppercase tracking-widest text-primary">
+        <p class="eyebrow text-primary-strong">
           Application status
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -247,7 +247,7 @@ async function retryStatus() {
         <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
       </div>
       <div class="space-y-2">
-        <p class="text-xs font-medium uppercase tracking-widest text-primary">
+        <p class="eyebrow text-primary-strong">
           Verification outcome
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -293,7 +293,7 @@ async function retryStatus() {
             <HugeiconsIcon :icon="FileSearchIcon" class="size-11 text-primary" />
           </div>
 
-          <p class="mb-2 text-xs font-medium uppercase tracking-widest text-primary">
+          <p class="mb-2 eyebrow text-primary-strong">
             Step 3 of 3 · Application status
           </p>
          <h1 class="text-balance text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
@@ -345,18 +345,18 @@ async function retryStatus() {
                   :class="step.status === 'done' ? 'bg-primary' : 'bg-border/60'"
                 />
               </div>
-              <p class="mt-2 text-[11px] font-medium leading-tight text-foreground sm:text-xs">
+              <p class="mt-2 text-2xs font-medium leading-tight text-foreground sm:text-xs">
                 {{ step.label }}
               </p>
               <p
                 v-if="step.status === 'current'"
-                class="mt-0.5 text-[10px] font-medium text-primary sm:text-xs"
+                class="mt-0.5 text-2xs font-medium text-primary sm:text-xs"
               >
                 In review
               </p>
               <p
                 v-else-if="step.status === 'done'"
-                class="mt-0.5 text-[10px] font-medium text-muted-foreground sm:text-xs"
+                class="mt-0.5 text-2xs font-medium text-muted-foreground sm:text-xs"
               >
                 Completed
               </p>
@@ -402,7 +402,7 @@ async function retryStatus() {
         <!-- Timeline (Mercury-style) -->
         <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
           <div class="border-b border-border/40 px-6 py-4">
-           <h2 class="text-xs font-medium uppercase tracking-widest text-primary">
+           <h2 class="eyebrow text-primary-strong">
               What happens next
             </h2>
           </div>

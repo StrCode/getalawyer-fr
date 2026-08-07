@@ -24,10 +24,10 @@ const steps = [
 </script>
 
 <template>
-  <section id="how-it-works" class="scroll-mt-23 bg-background py-12 md:py-24">
+  <section id="how-it-works" class="scroll-mt-23 bg-background section-y">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Header -->
-      <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">How it works</p>
+      <p class="eyebrow mb-4 text-primary-strong">How it works</p>
      <h2 class="text-4xl font-medium md:text-5xl mb-6 max-w-2xl text-foreground">
         From your first search to your first consultation.
       </h2>
@@ -56,7 +56,7 @@ const steps = [
                 <span class="size-6 shrink-0 rounded-full bg-primary/15" />
                 <span class="flex flex-1 flex-col gap-1">
                   <span class="h-1.5 w-2/3 rounded-full bg-muted-foreground/30" />
-                  <span class="text-[9px] leading-none text-primary">★★★★★</span>
+                  <span class="text-2xs leading-none text-primary">★★★★★</span>
                 </span>
               </div>
             </div>

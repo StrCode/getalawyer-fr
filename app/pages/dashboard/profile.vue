@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authPending" class="mx-auto w-full max-w-5xl space-y-4">
+  <div v-if="authPending" class="space-y-4">
     <Skeleton class="h-36 w-full rounded-xl" />
     <Skeleton class="h-64 w-full rounded-xl" />
   </div>

@@ -111,7 +111,7 @@ function isLinkActive(href: string) {
           <NuxtLink
             v-else
             to="/login"
-            class="hidden cursor-pointer items-center rounded-xl px-4 py-2 font-sans text-sm font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted sm:inline-flex"
+            class="inline-flex cursor-pointer items-center rounded-xl px-4 py-2 font-sans text-sm font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted"
           >Sign in</NuxtLink>
           <NuxtLink
             v-if="showFindLawyerCta"
@@ -123,7 +123,7 @@ function isLinkActive(href: string) {
         <!-- Mobile Hamburger Button -->
         <div class="flex items-center lg:hidden">
           <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-transparent transition-colors hover:bg-muted"
+            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-transparent transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
             aria-label="Open mobile menu"
             @click="isMobileMenuOpen = true"
           >
@@ -153,7 +153,7 @@ function isLinkActive(href: string) {
           <LandingBrandLogo @click="isMobileMenuOpen = false" />
 
           <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-muted transition-colors hover:bg-accent"
+            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-muted transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
             aria-label="Close mobile menu"
             @click="isMobileMenuOpen = false"
           >

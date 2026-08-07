@@ -31,7 +31,7 @@ const isLoading = computed(() => bookingsPending.value || conversationsPending.v
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-4xl space-y-6">
+  <div class="space-y-6">
     <DashboardPageHeader
       title="My lawyers"
       description="Lawyers you have booked or messaged on GetALawyer."

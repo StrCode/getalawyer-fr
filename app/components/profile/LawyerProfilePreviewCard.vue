@@ -39,7 +39,7 @@ const aboutPreview = computed(() => {
     <CardHeader class="pb-3">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <CardTitle class="text-base">
+          <CardTitle>
             How clients see you
           </CardTitle>
           <CardDescription>

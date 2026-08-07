@@ -1,6 +1,6 @@
 <template>
   <AppSidebar variant="inset" />
-  <SidebarInset class="dashboard-shell bg-card">
+  <SidebarInset class="bg-card">
     <SiteHeader />
     <div
       class="flex flex-1 flex-col"
@@ -16,7 +16,12 @@
             ? 'min-h-0 flex-1 overflow-hidden px-4 lg:px-6'
             : 'px-4 lg:px-6'"
         >
-          <slot />
+          <div
+            class="flex w-full flex-1 flex-col"
+            :class="fullBleed ? '' : 'mx-auto max-w-5xl'"
+          >
+            <slot />
+          </div>
         </div>
       </div>
     </div>
@@ -30,4 +35,5 @@ import { SidebarInset } from '@/components/ui/sidebar'
 
 const route = useRoute()
 const containedScroll = computed(() => route.meta.dashboardScroll === 'contained')
+const fullBleed = computed(() => route.meta.dashboardWidth === 'full')
 </script>

@@ -83,7 +83,7 @@ const showTier1Details = computed(
     <CardHeader class="pb-3">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <CardTitle class="text-base">
+          <CardTitle>
             Directory visibility
           </CardTitle>
           <CardDescription>

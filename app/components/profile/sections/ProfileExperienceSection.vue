@@ -129,7 +129,7 @@ async function onDeleteConfirm() {
     <CardHeader class="pb-3">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <CardTitle class="text-base">
+          <CardTitle>
             Experience
           </CardTitle>
           <CardDescription>

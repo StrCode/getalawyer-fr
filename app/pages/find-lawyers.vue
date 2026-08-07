@@ -368,7 +368,7 @@ const showMobileFilters = ref(false)
         <div class="mx-auto max-w-3xl text-center">
           <div class="mb-5 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-3.5 py-2">
             <span class="size-1.5 rounded-full bg-primary" />
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary">Verified directory</span>
+            <span class="eyebrow text-primary-strong">Verified directory</span>
           </div>
          <h1 class="text-4xl font-medium md:text-5xl text-balance text-foreground">
             Find a verified lawyer
@@ -393,7 +393,7 @@ const showMobileFilters = ref(false)
                 enterkeyhint="search"
                 autocomplete="off"
                 aria-label="Topic or keywords"
-                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
+                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder="Search by topic or keyword…"
               >
             </label>
@@ -406,7 +406,7 @@ const showMobileFilters = ref(false)
                 enterkeyhint="search"
                 autocomplete="off"
                 aria-label="Lawyer name"
-                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground/70"
+                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
                 placeholder="Or by name…"
               >
             </label>
@@ -419,7 +419,7 @@ const showMobileFilters = ref(false)
       <!-- Mobile filter toggle -->
       <button
         type="button"
-        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted lg:hidden"
+        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted lg:hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
         :aria-expanded="showMobileFilters"
         @click="showMobileFilters = !showMobileFilters"
       >
@@ -454,7 +454,7 @@ const showMobileFilters = ref(false)
             <div class="flex flex-col gap-5">
               <!-- States -->
               <div class="flex flex-col gap-2">
-                <span class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">States</span>
+                <span class="eyebrow text-muted-foreground">States</span>
                 <Popover v-model:open="statePopoverOpen">
                   <PopoverTrigger as-child>
                     <button
@@ -482,7 +482,7 @@ const showMobileFilters = ref(false)
                     <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                       <button
                         type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                         @click="clearStatesFilter"
                       >
                         All states
@@ -512,7 +512,7 @@ const showMobileFilters = ref(false)
 
               <!-- Specializations -->
               <div class="flex flex-col gap-2">
-                <span class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Specializations</span>
+                <span class="eyebrow text-muted-foreground">Specializations</span>
                 <div
                   v-if="specsLoading"
                   class="flex h-11 items-center rounded-xl border border-border bg-muted px-3 text-sm text-muted-foreground"
@@ -547,7 +547,7 @@ const showMobileFilters = ref(false)
                     <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
                       <button
                         type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                         @click="clearSpecializationsFilter"
                       >
                         All specializations
@@ -577,7 +577,7 @@ const showMobileFilters = ref(false)
 
             <!-- Trust callout -->
             <div class="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-              <p class="text-xs font-semibold uppercase tracking-widest text-primary">Verified only</p>
+              <p class="eyebrow text-primary-strong">Verified only</p>
               <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Every lawyer in this directory has passed NIN and Supreme Court number verification.
               </p>
@@ -594,13 +594,13 @@ const showMobileFilters = ref(false)
           >
             <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.lawyerName }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove name filter" @click="filters.lawyerName = ''">
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20" aria-label="Remove name filter" @click="filters.lawyerName = ''">
                 <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
             <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
               {{ filters.keywords }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground" aria-label="Remove keyword filter" @click="filters.keywords = ''">
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20" aria-label="Remove keyword filter" @click="filters.keywords = ''">
                 <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
               </button>
             </div>
@@ -612,7 +612,7 @@ const showMobileFilters = ref(false)
               <span class="truncate">{{ stateLabel(code) }}</span>
               <button
                 type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground"
+                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                 :aria-label="`Remove ${stateLabel(code)}`"
                 @click="removeStateCode(code)"
               >
@@ -627,7 +627,7 @@ const showMobileFilters = ref(false)
               <span class="truncate">{{ specializationNameById(sid) }}</span>
               <button
                 type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground"
+                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                 :aria-label="`Remove ${specializationNameById(sid)}`"
                 @click="removeSpecialization(sid)"
               >
@@ -655,7 +655,7 @@ const showMobileFilters = ref(false)
                 {{ lawyers.length === 1 ? ' lawyer' : ' lawyers' }}
                 <span v-if="hasNextPage && lawyers.length > 0" class="text-muted-foreground">+</span>
               </p>
-              <p class="text-xs font-semibold uppercase tracking-widest mt-0.5 text-muted-foreground">
+              <p class="eyebrow mt-0.5 text-muted-foreground">
                 {{ isLoading ? 'Updating results' : (searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience') }}
               </p>
             </div>
@@ -667,7 +667,7 @@ const showMobileFilters = ref(false)
             >
               <button
                 type="button"
-                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                 :class="resultsLayout === 'grid' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
                 :aria-pressed="resultsLayout === 'grid'"
                 title="Grid"
@@ -678,7 +678,7 @@ const showMobileFilters = ref(false)
               </button>
               <button
                 type="button"
-                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
                 :class="resultsLayout === 'list' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
                 :aria-pressed="resultsLayout === 'list'"
                 title="List"

@@ -289,7 +289,7 @@ async function retry() {
 
     <div v-else class="space-y-8 py-6 sm:py-10">
       <div class="text-center lg:text-left">
-        <p class="mb-2 text-xs font-medium uppercase tracking-widest text-primary">
+        <p class="mb-2 eyebrow text-primary-strong">
           Annual membership
         </p>
        <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
