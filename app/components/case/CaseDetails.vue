@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-6">
     <!-- Case Header -->
-    <div class="flex justify-between items-start">
+    <div class="flex items-start justify-between">
       <div>
-        <div class="flex items-center gap-2 mb-2">
+        <div class="mb-2 flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
@@ -13,10 +13,10 @@
           >
             <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4 shrink-0" aria-hidden="true" />
           </Button>
-         <h1 class="font-semibold text-3xl">{{ props.case.caseTitle || props.case.title }}</h1>
+          <h1 class="text-3xl font-semibold">{{ props.case.caseTitle || props.case.title }}</h1>
         </div>
-        
-        <div class="flex items-center gap-4 text-muted-foreground text-sm">
+
+        <div class="flex items-center gap-4 text-sm text-muted-foreground">
           <span>Case #{{ props.case.caseNumber }}</span>
           <span>•</span>
           <span>Created {{ formatDate(props.case.createdAt) }}</span>
@@ -24,151 +24,172 @@
           <span>Last updated {{ formatDate(props.case.updatedAt) }}</span>
         </div>
       </div>
-      
+
       <div class="flex items-center gap-3">
-        <UBadge 
-          :color="getStatusColor(props.case.status)" 
-          variant="subtle"
-          size="lg"
-        >
+        <Badge v-bind="caseStatusBadge(props.case.status)">
           {{ props.case.status }}
-        </UBadge>
-        
-        <UBadge 
-          :color="getPriorityColor(props.case.priority)" 
-          variant="outline"
-          size="lg"
-        >
+        </Badge>
+
+        <Badge v-bind="casePriorityBadge(props.case.priority)">
           {{ props.case.priority }}
-        </UBadge>
-        
-        <UDropdown v-if="role === 'lawyer'" :items="caseActions">
-          <Button variant="ghost" size="icon-sm" aria-label="Case actions">
-            <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4 shrink-0" aria-hidden="true" />
-          </Button>
-        </UDropdown>
+        </Badge>
+
+        <DropdownMenu v-if="role === 'lawyer'">
+          <DropdownMenuTrigger as-child>
+            <Button variant="ghost" size="icon-sm" aria-label="Case actions">
+              <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4 shrink-0" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem @select="showEditDescription = true">
+              <HugeiconsIcon :icon="PencilEdit01Icon" class="size-4" aria-hidden="true" />
+              Edit case
+            </DropdownMenuItem>
+            <DropdownMenuItem @select="showStatusModal = true">
+              <HugeiconsIcon :icon="ArrowReloadHorizontalIcon" class="size-4" aria-hidden="true" />
+              Change status
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @select="archiveCase">
+              <HugeiconsIcon :icon="Archive02Icon" class="size-4" aria-hidden="true" />
+              Archive case
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
 
     <!-- Case Overview Cards -->
-    <div class="gap-6 grid grid-cols-1 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
       <!-- Case Info -->
-      <UCard>
-        <template #header>
-         <h3 class="font-semibold">Case Information</h3>
-        </template>
-        
-        <div class="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Case Information</CardTitle>
+        </CardHeader>
+        <CardContent class="space-y-4">
           <div>
-            <label class="font-medium text-foreground text-sm">Client</label>
-            <p class="text-foreground text-sm">{{ props.case.client?.name || 'N/A' }}</p>
+            <p class="text-sm font-medium text-foreground">Client</p>
+            <p class="text-sm text-muted-foreground">{{ props.case.client?.name || 'N/A' }}</p>
           </div>
-          
+
           <div>
-            <label class="font-medium text-foreground text-sm">Lawyer</label>
-            <p class="text-foreground text-sm">{{ props.case.lawyer?.name || 'N/A' }}</p>
+            <p class="text-sm font-medium text-foreground">Lawyer</p>
+            <p class="text-sm text-muted-foreground">{{ props.case.lawyer?.name || 'N/A' }}</p>
           </div>
-          
+
           <div v-if="props.case.dueDate">
-            <label class="font-medium text-foreground text-sm">Due Date</label>
-            <p class="text-foreground text-sm">{{ formatDate(props.case.dueDate) }}</p>
+            <p class="text-sm font-medium text-foreground">Due Date</p>
+            <p class="text-sm text-muted-foreground">{{ formatDate(props.case.dueDate) }}</p>
           </div>
-          
+
           <div v-if="role === 'lawyer' && props.case.hourlyRate">
-            <label class="font-medium text-foreground text-sm">Hourly Rate</label>
-            <p class="text-foreground text-sm">${{ props.case.hourlyRate }}/hour</p>
+            <p class="text-sm font-medium text-foreground">Hourly Rate</p>
+            <p class="text-sm text-muted-foreground">₦{{ props.case.hourlyRate }}/hour</p>
           </div>
-        </div>
-      </UCard>
-      
+        </CardContent>
+      </Card>
+
       <!-- Task Summary -->
-      <UCard>
-        <template #header>
-          <div class="flex justify-between items-center">
-           <h3 class="font-semibold">Tasks</h3>
-            <Button
-              v-if="role === 'lawyer'"
-              size="sm"
-              class="gap-2"
-              @click="$emit('create-task')"
-            >
-              <HugeiconsIcon :icon="Add01Icon" class="size-4 shrink-0" aria-hidden="true" />
-              Add Task
-            </Button>
-          </div>
-        </template>
-        
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-muted-foreground text-sm">Total Tasks</span>
+      <Card>
+        <CardHeader class="flex flex-row items-center justify-between space-y-0">
+          <CardTitle>Tasks</CardTitle>
+          <Button
+            v-if="role === 'lawyer'"
+            size="sm"
+            class="gap-2"
+            @click="$emit('create-task')"
+          >
+            <HugeiconsIcon :icon="Add01Icon" class="size-4 shrink-0" aria-hidden="true" />
+            Add Task
+          </Button>
+        </CardHeader>
+        <CardContent class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-muted-foreground">Total Tasks</span>
             <span class="font-medium">{{ props.case.totalTaskCount || 0 }}</span>
           </div>
-          
-          <div class="flex justify-between items-center">
-            <span class="text-muted-foreground text-sm">Completed</span>
+
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-muted-foreground">Completed</span>
             <span class="font-medium text-success">{{ props.case.completedTaskCount || 0 }}</span>
           </div>
-          
-          <div class="bg-muted rounded-full w-full h-2">
-            <div 
-              class="bg-success rounded-full h-2 transition-all duration-300"
+
+          <div
+            class="h-2 w-full rounded-full bg-muted"
+            role="progressbar"
+            :aria-valuenow="taskCompletionRate"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Task completion"
+          >
+            <div
+              class="h-2 rounded-full bg-success transition-all duration-300"
               :style="{ width: `${taskCompletionRate}%` }"
             />
           </div>
-        </div>
-      </UCard>
+        </CardContent>
+      </Card>
     </div>
 
     <!-- Case Description -->
-    <UCard v-if="props.case.description">
-      <template #header>
-        <div class="flex justify-between items-center">
-         <h3 class="font-semibold">Description</h3>
-          <Button
-            v-if="role === 'lawyer'"
-            variant="ghost"
-            size="sm"
-            class="gap-2"
-            @click="showEditDescription = true"
-          >
-            <HugeiconsIcon :icon="PencilEdit01Icon" class="size-4 shrink-0" aria-hidden="true" />
-            Edit
-          </Button>
-        </div>
-      </template>
-      
-      <p class="text-foreground">{{ props.case.description }}</p>
-    </UCard>
+    <Card v-if="props.case.description">
+      <CardHeader class="flex flex-row items-center justify-between space-y-0">
+        <CardTitle>Description</CardTitle>
+        <Button
+          v-if="role === 'lawyer'"
+          variant="ghost"
+          size="sm"
+          class="gap-2"
+          @click="showEditDescription = true"
+        >
+          <HugeiconsIcon :icon="PencilEdit01Icon" class="size-4 shrink-0" aria-hidden="true" />
+          Edit
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <p class="text-foreground">{{ props.case.description }}</p>
+      </CardContent>
+    </Card>
 
     <!-- Status Update Modal (Lawyers only) -->
-    <UModal v-model:open="showStatusModal" title="Update Case Status">
-      <template #body>
+    <Dialog v-model:open="showStatusModal">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Update case status</DialogTitle>
+        </DialogHeader>
+
         <div class="space-y-4">
-          <UFormField label="New Status" required>
-            <USelectMenu
-              v-model="newStatus"
-              :options="statusOptions"
-              placeholder="Select new status"
-              value-attribute="value"
-              option-attribute="label"
-              class="w-full"
-            />
-          </UFormField>
-          
-          <UFormField label="Reason for Change">
-            <UTextarea
+          <div class="space-y-2">
+            <Label for="case-new-status">New status</Label>
+            <Select v-model="newStatus">
+              <SelectTrigger id="case-new-status" class="w-full">
+                <SelectValue placeholder="Select new status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="option in statusOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="case-status-reason">Reason for change</Label>
+            <Textarea
+              id="case-status-reason"
               v-model="statusReason"
               placeholder="Reason for status change (optional)..."
-              class="w-full"
               :rows="3"
             />
-          </UFormField>
+          </div>
         </div>
-      </template>
-      
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button variant="ghost" @click="showStatusModal = false">
+
+        <DialogFooter>
+          <Button variant="outline" @click="showStatusModal = false">
             Cancel
           </Button>
           <ButtonBusy
@@ -178,26 +199,29 @@
           >
             Update Status
           </ButtonBusy>
-        </div>
-      </template>
-    </UModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
     <!-- Edit Description Modal (Lawyers only) -->
-    <UModal v-model:open="showEditDescription" title="Edit Case Description">
-      <template #body>
-        <UFormField label="Description">
-          <UTextarea
+    <Dialog v-model:open="showEditDescription">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit case description</DialogTitle>
+        </DialogHeader>
+
+        <div class="space-y-2">
+          <Label for="case-description">Description</Label>
+          <Textarea
+            id="case-description"
             v-model="editedDescription"
             placeholder="Case description..."
-            class="w-full"
             :rows="5"
           />
-        </UFormField>
-      </template>
-      
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button variant="ghost" @click="showEditDescription = false">
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" @click="showEditDescription = false">
             Cancel
           </Button>
           <ButtonBusy
@@ -207,17 +231,42 @@
           >
             Save Changes
           </ButtonBusy>
-        </div>
-      </template>
-    </UModal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Add01Icon, ArrowLeft01Icon, MoreVerticalIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
+import { Add01Icon, Archive02Icon, ArrowLeft01Icon, ArrowReloadHorizontalIcon, MoreVerticalIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { Case, CaseStatus, Priority } from '~/types'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import type { Case, CaseStatus } from '~/types'
 
 interface Props {
   case: Case
@@ -235,6 +284,8 @@ const emit = defineEmits<{
   'description-update': [description: string]
 }>()
 
+const { caseStatusBadge, casePriorityBadge } = useCaseDisplay()
+
 // Reactive data
 const showStatusModal = ref(false)
 const showEditDescription = ref(false)
@@ -249,32 +300,6 @@ const taskCompletionRate = computed(() => {
   return Math.round(((props.case.completedTaskCount || 0) / props.case.totalTaskCount) * 100)
 })
 
-// Case actions for lawyers
-const caseActions = computed(() => [
-  [{
-    label: 'Edit Case',
-    icon: 'i-heroicons-pencil',
-    click: () => {
-      showEditDescription.value = true
-    }
-  }],
-  [{
-    label: 'Change Status',
-    icon: 'i-heroicons-arrow-path',
-    click: () => {
-      showStatusModal.value = true
-    }
-  }],
-  [{
-    label: 'Archive Case',
-    icon: 'i-heroicons-archive-box',
-    click: () => {
-      newStatus.value = 'archived'
-      showStatusModal.value = true
-    }
-  }]
-])
-
 // Status options
 const statusOptions = [
   { label: 'Active', value: 'active' },
@@ -284,9 +309,14 @@ const statusOptions = [
 ]
 
 // Methods
+const archiveCase = () => {
+  newStatus.value = 'archived'
+  showStatusModal.value = true
+}
+
 const updateStatus = async () => {
   if (!newStatus.value) return
-  
+
   updating.value = true
   try {
     emit('status-update', newStatus.value, statusReason.value || undefined)
@@ -306,27 +336,6 @@ const updateDescription = async () => {
   } finally {
     updating.value = false
   }
-}
-
-// Helper functions
-const getStatusColor = (status: CaseStatus) => {
-  const colors = {
-    active: 'green',
-    closed: 'gray',
-    reopened: 'blue',
-    archived: 'yellow'
-  }
-  return colors[status] || 'gray'
-}
-
-const getPriorityColor = (priority: Priority) => {
-  const colors = {
-    low: 'gray',
-    medium: 'blue',
-    high: 'orange',
-    urgent: 'red'
-  }
-  return colors[priority] || 'gray'
 }
 
 const formatDate = (date: Date | string) => {

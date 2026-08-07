@@ -1,39 +1,53 @@
 <template>
   <div class="space-y-4">
     <!-- Task Filters and Search -->
-    <UCard>
-      <div class="flex md:flex-row flex-col md:items-center gap-4">
-        <div class="flex flex-1 gap-3">
-          <USelectMenu
-            v-model="statusFilter"
-            :options="statusFilterOptions"
-            placeholder="All Tasks"
-            value-attribute="value"
-            option-attribute="label"
-            class="w-40"
-          />
-          
-          <USelectMenu
-            v-model="priorityFilter"
-            :options="priorityFilterOptions"
-            placeholder="All Priorities"
-            value-attribute="value"
-            option-attribute="label"
-            class="w-40"
-          />
+    <Card class="py-4">
+      <CardContent class="px-4">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center">
+          <div class="flex flex-1 gap-3">
+            <Select v-model="statusFilter">
+              <SelectTrigger class="w-40" aria-label="Filter by status">
+                <SelectValue placeholder="All Tasks" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="option in statusFilterOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select v-model="priorityFilter">
+              <SelectTrigger class="w-40" aria-label="Filter by priority">
+                <SelectValue placeholder="All Priorities" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="option in priorityFilterOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <InputGroup class="flex-1 md:max-w-xs">
+            <InputGroupAddon>
+              <HugeiconsIcon :icon="Search01Icon" class="size-4 shrink-0 opacity-70" aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              v-model="searchQuery"
+              placeholder="Search tasks..."
+            />
+          </InputGroup>
         </div>
-        
-        <UInput
-          v-model="searchQuery"
-          placeholder="Search tasks..."
-          class="flex-1 md:max-w-xs"
-        >
-          <template #leading>
-            <HugeiconsIcon :icon="Search01Icon" class="w-4 h-4 shrink-0 opacity-70" />
-          </template>
-        </UInput>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
 
     <!-- Tasks Display -->
     <div class="space-y-4">
@@ -49,36 +63,36 @@
           class="h-20 w-full rounded-xl"
         />
       </div>
-      
-      <div v-else-if="error" class="py-8 text-destructive text-center">
-        <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 w-12 h-12" />
-        <p class="mb-4">{{ error }}</p>
+
+      <div v-else-if="error" class="py-8 text-center">
+        <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" aria-hidden="true" />
+        <p class="mb-4 text-destructive">{{ error }}</p>
         <Button variant="outline" @click="$emit('retry')">
           Try Again
         </Button>
       </div>
-      
-      <div v-else-if="filteredTasks.length === 0" class="py-12 text-muted-foreground text-center">
-        <HugeiconsIcon :icon="ClipboardIcon" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
-        <p class="mb-2 font-medium text-lg">No tasks found</p>
+
+      <div v-else-if="filteredTasks.length === 0" class="py-12 text-center text-muted-foreground">
+        <HugeiconsIcon :icon="ClipboardIcon" class="mx-auto mb-4 size-12 text-muted-foreground/40" aria-hidden="true" />
+        <p class="mb-2 text-lg font-medium">No tasks found</p>
         <p class="text-sm">
           {{ getEmptyMessage() }}
         </p>
       </div>
-      
+
       <div v-else class="space-y-3">
         <!-- Group tasks by status if showing all -->
         <div v-if="statusFilter === 'all'" class="space-y-6">
           <div v-for="(statusTasks, status) in groupedTasks" :key="status" class="space-y-3">
             <div v-if="statusTasks.length > 0">
-             <h4 class="flex items-center gap-2 mb-3 font-medium text-foreground">
-                <HugeiconsIcon :icon="getStatusIcon(status)" class="w-4 h-4" />
+              <h4 class="mb-3 flex items-center gap-2 font-medium text-foreground">
+                <HugeiconsIcon :icon="getStatusIcon(status)" class="size-4" aria-hidden="true" />
                 {{ getStatusLabel(status) }}
-                <UBadge :color="getStatusColor(status)" variant="subtle" size="sm">
+                <Badge v-bind="taskStatusBadge(status)">
                   {{ statusTasks.length }}
-                </UBadge>
+                </Badge>
               </h4>
-              
+
               <div class="space-y-3">
                 <TaskCard
                   v-for="task in statusTasks"
@@ -92,7 +106,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Show flat list if filtering by specific status -->
         <div v-else class="space-y-3">
           <TaskCard
@@ -113,8 +127,19 @@
 import type { Hugeicon } from '@/lib/icon-types'
 import { Alert01Icon, AlertCircleIcon, CheckmarkCircle01Icon, ClipboardIcon, Clock01Icon, PlayIcon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Task, TaskStatus, Priority } from '~/types'
+import type { Priority, Task, TaskStatus } from '~/types'
 
 interface Props {
   caseId: string
@@ -137,6 +162,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 const { updateTaskStatus } = useTasks()
+const { taskStatusBadge } = useCaseDisplay()
 
 // Reactive data
 const searchQuery = ref('')
@@ -160,7 +186,7 @@ const filteredTasks = computed(() => {
   // Apply search
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(t => 
+    filtered = filtered.filter(t =>
       t.title.toLowerCase().includes(query) ||
       t.description?.toLowerCase().includes(query) ||
       t.assignee?.name.toLowerCase().includes(query)
@@ -172,35 +198,35 @@ const filteredTasks = computed(() => {
     // First sort by overdue status
     if (a.isOverdue && !b.isOverdue) return -1
     if (!a.isOverdue && b.isOverdue) return 1
-    
+
     // Then by priority
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 }
     const aPriority = priorityOrder[a.priority]
     const bPriority = priorityOrder[b.priority]
-    
+
     if (aPriority !== bPriority) {
       return aPriority - bPriority
     }
-    
+
     // Finally by due date
     if (a.dueDate && b.dueDate) {
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
     }
     if (a.dueDate && !b.dueDate) return -1
     if (!a.dueDate && b.dueDate) return 1
-    
+
     return 0
   })
 })
 
 const groupedTasks = computed(() => {
-  const groups: Record<TaskStatus, Task[]> = {
+  const groups: Record<TaskStatus | 'overdue', Task[]> = {
     overdue: [],
     pending: [],
     in_progress: [],
     completed: []
   }
-  
+
   filteredTasks.value.forEach(task => {
     if (task.isOverdue && task.status !== 'completed') {
       groups.overdue.push(task)
@@ -208,7 +234,7 @@ const groupedTasks = computed(() => {
       groups[task.status].push(task)
     }
   })
-  
+
   return groups
 })
 
@@ -248,16 +274,6 @@ const getStatusLabel = (status: TaskStatus | 'overdue') => {
     overdue: 'Overdue Tasks'
   }
   return labels[status] || status
-}
-
-const getStatusColor = (status: TaskStatus | 'overdue') => {
-  const colors = {
-    pending: 'gray',
-    in_progress: 'blue',
-    completed: 'green',
-    overdue: 'red'
-  }
-  return colors[status] || 'gray'
 }
 
 const getEmptyMessage = () => {

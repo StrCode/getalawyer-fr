@@ -1,86 +1,103 @@
 <template>
   <div class="space-y-4">
     <!-- Task Creation (Lawyers only) -->
-    <UCard v-if="role === 'lawyer'">
-      <template #header>
-       <h3 class="font-semibold">Create New Task</h3>
-      </template>
-      
-      <div class="space-y-4">
-        <UFormField label="Task Title" required>
-          <UInput
+    <Card v-if="role === 'lawyer'">
+      <CardHeader>
+        <CardTitle>Create New Task</CardTitle>
+      </CardHeader>
+      <CardContent class="space-y-4">
+        <div class="space-y-2">
+          <Label for="new-task-title">Task title</Label>
+          <Input
+            id="new-task-title"
             v-model="newTask.title"
             placeholder="Task title..."
-            class="w-full"
           />
-        </UFormField>
-        
-        <UFormField label="Description">
-          <UTextarea
+        </div>
+
+        <div class="space-y-2">
+          <Label for="new-task-description">Description</Label>
+          <Textarea
+            id="new-task-description"
             v-model="newTask.description"
             placeholder="Task description (optional)..."
-            class="w-full"
             :rows="2"
           />
-        </UFormField>
-        
-        <div class="gap-4 grid grid-cols-1 md:grid-cols-3">
-          <UFormField label="Priority" required>
-            <USelectMenu
-              v-model="newTask.priority"
-              :options="priorityOptions"
-              placeholder="Priority"
-              value-attribute="value"
-              option-attribute="label"
-              class="w-full"
-            />
-          </UFormField>
-          
-          <UFormField label="Due Date">
-            <UInput
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div class="space-y-2">
+            <Label for="new-task-priority">Priority</Label>
+            <Select v-model="newTask.priority">
+              <SelectTrigger id="new-task-priority" class="w-full">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="option in priorityOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="new-task-due">Due date</Label>
+            <Input
+              id="new-task-due"
               v-model="newTask.dueDate"
               type="date"
-              placeholder="Due date"
-              class="w-full"
             />
-          </UFormField>
-          
+          </div>
+
           <div class="flex items-end">
-            <Button
-              :disabled="!newTask.title.trim()"
-              @click="createTask"
+            <ButtonBusy
               class="w-full"
+              :disabled="!newTask.title.trim() || creating"
+              :loading="creating"
+              @click="createTask"
             >
               Create Task
-            </Button>
+            </ButtonBusy>
           </div>
         </div>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
 
     <!-- Task Filters -->
-    <UCard>
-      <div class="flex items-center gap-4">
-        <USelectMenu
-          v-model="statusFilter"
-          :options="statusFilterOptions"
-          placeholder="All Tasks"
-          value-attribute="value"
-          option-attribute="label"
-          class="w-40"
-        />
-        
-        <UInput
-          v-model="searchQuery"
-          placeholder="Search tasks..."
-          class="flex-1"
-        >
-          <template #leading>
-            <HugeiconsIcon :icon="Search01Icon" class="w-4 h-4 shrink-0 opacity-70" />
-          </template>
-        </UInput>
-      </div>
-    </UCard>
+    <Card class="py-4">
+      <CardContent class="px-4">
+        <div class="flex items-center gap-4">
+          <Select v-model="statusFilter">
+            <SelectTrigger class="w-40" aria-label="Filter by status">
+              <SelectValue placeholder="All Tasks" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="option in statusFilterOptions"
+                :key="option.value"
+                :value="option.value"
+              >
+                {{ option.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <InputGroup class="flex-1">
+            <InputGroupAddon>
+              <HugeiconsIcon :icon="Search01Icon" class="size-4 shrink-0 opacity-70" aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              v-model="searchQuery"
+              placeholder="Search tasks..."
+            />
+          </InputGroup>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- Tasks List -->
     <div class="space-y-4">
@@ -96,12 +113,12 @@
           class="h-20 w-full rounded-xl"
         />
       </div>
-      
-      <div v-else-if="filteredTasks.length === 0" class="py-8 text-muted-foreground text-center">
-        <HugeiconsIcon :icon="ClipboardIcon" class="mx-auto mb-4 w-12 h-12 text-muted-foreground/40" />
+
+      <div v-else-if="filteredTasks.length === 0" class="py-8 text-center text-muted-foreground">
+        <HugeiconsIcon :icon="ClipboardIcon" class="mx-auto mb-4 size-12 text-muted-foreground/40" aria-hidden="true" />
         <p>No tasks found.</p>
       </div>
-      
+
       <div v-else class="space-y-3">
         <TaskCard
           v-for="task in filteredTasks"
@@ -117,8 +134,19 @@
 <script setup lang="ts">
 import { ClipboardIcon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Task, TaskStatus, Priority, CreateTaskRequest } from '~/types'
+import type { CreateTaskRequest, TaskStatus } from '~/types'
 
 interface Props {
   caseId: string
@@ -127,11 +155,12 @@ interface Props {
 const props = defineProps<Props>()
 
 const { session } = useAuth()
-const { tasks, loading, fetchCaseTasks, createTask: createCaseTask } = useTasks()
+const { tasks, loading, fetchCaseTasks, createTask: createCaseTask, updateTaskStatus } = useTasks()
 
 // Reactive data
 const searchQuery = ref('')
 const statusFilter = ref<TaskStatus | 'all'>('all')
+const creating = ref(false)
 
 const newTask = ref<CreateTaskRequest & { dueDate?: string }>({
   title: '',
@@ -155,7 +184,7 @@ const filteredTasks = computed(() => {
   // Apply search
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(t => 
+    filtered = filtered.filter(t =>
       t.title.toLowerCase().includes(query) ||
       t.description?.toLowerCase().includes(query)
     )
@@ -183,7 +212,8 @@ const statusFilterOptions = [
 // Methods
 const createTask = async () => {
   if (!newTask.value.title.trim()) return
-  
+
+  creating.value = true
   try {
     const taskData: CreateTaskRequest = {
       title: newTask.value.title,
@@ -192,9 +222,9 @@ const createTask = async () => {
       priority: newTask.value.priority,
       dueDate: newTask.value.dueDate ? new Date(newTask.value.dueDate) : undefined
     }
-    
+
     await createCaseTask(props.caseId, taskData)
-    
+
     // Reset form
     newTask.value = {
       title: '',
@@ -205,11 +235,17 @@ const createTask = async () => {
     }
   } catch (error) {
     console.error('Failed to create task:', error)
+  } finally {
+    creating.value = false
   }
 }
 
-const handleTaskStatusChange = (_taskId: string, _status: TaskStatus) => {
-  // TODO: Implement task status update
+const handleTaskStatusChange = async (taskId: string, status: TaskStatus) => {
+  try {
+    await updateTaskStatus(taskId, status)
+  } catch (error) {
+    console.error('Failed to update task status:', error)
+  }
 }
 
 // Lifecycle

@@ -5,14 +5,14 @@
       <div class="flex items-center space-x-3">
         <HugeiconsIcon :icon="MessageMultiple01Icon" class="w-5 h-5 text-muted-foreground" />
        <h3 class="font-semibold text-foreground">Case Messages</h3>
-        <UBadge v-if="messages?.length" variant="soft" color="blue">
+        <Badge v-if="messages?.length" variant="soft">
           {{ messages.length }} messages
-        </UBadge>
+        </Badge>
       </div>
     </div>
 
     <!-- Messages Container -->
-    <div class="flex-1 space-y-4 p-4 overflow-y-auto" style="max-height: 400px;">
+    <div class="max-h-[400px] flex-1 space-y-4 overflow-y-auto p-4">
       <!-- Loading State -->
       <div
         v-if="isLoading"
@@ -30,7 +30,7 @@
 
       <!-- Error State -->
       <div v-else-if="error" class="py-8 text-center">
-        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-destructive/70" />
+        <HugeiconsIcon :icon="Alert01Icon" class="mx-auto mb-2 w-8 h-8 text-destructive/70" aria-hidden="true" />
         <p class="text-destructive text-sm">Failed to load messages</p>
       </div>
 
@@ -87,22 +87,21 @@
     <div v-if="!readonly" class="border-t border-border p-4">
       <div class="flex items-end space-x-3">
         <div class="flex-1">
-          <UTextarea
+          <Textarea
             v-model="messageInput"
             placeholder="Type your message..."
             :rows="1"
-            autoresize
             @keydown.enter.prevent="handleSendMessage"
           />
         </div>
         <ButtonBusy
-          @click="handleSendMessage"
+          aria-label="Send message"
           :disabled="!messageInput.trim() || isSending"
           :loading="isSending"
+          @click="handleSendMessage"
         >
-          <template #leading>
-            <HugeiconsIcon :icon="SentIcon" class="w-5 h-5" />
-          </template>
+          <HugeiconsIcon v-if="!isSending" :icon="SentIcon" class="size-4 shrink-0" aria-hidden="true" />
+          Send
         </ButtonBusy>
       </div>
     </div>
@@ -118,7 +117,9 @@
 import { Alert01Icon, CheckmarkCircle01Icon, Message02Icon, MessageMultiple01Icon, SentIcon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
+import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 
 const props = defineProps({
   caseId: {
