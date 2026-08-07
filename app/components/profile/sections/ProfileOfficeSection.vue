@@ -84,7 +84,7 @@ function onSave() {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-base">
+      <CardTitle>
         Office & firm
       </CardTitle>
       <CardDescription>

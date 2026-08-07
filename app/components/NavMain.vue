@@ -90,7 +90,7 @@ function navTooltip(link: DashboardNavLink) {
               <span>{{ link.title }}</span>
               <SidebarMenuBadge
                 v-if="linkBadge(link)"
-                class="ml-auto rounded-full border-0 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary tabular-nums"
+                class="ml-auto rounded-full border-0 bg-primary/10 px-2 py-0.5 text-2xs font-semibold text-primary tabular-nums"
               >
                 {{ linkBadge(link) }}
               </SidebarMenuBadge>

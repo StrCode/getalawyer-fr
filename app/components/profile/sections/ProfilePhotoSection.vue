@@ -47,7 +47,7 @@ function onFileSelected(event: Event) {
 <template>
   <Card>
     <CardHeader class="pb-3">
-      <CardTitle class="text-base">
+      <CardTitle>
         {{ title }}
       </CardTitle>
       <CardDescription>

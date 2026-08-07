@@ -16,11 +16,11 @@ const secondary = [
 </script>
 
 <template>
-  <section class="bg-background py-12 md:py-24">
+  <section class="bg-background section-y">
     <div class="mx-auto max-w-7xl px-6 md:px-8">
       <!-- Section header -->
       <div class="mb-10 max-w-2xl">
-        <p class="text-xs font-medium uppercase tracking-widest mb-4 text-primary">Trusted across Nigeria</p>
+        <p class="eyebrow mb-4 text-primary-strong">Trusted across Nigeria</p>
        <h2 class="text-3xl font-medium md:text-4xl text-foreground">
           Real clients, real outcomes.
         </h2>

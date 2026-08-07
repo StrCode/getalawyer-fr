@@ -154,7 +154,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           <HugeiconsIcon :icon="SquareLock01Icon" class="h-10 w-10" />
         </div>
         <div
-          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-widest text-primary"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 eyebrow text-primary-strong"
         >
           <HugeiconsIcon :icon="SecurityCheckIcon" class="h-4 w-4" />
           Verified by GetaLawyer

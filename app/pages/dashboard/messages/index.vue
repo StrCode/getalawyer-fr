@@ -17,6 +17,7 @@ definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
   dashboardScroll: 'contained',
+  dashboardWidth: 'full',
 })
 
 const route = useRoute()

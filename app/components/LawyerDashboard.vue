@@ -439,7 +439,7 @@ function confirmDecline() {
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card class="py-0 shadow-xs">
               <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
-                <CardTitle class="text-base">
+                <CardTitle>
                   Consultation Types
                 </CardTitle>
                 <Button
@@ -459,7 +459,7 @@ function confirmDecline() {
             </Card>
             <Card class="py-0 shadow-xs">
               <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
-                <CardTitle class="text-base">
+                <CardTitle>
                   Availability
                 </CardTitle>
                 <Button
@@ -529,32 +529,7 @@ function confirmDecline() {
       </div>
     </template>
 
-    <div
-      v-else
-      class="space-y-6"
-      aria-busy="true"
-      aria-label="Loading dashboard"
-    >
-      <div class="space-y-2">
-        <Skeleton class="h-8 w-64 rounded-lg" />
-        <Skeleton class="h-4 w-96 rounded-lg" />
-      </div>
-      <Skeleton class="h-32 w-full rounded-xl" />
-      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Skeleton
-          v-for="i in 4"
-          :key="i"
-          class="h-24 rounded-xl"
-        />
-      </div>
-      <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div class="space-y-4">
-          <Skeleton class="h-48 w-full rounded-xl" />
-          <Skeleton class="h-56 w-full rounded-xl" />
-        </div>
-        <Skeleton class="h-80 w-full rounded-xl" />
-      </div>
-    </div>
+    <DashboardOverviewSkeleton v-else />
 
     <Dialog v-model:open="isCancelModalOpen">
       <DialogContent class="sm:max-w-md">

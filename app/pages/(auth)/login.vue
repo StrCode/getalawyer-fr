@@ -104,7 +104,7 @@
         </template>
         
         <!-- Dev Hint -->
-        <div v-if="process.dev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
+        <div v-if="isDev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
           <p class="font-medium">Development Mode</p>
           <p class="mt-1">Check your terminal or browser console for the verification code.</p>
         </div>
@@ -311,6 +311,8 @@ const pendingPhone = ref('')
 const phoneOtp = ref('')
 const otpError = ref('')
 const otpBlocked = ref(false)
+// Bound in setup: `process.dev` is not reachable from templates in production builds.
+const isDev = import.meta.dev
 const isResending = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null

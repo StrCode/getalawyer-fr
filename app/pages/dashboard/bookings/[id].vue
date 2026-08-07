@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto w-full max-w-5xl space-y-6">
+  <div class="space-y-6">
     <DashboardPageHeader
       title="Booking details"
       :description="booking ? `Reference ${booking.bookingReference}` : 'Loading booking information.'"

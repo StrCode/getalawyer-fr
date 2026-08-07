@@ -23,7 +23,7 @@ function areaQuery(id: string) {
 <template>
   <Card class="py-0 shadow-xs">
     <CardHeader class="border-b border-border/40 px-4 py-4">
-      <CardTitle class="text-base">
+      <CardTitle>
         Your legal interests
       </CardTitle>
       <p class="text-sm text-muted-foreground">

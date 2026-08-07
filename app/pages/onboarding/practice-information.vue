@@ -393,7 +393,7 @@ onBeforeUnmount(() => {
                       <ListboxFilter v-model="stateQuery" as-child>
                         <TagsInputInput
                           placeholder="Search or select states..."
-                          class="min-h-8 text-base placeholder:text-muted-foreground/50"
+                          class="min-h-8 text-base placeholder:text-muted-foreground"
                           @keydown.enter.prevent
                           @keydown.down="statesPopoverOpen = true"
                         />
@@ -470,7 +470,7 @@ onBeforeUnmount(() => {
                 />
               </div>
 
-              <p class="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              <p class="mb-3 eyebrow text-muted-foreground">
                 Selected ({{ selectedCount }}/5)
               </p>
 

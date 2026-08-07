@@ -215,10 +215,6 @@
     @apply z-40 shrink-0 border-t border-border/60 bg-background pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-sm;
   }
 
-  .dashboard-shell {
-    /* Kept class wrapper */
-  }
-
   .app-page-title {
     @apply font-semibold text-foreground text-2xl tracking-tight;
   }

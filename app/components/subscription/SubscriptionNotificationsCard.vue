@@ -41,7 +41,7 @@ function onOpenNotification(id: string, isRead: boolean) {
   <Card>
     <CardHeader class="flex flex-row items-start justify-between gap-4 space-y-0">
       <div>
-        <CardTitle class="text-base">
+        <CardTitle>
           Billing notifications
         </CardTitle>
         <CardDescription>

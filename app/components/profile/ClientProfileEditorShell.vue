@@ -259,7 +259,7 @@ onBeforeUnmount(() => {
 
 <template>
   <motion.div
-    class="mx-auto w-full max-w-5xl space-y-6"
+    class="space-y-6"
     :initial="{ opacity: 0, y: 8 }"
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
@@ -333,7 +333,7 @@ onBeforeUnmount(() => {
 
           <Card id="personal">
             <CardHeader class="pb-3">
-              <CardTitle class="text-base">
+              <CardTitle>
                 Personal information
               </CardTitle>
               <CardDescription>
@@ -402,7 +402,7 @@ onBeforeUnmount(() => {
 
           <Card id="location">
             <CardHeader class="pb-3">
-              <CardTitle class="text-base">
+              <CardTitle>
                 Location
               </CardTitle>
               <CardDescription>
@@ -471,7 +471,7 @@ onBeforeUnmount(() => {
 
           <Card id="about">
             <CardHeader class="pb-3">
-              <CardTitle class="text-base">
+              <CardTitle>
                 About you
               </CardTitle>
               <CardDescription>
@@ -506,7 +506,7 @@ onBeforeUnmount(() => {
 
           <Card id="contact">
             <CardHeader class="pb-3">
-              <CardTitle class="text-base">
+              <CardTitle>
                 Contact
               </CardTitle>
               <CardDescription>

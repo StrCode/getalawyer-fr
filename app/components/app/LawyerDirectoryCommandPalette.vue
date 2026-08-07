@@ -116,7 +116,7 @@ onMounted(() => {
           <span class="font-medium text-foreground">{{ isAppleOs ? '⌘K' : 'Ctrl K' }}</span>.
         </span>
         <kbd
-          class="hidden shrink-0 rounded border border-muted-foreground/25 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-block"
+          class="hidden shrink-0 rounded border border-muted-foreground/25 bg-muted/40 px-1.5 py-0.5 font-mono text-2xs text-muted-foreground sm:inline-block"
         >
           {{ isAppleOs ? '⌘ K' : 'Ctrl K' }}
         </kbd>
@@ -125,7 +125,7 @@ onMounted(() => {
       <CommandGroup heading="Recent">
         <p
           v-if="!hasStoredSearches()"
-          class="mx-3 mb-1 text-muted-foreground text-[11px] leading-relaxed italic"
+          class="mx-3 mb-1 text-muted-foreground text-2xs leading-relaxed italic"
         >
           Nothing saved yet — these are placeholders until you search on the directory or from the homepage.
         </p>

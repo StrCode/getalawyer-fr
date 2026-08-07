@@ -69,7 +69,7 @@ export const useClientOnboarding = () => {
       queryKey: ['countries'],
       queryFn: clientOnboardingAPI.getCountries,
       staleTime: 1000 * 60 * 60,
-      enabled: process.client,
+      enabled: import.meta.client,
     })
   }
 
@@ -78,7 +78,7 @@ export const useClientOnboarding = () => {
       queryKey: ['specializations'],
       queryFn: clientOnboardingAPI.getSpecializations,
       staleTime: 1000 * 60 * 30,
-      enabled: process.client,
+      enabled: import.meta.client,
     })
   }
 

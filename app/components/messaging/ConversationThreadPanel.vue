@@ -180,7 +180,7 @@ function formatMessageTime(timestamp: string) {
               {{ message.content }}
             </p>
             <div
-              class="mt-1 flex items-center gap-1.5 text-[10px] opacity-70"
+              class="mt-1 flex items-center gap-1.5 text-2xs opacity-70"
               :class="isOwnMessage(message) ? 'justify-end' : 'justify-start'"
             >
               <span>{{ formatMessageTime(message.createdAt) }}</span>

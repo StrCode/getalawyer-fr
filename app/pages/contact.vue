@@ -39,7 +39,7 @@ const handleSubmit = () => {
 
         <!-- Left: copy & trust -->
         <div class="lg:col-span-5">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Contact</p>
+          <p class="eyebrow mb-4 text-primary-strong">Contact</p>
          <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
             Get in touch.
           </h1>
@@ -104,22 +104,22 @@ const handleSubmit = () => {
             <div class="grid gap-6 md:grid-cols-2">
               <!-- Name -->
               <div class="flex flex-col gap-2.5">
-                <label class="text-sm font-medium text-foreground">Full name</label>
-                <input v-model="form.name" required type="text" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="Jane Doe" />
+                <label for="contact-name" class="text-sm font-medium text-foreground">Full name</label>
+                <input id="contact-name" v-model="form.name" required type="text" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="Jane Doe" />
               </div>
 
               <!-- Email -->
               <div class="flex flex-col gap-2.5">
-                <label class="text-sm font-medium text-foreground">Email address</label>
-                <input v-model="form.email" required type="email" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="jane@example.com" />
+                <label for="contact-email" class="text-sm font-medium text-foreground">Email address</label>
+                <input id="contact-email" v-model="form.email" required type="email" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="jane@example.com" />
               </div>
             </div>
 
             <!-- Subject -->
             <div class="flex flex-col gap-2.5">
-              <label class="text-sm font-medium text-foreground">Subject</label>
+              <label for="contact-subject" class="text-sm font-medium text-foreground">Subject</label>
               <div class="relative">
-                <select v-model="form.subject" required class="w-full cursor-pointer appearance-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10">
+                <select id="contact-subject" v-model="form.subject" required class="w-full cursor-pointer appearance-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10">
                   <option value="" disabled selected>Select a topic</option>
                   <option value="support">General Support</option>
                   <option value="lawyer">I'm a lawyer (Registration/Billing)</option>
@@ -132,8 +132,8 @@ const handleSubmit = () => {
 
             <!-- Message -->
             <div class="flex flex-col gap-2.5">
-              <label class="text-sm font-medium text-foreground">Message</label>
-              <textarea v-model="form.message" required rows="5" class="w-full resize-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="How can we help you?"></textarea>
+              <label for="contact-message" class="text-sm font-medium text-foreground">Message</label>
+              <textarea id="contact-message" v-model="form.message" required rows="5" class="w-full resize-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="How can we help you?"></textarea>
             </div>
 
             <!-- Submit -->

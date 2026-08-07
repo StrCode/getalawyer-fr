@@ -32,12 +32,12 @@ const features = [
 </script>
 
 <template>
-  <section class="flex min-h-[80vh] flex-col items-center justify-center bg-background py-24">
+  <section class="flex min-h-[80vh] flex-col items-center justify-center bg-background section-y-lg">
     <div class="mx-auto w-full max-w-7xl px-6 md:px-8">
 
       <!-- Header -->
       <div class="mx-auto mb-16 max-w-2xl text-center">
-        <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Pricing for Lawyers</p>
+        <p class="eyebrow mb-4 text-primary-strong">Pricing for Lawyers</p>
        <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
           Simple, transparent pricing.
         </h1>
@@ -53,7 +53,7 @@ const features = [
         </Badge>
 
         <div class="mb-8 mt-2 text-center">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">Annual membership</p>
+          <p class="eyebrow mb-4 text-primary-strong">Annual membership</p>
          <h2 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h2>
           <div class="mb-2 flex items-end justify-center gap-1.5">
             <span class="font-heading text-6xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
@@ -70,7 +70,7 @@ const features = [
 
         <!-- Features list -->
         <div class="border-t border-border pt-8">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-5 text-muted-foreground">Everything included</p>
+          <p class="eyebrow mb-5 text-muted-foreground">Everything included</p>
           <ul class="m-0 list-none space-y-4 p-0">
             <li v-for="feat in features" :key="feat" class="flex items-start gap-3 text-base text-foreground">
               <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-primary">

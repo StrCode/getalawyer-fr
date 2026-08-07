@@ -72,7 +72,7 @@ function goToPage(next: number) {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-base">
+      <CardTitle>
         Payment history
       </CardTitle>
       <CardDescription>

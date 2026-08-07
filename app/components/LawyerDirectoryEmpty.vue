@@ -41,7 +41,7 @@ const tips = [
       </div>
 
       <p
-        class="font-mono text-muted-foreground text-[0.65rem] uppercase tracking-[0.2em]"
+        class="font-mono text-muted-foreground text-2xs uppercase tracking-[0.2em]"
       >
         No matches
       </p>

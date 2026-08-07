@@ -38,7 +38,7 @@
       class="rounded-xl"
     >
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
-        <CardTitle class="text-base">
+        <CardTitle>
           Advanced Filters
         </CardTitle>
         <Button
@@ -138,7 +138,7 @@
       class="rounded-xl"
     >
       <CardHeader>
-        <CardTitle class="text-base">
+        <CardTitle>
           Saved Searches
         </CardTitle>
       </CardHeader>

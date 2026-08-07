@@ -13,7 +13,7 @@ const slots = useSlots()
   <div class="mb-6">
     <p
       v-if="eyebrow"
-      class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary"
+      class="eyebrow mb-2 text-primary-strong"
     >
       {{ eyebrow }}
     </p>
