@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import { httpClient } from '~/lib/api/client'
 definePageMeta({
-  layout: 'onboarding-wizard',
+  layout: 'onboarding-draft',
   middleware: 'auth'
 })
 

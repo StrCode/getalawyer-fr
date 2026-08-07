@@ -216,92 +216,94 @@ export const useRealTimeMessaging = (conversationId: string) => {
     })
   }
 
-  // Socket event handlers
-  const setupSocketListeners = () => {
-    // Connection events
-    $socket.on('connect', () => {
+  // Socket event handlers — named so cleanup removes ONLY this instance's
+  // listeners ($socket is an app-wide singleton; a bare .off(event) would
+  // strip every subscriber, including the plugin's own handlers).
+  const onConnect = () => {
+    isConnected.value = true
+    connectionError.value = null
+    connect() // Rejoin conversation on reconnect
+  }
+
+  const onDisconnect = () => {
+    isConnected.value = false
+  }
+
+  const onConnectError = (error: { message?: string }) => {
+    connectionError.value = error.message || 'Connection failed'
+    isConnected.value = false
+  }
+
+  const onConversationJoined = (data: { conversationId: string }) => {
+    if (data.conversationId === conversationId) {
       isConnected.value = true
-      connectionError.value = null
-      connect() // Rejoin conversation on reconnect
-    })
+      processMessageQueue()
+    }
+  }
 
-    $socket.on('disconnect', () => {
+  const onConversationLeft = (data: { conversationId: string }) => {
+    if (data.conversationId === conversationId) {
       isConnected.value = false
-    })
+    }
+  }
 
-    $socket.on('connect_error', (error: any) => {
-      connectionError.value = error.message || 'Connection failed'
-      isConnected.value = false
-    })
-
-    // Conversation events
-    $socket.on('conversation:joined', (data: { conversationId: string }) => {
-      if (data.conversationId === conversationId) {
-        isConnected.value = true
-        processMessageQueue()
+  const onMessageNew = (message: Message) => {
+    if (message.conversationId === conversationId) {
+      if (message.senderId !== currentUserId.value) {
+        markMessageAsDelivered(message.id)
+        markMessageAsRead(message.id)
       }
-    })
+    }
+  }
 
-    $socket.on('conversation:left', (data: { conversationId: string }) => {
-      if (data.conversationId === conversationId) {
-        isConnected.value = false
+  const onTypingStart = (data: { userId: string; userName: string }) => {
+    if (data.userId !== currentUserId.value) {
+      const existingIndex = typingUsers.value.findIndex(u => u.userId === data.userId)
+      const typingUser: TypingUser = {
+        userId: data.userId,
+        userName: data.userName,
+        timestamp: Date.now()
       }
-    })
 
-    // Message events
-    $socket.on('message:new', (message: Message) => {
-      if (message.conversationId === conversationId) {
-        if (message.senderId !== currentUserId.value) {
-          markMessageAsDelivered(message.id)
-          markMessageAsRead(message.id)
-        }
+      if (existingIndex !== -1) {
+        typingUsers.value[existingIndex] = typingUser
+      } else {
+        typingUsers.value.push(typingUser)
       }
-    })
+    }
+  }
 
-    $socket.on('message:status', (data: MessageStatus) => {
-      // Message status updates are handled by the messaging composable
-    })
+  const onTypingStop = (data: { userId: string }) => {
+    typingUsers.value = typingUsers.value.filter(u => u.userId !== data.userId)
+  }
 
-    // Typing events
-    $socket.on('typing:start', (data: { userId: string; userName: string }) => {
-      if (data.userId !== currentUserId.value) {
-        const existingIndex = typingUsers.value.findIndex(u => u.userId === data.userId)
-        const typingUser: TypingUser = {
-          userId: data.userId,
-          userName: data.userName,
-          timestamp: Date.now()
-        }
+  const onSocketError = (data: { message: string; code: string }) => {
+    console.error('Socket error:', data)
+    connectionError.value = data.message
+  }
 
-        if (existingIndex !== -1) {
-          typingUsers.value[existingIndex] = typingUser
-        } else {
-          typingUsers.value.push(typingUser)
-        }
-      }
-    })
-
-    $socket.on('typing:stop', (data: { userId: string }) => {
-      typingUsers.value = typingUsers.value.filter(u => u.userId !== data.userId)
-    })
-
-    // Error events
-    $socket.on('error', (data: { message: string; code: string }) => {
-      console.error('Socket error:', data)
-      connectionError.value = data.message
-    })
+  const setupSocketListeners = () => {
+    $socket.on('connect', onConnect)
+    $socket.on('disconnect', onDisconnect)
+    $socket.on('connect_error', onConnectError)
+    $socket.on('conversation:joined', onConversationJoined)
+    $socket.on('conversation:left', onConversationLeft)
+    $socket.on('message:new', onMessageNew)
+    $socket.on('typing:start', onTypingStart)
+    $socket.on('typing:stop', onTypingStop)
+    $socket.on('error', onSocketError)
   }
 
   const cleanupSocketListeners = () => {
-    $socket.off('connect')
-    $socket.off('disconnect')
-    $socket.off('connect_error')
-    $socket.off('conversation:joined')
-    $socket.off('conversation:left')
-    $socket.off('message:new')
-    $socket.off('message:status')
-    $socket.off('typing:start')
-    $socket.off('typing:stop')
-    $socket.off('error')
+    $socket.off('connect', onConnect)
+    $socket.off('disconnect', onDisconnect)
+    $socket.off('connect_error', onConnectError)
+    $socket.off('conversation:joined', onConversationJoined)
+    $socket.off('conversation:left', onConversationLeft)
+    $socket.off('message:new', onMessageNew)
+    $socket.off('typing:start', onTypingStart)
+    $socket.off('typing:stop', onTypingStop)
+    $socket.off('error', onSocketError)
   }
 
   // File upload with progress

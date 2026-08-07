@@ -67,7 +67,7 @@ const emit = defineEmits<{
               <HugeiconsIcon :icon="Video01Icon" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">Video call</span>
             </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-primary" />
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
           </div>
           <div
             v-if="availableMeetingTypes.includes('phone')"
@@ -77,7 +77,7 @@ const emit = defineEmits<{
               <HugeiconsIcon :icon="CallIcon" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">Phone call</span>
             </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-primary" />
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
           </div>
           <div
             v-if="availableMeetingTypes.includes('in_person')"
@@ -87,7 +87,7 @@ const emit = defineEmits<{
               <HugeiconsIcon :icon="Building01Icon" class="size-4 text-muted-foreground" />
               <span class="text-sm font-medium text-foreground">In person</span>
             </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-primary" />
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
           </div>
         </div>
       </div>

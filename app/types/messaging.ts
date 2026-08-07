@@ -15,9 +15,24 @@ export interface FeeResponseMetadata {
   response: 'accepted' | 'declined'
 }
 
+/** Lifecycle of an optimistic (not yet server-confirmed) outgoing message. */
+export type OptimisticSendState = 'queued' | 'pending' | 'failed'
+
+export interface OptimisticMessage {
+  clientId: string
+  conversationId: string
+  content: string
+  replyToId: string | null
+  senderId: string
+  createdAt: string
+  state: OptimisticSendState
+}
+
 export interface Message {
   id: string
   conversationId: string
+  /** Echoed by the backend when the sender supplied one — reconciles optimistic bubbles. */
+  clientId?: string
   senderId: string
   senderType?: 'lawyer' | 'client'
   content: string | null
