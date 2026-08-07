@@ -1,95 +1,67 @@
 <template>
   <div class="space-y-6">
-    <!-- Calendar Header -->
-    <div class="flex items-center justify-between">
-     <h3 class="text-lg font-semibold text-gray-900">Select Date & Time</h3>
-      <div class="flex items-center gap-2">
-        <Button
-          icon="i-hugeicons-arrow-left-01"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="previousMonth"
-        />
-        <span class="text-sm font-medium text-gray-700 min-w-[140px] text-center">
-          {{ currentMonthLabel }}
-        </span>
-        <Button
-          icon="i-hugeicons-arrow-right-01"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="nextMonth"
-        />
-      </div>
-    </div>
+    <h3 class="text-lg font-semibold text-foreground">Select Date & Time</h3>
 
-    <!-- Calendar Grid -->
-    <div class="grid grid-cols-7 gap-2">
-      <!-- Day headers -->
+    <Alert v-if="isError" variant="destructive">
+      <HugeiconsIcon :icon="CalendarRemove01Icon" class="size-4" aria-hidden="true" />
+      <AlertTitle>Couldn't load availability</AlertTitle>
+      <AlertDescription>
+        <p>Check your connection and try again.</p>
+        <Button variant="outline" size="sm" class="mt-2" @click="refetch()">
+          Retry
+        </Button>
+      </AlertDescription>
+    </Alert>
+
+    <Calendar
+      v-model="selectedDateValue"
+      v-model:placeholder="placeholder"
+      :min-value="minDate"
+      :is-date-unavailable="isDateUnavailable"
+      :disabled="isPending"
+      class="w-full rounded-xl border border-border bg-card"
+      :aria-busy="isPending"
+    />
+
+    <div v-if="selectedDate" class="space-y-3">
+      <h4 class="text-sm font-semibold text-foreground">Available Times</h4>
+
       <div
-        v-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']"
-        :key="day"
-        class="text-center text-xs font-medium text-gray-500 py-2"
-      >
-        {{ day }}
-      </div>
-
-      <!-- Calendar days -->
-      <button
-        v-for="day in calendarDays"
-        :key="day.date"
-        :disabled="!day.isCurrentMonth || day.isPast || !day.hasSlots"
-        :class="[
-          'aspect-square rounded-lg text-sm font-medium transition-all',
-          day.isSelected
-            ? 'bg-[#007AFC] text-white'
-            : day.isCurrentMonth && !day.isPast && day.hasSlots
-            ? 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200'
-            : 'text-gray-300 cursor-not-allowed',
-          !day.isCurrentMonth && 'invisible'
-        ]"
-        @click="selectDate(day.date)"
-      >
-        {{ day.day }}
-      </button>
-    </div>
-
-    <!-- Time Slots -->
-    <div v-if="selectedDate && availableSlots" class="space-y-3">
-     <h4 class="text-sm font-semibold text-gray-900">Available Times</h4>
-      
-      <div
-        v-if="isLoadingSlots"
+        v-if="isPending"
         class="grid grid-cols-3 gap-2"
         aria-busy="true"
         aria-label="Loading time slots"
       >
-        <Skeleton
-          v-for="i in 9"
-          :key="i"
-          class="h-10 rounded-lg"
-        />
+        <Skeleton v-for="i in 9" :key="i" class="h-10 rounded-lg" />
       </div>
 
-      <div v-else-if="availableTimeSlots.length === 0" class="text-center py-8 text-gray-500">
-        <HugeiconsIcon :icon="CalendarRemove01Icon" class="w-12 h-12 mx-auto mb-2 text-gray-300" />
+      <div
+        v-else-if="availableTimeSlots.length === 0"
+        class="py-8 text-center text-muted-foreground"
+      >
+        <HugeiconsIcon
+          :icon="CalendarRemove01Icon"
+          class="mx-auto mb-2 size-12 text-muted-foreground/50"
+          aria-hidden="true"
+        />
         <p>No available time slots for this date</p>
       </div>
 
-      <div v-else class="grid grid-cols-3 gap-2 max-h-[300px] overflow-y-auto">
+      <div v-else class="grid max-h-[300px] grid-cols-3 gap-2 overflow-y-auto">
         <button
           v-for="slot in availableTimeSlots"
           :key="slot.startTime"
+          type="button"
+          :aria-pressed="selectedTime === slot.startTime"
           :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            'rounded-lg px-4 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20',
             selectedTime === slot.startTime
-              ? 'bg-[#007AFC] text-white'
-              : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200'
+              ? 'bg-primary text-primary-foreground'
+              : 'border border-border bg-card text-foreground hover:bg-accent'
           ]"
           @click="selectTime(slot.startTime)"
         >
-          {{ formatTime(slot.startTime) }}
+          {{ formatTimeLabel(slot.startTime) }}
         </button>
       </div>
     </div>
@@ -97,10 +69,16 @@
 </template>
 
 <script setup lang="ts">
+import type { DateValue } from 'reka-ui'
+import { getLocalTimeZone, today } from '@internationalized/date'
 import { CalendarRemove01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref, watch } from 'vue'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { buildSlotsByDate, formatTimeLabel, monthRange } from '~/lib/booking-calendar'
 import { useClientBooking } from '~/composables/useClientBooking'
 
 const props = defineProps<{
@@ -113,121 +91,42 @@ const emit = defineEmits<{
   select: [{ date: string; time: string }]
 }>()
 
-const { useAvailableSlots } = useClientBooking()
+const { useAvailableSlotsRange } = useClientBooking()
 
-// Calendar state
-const currentDate = ref(new Date())
-const selectedDate = ref<string | null>(null)
+const minDate = today(getLocalTimeZone())
+const placeholder = ref<DateValue>(minDate)
+const selectedDateValue = ref<DateValue>()
 const selectedTime = ref<string | null>(null)
 
-// Fetch available slots for selected date
-const { data: slotsData, isLoading: isLoadingSlots } = useAvailableSlots(
-  ref(props.lawyerId),
-  computed(() => selectedDate.value || ''),
-  ref(props.consultationTypeId),
-  ref(props.timezone || 'Africa/Lagos'),
-  ref(true) // Only available slots
+const selectedDate = computed(() => selectedDateValue.value?.toString() ?? null)
+
+// One range query per visible month; day gating and the time list both derive from it.
+const visibleRange = computed(() => monthRange(placeholder.value))
+const { data: rangeData, isPending, isError, refetch } = useAvailableSlotsRange(
+  computed(() => props.lawyerId),
+  computed(() => visibleRange.value.start),
+  computed(() => visibleRange.value.end),
+  computed(() => props.consultationTypeId),
+  computed(() => props.timezone ?? 'Africa/Lagos')
 )
 
-const availableSlots = computed(() => slotsData.value)
-const availableTimeSlots = computed(() => availableSlots.value?.slots || [])
+const slotsByDate = computed(() => buildSlotsByDate(rangeData.value?.results))
 
-// Calendar helpers
-const currentMonthLabel = computed(() => {
-  return currentDate.value.toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric'
-  })
-})
-
-const calendarDays = computed(() => {
-  const year = currentDate.value.getFullYear()
-  const month = currentDate.value.getMonth()
-  
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
-  const daysInMonth = lastDay.getDate()
-  const startingDayOfWeek = firstDay.getDay()
-  
-  const days = []
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  
-  // Previous month days (invisible)
-  for (let i = 0; i < startingDayOfWeek; i++) {
-    days.push({
-      day: '',
-      date: '',
-      isCurrentMonth: false,
-      isPast: true,
-      isSelected: false,
-      hasSlots: false
-    })
-  }
-  
-  // Current month days
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day)
-    date.setHours(0, 0, 0, 0)
-    const dateStr = date.toISOString().split('T')[0]
-    
-    days.push({
-      day: day.toString(),
-      date: dateStr,
-      isCurrentMonth: true,
-      isPast: date < today,
-      isSelected: dateStr === selectedDate.value,
-      hasSlots: true // We'll assume all future dates have slots
-    })
-  }
-  
-  return days
-})
-
-// Navigation
-const previousMonth = () => {
-  currentDate.value = new Date(
-    currentDate.value.getFullYear(),
-    currentDate.value.getMonth() - 1,
-    1
-  )
+function isDateUnavailable(date: DateValue): boolean {
+  return !slotsByDate.value.get(date.toString())?.length
 }
 
-const nextMonth = () => {
-  currentDate.value = new Date(
-    currentDate.value.getFullYear(),
-    currentDate.value.getMonth() + 1,
-    1
-  )
-}
+const availableTimeSlots = computed(() =>
+  selectedDate.value ? slotsByDate.value.get(selectedDate.value) ?? [] : []
+)
 
-// Selection
-const selectDate = (date: string) => {
-  if (!date) return
-  selectedDate.value = date
-  selectedTime.value = null
-}
-
-const selectTime = (time: string) => {
+function selectTime(time: string) {
   selectedTime.value = time
-  if (selectedDate.value && selectedTime.value) {
-    emit('select', {
-      date: selectedDate.value,
-      time: selectedTime.value
-    })
+  if (selectedDate.value) {
+    emit('select', { date: selectedDate.value, time })
   }
 }
 
-// Format time for display
-const formatTime = (time: string) => {
-  const [hours, minutes] = time.split(':')
-  const hour = parseInt(hours)
-  const ampm = hour >= 12 ? 'PM' : 'AM'
-  const displayHour = hour % 12 || 12
-  return `${displayHour}:${minutes} ${ampm}`
-}
-
-// Watch for changes and reset time selection
 watch(selectedDate, () => {
   selectedTime.value = null
 })

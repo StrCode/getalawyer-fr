@@ -1,10 +1,196 @@
+<template>
+  <Dialog v-model:open="isOpen">
+    <DialogContent class="sm:max-w-2xl">
+      <DialogHeader>
+        <DialogTitle>Record engagement outcome</DialogTitle>
+        <DialogDescription>
+          What happened after the consultation with {{ booking.client?.name }}?
+        </DialogDescription>
+      </DialogHeader>
+
+      <form class="space-y-6" @submit="onSubmit">
+        <!-- Outcome selection -->
+        <FormField v-slot="{ componentField }" type="radio" name="outcome">
+          <FormItem class="space-y-3">
+            <FormLabel>Engagement outcome</FormLabel>
+            <FormControl>
+              <RadioGroup v-bind="componentField" class="grid grid-cols-1 gap-3">
+                <FormItem
+                  v-for="option in outcomeOptions"
+                  :key="option.value"
+                  class="flex items-start gap-4 rounded-lg border-2 p-4 transition-all"
+                  :class="
+                    outcome === option.value
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-foreground/30'
+                  "
+                >
+                  <FormLabel class="flex flex-1 cursor-pointer items-start gap-4 font-normal">
+                    <span
+                      class="flex size-10 shrink-0 items-center justify-center rounded-lg"
+                      :class="
+                        outcome === option.value
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted text-muted-foreground'
+                      "
+                    >
+                      <HugeiconsIcon :icon="option.icon" class="size-5" aria-hidden="true" />
+                    </span>
+                    <span class="flex-1">
+                      <span class="block font-semibold text-foreground">{{ option.label }}</span>
+                      <span class="mt-0.5 block text-sm text-muted-foreground">
+                        {{ option.description }}
+                      </span>
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <RadioGroupItem :value="option.value" class="mt-1" />
+                  </FormControl>
+                </FormItem>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <!-- Fee details (client hired) -->
+        <div v-if="showFeeDetails" class="space-y-4">
+          <Alert variant="info">
+            <HugeiconsIcon :icon="InformationCircleIcon" class="size-4" aria-hidden="true" />
+            <AlertTitle>Case details required</AlertTitle>
+            <AlertDescription>
+              A new case will be created with these fee details
+            </AlertDescription>
+          </Alert>
+
+          <FormField v-slot="{ componentField }" name="agreedFee">
+            <FormItem>
+              <FormLabel>Agreed fee</FormLabel>
+              <FormControl>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>₦</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    v-bind="componentField"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormDescription>Enter the total agreed fee amount</FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="feeStructure">
+            <FormItem>
+              <FormLabel>Fee structure</FormLabel>
+              <Select v-bind="componentField">
+                <FormControl>
+                  <SelectTrigger class="w-full">
+                    <SelectValue placeholder="Select a fee structure" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem
+                    v-for="structure in feeStructureOptions"
+                    :key="structure.value"
+                    :value="structure.value"
+                  >
+                    <div>
+                      <div class="font-medium">{{ structure.label }}</div>
+                      <div class="text-xs text-muted-foreground">{{ structure.description }}</div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="paymentNotes">
+            <FormItem>
+              <FormLabel>Payment notes</FormLabel>
+              <FormControl>
+                <Textarea
+                  v-bind="componentField"
+                  :rows="3"
+                  placeholder="e.g., 50% upfront, 50% on completion"
+                />
+              </FormControl>
+              <FormDescription>Optional payment terms and notes</FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+        </div>
+
+        <!-- Consultation only -->
+        <Alert v-else>
+          <HugeiconsIcon :icon="InformationCircleIcon" class="size-4" aria-hidden="true" />
+          <AlertTitle>Consultation only</AlertTitle>
+          <AlertDescription>
+            This booking will be marked as completed without creating a case
+          </AlertDescription>
+        </Alert>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" @click="close">
+            Cancel
+          </Button>
+          <ButtonBusy type="submit" variant="default" :loading="isPending">
+            <HugeiconsIcon :icon="Tick01Icon" class="size-4 shrink-0" aria-hidden="true" />
+            Record outcome
+          </ButtonBusy>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
+</template>
+
 <script setup lang="ts">
 import type { Hugeicon } from '@/lib/icon-types'
-import { Briefcase01Icon, Cancel01Icon, Dollar01Icon, InformationCircleIcon, MessageMultiple01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { Briefcase01Icon, InformationCircleIcon, MessageMultiple01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from 'vee-validate'
 import * as z from 'zod'
 import { toast } from 'vue-sonner'
-import type { FormSubmitEvent } from '#ui/types'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText
+} from '@/components/ui/input-group'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { toTypedSchema } from '~/lib/typed-schema'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
 
@@ -37,13 +223,6 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-const state = reactive<Schema>({
-  outcome: 'consultation_only',
-  agreedFee: '',
-  feeStructure: 'flat_fee',
-  paymentNotes: ''
-})
-
 const outcomeOptions: {
   value: 'consultation_only' | 'client_hired'
   label: string
@@ -52,34 +231,48 @@ const outcomeOptions: {
 }[] = [
   {
     value: 'consultation_only',
-    label: 'Consultation Only',
+    label: 'Consultation only',
     description: 'Client did not hire me for ongoing representation',
     icon: MessageMultiple01Icon
   },
   {
     value: 'client_hired',
-    label: 'Client Hired',
+    label: 'Client hired',
     description: 'Client hired me and we will proceed with a case',
     icon: Briefcase01Icon
   }
 ]
 
 const feeStructureOptions = [
-  { value: 'flat_fee', label: 'Flat Fee', description: 'Fixed amount for the entire case' },
-  { value: 'hourly', label: 'Hourly Rate', description: 'Charge per hour of work' },
+  { value: 'flat_fee', label: 'Flat fee', description: 'Fixed amount for the entire case' },
+  { value: 'hourly', label: 'Hourly rate', description: 'Charge per hour of work' },
   { value: 'contingency', label: 'Contingency', description: 'Percentage of settlement/award' },
   { value: 'retainer', label: 'Retainer', description: 'Upfront payment for ongoing services' },
   { value: 'hybrid', label: 'Hybrid', description: 'Combination of fee structures' }
 ]
 
-const showFeeDetails = computed(() => state.outcome === 'client_hired')
-
-function onSubmit(event: FormSubmitEvent<Schema>) {
-  const data = event.data
-
-  const payload: any = {
-    outcome: data.outcome
+const form = useForm<Schema>({
+  validationSchema: toTypedSchema(schema),
+  initialValues: {
+    outcome: 'consultation_only',
+    agreedFee: '',
+    feeStructure: 'flat_fee',
+    paymentNotes: ''
   }
+})
+
+const outcome = computed(() => form.values.outcome)
+const showFeeDetails = computed(() => outcome.value === 'client_hired')
+
+const onSubmit = form.handleSubmit((data) => {
+  const payload: {
+    outcome: Schema['outcome']
+    engagementDetails?: {
+      agreedFee?: string
+      feeStructure?: Schema['feeStructure']
+      paymentNotes?: string
+    }
+  } = { outcome: data.outcome }
 
   if (data.outcome === 'client_hired') {
     payload.engagementDetails = {
@@ -97,186 +290,25 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
           toast.success('Success', {
             description: `Engagement recorded and case ${result.case.caseNumber} created`
           })
-          // Navigate to the new case
           router.push(`/dashboard/cases/${result.case.id}`)
-        } else {
+        }
+        else {
           toast.success('Success', {
             description: 'Engagement outcome recorded successfully'
           })
         }
         isOpen.value = false
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
         toast.error('Error', {
           description: error.message || 'Failed to record engagement'
         })
       }
     }
   )
-}
+})
 
 function close() {
   isOpen.value = false
 }
 </script>
-
-<template>
-  <UModal v-model:open="isOpen" :ui="{ width: 'sm:max-w-2xl' }">
-    <UCard>
-      <template #header>
-        <div class="flex justify-between items-center">
-          <div>
-           <h3 class="font-bold text-gray-900 text-xl">Record Engagement Outcome</h3>
-            <p class="mt-1 text-gray-500 text-sm">
-              What happened after the consultation with {{ booking.client?.name }}?
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            class="shrink-0"
-            aria-label="Close dialog"
-            @click="close"
-          >
-            <HugeiconsIcon :icon="Cancel01Icon" class="size-5" aria-hidden="true" />
-          </Button>
-        </div>
-      </template>
-
-      <UForm :schema="schema" :state="state" class="space-y-6" @submit="onSubmit">
-        <!-- Outcome Selection -->
-        <UFormField label="Engagement Outcome" name="outcome" required>
-          <div class="gap-3 grid grid-cols-1">
-            <button
-              v-for="option in outcomeOptions"
-              :key="option.value"
-              type="button"
-              @click="state.outcome = option.value as any"
-              class="flex items-start gap-4 p-4 border-2 rounded-lg text-left transition-all"
-              :class="
-                state.outcome === option.value
-                  ? 'border-primary-500 bg-primary-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              "
-            >
-              <div
-                class="flex justify-center items-center rounded-lg w-10 h-10 shrink-0"
-                :class="
-                  state.outcome === option.value
-                    ? 'bg-primary-100 text-primary-600'
-                    : 'bg-gray-100 text-gray-400'
-                "
-              >
-                <HugeiconsIcon :icon="option.icon" class="w-5 h-5" />
-              </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-900">{{ option.label }}</div>
-                <div class="mt-0.5 text-gray-500 text-sm">{{ option.description }}</div>
-              </div>
-              <div
-                class="flex justify-center items-center mt-1 border-2 rounded-full w-5 h-5 shrink-0"
-                :class="
-                  state.outcome === option.value
-                    ? 'border-primary-500 bg-primary-500'
-                    : 'border-gray-300'
-                "
-              >
-                <div
-                  v-if="state.outcome === option.value"
-                  class="bg-white rounded-full w-2 h-2"
-                />
-              </div>
-            </button>
-          </div>
-        </UFormField>
-
-        <!-- Fee Details (shown only when client hired) -->
-        <div v-if="showFeeDetails" class="space-y-4 bg-blue-50 p-4 border border-blue-200 rounded-lg">
-          <div class="flex items-start gap-2">
-            <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-blue-600" />
-            <div>
-             <h4 class="font-semibold text-blue-900 text-sm">Case Details Required</h4>
-              <p class="mt-0.5 text-blue-700 text-xs">
-                A new case will be created with these fee details
-              </p>
-            </div>
-          </div>
-
-          <UFormField label="Agreed Fee" name="agreedFee" required>
-            <UInput
-              v-model="state.agreedFee"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              size="lg"
-            >
-              <template #leading>
-                <HugeiconsIcon :icon="Dollar01Icon" class="w-5 h-5 shrink-0 opacity-70" />
-              </template>
-            </UInput>
-            <template #hint>
-              <span class="text-gray-500 text-xs">Enter the total agreed fee amount</span>
-            </template>
-          </UFormField>
-
-          <UFormField label="Fee Structure" name="feeStructure" required>
-            <USelectMenu
-              v-model="state.feeStructure"
-              :items="feeStructureOptions"
-              value-key="value"
-              size="lg"
-            >
-              <template #option="{ item }">
-                <div>
-                  <div class="font-medium">{{ item.label }}</div>
-                  <div class="text-gray-500 text-xs">{{ item.description }}</div>
-                </div>
-              </template>
-            </USelectMenu>
-          </UFormField>
-
-          <UFormField label="Payment Notes" name="paymentNotes">
-            <UTextarea
-              v-model="state.paymentNotes"
-              placeholder="e.g., 50% upfront, 50% on completion"
-              :rows="3"
-              autoresize
-            />
-            <template #hint>
-              <span class="text-gray-500 text-xs">Optional payment terms and notes</span>
-            </template>
-          </UFormField>
-        </div>
-
-        <!-- Consultation Only Info -->
-        <div v-else class="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-          <div class="flex items-start gap-2">
-            <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 w-5 h-5 text-gray-600" />
-            <div>
-             <h4 class="font-semibold text-gray-900 text-sm">Consultation Only</h4>
-              <p class="mt-0.5 text-gray-600 text-xs">
-                This booking will be marked as completed without creating a case
-              </p>
-            </div>
-          </div>
-        </div>
-      </UForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-3">
-          <Button variant="outline" @click="close">
-            Cancel
-          </Button>
-          <ButtonBusy
-            variant="default"
-            :loading="isPending"
-            @click="onSubmit"
-          >
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 shrink-0" aria-hidden="true" />
-            Record Outcome
-          </ButtonBusy>
-        </div>
-      </template>
-    </UCard>
-  </UModal>
-</template>
