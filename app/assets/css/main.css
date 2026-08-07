@@ -226,7 +226,7 @@
   }
 
   .app-page-title {
-    @apply font-semibold text-foreground text-2xl tracking-tight;
+    @apply font-semibold text-foreground text-3xl leading-[1.1] tracking-tight;
   }
 
   .app-page-description {

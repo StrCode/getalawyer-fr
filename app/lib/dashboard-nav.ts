@@ -11,28 +11,33 @@ export interface DashboardNavLink {
   exact?: boolean
   lawyerOnly?: boolean
   clientOnly?: boolean
+  /** Sidebar section label. Ungrouped links (Overview) render above the first group. */
+  group?: string
 }
 
+// Nav is grouped by what the user is doing, not by feature name:
+// "Today" = time-sensitive surfaces, "Practice"/"My legal life" = the
+// durable objects they manage, "Account" = self-service.
 const lawyerDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
-  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true },
-  { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true },
-  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon },
-  { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true },
-  { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true },
-  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true },
-  { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true },
-  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon },
+  { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true, group: 'Today' },
+  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
+  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Practice' },
+  { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true, group: 'Practice' },
+  { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true, group: 'Practice' },
+  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Account' },
+  { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true, group: 'Account' },
+  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon, group: 'Account' },
 ]
 
 const clientDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
-  { title: 'My Bookings', to: '/dashboard/bookings', icon: Calendar01Icon, clientOnly: true },
-  { title: 'My Cases', to: '/dashboard/cases', icon: Briefcase01Icon, clientOnly: true },
-  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon },
-  { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: UserIcon, clientOnly: true },
-  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, clientOnly: true },
-  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon },
+  { title: 'My Bookings', to: '/dashboard/bookings', icon: Calendar01Icon, clientOnly: true, group: 'Today' },
+  { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
+  { title: 'My Cases', to: '/dashboard/cases', icon: Briefcase01Icon, clientOnly: true, group: 'My legal life' },
+  { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: UserIcon, clientOnly: true, group: 'My legal life' },
+  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, clientOnly: true, group: 'Account' },
+  { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon, group: 'Account' },
 ]
 
 export const dashboardNavByRole = {
@@ -80,7 +85,6 @@ export function isDashboardNavActive(
 const ROUTE_LABELS: Record<string, string> = {
   '/dashboard': 'Overview',
   '/dashboard/bookings': 'My Bookings',
-  '/dashboard/cases': 'My Cases',
   '/dashboard/messages': 'Messages',
   '/dashboard/cases': 'Cases',
   '/dashboard/appointments': 'Appointments',
