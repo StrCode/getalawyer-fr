@@ -3,6 +3,7 @@ import { AlertCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Booking } from '~/types/booking'
 import type { Notification } from '~/types/messaging'
+import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 
 export interface ClientDashboardActionItem {
@@ -75,19 +76,19 @@ const hasActions = computed(() => actionItems.value.length > 0)
 </script>
 
 <template>
-  <div
+  <Alert
     v-if="hasActions"
-    class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-950"
-    role="status"
+    variant="warning"
+    class="px-4 py-4"
   >
-    <div class="flex items-start gap-3">
+    <div class="col-start-2 flex min-w-0 items-start gap-3">
       <div
-        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100"
+        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-warning/15"
         aria-hidden="true"
       >
         <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" />
       </div>
-      <div class="min-w-0 flex-1 space-y-3">
+      <div class="flex min-w-0 flex-1 flex-col gap-3">
         <div>
           <p class="text-sm font-semibold">
             Action required
@@ -97,11 +98,11 @@ const hasActions = computed(() => actionItems.value.length > 0)
           </p>
         </div>
 
-        <ul class="space-y-2">
+        <ul class="flex flex-col gap-2">
           <li
             v-for="item in actionItems"
             :key="item.id"
-            class="flex flex-col gap-2 rounded-lg border border-amber-200/80 bg-white/70 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col gap-2 rounded-lg border border-warning-border/80 bg-card/70 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="min-w-0">
               <p class="text-sm font-medium text-foreground">
@@ -115,7 +116,7 @@ const hasActions = computed(() => actionItems.value.length > 0)
               as-child
               size="sm"
               variant="outline"
-              class="shrink-0 cursor-pointer border-amber-300 bg-white"
+              class="shrink-0 cursor-pointer border-warning-border bg-card"
             >
               <NuxtLink :to="item.to">
                 {{ item.ctaLabel }}
@@ -125,5 +126,5 @@ const hasActions = computed(() => actionItems.value.length > 0)
         </ul>
       </div>
     </div>
-  </div>
+  </Alert>
 </template>

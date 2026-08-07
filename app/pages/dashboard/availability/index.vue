@@ -3,6 +3,7 @@ import { AlertCircleIcon, Calendar01Icon, InformationCircleIcon } from '@hugeico
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { Skeleton } from '@/components/ui/skeleton'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability'
 
 definePageMeta({
@@ -253,17 +254,12 @@ const handleSaveAll = async () => {
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Weekly availability
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Set your recurring weekly schedule for client bookings
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      title="Weekly availability"
+      description="Set your recurring weekly schedule for client bookings"
+    >
+      <template #actions>
+        <Button
           variant="outline"
           as-child
         >
@@ -275,8 +271,8 @@ const handleSaveAll = async () => {
             Manage exceptions
           </NuxtLink>
         </Button>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
     <div
       v-if="isPending"

@@ -2,9 +2,11 @@
 import { Briefcase01Icon, Calendar03Icon, CheckmarkCircle01Icon, Clock01Icon, CreditCardIcon, File01Icon, Message01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
-import DashboardBookingRow from '@/components/dashboard/DashboardBookingRow.vue'
+import BookingRow from '@/components/booking/BookingRow.vue'
+import { Badge } from '@/components/ui/badge'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
 import DashboardMessagesPreview from '@/components/dashboard/DashboardMessagesPreview.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
 import DashboardNotificationsPreview from '@/components/dashboard/DashboardNotificationsPreview.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
@@ -254,17 +256,12 @@ function confirmDecline() {
       :is-approved="isApproved"
     />
 
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        {{ `Welcome back, ${firstName}!` }}
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Manage your consultations and grow your practice
-      </p>
-    </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
+    <DashboardPageHeader
+      :title="`Welcome back, ${firstName}!`"
+      description="Manage your consultations and grow your practice"
+    >
+      <template #actions>
+        <Button
           as-child
           variant="outline"
           class="cursor-pointer"
@@ -280,8 +277,8 @@ function confirmDecline() {
             View Profile
           </NuxtLink>
         </Button>
-    </div>
-  </div>
+      </template>
+    </DashboardPageHeader>
 
       <DashboardNextAppointment
         v-if="nextBooking"
@@ -366,36 +363,50 @@ function confirmDecline() {
               </template>
             </DashboardSectionHeader>
 
-            <DashboardBookingRow
-              v-for="booking in recentBookings"
-              :key="booking.id"
-              :booking="booking"
-              :person-name="booking.client?.name ?? 'Client'"
-              :subtitle="booking.consultationType?.name"
-              @click="navigateTo(`/dashboard/appointments/${booking.id}`)"
-            >
-              <template
-                v-if="booking.status === 'pending'"
-                #actions
+            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+              <BookingRow
+                v-for="booking in recentBookings"
+                :key="booking.id"
+                :booking="booking"
+                :title="booking.client?.name ?? 'Client'"
+                :subtitle="booking.consultationType?.name"
+                @click="navigateTo(`/dashboard/appointments/${booking.id}`)"
               >
-                <Button
-                  size="sm"
-                  class="cursor-pointer"
-                  :disabled="isConfirming && confirmingBookingId === booking.id"
-                  @click="handleConfirm(booking.id)"
+                <template v-if="booking.engagementOutcome === 'client_hired'" #body>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <Badge variant="verified">Case opened</Badge>
+                    <NuxtLink
+                      :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
+                      class="text-xs font-medium text-primary underline-offset-4 hover:underline"
+                      @click.stop
+                    >
+                      {{ booking.caseId ? 'View case' : 'View cases' }}
+                    </NuxtLink>
+                  </div>
+                </template>
+                <template
+                  v-if="booking.status === 'pending'"
+                  #actions
                 >
-                  Confirm
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  class="cursor-pointer"
-                  @click="handleDecline(booking.id)"
-                >
-                  Decline
-                </Button>
-              </template>
-            </DashboardBookingRow>
+                  <Button
+                    size="sm"
+                    class="cursor-pointer"
+                    :disabled="isConfirming && confirmingBookingId === booking.id"
+                    @click="handleConfirm(booking.id)"
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    class="cursor-pointer"
+                    @click="handleDecline(booking.id)"
+                  >
+                    Decline
+                  </Button>
+                </template>
+              </BookingRow>
+            </div>
           </section>
 
           <section

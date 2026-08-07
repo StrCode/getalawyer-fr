@@ -119,7 +119,7 @@ function handleOpenChange(value: boolean) {
       <div class="px-6 pb-6 pt-8 text-center">
         <div
           class="mx-auto mb-5 flex size-16 items-center justify-center rounded-full"
-          :class="sent ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-primary/10 text-primary'"
+          :class="sent ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'"
         >
           <HugeiconsIcon
             :icon="sent ? CheckmarkCircle01Icon : SentIcon"
@@ -203,7 +203,7 @@ function handleOpenChange(value: boolean) {
         >
           <div
             v-if="sent"
-            class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-left text-sm text-muted-foreground"
+            class="rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-left text-sm text-muted-foreground"
           >
             <p class="font-medium text-foreground">
               Verification email sent

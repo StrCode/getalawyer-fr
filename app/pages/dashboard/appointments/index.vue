@@ -1,15 +1,9 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Appointments
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Manage your consultation bookings and appointments.
-      </p>
-    </div>
-  </div>
+    <DashboardPageHeader
+      title="Appointments"
+      description="Manage your consultation bookings and appointments."
+    />
 
     <div
       v-if="isLoading"
@@ -41,22 +35,75 @@
             <CardTitle class="text-lg">
               Pending confirmations
             </CardTitle>
-            <Badge
-              variant="outline"
-              class="border-amber-200 bg-amber-50 text-amber-800"
-            >
+            <Badge variant="warning">
               {{ pendingBookings.length }}
             </Badge>
           </div>
         </CardHeader>
         <CardContent class="divide-y divide-border/60 p-0">
-          <BookingCard
+          <BookingRow
             v-for="booking in pendingBookings"
             :key="booking.id"
             :booking="booking"
-            @confirm="handleConfirm"
-            @cancel="handleCancelBooking"
-          />
+            :title="booking.client?.name || 'Client'"
+            :subtitle="booking.consultationType?.name || 'Consultation'"
+          >
+            <template #body>
+              <div class="flex flex-col gap-3">
+                <div
+                  v-if="booking.conversationId || booking.engagementOutcome"
+                  class="flex flex-wrap items-center gap-2"
+                >
+                  <Badge
+                    v-if="booking.conversationId"
+                    variant="secondary"
+                    class="gap-1"
+                  >
+                    <HugeiconsIcon :icon="MessageMultiple01Icon" class="size-3" />
+                    Conversation
+                  </Badge>
+                  <Badge
+                    v-if="booking.engagementOutcome === 'client_hired'"
+                    variant="verified"
+                    class="gap-1"
+                  >
+                    <HugeiconsIcon :icon="Briefcase01Icon" class="size-3" />
+                    Case Created
+                  </Badge>
+                  <Badge
+                    v-if="booking.engagementOutcome === 'consultation_only'"
+                    variant="outline"
+                  >
+                    Consultation Only
+                  </Badge>
+                </div>
+                <div
+                  v-if="booking.clientNotes"
+                  class="rounded-lg border border-border bg-background p-3 text-sm text-muted-foreground"
+                >
+                  <p class="mb-1 font-medium text-foreground">
+                    Client notes
+                  </p>
+                  <p>{{ booking.clientNotes }}</p>
+                </div>
+              </div>
+            </template>
+            <template #actions>
+              <Button
+                size="sm"
+                @click="handleConfirm(booking.id)"
+              >
+                Confirm
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                @click="handleCancelBooking(booking.id)"
+              >
+                Cancel
+              </Button>
+            </template>
+          </BookingRow>
         </CardContent>
       </Card>
 
@@ -89,14 +136,88 @@
             v-else
             class="divide-y divide-border/60"
           >
-            <TodayBookingCard
+            <BookingRow
               v-for="booking in todayBookings"
               :key="booking.id"
               :booking="booking"
-              @complete="handleComplete"
-              @no-show="handleNoShow"
-              @cancel="handleCancelBooking"
-            />
+              :title="booking.client?.name || 'Client'"
+              :subtitle="booking.consultationType?.name || 'Consultation'"
+              :show-date="false"
+            >
+              <template #header-extra>
+                <span
+                  v-if="isUpcomingBookingTime(booking)"
+                  class="text-sm font-medium text-primary"
+                >
+                  Starts in {{ timeUntil(booking) }}
+                </span>
+                <span
+                  v-else-if="isPastBooking(booking)"
+                  class="text-sm text-muted-foreground"
+                >
+                  Ended {{ timeSince(booking) }} ago
+                </span>
+              </template>
+              <template #body>
+                <div class="flex flex-col gap-3">
+                  <div
+                    v-if="booking.meetingType === 'video' && booking.meetingUrl"
+                    class="flex items-center gap-2"
+                  >
+                    <Button
+                      size="sm"
+                      as-child
+                    >
+                      <NuxtLink
+                        :to="booking.meetingUrl"
+                        target="_blank"
+                        class="gap-2"
+                      >
+                        <HugeiconsIcon :icon="Video01Icon" class="size-4" />
+                        Join meeting
+                      </NuxtLink>
+                    </Button>
+                  </div>
+                  <div
+                    v-if="booking.clientNotes"
+                    class="rounded-lg border border-border bg-background p-3 text-sm text-muted-foreground"
+                  >
+                    <p class="mb-1 font-medium text-foreground">
+                      Client notes
+                    </p>
+                    <p>{{ booking.clientNotes }}</p>
+                  </div>
+                </div>
+              </template>
+              <template
+                v-if="(booking.status === 'confirmed' && isPastBooking(booking)) || booking.status === 'pending'"
+                #actions
+              >
+                <template v-if="booking.status === 'confirmed' && isPastBooking(booking)">
+                  <Button
+                    size="sm"
+                    @click="handleComplete(booking.id)"
+                  >
+                    Mark completed
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    @click="handleNoShow(booking.id)"
+                  >
+                    Mark no-show
+                  </Button>
+                </template>
+                <Button
+                  v-else-if="booking.status === 'pending'"
+                  variant="ghost"
+                  size="sm"
+                  @click="handleCancelBooking(booking.id)"
+                >
+                  Cancel
+                </Button>
+              </template>
+            </BookingRow>
           </div>
         </CardContent>
       </Card>
@@ -119,12 +240,25 @@
             v-else
             class="divide-y divide-border/60"
           >
-            <UpcomingBookingCard
+            <BookingRow
               v-for="booking in upcomingBookings"
               :key="booking.id"
               :booking="booking"
-              @cancel="handleCancelBooking"
-            />
+              :title="booking.client?.name || 'Client'"
+              :subtitle="booking.consultationType?.name || 'Consultation'"
+              :to="`/dashboard/appointments/${booking.id}`"
+            >
+              <template v-if="booking.clientNotes" #body>
+                <div class="text-sm text-muted-foreground">
+                  <p class="font-medium text-foreground">
+                    Client notes
+                  </p>
+                  <p class="line-clamp-2">
+                    {{ booking.clientNotes }}
+                  </p>
+                </div>
+              </template>
+            </BookingRow>
           </div>
         </CardContent>
       </Card>
@@ -144,12 +278,25 @@
           </div>
         </CardHeader>
         <CardContent class="divide-y divide-border/60 p-0">
-          <UpcomingBookingCard
+          <BookingRow
             v-for="booking in completedBookings"
             :key="booking.id"
             :booking="booking"
-            @cancel="handleCancelBooking"
-          />
+            :title="booking.client?.name || 'Client'"
+            :subtitle="booking.consultationType?.name || 'Consultation'"
+            :to="`/dashboard/appointments/${booking.id}`"
+          >
+            <template v-if="booking.clientNotes" #body>
+              <div class="text-sm text-muted-foreground">
+                <p class="font-medium text-foreground">
+                  Client notes
+                </p>
+                <p class="line-clamp-2">
+                  {{ booking.clientNotes }}
+                </p>
+              </div>
+            </template>
+          </BookingRow>
         </CardContent>
       </Card>
     </div>
@@ -193,14 +340,13 @@
 </template>
 
 <script setup lang="ts">
-import { Calendar01Icon, CalendarCheckIn01Icon } from '@hugeicons/core-free-icons'
+import { Briefcase01Icon, Calendar01Icon, CalendarCheckIn01Icon, MessageMultiple01Icon, Video01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
-import BookingCard from '~/components/appointments/BookingCard.vue'
-import TodayBookingCard from '~/components/appointments/TodayBookingCard.vue'
-import UpcomingBookingCard from '~/components/appointments/UpcomingBookingCard.vue'
+import BookingRow from '~/components/booking/BookingRow.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -216,6 +362,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
+import type { Booking } from '~/types'
 
 definePageMeta({
   layout: 'dashboard',
@@ -267,6 +414,29 @@ const completedBookings = computed(() =>
     new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime(),
   ) ?? [],
 )
+
+// "Starts in / Ended ago" helpers for today's rows (moved from TodayBookingCard).
+function isPastBooking(booking: Booking) {
+  return new Date(`${booking.scheduledDate}T${booking.scheduledEndTime}`) < new Date()
+}
+
+function isUpcomingBookingTime(booking: Booking) {
+  return new Date(`${booking.scheduledDate}T${booking.scheduledStartTime}`) > new Date()
+}
+
+function formatHoursMinutes(diffMs: number) {
+  const hours = Math.floor(diffMs / (1000 * 60 * 60))
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+}
+
+function timeUntil(booking: Booking) {
+  return formatHoursMinutes(new Date(`${booking.scheduledDate}T${booking.scheduledStartTime}`).getTime() - Date.now())
+}
+
+function timeSince(booking: Booking) {
+  return formatHoursMinutes(Date.now() - new Date(`${booking.scheduledDate}T${booking.scheduledEndTime}`).getTime())
+}
 
 const { mutate: confirmBooking } = useConfirmBooking()
 const { mutate: completeBooking } = useCompleteBooking()

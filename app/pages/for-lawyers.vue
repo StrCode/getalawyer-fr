@@ -80,7 +80,7 @@ const toggleFaq = (index: number) => {
           Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
         </p>
 
-        <Button size="lg" class="cursor-pointer bg-card text-foreground hover:bg-card/90" as-child>
+        <Button size="lg" class="cursor-pointer" as-child>
           <NuxtLink to="/register?role=lawyer">
             Register as a lawyer
           </NuxtLink>

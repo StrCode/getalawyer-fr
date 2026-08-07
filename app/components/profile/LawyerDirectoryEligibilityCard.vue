@@ -119,7 +119,7 @@ const showTier1Details = computed(
           />
           <HugeiconsIcon :icon="Alert01Icon"
             v-else-if="gate.soft"
-            class="mt-0.5 size-4 shrink-0 text-amber-600"
+            class="mt-0.5 size-4 shrink-0 text-warning"
             aria-hidden="true"
           />
           <HugeiconsIcon :icon="CircleIcon"
@@ -133,7 +133,7 @@ const showTier1Details = computed(
             </p>
             <p
               v-if="!gate.passed && gate.soft"
-              class="mt-0.5 text-xs text-amber-700 dark:text-amber-500"
+              class="mt-0.5 text-xs text-warning"
             >
               Payment issue — update your card to restore visibility.
             </p>
