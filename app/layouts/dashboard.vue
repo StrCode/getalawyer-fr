@@ -1,7 +1,7 @@
 <template>
   <SidebarProvider
     :default-open="sidebarOpen"
-    class="min-h-svh w-full has-data-[variant=inset]:bg-background!"
+    class="h-svh w-full overflow-hidden has-data-[variant=inset]:bg-background!"
     :style="{
       '--sidebar-width': 'calc(var(--spacing) * 72)',
       '--header-height': 'calc(var(--spacing) * 12)',

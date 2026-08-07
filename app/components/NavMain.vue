@@ -42,6 +42,21 @@ const navLinks = computed(() => {
   return filterNavForRole(links, role.value)
 })
 
+// Consecutive links sharing a group render as one labeled section;
+// ungrouped links (Overview) form their own label-less section on top.
+const navSections = computed(() => {
+  const sections: { label: string | null, links: DashboardNavLink[] }[] = []
+  for (const link of navLinks.value) {
+    const label = link.group ?? null
+    const last = sections[sections.length - 1]
+    if (last && last.label === label)
+      last.links.push(link)
+    else
+      sections.push({ label, links: [link] })
+  }
+  return sections
+})
+
 const badgeMap = computed<Record<string, string | undefined>>(() => ({
   '/dashboard/bookings': clientUpcomingBookingsBadge.value,
   '/dashboard/messages': unreadMessagesBadge.value,
@@ -72,12 +87,20 @@ function navTooltip(link: DashboardNavLink) {
 </script>
 
 <template>
-  <SidebarGroup v-if="navLinks.length">
-    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+  <SidebarGroup
+    v-for="(section, index) in navSections"
+    :key="section.label ?? `section-${index}`"
+  >
+    <SidebarGroupLabel
+      v-if="section.label"
+      class="text-2xs uppercase tracking-[0.18em]"
+    >
+      {{ section.label }}
+    </SidebarGroupLabel>
     <SidebarGroupContent>
       <SidebarMenu>
         <SidebarMenuItem
-          v-for="link in navLinks"
+          v-for="link in section.links"
           :key="link.to"
         >
           <SidebarMenuButton
