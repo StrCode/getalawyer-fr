@@ -1,7 +1,5 @@
 <template>
   <div class="w-full font-sans">
-    <LandingBrandLogo class="mx-auto mb-8 lg:hidden" />
-
     <header class="mb-8 text-center">
       <h1 class="text-balance text-2xl font-medium leading-tight tracking-[-0.02em] text-foreground sm:text-3xl">
         Welcome back
@@ -11,7 +9,7 @@
       </p>
     </header>
 
-    <div class="rounded-xl border border-border/40 bg-card p-5 shadow-none sm:p-7">
+    <div class="rounded-xl border border-foreground/15 bg-card p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] sm:p-8">
       <div v-if="!showPhoneOtpStep" class="mb-6">
         <Button
           type="button"
@@ -244,33 +242,19 @@
       </form>
     </div>
 
-    <div class="mt-6 space-y-5">
-      <p class="text-center text-sm leading-relaxed text-muted-foreground">
-        By continuing, you agree to our
-        <NuxtLink to="/terms" class="text-foreground underline underline-offset-4 hover:text-primary">
-          Terms of Service
-        </NuxtLink>
-        and
-        <NuxtLink to="/privacy" class="text-foreground underline underline-offset-4 hover:text-primary">
-          Privacy Policy
-        </NuxtLink>.
-      </p>
-
-      <p class="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?
-        <NuxtLink
-          to="/register"
-          class="font-medium text-primary underline-offset-4 hover:underline"
-        >
-          Sign up
-        </NuxtLink>
-      </p>
+    <div class="mt-6 flex items-center justify-center gap-2 border-t border-foreground/10 pt-5">
+      <span class="text-sm text-muted-foreground">New to getalawyer?</span>
+      <NuxtLink
+        to="/register"
+        class="text-sm font-medium text-primary underline-offset-4 hover:underline"
+      >
+        Create an account
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { motion } from 'motion-v'
 import { AlertCircleIcon, Loading03Icon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
@@ -280,7 +264,6 @@ import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
-import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone, normalizeNgPhone, toE164Plus, formatNgPhoneDisplay } from '~/lib/phone'
 import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/session-user'
@@ -288,8 +271,6 @@ import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/se
 definePageMeta({
   layout: 'auth',
   middleware: 'guest',
-  authTitle: 'Welcome back to GetaLawyer.',
-  authDescription: 'Log in to access your dashboard, manage your cases, and connect with top legal professionals.',
 })
 
 function sanitizeRedirect(raw: unknown): string {

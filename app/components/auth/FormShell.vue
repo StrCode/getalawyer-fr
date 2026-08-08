@@ -8,9 +8,7 @@ defineProps<{
 
 <template>
   <div class="w-full font-sans">
-    <AuthLogo class="mb-8 lg:hidden" />
-
-    <header class="mb-6 text-center lg:text-left">
+    <header class="mb-6 text-center">
       <p
         v-if="eyebrow"
         class="text-xs font-semibold uppercase tracking-widest mb-2 text-primary"
@@ -28,7 +26,7 @@ defineProps<{
       </p>
     </header>
 
-    <div class="rounded-2xl border border-border bg-card p-5 shadow-xs sm:p-7">
+    <div class="rounded-xl border border-foreground/15 bg-card p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] sm:p-8">
       <slot />
     </div>
 
