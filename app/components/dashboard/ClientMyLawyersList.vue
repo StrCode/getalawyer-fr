@@ -33,7 +33,7 @@ function formatWhen(iso: string): string {
     <Card
       v-for="lawyer in lawyers"
       :key="lawyer.lawyerProfileId ?? lawyer.userId ?? lawyer.name"
-      class="py-0 shadow-xs"
+      class="py-0"
     >
       <CardContent class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex min-w-0 items-center gap-3">

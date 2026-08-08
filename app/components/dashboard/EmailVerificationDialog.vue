@@ -113,7 +113,7 @@ function handleOpenChange(value: boolean) {
     @update:open="handleOpenChange"
   >
     <DialogContent
-      class="gap-0 overflow-hidden border-border/40 p-0 sm:max-w-[440px]"
+      class="gap-0 overflow-hidden border-foreground/15 p-0 sm:max-w-[440px]"
       :show-close-button="true"
     >
       <div class="px-6 pb-6 pt-8 text-center">
@@ -136,7 +136,7 @@ function handleOpenChange(value: boolean) {
 
         <div
           v-if="user?.email && !needsLinkEmail"
-          class="mx-auto mt-4 inline-flex max-w-full items-center rounded-full border border-border/40 bg-muted/40 px-3 py-1.5"
+          class="mx-auto mt-4 inline-flex max-w-full items-center rounded-full border border-foreground/15 bg-muted/40 px-3 py-1.5"
         >
           <HugeiconsIcon
             :icon="Mail01Icon"
@@ -148,7 +148,7 @@ function handleOpenChange(value: boolean) {
         </div>
       </div>
 
-      <div class="border-t border-border/40 px-6 py-5">
+      <div class="border-t border-foreground/15 px-6 py-5">
         <div v-if="needsLinkEmail" class="space-y-4">
           <form @submit.prevent="async () => {
             isSending = true

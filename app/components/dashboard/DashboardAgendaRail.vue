@@ -19,7 +19,7 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 </script>
 
 <template>
-  <Card class="sticky top-6 h-fit py-0 shadow-xs">
+  <Card class="sticky top-6 h-fit py-0">
     <CardHeader class="gap-1 px-5 pt-5 pb-0">
       <span class="micro-label text-muted-foreground">
         Upcoming

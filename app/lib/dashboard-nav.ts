@@ -1,7 +1,6 @@
 import type { Hugeicon } from '@/lib/icon-types'
 import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Search01Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
 
-
 export type DashboardIcon = Hugeicon
 
 export interface DashboardNavLink {
@@ -80,48 +79,6 @@ export function isDashboardNavActive(
     return normalized === link.to || normalized === `${link.to}/`
 
   return normalized === link.to || normalized.startsWith(`${link.to}/`)
-}
-
-const ROUTE_LABELS: Record<string, string> = {
-  '/dashboard': 'Overview',
-  '/dashboard/bookings': 'My Bookings',
-  '/dashboard/messages': 'Messages',
-  '/dashboard/cases': 'Cases',
-  '/dashboard/appointments': 'Appointments',
-  '/dashboard/consultation-types': 'Consultation Types',
-  '/dashboard/availability': 'Availability',
-  '/dashboard/availability/exceptions': 'Exceptions',
-  '/dashboard/profile': 'Profile',
-  '/dashboard/settings': 'Settings',
-  '/dashboard/subscription': 'Subscription',
-  '/dashboard/my-lawyers': 'My Lawyers',
-}
-
-export function dashboardPageTitle(path: string): string {
-  const normalized = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
-
-  if (normalized === '/dashboard' || normalized === '/dashboard/')
-    return 'Overview'
-
-  for (const role of ['lawyer', 'client'] as const) {
-    const links = getDashboardNavForRole(role)
-    if (!links)
-      continue
-
-    for (const item of links) {
-      if (isDashboardNavActive(path, item))
-        return item.title
-    }
-  }
-
-  if (ROUTE_LABELS[normalized])
-    return ROUTE_LABELS[normalized]
-
-  const parent = normalized.replace(/\/[^/]+$/, '')
-  if (parent && ROUTE_LABELS[parent])
-    return normalized.split('/').pop()?.replace(/-/g, ' ') ?? 'Details'
-
-  return 'Dashboard'
 }
 
 export function getNavBadgeKey(to: string): string {

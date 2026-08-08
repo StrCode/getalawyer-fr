@@ -21,8 +21,8 @@ function areaQuery(id: string) {
 </script>
 
 <template>
-  <Card class="py-0 shadow-xs">
-    <CardHeader class="border-b border-border/40 px-4 py-4">
+  <Card class="py-0">
+    <CardHeader class="border-b border-foreground/15 px-4 py-4">
       <span class="micro-label text-muted-foreground">
         Your legal interests
       </span>
