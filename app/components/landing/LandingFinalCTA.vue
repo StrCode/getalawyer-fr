@@ -15,7 +15,7 @@
             Get the legal help you need, from someone you can trust.
           </h2>
           <p class="mb-10 max-w-lg text-xl leading-normal text-background/70">
-            Verified lawyers. Transparent pricing. Booking in minutes. Take the stress out of finding legal representation today.
+            Verified lawyers. Transparent pricing. Direct answers in minutes. Take the stress out of finding legal representation today.
           </p>
 
           <div class="flex flex-wrap gap-4">

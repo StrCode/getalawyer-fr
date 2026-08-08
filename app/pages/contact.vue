@@ -134,7 +134,7 @@ const handleSubmit = () => {
                   <option value="" disabled selected>Select a topic</option>
                   <option value="support">General Support</option>
                   <option value="lawyer">I'm a lawyer (Registration/Billing)</option>
-                  <option value="client">I'm a client (Booking issues)</option>
+                  <option value="client">I'm a client (Help finding or contacting a lawyer)</option>
                   <option value="partnership">Partnerships</option>
                 </select>
                 <HugeiconsIcon :icon="ArrowDown01Icon" class="pointer-events-none absolute top-1/2 right-5 size-5 -translate-y-1/2 text-muted-foreground" />
