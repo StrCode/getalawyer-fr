@@ -40,7 +40,7 @@ const statusVariant = computed(() => {
 </script>
 
 <template>
-  <Card class="group py-0 shadow-xs transition-colors hover:border-primary/30">
+  <Card class="group py-0 transition-colors hover:border-primary/30">
     <CardContent class="flex items-start gap-4 p-4">
       <button
         type="button"

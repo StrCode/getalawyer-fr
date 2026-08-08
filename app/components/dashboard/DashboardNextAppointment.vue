@@ -43,7 +43,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
 <template>
   <Card
     v-if="booking"
-    class="border-primary/15 bg-primary/5 py-0 shadow-xs"
+    class="border-primary/15 bg-primary/5 py-0"
   >
     <CardContent class="p-6">
       <p class="mb-3 font-medium text-primary text-xs uppercase tracking-wide">
@@ -88,7 +88,7 @@ const path = computed(() => props.detailPath ?? (props.booking ? `/dashboard/boo
 
   <Card
     v-else
-    class="border-dashed py-0 shadow-xs"
+    class="border-dashed py-0"
   >
     <CardContent class="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>

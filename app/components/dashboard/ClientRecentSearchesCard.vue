@@ -41,9 +41,9 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
 <template>
   <Card
     v-if="showCard"
-    class="py-0 shadow-xs"
+    class="py-0"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
+    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
       <div>
         <span class="micro-label text-muted-foreground">
           Recent searches

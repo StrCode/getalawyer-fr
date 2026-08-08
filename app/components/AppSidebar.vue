@@ -3,7 +3,6 @@ import NavMain from '@/components/NavMain.vue'
 import UserMenu from '@/components/UserMenu.vue'
 import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
 import { getSessionUserType } from '@/lib/session-user'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Sidebar,
   SidebarContent,
@@ -71,18 +70,15 @@ const showUpgradePrompt = computed(() => {
       <NuxtLink
         v-if="showUpgradePrompt"
         to="/dashboard/subscription"
-        class="mb-2 block px-2 group-data-[collapsible=icon]:hidden"
+        class="group mb-2 block rounded-lg px-2 py-2 transition-colors hover:bg-sidebar-accent group-data-[collapsible=icon]:hidden"
       >
-        <Card class="gap-0 overflow-hidden border-primary/20 bg-primary/5 py-0 shadow-none transition-colors hover:border-primary/30 hover:bg-primary/10">
-          <CardContent class="px-3 py-2.5">
-            <p class="text-xs font-semibold text-foreground">
-              Activate subscription
-            </p>
-            <p class="mt-0.5 text-2xs leading-snug text-muted-foreground">
-              Start receiving client bookings
-            </p>
-          </CardContent>
-        </Card>
+        <p class="flex items-center justify-between gap-2 text-xs font-medium text-foreground">
+          Activate subscription
+          <span class="text-primary transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
+        </p>
+        <p class="mt-0.5 text-2xs leading-snug text-muted-foreground">
+          Start receiving client bookings
+        </p>
       </NuxtLink>
 
       <div class="rounded-lg border border-sidebar-border bg-sidebar p-1">

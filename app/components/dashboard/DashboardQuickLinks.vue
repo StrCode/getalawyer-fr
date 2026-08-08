@@ -32,7 +32,7 @@ defineProps<{
         :to="link.to"
         class="group block"
       >
-        <Card class="h-full py-0 shadow-xs transition-colors hover:border-primary/25 hover:bg-muted/30">
+        <Card class="h-full py-0 transition-colors hover:border-primary/25 hover:bg-muted/30">
           <CardContent class="flex items-center gap-3 p-3">
             <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
               <HugeiconsIcon :icon="link.icon" class="size-4" />
