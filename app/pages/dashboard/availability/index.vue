@@ -289,7 +289,7 @@ const handleSaveAll = async () => {
     </div>
 
     <template v-else>
-      <Card class="rounded-xl">
+      <Card>
         <CardHeader>
           <CardTitle class="text-lg">
             Quick setup
@@ -315,7 +315,7 @@ const handleSaveAll = async () => {
         </CardContent>
       </Card>
 
-      <Card class="rounded-xl"
+      <Card
     >
       <CardHeader class="flex flex-row items-center justify-between gap-4">
         <CardTitle class="text-lg">
@@ -332,7 +332,7 @@ const handleSaveAll = async () => {
         <div
           v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
           :key="day"
-          class="rounded-lg border p-4"
+          class="rounded-lg border border-foreground/15 p-4"
           :class="validationErrors[day as DayOfWeek] ? 'border-destructive/40 bg-destructive/5' : 'border-border'"
         >
           <div class="flex flex-wrap items-center gap-4">
@@ -391,7 +391,7 @@ const handleSaveAll = async () => {
       </CardContent>
     </Card>
 
-    <Card class="rounded-xl">
+    <Card>
       <CardContent class="flex gap-4 p-5">
         <HugeiconsIcon :icon="InformationCircleIcon" class="size-6 shrink-0 text-primary" />
         <div class="space-y-2 text-sm text-muted-foreground">

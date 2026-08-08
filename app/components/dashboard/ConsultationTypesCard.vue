@@ -35,7 +35,7 @@
     <div
       v-for="type in displayedTypes"
       :key="type.id"
-      class="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3"
+      class="flex items-center justify-between gap-3 rounded-lg border border-foreground/15 bg-background p-3"
     >
       <div class="min-w-0 flex-1">
         <div class="flex flex-wrap items-center gap-2">

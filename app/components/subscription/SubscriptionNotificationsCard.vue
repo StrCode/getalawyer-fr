@@ -77,7 +77,7 @@ function onOpenNotification(id: string, isRead: boolean) {
 
       <ul
         v-else
-        class="divide-y divide-border rounded-lg border border-border"
+        class="divide-y divide-border rounded-lg border border-foreground/15"
       >
         <li
           v-for="item in notifications"

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center rounded-xl border bg-card px-6 py-12 text-center"
+    class="flex flex-col items-center justify-center rounded-xl border border-foreground/15 bg-card px-6 py-12 text-center"
     :class="variant === 'error' ? 'border-destructive-border' : 'border-border'"
   >
     <span

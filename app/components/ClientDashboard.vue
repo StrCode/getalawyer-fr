@@ -366,7 +366,7 @@ const showFullEmpty = computed(
                 </Button>
               </template>
             </DashboardSectionHeader>
-            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-foreground/15 bg-card">
               <BookingRow
                 v-for="booking in recentBookings"
                 :key="booking.id"
