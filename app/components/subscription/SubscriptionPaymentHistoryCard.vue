@@ -1,22 +1,16 @@
 <script setup lang="ts">
+import { h } from 'vue'
 import {
   formatNairaAmount,
   formatSubscriptionHistoryAction,
   getSubscriptionHistoryStatus,
   useSubscriptionPaymentHistory,
 } from '~/composables/useSubscription'
+import { dataTableColumnHelper } from '@/lib/data-table'
+import DataTable from '@/components/DataTable.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 
 const page = ref(1)
 
@@ -24,6 +18,8 @@ const { data, isPending, isFetching } = useSubscriptionPaymentHistory(page)
 
 const payments = computed(() => data.value?.payments ?? [])
 const pagination = computed(() => data.value?.pagination)
+
+type PaymentRow = (typeof payments.value)[number]
 
 const statusBadgeVariant = {
   paid: 'verified',
@@ -63,6 +59,45 @@ function formatStatusLabel(status: ReturnType<typeof getSubscriptionHistoryStatu
   return labels[status]
 }
 
+const columnHelper = dataTableColumnHelper<PaymentRow>()
+
+// Sorting is client-side within the fetched page; pagination stays
+// server-driven through the footer below.
+const columns = columnHelper.columns([
+  columnHelper.accessor('createdAt', {
+    header: 'Date',
+    sortFn: 'datetime',
+    cell: ({ row }) => formatDate(row.original.createdAt),
+    meta: { class: 'whitespace-nowrap text-muted-foreground' },
+  }),
+  columnHelper.accessor('action', {
+    header: 'Description',
+    enableSorting: false,
+    cell: ({ row }) => formatSubscriptionHistoryAction(row.original.action),
+    meta: { class: 'font-medium' },
+  }),
+  columnHelper.accessor('amountNaira', {
+    header: 'Amount',
+    enableSorting: false,
+    cell: ({ row }) => formatAmount(row.original.action, row.original.amountNaira),
+    meta: { class: 'text-right tabular-nums' },
+  }),
+  columnHelper.display({
+    id: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      const status = getSubscriptionHistoryStatus(row.original.action)
+      return h(Badge, { variant: statusBadgeVariant[status] }, () => formatStatusLabel(status))
+    },
+  }),
+  columnHelper.accessor('paymentReference', {
+    header: 'Reference',
+    enableSorting: false,
+    cell: ({ row }) => row.original.paymentReference ?? '—',
+    meta: { class: 'hidden max-w-32 truncate font-mono text-xs text-muted-foreground sm:table-cell' },
+  }),
+])
+
 function goToPage(next: number) {
   const totalPages = pagination.value?.totalPages ?? 1
   page.value = Math.min(Math.max(next, 1), totalPages)
@@ -80,94 +115,43 @@ function goToPage(next: number) {
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <div
-        v-if="isPending"
-        class="space-y-2"
-      >
-        <Skeleton class="h-10 w-full rounded-lg" />
-        <Skeleton class="h-10 w-full rounded-lg" />
-        <Skeleton class="h-10 w-full rounded-lg" />
+      <div class="overflow-x-auto rounded-lg border border-border">
+        <DataTable
+          :columns="columns"
+          :data="payments"
+          :loading="isPending"
+          :skeleton-rows="3"
+          empty-title="No payments yet"
+          empty-description="Your first charge will appear here after checkout."
+        />
       </div>
 
-      <p
-        v-else-if="payments.length === 0"
-        class="text-sm text-muted-foreground"
+      <div
+        v-if="pagination && pagination.totalPages > 1"
+        class="mt-4 flex items-center justify-between gap-3 text-sm"
       >
-        No payments yet. Your first charge will appear here after checkout.
-      </p>
-
-      <template v-else>
-        <div class="overflow-x-auto rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead class="text-right">
-                  Amount
-                </TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead class="hidden sm:table-cell">
-                  Reference
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow
-                v-for="payment in payments"
-                :key="payment.id"
-              >
-                <TableCell class="whitespace-nowrap text-muted-foreground">
-                  {{ formatDate(payment.createdAt) }}
-                </TableCell>
-                <TableCell class="font-medium">
-                  {{ formatSubscriptionHistoryAction(payment.action) }}
-                </TableCell>
-                <TableCell class="text-right tabular-nums">
-                  {{ formatAmount(payment.action, payment.amountNaira) }}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    :variant="statusBadgeVariant[getSubscriptionHistoryStatus(payment.action)]"
-                  >
-                    {{ formatStatusLabel(getSubscriptionHistoryStatus(payment.action)) }}
-                  </Badge>
-                </TableCell>
-                <TableCell class="hidden max-w-32 truncate font-mono text-xs text-muted-foreground sm:table-cell">
-                  {{ payment.paymentReference ?? '—' }}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <p class="text-muted-foreground tabular-nums">
+          Page {{ pagination.page }} of {{ pagination.totalPages }}
+        </p>
+        <div class="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            :disabled="pagination.page <= 1 || isFetching"
+            @click="goToPage(pagination.page - 1)"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            :disabled="pagination.page >= pagination.totalPages || isFetching"
+            @click="goToPage(pagination.page + 1)"
+          >
+            Next
+          </Button>
         </div>
-
-        <div
-          v-if="pagination && pagination.totalPages > 1"
-          class="mt-4 flex items-center justify-between gap-3 text-sm"
-        >
-          <p class="text-muted-foreground">
-            Page {{ pagination.page }} of {{ pagination.totalPages }}
-          </p>
-          <div class="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              :disabled="pagination.page <= 1 || isFetching"
-              @click="goToPage(pagination.page - 1)"
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              :disabled="pagination.page >= pagination.totalPages || isFetching"
-              @click="goToPage(pagination.page + 1)"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-      </template>
+      </div>
     </CardContent>
   </Card>
 </template>
