@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { Location01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref } from 'vue'
+import { Button } from '@/components/ui/button'
 import HeroLawyerSpotlightAvatars from '~/components/landing/HeroLawyerSpotlightAvatars.vue'
 import HeroLawyerSpotlightFloat from '~/components/landing/HeroLawyerSpotlightFloat.vue'
 import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
@@ -67,9 +70,7 @@ function searchFor(term: string) {
         <div class="flex flex-col sm:flex-row sm:items-stretch">
           <!-- What field -->
           <div class="flex flex-1 items-center gap-3 px-4 py-2.5">
-            <svg class="size-5 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
+            <HugeiconsIcon :icon="Search01Icon" class="size-5 shrink-0 text-primary" aria-hidden="true" />
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
               <label for="hero-what" class="eyebrow text-muted-foreground">What do you need?</label>
               <input
@@ -89,9 +90,7 @@ function searchFor(term: string) {
 
           <!-- Where field -->
           <div class="flex flex-1 items-center gap-3 px-4 py-2.5">
-            <svg class="size-5 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-            </svg>
+            <HugeiconsIcon :icon="Location01Icon" class="size-5 shrink-0 text-primary" aria-hidden="true" />
             <div class="flex min-w-0 flex-1 flex-col gap-0.5">
               <label for="hero-where" class="eyebrow text-muted-foreground">Where?</label>
               <select
@@ -113,31 +112,30 @@ function searchFor(term: string) {
           </div>
 
           <!-- Search button -->
-          <button
-            type="button"
-            class="mt-2 flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl border-none bg-primary px-7 py-3.5 font-sans text-base font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 active:scale-[0.98] sm:mt-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+          <Button
+            size="lg"
+            class="mt-2 h-auto shrink-0 rounded-2xl px-7 py-3.5 text-base sm:mt-0"
             @click="onSearch"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
+            <HugeiconsIcon :icon="Search01Icon" class="size-4" aria-hidden="true" />
             Search
-          </button>
+          </Button>
         </div>
       </div>
 
       <!-- Popular chips -->
       <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
         <span class="text-sm text-muted-foreground">Popular:</span>
-        <button
+        <Button
           v-for="chip in popular"
           :key="chip"
-          type="button"
-          class="cursor-pointer rounded-xl border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:border-primary/30 hover:text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+          variant="outline"
+          size="sm"
+          class="rounded-full bg-card font-medium hover:border-primary/30 hover:text-primary"
           @click="searchFor(chip)"
         >
           {{ chip }}
-        </button>
+        </Button>
       </div>
     </div>
   </section>

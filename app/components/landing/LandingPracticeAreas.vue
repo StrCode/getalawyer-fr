@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Briefcase01Icon } from '@hugeicons/core-free-icons'
+import { ArrowRight01Icon, Briefcase01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useFeaturedSpecializations } from '~/composables/useSpecializations'
 import { specializationDirectoryHref } from '~/lib/practice-areas'
@@ -22,7 +22,8 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
         </div>
         <Button variant="outline" as-child class="shrink-0">
           <NuxtLink to="/practice-areas">
-            View all areas →
+            View all areas
+            <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" aria-hidden="true" />
           </NuxtLink>
         </Button>
       </div>
@@ -108,7 +109,7 @@ const { data: featuredAreas, isPending, isError } = useFeaturedSpecializations()
               class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary no-underline"
             >
               Find {{ area.name }} lawyers
-              <span class="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
             </NuxtLink>
           </div>
         </div>
