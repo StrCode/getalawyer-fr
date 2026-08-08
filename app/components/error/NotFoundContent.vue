@@ -44,7 +44,7 @@ const quickLinks = [
           style="font-size: clamp(1.75rem, 4.5vw, 2.5rem);"
         >
           This page isn’t in our
-          <em class="font-medium italic text-primary">case file.</em>
+          <em class="font-semibold not-italic text-primary">case file.</em>
         </h1>
 
         <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">

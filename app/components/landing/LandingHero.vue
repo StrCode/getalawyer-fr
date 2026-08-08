@@ -55,7 +55,7 @@ function searchFor(term: string) {
       <!-- Headline -->
      <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-4xl text-balance text-foreground lg:max-w-5xl">
         Get legal help
-        <em class="font-heading italic font-medium text-primary">without the runaround.</em>
+        <em class="font-semibold not-italic text-primary">without the runaround.</em>
       </h1>
 
       <!-- Sub -->
