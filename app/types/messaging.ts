@@ -22,6 +22,8 @@ export interface OptimisticMessage {
   clientId: string
   conversationId: string
   content: string
+  /** Already-uploaded attachment metadata — upload completes before send. */
+  file: FileUploadResponse | null
   replyToId: string | null
   senderId: string
   createdAt: string
@@ -135,7 +137,7 @@ export interface ServerToClientEvents {
   'typing:start': (data: { userId: string; userName: string }) => void
   'typing:stop': (data: { userId: string }) => void
   'conversation:joined': (data: { conversationId: string }) => void
-  'error': (data: { message: string; code: string }) => void
+  'error': (data: { message: string; code: string; clientId?: string }) => void
 }
 
 export interface ClientToServerEvents {
@@ -146,6 +148,8 @@ export interface ClientToServerEvents {
     content: string
     file?: FileUploadResponse
     replyToId?: string
+    /** Echoed back on message:new / error so optimistic bubbles reconcile. */
+    clientId?: string
   }) => void
   'message:read': (data: { conversationId: string; messageId: string }) => void
   'message:delivered': (data: { conversationId: string; messageId: string }) => void

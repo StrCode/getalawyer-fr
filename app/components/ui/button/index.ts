@@ -29,6 +29,8 @@ export const buttonVariants = cva(
         "sm": "h-8 rounded-lg gap-1.5 px-3 has-[>svg]:px-2.5",
         "lg": "h-11 rounded-xl px-6 has-[>svg]:px-4",
         "icon": "size-9",
+        // Used by vendored components (e.g. AttachmentAction's default size).
+        "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-11",
       },

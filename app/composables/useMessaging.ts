@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { messagingAPI } from '~/lib/api/messaging'
 import { queryKeys } from '~/lib/query-client'
 import { useMessagingStore } from '~/stores/messagingStore'
-import type { ConversationInfo, Message, Notification } from '~/types/messaging'
+import type { ConversationInfo, FileUploadResponse, Message, Notification } from '~/types/messaging'
 
 let socketListenersInitialized = false
 
@@ -150,11 +150,12 @@ export const useMessaging = () => {
     }
   }
 
-  function emitOptimistic(entry: { clientId: string; conversationId: string; content: string; replyToId: string | null }) {
+  function emitOptimistic(entry: { clientId: string; conversationId: string; content: string; file?: FileUploadResponse | null; replyToId: string | null }) {
     store.setOptimisticState(entry.clientId, 'pending')
     $socket.emit('message:send', {
       conversationId: entry.conversationId,
       content: entry.content,
+      file: entry.file ?? undefined,
       replyToId: entry.replyToId ?? undefined,
       clientId: entry.clientId,
     })
@@ -170,19 +171,20 @@ export const useMessaging = () => {
    * while offline), reconciles to the real message when the backend echoes
    * the clientId, and flips to failed on a correlated error or timeout.
    */
-  const sendMessage = (data: { conversationId: string; content: string; replyToId?: string }) => {
+  const sendMessage = (data: { conversationId: string; content: string; file?: FileUploadResponse; replyToId?: string }) => {
     const clientId = crypto.randomUUID()
     store.addOptimisticMessage({
       clientId,
       conversationId: data.conversationId,
       content: data.content,
+      file: data.file ?? null,
       replyToId: data.replyToId ?? null,
       senderId: session.value?.user?.id ?? '',
       createdAt: new Date().toISOString(),
       state: 'queued',
     })
     if ($socket.connected) {
-      emitOptimistic({ clientId, conversationId: data.conversationId, content: data.content, replyToId: data.replyToId ?? null })
+      emitOptimistic({ clientId, conversationId: data.conversationId, content: data.content, file: data.file ?? null, replyToId: data.replyToId ?? null })
     }
     return clientId
   }
