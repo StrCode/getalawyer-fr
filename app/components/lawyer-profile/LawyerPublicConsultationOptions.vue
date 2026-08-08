@@ -8,6 +8,16 @@ defineProps<{
   consultationTypes: ConsultationType[]
 }>()
 
+const MEETING_BADGES = [
+  { value: 'video', label: 'Video', icon: Video01Icon },
+  { value: 'phone', label: 'Phone', icon: CallIcon },
+  { value: 'in_person', label: 'In person', icon: Building01Icon },
+] as const
+
+function badgesFor(meetingType: ConsultationType['meetingType']) {
+  return MEETING_BADGES.filter(b => meetingType === 'any' || b.value === meetingType)
+}
+
 function formatPrice(price: string): string {
   return parseFloat(price) === 0 ? 'Free' : `₦${parseFloat(price).toLocaleString()}`
 }
@@ -49,28 +59,13 @@ function formatPrice(price: string): string {
         </div>
         <div class="mt-4 flex flex-wrap gap-2">
           <Badge
-            v-if="consult.meetingType === 'video' || consult.meetingType === 'any'"
+            v-for="badge in badgesFor(consult.meetingType)"
+            :key="badge.value"
             variant="soft"
             class="gap-1"
           >
-            <HugeiconsIcon :icon="Video01Icon" class="size-3.5" />
-            Video
-          </Badge>
-          <Badge
-            v-if="consult.meetingType === 'phone' || consult.meetingType === 'any'"
-            variant="soft"
-            class="gap-1"
-          >
-            <HugeiconsIcon :icon="CallIcon" class="size-3.5" />
-            Phone
-          </Badge>
-          <Badge
-            v-if="consult.meetingType === 'in_person' || consult.meetingType === 'any'"
-            variant="soft"
-            class="gap-1"
-          >
-            <HugeiconsIcon :icon="Building01Icon" class="size-3.5" />
-            In person
+            <HugeiconsIcon :icon="badge.icon" class="size-3.5" />
+            {{ badge.label }}
           </Badge>
         </div>
       </div>

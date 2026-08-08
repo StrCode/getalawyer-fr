@@ -15,9 +15,12 @@ import {
   shouldTruncateAbout,
 } from '~/lib/lawyer-public-profile'
 import type { LawyerPublicProfileSections } from '~/types/lawyer-profile-editor'
-defineProps<{
+withDefaults(defineProps<{
   profile: LawyerPublicProfileSections
-}>()
+  isOwnProfile?: boolean
+}>(), {
+  isOwnProfile: false,
+})
 
 const aboutExpanded = ref(false)
 
@@ -47,20 +50,12 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         {{ getAboutPreview(profile.about.about, aboutExpanded) }}
       </p>
       <Button
-        v-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && !aboutExpanded"
+        v-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about)"
         variant="link"
         class="mt-3 h-auto p-0 text-sm font-medium"
-        @click="aboutExpanded = true"
+        @click="aboutExpanded = !aboutExpanded"
       >
-        Show more
-      </Button>
-      <Button
-        v-else-if="profile.about.about?.trim() && shouldTruncateAbout(profile.about.about) && aboutExpanded"
-        variant="link"
-        class="mt-3 h-auto p-0 text-sm font-medium"
-        @click="aboutExpanded = false"
-      >
-        Show less
+        {{ aboutExpanded ? 'Show less' : 'Show more' }}
       </Button>
     </section>
 
@@ -133,8 +128,9 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
             >
               {{ formatEducationYears(item) }}
             </p>
+<!-- Owner-facing hint only — visitors shouldn't see editor jargon. -->
             <p
-              v-if="item.source === 'onboarding'"
+              v-if="isOwnProfile && item.source === 'onboarding'"
               class="mt-2 text-xs text-muted-foreground"
             >
               From onboarding — update in profile editor for full details.

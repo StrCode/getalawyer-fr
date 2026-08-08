@@ -10,9 +10,12 @@ import LawyerPublicProfileEmptyPreview from '@/components/lawyer-profile/LawyerP
 import LawyerPublicBookingSidebar from '@/components/lawyer-profile/LawyerPublicBookingSidebar.vue'
 import AskQuestionSheet from '@/components/lawyer-profile/AskQuestionSheet.vue'
 
+// Public conversion surface: no login gate. The API serves profiles with
+// optional auth (lawyer sessions are still blocked from foreign profiles by
+// the API + client-directory middleware); auth-only actions redirect inline.
 definePageMeta({
   layout: 'landing',
-  middleware: ['require-login', 'client-directory'],
+  middleware: ['client-directory'],
 })
 
 const route = useRoute()
@@ -50,6 +53,11 @@ const {
 const isAskQuestionOpen = ref(false)
 
 function openAskQuestion() {
+  // Messaging needs a session — send anonymous visitors through login and back.
+  if (!isAuthenticated.value) {
+    navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
+    return
+  }
   isAskQuestionOpen.value = true
 }
 </script>
@@ -84,15 +92,33 @@ function openAskQuestion() {
         @ask="openAskQuestion"
       />
 
+<!-- Mobile: the booking rail (price, CTAs, trust signals) comes right
+           after the hero instead of below a long content scroll. -->
       <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-10 md:px-8 lg:grid-cols-3 lg:gap-12 lg:py-12">
-        <main class="space-y-12 lg:col-span-2">
+        <main class="order-2 space-y-12 lg:order-1 lg:col-span-2">
           <LawyerPublicProfileEmptyPreview
             v-if="isOwnProfile && !hasProfileContent"
           />
 
+          <!-- Visitor-facing sparse state: without this, a bare profile
+               renders a hero over an empty page. -->
+          <section
+            v-else-if="!hasProfileContent"
+            class="rounded-2xl border border-foreground/15 bg-card p-8 text-center"
+          >
+            <p class="text-base font-medium text-foreground">
+              {{ lawyer.name }} hasn't published profile details yet
+            </p>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+              Their identity and Supreme Court enrolment are verified. Ask a question to learn
+              more about their experience before you commit to anything.
+            </p>
+          </section>
+
           <LawyerPublicProfileSections
             v-if="profileSections && hasProfileContent"
             :profile="profileSections"
+            :is-own-profile="isOwnProfile"
           />
 
           <LawyerPublicPracticeAreas
@@ -116,7 +142,7 @@ function openAskQuestion() {
           />
         </main>
 
-        <aside class="lg:col-span-1">
+        <aside class="order-1 lg:order-2 lg:col-span-1">
           <LawyerPublicBookingSidebar
             :lawyer-id="lawyerId"
             :price-range="priceRange"

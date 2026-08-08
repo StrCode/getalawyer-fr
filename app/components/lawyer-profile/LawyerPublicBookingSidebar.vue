@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Building01Icon, Calendar01Icon, CallIcon, Clock01Icon, Location01Icon, Message02Icon, SecurityCheckIcon, Tick01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { Building01Icon, Calendar01Icon, CallIcon, Clock01Icon, Location01Icon, Message02Icon, SecurityCheckIcon, Video01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,30 +21,45 @@ defineProps<{
 const emit = defineEmits<{
   ask: []
 }>()
+
+const MEETING_TYPE_ROWS = [
+  { value: 'video', label: 'Video call', icon: Video01Icon },
+  { value: 'phone', label: 'Phone call', icon: CallIcon },
+  { value: 'in_person', label: 'In person', icon: Building01Icon },
+] as const
 </script>
 
 <template>
   <div class="sticky top-24 overflow-hidden rounded-2xl border border-border bg-card shadow-lg ring-1 ring-border/40">
+<!-- Price leads: it's the #1 comparison signal, not a footnote. -->
     <div class="border-b border-border p-6 md:p-7">
-      <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
-        Free to message
-      </p>
-      <p class="mt-1 text-sm text-muted-foreground">
-        Ask a question — the lawyer may request a consultation fee if needed.
-      </p>
-      <p
-        v-if="primaryConsultation"
-        class="mt-3 text-xs text-muted-foreground"
-      >
-        Consultation from
-        <template v-if="primaryConsultation.price > 0">
-          ₦{{ primaryConsultation.price.toLocaleString() }}
-        </template>
-        <template v-else>
-          free
-        </template>
-        · {{ primaryConsultation.durationMinutes }} min
-      </p>
+      <template v-if="primaryConsultation">
+        <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
+          <template v-if="priceRange.min > 0 && priceRange.max > priceRange.min">
+            From ₦{{ priceRange.min.toLocaleString() }}
+          </template>
+          <template v-else-if="primaryConsultation.price > 0">
+            ₦{{ primaryConsultation.price.toLocaleString() }}
+          </template>
+          <template v-else>
+            Free consultation
+          </template>
+        </p>
+        <p class="text-sm text-muted-foreground">
+          {{ primaryConsultation.durationMinutes }} min · {{ primaryConsultation.name }}
+        </p>
+        <p class="mt-3 text-xs text-muted-foreground">
+          Messaging is free — ask a question before committing to anything.
+        </p>
+      </template>
+      <template v-else>
+        <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
+          Free to message
+        </p>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Ask a question — the lawyer may request a consultation fee if needed.
+        </p>
+      </template>
       <p
         v-if="availabilitySummary"
         class="mt-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground"
@@ -61,34 +76,12 @@ const emit = defineEmits<{
         </h3>
         <div class="space-y-2">
           <div
-            v-if="availableMeetingTypes.includes('video')"
-            class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
+            v-for="meeting in MEETING_TYPE_ROWS.filter(m => availableMeetingTypes.includes(m.value))"
+            :key="meeting.value"
+            class="flex items-center gap-3 rounded-lg border border-border px-3.5 py-3"
           >
-            <div class="flex items-center gap-3">
-              <HugeiconsIcon :icon="Video01Icon" class="size-4 text-muted-foreground" />
-              <span class="text-sm font-medium text-foreground">Video call</span>
-            </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
-          </div>
-          <div
-            v-if="availableMeetingTypes.includes('phone')"
-            class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
-          >
-            <div class="flex items-center gap-3">
-              <HugeiconsIcon :icon="CallIcon" class="size-4 text-muted-foreground" />
-              <span class="text-sm font-medium text-foreground">Phone call</span>
-            </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
-          </div>
-          <div
-            v-if="availableMeetingTypes.includes('in_person')"
-            class="flex items-center justify-between rounded-lg border border-border px-3.5 py-3"
-          >
-            <div class="flex items-center gap-3">
-              <HugeiconsIcon :icon="Building01Icon" class="size-4 text-muted-foreground" />
-              <span class="text-sm font-medium text-foreground">In person</span>
-            </div>
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
+            <HugeiconsIcon :icon="meeting.icon" class="size-4 text-muted-foreground" />
+            <span class="text-sm font-medium text-foreground">{{ meeting.label }}</span>
           </div>
         </div>
       </div>
@@ -147,7 +140,6 @@ const emit = defineEmits<{
           size="lg"
           :variant="primaryConsultation ? 'outline' : 'default'"
           class="h-12 w-full font-semibold"
-          :disabled="!canMessage"
           @click="emit('ask')"
         >
           <HugeiconsIcon :icon="Message02Icon" class="mr-2 size-5" />

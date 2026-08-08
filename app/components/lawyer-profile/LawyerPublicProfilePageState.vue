@@ -19,19 +19,21 @@ const emit = defineEmits<{
 </script>
 
 <template>
+<!-- Mirrors the loaded page's geometry (max-w-7xl, 2:1 columns) so the
+       layout doesn't jump when content arrives. -->
   <div
     v-if="pending"
-    class="mx-auto w-full max-w-5xl space-y-6 px-4 py-10"
+    class="mx-auto w-full max-w-7xl space-y-10 px-6 py-10 md:px-8"
     aria-busy="true"
     aria-label="Loading profile"
   >
     <Skeleton class="h-56 w-full rounded-xl" />
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <div class="space-y-4">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
+      <div class="space-y-6 lg:col-span-2">
         <Skeleton class="h-40 w-full rounded-xl" />
         <Skeleton class="h-48 w-full rounded-xl" />
       </div>
-      <Skeleton class="h-64 w-full rounded-xl" />
+      <Skeleton class="h-72 w-full rounded-xl lg:col-span-1" />
     </div>
   </div>
 
