@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { Cancel01Icon } from '@hugeicons/core-free-icons'
+import { ArrowRight01Icon, Cancel01Icon, Menu01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import UserMenu from '@/components/UserMenu.vue'
+import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { getSessionUserType } from '~/lib/session-user'
 
 const { session } = useAuth()
@@ -35,11 +43,7 @@ const handleScroll = () => {
 }
 
 onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  if (import.meta.client)
-    document.body.style.overflow = ''
-})
+onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 
 watch(
   () => route.fullPath,
@@ -47,13 +51,6 @@ watch(
     isMobileMenuOpen.value = false
   },
 )
-
-watch(isMobileMenuOpen, (isOpen) => {
-  if (!import.meta.client)
-    return
-
-  document.body.style.overflow = isOpen ? 'hidden' : ''
-})
 
 function isLinkActive(href: string) {
   if (href === '/practice-areas')
@@ -108,124 +105,129 @@ function isLinkActive(href: string) {
             variant="nav"
             @signed-out="isMobileMenuOpen = false"
           />
-          <NuxtLink
+          <Button
             v-else
-            to="/login"
-            class="inline-flex cursor-pointer items-center rounded-xl px-4 py-2 font-sans text-sm font-medium text-foreground no-underline transition-colors duration-200 hover:bg-muted"
-          >Sign in</NuxtLink>
-          <NuxtLink
+            as-child
+            variant="ghost"
+          >
+            <NuxtLink to="/login">Sign in</NuxtLink>
+          </Button>
+          <Button
             v-if="showFindLawyerCta"
-            to="/find-lawyers"
-            class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-4 py-2 font-sans text-sm font-medium text-primary-foreground no-underline transition-all duration-200 hover:-translate-y-px hover:bg-primary/90"
-          >Find a lawyer →</NuxtLink>
+            as-child
+          >
+            <NuxtLink to="/find-lawyers">
+              Find a lawyer
+              <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" aria-hidden="true" />
+            </NuxtLink>
+          </Button>
         </div>
 
-        <!-- Mobile Hamburger Button -->
+        <!-- Mobile menu button -->
         <div class="flex items-center lg:hidden">
-          <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-transparent transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-            aria-label="Open mobile menu"
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            aria-label="Open menu"
             @click="isMobileMenuOpen = true"
           >
-            <svg class="size-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h16M4 16h12" />
-            </svg>
-          </button>
+            <HugeiconsIcon :icon="Menu01Icon" class="size-6" />
+          </Button>
         </div>
       </div>
     </nav>
 
-    <!-- Full Screen Mobile Menu Overlay -->
-    <Transition
-      enter-active-class="transition duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      enter-from-class="opacity-0 translate-y-4"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-8"
-    >
-      <div
-        v-if="isMobileMenuOpen"
-        class="fixed inset-0 z-200 flex h-dvh flex-col bg-background"
+    <!-- Mobile menu: full-screen Sheet — focus trap, Esc, and scroll lock come
+         from the dialog primitive instead of hand-rolled body/overflow code. -->
+    <Sheet v-model:open="isMobileMenuOpen">
+      <SheetContent
+        side="right"
+        class="w-full gap-0 p-0 sm:max-w-none [&>button:last-of-type]:hidden"
       >
-        <!-- Mobile Menu Header -->
-        <div class="flex shrink-0 items-center justify-between border-b border-border/50 px-8 py-5">
-          <LandingBrandLogo @click="isMobileMenuOpen = false" />
+        <SheetHeader class="sr-only">
+          <SheetTitle>Menu</SheetTitle>
+          <SheetDescription>Site navigation</SheetDescription>
+        </SheetHeader>
 
-          <button
-            class="flex size-11 cursor-pointer items-center justify-center rounded-xl border-none bg-muted transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-            aria-label="Close mobile menu"
-            @click="isMobileMenuOpen = false"
-          >
-            <HugeiconsIcon :icon="Cancel01Icon" class="size-5 text-foreground" />
-          </button>
-        </div>
+        <div class="flex h-full flex-col bg-background">
+          <!-- Header -->
+          <div class="flex shrink-0 items-center justify-between border-b border-border/50 px-8 py-5">
+            <LandingBrandLogo @click="isMobileMenuOpen = false" />
+            <Button
+              variant="secondary"
+              size="icon-lg"
+              aria-label="Close menu"
+              @click="isMobileMenuOpen = false"
+            >
+              <HugeiconsIcon :icon="Cancel01Icon" class="size-5" />
+            </Button>
+          </div>
 
-        <!-- Mobile Menu Links -->
-        <div class="flex flex-1 flex-col justify-center overflow-y-auto px-8 py-12">
-          <ul class="m-0 flex list-none flex-col gap-8 p-0">
-            <li v-for="(link, index) in links" :key="link.href" class="overflow-hidden">
-              <NuxtLink
-                :to="link.href"
-                class="block font-heading text-3xl font-medium leading-tight no-underline transition-colors duration-200"
-                :class="isLinkActive(link.href) ? 'text-primary' : 'text-foreground hover:text-primary'"
-                :style="{ animationDelay: `${index * 75 + 100}ms` }"
-                :aria-current="isLinkActive(link.href) ? 'page' : undefined"
-                @click="isMobileMenuOpen = false"
+          <!-- Links -->
+          <div class="flex flex-1 flex-col justify-center overflow-y-auto px-8 py-12">
+            <ul class="m-0 flex list-none flex-col gap-8 p-0">
+              <li v-for="(link, index) in links" :key="link.href" class="overflow-hidden">
+                <NuxtLink
+                  :to="link.href"
+                  class="block font-heading text-3xl font-medium leading-tight no-underline transition-colors duration-200"
+                  :class="isLinkActive(link.href) ? 'text-primary' : 'text-foreground hover:text-primary'"
+                  :style="{ animationDelay: `${index * 75 + 100}ms` }"
+                  :aria-current="isLinkActive(link.href) ? 'page' : undefined"
+                  @click="isMobileMenuOpen = false"
+                >
+                  {{ link.label }}
+                </NuxtLink>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer CTAs -->
+          <div class="flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8">
+            <template v-if="isSignedIn">
+              <div class="flex w-full items-center rounded-2xl border border-border bg-background p-3">
+                <UserMenu
+                  variant="nav"
+                  after-sign-out="stay"
+                  @signed-out="isMobileMenuOpen = false"
+                />
+              </div>
+              <Button as-child size="lg" class="w-full">
+                <NuxtLink to="/dashboard" @click="isMobileMenuOpen = false">
+                  Go to dashboard
+                </NuxtLink>
+              </Button>
+              <Button
+                v-if="showFindLawyerCta"
+                as-child
+                variant="outline"
+                size="lg"
+                class="w-full"
               >
-                {{ link.label }}
-              </NuxtLink>
-            </li>
-          </ul>
+                <NuxtLink to="/find-lawyers" @click="isMobileMenuOpen = false">
+                  Find a lawyer
+                </NuxtLink>
+              </Button>
+            </template>
+            <template v-else>
+              <Button
+                v-if="showFindLawyerCta"
+                as-child
+                size="lg"
+                class="w-full"
+              >
+                <NuxtLink to="/find-lawyers" @click="isMobileMenuOpen = false">
+                  Find a lawyer
+                </NuxtLink>
+              </Button>
+              <Button as-child variant="outline" size="lg" class="w-full">
+                <NuxtLink to="/login" @click="isMobileMenuOpen = false">
+                  Sign in
+                </NuxtLink>
+              </Button>
+            </template>
+          </div>
         </div>
-
-        <!-- Mobile Menu Footer CTAs -->
-        <div class="flex shrink-0 flex-col gap-4 px-8 pb-12 pt-8">
-          <template v-if="isSignedIn">
-            <div class="flex w-full items-center rounded-2xl border border-border bg-background p-3">
-              <UserMenu
-                variant="nav"
-                after-sign-out="stay"
-                @signed-out="isMobileMenuOpen = false"
-              />
-            </div>
-            <NuxtLink
-              to="/dashboard"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-4 font-sans text-base font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
-              @click="isMobileMenuOpen = false"
-            >
-              Go to dashboard
-            </NuxtLink>
-            <NuxtLink
-              v-if="showFindLawyerCta"
-              to="/find-lawyers"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-4 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
-              @click="isMobileMenuOpen = false"
-            >
-              Find a lawyer
-            </NuxtLink>
-          </template>
-          <template v-else>
-            <NuxtLink
-              v-if="showFindLawyerCta"
-              to="/find-lawyers"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-primary px-6 py-4 font-sans text-base font-medium text-primary-foreground no-underline shadow-sm transition-all duration-200 hover:bg-primary/90"
-              @click="isMobileMenuOpen = false"
-            >
-              Find a lawyer
-            </NuxtLink>
-            <NuxtLink
-              to="/login"
-              class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-border bg-transparent px-6 py-4 font-sans text-base font-medium text-foreground no-underline transition-all duration-200 hover:bg-muted"
-              @click="isMobileMenuOpen = false"
-            >
-              Sign in
-            </NuxtLink>
-          </template>
-        </div>
-
-      </div>
-    </Transition>
+      </SheetContent>
+    </Sheet>
   </div>
 </template>
-

@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { CheckmarkCircle01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref } from 'vue'
+import { Button } from '@/components/ui/button'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 
 const year = new Date().getFullYear()
 const email = ref('')
@@ -41,9 +45,7 @@ const cols = {
         <!-- Brand + newsletter -->
         <div class="max-w-sm">
           <div class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-            </svg>
+            <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-3.5" aria-hidden="true" />
             Every lawyer NIN &amp; SCN verified
           </div>
           <p class="mt-6 max-w-xs text-base leading-relaxed text-background/70">
@@ -53,21 +55,22 @@ const cols = {
           <!-- Newsletter -->
           <form class="mt-7" @submit.prevent="onSubscribe">
             <label for="footer-email" class="eyebrow text-background/70">Stay in the loop</label>
-            <div class="mt-3 flex items-center gap-2 rounded-full border border-background/20 bg-white/5 p-1.5 transition-colors focus-within:border-primary/50">
-              <input
+            <InputGroup
+              class="mt-3 h-auto rounded-full border-background/20 bg-background/5 p-1.5 shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-primary/50 has-[[data-slot=input-group-control]:focus-visible]:ring-0"
+            >
+              <InputGroupInput
                 id="footer-email"
                 v-model="email"
                 type="email"
                 placeholder="Your email address"
-                class="min-w-0 flex-1 border-none bg-transparent px-4 text-sm text-background outline-none placeholder:text-background/70"
+                class="px-4 text-background placeholder:text-background/70"
               />
-              <button
-                type="submit"
-                class="shrink-0 cursor-pointer rounded-xl border-none bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-              >
-                Subscribe
-              </button>
-            </div>
+              <InputGroupAddon align="inline-end" class="mr-0 pr-0">
+                <Button type="submit" class="rounded-full px-5">
+                  Subscribe
+                </Button>
+              </InputGroupAddon>
+            </InputGroup>
             <p v-if="showComingSoon" class="mt-2 text-xs text-background/70" role="status">
               The newsletter isn't live yet — signups open soon.
             </p>

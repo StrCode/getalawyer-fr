@@ -24,8 +24,8 @@ withDefaults(
     <span
       class="flex justify-center items-center rounded-xl ring-1 shrink-0 size-9"
       :class="onDark
-        ? 'bg-white/[0.06] ring-white/[0.08]'
-        : 'bg-white/95 ring-border/80 shadow-xs'"
+        ? 'bg-background/10 ring-background/15'
+        : 'bg-card ring-border/80 shadow-xs'"
     >
       <svg
         class="size-5"
