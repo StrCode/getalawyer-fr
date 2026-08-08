@@ -140,9 +140,12 @@ function isLinkActive(href: string) {
     <!-- Mobile menu: full-screen Sheet — focus trap, Esc, and scroll lock come
          from the dialog primitive instead of hand-rolled body/overflow code. -->
     <Sheet v-model:open="isMobileMenuOpen">
+      <!-- z-200: must stack above the sticky nav (z-100), which is transparent
+           and would otherwise paint its logo/hamburger over the open sheet. -->
       <SheetContent
         side="right"
-        class="w-full gap-0 p-0 sm:max-w-none [&>button:last-of-type]:hidden"
+        :show-close-button="false"
+        class="z-200 w-full gap-0 p-0 sm:max-w-none"
       >
         <SheetHeader class="sr-only">
           <SheetTitle>Menu</SheetTitle>
