@@ -78,6 +78,7 @@ function openAskQuestion() {
         :display-location="displayLocation"
         :years-experience="yearsExperience"
         :can-message="canMessage"
+        :has-bookable-consultation="primaryConsultation !== null"
         :availability-summary="availabilitySummary"
         :is-accepting-clients="isAcceptingClients"
         @ask="openAskQuestion"
@@ -117,6 +118,7 @@ function openAskQuestion() {
 
         <aside class="lg:col-span-1">
           <LawyerPublicBookingSidebar
+            :lawyer-id="lawyerId"
             :price-range="priceRange"
             :primary-consultation="primaryConsultation"
             :available-meeting-types="availableMeetingTypes"
