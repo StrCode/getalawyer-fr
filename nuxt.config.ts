@@ -94,9 +94,11 @@ export default defineNuxtConfig({
         global: true,
       },
       {
-        name: 'Neue Haas Grotesk Text',
-        provider: 'local',
-        weights: [400, 500],
+        // True 400-600 weights (the old local Neue Haas shipped only 400,
+        // so every font-medium heading was synthetically bolded).
+        name: 'General Sans',
+        provider: 'fontshare',
+        weights: [400, 500, 600],
         styles: ['normal', 'italic'],
         global: true,
       },

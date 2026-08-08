@@ -7,7 +7,7 @@
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Neue Haas Grotesk Text", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "General Sans", ui-sans-serif, system-ui, sans-serif;
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
   --radius-sm: calc(var(--radius) - 4px);
@@ -76,20 +76,20 @@
  */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.961 0.011 88); /* warm beige page */
-  --foreground: oklch(0.24 0.011 85); /* ink — 14.7:1 on background */
-  --card: oklch(0.982 0.007 90); /* cream card */
+  --background: oklch(0.988 0.004 92); /* warm off-white page */
+  --foreground: oklch(0.24 0.011 85); /* ink — 15.9:1 on background */
+  --card: oklch(0.998 0.002 95); /* white card — reads elevated on the off-white ground */
   --card-foreground: oklch(0.24 0.011 85);
-  --popover: oklch(0.982 0.007 90);
+  --popover: oklch(0.998 0.002 95);
   --popover-foreground: oklch(0.24 0.011 85);
   --primary: oklch(0.46 0.078 161); /* forest green — white on it 6.8:1 */
   --primary-foreground: oklch(0.982 0.007 90);
   --primary-strong: oklch(0.46 0.078 161);
-  --secondary: oklch(0.92 0.018 88);
+  --secondary: oklch(0.951 0.01 88);
   --secondary-foreground: oklch(0.309 0.014 85);
-  --muted: oklch(0.926 0.016 88);
+  --muted: oklch(0.957 0.009 90);
   --muted-foreground: oklch(0.521 0.018 85); /* 5.2:1 on card */
-  --accent: oklch(0.914 0.021 88);
+  --accent: oklch(0.945 0.012 88);
   --accent-foreground: oklch(0.309 0.014 85);
   --destructive: oklch(0.637 0.208 25);
   --destructive-foreground: oklch(0.985 0 0);
@@ -111,8 +111,8 @@
   --info-subtle: oklch(0.977 0.013 237);
   --info-subtle-foreground: oklch(0.295 0.063 243);
   --info-border: oklch(0.9 0.056 232);
-  --border: oklch(0.881 0.02 85);
-  --input: oklch(0.881 0.02 85);
+  --border: oklch(0.908 0.012 88);
+  --input: oklch(0.908 0.012 88);
   --ring: oklch(0.513 0.078 162);
   /* Categorical ramp anchored on the brand green, tuned for the beige ground:
      forest / terracotta / slate / harvest / plum */
@@ -121,13 +121,13 @@
   --chart-3: oklch(0.55 0.08 250);
   --chart-4: oklch(0.75 0.13 85);
   --chart-5: oklch(0.55 0.1 330);
-  --sidebar: oklch(0.975 0.008 90);
+  --sidebar: oklch(0.992 0.003 92);
   --sidebar-foreground: oklch(0.39 0.016 85);
   --sidebar-primary: oklch(0.46 0.078 161);
   --sidebar-primary-foreground: oklch(0.982 0.007 90);
-  --sidebar-accent: oklch(0.927 0.018 88);
+  --sidebar-accent: oklch(0.955 0.01 88);
   --sidebar-accent-foreground: oklch(0.309 0.014 85);
-  --sidebar-border: oklch(0.888 0.019 85);
+  --sidebar-border: oklch(0.912 0.012 88);
   --sidebar-ring: oklch(0.513 0.078 162);
 }
 
