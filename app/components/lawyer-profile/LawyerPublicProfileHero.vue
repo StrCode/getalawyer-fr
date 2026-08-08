@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft01Icon, Briefcase01Icon, CheckmarkBadge01Icon, Clock01Icon, Location01Icon, Mail01Icon, Message02Icon } from '@hugeicons/core-free-icons'
+import { ArrowLeft01Icon, Briefcase01Icon, Calendar01Icon, CheckmarkBadge01Icon, Clock01Icon, Location01Icon, Mail01Icon, Message02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +14,7 @@ defineProps<{
   displayLocation: string
   yearsExperience: number
   canMessage: boolean
+  hasBookableConsultation?: boolean
   availabilitySummary: string | null
   isAcceptingClients: boolean
 }>()
@@ -143,7 +144,19 @@ const emit = defineEmits<{
           class="flex w-full shrink-0 flex-col gap-3 lg:hidden"
         >
           <Button
+            v-if="hasBookableConsultation"
             size="lg"
+            class="h-12 w-full gap-2 px-8 font-semibold"
+            as-child
+          >
+            <NuxtLink :to="`/lawyers/${lawyer.id}/book`">
+              <HugeiconsIcon :icon="Calendar01Icon" class="size-5 shrink-0" />
+              Book a consultation
+            </NuxtLink>
+          </Button>
+          <Button
+            size="lg"
+            :variant="hasBookableConsultation ? 'outline' : 'default'"
             class="h-12 w-full gap-2 px-8 font-semibold"
             :disabled="!canMessage"
             @click="emit('ask')"

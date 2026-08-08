@@ -90,10 +90,8 @@ function formatWhen(iso: string): string {
             size="sm"
             class="cursor-pointer"
           >
-<!-- Interim until the booking flow is rebuilt (P3): the /book route is a
-                 redirect stub, so link straight to the profile. -->
-            <NuxtLink :to="`/lawyers/${lawyer.lawyerProfileId}`">
-              View profile
+<NuxtLink :to="`/lawyers/${lawyer.lawyerProfileId}/book`">
+              Book again
             </NuxtLink>
           </Button>
           <Button

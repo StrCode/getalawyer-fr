@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { Building01Icon, CallIcon, Clock01Icon, Location01Icon, Message02Icon, SecurityCheckIcon, Tick01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { Building01Icon, Calendar01Icon, CallIcon, Clock01Icon, Location01Icon, Message02Icon, SecurityCheckIcon, Tick01Icon, Video01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { LawyerPriceRange, PrimaryConsultation } from '~/lib/lawyer-public-profile'
 import type { LawyerPracticeInfo } from '~/types/lawyer'
 defineProps<{
+  lawyerId: string
   priceRange: LawyerPriceRange
   primaryConsultation: PrimaryConsultation | null
   availableMeetingTypes: string[]
@@ -130,9 +131,21 @@ const emit = defineEmits<{
         </div>
       </div>
 
-      <div v-if="!isOwnProfile">
+      <div v-if="!isOwnProfile" class="space-y-3">
+        <Button
+          v-if="primaryConsultation"
+          size="lg"
+          class="h-12 w-full font-semibold"
+          as-child
+        >
+          <NuxtLink :to="`/lawyers/${lawyerId}/book`">
+            <HugeiconsIcon :icon="Calendar01Icon" class="mr-2 size-5" />
+            Book a consultation
+          </NuxtLink>
+        </Button>
         <Button
           size="lg"
+          :variant="primaryConsultation ? 'outline' : 'default'"
           class="h-12 w-full font-semibold"
           :disabled="!canMessage"
           @click="emit('ask')"
