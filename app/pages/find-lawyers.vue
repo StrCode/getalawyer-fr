@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Alert01Icon, ArrowDown01Icon, Briefcase01Icon, Cancel01Icon, LayoutGridIcon, LayoutTwoRowIcon, Location01Icon, Search01Icon, Settings01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { Alert01Icon, Cancel01Icon, LayoutGridIcon, LayoutTwoRowIcon, Search01Icon, Settings01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -9,9 +9,16 @@ import { useLawyers } from '~/composables/useLawyers'
 import { useSpecializations } from '~/composables/useSpecializations'
 import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import type { Specialization } from '~/lib/api'
-import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
-import { Checkbox } from '~/components/ui/checkbox'
-import Input from '~/components/ui/input/Input.vue'
+import LawyerFilterPanel from '@/components/app/LawyerFilterPanel.vue'
+import { Button } from '@/components/ui/button'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import type { LocationQuery } from 'vue-router'
 
@@ -148,31 +155,6 @@ const { data: specData, isPending: specsLoading } = useSpecializations()
 
 const specializationsList = computed(() => specData.value ?? [])
 
-const specPopoverOpen = ref(false)
-const specSearchQuery = ref('')
-
-const filteredSpecializations = computed(() => {
-  const q = specSearchQuery.value.trim().toLowerCase()
-  const list = specializationsList.value
-  if (!q) return list
-  return list.filter(
-    s =>
-      s.name.toLowerCase().includes(q)
-      || s.description?.toLowerCase().includes(q),
-  )
-})
-
-const specializationTriggerLabel = computed(() => {
-  const ids = filters.value.practiceAreas
-  const specs = specializationsList.value
-  if (ids.length === 0) return 'All specializations'
-  if (ids.length === 1) {
-    const n = specs.find(s => s.id === ids[0])?.name
-    return n ?? '1 selected'
-  }
-  return `${ids.length} selected`
-})
-
 function specializationNameById(id: string): string {
   return specializationsList.value.find(s => s.id === id)?.name ?? id
 }
@@ -200,34 +182,7 @@ watch(
   },
 )
 
-watch(specPopoverOpen, (open) => {
-  if (!open)
-    specSearchQuery.value = ''
-})
-
-const statePopoverOpen = ref(false)
-const stateSearchQuery = ref('')
-
 const selectedStateCodes = computed(() => parseStateCodesFromLocation(filters.value.location))
-
-const filteredStates = computed(() => {
-  const q = stateSearchQuery.value.trim().toLowerCase()
-  if (!q) return STATE_DIRECTORY_OPTIONS
-  return STATE_DIRECTORY_OPTIONS.filter(
-    s =>
-      s.label.toLowerCase().includes(q)
-      || s.code.toLowerCase().includes(q),
-  )
-})
-
-const statesTriggerLabel = computed(() => {
-  const codes = selectedStateCodes.value
-  if (codes.length === 0) return 'All states'
-  if (codes.length === 1) {
-    return STATE_DIRECTORY_OPTIONS.find(s => s.code === codes[0])?.label ?? codes[0]
-  }
-  return `${codes.length} states`
-})
 
 function stateLabel(code: string): string {
   return STATE_DIRECTORY_OPTIONS.find(s => s.code === code)?.label ?? code
@@ -250,18 +205,11 @@ function removeStateCode(code: string) {
 
 function clearStatesFilter() {
   filters.value = { ...filters.value, location: '' }
-  statePopoverOpen.value = false
 }
 
 function clearSpecializationsFilter() {
   filters.value = { ...filters.value, practiceAreas: [] }
-  specPopoverOpen.value = false
 }
-
-watch(statePopoverOpen, (open) => {
-  if (!open)
-    stateSearchQuery.value = ''
-})
 
 onMounted(() => {
   const fromRoute = filtersFromQuery(route.query)
@@ -356,7 +304,7 @@ function clearAllFilters(): void {
   resetFilters()
 }
 
-const showMobileFilters = ref(false)
+const mobileFiltersOpen = ref(false)
 </script>
 
 <template>
@@ -416,172 +364,69 @@ const showMobileFilters = ref(false)
     </header>
 
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <!-- Mobile filter toggle -->
-      <button
-        type="button"
-        class="mb-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted lg:hidden focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-        :aria-expanded="showMobileFilters"
-        @click="showMobileFilters = !showMobileFilters"
+      <!-- Mobile filters live in a bottom drawer; desktop keeps the sidebar. -->
+      <Button
+        variant="outline"
+        class="mb-4 w-full bg-card font-semibold lg:hidden"
+        @click="mobileFiltersOpen = true"
       >
         <HugeiconsIcon :icon="Settings01Icon" class="size-4" aria-hidden="true" />
-        {{ showMobileFilters ? 'Hide filters' : 'Show filters' }}
+        Filters
         <Badge v-if="activeFilterCount > 0" variant="soft" class="ms-1 rounded-full px-2 py-0 text-xs tabular-nums">
           {{ activeFilterCount }}
         </Badge>
-      </button>
+      </Button>
+
+      <Drawer v-model:open="mobileFiltersOpen" swipe-direction="down">
+        <DrawerContent class="max-h-[85dvh]">
+          <DrawerHeader class="sr-only">
+            <DrawerTitle>Filters</DrawerTitle>
+            <DrawerDescription>Refine your lawyer search</DrawerDescription>
+          </DrawerHeader>
+          <div class="app-scrollbar min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-1">
+            <LawyerFilterPanel
+              :state-options="STATE_DIRECTORY_OPTIONS"
+              :selected-state-codes="selectedStateCodes"
+              :specializations="specializationsList"
+              :selected-specialization-ids="filters.practiceAreas"
+              :specs-loading="specsLoading"
+              :active-filter-count="activeFilterCount"
+              @toggle-state="toggleStateCode"
+              @clear-states="clearStatesFilter"
+              @toggle-specialization="toggleSpecialization"
+              @clear-specializations="clearSpecializationsFilter"
+              @clear-all="clearAllFilters"
+            />
+          </div>
+          <DrawerFooter class="border-t border-border">
+            <Button size="lg" @click="mobileFiltersOpen = false">
+              <template v-if="isLoading">Searching…</template>
+              <template v-else>
+                Show {{ lawyers.length }}{{ hasNextPage && lawyers.length > 0 ? '+' : '' }}
+                {{ lawyers.length === 1 ? 'lawyer' : 'lawyers' }}
+              </template>
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
         <!-- Sidebar filters (Webflow / Zendesk pattern) -->
-        <aside
-          class="w-full shrink-0 lg:w-72"
-          :class="showMobileFilters ? 'block' : 'hidden lg:block'"
-        >
+        <aside class="hidden w-full shrink-0 lg:block lg:w-72">
           <div class="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-xs">
-            <div class="mb-5 flex items-center justify-between gap-3">
-             <h2 class="text-sm font-semibold text-foreground">
-                Refine search
-              </h2>
-              <button
-                v-if="activeFilterCount > 0"
-                type="button"
-                class="cursor-pointer text-xs font-medium text-primary hover:text-primary/80"
-                @click="clearAllFilters"
-              >
-                Clear all
-              </button>
-            </div>
-
-            <div class="flex flex-col gap-5">
-              <!-- States -->
-              <div class="flex flex-col gap-2">
-                <span class="eyebrow text-muted-foreground">States</span>
-                <Popover v-model:open="statePopoverOpen">
-                  <PopoverTrigger as-child>
-                    <button
-                      type="button"
-                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-muted px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
-                      aria-haspopup="dialog"
-                      aria-label="States"
-                      :aria-expanded="statePopoverOpen"
-                    >
-                      <HugeiconsIcon :icon="Location01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span class="min-w-0 flex-1 truncate">{{ statesTriggerLabel }}</span>
-                      <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
-                    <div class="border-b border-border p-2">
-                      <Input
-                        v-model="stateSearchQuery"
-                        type="search"
-                        autocomplete="off"
-                        placeholder="Filter states…"
-                        class="h-9 rounded-xl border-border bg-transparent"
-                      />
-                    </div>
-                    <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
-                      <button
-                        type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                        @click="clearStatesFilter"
-                      >
-                        All states
-                      </button>
-                      <p
-                        v-if="filteredStates.length === 0"
-                        class="px-2 py-6 text-center text-sm text-muted-foreground"
-                      >
-                        No matches.
-                      </p>
-                      <label
-                        v-for="s in filteredStates"
-                        :key="s.code"
-                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-muted"
-                      >
-                        <Checkbox
-                          :checked="selectedStateCodes.includes(s.code)"
-                          @update:checked="(v: boolean | 'indeterminate') => toggleStateCode(s.code, v === true)"
-                        />
-                        <span class="min-w-0 leading-snug">{{ s.label }}</span>
-                        <span class="ms-auto shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{{ s.code }}</span>
-                      </label>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <!-- Specializations -->
-              <div class="flex flex-col gap-2">
-                <span class="eyebrow text-muted-foreground">Specializations</span>
-                <div
-                  v-if="specsLoading"
-                  class="flex h-11 items-center rounded-xl border border-border bg-muted px-3 text-sm text-muted-foreground"
-                  aria-busy="true"
-                >
-                  Loading…
-                </div>
-                <Popover v-else v-model:open="specPopoverOpen">
-                  <PopoverTrigger as-child>
-                    <button
-                      type="button"
-                      class="flex h-11 w-full cursor-pointer items-center gap-2 rounded-xl border border-border bg-muted px-3 text-left text-sm text-foreground transition-colors hover:border-foreground/20 focus-visible:border-primary/30 focus-visible:ring-3 focus-visible:ring-primary/10 focus-visible:outline-none"
-                      aria-haspopup="dialog"
-                      aria-label="Specializations"
-                      :aria-expanded="specPopoverOpen"
-                    >
-                      <HugeiconsIcon :icon="Briefcase01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      <span class="min-w-0 flex-1 truncate">{{ specializationTriggerLabel }}</span>
-                      <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" class="w-(--reka-popover-trigger-width) rounded-xl border-border p-0">
-                    <div class="border-b border-border p-2">
-                      <Input
-                        v-model="specSearchQuery"
-                        type="search"
-                        autocomplete="off"
-                        placeholder="Filter specializations…"
-                        class="h-9 rounded-xl border-border bg-transparent"
-                      />
-                    </div>
-                    <div class="max-h-64 overflow-y-auto overscroll-contain p-2">
-                      <button
-                        type="button"
-                        class="mb-2 w-full cursor-pointer rounded-lg px-2 py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                        @click="clearSpecializationsFilter"
-                      >
-                        All specializations
-                      </button>
-                      <p
-                        v-if="filteredSpecializations.length === 0"
-                        class="px-2 py-6 text-center text-sm text-muted-foreground"
-                      >
-                        No matches.
-                      </p>
-                      <label
-                        v-for="s in filteredSpecializations"
-                        :key="s.id"
-                        class="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-2 text-sm hover:bg-muted"
-                      >
-                        <Checkbox
-                          :checked="filters.practiceAreas.includes(s.id)"
-                          @update:checked="(v: boolean | 'indeterminate') => toggleSpecialization(s.id, v === true)"
-                        />
-                        <span class="min-w-0 leading-snug">{{ s.name }}</span>
-                      </label>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            <!-- Trust callout -->
-            <div class="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-              <p class="eyebrow text-primary-strong">Verified only</p>
-              <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Every lawyer in this directory has passed NIN and Supreme Court number verification.
-              </p>
-            </div>
+            <LawyerFilterPanel
+              :state-options="STATE_DIRECTORY_OPTIONS"
+              :selected-state-codes="selectedStateCodes"
+              :specializations="specializationsList"
+              :selected-specialization-ids="filters.practiceAreas"
+              :specs-loading="specsLoading"
+              :active-filter-count="activeFilterCount"
+              @toggle-state="toggleStateCode"
+              @clear-states="clearStatesFilter"
+              @toggle-specialization="toggleSpecialization"
+              @clear-specializations="clearSpecializationsFilter"
+              @clear-all="clearAllFilters"
+            />
           </div>
         </aside>
 
