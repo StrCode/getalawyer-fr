@@ -449,7 +449,7 @@
             Connect with Nigeria's most trusted legal professionals.
           </h2>
           <p class="mt-4 text-base leading-relaxed text-background/60">
-            Every lawyer is NIN & SCN verified. Book consultations in minutes, not days.
+            Every lawyer is NIN & SCN verified. Reach one in minutes, not days.
           </p>
         </div>
         <p class="text-sm text-background/30">

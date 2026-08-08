@@ -17,12 +17,12 @@ function onAvatarError(id: string) {
         :key="lawyer.id"
         :to="heroSpotlightLawyerHref(lawyer)"
         class="relative flex size-11 items-center justify-center overflow-hidden rounded-full border-2 border-card bg-muted shadow-sm transition-transform duration-200 hover:z-10 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-        :title="lawyer.name"
+        :title="lawyer.practiceArea"
       >
         <img
           v-if="!failedAvatars[lawyer.id]"
           :src="lawyer.avatarUrl"
-          :alt="`${lawyer.name} profile`"
+          :alt="`${lawyer.practiceArea} illustration`"
           class="size-full object-cover"
           width="44"
           height="44"

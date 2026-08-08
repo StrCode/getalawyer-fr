@@ -27,7 +27,7 @@ function onAvatarError() {
       <img
         v-if="!showInitials"
         :src="lawyer.avatarUrl"
-        :alt="`${lawyer.name} profile`"
+        :alt="`${lawyer.practiceArea} illustration`"
         class="size-full object-cover"
         width="44"
         height="44"
@@ -53,10 +53,10 @@ function onAvatarError() {
 
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
-        {{ lawyer.name }}
+        {{ lawyer.practiceArea }}
       </p>
       <p class="mt-0.5 truncate text-xs text-muted-foreground">
-        {{ lawyer.practiceArea }}
+        Verified specialists
       </p>
     </div>
   </NuxtLink>

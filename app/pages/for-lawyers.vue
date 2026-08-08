@@ -27,8 +27,8 @@ const features: { title: string, desc: string, icon: Hugeicon }[] = [
     icon: Shield01Icon,
   },
   {
-    title: 'Smart booking',
-    desc: 'Calendar that syncs with yours. Clients book directly into your available slots.',
+    title: 'Your schedule, your rules',
+    desc: 'Set your availability and consultation types. You decide when and how you take consultations.',
     icon: Calendar01Icon,
   },
   {
@@ -46,7 +46,7 @@ const features: { title: string, desc: string, icon: Hugeicon }[] = [
 const lawyerSteps = [
   { num: '01', title: 'Create your profile', desc: 'Sign up and submit your NIN and SCN for verification. Our team reviews applications within 24 hours.' },
   { num: '02', title: 'Set your schedule', desc: 'Sync your calendar and set your availability. You have full control over when you take consultations.' },
-  { num: '03', title: 'Receive bookings', desc: 'Clients find you in our directory and book available slots. Use messaging to answer questions and agree consultation fees.' },
+  { num: '03', title: 'Receive enquiries', desc: 'Clients find you in our directory and message you directly. Answer questions and agree consultation fees in chat.' },
   { num: '04', title: 'Consult & get paid', desc: 'Meet by video, phone, or in person. Clients pay your fees directly to you — GetaLawyer does not process consultation payments.' },
 ]
 

@@ -8,7 +8,7 @@ const steps = [
   {
     num: '02',
     title: 'Compare profiles',
-    desc: 'Review verified credentials, real client reviews, and transparent fees. See exactly who you\'re hiring before you commit.',
+    desc: 'Review verified credentials, experience, and transparent fees. See exactly who you\'re hiring before you commit.',
   },
   {
     num: '03',
@@ -56,19 +56,15 @@ const steps = [
                 <span class="size-6 shrink-0 rounded-full bg-primary/15" />
                 <span class="flex flex-1 flex-col gap-1">
                   <span class="h-1.5 w-2/3 rounded-full bg-muted-foreground/30" />
-                  <span class="text-2xs leading-none text-primary">★★★★★</span>
+                  <span class="flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="shrink-0 text-primary"><path d="M20 6 9 17l-5-5"/></svg><span class="h-1.5 w-1/3 rounded-full bg-muted-foreground/20" /></span>
                 </span>
               </div>
             </div>
 
-            <!-- 03 · Calendar mock -->
-            <div v-else-if="step.num === '03'" class="grid w-[58%] grid-cols-4 gap-1.5">
-              <span
-                v-for="d in 12"
-                :key="d"
-                class="aspect-square rounded-[4px]"
-                :class="d === 6 ? 'bg-primary' : 'bg-card ring-1 ring-border'"
-              />
+            <!-- 03 · Chat mock -->
+            <div v-else-if="step.num === '03'" class="flex w-[70%] flex-col gap-1.5">
+              <span class="h-5 w-3/4 self-start rounded-lg rounded-bl-sm border border-border bg-card shadow-xs" />
+              <span class="h-5 w-2/3 self-end rounded-lg rounded-br-sm bg-primary/80" />
             </div>
 
             <!-- 04 · Video tile mock -->

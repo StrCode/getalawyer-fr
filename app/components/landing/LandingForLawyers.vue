@@ -10,8 +10,8 @@ const features: { title: string, desc: string, icon: Hugeicon }[] = [
     icon: Shield01Icon,
   },
   {
-    title: 'Smart booking',
-    desc: 'Calendar that syncs with yours. Reduce no-shows.',
+    title: 'Your schedule, your rules',
+    desc: 'Set availability and consultation types you control.',
     icon: Calendar01Icon,
   },
   {

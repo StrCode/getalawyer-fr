@@ -60,7 +60,7 @@ function searchFor(term: string) {
 
       <!-- Sub -->
       <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl sm:leading-[1.55]">
-        Search verified lawyers by practice area and location, compare options, and book online in minutes.
+        Search verified lawyers by practice area and location, compare options, and message one in minutes.
       </p>
 
       <HeroLawyerSpotlightAvatars />

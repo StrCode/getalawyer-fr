@@ -15,7 +15,7 @@ useSeoMeta({
     <LandingHowItWorks />
     <LandingPracticeAreas />
     <LandingForLawyers />
-    <LandingTestimonial />
+    <LandingTrust />
     <LandingFinalCTA />
   </div>
 </template>
