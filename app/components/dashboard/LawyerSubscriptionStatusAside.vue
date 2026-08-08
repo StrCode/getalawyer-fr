@@ -3,7 +3,7 @@ import { CreditCardIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   formatNairaAmount,
   formatSubscriptionStatusLabel,
@@ -64,9 +64,9 @@ const showPrice = computed(
   >
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           Membership
-        </CardTitle>
+        </span>
         <p class="mt-0.5 text-xs text-muted-foreground">
           {{ subtitle }}
         </p>

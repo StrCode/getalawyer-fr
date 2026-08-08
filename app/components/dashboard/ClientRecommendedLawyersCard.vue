@@ -4,8 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerSearchResult } from '~/lib/api'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const props = defineProps<{
   lawyers: LawyerSearchResult[]
@@ -29,24 +28,20 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
   <Card class="py-0 shadow-xs">
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           Recommended for you
-        </CardTitle>
+        </span>
         <p class="mt-0.5 text-xs text-muted-foreground">
           Based on your legal interests
         </p>
       </div>
-      <Button
+      <NuxtLink
         v-if="listingQuery"
-        as-child
-        variant="ghost"
-        size="sm"
-        class="cursor-pointer"
+        :to="{ path: '/find-lawyers', query: listingQuery }"
+        class="group shrink-0 text-xs font-medium text-primary"
       >
-        <NuxtLink :to="{ path: '/find-lawyers', query: listingQuery }">
-          View all
-        </NuxtLink>
-      </Button>
+        View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
+      </NuxtLink>
     </CardHeader>
 
     <CardContent class="p-4">

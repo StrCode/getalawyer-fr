@@ -18,7 +18,7 @@ import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
 import type { DashboardQuickLink } from '@/components/dashboard/DashboardQuickLinks.vue'
 import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
-import StatCard from '@/components/dashboard/StatCard.vue'
+import DashboardFigures from '@/components/dashboard/DashboardFigures.vue'
 import ClientProfileCompletenessAside from '@/components/profile/ClientProfileCompletenessAside.vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -52,6 +52,12 @@ const {
 } = useBookingDisplay()
 
 const firstName = computed(() => session.value?.user.name?.split(' ')[0] ?? 'there')
+
+const daypart = computed(() => {
+  const h = new Date().getHours()
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+})
+const todayLabel = new Date().toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long' })
 
 const bookings = computed(() => bookingsData.value ?? [])
 const cases = computed(() => casesData.value?.cases ?? [])
@@ -229,9 +235,13 @@ const showFullEmpty = computed(
     />
 
     <DashboardPageHeader
-      :title="`Welcome back, ${firstName}!`"
+      class="snapshot-rise"
+      :eyebrow="todayLabel"
       description="Here's what's happening with your legal consultations"
     >
+      <template #title>
+        {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
+      </template>
       <template #actions>
         <Button
           as-child
@@ -253,41 +263,26 @@ const showFullEmpty = computed(
 
       <DashboardNextAppointment
         v-if="nextBooking"
+        class="snapshot-rise"
+        style="animation-delay: 80ms"
         :booking="nextBooking"
         :person-name="nextBooking.lawyer?.name"
         :person-image="nextBooking.lawyer?.profilePicture"
       />
 
       <div
-        class="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]"
+        class="snapshot-rise grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]"
+        style="animation-delay: 160ms"
       >
         <div class="min-w-0 space-y-6">
-          <div class="dashboard-stat-grid grid">
-            <StatCard
-              label="Upcoming"
-              :value="stats.upcoming"
-              :icon="Calendar03Icon"
-              :subtitle="stats.upcoming === 0 ? 'No upcoming' : 'Confirmed consultations'"
-            />
-            <StatCard
-              label="Pending confirmation"
-              :value="stats.pending"
-              :icon="Clock01Icon"
-              :subtitle="stats.pending === 0 ? 'None waiting' : 'Awaiting lawyer'"
-            />
-            <StatCard
-              label="Completed"
-              :value="stats.completed"
-              :icon="CheckmarkCircle01Icon"
-              :subtitle="stats.completed === 0 ? 'None yet' : 'Past consultations'"
-            />
-            <StatCard
-              label="Active cases"
-              :value="stats.activeCases"
-              :icon="Briefcase01Icon"
-              :subtitle="stats.activeCases === 0 ? 'No open cases' : 'Ongoing matters'"
-            />
-          </div>
+          <DashboardFigures
+            :figures="[
+              { label: 'Upcoming', value: stats.upcoming, hint: stats.upcoming === 0 ? 'No upcoming' : 'Confirmed consultations' },
+              { label: 'Pending', value: stats.pending, hint: stats.pending === 0 ? 'None waiting' : 'Awaiting lawyer' },
+              { label: 'Completed', value: stats.completed, hint: stats.completed === 0 ? 'None yet' : 'Past consultations' },
+              { label: 'Active cases', value: stats.activeCases, hint: stats.activeCases === 0 ? 'No open cases' : 'Ongoing matters' },
+            ]"
+          />
 
           <EmptyState
             v-if="showFullEmpty"

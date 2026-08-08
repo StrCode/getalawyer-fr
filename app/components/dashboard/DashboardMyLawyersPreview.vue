@@ -2,8 +2,7 @@
 import type { ClientLawyerContact } from '~/lib/client-derived-lawyers'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const props = defineProps<{
   lawyers: ClientLawyerContact[]
@@ -22,23 +21,14 @@ function initials(name: string): string {
   <Card class="py-0 shadow-xs">
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           My lawyers
-        </CardTitle>
+        </span>
         <p class="mt-0.5 text-xs text-muted-foreground">
           People you have consulted or messaged
         </p>
       </div>
-      <Button
-        as-child
-        variant="ghost"
-        size="sm"
-        class="cursor-pointer"
-      >
-        <NuxtLink to="/dashboard/my-lawyers">
-          View all
-        </NuxtLink>
-      </Button>
+      <NuxtLink to="/dashboard/my-lawyers" class="group shrink-0 text-xs font-medium text-primary">View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span></NuxtLink>
     </CardHeader>
 
     <CardContent class="divide-y divide-border p-0">

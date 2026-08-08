@@ -245,8 +245,31 @@
     @apply py-24 md:py-32;
   }
 
-  .dashboard-stat-grid {
-    @apply grid grid-cols-2 gap-4 lg:grid-cols-4;
+  /* Uppercase micro-caps label — panel headers, KPI labels (Soroman pattern). */
+  .micro-label {
+    @apply text-xs tracking-[0.25em] uppercase;
+  }
+
+  /* Staggered dashboard entrance; sections set inline animation-delay. */
+  .snapshot-rise {
+    animation: snapshot-rise 500ms var(--ease-luxe) both;
+  }
+
+  @keyframes snapshot-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .snapshot-rise {
+      animation: none;
+    }
   }
 
   .page-enter-active,
