@@ -209,11 +209,12 @@
                     </div>
 
                     <Tabs :model-value="authMethod" @update:model-value="(v) => authMethod = v as 'email' | 'phone'" class="w-full">
-                      <TabsList class="grid w-full grid-cols-2">
+                      <!-- Method chooser is client-only; lawyers register with email. -->
+                      <TabsList v-if="canUsePhone" class="grid w-full grid-cols-2">
                         <TabsTrigger value="email" :disabled="isSubmitting">Email</TabsTrigger>
                         <TabsTrigger value="phone" :disabled="isSubmitting">Phone</TabsTrigger>
                       </TabsList>
-                      
+
                       <div v-show="authMethod === 'email'" class="mt-4">
                         <form.Field v-slot="{ field }" name="email">
                           <Field :data-invalid="isInvalid(field)">
@@ -489,6 +490,14 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
 const step = ref<'role' | 'form' | 'verify'>('role')
 const authMethod = ref<'email' | 'phone'>('email')
 const passwordVisible = ref(false)
+
+// Lawyers register with email only — their onboarding is email/NIN-gated.
+// Clients keep the phone-or-email choice.
+const canUsePhone = computed(() => selectedRole.value === 'client')
+watch(selectedRole, (role) => {
+  if (role !== 'client')
+    authMethod.value = 'email'
+})
 
 const pendingPhone = ref('')
 const pendingPassword = ref('')
