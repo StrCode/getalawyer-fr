@@ -239,31 +239,15 @@
                       <div v-show="authMethod === 'phone'" class="mt-4">
                         <form.Field v-slot="{ field }" name="phone">
                           <Field :data-invalid="isInvalid(field)">
-                            <FieldLabel :for="field.name">Phone number</FieldLabel>
-                            <div class="flex gap-2">
-                              <div
-                                class="flex h-10 shrink-0 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium text-muted-foreground"
-                                aria-hidden="true"
-                              >
-                                +234
-                              </div>
-                              <Input
-                                :id="field.name"
-                                :model-value="getPhoneLocalDigits(field.state.value)"
-                                type="tel"
-                                inputmode="numeric"
-                                placeholder="801 234 5678"
-                                autocomplete="tel"
-                                :disabled="isSubmitting"
-                                :aria-invalid="isInvalid(field)"
-                                class="flex-1"
-                                @update:model-value="(v) => handlePhoneInput(v as string, field.handleChange)"
-                                @blur="field.handleBlur"
-                              />
-                            </div>
-                            <p v-if="getPhoneDisplayValue(field.state.value) && !isInvalid(field)" class="mt-1 text-xs text-muted-foreground">
-                              {{ getPhoneDisplayValue(field.state.value) }}
-                            </p>
+<FieldLabel :for="field.name">Phone number</FieldLabel>
+                            <AuthPhoneInput
+                              label=""
+                              :model-value="field.state.value"
+                              :invalid="isInvalid(field)"
+                              :disabled="isSubmitting"
+                              @update:model-value="(v) => field.handleChange(v)"
+                              @blur="field.handleBlur"
+                            />
                             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                           </Field>
                         </form.Field>
@@ -466,7 +450,7 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/comp
 import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
-import { isValidNgPhone, normalizeNgPhone, toE164Plus, formatNgPhoneDisplay } from '~/lib/phone'
+import { isValidNgPhone } from '~/lib/phone'
 
 definePageMeta({
   layout: 'auth',
@@ -636,29 +620,6 @@ const form = useForm({
 })
 
 const { isInvalid } = useAuthFieldInvalid()
-
-// Phone formatting logic
-function getPhoneLocalDigits(value: string) {
-  const normalized = normalizeNgPhone(value)
-  if (!normalized) return value.replace(/\D/g, '').replace(/^234/, '').replace(/^0/, '')
-  return normalized.startsWith('234') ? normalized.slice(3) : normalized
-}
-
-function getPhoneDisplayValue(value: string) {
-  const normalized = normalizeNgPhone(value || `0${getPhoneLocalDigits(value)}`)
-  if (!normalized) return ''
-  return formatNgPhoneDisplay(normalized)
-}
-
-function handlePhoneInput(rawValue: string, handleChange: (v: string) => void) {
-  const digits = String(rawValue).replace(/\D/g, '').slice(0, 10)
-  const normalized = normalizeNgPhone(digits.length === 10 ? digits : `0${digits}`)
-  if (normalized) {
-    handleChange(toE164Plus(normalized))
-  } else {
-    handleChange(digits)
-  }
-}
 
 function startCooldown(seconds = 60) {
   resendCooldown.value = seconds
