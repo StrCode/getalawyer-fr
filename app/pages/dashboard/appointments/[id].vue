@@ -48,7 +48,7 @@
       class="grid grid-cols-1 gap-6 lg:grid-cols-3"
     >
       <div class="space-y-6 lg:col-span-2">
-        <Card class="rounded-xl">
+        <Card>
           <CardHeader>
             <CardTitle class="text-lg">
               Client information
@@ -87,7 +87,7 @@
           </CardContent>
         </Card>
 
-        <Card class="rounded-xl">
+        <Card>
           <CardHeader>
             <CardTitle class="text-lg">
               Consultation details
@@ -171,7 +171,6 @@
 
         <Card
           v-if="booking.engagementOutcome"
-          class="rounded-xl"
         >
           <CardHeader>
             <CardTitle class="text-lg">
@@ -192,7 +191,7 @@
             </div>
             <div
               v-if="booking.engagementOutcome === 'client_hired'"
-              class="rounded-lg border border-border bg-background p-4"
+              class="rounded-lg border border-foreground/15 bg-background p-4"
             >
               <div class="flex items-start gap-2">
                 <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 text-primary" />
@@ -219,7 +218,6 @@
 
         <Card
           v-if="booking.conversationId"
-          class="rounded-xl"
         >
           <CardHeader>
             <CardTitle class="text-lg">
@@ -245,7 +243,7 @@
           </CardContent>
         </Card>
 
-        <Card class="rounded-xl">
+        <Card>
           <CardHeader>
             <CardTitle class="text-lg">
               Your notes
@@ -270,7 +268,7 @@
       </div>
 
       <div class="space-y-6">
-        <Card class="rounded-xl">
+        <Card>
           <CardHeader>
             <CardTitle class="text-lg">
               Schedule
@@ -296,7 +294,6 @@
 
         <Card
           v-if="canTakeAction || canRecordEngagement"
-          class="rounded-xl"
         >
           <CardHeader>
             <CardTitle class="text-lg">
@@ -355,7 +352,6 @@
 
         <Card
           v-if="booking.cancelledAt || booking.rescheduledAt"
-          class="rounded-xl"
         >
           <CardHeader>
             <CardTitle class="text-lg">

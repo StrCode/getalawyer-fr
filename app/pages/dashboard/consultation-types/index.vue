@@ -51,7 +51,7 @@
       <Card
         v-for="type in consultationTypes"
         :key="type.id"
-        class="rounded-xl"
+        
       >
         <CardHeader class="pb-3">
           <div class="flex items-start justify-between gap-3">

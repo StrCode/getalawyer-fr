@@ -55,7 +55,7 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
           v-for="lawyer in previewLawyers"
           :key="lawyer.id"
           :to="`/lawyers/${lawyer.id}`"
-          class="group flex min-w-0 items-center gap-3 rounded-lg border border-border/40 p-3 transition-colors hover:border-primary/25 hover:bg-muted/30"
+          class="group flex min-w-0 items-center gap-3 rounded-lg border border-foreground/15 p-3 transition-colors hover:border-primary/25 hover:bg-muted/30"
         >
           <Avatar class="size-10 shrink-0">
             <AvatarImage

@@ -125,7 +125,7 @@ const paymentMethodLabel = computed(() => {
       <CardContent class="space-y-4">
         <div class="flex items-center gap-3">
           <div
-            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50"
+            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-foreground/15 bg-muted/50"
           >
             <HugeiconsIcon :icon="CreditCardIcon" class="size-5 text-muted-foreground" />
           </div>
@@ -146,7 +146,7 @@ const paymentMethodLabel = computed(() => {
 
         <div
           v-if="canManageAutoRenew"
-          class="flex items-start justify-between gap-4 rounded-lg border border-border px-3 py-3"
+          class="flex items-start justify-between gap-4 rounded-lg border border-foreground/15 px-3 py-3"
         >
           <div class="min-w-0 space-y-0.5">
             <p class="text-sm font-medium text-foreground">

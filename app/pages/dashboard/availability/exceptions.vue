@@ -307,7 +307,7 @@ const minDate = new Date().toISOString().split('T')[0]
       <Card
         v-for="exception in exceptions"
         :key="exception.id"
-        class="rounded-xl"
+        
       >
         <CardContent class="flex items-start justify-between gap-4 pt-6">
           <div class="min-w-0 flex-1 space-y-2">
@@ -519,7 +519,7 @@ const minDate = new Date().toISOString().split('T')[0]
           </Field>
           <div
             v-if="vacationForm.startDate && vacationForm.endDate"
-            class="rounded-lg border border-border bg-background p-4"
+            class="rounded-lg border border-foreground/15 bg-background p-4"
           >
             <p class="text-sm text-foreground">
               This will block {{ generateDateRange(vacationForm.startDate, vacationForm.endDate).length }} day(s)

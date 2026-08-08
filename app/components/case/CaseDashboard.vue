@@ -28,7 +28,7 @@
     />
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-      <Card class="rounded-xl">
+      <Card>
         <CardContent class="flex items-center justify-between pt-6">
           <div>
             <p class="text-sm text-muted-foreground">
@@ -42,7 +42,7 @@
         </CardContent>
       </Card>
 
-      <Card class="rounded-xl">
+      <Card>
         <CardContent class="flex items-center justify-between pt-6">
           <div>
             <p class="text-sm text-muted-foreground">
@@ -56,7 +56,7 @@
         </CardContent>
       </Card>
 
-      <Card class="rounded-xl">
+      <Card>
         <CardContent class="flex items-center justify-between pt-6">
           <div>
             <p class="text-sm text-muted-foreground">
@@ -70,7 +70,7 @@
         </CardContent>
       </Card>
 
-      <Card class="rounded-xl">
+      <Card>
         <CardContent class="flex items-center justify-between pt-6">
           <div>
             <p class="text-sm text-muted-foreground">
@@ -85,7 +85,7 @@
       </Card>
     </div>
 
-    <Card class="rounded-xl">
+    <Card>
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
         <CardTitle class="text-lg">
           Cases

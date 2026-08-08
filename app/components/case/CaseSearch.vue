@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <Card class="rounded-xl">
+    <Card>
       <CardContent class="flex items-center gap-4 pt-6">
         <div class="relative min-w-0 flex-1">
           <HugeiconsIcon :icon="Search01Icon"
@@ -35,7 +35,6 @@
 
     <Card
       v-if="showAdvancedFilters"
-      class="rounded-xl"
     >
       <CardHeader class="flex flex-row items-center justify-between space-y-0">
         <CardTitle>
@@ -135,7 +134,6 @@
 
     <Card
       v-if="savedSearches.length > 0"
-      class="rounded-xl"
     >
       <CardHeader>
         <CardTitle>

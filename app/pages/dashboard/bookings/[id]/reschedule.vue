@@ -62,7 +62,7 @@
       class="grid grid-cols-1 gap-8 lg:grid-cols-3"
     >
       <div class="lg:col-span-2">
-        <Card class="rounded-xl">
+        <Card>
           <CardContent class="pt-6">
             <BookingCalendar
               :lawyer-id="booking.lawyerId"
@@ -92,7 +92,7 @@
       </div>
 
       <div class="space-y-6">
-        <Card class="rounded-xl">
+        <Card>
           <CardHeader>
             <CardTitle>
               Current booking
@@ -131,7 +131,7 @@
 
         <Card
           v-if="selectedSlot"
-          class="rounded-xl border-primary/30"
+          class="border-primary/30"
         >
           <CardHeader>
             <CardTitle class="text-base text-primary">

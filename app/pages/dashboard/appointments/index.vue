@@ -28,7 +28,7 @@
     >
       <Card
         v-if="pendingBookings.length > 0"
-        class="overflow-hidden rounded-xl py-0"
+        class="overflow-hidden py-0"
       >
         <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">
@@ -79,7 +79,7 @@
                 </div>
                 <div
                   v-if="booking.clientNotes"
-                  class="rounded-lg border border-border bg-background p-3 text-sm text-muted-foreground"
+                  class="rounded-lg border border-foreground/15 bg-background p-3 text-sm text-muted-foreground"
                 >
                   <p class="mb-1 font-medium text-foreground">
                     Client notes
@@ -107,7 +107,7 @@
         </CardContent>
       </Card>
 
-      <Card class="overflow-hidden rounded-xl py-0">
+      <Card class="overflow-hidden py-0">
         <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">
             <CardTitle class="text-lg">
@@ -180,7 +180,7 @@
                   </div>
                   <div
                     v-if="booking.clientNotes"
-                    class="rounded-lg border border-border bg-background p-3 text-sm text-muted-foreground"
+                    class="rounded-lg border border-foreground/15 bg-background p-3 text-sm text-muted-foreground"
                   >
                     <p class="mb-1 font-medium text-foreground">
                       Client notes
@@ -222,7 +222,7 @@
         </CardContent>
       </Card>
 
-      <Card class="overflow-hidden rounded-xl py-0">
+      <Card class="overflow-hidden py-0">
         <CardHeader class="border-b border-border/40 px-5 py-4 sm:px-6">
           <CardTitle class="text-lg">
             Upcoming appointments
@@ -265,7 +265,7 @@
 
       <Card
         v-if="completedBookings.length > 0"
-        class="overflow-hidden rounded-xl py-0"
+        class="overflow-hidden py-0"
       >
         <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4 sm:px-6">
           <div class="flex items-center gap-2">

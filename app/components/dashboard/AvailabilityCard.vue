@@ -35,7 +35,7 @@
     <div
       v-for="day in displayedSchedule"
       :key="day.id"
-      class="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3"
+      class="flex items-center justify-between gap-3 rounded-lg border border-foreground/15 bg-background p-3"
     >
       <div class="flex items-center gap-2.5">
         <span class="size-2 shrink-0 rounded-full bg-primary" />
@@ -53,7 +53,7 @@
       <div
         v-for="exception in upcomingExceptions.slice(0, 2)"
         :key="exception.id"
-        class="mb-2 flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-2.5 last:mb-0"
+        class="mb-2 flex items-center justify-between gap-3 rounded-lg border border-foreground/15 bg-background p-2.5 last:mb-0"
       >
         <span class="truncate text-foreground text-sm">
           {{ exception.reason || 'Time off' }}
