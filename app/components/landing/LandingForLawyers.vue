@@ -39,7 +39,7 @@ const features: { title: string, desc: string, icon: Hugeicon }[] = [
         <div>
           <p class="eyebrow mb-4 text-primary">For legal professionals</p>
          <h2 class="text-4xl font-medium md:text-5xl max-w-2xl text-background">
-            Grow your practice. <em class="font-heading italic font-normal text-background/70">Keep every naira you earn.</em>
+            Grow your practice. <em class="font-semibold not-italic text-background/70">Keep every naira you earn.</em>
           </h2>
           <p class="mt-6 mb-9 max-w-lg text-xl leading-normal text-background/70">
             Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat monthly subscription. Your bar-verified credentials, displayed prominently.

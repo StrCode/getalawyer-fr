@@ -374,7 +374,7 @@ const handleSaveAll = async () => {
 
             <div
               v-else
-              class="flex-1 italic text-muted-foreground"
+              class="flex-1 text-muted-foreground"
             >
               Not available
             </div>

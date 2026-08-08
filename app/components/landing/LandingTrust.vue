@@ -37,7 +37,7 @@ const proofs = [
       <div class="relative overflow-hidden rounded-2xl border border-background/20 bg-foreground p-10 text-left md:p-14 lg:p-16">
         <p class="relative z-10 max-w-4xl font-heading text-[clamp(1.5rem,3.5vw,2.625rem)] leading-tight tracking-tight text-background">
           Every lawyer here passed
-          <em class="italic text-primary">NIN and SCN verification</em>
+          <em class="font-semibold not-italic text-primary">NIN and SCN verification</em>
           before their profile went live — identity and Supreme Court enrolment, checked against official records.
         </p>
 

@@ -112,7 +112,7 @@ const locationLabel = computed(() => {
         </p>
         <p
           v-else
-          class="mt-4 border-t border-border/40 pt-4 text-sm italic text-muted-foreground"
+          class="mt-4 border-t border-border/40 pt-4 text-sm text-muted-foreground"
         >
           Add a short bio to give lawyers context before your consultation.
         </p>

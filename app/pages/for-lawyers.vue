@@ -75,7 +75,7 @@ const toggleFaq = (index: number) => {
         <p class="eyebrow mb-6 text-primary">For legal professionals</p>
        <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-3xl text-background">
           Grow your practice.<br>
-          <em class="font-normal italic">Keep every naira you earn.</em>
+          <em class="font-semibold not-italic">Keep every naira you earn.</em>
         </h1>
         <p class="mx-auto mt-8 mb-10 max-w-xl text-lg leading-relaxed text-background/70">
           Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
@@ -138,7 +138,7 @@ const toggleFaq = (index: number) => {
             :key="step.num"
             class="rounded-2xl border border-background/20 bg-background/5 p-8"
           >
-            <div class="font-heading mb-6 text-5xl leading-none text-primary italic">
+            <div class="mb-6 text-5xl font-semibold leading-none tracking-tight text-primary tabular-nums">
               {{ step.num }}
             </div>
            <h3 class="mb-3 text-base font-semibold text-background">{{ step.title }}</h3>

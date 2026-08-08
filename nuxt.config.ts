@@ -82,24 +82,19 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
+    // One family, like the reference dashboard: Inter Variable carries
+    // everything; headings differentiate by weight and tracking. No italics
+    // are loaded — emphasis is semibold (`not-italic` on em elements).
     defaults: {
       weights: [400, 500],
-      styles: ['normal', 'italic'],
+      styles: ['normal'],
     },
     families: [
       {
         name: 'Inter',
         provider: 'fontsource',
         weights: ['100 900'],
-        global: true,
-      },
-      {
-        // True 400-600 weights (the old local Neue Haas shipped only 400,
-        // so every font-medium heading was synthetically bolded).
-        name: 'General Sans',
-        provider: 'fontshare',
-        weights: [400, 500, 600],
-        styles: ['normal', 'italic'],
+        styles: ['normal'],
         global: true,
       },
     ],

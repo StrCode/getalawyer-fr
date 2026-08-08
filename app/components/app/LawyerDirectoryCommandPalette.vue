@@ -125,7 +125,7 @@ onMounted(() => {
       <CommandGroup heading="Recent">
         <p
           v-if="!hasStoredSearches()"
-          class="mx-3 mb-1 text-muted-foreground text-2xs leading-relaxed italic"
+          class="mx-3 mb-1 text-muted-foreground text-2xs leading-relaxed"
         >
           Nothing saved yet — these are placeholders until you search on the directory or from the homepage.
         </p>
