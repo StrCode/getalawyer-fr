@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { SentIcon } from '@hugeicons/core-free-icons'
+import { Attachment01Icon, Cancel01Icon, Download01Icon, File01Icon, SentIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import { useRealTimeMessaging } from '~/composables/useRealTimeMessaging'
 import { useMessagingStore } from '~/stores/messagingStore'
-import type { Message as ThreadMessage } from '~/types/messaging'
+import type { FileUploadResponse, Message as ThreadMessage } from '~/types/messaging'
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from '@/components/ui/attachment'
 import MessageReadTicks from '@/components/messaging/MessageReadTicks.vue'
 import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRequestCard.vue'
 import ConsultationFeeRequestComposer from '@/components/messaging/ConsultationFeeRequestComposer.vue'
@@ -35,7 +44,7 @@ const props = defineProps<{
 const { session } = useAuth()
 const currentUserId = computed(() => session.value?.user?.id ?? '')
 
-const { useConversation, useMarkAsRead, sendMessage, retryMessage } = useMessaging()
+const { useConversation, useMarkAsRead, useUploadFile, sendMessage, retryMessage } = useMessaging()
 const messagingStore = useMessagingStore()
 const conversationIdRef = toRef(props, 'conversationId')
 
@@ -82,16 +91,81 @@ onMounted(() => {
   markAsRead(props.conversationId)
 })
 
-function handleSend() {
+// --- Attachments (limits mirror the backend: message.service.ts) ---
+const MAX_FILE_BYTES = 10 * 1024 * 1024
+const ALLOWED_FILE_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+])
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const pendingFile = ref<File | null>(null)
+const fileError = ref('')
+const upload = useUploadFile()
+
+function onPickFile(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  // Allow re-selecting the same file after removing it.
+  if (fileInput.value) fileInput.value.value = ''
+  if (!file) return
+  if (!ALLOWED_FILE_TYPES.has(file.type)) {
+    fileError.value = 'That file type isn\'t supported. Use an image, PDF, or Word document.'
+    return
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    fileError.value = 'Files can be up to 10 MB.'
+    return
+  }
+  fileError.value = ''
+  pendingFile.value = file
+}
+
+function removePendingFile() {
+  pendingFile.value = null
+  fileError.value = ''
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+function isImageType(type: string | null | undefined): boolean {
+  return !!type && type.startsWith('image/')
+}
+
+async function handleSend() {
   const content = messageInput.value.trim()
-  if (!content) return
+  if (!content && !pendingFile.value) return
+  if (upload.isPending.value) return
+
+  // Two-phase send: upload first, then emit the message with the returned
+  // metadata — so a failed upload never produces a half-sent message.
+  let file: FileUploadResponse | undefined
+  if (pendingFile.value) {
+    try {
+      file = await upload.mutateAsync({ conversationId: props.conversationId, file: pendingFile.value })
+    } catch {
+      fileError.value = 'Couldn\'t upload the file. Check your connection and try again.'
+      return
+    }
+  }
 
   // Composer clears optimistically; delivery feedback lives on the bubble.
   sendMessage({
     conversationId: props.conversationId,
     content,
+    file,
   })
   messageInput.value = ''
+  pendingFile.value = null
+  fileError.value = ''
   markAsRead(props.conversationId)
 }
 
@@ -260,7 +334,48 @@ const timeline = computed<TimelineEntry[]>(() => {
                       class="max-w-[85%]"
                     >
                       <BubbleContent>
-                        <p class="whitespace-pre-wrap break-words">
+                        <template v-if="entry.message.fileUrl">
+                          <a
+                            v-if="isImageType(entry.message.fileType)"
+                            :href="entry.message.fileUrl"
+                            target="_blank"
+                            rel="noopener"
+                            class="block"
+                          >
+                            <img
+                              :src="entry.message.fileUrl"
+                              :alt="entry.message.fileName ?? 'Attached image'"
+                              class="max-h-64 w-auto rounded-lg"
+                              loading="lazy"
+                            >
+                          </a>
+                          <Attachment
+                            v-else
+                            state="done"
+                            class="my-0.5 bg-background/60"
+                          >
+                            <AttachmentMedia>
+                              <HugeiconsIcon :icon="File01Icon" class="size-4" aria-hidden="true" />
+                            </AttachmentMedia>
+                            <AttachmentContent>
+                              <AttachmentTitle>{{ entry.message.fileName ?? 'Attachment' }}</AttachmentTitle>
+                              <AttachmentDescription v-if="entry.message.fileSize">
+                                {{ formatFileSize(entry.message.fileSize) }}
+                              </AttachmentDescription>
+                            </AttachmentContent>
+                            <AttachmentActions>
+                              <AttachmentAction
+                                as-child
+                                :aria-label="`Download ${entry.message.fileName ?? 'attachment'}`"
+                              >
+                                <a :href="entry.message.fileUrl" target="_blank" rel="noopener" download>
+                                  <HugeiconsIcon :icon="Download01Icon" aria-hidden="true" />
+                                </a>
+                              </AttachmentAction>
+                            </AttachmentActions>
+                          </Attachment>
+                        </template>
+                        <p v-if="entry.message.content" class="whitespace-pre-wrap break-words">
                           {{ entry.message.content }}
                         </p>
                       </BubbleContent>
@@ -295,7 +410,20 @@ const timeline = computed<TimelineEntry[]>(() => {
                     :class="optimistic.state === 'failed' ? 'opacity-90' : 'opacity-60'"
                   >
                     <BubbleContent>
-                      <p class="whitespace-pre-wrap break-words">
+                      <Attachment
+                        v-if="optimistic.file"
+                        state="done"
+                        class="my-0.5 bg-background/60"
+                      >
+                        <AttachmentMedia>
+                          <HugeiconsIcon :icon="File01Icon" class="size-4" aria-hidden="true" />
+                        </AttachmentMedia>
+                        <AttachmentContent>
+                          <AttachmentTitle>{{ optimistic.file.name }}</AttachmentTitle>
+                          <AttachmentDescription>{{ formatFileSize(optimistic.file.size) }}</AttachmentDescription>
+                        </AttachmentContent>
+                      </Attachment>
+                      <p v-if="optimistic.content" class="whitespace-pre-wrap break-words">
                         {{ optimistic.content }}
                       </p>
                     </BubbleContent>
@@ -329,7 +457,52 @@ const timeline = computed<TimelineEntry[]>(() => {
       >
         {{ typingLabel }}
       </p>
+<Attachment
+        v-if="pendingFile"
+        :state="upload.isPending.value ? 'uploading' : 'idle'"
+        class="mb-2"
+      >
+        <AttachmentMedia>
+          <HugeiconsIcon :icon="File01Icon" class="size-4" aria-hidden="true" />
+        </AttachmentMedia>
+        <AttachmentContent>
+          <AttachmentTitle>{{ pendingFile.name }}</AttachmentTitle>
+          <AttachmentDescription>
+            {{ upload.isPending.value ? 'Uploading…' : formatFileSize(pendingFile.size) }}
+          </AttachmentDescription>
+        </AttachmentContent>
+        <AttachmentActions>
+          <AttachmentAction
+            aria-label="Remove attachment"
+            :disabled="upload.isPending.value"
+            @click="removePendingFile"
+          >
+            <HugeiconsIcon :icon="Cancel01Icon" aria-hidden="true" />
+          </AttachmentAction>
+        </AttachmentActions>
+      </Attachment>
+      <p v-if="fileError" role="alert" class="mb-2 text-xs text-destructive">
+        {{ fileError }}
+      </p>
       <form class="flex items-end gap-2" @submit.prevent="handleSend">
+        <input
+          ref="fileInput"
+          type="file"
+          class="sr-only"
+          accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx"
+          @change="onPickFile"
+        >
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          class="shrink-0"
+          aria-label="Attach a file"
+          :disabled="upload.isPending.value"
+          @click="fileInput?.click()"
+        >
+          <HugeiconsIcon :icon="Attachment01Icon" class="size-4" />
+        </Button>
         <Textarea
           v-model="messageInput"
           rows="1"
@@ -343,7 +516,7 @@ const timeline = computed<TimelineEntry[]>(() => {
           size="icon"
           class="shrink-0"
           aria-label="Send message"
-          :disabled="!messageInput.trim()"
+          :disabled="(!messageInput.trim() && !pendingFile) || upload.isPending.value"
         >
           <HugeiconsIcon :icon="SentIcon" class="size-4" />
         </Button>
