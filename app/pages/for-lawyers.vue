@@ -136,7 +136,7 @@ const toggleFaq = (index: number) => {
           <div
             v-for="step in lawyerSteps"
             :key="step.num"
-            class="rounded-2xl border border-background/20 bg-foreground-foreground/5 p-8"
+            class="rounded-2xl border border-background/20 bg-background/5 p-8"
           >
             <div class="font-heading mb-6 text-5xl leading-none text-primary italic">
               {{ step.num }}
