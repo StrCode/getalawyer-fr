@@ -97,14 +97,12 @@ const emit = defineEmits<{
             </Badge>
           </div>
 
+<!-- Verification is already stated by the "NIN verified" badge above;
+               a second bare tick here doubled the same signal. -->
           <div class="mb-2 flex flex-wrap items-center gap-3">
            <h1 class="text-4xl font-medium tracking-[-0.02em] text-foreground md:text-5xl">
               {{ lawyer.name }}
             </h1>
-            <HugeiconsIcon :icon="CheckmarkBadge01Icon"
-              v-if="lawyer.ninVerified"
-              class="size-7 text-primary"
-            />
           </div>
 
           <p class="text-lg text-muted-foreground md:text-xl">
@@ -158,7 +156,6 @@ const emit = defineEmits<{
             size="lg"
             :variant="hasBookableConsultation ? 'outline' : 'default'"
             class="h-12 w-full gap-2 px-8 font-semibold"
-            :disabled="!canMessage"
             @click="emit('ask')"
           >
             <HugeiconsIcon :icon="Message02Icon" class="size-5 shrink-0" />
