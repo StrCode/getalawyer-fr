@@ -127,16 +127,17 @@
 <!-- One method at a time with a quiet toggle link, not tabs. The
                inactive method is never validated (see loginSchema.superRefine),
                so v-if lets the two fields crossfade cleanly. -->
-          <Transition
-            enter-active-class="transition duration-200 ease-luxe"
-            enter-from-class="opacity-0 translate-y-1"
-            leave-active-class="transition duration-150 ease-luxe absolute"
-            leave-to-class="opacity-0 -translate-y-1"
-            mode="out-in"
-          >
-<!-- Each branch is wrapped in a real element so <Transition> has a
-                 DOM node to toggle — a bare renderless form.Field won't switch. -->
-            <div v-if="authMethod === 'email'" key="email">
+<!-- Grid-stacked crossfade: both fields share one cell, so they fade in
+               place without the leaving field going absolute (which yanked the
+               password field up underneath it). Motion-safe. -->
+          <div class="grid">
+            <Transition
+              enter-active-class="transition-opacity duration-200 ease-out motion-reduce:transition-none"
+              enter-from-class="opacity-0"
+              leave-active-class="transition-opacity duration-150 ease-in motion-reduce:transition-none"
+              leave-to-class="opacity-0"
+            >
+            <div v-if="authMethod === 'email'" key="email" class="col-start-1 row-start-1">
               <form.Field v-slot="{ field }" name="email">
                 <Field :data-invalid="isInvalid(field)">
                   <div class="flex w-full items-center justify-between gap-3">
@@ -167,7 +168,7 @@
               </form.Field>
             </div>
 
-            <div v-else key="phone">
+            <div v-else key="phone" class="col-start-1 row-start-1">
               <form.Field v-slot="{ field }" name="phone">
                 <Field :data-invalid="isInvalid(field)">
                   <div class="flex w-full items-center justify-between gap-3">
@@ -193,7 +194,8 @@
                 </Field>
               </form.Field>
             </div>
-          </Transition>
+            </Transition>
+          </div>
 
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
