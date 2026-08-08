@@ -124,15 +124,32 @@
 
       <form v-else @submit.prevent="form.handleSubmit">
         <FieldGroup class="gap-5">
-          <Tabs :model-value="authMethod" @update:model-value="(v) => authMethod = v as 'email' | 'phone'" class="w-full">
-            <TabsList class="grid w-full grid-cols-2">
-              <TabsTrigger value="email" :disabled="isSubmitting">Email</TabsTrigger>
-              <TabsTrigger value="phone" :disabled="isSubmitting">Phone</TabsTrigger>
-            </TabsList>
-            <div v-show="authMethod === 'email'" class="mt-4">
+<!-- One method at a time with a quiet toggle link, not tabs. The
+               inactive method is never validated (see loginSchema.superRefine),
+               so v-if lets the two fields crossfade cleanly. -->
+          <Transition
+            enter-active-class="transition duration-200 ease-luxe"
+            enter-from-class="opacity-0 translate-y-1"
+            leave-active-class="transition duration-150 ease-luxe absolute"
+            leave-to-class="opacity-0 -translate-y-1"
+            mode="out-in"
+          >
+<!-- Each branch is wrapped in a real element so <Transition> has a
+                 DOM node to toggle — a bare renderless form.Field won't switch. -->
+            <div v-if="authMethod === 'email'" key="email">
               <form.Field v-slot="{ field }" name="email">
                 <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name">Email address</FieldLabel>
+                  <div class="flex w-full items-center justify-between gap-3">
+                    <FieldLabel :for="field.name" class="w-auto">Email address</FieldLabel>
+                    <button
+                      type="button"
+                      class="shrink-0 text-sm font-medium text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:underline"
+                      :disabled="isSubmitting"
+                      @click="authMethod = 'phone'"
+                    >
+                      Use phone instead
+                    </button>
+                  </div>
                   <Input
                     :id="field.name"
                     :name="field.name"
@@ -149,10 +166,21 @@
                 </Field>
               </form.Field>
             </div>
-            <div v-show="authMethod === 'phone'" class="mt-4">
+
+            <div v-else key="phone">
               <form.Field v-slot="{ field }" name="phone">
                 <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name">Phone number</FieldLabel>
+                  <div class="flex w-full items-center justify-between gap-3">
+                    <FieldLabel :for="field.name" class="w-auto">Phone number</FieldLabel>
+                    <button
+                      type="button"
+                      class="shrink-0 text-sm font-medium text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:underline"
+                      :disabled="isSubmitting"
+                      @click="authMethod = 'email'"
+                    >
+                      Use email instead
+                    </button>
+                  </div>
                   <div class="flex gap-2">
                     <div
                       class="flex h-10 shrink-0 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium text-muted-foreground"
@@ -181,7 +209,7 @@
                 </Field>
               </form.Field>
             </div>
-          </Tabs>
+          </Transition>
 
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
@@ -262,7 +290,6 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone, normalizeNgPhone, toE164Plus, formatNgPhoneDisplay } from '~/lib/phone'
