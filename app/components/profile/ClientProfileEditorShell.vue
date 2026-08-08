@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircleIcon, Building01Icon, CallIcon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, Building01Icon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
@@ -27,8 +27,8 @@ import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientProfile } from '~/composables/useClientProfile'
 import type { ClientProfile } from '~/lib/api'
 import { ApiError } from '~/lib/api/client'
+import { isValidNgPhone } from '~/lib/phone'
 
-const PHONE_REGEX = /^\+?[1-9]\d{1,14}$/
 const DEFAULT_COUNTRY = 'NG'
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -130,8 +130,8 @@ const avatarSrc = computed(() => avatarPreview.value ?? profile.value?.image ?? 
 
 const phoneValid = computed(() => {
   const phone = form.phoneNumber.trim()
-  if (!phone) return true
-  return PHONE_REGEX.test(phone)
+  if (!phone) return true // optional
+  return isValidNgPhone(phone)
 })
 
 const isPersonalDirty = computed(() => snapshotPersonal() !== savedSnapshots.personal)
@@ -515,28 +515,22 @@ onBeforeUnmount(() => {
             </CardHeader>
             <CardContent>
               <FieldGroup>
-                <ProfileSettingsRow
+<ProfileSettingsRow
                   title="Phone number"
-                  description="International format, e.g. +2348012345678"
+                  description="Optional — a Nigerian number lawyers can reach you on."
                 >
                   <div class="space-y-2">
-                    <div class="relative">
-                      <HugeiconsIcon :icon="CallIcon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        id="profile-phone"
-                        v-model="form.phoneNumber"
-                        type="tel"
-                        autocomplete="tel"
-                        placeholder="+2348012345678"
-                        class="pl-9"
-                        :aria-invalid="!phoneValid"
-                      />
-                    </div>
+                    <AuthPhoneInput
+                      label=""
+                      :model-value="form.phoneNumber"
+                      :invalid="!phoneValid"
+                      @update:model-value="(v) => form.phoneNumber = v"
+                    />
                     <p
                       v-if="!phoneValid"
                       class="text-sm text-destructive"
                     >
-                      Enter a valid international phone number or leave blank.
+                      Enter a valid Nigerian phone number or leave blank.
                     </p>
                   </div>
                 </ProfileSettingsRow>
