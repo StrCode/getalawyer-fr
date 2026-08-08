@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { SubscriptionNotificationRecord } from '~/composables/useSubscription'
 
 const props = defineProps<{
@@ -29,9 +28,9 @@ const previewItems = computed(() => props.notifications.slice(0, 4))
   >
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           Billing updates
-        </CardTitle>
+        </span>
         <p
           v-if="(unreadCount ?? 0) > 0"
           class="mt-0.5 text-xs text-muted-foreground"
@@ -39,16 +38,7 @@ const previewItems = computed(() => props.notifications.slice(0, 4))
           {{ unreadCount }} unread
         </p>
       </div>
-      <Button
-        as-child
-        variant="ghost"
-        size="sm"
-        class="cursor-pointer"
-      >
-        <NuxtLink to="/dashboard/subscription">
-          View all
-        </NuxtLink>
-      </Button>
+      <NuxtLink to="/dashboard/subscription" class="group shrink-0 text-xs font-medium text-primary">View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span></NuxtLink>
     </CardHeader>
 
     <CardContent class="divide-y divide-border p-0">

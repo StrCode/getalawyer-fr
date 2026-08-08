@@ -7,7 +7,7 @@ import {
 } from '~/composables/useRecentLawyerDirectorySearches'
 import { lawyersListingQueryFromParts } from '~/composables/useLawyerFilters'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const { listStoredOnly, hasStoredSearches } = useRecentLawyerDirectorySearches()
 
@@ -45,9 +45,9 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
   >
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           Recent searches
-        </CardTitle>
+        </span>
         <p class="mt-0.5 text-xs text-muted-foreground">
           Pick up where you left off
         </p>

@@ -1,7 +1,8 @@
 <template>
+  <!-- Ground is the sidebar tint; the inset content card floats white on it. -->
   <SidebarProvider
     :default-open="sidebarOpen"
-    class="h-svh w-full overflow-hidden has-data-[variant=inset]:bg-background!"
+    class="h-svh w-full overflow-hidden has-data-[variant=inset]:bg-sidebar!"
     :style="{
       '--sidebar-width': 'calc(var(--spacing) * 72)',
       '--header-height': 'calc(var(--spacing) * 12)',

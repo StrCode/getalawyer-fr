@@ -93,12 +93,13 @@ function navTooltip(link: DashboardNavLink) {
   >
     <SidebarGroupLabel
       v-if="section.label"
-      class="text-2xs uppercase tracking-[0.18em]"
+      class="text-[0.65rem] uppercase tracking-[0.22em]"
     >
       {{ section.label }}
     </SidebarGroupLabel>
     <SidebarGroupContent>
-      <SidebarMenu>
+      <!-- gap-0: dense flush 32px rhythm instead of shadcn's default gap-1. -->
+      <SidebarMenu class="gap-0">
         <SidebarMenuItem
           v-for="link in section.links"
           :key="link.to"

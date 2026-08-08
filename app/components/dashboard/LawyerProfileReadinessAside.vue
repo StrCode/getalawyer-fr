@@ -5,7 +5,7 @@ import type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~
 import { getTier1IncompleteItems } from '~/lib/profile-check-catalog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const props = defineProps<{
   profileStrength: LawyerProfileStrengthSummary | null | undefined
@@ -30,9 +30,9 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
   >
     <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-border/40 px-4 py-4">
       <div>
-        <CardTitle>
+        <span class="micro-label text-muted-foreground">
           Publish readiness
-        </CardTitle>
+        </span>
         <p class="mt-0.5 text-xs text-muted-foreground">
           Required to appear in search
         </p>

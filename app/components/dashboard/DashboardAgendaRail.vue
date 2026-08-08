@@ -2,7 +2,7 @@
 import { CalendarCheckIn01Icon, CalendarRemove01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Booking } from '~/types/booking'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 const props = withDefaults(defineProps<{
   bookings: Booking[]
   personLabel: (booking: Booking) => string
@@ -21,9 +21,9 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
 <template>
   <Card class="sticky top-6 h-fit py-0 shadow-xs">
     <CardHeader class="gap-1 px-5 pt-5 pb-0">
-      <CardTitle>
+      <span class="micro-label text-muted-foreground">
         Upcoming
-      </CardTitle>
+      </span>
       <p class="text-muted-foreground text-sm">
         {{ agendaItems.length > 0 ? `${agendaItems.length} appointment${agendaItems.length === 1 ? '' : 's'}` : 'Nothing scheduled' }}
       </p>
@@ -65,10 +65,9 @@ const agendaItems = computed(() => getAgendaBookings(props.bookings, 4))
     <CardFooter class="px-5 pb-5 pt-2">
       <NuxtLink
         :to="listPath"
-        class="inline-flex items-center gap-1.5 font-medium text-primary text-xs hover:underline"
+        class="group inline-flex items-center font-medium text-primary text-xs"
       >
-        <HugeiconsIcon :icon="CalendarCheckIn01Icon" class="size-3.5" />
-        View all appointments
+        View all appointments<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
       </NuxtLink>
     </CardFooter>
   </Card>

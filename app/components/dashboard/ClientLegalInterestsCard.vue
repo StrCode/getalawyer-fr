@@ -3,7 +3,7 @@ import { Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { lawyersListingQueryFromParts } from '~/composables/useLawyerFilters'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const props = defineProps<{
   specializations: Array<{ id: string; name: string }>
@@ -23,9 +23,9 @@ function areaQuery(id: string) {
 <template>
   <Card class="py-0 shadow-xs">
     <CardHeader class="border-b border-border/40 px-4 py-4">
-      <CardTitle>
+      <span class="micro-label text-muted-foreground">
         Your legal interests
-      </CardTitle>
+      </span>
       <p class="text-sm text-muted-foreground">
         Find lawyers who match the areas you care about.
       </p>
