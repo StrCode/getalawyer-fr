@@ -7,6 +7,12 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3002,
       "autoPort": true
+    },
+    {
+      "name": "getalawyer-audit",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "NUXT_PUBLIC_API_URL=http://localhost:3004 NUXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3004/api/auth npm run dev"],
+      "port": 3002
     }
   ]
 }
