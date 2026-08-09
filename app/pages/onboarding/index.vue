@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircleIcon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, Loading03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { useLawyerOnboarding, useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
@@ -135,16 +135,29 @@ function refresh() {
   <div class="flex min-h-[calc(100dvh-5.75rem)] flex-col items-center justify-center px-6 py-12">
     <div
       v-if="isRouting && !isError"
-      class="mx-auto w-full max-w-md space-y-6 rounded-2xl p-8 text-center"
+      class="mx-auto flex w-full max-w-sm flex-col items-center gap-4 px-4 text-center"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     >
-      <Skeleton class="mx-auto size-16 rounded-full" />
-      <Skeleton class="mx-auto h-6 w-3/4 rounded-lg" />
-      <Skeleton class="mx-auto h-4 w-1/2 rounded-lg" />
+      <HugeiconsIcon
+        :icon="Loading03Icon"
+        class="size-8 animate-spin text-primary"
+        aria-hidden="true"
+      />
+      <div class="space-y-1.5">
+        <p class="text-base font-medium text-foreground">
+          Loading your application
+        </p>
+        <p class="text-sm text-muted-foreground">
+          Checking your progress and opening the right step…
+        </p>
+      </div>
     </div>
 
     <div
       v-else-if="isError"
-      class="mx-auto w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm"
+      class="mx-auto w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-xs"
     >
       <div class="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-destructive/10 text-destructive">
         <HugeiconsIcon :icon="AlertCircleIcon" class="size-8" aria-hidden="true" />
@@ -155,7 +168,7 @@ function refresh() {
       <p class="mb-6 text-sm text-muted-foreground">
         Check your connection and try again.
       </p>
-      <Button class="h-11 w-full font-medium" @click="refresh">
+      <Button class="h-11 w-full cursor-pointer font-medium" @click="refresh">
         Retry
       </Button>
     </div>

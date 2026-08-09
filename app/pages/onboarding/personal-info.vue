@@ -10,7 +10,25 @@ import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { getLgasForState, NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import { Card } from '@/components/ui/card'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from '@/components/ui/field'
+
+/** Taller touch targets + larger control text; labels stay text-sm for hierarchy. */
+const fieldControlClass =
+  'h-11 w-full rounded-xl border-border/50 bg-background text-base shadow-none focus:bg-background'
+
+/** FieldLabel defaults to text-base — keep labels smaller than control text. */
+const fieldLabelClass = 'text-sm'
+
+/** Tighter label → control gap than Field’s default gap-3. */
+const fieldClass = 'gap-1.5'
 
 definePageMeta({
   layout: 'onboarding-wizard',
@@ -160,7 +178,7 @@ watch(
 </script>
 
 <template>
-  <div class="w-full space-y-8 pb-20">
+  <div class="flex w-full flex-col gap-5">
     <OnboardingClientStepHeader
       :step="step.step"
       :total="step.total"
@@ -169,19 +187,24 @@ watch(
       :description="step.description"
     />
 
-    <Card class="p-6 sm:p-8">
-        <FieldGroup class="gap-5">
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <Card class="gap-0 p-5 sm:p-7">
+    <FieldGroup class="gap-5">
+      <FieldSet class="gap-3">
+        <FieldLegend variant="label" class="mb-1.5">
+          Name
+        </FieldLegend>
+        <FieldGroup class="gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <form.Field v-slot="{ field }" name="firstName">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">First name</FieldLabel>
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">First name</FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
+                  :class="fieldControlClass"
                   placeholder="First name"
                   autocomplete="given-name"
-                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -191,8 +214,8 @@ watch(
             </form.Field>
 
             <form.Field v-slot="{ field }" name="middleName">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">
                   Middle name
                   <span class="font-normal text-muted-foreground">(optional)</span>
                 </FieldLabel>
@@ -200,9 +223,9 @@ watch(
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
+                  :class="fieldControlClass"
                   placeholder="Middle name"
                   autocomplete="additional-name"
-                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -212,15 +235,15 @@ watch(
             </form.Field>
 
             <form.Field v-slot="{ field }" name="lastName">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">Last name</FieldLabel>
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">Last name</FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
+                  :class="fieldControlClass"
                   placeholder="Last name"
                   autocomplete="family-name"
-                 
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="field.handleChange"
@@ -231,40 +254,51 @@ watch(
           </div>
 
           <form.Field v-slot="{ field }" name="governmentIdLegalName">
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
+            <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="fieldLabelClass">
                 Full name on government-issued ID
-                <span class="text-primary">*</span>
               </FieldLabel>
               <Input
                 :id="field.name"
                 :name="field.name"
                 :model-value="field.state.value"
+                :class="fieldControlClass"
                 placeholder="As shown on NIN, passport, or driver licence"
                 autocomplete="name"
-               
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
                 @update:model-value="field.handleChange"
               />
               <FieldDescription>
-                Used for identity verification and your public profile display name. Must match your NIN.
+                Must match your NIN exactly. This is also the name shown on your public profile.
               </FieldDescription>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
+        </FieldGroup>
+      </FieldSet>
 
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <FieldSet class="gap-3 border-t border-border/40 pt-5">
+        <FieldLegend variant="label" class="mb-1.5">
+          Personal details
+        </FieldLegend>
+        <FieldGroup class="gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="dateOfBirth">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="`${field.name}-trigger`">Date of birth</FieldLabel>
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="`${field.name}-trigger`" :class="fieldLabelClass">
+                  Date of birth
+                </FieldLabel>
                 <Popover v-slot="{ close }">
                   <PopoverTrigger as-child>
                     <Button
                       :id="`${field.name}-trigger`"
                       type="button"
                       variant="outline"
-                      class="h-11 w-full justify-between rounded-xl border-border/50 bg-card/80 font-normal text-foreground shadow-none hover:bg-card focus:bg-card"
+                      :class="[
+                        fieldControlClass,
+                        'cursor-pointer justify-between font-normal text-foreground hover:bg-muted/40',
+                      ]"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                     >
@@ -299,15 +333,15 @@ watch(
                   </PopoverContent>
                 </Popover>
                 <FieldDescription>
-                  You must be at least 18 years old to register as a lawyer.
+                  You must be 18 or older to register as a lawyer.
                 </FieldDescription>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
 
             <form.Field v-slot="{ field }" name="gender">
-              <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name">Gender</FieldLabel>
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">Gender</FieldLabel>
                 <Select
                   :model-value="field.state.value"
                   @update:model-value="(v) => {
@@ -317,13 +351,17 @@ watch(
                 >
                   <SelectTrigger
                     :id="field.name"
-                    class="h-11 w-full rounded-xl border-border/50 bg-card/80 text-base focus:bg-card"
+                    :class="fieldControlClass"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="g in genders" :key="g.value" :value="g.value">
+                    <SelectItem
+                      v-for="g in genders"
+                      :key="g.value"
+                      :value="g.value"
+                    >
                       {{ g.label }}
                     </SelectItem>
                   </SelectContent>
@@ -332,86 +370,96 @@ watch(
               </Field>
             </form.Field>
           </div>
-
-          <div class="border-t border-border/40 pt-5">
-            <p class="mb-4 text-sm font-medium text-foreground">Location</p>
-            <FieldDescription class="mb-4">
-              Your current state and local government area of residence.
-            </FieldDescription>
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <form.Field v-slot="{ field }" name="state">
-                <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name">State</FieldLabel>
-                  <Select
-                    :model-value="field.state.value || undefined"
-                    @update:model-value="(v) => {
-                      field.handleChange(v ?? '')
-                      field.handleBlur()
-                    }"
-                  >
-                    <SelectTrigger
-                      :id="field.name"
-                      class="w-full"
-                      :aria-invalid="isInvalid(field)"
-                    >
-                      <SelectValue placeholder="Select state" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="name in NIGERIA_STATE_NAMES"
-                        :key="name"
-                        :value="name"
-                      >
-                        {{ name }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                </Field>
-              </form.Field>
-
-              <form.Field v-slot="{ field }" name="lga">
-                <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name">LGA</FieldLabel>
-                  <Select
-                    :key="`lga-${selectedState}`"
-                    :model-value="field.state.value || undefined"
-                    :disabled="!selectedState"
-                    @update:model-value="(v) => {
-                      field.handleChange(v ?? '')
-                      field.handleBlur()
-                    }"
-                  >
-                    <SelectTrigger
-                      :id="field.name"
-                      class="w-full"
-                      :aria-invalid="isInvalid(field)"
-                      :disabled="!selectedState"
-                    >
-                      <SelectValue
-                        :placeholder="selectedState ? 'Select LGA' : 'Select state first'"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        v-for="lgaName in lgaOptions"
-                        :key="lgaName"
-                        :value="lgaName"
-                      >
-                        {{ lgaName }}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                </Field>
-              </form.Field>
-            </div>
-          </div>
-
-          <p class="text-sm leading-relaxed text-muted-foreground">
-            All fields except middle name are required for identity verification.
-          </p>
         </FieldGroup>
-      </Card>
+      </FieldSet>
+
+      <FieldSet class="gap-3 border-t border-border/40 pt-5">
+        <FieldLegend variant="label" class="mb-1.5">
+          Location
+        </FieldLegend>
+        <FieldDescription>
+          Where you currently live in Nigeria.
+        </FieldDescription>
+        <FieldGroup class="gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form.Field v-slot="{ field }" name="state">
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">State</FieldLabel>
+                <Select
+                  :model-value="field.state.value || undefined"
+                  @update:model-value="(v) => {
+                    field.handleChange(v ?? '')
+                    field.handleBlur()
+                  }"
+                >
+                  <SelectTrigger
+                    :id="field.name"
+                    :class="fieldControlClass"
+                    :aria-invalid="isInvalid(field)"
+                  >
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="name in NIGERIA_STATE_NAMES"
+                      :key="name"
+                      :value="name"
+                    >
+                      {{ name }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+
+            <form.Field v-slot="{ field }" name="lga">
+              <Field
+                :class="fieldClass"
+                :data-invalid="isInvalid(field)"
+                :data-disabled="!selectedState || undefined"
+              >
+                <FieldLabel :for="field.name" :class="fieldLabelClass">LGA</FieldLabel>
+                <Select
+                  :key="`lga-${selectedState}`"
+                  :model-value="field.state.value || undefined"
+                  :disabled="!selectedState"
+                  @update:model-value="(v) => {
+                    field.handleChange(v ?? '')
+                    field.handleBlur()
+                  }"
+                >
+                  <SelectTrigger
+                    :id="field.name"
+                    :class="fieldControlClass"
+                    :aria-invalid="isInvalid(field)"
+                    :disabled="!selectedState"
+                  >
+                    <SelectValue
+                      :placeholder="selectedState ? 'Select LGA' : 'Select state first'"
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="lgaName in lgaOptions"
+                      :key="lgaName"
+                      :value="lgaName"
+                    >
+                      {{ lgaName }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </div>
+        </FieldGroup>
+      </FieldSet>
+
+      <p class="text-sm leading-relaxed text-muted-foreground">
+        Middle name is optional. Everything else is required.
+      </p>
+    </FieldGroup>
+    </Card>
   </div>
 </template>

@@ -37,13 +37,13 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
     label: 'About you',
     title: 'Tell us about yourself',
     description:
-      'We use this for identity verification. Your details are kept private and are not shown on your public profile.',
+      'These details help us confirm who you are. They stay private — nothing here appears on your public profile.',
   },
   nin_verification: {
     label: 'About you',
-    title: 'Submit your NIN for verification',
+    title: 'Confirm your NIN',
     description:
-      'Enter your National Identification Number. We store it securely and review it during application verification.',
+      'Add your National Identification Number so we can verify your identity before you join the platform.',
   },
   professional_info: {
     label: 'Credentials & practice',
