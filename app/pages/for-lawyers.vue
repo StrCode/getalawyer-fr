@@ -52,7 +52,7 @@ const lawyerSteps = [
 
 const faqItems = computed(() => [
   { q: 'How long does verification take?', a: 'We typically verify your NIN and Supreme Court Number within 24-48 hours. Once approved, your profile goes live immediately.' },
-  { q: 'Do you take a percentage of my fees?', a: `No. We charge a flat ${subscriptionPriceLabel.value} annual subscription — the only payment processed on GetaLawyer. You keep 100% of the consultation fees you agree with clients.` },
+  { q: 'Do you take a percentage of my fees?', a: `No. We charge a flat ${subscriptionPriceLabel.value} annual subscription (first checkout also includes a small verification fee). That is the only payment processed on GetaLawyer. You keep 100% of the consultation fees you agree with clients.` },
   { q: 'Do clients pay through GetaLawyer?', a: 'No. Client consultation fees are not processed on our site. You agree fees with clients in messaging or before your session, and they pay you directly on terms you set (for example, bank transfer).' },
   { q: 'What happens if a client cancels?', a: 'You set your own cancellation policy. If a client cancels a booking, handle rescheduling or any refund directly with them — GetaLawyer does not hold or refund consultation fees.' },
 ])

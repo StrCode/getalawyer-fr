@@ -59,7 +59,12 @@ const features = [
             <span class="font-heading text-6xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
             <span class="mb-2 text-base text-muted-foreground">/ year</span>
           </div>
-          <p class="text-sm text-muted-foreground">Billed annually. Cancel anytime.</p>
+          <p class="text-sm text-muted-foreground">
+            Billed annually. Cancel anytime.
+            <template v-if="pricing">
+              First checkout adds a {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }} verification fee.
+            </template>
+          </p>
         </div>
 
         <Button size="lg" class="mb-10 w-full cursor-pointer" as-child>

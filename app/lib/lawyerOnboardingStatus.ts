@@ -123,7 +123,7 @@ export function getLawyerApplicationStatusNotice(
       tone: 'failed',
       title: 'Verification could not be completed',
       description:
-        'Your application was not approved. If you paid a subscription fee, a refund minus the admin processing fee will be returned to your payment method.',
+        'Your application was not approved. If you paid, your membership fee will be refunded and the verification fee will be kept.',
     }
   }
 

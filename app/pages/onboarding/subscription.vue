@@ -252,6 +252,15 @@ const paymentBusy = computed(
   () => navigatingToPayment.value || paymentInitPending.value || confirmingPendingPayment.value,
 )
 
+const firstPaymentTotalNaira = computed(() => {
+  const p = pricing.value
+  if (!p) return null
+  if (Number.isFinite(p.firstPaymentTotalNaira) && p.firstPaymentTotalNaira! > 0) {
+    return p.firstPaymentTotalNaira!
+  }
+  return p.subscriptionPriceNaira + p.verificationAdminFeeNaira
+})
+
 const payButtonLabel = computed(() => {
   if (paymentBusy.value) {
     return syncPendingPending.value || confirmingPendingPayment.value
@@ -259,8 +268,8 @@ const payButtonLabel = computed(() => {
       : 'Opening Paystack…'
   }
   if (hasCheckoutFailure.value) return 'Try payment again'
-  if (pricing.value) {
-    return `Pay ${formatNairaAmount(pricing.value.subscriptionPriceNaira)}`
+  if (firstPaymentTotalNaira.value != null) {
+    return `Pay ${formatNairaAmount(firstPaymentTotalNaira.value)}`
   }
   return 'Continue to payment'
 })
@@ -342,14 +351,27 @@ async function retry() {
               Lawyer membership
             </p>
             <p
-              v-if="pricing"
+              v-if="firstPaymentTotalNaira != null"
               class="text-4xl font-medium tracking-tight tabular-nums text-foreground"
             >
-              {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
+              {{ formatNairaAmount(firstPaymentTotalNaira) }}
             </p>
             <Skeleton v-else class="h-10 w-36 rounded-lg" />
             <p class="text-sm text-muted-foreground">
-              per year
+              first year · then
+              <template v-if="pricing">
+                {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year
+              </template>
+              <template v-else>
+                annual renewal
+              </template>
+            </p>
+            <p
+              v-if="pricing"
+              class="mt-1 text-xs text-muted-foreground"
+            >
+              {{ formatNairaAmount(pricing.subscriptionPriceNaira) }} membership
+              + {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }} verification
             </p>
           </div>
 
@@ -408,15 +430,11 @@ async function retry() {
         <div class="border-t border-border/50 bg-muted/40 px-6 py-4 text-center sm:px-7">
           <p class="text-xs leading-relaxed text-muted-foreground">
             Secure checkout via Paystack.
-            Renews annually unless you turn off auto-renew later.
-            Failed verification: refunded minus
+            Renewals are membership only
             <template v-if="pricing">
-              {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
-            </template>
-            <template v-else>
-              a small
-            </template>
-            admin fee.
+              ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year)
+            </template>.
+            Failed verification: membership refunded; verification fee kept.
           </p>
         </div>
       </div>

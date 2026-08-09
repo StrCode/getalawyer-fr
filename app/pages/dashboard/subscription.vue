@@ -110,13 +110,31 @@ const catalogPriceNaira = computed(
     ?? null,
 )
 
+const firstPaymentTotalNaira = computed(() => {
+  const p = pricing.value
+  if (!p) return null
+  if (Number.isFinite(p.firstPaymentTotalNaira) && p.firstPaymentTotalNaira! > 0) {
+    return p.firstPaymentTotalNaira!
+  }
+  return p.subscriptionPriceNaira + p.verificationAdminFeeNaira
+})
+
 const lastPaidPriceNaira = computed(() => subscription.value?.priceNaira ?? null)
 const renewalPriceNaira = computed(() => catalogPriceNaira.value)
 
 const showPriceChangedNotice = computed(() => {
   const last = lastPaidPriceNaira.value
   const next = renewalPriceNaira.value
-  return last != null && next != null && last !== next
+  if (last == null || next == null || last === next) return false
+  // First checkout stores membership + verification fee; that is not a catalog price change.
+  if (
+    firstPaymentTotalNaira.value != null
+    && last === firstPaymentTotalNaira.value
+    && next === pricing.value?.subscriptionPriceNaira
+  ) {
+    return false
+  }
+  return true
 })
 
 const canManageAutoRenew = computed(() => {
@@ -148,8 +166,12 @@ const membershipActionTitle = computed(() =>
 )
 
 const membershipActionDescription = computed(() => {
-  const price =
+  const renewalPrice =
     catalogPriceNaira.value != null ? formatNairaAmount(catalogPriceNaira.value) : null
+  const firstPrice =
+    firstPaymentTotalNaira.value != null
+      ? formatNairaAmount(firstPaymentTotalNaira.value)
+      : null
 
   if (subscription.value?.status === 'refund_processing') {
     return 'Your subscription refund is being processed. Contact support if you need help.'
@@ -158,17 +180,25 @@ const membershipActionDescription = computed(() => {
     return 'Verification did not pass after payment. Check your application status or contact support.'
   }
   if (isExpired.value && subscriptionEndLabel.value) {
-    return `Your membership ended on ${subscriptionEndLabel.value}. Pay ${price ?? 'the annual fee'} to restore your directory listing, bookings, and messaging.`
+    return `Your membership ended on ${subscriptionEndLabel.value}. Pay ${renewalPrice ?? 'the annual fee'} to restore your directory listing, bookings, and messaging.`
   }
   if (isRenewal.value) {
-    return `Pay ${price ?? 'the annual subscription'} to restore your GetALawyer membership and directory visibility.`
+    return `Pay ${renewalPrice ?? 'the annual subscription'} to restore your GetALawyer membership and directory visibility.`
   }
-  return `Pay the annual subscription to activate membership${price ? ` (${price})` : ''}. If identity or SCN verification fails after payment, your subscription is refunded minus the admin processing fee.`
+  return `Pay ${firstPrice ?? 'the first-year total'} to activate membership (membership + verification fee). If identity or SCN verification fails, the membership fee is refunded and the verification fee is kept. Renewals are membership only.`
 })
 
-const membershipActionButtonLabel = computed(() =>
-  isRenewal.value ? 'Renew membership' : 'Pay annual subscription',
-)
+const membershipActionButtonLabel = computed(() => {
+  if (isRenewal.value) {
+    return renewalPriceNaira.value != null
+      ? `Renew · ${formatNairaAmount(renewalPriceNaira.value)}`
+      : 'Renew membership'
+  }
+  if (firstPaymentTotalNaira.value != null) {
+    return `Pay ${formatNairaAmount(firstPaymentTotalNaira.value)}`
+  }
+  return 'Pay annual subscription'
+})
 
 const canRetryPayment = computed(() => {
   const status = subscription.value?.status
@@ -416,8 +446,10 @@ async function startPayment() {
           </p>
           <p>Zero commission on consultation fees you charge clients.</p>
           <p v-if="pricing">
-            Verification admin fee (deducted on failed verification refund):
+            First checkout adds a
             {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
+            verification fee (kept if verification fails; membership fee is refunded). Renewals are
+            membership only.
           </p>
         </CardContent>
       </Card>

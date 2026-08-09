@@ -239,8 +239,8 @@ async function retryStatus() {
         <HugeiconsIcon :icon="AlertCircleIcon" />
         <AlertTitle>Verification could not be completed</AlertTitle>
         <AlertDescription>
-          We could not verify your credentials. If you paid, a refund minus the admin fee will return
-          to your payment method.
+          We could not verify your credentials. If you paid, your membership fee will be refunded and
+          the verification fee will be kept.
         </AlertDescription>
       </Alert>
       <p class="text-center text-sm text-muted-foreground">

@@ -51,6 +51,10 @@ export const SUBSCRIPTION_PAYMENT_REF_KEY = 'gal_subscription_payment_ref'
 export interface SubscriptionPricingPayload {
   subscriptionPriceNaira: number
   verificationAdminFeeNaira: number
+  /** First onboarding checkout total (subscription + verification fee). */
+  firstPaymentTotalNaira?: number
+  /** Annual renewal / restore price (subscription only). */
+  renewalPriceNaira?: number
 }
 
 export function formatNairaAmount(amount: number): string {
@@ -96,19 +100,16 @@ export function hasPendingCheckoutFailure(
   return subscription?.status === 'pending' && Boolean(getSubscriptionPaymentFailureMessage(subscription))
 }
 
-/** Lawyer previously had (or almost had) paid membership — show renew copy, not first-time activate. */
+/**
+ * True when checkout should use renewal pricing (subscription only).
+ * Must stay aligned with law-backend `initiateSubscription` renewal/restore statuses.
+ * Verification-failure refunds (`refunded` / `refund_processing`) are first-checkout again.
+ */
 export function hadPriorMembership(
   subscription: SubscriptionRecord | null | undefined,
 ): boolean {
   if (!subscription) return false
-  if (
-    ['expired', 'cancelled', 'failed_renewal', 'refunded', 'refund_processing'].includes(
-      subscription.status,
-    )
-  ) {
-    return true
-  }
-  return Boolean(subscription.subscriptionStartDate)
+  return ['expired', 'cancelled', 'failed_renewal'].includes(subscription.status)
 }
 
 export function isExpiredMembership(
