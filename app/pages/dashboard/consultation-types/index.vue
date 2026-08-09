@@ -1,154 +1,22 @@
-<template>
-  <div class="space-y-6">
-    <DashboardPageHeader
-      title="Consultation types"
-      description="Manage the services you offer to clients"
-    >
-      <template #actions>
-        <Button @click="handleCreate">
-          <HugeiconsIcon :icon="Add01Icon" class="mr-2 size-4" />
-          Create new
-        </Button>
-      </template>
-    </DashboardPageHeader>
-
-    <div class="flex items-center gap-2">
-      <Switch
-        :model-value="showInactive"
-        @update:model-value="showInactive = $event"
-      />
-      <span class="text-sm text-muted-foreground">Show inactive types</span>
-    </div>
-
-    <div
-      v-if="isPending"
-      class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-    >
-      <Skeleton
-        v-for="i in 3"
-        :key="i"
-        class="h-52 w-full rounded-xl"
-      />
-    </div>
-
-    <EmptyState
-      v-else-if="!consultationTypes?.length"
-      :icon="File01Icon"
-      title="No consultation types yet"
-      description="Create your first consultation type to start accepting bookings"
-    >
-      <template #actions>
-        <Button @click="handleCreate">
-          Create consultation type
-        </Button>
-      </template>
-    </EmptyState>
-
-    <div
-      v-else
-      class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-    >
-      <Card
-        v-for="type in consultationTypes"
-        :key="type.id"
-        
-      >
-        <CardHeader class="pb-3">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0 flex-1">
-              <CardTitle class="text-lg">
-                {{ type.name }}
-              </CardTitle>
-              <CardDescription
-                v-if="type.description"
-                class="mt-1 line-clamp-2"
-              >
-                {{ type.description }}
-              </CardDescription>
-            </div>
-            <Badge
-              :variant="type.isActive ? 'secondary' : 'outline'"
-              :class="type.isActive ? 'border-transparent bg-primary/10 text-primary' : ''"
-            >
-              {{ type.isActive ? 'Active' : 'Inactive' }}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent class="space-y-4">
-          <div class="space-y-2 text-sm text-muted-foreground">
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon :icon="Clock01Icon" class="size-4 shrink-0" />
-              <span>{{ type.durationMinutes }} minutes</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon :icon="EuroIcon" class="size-4 shrink-0" />
-              <span class="font-semibold text-foreground tabular-nums">{{ formatPrice(type.price, type.currency) }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon :icon="Video01Icon" class="size-4 shrink-0" />
-              <span>{{ getMeetingTypeLabel(type.meetingType) }}</span>
-            </div>
-            <div
-              v-if="type.bufferMinutes > 0"
-              class="flex items-center gap-2"
-            >
-              <HugeiconsIcon :icon="Timer01Icon" class="size-4 shrink-0" />
-              <span>{{ type.bufferMinutes }}min buffer</span>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-2 border-t border-border/40 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              @click="handleEdit(type)"
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              @click="handleToggleActive(type)"
-            >
-              {{ type.isActive ? 'Deactivate' : 'Activate' }}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              class="text-destructive hover:text-destructive"
-              @click="handleDelete(type)"
-            >
-              Delete
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <ConsultationTypeModal
-      v-model="isCreateModalOpen"
-      @success="refetch"
-    />
-
-    <ConsultationTypeModal
-      v-model="isEditModalOpen"
-      :consultation-type="selectedType"
-      @success="refetch"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-import { Add01Icon, Clock01Icon, EuroIcon, File01Icon, Timer01Icon, Video01Icon } from '@hugeicons/core-free-icons'
+import { Add01Icon, Clock01Icon, Delete02Icon, Edit02Icon, File01Icon, MoreHorizontalIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
+import { MICRO, PANEL } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 import type { ConsultationType } from '~/types/booking'
 
 definePageMeta({
@@ -156,7 +24,16 @@ definePageMeta({
   middleware: ['auth'],
 })
 
-const { useConsultationTypesList, useDeleteConsultationType, useActivateConsultationType, useDeactivateConsultationType } = useConsultationTypes()
+useHead({
+  title: 'Consultation types - GetALawyer',
+})
+
+const {
+  useConsultationTypesList,
+  useDeleteConsultationType,
+  useActivateConsultationType,
+  useDeactivateConsultationType,
+} = useConsultationTypes()
 
 const showInactive = ref(false)
 const isCreateModalOpen = ref(false)
@@ -167,6 +44,10 @@ const { data: consultationTypes, isPending, refetch } = useConsultationTypesList
 const deleteMutation = useDeleteConsultationType()
 const activateMutation = useActivateConsultationType()
 const deactivateMutation = useDeactivateConsultationType()
+
+const activeCount = computed(
+  () => (consultationTypes.value ?? []).filter((type) => type.isActive).length,
+)
 
 function handleCreate() {
   isCreateModalOpen.value = true
@@ -229,11 +110,213 @@ function formatPrice(price: string, currency: string) {
 
 function getMeetingTypeLabel(type: string) {
   const labels: Record<string, string> = {
-    video: 'Video call',
-    phone: 'Phone call',
+    video: 'Video',
+    phone: 'Phone',
     in_person: 'In person',
-    any: 'Any type',
+    any: 'Any',
   }
   return labels[type] || type
 }
 </script>
+
+<template>
+  <div class="space-y-6 md:space-y-8">
+    <DashboardPageHeader
+      eyebrow="Practice"
+      title="Consultation types"
+      description="Services clients can book — duration, price, and meeting format."
+    >
+      <template #actions>
+        <Badge
+          v-if="!isPending"
+          variant="outline"
+          class="rounded-full border-foreground/15 px-3 py-1 text-xs font-semibold tabular-nums"
+          :class="activeCount > 0 ? 'border-primary/40 bg-primary/10 text-primary' : 'text-muted-foreground'"
+        >
+          {{ activeCount }} active
+        </Badge>
+        <Button
+          size="lg"
+          class="cursor-pointer"
+          @click="handleCreate"
+        >
+          <HugeiconsIcon
+            :icon="Add01Icon"
+            class="size-4"
+          />
+          New type
+        </Button>
+      </template>
+    </DashboardPageHeader>
+
+    <div class="flex items-center justify-between gap-4">
+      <label class="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+        <Switch
+          :model-value="showInactive"
+          @update:model-value="showInactive = $event"
+        />
+        Show inactive
+      </label>
+      <p
+        v-if="!isPending && consultationTypes?.length"
+        class="text-xs text-muted-foreground tabular-nums"
+      >
+        {{ consultationTypes.length }} total
+      </p>
+    </div>
+
+    <div
+      v-if="isPending"
+      class="space-y-3"
+    >
+      <Skeleton
+        v-for="i in 4"
+        :key="i"
+        class="h-16 w-full rounded-xl"
+      />
+    </div>
+
+    <EmptyState
+      v-else-if="!consultationTypes?.length"
+      :icon="File01Icon"
+      title="No consultation types yet"
+      description="Add at least one active type so clients can book you from search."
+    >
+      <template #actions>
+        <Button
+          class="cursor-pointer"
+          @click="handleCreate"
+        >
+          Create consultation type
+        </Button>
+      </template>
+    </EmptyState>
+
+    <section
+      v-else
+      :class="cn(PANEL)"
+    >
+      <div class="hidden border-b border-foreground/15 bg-muted/30 px-6 py-3 md:grid md:grid-cols-[minmax(0,1.4fr)_7rem_7rem_7rem_6rem_2.5rem] md:gap-4">
+        <span :class="cn(MICRO, 'text-muted-foreground')">Service</span>
+        <span :class="cn(MICRO, 'text-muted-foreground')">Duration</span>
+        <span :class="cn(MICRO, 'text-muted-foreground')">Price</span>
+        <span :class="cn(MICRO, 'text-muted-foreground')">Meeting</span>
+        <span :class="cn(MICRO, 'text-muted-foreground')">Status</span>
+        <span class="sr-only">Actions</span>
+      </div>
+
+      <ul class="divide-y divide-foreground/15">
+        <li
+          v-for="type in consultationTypes"
+          :key="type.id"
+          class="ease-luxe grid gap-3 px-5 py-4 transition-colors duration-220 hover:bg-muted/40 sm:px-6 md:grid-cols-[minmax(0,1.4fr)_7rem_7rem_7rem_6rem_2.5rem] md:items-center md:gap-4"
+        >
+          <div class="min-w-0">
+            <p class="truncate font-medium tracking-tight text-foreground">
+              {{ type.name }}
+            </p>
+            <p
+              v-if="type.description"
+              class="mt-0.5 line-clamp-1 text-xs text-muted-foreground"
+            >
+              {{ type.description }}
+            </p>
+            <p
+              v-if="type.bufferMinutes > 0"
+              class="mt-1 text-xs text-muted-foreground md:hidden"
+            >
+              {{ type.bufferMinutes }}min buffer
+            </p>
+          </div>
+
+          <p class="flex items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
+            <HugeiconsIcon
+              :icon="Clock01Icon"
+              class="size-3.5 shrink-0 md:hidden"
+            />
+            {{ type.durationMinutes }} min
+          </p>
+
+          <p class="text-sm font-semibold tabular-nums text-foreground">
+            {{ formatPrice(type.price, type.currency) }}
+          </p>
+
+          <p class="text-sm text-muted-foreground">
+            {{ getMeetingTypeLabel(type.meetingType) }}
+          </p>
+
+          <div>
+            <Badge
+              variant="outline"
+              class="rounded-full px-2 py-0.5 text-[0.6rem] font-medium tracking-widest uppercase"
+              :class="type.isActive
+                ? 'border-primary/40 bg-primary/10 text-primary'
+                : 'border-foreground/15 text-muted-foreground'"
+            >
+              {{ type.isActive ? 'Active' : 'Inactive' }}
+            </Badge>
+          </div>
+
+          <div class="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  class="cursor-pointer"
+                  :aria-label="`Actions for ${type.name}`"
+                >
+                  <HugeiconsIcon
+                    :icon="MoreHorizontalIcon"
+                    class="size-4"
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  class="cursor-pointer"
+                  @click="handleEdit(type)"
+                >
+                  <HugeiconsIcon
+                    :icon="Edit02Icon"
+                    class="size-4"
+                  />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  class="cursor-pointer"
+                  @click="handleToggleActive(type)"
+                >
+                  {{ type.isActive ? 'Deactivate' : 'Activate' }}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  class="cursor-pointer"
+                  @click="handleDelete(type)"
+                >
+                  <HugeiconsIcon
+                    :icon="Delete02Icon"
+                    class="size-4"
+                  />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <ConsultationTypeModal
+      v-model="isCreateModalOpen"
+      @success="refetch"
+    />
+
+    <ConsultationTypeModal
+      v-model="isEditModalOpen"
+      :consultation-type="selectedType"
+      @success="refetch"
+    />
+  </div>
+</template>

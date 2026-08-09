@@ -10,7 +10,8 @@ import { dataTableColumnHelper } from '@/lib/data-table'
 import DataTable from '@/components/DataTable.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { MICRO, PANEL, PANEL_FOOTER, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 
 const page = ref(1)
 
@@ -35,7 +36,8 @@ function formatDate(iso: string): string {
       month: 'short',
       year: 'numeric',
     })
-  } catch {
+  }
+  catch {
     return iso
   }
 }
@@ -43,9 +45,8 @@ function formatDate(iso: string): string {
 function formatAmount(action: string, amountNaira: number | null): string {
   if (amountNaira == null) return '—'
   const formatted = formatNairaAmount(amountNaira)
-  if (action === 'refunded' || action === 'refund_initiated') {
+  if (action === 'refunded' || action === 'refund_initiated')
     return `−${formatted}`
-  }
   return formatted
 }
 
@@ -61,8 +62,6 @@ function formatStatusLabel(status: ReturnType<typeof getSubscriptionHistoryStatu
 
 const columnHelper = dataTableColumnHelper<PaymentRow>()
 
-// Sorting is client-side within the fetched page; pagination stays
-// server-driven through the footer below.
 const columns = columnHelper.columns([
   columnHelper.accessor('createdAt', {
     header: 'Date',
@@ -105,31 +104,34 @@ function goToPage(next: number) {
 </script>
 
 <template>
-  <Card>
-    <CardHeader>
-      <CardTitle>
-        Payment history
-      </CardTitle>
-      <CardDescription>
-        Invoices and charges for your GetALawyer membership.
-      </CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div class="overflow-x-auto rounded-lg border border-border">
-        <DataTable
-          :columns="columns"
-          :data="payments"
-          :loading="isPending"
-          :skeleton-rows="3"
-          empty-title="No payments yet"
-          empty-description="Your first charge will appear here after checkout."
-        />
+  <section :class="cn(PANEL)">
+    <div :class="PANEL_HEADER">
+      <div>
+        <span :class="cn(MICRO, 'text-muted-foreground')">
+          Invoices
+        </span>
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          Charges and refunds for your membership.
+        </p>
       </div>
+    </div>
 
-      <div
-        v-if="pagination && pagination.totalPages > 1"
-        class="mt-4 flex items-center justify-between gap-3 text-sm"
-      >
+    <div class="px-2 py-2 sm:px-4 sm:py-3">
+      <DataTable
+        :columns="columns"
+        :data="payments"
+        :loading="isPending"
+        :skeleton-rows="3"
+        empty-title="No payments yet"
+        empty-description="Your first charge will appear here after checkout."
+      />
+    </div>
+
+    <div
+      v-if="pagination && pagination.totalPages > 1"
+      :class="PANEL_FOOTER"
+    >
+      <div class="flex items-center justify-between gap-3 text-sm">
         <p class="text-muted-foreground tabular-nums">
           Page {{ pagination.page }} of {{ pagination.totalPages }}
         </p>
@@ -137,6 +139,7 @@ function goToPage(next: number) {
           <Button
             variant="outline"
             size="sm"
+            class="cursor-pointer"
             :disabled="pagination.page <= 1 || isFetching"
             @click="goToPage(pagination.page - 1)"
           >
@@ -145,6 +148,7 @@ function goToPage(next: number) {
           <Button
             variant="outline"
             size="sm"
+            class="cursor-pointer"
             :disabled="pagination.page >= pagination.totalPages || isFetching"
             @click="goToPage(pagination.page + 1)"
           >
@@ -152,6 +156,6 @@ function goToPage(next: number) {
           </Button>
         </div>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>

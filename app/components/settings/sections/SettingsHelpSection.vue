@@ -11,7 +11,7 @@
               Contact us
             </p>
             <p class="text-xs text-muted-foreground">
-              Questions about bookings, verification, or your account
+              Questions about bookings, your account, or using GetALawyer
             </p>
           </div>
           <Button

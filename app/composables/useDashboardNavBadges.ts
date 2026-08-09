@@ -1,10 +1,26 @@
 import type { Booking } from '~/types/booking'
 import type { ConversationInfo } from '~/types/messaging'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
+import {
+  getListingProgressTone,
+  LISTING_PROGRESS_NAV_BADGE_CLASS,
+} from '@/lib/listing-progress'
 import { getSessionUserType } from '~/lib/session-user'
 
-function badgeFromCount(count: number): string | undefined {
-  return count > 0 ? String(count) : undefined
+export type DashboardNavBadge = {
+  label: string
+  className?: string
+}
+
+function badgeFromCount(count: number): DashboardNavBadge | undefined {
+  return count > 0 ? { label: String(count) } : undefined
+}
+
+function badgeAlert(label = '!'): DashboardNavBadge {
+  return {
+    label,
+    className: 'border-0 bg-amber-500/15 text-amber-800 dark:text-amber-400',
+  }
 }
 
 /**
@@ -44,13 +60,24 @@ export function useDashboardNavBadges() {
     enabled: computed(() => role.value === 'lawyer'),
   })
 
-  const clientUpcomingBookingsBadge = computed(() => {
+  const { useConsultationTypesList } = useConsultationTypes()
+  const { data: consultationTypes, isFetched: consultationTypesFetched } = useConsultationTypesList(
+    false,
+    { enabled: isLawyer },
+  )
+
+  const { useAvailabilitySchedule } = useAvailability()
+  const { data: availabilitySchedule, isFetched: availabilityFetched } = useAvailabilitySchedule({
+    enabled: isLawyer,
+  })
+
+  const clientUpcomingBookingsBadge = computed((): DashboardNavBadge | undefined => {
     if (role.value !== 'client' || !clientBookingsFetched.value) return undefined
     const count = (clientBookings.value ?? []).filter((b: Booking) => isUpcomingBooking(b)).length
     return badgeFromCount(count)
   })
 
-  const unreadMessagesBadge = computed(() => {
+  const unreadMessagesBadge = computed((): DashboardNavBadge | undefined => {
     if (!conversationsFetched.value) return undefined
     const count = (conversations.value ?? []).reduce(
       (sum: number, c: ConversationInfo) => sum + (c.unreadCount ?? 0),
@@ -59,7 +86,7 @@ export function useDashboardNavBadges() {
     return badgeFromCount(count)
   })
 
-  const activeCasesBadge = computed(() => {
+  const activeCasesBadge = computed((): DashboardNavBadge | undefined => {
     if (role.value !== 'lawyer' && role.value !== 'client') return undefined
     if (!casesFetched.value) return undefined
     const count = (casesData.value?.cases ?? []).filter(
@@ -68,28 +95,46 @@ export function useDashboardNavBadges() {
     return badgeFromCount(count)
   })
 
-  const lawyerPendingAppointmentsBadge = computed(() => {
+  const lawyerPendingAppointmentsBadge = computed((): DashboardNavBadge | undefined => {
     if (role.value !== 'lawyer' || !lawyerBookingsFetched.value) return undefined
     const count = (lawyerBookings.value ?? []).filter((b: Booking) => b.status === 'pending').length
     return badgeFromCount(count)
   })
 
   /** Shown when lawyer has no active membership. */
-  const lawyerSubscriptionBadge = computed(() => {
+  const lawyerSubscriptionBadge = computed((): DashboardNavBadge | undefined => {
     if (role.value !== 'lawyer' || !subscriptionFetched.value) return undefined
-    return subscriptionStatus.value?.hasActiveSubscription ? undefined : '!'
+    return subscriptionStatus.value?.hasActiveSubscription ? undefined : badgeAlert()
   })
 
   /**
-   * Listing progress (Mobbin/Aboard-style percent). Hidden once the listing
-   * checklist is complete so the nav stays quiet for finished profiles.
+   * Listing progress (Mobbin/Aboard-style percent). Color tracks completion
+   * band; hidden once the checklist hits 100%.
    */
-  const lawyerListingBadge = computed(() => {
+  const lawyerListingBadge = computed((): DashboardNavBadge | undefined => {
     if (role.value !== 'lawyer' || !profileQuery.isFetched.value) return undefined
     const percent = profileStrength.value?.percent
     if (percent == null) return undefined
     if (percent >= 100) return undefined
-    return `${percent}%`
+    const tone = getListingProgressTone(percent)
+    return {
+      label: `${percent}%`,
+      className: LISTING_PROGRESS_NAV_BADGE_CLASS[tone],
+    }
+  })
+
+  /** Nudge until at least one active consultation type exists. */
+  const lawyerConsultationTypesBadge = computed((): DashboardNavBadge | undefined => {
+    if (role.value !== 'lawyer' || !consultationTypesFetched.value) return undefined
+    const active = (consultationTypes.value ?? []).filter((t) => t.isActive).length
+    return active > 0 ? undefined : badgeAlert()
+  })
+
+  /** Nudge until at least one weekday is open for booking. */
+  const lawyerAvailabilityBadge = computed((): DashboardNavBadge | undefined => {
+    if (role.value !== 'lawyer' || !availabilityFetched.value) return undefined
+    const hasOpenDay = (availabilitySchedule.value ?? []).some((row) => row.isAvailable)
+    return hasOpenDay ? undefined : badgeAlert()
   })
 
   return {
@@ -99,5 +144,7 @@ export function useDashboardNavBadges() {
     lawyerPendingAppointmentsBadge,
     lawyerSubscriptionBadge,
     lawyerListingBadge,
+    lawyerConsultationTypesBadge,
+    lawyerAvailabilityBadge,
   }
 }

@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { CreditCardIcon } from '@hugeicons/core-free-icons'
+import {
+  Calendar01Icon,
+  CheckmarkCircle01Icon,
+  CreditCardIcon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import type { SubscriptionRecord } from '~/composables/useSubscription'
 import { formatNairaAmount } from '~/composables/useSubscription'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
+import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 
 const props = defineProps<{
   subscription: SubscriptionRecord | null
@@ -20,6 +25,7 @@ const props = defineProps<{
   autoRenewEnabled: boolean
   canManageAutoRenew: boolean
   autoRenewPending: boolean
+  daysRemaining?: number | null
 }>()
 
 const emit = defineEmits<{
@@ -31,111 +37,155 @@ const paymentMethodLabel = computed(() => {
   const bank = props.subscription.bank ?? 'Card'
   return `${bank} ···· ${props.subscription.cardLast4}`
 })
+
+const statusBadgeClass = computed(() => {
+  if (props.hasActiveSubscription)
+    return 'border-primary/40 bg-primary/10 text-primary'
+  const status = props.subscription?.status
+  if (status === 'failed_renewal' || status === 'expired' || status === 'verification_failed')
+    return 'border-destructive/40 bg-destructive/10 text-destructive'
+  if (status === 'pending' || status === 'refund_processing')
+    return 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-500'
+  return 'border-foreground/15 bg-muted/50 text-muted-foreground'
+})
+
+const planSubtitle = computed(() => {
+  if (props.hasActiveSubscription) {
+    if (props.autoRenewEnabled && props.nextBillingLabel)
+      return `Auto-renews on ${props.nextBillingLabel}`
+    if (props.subscriptionEndLabel)
+      return `Active until ${props.subscriptionEndLabel}`
+    return 'Annual membership'
+  }
+  if (props.isMembershipRenewal)
+    return 'Renew to restore directory listing, bookings, and messaging'
+  return 'Activate to go live in search'
+})
+
+const displayPrice = computed(() => {
+  if (props.hasActiveSubscription && props.autoRenewEnabled && props.renewalPriceNaira != null)
+    return formatNairaAmount(props.renewalPriceNaira)
+  if (!props.hasActiveSubscription && props.renewalPriceNaira != null)
+    return formatNairaAmount(props.renewalPriceNaira)
+  if (props.lastPaidPriceNaira != null)
+    return formatNairaAmount(props.lastPaidPriceNaira)
+  return null
+})
+
+const planFeatures = [
+  'Public directory listing',
+  'Client bookings & messaging',
+  'Zero commission on consultation fees',
+  'Annual billing — renew when ready',
+] as const
 </script>
 
 <template>
-  <div class="grid gap-4 sm:grid-cols-2">
-    <Card>
-      <CardHeader class="pb-3">
-        <div class="flex items-start justify-between gap-3">
-          <CardTitle class="font-medium">
-            <template v-if="hasActiveSubscription">
-              Upcoming bill
-            </template>
-            <template v-else-if="isMembershipRenewal">
-              Renewal due
-            </template>
-            <template v-else>
-              Upcoming bill
-            </template>
-          </CardTitle>
-          <Badge
-            v-if="hasActiveSubscription"
-            variant="verified"
-          >
-            {{ statusLabel }}
-          </Badge>
-          <Badge
-            v-else
-            variant="soft"
-          >
-            {{ statusLabel }}
-          </Badge>
+  <section :class="cn(PANEL)">
+    <div :class="PANEL_HEADER">
+      <div class="min-w-0">
+        <span :class="cn(MICRO, 'text-muted-foreground')">
+          Current plan
+        </span>
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          {{ planSubtitle }}
+        </p>
+      </div>
+      <Badge
+        variant="outline"
+        class="shrink-0 rounded-full px-2.5 py-0.5 text-[0.65rem] font-medium tracking-wide uppercase"
+        :class="statusBadgeClass"
+      >
+        {{ statusLabel }}
+      </Badge>
+    </div>
+
+    <div class="space-y-0 divide-y divide-foreground/15">
+      <!-- Plan -->
+      <div class="grid gap-6 px-6 py-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <div class="min-w-0 space-y-4">
+          <div>
+            <p class="text-xl font-semibold tracking-tight text-foreground">
+              Annual membership
+            </p>
+            <p class="mt-1 text-sm text-muted-foreground">
+              One plan for listing, bookings, and messaging — you keep 100% of consultation fees.
+            </p>
+          </div>
+
+          <ul class="grid gap-2 sm:grid-cols-2">
+            <li
+              v-for="feature in planFeatures"
+              :key="feature"
+              class="flex items-start gap-2 text-sm text-muted-foreground"
+            >
+              <HugeiconsIcon
+                :icon="CheckmarkCircle01Icon"
+                class="mt-0.5 size-4 shrink-0 text-primary"
+              />
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
         </div>
-      </CardHeader>
-      <CardContent class="space-y-3">
-        <template v-if="hasActiveSubscription">
-          <p class="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
-            <template v-if="autoRenewEnabled && renewalPriceNaira != null">
-              {{ formatNairaAmount(renewalPriceNaira) }}
-            </template>
-            <template v-else>
-              —
-            </template>
+
+        <div class="sm:text-right">
+          <p
+            v-if="displayPrice"
+            class="text-3xl font-semibold tracking-tight tabular-nums text-foreground"
+          >
+            {{ displayPrice }}
           </p>
-          <p class="text-sm text-muted-foreground">
-            <template v-if="autoRenewEnabled && nextBillingLabel">
-              Next charge on {{ nextBillingLabel }}
+          <p
+            v-else
+            class="text-3xl font-semibold tracking-tight text-muted-foreground"
+          >
+            —
+          </p>
+          <p class="mt-1 text-xs text-muted-foreground">
+            <template v-if="hasActiveSubscription && autoRenewEnabled">
+              per year at renewal
             </template>
-            <template v-else-if="subscriptionEndLabel">
-              Active until {{ subscriptionEndLabel }}. Pay manually to extend.
+            <template v-else-if="hasActiveSubscription">
+              last paid / renew manually
             </template>
             <template v-else>
-              Your membership is active.
+              due to activate
             </template>
           </p>
           <p
-            v-if="showPriceChangedNotice && renewalPriceNaira != null"
-            class="text-xs leading-relaxed text-muted-foreground"
+            v-if="daysRemaining != null && hasActiveSubscription"
+            class="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground"
           >
-            Your last payment was
-            <span class="font-medium text-foreground">
-              {{ formatNairaAmount(lastPaidPriceNaira!) }}
-            </span>.
-            The next charge uses the current annual rate.
+            <HugeiconsIcon
+              :icon="Calendar01Icon"
+              class="size-3.5"
+            />
+            {{ daysRemaining }} days remaining
           </p>
-        </template>
-        <template v-else>
-          <p class="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
-            <template v-if="renewalPriceNaira != null">
-              {{ formatNairaAmount(renewalPriceNaira) }}
-            </template>
-            <template v-else>
-              —
-            </template>
-          </p>
-          <p class="text-sm text-muted-foreground">
-            <template v-if="isMembershipRenewal">
-              Pay to restore your directory listing, bookings, and messaging.
-            </template>
-            <template v-else>
-              Annual membership fee due to activate your listing.
-            </template>
-          </p>
-        </template>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
 
-    <Card>
-      <CardHeader class="pb-3">
-        <CardTitle class="font-medium">
-          Payment method
-        </CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div class="flex items-center gap-3">
+      <!-- Payment method -->
+      <div class="flex flex-col gap-3 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex min-w-0 items-center gap-3">
           <div
-            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-foreground/15 bg-muted/50"
+            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-foreground/15 bg-muted/40"
           >
-            <HugeiconsIcon :icon="CreditCardIcon" class="size-5 text-muted-foreground" />
+            <HugeiconsIcon
+              :icon="CreditCardIcon"
+              class="size-5 text-muted-foreground"
+            />
           </div>
           <div class="min-w-0">
-            <p class="text-sm font-medium text-foreground">
+            <p :class="cn(MICRO, 'text-muted-foreground')">
+              Payment
+            </p>
+            <p class="mt-0.5 truncate text-sm font-medium text-foreground">
               {{ paymentMethodLabel }}
             </p>
             <p class="text-xs text-muted-foreground">
               <template v-if="subscription?.cardLast4">
-                Used for auto-renew when enabled
+                Saved for auto-renew when enabled
               </template>
               <template v-else>
                 Added when you complete checkout
@@ -143,33 +193,47 @@ const paymentMethodLabel = computed(() => {
             </p>
           </div>
         </div>
+      </div>
 
-        <div
-          v-if="canManageAutoRenew"
-          class="flex items-start justify-between gap-4 rounded-lg border border-foreground/15 px-3 py-3"
-        >
-          <div class="min-w-0 space-y-0.5">
-            <p class="text-sm font-medium text-foreground">
-              Auto-renew
-            </p>
-            <p class="text-xs leading-relaxed text-muted-foreground">
-              <template v-if="autoRenewEnabled">
-                Charge your saved card on your renewal date.
-              </template>
-              <template v-else>
-                Renew manually each year before your membership ends.
-              </template>
-            </p>
-          </div>
-          <Switch
-            :model-value="autoRenewEnabled"
-            :disabled="autoRenewPending"
-            class="shrink-0"
-            aria-label="Toggle auto-renew"
-            @update:model-value="emit('update:autoRenew', $event)"
-          />
+      <!-- Auto-renew -->
+      <div
+        v-if="canManageAutoRenew"
+        class="flex items-start justify-between gap-4 px-6 py-5"
+      >
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-foreground">
+            Auto-renew
+          </p>
+          <p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            <template v-if="autoRenewEnabled">
+              We’ll charge your saved card on the renewal date at the current annual rate.
+            </template>
+            <template v-else>
+              Renew manually each year before your membership ends.
+            </template>
+          </p>
+          <p
+            v-if="showPriceChangedNotice && renewalPriceNaira != null && lastPaidPriceNaira != null"
+            class="mt-2 text-xs leading-relaxed text-muted-foreground"
+          >
+            Last payment was
+            <span class="font-medium text-foreground">
+              {{ formatNairaAmount(lastPaidPriceNaira) }}
+            </span>.
+            Next charge uses
+            <span class="font-medium text-foreground">
+              {{ formatNairaAmount(renewalPriceNaira) }}
+            </span>.
+          </p>
         </div>
-      </CardContent>
-    </Card>
-  </div>
+        <Switch
+          :model-value="autoRenewEnabled"
+          :disabled="autoRenewPending"
+          class="shrink-0"
+          aria-label="Toggle auto-renew"
+          @update:model-value="emit('update:autoRenew', $event)"
+        />
+      </div>
+    </div>
+  </section>
 </template>

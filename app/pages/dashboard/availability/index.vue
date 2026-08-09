@@ -1,274 +1,281 @@
 <script setup lang="ts">
-import { AlertCircleIcon, Calendar01Icon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, Calendar01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
-import { Skeleton } from '@/components/ui/skeleton'
+import ButtonBusy from '@/components/ButtonBusy.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
-import type { LawyerAvailabilitySchedule, DayOfWeek } from '~/types/availability'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
+import { MICRO, PANEL, PANEL_FOOTER, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
+import type { DayOfWeek, LawyerAvailabilitySchedule } from '~/types/availability'
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth']
-});
+  middleware: ['auth'],
+})
 
-const { 
-  useAvailabilitySchedule, 
-  useSetSchedule, 
-  useBulkSetSchedule, 
-  useDeleteSchedule 
-} = useAvailability();
+useHead({
+  title: 'Availability - GetALawyer',
+})
 
-const { data: schedules, isPending, isError, error, isSuccess } = useAvailabilitySchedule();
+const {
+  useAvailabilitySchedule,
+  useSetSchedule,
+  useBulkSetSchedule,
+  useDeleteSchedule,
+} = useAvailability()
 
-const setScheduleMutation = useSetSchedule();
-const bulkSetMutation = useBulkSetSchedule();
-const deleteMutation = useDeleteSchedule();
+const { data: schedules, isPending } = useAvailabilitySchedule()
 
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const setScheduleMutation = useSetSchedule()
+const bulkSetMutation = useBulkSetSchedule()
+const deleteMutation = useDeleteSchedule()
 
-// Track which day is currently being saved
-const savingDay = ref<DayOfWeek | null>(null);
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const dayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-// Track validation errors for each day
+const savingDay = ref<DayOfWeek | null>(null)
+
 const validationErrors = ref<Record<DayOfWeek, string | null>>({
-  '0': null,
-  '1': null,
-  '2': null,
-  '3': null,
-  '4': null,
-  '5': null,
-  '6': null,
-});
+  0: null,
+  1: null,
+  2: null,
+  3: null,
+  4: null,
+  5: null,
+  6: null,
+})
 
-// Initialize form state
-const weekSchedule = ref<Record<DayOfWeek, { enabled: boolean; startTime: string; endTime: string }>>({
-  '0': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '1': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '2': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '3': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '4': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '5': { enabled: false, startTime: '09:00', endTime: '17:00' },
-  '6': { enabled: false, startTime: '09:00', endTime: '17:00' },
-});
+const weekSchedule = ref<Record<DayOfWeek, { enabled: boolean, startTime: string, endTime: string }>>({
+  0: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  1: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  2: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  3: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  4: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  5: { enabled: false, startTime: '09:00', endTime: '17:00' },
+  6: { enabled: false, startTime: '09:00', endTime: '17:00' },
+})
 
-// Validate time range for a specific day
-const validateDay = (dayOfWeek: DayOfWeek): boolean => {
-  const config = weekSchedule.value[dayOfWeek];
-  
+const availableDaysCount = computed(
+  () => Object.values(weekSchedule.value).filter((day) => day.enabled).length,
+)
+
+function validateDay(dayOfWeek: DayOfWeek): boolean {
+  const config = weekSchedule.value[dayOfWeek]
+
   if (!config.enabled) {
-    validationErrors.value[dayOfWeek] = null;
-    return true;
+    validationErrors.value[dayOfWeek] = null
+    return true
   }
-  
-  if (!config.startTime || !config.endTime) {
-    validationErrors.value[dayOfWeek] = 'Please set both start and end times';
-    return false;
-  }
-  
-  // Compare times as strings (HH:mm format)
-  if (config.startTime >= config.endTime) {
-    validationErrors.value[dayOfWeek] = 'End time must be after start time';
-    return false;
-  }
-  
-  validationErrors.value[dayOfWeek] = null;
-  return true;
-};
 
-// Watch for changes to clear errors
+  if (!config.startTime || !config.endTime) {
+    validationErrors.value[dayOfWeek] = 'Please set both start and end times'
+    return false
+  }
+
+  if (config.startTime >= config.endTime) {
+    validationErrors.value[dayOfWeek] = 'End time must be after start time'
+    return false
+  }
+
+  validationErrors.value[dayOfWeek] = null
+  return true
+}
+
 watch(weekSchedule, (newSchedule) => {
   Object.keys(newSchedule).forEach((day) => {
-    validateDay(day as DayOfWeek);
-  });
-}, { deep: true });
+    validateDay(day as DayOfWeek)
+  })
+}, { deep: true })
 
-// Load existing schedules
 watch(schedules, (newSchedules) => {
   if (newSchedules && Array.isArray(newSchedules) && newSchedules.length > 0) {
-    // Create a fresh schedule object
-    const freshSchedule: Record<DayOfWeek, { enabled: boolean; startTime: string; endTime: string }> = {
-      '0': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '1': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '2': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '3': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '4': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '5': { enabled: false, startTime: '09:00', endTime: '17:00' },
-      '6': { enabled: false, startTime: '09:00', endTime: '17:00' },
-    };
-    
-    // Populate with actual schedule data
+    const freshSchedule: Record<DayOfWeek, { enabled: boolean, startTime: string, endTime: string }> = {
+      0: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      1: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      2: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      3: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      4: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      5: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      6: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    }
+
     newSchedules.forEach((schedule: LawyerAvailabilitySchedule) => {
       freshSchedule[schedule.dayOfWeek] = {
         enabled: schedule.isAvailable,
-        startTime: schedule.startTime.substring(0, 5), // HH:mm
+        startTime: schedule.startTime.substring(0, 5),
         endTime: schedule.endTime.substring(0, 5),
-      };
-    });
-    
-    weekSchedule.value = freshSchedule;
-  }
-}, { immediate: true });
+      }
+    })
 
-const handleQuickSetup = async (preset: 'weekdays' | 'weekdays-sat') => {
-  const schedulesToSet = [];
-  
+    weekSchedule.value = freshSchedule
+  }
+}, { immediate: true })
+
+async function handleQuickSetup(preset: 'weekdays' | 'weekdays-sat') {
+  const schedulesToSet = []
+
   if (preset === 'weekdays') {
     for (let day = 1; day <= 5; day++) {
       schedulesToSet.push({
         dayOfWeek: String(day) as DayOfWeek,
         startTime: '09:00:00',
         endTime: '17:00:00',
-        isAvailable: true
-      });
+        isAvailable: true,
+      })
       weekSchedule.value[String(day) as DayOfWeek] = {
         enabled: true,
         startTime: '09:00',
-        endTime: '17:00'
-      };
+        endTime: '17:00',
+      }
     }
-  } else if (preset === 'weekdays-sat') {
+  }
+  else if (preset === 'weekdays-sat') {
     for (let day = 1; day <= 6; day++) {
-      const endTime = day === 6 ? '14:00:00' : '17:00:00';
+      const endTime = day === 6 ? '14:00:00' : '17:00:00'
       schedulesToSet.push({
         dayOfWeek: String(day) as DayOfWeek,
         startTime: '09:00:00',
         endTime,
-        isAvailable: true
-      });
+        isAvailable: true,
+      })
       weekSchedule.value[String(day) as DayOfWeek] = {
         enabled: true,
         startTime: '09:00',
-        endTime: day === 6 ? '14:00' : '17:00'
-      };
+        endTime: day === 6 ? '14:00' : '17:00',
+      }
     }
   }
 
   try {
-    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet });
-    toast.success('Success', {
-      description: 'Quick setup applied successfully'
-    });
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to apply quick setup'
-    });
+    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet })
+    toast.success('Quick setup applied')
   }
-};
+  catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to apply quick setup'
+    toast.error(message)
+  }
+}
 
-const handleSaveDay = async (dayOfWeek: DayOfWeek) => {
-  // Validate before saving
+async function handleSaveDay(dayOfWeek: DayOfWeek) {
   if (!validateDay(dayOfWeek)) {
-    toast.error('Validation Error', {
-      description: validationErrors.value[dayOfWeek] || 'Invalid time range'
-    });
-    return;
+    toast.error(validationErrors.value[dayOfWeek] || 'Invalid time range')
+    return
   }
-  
-  savingDay.value = dayOfWeek;
-  const config = weekSchedule.value[dayOfWeek];
-  
+
+  savingDay.value = dayOfWeek
+  const config = weekSchedule.value[dayOfWeek]
+
   if (!config.enabled) {
-    // Find and delete existing schedule
-    const existing = schedules.value?.find((s: LawyerAvailabilitySchedule) => s.dayOfWeek === dayOfWeek);
+    const existing = schedules.value?.find((s: LawyerAvailabilitySchedule) => s.dayOfWeek === dayOfWeek)
     if (existing) {
       try {
-        await deleteMutation.mutateAsync(existing.id);
-        toast.success('Success', {
-          description: `${dayNames[parseInt(dayOfWeek)]} schedule removed`
-        });
-      } catch (error: any) {
-        toast.error('Error', {
-          description: error.message || 'Failed to remove schedule'
-        });
+        await deleteMutation.mutateAsync(existing.id)
+        toast.success(`${dayNames[Number.parseInt(dayOfWeek)]} marked unavailable`)
+      }
+      catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Failed to remove schedule'
+        toast.error(message)
       }
     }
-    savingDay.value = null;
-    return;
+    savingDay.value = null
+    return
   }
 
   try {
     await setScheduleMutation.mutateAsync({
       dayOfWeek,
-      startTime: config.startTime + ':00',
-      endTime: config.endTime + ':00',
-      isAvailable: true
-    });
-    toast.success('Success', {
-      description: `${dayNames[parseInt(dayOfWeek)]} schedule updated`
-    });
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to update schedule'
-    });
-  } finally {
-    savingDay.value = null;
+      startTime: `${config.startTime}:00`,
+      endTime: `${config.endTime}:00`,
+      isAvailable: true,
+    })
+    toast.success(`${dayNames[Number.parseInt(dayOfWeek)]} updated`)
   }
-};
+  catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to update schedule'
+    toast.error(message)
+  }
+  finally {
+    savingDay.value = null
+  }
+}
 
-const handleSaveAll = async () => {
-  const schedulesToSet = [];
-  let hasErrors = false;
-  
+async function handleSaveAll() {
+  const schedulesToSet = []
+  let hasErrors = false
+
   for (const [day, config] of Object.entries(weekSchedule.value)) {
     if (config.enabled) {
       if (!validateDay(day as DayOfWeek)) {
-        hasErrors = true;
-        continue;
+        hasErrors = true
+        continue
       }
-      
+
       schedulesToSet.push({
         dayOfWeek: day as DayOfWeek,
-        startTime: config.startTime + ':00',
-        endTime: config.endTime + ':00',
-        isAvailable: true
-      });
+        startTime: `${config.startTime}:00`,
+        endTime: `${config.endTime}:00`,
+        isAvailable: true,
+      })
     }
   }
 
   if (hasErrors) {
-    toast.error('Validation Error', {
-      description: 'Please fix the time range errors before saving'
-    });
-    return;
+    toast.error('Fix the time range errors before saving')
+    return
   }
 
   if (schedulesToSet.length === 0) {
-    toast.warning('Warning', {
-      description: 'Please enable at least one day'
-    });
-    return;
+    toast.warning('Enable at least one day')
+    return
   }
 
   try {
-    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet });
-    toast.success('Success', {
-      description: 'Weekly schedule saved successfully'
-    });
-  } catch (error: any) {
-    toast.error('Error', {
-      description: error.message || 'Failed to save schedule'
-    });
+    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet })
+    toast.success('Weekly schedule saved')
   }
-};
+  catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to save schedule'
+    toast.error(message)
+  }
+}
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 md:space-y-8">
     <DashboardPageHeader
+      eyebrow="Practice"
       title="Weekly availability"
-      description="Set your recurring weekly schedule for client bookings"
+      description="Your recurring hours for client bookings. Override specific dates with exceptions."
     >
       <template #actions>
-        <Button
+        <Badge
+          v-if="!isPending"
           variant="outline"
+          class="rounded-full border-foreground/15 px-3 py-1 text-xs font-semibold tabular-nums"
+          :class="availableDaysCount > 0 ? 'border-primary/40 bg-primary/10 text-primary' : 'text-muted-foreground'"
+        >
+          {{ availableDaysCount }} {{ availableDaysCount === 1 ? 'day' : 'days' }} open
+        </Badge>
+        <Button
           as-child
+          size="lg"
+          variant="outline"
+          class="cursor-pointer"
         >
           <NuxtLink
             to="/dashboard/availability/exceptions"
             class="gap-2"
           >
-            <HugeiconsIcon :icon="Calendar01Icon" class="size-4" />
-            Manage exceptions
+            <HugeiconsIcon
+              :icon="Calendar01Icon"
+              class="size-4"
+            />
+            Exceptions
           </NuxtLink>
         </Button>
       </template>
@@ -276,130 +283,145 @@ const handleSaveAll = async () => {
 
     <div
       v-if="isPending"
-      class="space-y-6"
+      class="space-y-4"
     >
-      <Skeleton class="h-32 w-full rounded-xl" />
-      <div class="space-y-3">
-        <Skeleton
-          v-for="i in 4"
-          :key="i"
-          class="h-16 w-full rounded-xl"
-        />
-      </div>
+      <Skeleton class="h-24 w-full rounded-xl" />
+      <Skeleton class="h-80 w-full rounded-xl" />
     </div>
 
     <template v-else>
-      <Card>
-        <CardHeader>
-          <CardTitle class="text-lg">
-            Quick setup
-          </CardTitle>
-          <CardDescription>
-            Apply common schedule templates
-          </CardDescription>
-        </CardHeader>
-        <CardContent class="flex flex-wrap gap-3">
+      <section :class="cn(PANEL)">
+        <div :class="PANEL_HEADER">
+          <div>
+            <span :class="cn(MICRO, 'text-muted-foreground')">
+              Quick setup
+            </span>
+            <p class="mt-0.5 text-xs text-muted-foreground">
+              Apply a common week, then fine-tune below.
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 px-6 py-5">
           <ButtonBusy
+            class="cursor-pointer"
             :loading="bulkSetMutation.isPending.value"
             @click="handleQuickSetup('weekdays')"
           >
-            Mon–Fri 9am–5pm
+            Mon–Fri · 9–5
           </ButtonBusy>
           <ButtonBusy
             variant="outline"
+            class="cursor-pointer"
             :loading="bulkSetMutation.isPending.value"
             @click="handleQuickSetup('weekdays-sat')"
           >
-            Mon–Fri 9am–5pm, Sat 9am–2pm
+            Mon–Sat · Sat to 2pm
           </ButtonBusy>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card
-    >
-      <CardHeader class="flex flex-row items-center justify-between gap-4">
-        <CardTitle class="text-lg">
-          Custom schedule
-        </CardTitle>
-        <ButtonBusy
-          :loading="bulkSetMutation.isPending.value"
-          @click="handleSaveAll"
-        >
-          Save all changes
-        </ButtonBusy>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div
-          v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
-          :key="day"
-          class="rounded-lg border border-foreground/15 p-4"
-          :class="validationErrors[day as DayOfWeek] ? 'border-destructive/40 bg-destructive/5' : 'border-border'"
-        >
-          <div class="flex flex-wrap items-center gap-4">
-            <div class="flex w-40 items-center gap-2">
-              <Switch
-                :model-value="weekSchedule[day as DayOfWeek].enabled"
-                @update:model-value="weekSchedule[day as DayOfWeek].enabled = $event"
-              />
-              <span class="font-medium text-foreground">{{ dayNames[index] }}</span>
-            </div>
-
-            <div
-              v-if="weekSchedule[day as DayOfWeek].enabled"
-              class="flex flex-1 flex-wrap items-center gap-4"
-            >
-              <Input
-                v-model="weekSchedule[day as DayOfWeek].startTime"
-                type="time"
-                class="max-w-40 flex-1"
-                :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
-              />
-              <span class="text-muted-foreground">to</span>
-              <Input
-                v-model="weekSchedule[day as DayOfWeek].endTime"
-                type="time"
-                class="max-w-40 flex-1"
-                :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
-              />
-              <ButtonBusy
-                size="sm"
-                variant="outline"
-                :loading="savingDay === day"
-                :disabled="!!validationErrors[day as DayOfWeek]"
-                @click="handleSaveDay(day as DayOfWeek)"
-              >
-                Save
-              </ButtonBusy>
-            </div>
-
-            <div
-              v-else
-              class="flex-1 text-muted-foreground"
-            >
-              Not available
-            </div>
+      <section :class="cn(PANEL)">
+        <div :class="PANEL_HEADER">
+          <div>
+            <span :class="cn(MICRO, 'text-muted-foreground')">
+              Weekly hours
+            </span>
+            <p class="mt-0.5 text-xs text-muted-foreground">
+              Toggle days on and set your open window.
+            </p>
           </div>
-
-          <p
-            v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled"
-            class="mt-2 flex items-center gap-1 text-sm text-destructive"
+          <ButtonBusy
+            size="sm"
+            class="cursor-pointer"
+            :loading="bulkSetMutation.isPending.value"
+            @click="handleSaveAll"
           >
-            <HugeiconsIcon :icon="AlertCircleIcon" class="size-4" />
-            {{ validationErrors[day as DayOfWeek] }}
+            Save all
+          </ButtonBusy>
+        </div>
+
+        <ul class="divide-y divide-foreground/15">
+          <li
+            v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
+            :key="day"
+            class="px-5 py-4 sm:px-6"
+            :class="validationErrors[day as DayOfWeek] ? 'bg-destructive/5' : ''"
+          >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div class="flex w-full items-center gap-3 sm:w-44">
+                <Switch
+                  :model-value="weekSchedule[day as DayOfWeek].enabled"
+                  @update:model-value="weekSchedule[day as DayOfWeek].enabled = $event"
+                />
+                <div class="min-w-0">
+                  <p class="font-medium text-foreground">
+                    <span class="sm:hidden">{{ dayShort[index] }}</span>
+                    <span class="hidden sm:inline">{{ dayNames[index] }}</span>
+                  </p>
+                  <p
+                    v-if="!weekSchedule[day as DayOfWeek].enabled"
+                    class="text-xs text-muted-foreground"
+                  >
+                    Closed
+                  </p>
+                </div>
+              </div>
+
+              <div
+                v-if="weekSchedule[day as DayOfWeek].enabled"
+                class="flex flex-1 flex-wrap items-center gap-3"
+              >
+                <Input
+                  v-model="weekSchedule[day as DayOfWeek].startTime"
+                  type="time"
+                  class="max-w-36"
+                  :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
+                />
+                <span class="text-xs text-muted-foreground">to</span>
+                <Input
+                  v-model="weekSchedule[day as DayOfWeek].endTime"
+                  type="time"
+                  class="max-w-36"
+                  :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
+                />
+                <ButtonBusy
+                  size="sm"
+                  variant="outline"
+                  class="cursor-pointer"
+                  :loading="savingDay === day"
+                  :disabled="!!validationErrors[day as DayOfWeek]"
+                  @click="handleSaveDay(day as DayOfWeek)"
+                >
+                  Save
+                </ButtonBusy>
+              </div>
+            </div>
+
+            <p
+              v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled"
+              class="mt-2 flex items-center gap-1.5 text-sm text-destructive"
+            >
+              <HugeiconsIcon
+                :icon="AlertCircleIcon"
+                class="size-4"
+              />
+              {{ validationErrors[day as DayOfWeek] }}
+            </p>
+          </li>
+        </ul>
+
+        <div :class="PANEL_FOOTER">
+          <p class="text-xs text-muted-foreground">
+            Need a day off or special hours?
+            <NuxtLink
+              to="/dashboard/availability/exceptions"
+              class="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Manage exceptions
+            </NuxtLink>
           </p>
         </div>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardContent class="flex gap-4 p-5">
-        <HugeiconsIcon :icon="InformationCircleIcon" class="size-6 shrink-0 text-primary" />
-        <div class="space-y-2 text-sm text-muted-foreground">
-          <p>Your weekly schedule sets your default availability. You can override specific dates using exceptions.</p>
-          <p>Changes take effect immediately and will be visible to clients when booking consultations.</p>
-        </div>
-      </CardContent>
-    </Card>
+      </section>
     </template>
   </div>
 </template>

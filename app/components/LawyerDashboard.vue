@@ -42,6 +42,7 @@ import {
   useSubscriptionPricing,
   useSubscriptionStatus,
 } from '~/composables/useSubscription'
+import { getLawyerApprovalHeaderBadge } from '~/lib/lawyerOnboardingStatus'
 
 const { session } = useAuth()
 const router = useRouter()
@@ -51,6 +52,9 @@ const applicationStatus = computed(
   () => (session.value?.user as { applicationStatus?: string })?.applicationStatus,
 )
 const isApproved = computed(() => applicationStatus.value === 'approved')
+const approvalHeaderBadge = computed(() =>
+  getLawyerApprovalHeaderBadge(null, applicationStatus.value),
+)
 
 watch(applicationStatus, (status) => {
   if (status === 'rejected') {
@@ -261,6 +265,14 @@ function confirmDecline() {
           {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
         </template>
         <template #actions>
+          <Badge
+            v-if="approvalHeaderBadge"
+            variant="outline"
+            class="rounded-full px-3 py-1 text-xs font-semibold"
+            :class="approvalHeaderBadge.className"
+          >
+            {{ approvalHeaderBadge.label }}
+          </Badge>
           <Button
             as-child
             size="lg"

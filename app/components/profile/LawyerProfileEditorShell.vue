@@ -27,7 +27,12 @@ import { getIncompleteListingSectionIds } from '~/lib/profile-check-catalog'
 import { ApiError } from '~/lib/api/client'
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import {
+  getListingProgressTone,
+  LISTING_PROGRESS_OUTLINE_BADGE_CLASS,
+} from '@/lib/listing-progress'
+import {
   canEditLawyerPublicProfile,
+  getLawyerApprovalHeaderBadge,
   getProfileEditorApprovalNotice,
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
@@ -162,11 +167,24 @@ const lawyerSections = computed(() =>
 
 const listingPercent = computed(() => profileStrength.value?.percent ?? null)
 
+const listingProgressTone = computed(() =>
+  getListingProgressTone(listingPercent.value ?? 0),
+)
+
 const listingStatusLabel = computed(() => {
   if (isDirectoryVisible.value) return 'Live in search'
   if ((profileStrength.value?.percent ?? 0) < 100) return 'In progress'
   return 'Hidden from search'
 })
+
+const approvalHeaderBadge = computed(() =>
+  getLawyerApprovalHeaderBadge(
+    onboardingStatus.value,
+    onboardingStatus.value
+      ? onboardingApplicationStatus(onboardingStatus.value)
+      : null,
+  ),
+)
 
 const isLoading = computed(
   () =>
@@ -402,7 +420,7 @@ onBeforeUnmount(() => {
     <DashboardPageHeader
       class="snapshot-rise"
       eyebrow="Practice"
-      description="How clients see you in search. Consultation types, availability, and billing stay in Settings."
+      description="How clients see you in search. Consultation types, availability, and billing live under Practice and Account."
     >
       <template #title>
         Your listing
@@ -411,10 +429,18 @@ onBeforeUnmount(() => {
         <Badge
           v-if="listingPercent != null"
           variant="outline"
-          class="rounded-full border-foreground/15 px-3 py-1 text-xs font-semibold tabular-nums"
-          :class="isDirectoryVisible ? 'border-primary/40 bg-primary/10 text-primary' : 'text-muted-foreground'"
+          class="rounded-full px-3 py-1 text-xs font-semibold tabular-nums"
+          :class="LISTING_PROGRESS_OUTLINE_BADGE_CLASS[listingProgressTone]"
         >
           {{ listingPercent }}% · {{ listingStatusLabel }}
+        </Badge>
+        <Badge
+          v-if="approvalHeaderBadge"
+          variant="outline"
+          class="rounded-full px-3 py-1 text-xs font-semibold"
+          :class="approvalHeaderBadge.className"
+        >
+          {{ approvalHeaderBadge.label }}
         </Badge>
         <TooltipProvider v-if="publicProfileUrl">
           <Tooltip :disabled="isDirectoryVisible">
@@ -526,9 +552,9 @@ onBeforeUnmount(() => {
         class="lg:hidden"
       />
 
-      <div class="snapshot-rise lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:items-start lg:gap-8" style="animation-delay: 120ms">
-        <aside class="hidden lg:block">
-          <div class="sticky top-24 rounded-xl border border-foreground/15 bg-card p-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+      <div class="snapshot-rise lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8" style="animation-delay: 120ms">
+        <aside class="relative hidden lg:block">
+          <div class="sticky top-6 rounded-xl border border-foreground/15 bg-card p-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
             <ProfileSectionNav :sections="lawyerSections" />
           </div>
         </aside>

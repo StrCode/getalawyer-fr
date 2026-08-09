@@ -18,14 +18,15 @@ export interface DashboardNavLink {
 // "Today" = time-sensitive surfaces, "Practice"/"My legal life" = the
 // durable objects they manage, "Account" = self-service.
 // Lawyer "Listing" is the public directory object (not personal account profile).
+// Today = operational work; Practice = how clients book you; Account = self-service.
 const lawyerDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
   { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true, group: 'Today' },
   { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
+  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Today' },
   { title: 'Listing', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Practice' },
   { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true, group: 'Practice' },
-  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true, group: 'Account' },
   { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon, group: 'Account' },
 ]

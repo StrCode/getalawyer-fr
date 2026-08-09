@@ -4,10 +4,10 @@
       class="hidden lg:block lg:w-56 lg:shrink-0"
       aria-label="Account settings"
     >
-      <div class="sticky top-24 space-y-1 rounded-xl border border-border bg-card p-2">
+      <div class="sticky top-24 space-y-1 rounded-xl border border-foreground/15 bg-card p-2">
         <ul class="space-y-0.5">
           <li
-            v-for="item in SETTINGS_NAV"
+            v-for="item in navItems"
             :key="item.id"
           >
             <button
@@ -18,7 +18,11 @@
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
               @click="$emit('update:activeSection', item.id)"
             >
-              <HugeiconsIcon :icon="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+              <HugeiconsIcon
+                :icon="item.icon"
+                class="size-4 shrink-0"
+                aria-hidden="true"
+              />
               <span class="truncate">{{ item.label }}</span>
             </button>
           </li>
@@ -37,7 +41,7 @@
         </SelectTrigger>
         <SelectContent>
           <SelectItem
-            v-for="item in SETTINGS_NAV"
+            v-for="item in navItems"
             :key="item.id"
             :value="item.id"
           >
@@ -53,7 +57,11 @@
 
 <script setup lang="ts">
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { SETTINGS_NAV, isSettingsSectionId } from '@/components/settings/settings-nav'
+import {
+  getSettingsNavForRole,
+  isSettingsSectionId,
+  type SettingsNavItem,
+} from '@/components/settings/settings-nav'
 import {
   Select,
   SelectContent,
@@ -65,17 +73,19 @@ import type { SettingsSectionId } from '~/types/account-settings'
 
 const props = defineProps<{
   activeSection: SettingsSectionId
+  role?: 'lawyer' | 'client'
 }>()
 
 const emit = defineEmits<{
   'update:activeSection': [SettingsSectionId]
 }>()
 
-const activeNavItem = computed(() => SETTINGS_NAV.find(n => n.id === props.activeSection))
+const navItems = computed<SettingsNavItem[]>(() => getSettingsNavForRole(props.role))
+
+const activeNavItem = computed(() => navItems.value.find(n => n.id === props.activeSection))
 
 function onMobileSectionChange(value: unknown) {
-  if (typeof value === 'string' && isSettingsSectionId(value)) {
+  if (typeof value === 'string' && isSettingsSectionId(value, props.role))
     emit('update:activeSection', value)
-  }
 }
 </script>

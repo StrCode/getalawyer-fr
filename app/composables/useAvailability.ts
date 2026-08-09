@@ -4,6 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import type { MaybeRefOrGetter } from 'vue'
 import { httpClient, type ApiResponse } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import type {
@@ -115,10 +116,11 @@ export const useAvailability = () => {
   const queryClient = useQueryClient()
 
   // Query: Get availability schedule
-  const useAvailabilitySchedule = () => {
+  const useAvailabilitySchedule = (options?: { enabled?: MaybeRefOrGetter<boolean> }) => {
     return useQuery({
       queryKey: queryKeys.availability.schedule,
       queryFn: availabilityAPI.getSchedule,
+      enabled: computed(() => options?.enabled === undefined || !!toValue(options.enabled)),
     })
   }
 

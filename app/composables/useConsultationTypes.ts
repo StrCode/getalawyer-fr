@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import type { MaybeRefOrGetter } from 'vue';
 import { api } from '~/lib/api';
 import type { ConsultationType, CreateConsultationTypeInput, UpdateConsultationTypeInput } from '~/types/booking';
 
@@ -6,13 +7,17 @@ export const useConsultationTypes = () => {
   const queryClient = useQueryClient();
 
   // Fetch all consultation types
-  const useConsultationTypesList = (includeInactive = false) => {
+  const useConsultationTypesList = (
+    includeInactive: MaybeRefOrGetter<boolean> = false,
+    options?: { enabled?: MaybeRefOrGetter<boolean> },
+  ) => {
     return useQuery({
-      queryKey: ['consultation-types', includeInactive],
+      queryKey: computed(() => ['consultation-types', toValue(includeInactive)] as const),
       queryFn: async () => {
-        const response = await api.consultationTypes.getAll(includeInactive);
+        const response = await api.consultationTypes.getAll(toValue(includeInactive));
         return response.consultationTypes;
       },
+      enabled: computed(() => options?.enabled === undefined || !!toValue(options.enabled)),
     });
   };
 

@@ -196,6 +196,75 @@ export function canEditLawyerPublicProfile(applicationStatus: ApplicationStatus)
   return applicationStatus === 'approved'
 }
 
+export interface LawyerApprovalHeaderBadge {
+  label: string
+  className: string
+}
+
+/**
+ * Compact approval chip for dashboard / listing page headers.
+ * Prefer full onboarding payload when available; falls back to applicationStatus alone.
+ */
+export function getLawyerApprovalHeaderBadge(
+  payload?: OnboardingStatusPayload | null,
+  applicationStatusFallback?: ApplicationStatus | null,
+): LawyerApprovalHeaderBadge | null {
+  if (payload) {
+    if (isLawyerVerificationFailed(payload)) {
+      return {
+        label: 'Verification failed',
+        className: 'border-destructive/40 bg-destructive/10 text-destructive',
+      }
+    }
+    if (isLawyerRejected(payload)) {
+      return {
+        label: 'Not approved',
+        className: 'border-destructive/40 bg-destructive/10 text-destructive',
+      }
+    }
+    if (onboardingApplicationStatus(payload) === 'approved') {
+      return {
+        label: 'Approved',
+        className: 'border-primary/40 bg-primary/10 text-primary',
+      }
+    }
+    if (isLawyerAwaitingApproval(payload) || onboardingApplicationStatus(payload) === 'pending_verification') {
+      return {
+        label: 'Pending review',
+        className: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-500',
+      }
+    }
+  }
+
+  const status = String(applicationStatusFallback ?? '')
+  if (status === 'approved') {
+    return {
+      label: 'Approved',
+      className: 'border-primary/40 bg-primary/10 text-primary',
+    }
+  }
+  if (status === 'rejected') {
+    return {
+      label: 'Not approved',
+      className: 'border-destructive/40 bg-destructive/10 text-destructive',
+    }
+  }
+  if (status === 'verification_failed') {
+    return {
+      label: 'Verification failed',
+      className: 'border-destructive/40 bg-destructive/10 text-destructive',
+    }
+  }
+  if (status === 'pending' || status === 'pending_verification') {
+    return {
+      label: 'Pending review',
+      className: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-500',
+    }
+  }
+
+  return null
+}
+
 export interface ProfileEditorApprovalNotice {
   variant: 'info' | 'warning' | 'destructive'
   title: string

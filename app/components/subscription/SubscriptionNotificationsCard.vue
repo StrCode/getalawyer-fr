@@ -6,8 +6,9 @@ import {
   useSubscriptionNotifications,
 } from '~/composables/useSubscription'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 
 const { data, isPending } = useSubscriptionNotifications({ enabled: true })
 const { mutate: markRead } = useMarkSubscriptionNotificationRead()
@@ -25,41 +26,42 @@ function formatWhen(iso: string): string {
       hour: '2-digit',
       minute: '2-digit',
     })
-  } catch {
+  }
+  catch {
     return iso
   }
 }
 
 function onOpenNotification(id: string, isRead: boolean) {
-  if (!isRead) {
+  if (!isRead)
     markRead(id)
-  }
 }
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="flex flex-row items-start justify-between gap-4 space-y-0">
-      <div>
-        <CardTitle>
-          Billing notifications
-        </CardTitle>
-        <CardDescription>
-          Payment receipts, renewal reminders, and billing updates.
-        </CardDescription>
+  <section :class="cn(PANEL)">
+    <div :class="PANEL_HEADER">
+      <div class="min-w-0">
+        <span :class="cn(MICRO, 'text-muted-foreground')">
+          Billing alerts
+        </span>
+        <p class="mt-0.5 text-xs text-muted-foreground">
+          Receipts, renewals, and payment updates.
+        </p>
       </div>
       <Button
         v-if="unreadCount > 0"
         variant="ghost"
         size="sm"
-        class="shrink-0"
+        class="shrink-0 cursor-pointer"
         :disabled="markingAll"
         @click="markAllRead()"
       >
         Mark all read
       </Button>
-    </CardHeader>
-    <CardContent>
+    </div>
+
+    <div class="px-6 py-5">
       <div
         v-if="isPending"
         class="space-y-2"
@@ -72,41 +74,43 @@ function onOpenNotification(id: string, isRead: boolean) {
         v-else-if="notifications.length === 0"
         class="text-sm text-muted-foreground"
       >
-        No billing notifications yet. Payment and renewal updates will appear here.
+        No billing notifications yet.
       </p>
 
       <ul
         v-else
-        class="divide-y divide-border rounded-lg border border-foreground/15"
+        class="divide-y divide-foreground/10"
       >
         <li
           v-for="item in notifications"
           :key="item.id"
-          class="flex gap-3 px-4 py-3 text-sm"
-          :class="item.isRead ? 'bg-background' : 'bg-primary/5'"
+          class="-mx-2 rounded-lg px-2 py-3 transition-colors duration-220 ease-luxe"
+          :class="item.isRead ? '' : 'bg-primary/5'"
         >
-          <span
-            class="mt-1.5 size-2 shrink-0 rounded-full"
-            :class="item.isRead ? 'bg-transparent' : 'bg-primary'"
-            aria-hidden="true"
-          />
           <button
             type="button"
-            class="min-w-0 flex-1 text-left"
+            class="flex w-full cursor-pointer gap-3 text-left text-sm"
             @click="onOpenNotification(item.id, item.isRead)"
           >
-            <p class="font-medium text-foreground">
-              {{ formatSubscriptionNotificationType(item.type) }}
-            </p>
-            <p class="mt-0.5 leading-relaxed text-muted-foreground">
-              {{ item.message.replace(/\s*\[[\d-]+\]\s*$/, '').replace(/\s*\[sub_[^\]]+\]\s*$/, '') }}
-            </p>
-            <p class="mt-1 text-xs text-muted-foreground/80">
-              {{ formatWhen(item.sentAt ?? item.createdAt) }}
-            </p>
+            <span
+              class="mt-1.5 size-2 shrink-0 rounded-full"
+              :class="item.isRead ? 'bg-transparent' : 'bg-primary'"
+              aria-hidden="true"
+            />
+            <span class="min-w-0 flex-1">
+              <span class="font-medium text-foreground">
+                {{ formatSubscriptionNotificationType(item.type) }}
+              </span>
+              <span class="mt-0.5 block leading-relaxed text-muted-foreground">
+                {{ item.message.replace(/\s*\[[\d-]+\]\s*$/, '').replace(/\s*\[sub_[^\]]+\]\s*$/, '') }}
+              </span>
+              <span class="mt-1 block text-xs text-muted-foreground/80">
+                {{ formatWhen(item.sentAt ?? item.createdAt) }}
+              </span>
+            </span>
           </button>
         </li>
       </ul>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>

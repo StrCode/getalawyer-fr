@@ -11,6 +11,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
 import {
+  getListingProgressTone,
+  LISTING_PROGRESS_BAR_CLASS,
+  LISTING_PROGRESS_TEXT_CLASS,
+} from '@/lib/listing-progress'
+import {
   buildProfileChecklist,
   getIncompleteListingItems,
   getTier1IncompleteItems,
@@ -29,6 +34,7 @@ const props = defineProps<{
 const showAllChecks = ref(false)
 
 const percent = computed(() => props.profileStrength?.percent ?? 0)
+const progressTone = computed(() => getListingProgressTone(percent.value))
 const isVisible = computed(() => props.eligibility?.isDirectoryVisible ?? false)
 const tier1Incomplete = computed(() => getTier1IncompleteItems(props.profileStrength))
 const incompleteItems = computed(() => getIncompleteListingItems(props.profileStrength))
@@ -153,7 +159,10 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
       <div class="space-y-4">
         <div class="flex items-end justify-between gap-4">
           <div>
-            <p class="text-4xl font-semibold tracking-tight tabular-nums text-foreground">
+            <p
+              class="text-4xl font-semibold tracking-tight tabular-nums"
+              :class="LISTING_PROGRESS_TEXT_CLASS[progressTone]"
+            >
               {{ percent }}%
             </p>
             <p class="mt-1 text-xs text-muted-foreground">
@@ -188,7 +197,8 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
           aria-label="Listing completion"
         >
           <div
-            class="h-full rounded-full bg-primary transition-[width] duration-500 ease-luxe"
+            class="h-full rounded-full transition-[width] duration-500 ease-luxe"
+            :class="LISTING_PROGRESS_BAR_CLASS[progressTone]"
             :style="{ width: `${percent}%` }"
           />
         </div>
