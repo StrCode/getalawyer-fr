@@ -5,11 +5,13 @@ export type SignOutRedirect = 'login' | 'home' | 'stay'
 
 type UseSignOutOptions = {
   /** Where to navigate after a successful sign-out. Defaults to `/login`. */
-  redirectTo?: SignOutRedirect
+  redirectTo?: SignOutRedirect | `/${string}`
 }
 
 /**
  * Shared sign-out flow: clears session, caches, storage, disconnects socket, then navigates.
+ * `redirectOverride` accepts presets (`login` / `home` / `stay`) or an absolute app path
+ * (e.g. `/forgot-password`).
  */
 export function useSignOut(options: UseSignOutOptions = {}) {
   const { signOut } = useAuth()
@@ -19,7 +21,7 @@ export function useSignOut(options: UseSignOutOptions = {}) {
 
   const isSigningOut = ref(false)
 
-  async function handleSignOut(redirectOverride?: SignOutRedirect) {
+  async function handleSignOut(redirectOverride?: SignOutRedirect | `/${string}`) {
     if (isSigningOut.value)
       return { error: undefined }
 
@@ -36,11 +38,17 @@ export function useSignOut(options: UseSignOutOptions = {}) {
       nuxtApp.$disconnectSocket?.()
 
       const redirect = redirectOverride ?? options.redirectTo ?? 'login'
-      if (redirect === 'login') {
-        await router.push('/login')
+      if (redirect === 'stay') {
+        // no navigation
       }
       else if (redirect === 'home') {
         await router.push('/')
+      }
+      else if (redirect === 'login') {
+        await router.push('/login')
+      }
+      else {
+        await router.push(redirect)
       }
 
       return result

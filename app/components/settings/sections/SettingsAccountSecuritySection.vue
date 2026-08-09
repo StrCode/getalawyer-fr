@@ -118,29 +118,31 @@
 
     <SettingsSectionCard
       title="Password"
-      description="Reset your password via email or phone verification."
+      description="Update your password while signed in."
     >
       <div class="flex flex-wrap items-center justify-between gap-4">
         <p class="text-sm text-muted-foreground">
-          Use the secure reset flow if you need to change your password.
+          You’ll need your current password to set a new one.
         </p>
         <Button
-          as-child
-          variant="outline"
+          type="button"
           size="sm"
+          class="cursor-pointer"
+          @click="changePasswordOpen = true"
         >
-          <NuxtLink to="/forgot-password">
-            Reset password
-          </NuxtLink>
+          Change password
         </Button>
       </div>
     </SettingsSectionCard>
+
+    <SettingsChangePasswordDialog v-model="changePasswordOpen" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { CheckmarkCircle01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import SettingsChangePasswordDialog from '@/components/settings/SettingsChangePasswordDialog.vue'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -149,6 +151,8 @@ const { session, refetchSession } = useAuth()
 const { sendPhoneOtp, verifyPhoneOtp, isTooManyAttemptsError } = usePhoneAuth()
 const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
 const { openDialog } = useEmailVerificationDialog()
+
+const changePasswordOpen = ref(false)
 
 const phone = ref('')
 const otpSent = ref(false)
