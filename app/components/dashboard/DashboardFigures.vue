@@ -27,7 +27,7 @@ function cellClasses(index: number): string {
     <div
       v-for="(figure, index) in figures"
       :key="figure.label"
-      class="border-foreground/15 px-5 py-4 lg:px-6 lg:py-5"
+      class="border-foreground/15 px-6 py-5"
       :class="cellClasses(index)"
     >
       <dt class="text-[0.65rem] tracking-[0.22em] text-muted-foreground uppercase">
@@ -36,7 +36,10 @@ function cellClasses(index: number): string {
       <dd class="mt-2 text-2xl leading-none font-semibold tracking-tight tabular-nums md:text-3xl">
         {{ figure.value }}
       </dd>
-      <dd v-if="figure.hint" class="mt-2 text-xs text-muted-foreground">
+      <dd
+        v-if="figure.hint"
+        class="mt-2 text-xs text-muted-foreground"
+      >
         {{ figure.hint }}
       </dd>
     </div>

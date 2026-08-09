@@ -22,15 +22,15 @@ function areaQuery(id: string) {
 
 <template>
   <Card class="py-0">
-    <CardHeader class="border-b border-foreground/15 px-4 py-4">
+    <CardHeader class="border-b border-foreground/15 px-6 py-4">
       <span class="micro-label text-muted-foreground">
         Your legal interests
       </span>
-      <p class="text-sm text-muted-foreground">
+      <p class="mt-0.5 text-xs text-muted-foreground">
         Find lawyers who match the areas you care about.
       </p>
     </CardHeader>
-    <CardContent class="space-y-4 px-4 py-4">
+    <CardContent class="space-y-4 px-6 py-5">
       <div class="flex flex-wrap gap-2">
         <Button
           v-for="spec in specializations"

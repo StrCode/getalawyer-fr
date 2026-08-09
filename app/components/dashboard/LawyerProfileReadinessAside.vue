@@ -28,7 +28,7 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
     v-if="showCard"
     class="py-0"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
+    <CardHeader class="flex flex-row items-baseline justify-between gap-3 space-y-0 border-b border-foreground/15 px-6 py-4">
       <div>
         <span class="micro-label text-muted-foreground">
           Publish readiness
@@ -45,7 +45,7 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
       </Badge>
     </CardHeader>
 
-    <CardContent class="px-4 py-4">
+    <CardContent class="px-6 py-5">
       <div class="h-1.5 overflow-hidden rounded-full bg-muted">
         <div
           class="h-full rounded-full bg-primary transition-all duration-500"

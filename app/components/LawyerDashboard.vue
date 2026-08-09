@@ -11,10 +11,12 @@ import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppoin
 import DashboardNotificationsPreview from '@/components/dashboard/DashboardNotificationsPreview.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
 import type { DashboardQuickLink } from '@/components/dashboard/DashboardQuickLinks.vue'
-import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeader.vue'
+import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
 import DashboardConsultationTypesCard from '@/components/dashboard/ConsultationTypesCard.vue'
 import DashboardAvailabilityCard from '@/components/dashboard/AvailabilityCard.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
+import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 import LawyerDashboardActionRequired from '@/components/dashboard/LawyerDashboardActionRequired.vue'
 import LawyerProfileReadinessAside from '@/components/dashboard/LawyerProfileReadinessAside.vue'
 import LawyerSubscriptionNotificationsPreview from '@/components/dashboard/LawyerSubscriptionNotificationsPreview.vue'
@@ -23,7 +25,6 @@ import DashboardFigures from '@/components/dashboard/DashboardFigures.vue'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -247,61 +248,77 @@ function confirmDecline() {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 md:space-y-8">
     <DashboardEmailVerificationAlert />
 
     <template v-if="!isOverviewLoading">
-      <LawyerDashboardActionRequired
-      :pending-bookings="pendingBookings"
-      :soon-bookings="soonBookings"
-      :follow-up-bookings="followUpBookings"
-      :unread-message-count="unreadMessageCount"
-      :subscription="subscriptionStatus?.subscription"
-      :has-active-subscription="subscriptionStatus?.hasActiveSubscription ?? false"
-      :directory-eligibility="directoryEligibility"
-      :is-approved="isApproved"
-    />
-
-    <DashboardPageHeader
-      class="snapshot-rise"
-      :eyebrow="todayLabel"
-      description="Manage your consultations and grow your practice"
-    >
-      <template #title>
-        {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
-      </template>
-      <template #actions>
-        <Button
-          as-child
-          variant="outline"
-          class="cursor-pointer"
-        >
-          <NuxtLink
-            to="/dashboard/profile"
-            class="gap-2"
+      <DashboardPageHeader
+        class="snapshot-rise"
+        :eyebrow="todayLabel"
+        description="Manage your consultations and grow your practice."
+      >
+        <template #title>
+          {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
+        </template>
+        <template #actions>
+          <Button
+            as-child
+            size="lg"
+            variant="outline"
+            class="cursor-pointer"
           >
-            <HugeiconsIcon
-              :icon="UserCircleIcon"
-              class="size-4"
-            />
-            View Profile
-          </NuxtLink>
-        </Button>
-      </template>
-    </DashboardPageHeader>
+            <NuxtLink
+              to="/dashboard/profile"
+              class="gap-2"
+            >
+              <HugeiconsIcon
+                :icon="UserCircleIcon"
+                class="size-4"
+              />
+              View Profile
+            </NuxtLink>
+          </Button>
+        </template>
+      </DashboardPageHeader>
+
+      <LawyerDashboardActionRequired
+        class="snapshot-rise"
+        style="animation-delay: 40ms"
+        :pending-bookings="pendingBookings"
+        :soon-bookings="soonBookings"
+        :follow-up-bookings="followUpBookings"
+        :unread-message-count="unreadMessageCount"
+        :subscription="subscriptionStatus?.subscription"
+        :has-active-subscription="subscriptionStatus?.hasActiveSubscription ?? false"
+        :directory-eligibility="directoryEligibility"
+        :is-approved="isApproved"
+      />
 
       <DashboardNextAppointment
-        v-if="nextBooking"
         class="snapshot-rise"
         style="animation-delay: 80ms"
         :booking="nextBooking"
-        :person-name="nextBooking.client?.name ?? 'Client'"
-        :consultation-name="nextBooking.consultationType?.name ?? 'Consultation'"
-        :detail-path="`/dashboard/appointments/${nextBooking.id}`"
+        :person-name="nextBooking?.client?.name ?? 'Client'"
+        :consultation-name="nextBooking?.consultationType?.name ?? 'Consultation'"
+        :detail-path="nextBooking ? `/dashboard/appointments/${nextBooking.id}` : undefined"
+        empty-label="All clear"
+        empty-title="No upcoming appointments. Ready for clients."
+        empty-description="Keep your profile and availability current so new requests can land."
+        empty-cta-label="Set availability"
+        empty-cta-to="/dashboard/availability"
       />
 
-      <div class="snapshot-rise grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]" style="animation-delay: 160ms">
-        <div class="min-w-0 space-y-6">
+      <DashboardQuickLinks
+        class="snapshot-rise"
+        style="animation-delay: 120ms"
+        :links="quickLinks"
+      />
+
+      <div
+        class="snapshot-rise grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
+        style="animation-delay: 160ms"
+      >
+        <div class="min-w-0 space-y-6 lg:col-span-7">
           <DashboardFigures
             :figures="[
               { label: 'Pending', value: stats.pending, hint: stats.pending === 0 ? 'No pending requests' : 'Awaiting your response' },
@@ -338,26 +355,13 @@ function confirmDecline() {
             </template>
           </EmptyState>
 
-          <section
+          <DashboardPanel
             v-if="recentBookings.length > 0"
-            class="space-y-3"
+            label="Recent consultations"
+            footer-to="/dashboard/appointments"
+            footer-label="View all appointments"
           >
-            <DashboardSectionHeader title="Recent consultations">
-              <template #actions>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
-                >
-                  <NuxtLink to="/dashboard/appointments">
-                    View all
-                  </NuxtLink>
-                </Button>
-              </template>
-            </DashboardSectionHeader>
-
-            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-foreground/15 bg-card">
+            <div class="divide-y divide-foreground/15">
               <BookingRow
                 v-for="booking in recentBookings"
                 :key="booking.id"
@@ -366,9 +370,14 @@ function confirmDecline() {
                 :subtitle="booking.consultationType?.name"
                 @click="navigateTo(`/dashboard/appointments/${booking.id}`)"
               >
-                <template v-if="booking.engagementOutcome === 'client_hired'" #body>
+                <template
+                  v-if="booking.engagementOutcome === 'client_hired'"
+                  #body
+                >
                   <div class="flex flex-wrap items-center gap-2">
-                    <Badge variant="verified">Case opened</Badge>
+                    <Badge variant="verified">
+                      Case opened
+                    </Badge>
                     <NuxtLink
                       :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
                       class="text-xs font-medium text-primary underline-offset-4 hover:underline"
@@ -401,85 +410,62 @@ function confirmDecline() {
                 </template>
               </BookingRow>
             </div>
-          </section>
+          </DashboardPanel>
 
-          <section
+          <DashboardPanel
             v-if="recentCases.length > 0"
-            class="space-y-3"
+            label="Active cases"
+            footer-to="/dashboard/cases"
+            footer-label="View all cases"
           >
-            <DashboardSectionHeader title="Active cases">
-              <template #actions>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
-                >
-                  <NuxtLink to="/dashboard/cases">
-                    View all
-                  </NuxtLink>
-                </Button>
-              </template>
-            </DashboardSectionHeader>
-            <DashboardCaseRow
-              v-for="caseItem in recentCases"
-              :key="caseItem.id"
-              :case-item="caseItem"
-              :person-name="caseItem.client?.name"
-              @click="navigateTo(`/dashboard/cases/${caseItem.id}`)"
-            />
-          </section>
+            <div class="divide-y divide-foreground/15">
+              <DashboardCaseRow
+                v-for="caseItem in recentCases"
+                :key="caseItem.id"
+                :case-item="caseItem"
+                :person-name="caseItem.client?.name"
+                @click="navigateTo(`/dashboard/cases/${caseItem.id}`)"
+              />
+            </div>
+          </DashboardPanel>
 
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <Card class="py-0 shadow-xs">
-              <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
-                <CardTitle>
-                  Consultation Types
-                </CardTitle>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <section :class="PANEL">
+              <div :class="cn(PANEL_HEADER)">
+                <span :class="cn(MICRO, 'text-muted-foreground')">
+                  Consultation types
+                </span>
+                <NuxtLink
+                  to="/dashboard/consultation-types"
+                  class="group text-xs font-medium text-primary"
                 >
-                  <NuxtLink to="/dashboard/consultation-types">
-                    Manage
-                  </NuxtLink>
-                </Button>
-              </CardHeader>
-              <CardContent class="p-5">
+                  Manage<span class="ml-1 inline-block transition-transform duration-220 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                </NuxtLink>
+              </div>
+              <div class="px-6 py-5">
                 <DashboardConsultationTypesCard />
-              </CardContent>
-            </Card>
-            <Card class="py-0 shadow-xs">
-              <CardHeader class="flex flex-row items-center justify-between border-b border-border/40 px-5 py-4">
-                <CardTitle>
+              </div>
+            </section>
+            <section :class="PANEL">
+              <div :class="cn(PANEL_HEADER)">
+                <span :class="cn(MICRO, 'text-muted-foreground')">
                   Availability
-                </CardTitle>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
+                </span>
+                <NuxtLink
+                  to="/dashboard/availability"
+                  class="group text-xs font-medium text-primary"
                 >
-                  <NuxtLink to="/dashboard/availability">
-                    Update
-                  </NuxtLink>
-                </Button>
-              </CardHeader>
-              <CardContent class="p-5">
+                  Update<span class="ml-1 inline-block transition-transform duration-220 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                </NuxtLink>
+              </div>
+              <div class="px-6 py-5">
                 <DashboardAvailabilityCard />
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </div>
-
-          <DashboardQuickLinks
-            title="Quick actions"
-            :links="quickLinks"
-          />
         </div>
 
-        <aside class="min-w-0 space-y-6">
+        <aside class="min-w-0 space-y-6 lg:col-span-5">
           <DashboardAgendaRail
             v-if="bookingsList.length > 0"
             :bookings="bookingsList"

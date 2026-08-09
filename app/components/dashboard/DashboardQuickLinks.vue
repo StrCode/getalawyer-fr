@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Hugeicon } from '@/lib/icon-types'
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { Card, CardContent } from '@/components/ui/card'
+import { MICRO } from '@/lib/dashboard-panel'
+
 export interface DashboardQuickLink {
   label: string
   description?: string
@@ -18,34 +18,33 @@ defineProps<{
 
 <template>
   <section>
-    <DashboardSectionHeader
+    <h2
       v-if="title"
-      :title="title"
-    />
+      :class="[MICRO, 'text-muted-foreground']"
+    >
+      {{ title }}
+    </h2>
     <div
-      class="gap-2 grid grid-cols-1 min-[480px]:grid-cols-2"
-      :class="title ? 'mt-3' : ''"
+      class="flex flex-wrap gap-2"
+      :class="title ? 'mt-4' : ''"
     >
       <NuxtLink
         v-for="link in links"
         :key="link.to"
         :to="link.to"
-        class="group block"
+        class="ease-luxe inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-card py-1.5 pr-3.5 pl-3 text-sm transition-colors duration-220 hover:border-primary/50 hover:bg-primary/5 active:bg-primary/10"
       >
-        <Card class="h-full py-0 transition-colors hover:border-primary/25 hover:bg-muted/30">
-          <CardContent class="flex items-center gap-3 p-3">
-            <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <HugeiconsIcon :icon="link.icon" class="size-4" />
-            </span>
-            <span class="flex-1 min-w-0">
-              <span class="block font-medium text-foreground text-sm">{{ link.label }}</span>
-              <span v-if="link.description" class="block text-muted-foreground text-xs truncate">
-                {{ link.description }}
-              </span>
-            </span>
-            <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
-          </CardContent>
-        </Card>
+        <HugeiconsIcon
+          :icon="link.icon"
+          class="size-3.5 text-muted-foreground"
+        />
+        <span class="font-medium text-foreground">{{ link.label }}</span>
+        <span
+          v-if="link.description"
+          class="hidden text-xs text-muted-foreground sm:inline"
+        >
+          · {{ link.description }}
+        </span>
       </NuxtLink>
     </div>
   </section>

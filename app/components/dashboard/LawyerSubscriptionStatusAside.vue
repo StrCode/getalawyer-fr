@@ -62,7 +62,7 @@ const showPrice = computed(
     class="py-0"
     :class="isHealthy ? '' : 'border-warning/25'"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
+    <CardHeader class="flex flex-row items-baseline justify-between gap-3 space-y-0 border-b border-foreground/15 px-6 py-4">
       <div>
         <span class="micro-label text-muted-foreground">
           Membership
@@ -79,7 +79,7 @@ const showPrice = computed(
       </Badge>
     </CardHeader>
 
-    <CardContent class="space-y-3 px-4 py-4">
+    <CardContent class="space-y-3 px-6 py-5">
       <p
         v-if="showPrice"
         class="text-sm text-muted-foreground"

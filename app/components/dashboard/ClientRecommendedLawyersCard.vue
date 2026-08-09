@@ -26,7 +26,7 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
 
 <template>
   <Card class="py-0">
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
+    <CardHeader class="flex flex-row items-baseline justify-between gap-3 space-y-0 border-b border-foreground/15 px-6 py-4">
       <div>
         <span class="micro-label text-muted-foreground">
           Recommended for you
@@ -40,11 +40,11 @@ function primarySpecialization(lawyer: LawyerSearchResult): string | null {
         :to="{ path: '/find-lawyers', query: listingQuery }"
         class="group shrink-0 text-xs font-medium text-primary"
       >
-        View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
+        View all<span class="ml-1 inline-block transition-transform duration-220 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span>
       </NuxtLink>
     </CardHeader>
 
-    <CardContent class="p-4">
+    <CardContent class="p-6">
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <NuxtLink
           v-for="lawyer in previewLawyers"

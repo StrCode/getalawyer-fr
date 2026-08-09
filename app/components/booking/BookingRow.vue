@@ -56,7 +56,7 @@ const timeRange = computed(() => {
 </script>
 
 <template>
-  <div class="group relative flex items-start gap-4 p-5 transition-colors hover:bg-background sm:p-6">
+  <div class="ease-luxe group relative flex items-start gap-4 p-5 transition-colors duration-220 hover:bg-muted/40 sm:px-6 sm:py-4">
     <!--
       Stretched-link overlay makes the whole padded row the link/button while keeping
       #actions and any interactive #body content valid (they sit above it via z-10).

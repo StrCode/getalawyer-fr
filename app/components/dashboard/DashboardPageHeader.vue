@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  title: string
+  title?: string
   description?: string
   /** Optional uppercase kicker above the title, set off by a hairline rule. */
   eyebrow?: string
@@ -8,18 +8,21 @@ defineProps<{
 </script>
 
 <template>
-  <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+  <header class="flex flex-wrap items-end justify-between gap-6">
     <div class="min-w-0 flex-1">
       <div
         v-if="eyebrow || $slots.eyebrow"
-        class="mb-3 flex items-center gap-3"
+        class="flex items-center gap-4"
       >
-        <span class="h-px w-8 bg-foreground/60" aria-hidden="true" />
+        <span
+          class="h-px w-8 bg-foreground md:w-12"
+          aria-hidden="true"
+        />
         <span class="eyebrow text-muted-foreground">
           <slot name="eyebrow">{{ eyebrow }}</slot>
         </span>
       </div>
-     <h1 class="app-page-title">
+      <h1 class="app-page-title mt-5">
         <slot name="title">{{ title }}</slot>
       </h1>
       <p
@@ -31,7 +34,7 @@ defineProps<{
     </div>
     <div
       v-if="$slots.actions"
-      class="flex shrink-0 items-center gap-2 sm:pt-1"
+      class="flex shrink-0 items-center gap-2"
     >
       <slot name="actions" />
     </div>

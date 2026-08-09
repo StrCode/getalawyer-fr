@@ -2,7 +2,8 @@
 import type { ClientLawyerContact } from '~/lib/client-derived-lawyers'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
+import { PANEL_LINK, PANEL_LINK_ARROW } from '@/lib/dashboard-panel'
 
 const props = defineProps<{
   lawyers: ClientLawyerContact[]
@@ -18,32 +19,35 @@ function initials(name: string): string {
 </script>
 
 <template>
-  <Card class="py-0">
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
-      <div>
-        <span class="micro-label text-muted-foreground">
-          My lawyers
-        </span>
-        <p class="mt-0.5 text-xs text-muted-foreground">
-          People you have consulted or messaged
-        </p>
-      </div>
-      <NuxtLink to="/dashboard/my-lawyers" class="group shrink-0 text-xs font-medium text-primary">View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span></NuxtLink>
-    </CardHeader>
+  <DashboardPanel
+    label="My lawyers"
+    meta="People you have consulted or messaged"
+  >
+    <template #headerMeta>
+      <NuxtLink
+        to="/dashboard/my-lawyers"
+        :class="PANEL_LINK"
+      >
+        View all<span
+          :class="PANEL_LINK_ARROW"
+          aria-hidden="true"
+        >→</span>
+      </NuxtLink>
+    </template>
 
-    <CardContent class="divide-y divide-border p-0">
-      <div
+    <ul class="divide-y divide-foreground/15">
+      <li
         v-for="lawyer in previewLawyers"
         :key="lawyer.lawyerProfileId ?? lawyer.userId ?? lawyer.name"
-        class="flex items-center gap-3 px-4 py-3"
+        class="flex items-center gap-3 px-6 py-3.5"
       >
-        <Avatar class="size-10 shrink-0">
+        <Avatar class="size-9 shrink-0">
           <AvatarImage
             v-if="lawyer.image"
             :src="lawyer.image"
             :alt="lawyer.name"
           />
-          <AvatarFallback class="bg-primary/10 text-primary text-sm">
+          <AvatarFallback class="bg-primary/10 text-sm text-primary">
             {{ initials(lawyer.name) }}
           </AvatarFallback>
         </Avatar>
@@ -69,7 +73,7 @@ function initials(name: string): string {
         >
           Active case
         </Badge>
-      </div>
-    </CardContent>
-  </Card>
+      </li>
+    </ul>
+  </DashboardPanel>
 </template>

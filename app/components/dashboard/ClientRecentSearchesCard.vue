@@ -43,7 +43,7 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
     v-if="showCard"
     class="py-0"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
+    <CardHeader class="flex flex-row items-baseline justify-between gap-3 space-y-0 border-b border-foreground/15 px-6 py-4">
       <div>
         <span class="micro-label text-muted-foreground">
           Recent searches
@@ -64,12 +64,12 @@ function searchQuery(entry: RecentLawyerDirectoryEntry) {
       </Button>
     </CardHeader>
 
-    <CardContent class="divide-y divide-border p-0">
+    <CardContent class="divide-y divide-foreground/15 p-0">
       <NuxtLink
         v-for="entry in searches"
         :key="entry.id"
         :to="{ path: '/find-lawyers', query: searchQuery(entry) }"
-        class="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
+        class="ease-luxe group flex items-center gap-3 px-6 py-3.5 transition-colors duration-220 hover:bg-muted/40"
       >
         <span class="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
           <HugeiconsIcon

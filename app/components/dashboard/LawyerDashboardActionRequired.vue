@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { AlertCircleIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import type { Booking } from '~/types/booking'
 import type { LawyerDirectoryEligibility } from '~/types/lawyer-directory-eligibility'
 import type { SubscriptionRecord } from '~/composables/useSubscription'
@@ -10,8 +8,9 @@ import {
   isExpiredMembership,
   needsMembershipRenewal,
 } from '~/composables/useSubscription'
-import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { MICRO } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
 
 export interface LawyerDashboardActionItem {
   id: string
@@ -130,55 +129,45 @@ const hasActions = computed(() => actionItems.value.length > 0)
 </script>
 
 <template>
-  <Alert
+  <section
     v-if="hasActions"
-    variant="warning"
-    class="px-4 py-4"
+    class="overflow-hidden rounded-xl border border-amber-500/35 bg-amber-500/8"
+    aria-label="Action required"
   >
-    <div class="col-start-2 flex min-w-0 items-start gap-3">
-      <div
-        class="flex size-9 shrink-0 items-center justify-center rounded-full bg-warning/15"
-        aria-hidden="true"
+    <div class="flex items-baseline justify-between gap-3 border-b border-amber-500/25 px-5 py-3 sm:px-6">
+      <span :class="cn(MICRO, 'font-semibold tracking-[0.12em] text-amber-700 dark:text-amber-500')">
+        Action required
+      </span>
+      <span class="text-xs text-amber-800/70 tabular-nums dark:text-amber-400/80">
+        {{ actionItems.length }}
+      </span>
+    </div>
+
+    <ul class="divide-y divide-amber-500/20">
+      <li
+        v-for="item in actionItems"
+        :key="item.id"
+        class="flex flex-col gap-3 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6"
       >
-        <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" />
-      </div>
-      <div class="flex min-w-0 flex-1 flex-col gap-3">
-        <div>
-          <p class="text-sm font-semibold">
-            Action required
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-foreground">
+            {{ item.title }}
           </p>
-          <p class="mt-0.5 text-sm leading-relaxed opacity-90">
-            Items that need your attention right now.
+          <p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            {{ item.description }}
           </p>
         </div>
-
-        <ul class="flex flex-col gap-2">
-          <li
-            v-for="item in actionItems"
-            :key="item.id"
-            class="flex flex-col gap-2 rounded-lg border border-warning-border/80 bg-card/70 px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-foreground">
-                {{ item.title }}
-              </p>
-              <p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                {{ item.description }}
-              </p>
-            </div>
-            <Button
-              as-child
-              size="sm"
-              variant="outline"
-              class="shrink-0 cursor-pointer border-warning-border bg-card"
-            >
-              <NuxtLink :to="item.to">
-                {{ item.ctaLabel }}
-              </NuxtLink>
-            </Button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </Alert>
+        <Button
+          as-child
+          size="sm"
+          variant="outline"
+          class="shrink-0 cursor-pointer border-amber-500/40 bg-background/80"
+        >
+          <NuxtLink :to="item.to">
+            {{ item.ctaLabel }}
+          </NuxtLink>
+        </Button>
+      </li>
+    </ul>
+  </section>
 </template>

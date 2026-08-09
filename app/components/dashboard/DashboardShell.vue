@@ -9,13 +9,15 @@
       :class="containedScroll ? 'flex flex-col overflow-hidden' : 'app-scrollbar overflow-y-auto'"
     >
       <div
-        class="@container/main flex flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6"
+        class="@container/main flex flex-col"
         :class="containedScroll ? 'min-h-0 flex-1 overflow-hidden' : ''"
       >
         <div
           class="flex w-full flex-1 flex-col"
           :class="[
-            fullBleed ? '' : 'mx-auto max-w-5xl',
+            fullBleed
+              ? 'min-h-0 px-4 pt-4 pb-4 sm:px-6 lg:px-8'
+              : 'mx-auto w-full max-w-6xl px-4 pt-6 pb-10 sm:px-6 md:pt-8 md:pb-14 lg:px-8',
             containedScroll ? 'min-h-0' : '',
           ]"
         >

@@ -16,7 +16,7 @@ import DashboardMessagesPreview from '@/components/dashboard/DashboardMessagesPr
 import DashboardNextAppointment from '@/components/dashboard/DashboardNextAppointment.vue'
 import DashboardQuickLinks from '@/components/dashboard/DashboardQuickLinks.vue'
 import type { DashboardQuickLink } from '@/components/dashboard/DashboardQuickLinks.vue'
-import DashboardSectionHeader from '@/components/dashboard/DashboardSectionHeader.vue'
+import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import DashboardFigures from '@/components/dashboard/DashboardFigures.vue'
 import ClientProfileCompletenessAside from '@/components/profile/ClientProfileCompletenessAside.vue'
@@ -223,58 +223,66 @@ const showFullEmpty = computed(
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 md:space-y-8">
     <DashboardEmailVerificationAlert />
 
     <template v-if="!isOverviewLoading">
-      <ClientDashboardActionRequired
-      :pending-bookings="pendingBookings"
-      :soon-bookings="soonBookings"
-      :unread-message-count="unreadMessageCount"
-      :fee-request-notifications="feeRequestNotifications"
-    />
-
-    <DashboardPageHeader
-      class="snapshot-rise"
-      :eyebrow="todayLabel"
-      description="Here's what's happening with your legal consultations"
-    >
-      <template #title>
-        {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
-      </template>
-      <template #actions>
-        <Button
-          as-child
-          class="cursor-pointer"
-        >
-          <NuxtLink
-            to="/find-lawyers"
-            class="gap-2"
+      <DashboardPageHeader
+        class="snapshot-rise"
+        :eyebrow="todayLabel"
+        description="Here's what's happening with your legal consultations."
+      >
+        <template #title>
+          {{ daypart }}, <em class="font-semibold text-primary not-italic">{{ firstName }}</em>.
+        </template>
+        <template #actions>
+          <Button
+            as-child
+            size="lg"
+            class="cursor-pointer"
           >
-            <HugeiconsIcon
-              :icon="Search01Icon"
-              class="size-4"
-            />
-            Find a Lawyer
-          </NuxtLink>
-        </Button>
-      </template>
-    </DashboardPageHeader>
+            <NuxtLink
+              to="/find-lawyers"
+              class="gap-2"
+            >
+              <HugeiconsIcon
+                :icon="Search01Icon"
+                class="size-4"
+              />
+              Find a Lawyer
+            </NuxtLink>
+          </Button>
+        </template>
+      </DashboardPageHeader>
+
+      <ClientDashboardActionRequired
+        class="snapshot-rise"
+        style="animation-delay: 40ms"
+        :pending-bookings="pendingBookings"
+        :soon-bookings="soonBookings"
+        :unread-message-count="unreadMessageCount"
+        :fee-request-notifications="feeRequestNotifications"
+      />
 
       <DashboardNextAppointment
-        v-if="nextBooking"
         class="snapshot-rise"
         style="animation-delay: 80ms"
         :booking="nextBooking"
-        :person-name="nextBooking.lawyer?.name"
-        :person-image="nextBooking.lawyer?.profilePicture"
+        :person-name="nextBooking?.lawyer?.name"
+        :person-image="nextBooking?.lawyer?.profilePicture"
+      />
+
+      <DashboardQuickLinks
+        class="snapshot-rise"
+        style="animation-delay: 120ms"
+        :links="quickLinks"
       />
 
       <div
-        class="snapshot-rise grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]"
+        class="snapshot-rise grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
         style="animation-delay: 160ms"
       >
-        <div class="min-w-0 space-y-6">
+        <div class="min-w-0 space-y-6 lg:col-span-7">
           <DashboardFigures
             :figures="[
               { label: 'Upcoming', value: stats.upcoming, hint: stats.upcoming === 0 ? 'No upcoming' : 'Confirmed consultations' },
@@ -343,25 +351,13 @@ const showFullEmpty = computed(
             </template>
           </EmptyState>
 
-          <section
+          <DashboardPanel
             v-if="recentBookings.length > 0"
-            class="space-y-3"
+            label="Recent consultations"
+            footer-to="/dashboard/bookings"
+            footer-label="View all consultations"
           >
-            <DashboardSectionHeader title="Recent consultations">
-              <template #actions>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
-                >
-                  <NuxtLink to="/dashboard/bookings">
-                    View all
-                  </NuxtLink>
-                </Button>
-              </template>
-            </DashboardSectionHeader>
-            <div class="divide-y divide-border overflow-hidden rounded-2xl border border-foreground/15 bg-card">
+            <div class="divide-y divide-foreground/15">
               <BookingRow
                 v-for="booking in recentBookings"
                 :key="booking.id"
@@ -372,9 +368,14 @@ const showFullEmpty = computed(
                 :subtitle="booking.consultationType?.name"
                 @click="navigateTo(`/dashboard/bookings/${booking.id}`)"
               >
-                <template v-if="booking.engagementOutcome === 'client_hired'" #body>
+                <template
+                  v-if="booking.engagementOutcome === 'client_hired'"
+                  #body
+                >
                   <div class="flex flex-wrap items-center gap-2">
-                    <Badge variant="verified">Case opened</Badge>
+                    <Badge variant="verified">
+                      Case opened
+                    </Badge>
                     <NuxtLink
                       :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
                       class="text-xs font-medium text-primary underline-offset-4 hover:underline"
@@ -386,38 +387,23 @@ const showFullEmpty = computed(
                 </template>
               </BookingRow>
             </div>
-          </section>
+          </DashboardPanel>
 
-          <section
+          <DashboardPanel
             v-if="recentCases.length > 0"
-            class="space-y-3"
+            label="Active cases"
+            footer-to="/dashboard/cases"
+            footer-label="View all cases"
           >
-            <DashboardSectionHeader title="Active cases">
-              <template #actions>
-                <Button
-                  as-child
-                  variant="ghost"
-                  size="sm"
-                  class="cursor-pointer"
-                >
-                  <NuxtLink to="/dashboard/cases">
-                    View all
-                  </NuxtLink>
-                </Button>
-              </template>
-            </DashboardSectionHeader>
-            <DashboardCaseRow
-              v-for="caseItem in recentCases"
-              :key="caseItem.id"
-              :case-item="caseItem"
-              @click="navigateTo(`/dashboard/cases/${caseItem.id}`)"
-            />
-          </section>
-
-          <DashboardQuickLinks
-            title="Quick actions"
-            :links="quickLinks"
-          />
+            <div class="divide-y divide-foreground/15">
+              <DashboardCaseRow
+                v-for="caseItem in recentCases"
+                :key="caseItem.id"
+                :case-item="caseItem"
+                @click="navigateTo(`/dashboard/cases/${caseItem.id}`)"
+              />
+            </div>
+          </DashboardPanel>
 
           <ClientLegalInterestsCard
             v-if="showLegalInterests"
@@ -433,7 +419,7 @@ const showFullEmpty = computed(
           <ClientRecentSearchesCard />
         </div>
 
-        <aside class="min-w-0 space-y-6">
+        <aside class="min-w-0 space-y-6 lg:col-span-5">
           <DashboardAgendaRail
             v-if="bookings.length > 0"
             :bookings="bookings"

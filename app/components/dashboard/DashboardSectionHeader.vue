@@ -1,6 +1,15 @@
+<script setup lang="ts">
+import { MICRO } from '@/lib/dashboard-panel'
+import { cn } from '@/lib/utils'
+
+defineProps<{
+  title: string
+}>()
+</script>
+
 <template>
-  <div class="flex items-center justify-between gap-3">
-   <h2 class="font-semibold text-foreground text-lg">
+  <div class="flex items-baseline justify-between gap-3">
+    <h2 :class="cn(MICRO, 'text-muted-foreground')">
       {{ title }}
     </h2>
     <div
@@ -11,9 +20,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-  title: string
-}>()
-</script>

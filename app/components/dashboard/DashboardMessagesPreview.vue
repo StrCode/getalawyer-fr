@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
+import { PANEL_LINK, PANEL_LINK_ARROW } from '@/lib/dashboard-panel'
 import type { ConversationInfo } from '~/types/messaging'
 
 const props = defineProps<{
@@ -57,80 +58,78 @@ const hasConversations = computed(() => previewConversations.value.length > 0)
 </script>
 
 <template>
-  <Card class="py-0">
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
-      <div>
-        <span class="micro-label text-muted-foreground">
-          Messages
-        </span>
-        <p
-          v-if="totalUnread > 0"
-          class="mt-0.5 text-xs text-muted-foreground"
-        >
-          {{ totalUnread }} unread
-        </p>
-      </div>
-      <NuxtLink to="/dashboard/messages" class="group shrink-0 text-xs font-medium text-primary">View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span></NuxtLink>
-    </CardHeader>
-
-    <CardContent class="p-0">
-      <p
-        v-if="!hasConversations"
-        class="px-4 py-6 text-sm text-muted-foreground"
+  <DashboardPanel
+    label="Messages"
+    :meta="totalUnread > 0 ? `${totalUnread} unread` : undefined"
+  >
+    <template #headerMeta>
+      <NuxtLink
+        to="/dashboard/messages"
+        :class="PANEL_LINK"
       >
-        No conversations yet. Message a lawyer after booking a consultation.
-      </p>
+        View all<span
+          :class="PANEL_LINK_ARROW"
+          aria-hidden="true"
+        >→</span>
+      </NuxtLink>
+    </template>
 
-      <ul
-        v-else
-        class="divide-y divide-border"
+    <p
+      v-if="!hasConversations"
+      class="px-6 py-8 text-sm text-muted-foreground"
+    >
+      No conversations yet. Message a lawyer after booking a consultation.
+    </p>
+
+    <ul
+      v-else
+      class="divide-y divide-foreground/15"
+    >
+      <li
+        v-for="conversation in previewConversations"
+        :key="conversation.id"
       >
-        <li
-          v-for="conversation in previewConversations"
-          :key="conversation.id"
+        <NuxtLink
+          :to="`/dashboard/messages?conversation=${conversation.id}`"
+          class="ease-luxe flex items-start gap-3 px-6 py-3.5 transition-colors duration-220 hover:bg-muted/40"
         >
-          <NuxtLink
-            :to="`/dashboard/messages?conversation=${conversation.id}`"
-            class="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
-          >
-            <Avatar class="size-10 shrink-0">
-              <AvatarImage
-                v-if="getOtherParticipant(conversation)?.image"
-                :src="getOtherParticipant(conversation)!.image!"
-                :alt="getOtherParticipant(conversation)?.name ?? 'Lawyer'"
-              />
-              <AvatarFallback class="bg-primary/10 text-primary text-sm">
-                {{ (getOtherParticipant(conversation)?.name ?? 'L').slice(0, 2).toUpperCase() }}
-              </AvatarFallback>
-            </Avatar>
+          <Avatar class="size-9 shrink-0">
+            <AvatarImage
+              v-if="getOtherParticipant(conversation)?.image"
+              :src="getOtherParticipant(conversation)!.image!"
+              :alt="getOtherParticipant(conversation)?.name ?? 'Lawyer'"
+            />
+            <AvatarFallback class="bg-primary/10 text-sm text-primary">
+              {{ (getOtherParticipant(conversation)?.name ?? 'L').slice(0, 2).toUpperCase() }}
+            </AvatarFallback>
+          </Avatar>
 
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center justify-between gap-2">
-                <p class="truncate text-sm font-medium text-foreground">
-                  {{ getOtherParticipant(conversation)?.name ?? 'Conversation' }}
-                </p>
-                <span
-                  v-if="formatWhen(conversation.lastMessageAt)"
-                  class="shrink-0 text-xs text-muted-foreground"
-                >
-                  {{ formatWhen(conversation.lastMessageAt) }}
-                </span>
-              </div>
-              <p class="mt-0.5 truncate text-xs text-muted-foreground">
-                {{ formatPreview(conversation) }}
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <p class="truncate text-sm font-medium text-foreground">
+                {{ getOtherParticipant(conversation)?.name ?? 'Conversation' }}
               </p>
+              <span
+                v-if="formatWhen(conversation.lastMessageAt)"
+                class="shrink-0 text-xs text-muted-foreground tabular-nums"
+              >
+                {{ formatWhen(conversation.lastMessageAt) }}
+              </span>
             </div>
+            <p class="mt-0.5 truncate text-xs text-muted-foreground">
+              {{ formatPreview(conversation) }}
+            </p>
+          </div>
 
-            <Badge
-              v-if="conversation.unreadCount > 0"
-              variant="default"
-              class="mt-1 shrink-0 tabular-nums"
-            >
-              {{ conversation.unreadCount }}
-            </Badge>
-          </NuxtLink>
-        </li>
-      </ul>
-    </CardContent>
-  </Card>
+          <Badge
+            v-if="conversation.unreadCount > 0"
+            variant="default"
+            class="mt-1 shrink-0 tabular-nums"
+          >
+            {{ conversation.unreadCount }}
+          </Badge>
+        </NuxtLink>
+      </li>
+    </ul>
+  </DashboardPanel>
 </template>

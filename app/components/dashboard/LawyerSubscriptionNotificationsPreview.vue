@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
+import { PANEL_LINK, PANEL_LINK_ARROW } from '@/lib/dashboard-panel'
 import type { SubscriptionNotificationRecord } from '~/composables/useSubscription'
 
 const props = defineProps<{
@@ -22,47 +23,48 @@ const previewItems = computed(() => props.notifications.slice(0, 4))
 </script>
 
 <template>
-  <Card
+  <DashboardPanel
     v-if="previewItems.length > 0"
-    class="py-0"
+    label="Billing updates"
+    :meta="(unreadCount ?? 0) > 0 ? `${unreadCount} unread` : undefined"
   >
-    <CardHeader class="flex flex-row items-center justify-between gap-3 space-y-0 border-b border-foreground/15 px-4 py-4">
-      <div>
-        <span class="micro-label text-muted-foreground">
-          Billing updates
-        </span>
-        <p
-          v-if="(unreadCount ?? 0) > 0"
-          class="mt-0.5 text-xs text-muted-foreground"
-        >
-          {{ unreadCount }} unread
-        </p>
-      </div>
-      <NuxtLink to="/dashboard/subscription" class="group shrink-0 text-xs font-medium text-primary">View all<span class="ml-1 inline-block transition-transform duration-200 ease-luxe group-hover:translate-x-0.5" aria-hidden="true">→</span></NuxtLink>
-    </CardHeader>
-
-    <CardContent class="divide-y divide-border p-0">
+    <template #headerMeta>
       <NuxtLink
+        to="/dashboard/subscription"
+        :class="PANEL_LINK"
+      >
+        View all<span
+          :class="PANEL_LINK_ARROW"
+          aria-hidden="true"
+        >→</span>
+      </NuxtLink>
+    </template>
+
+    <ul class="divide-y divide-foreground/15">
+      <li
         v-for="notification in previewItems"
         :key="notification.id"
-        to="/dashboard/subscription"
-        class="block px-4 py-3 transition-colors hover:bg-muted/40"
-        :class="notification.read ? '' : 'bg-primary/5'"
       >
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-foreground">
-              {{ notification.title }}
-            </p>
-            <p class="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-              {{ notification.body }}
-            </p>
+        <NuxtLink
+          to="/dashboard/subscription"
+          class="ease-luxe block px-6 py-3.5 transition-colors duration-220 hover:bg-muted/40"
+          :class="notification.read ? '' : 'bg-primary/5'"
+        >
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-foreground">
+                {{ notification.title }}
+              </p>
+              <p class="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                {{ notification.body }}
+              </p>
+            </div>
+            <span class="shrink-0 text-xs text-muted-foreground tabular-nums">
+              {{ formatWhen(notification.createdAt) }}
+            </span>
           </div>
-          <span class="shrink-0 text-xs text-muted-foreground">
-            {{ formatWhen(notification.createdAt) }}
-          </span>
-        </div>
-      </NuxtLink>
-    </CardContent>
-  </Card>
+        </NuxtLink>
+      </li>
+    </ul>
+  </DashboardPanel>
 </template>

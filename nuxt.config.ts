@@ -82,22 +82,13 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
-    // One family, like the reference dashboard: Inter Variable carries
-    // everything; headings differentiate by weight and tracking. No italics
-    // are loaded — emphasis is semibold (`not-italic` on em elements).
+    // Satoshi is self-hosted in main.css (same as soroman-web). Keep @nuxt/fonts
+    // defaults minimal so Inter is not pulled in as a second face.
     defaults: {
       weights: [400, 500],
       styles: ['normal'],
     },
-    families: [
-      {
-        name: 'Inter',
-        provider: 'fontsource',
-        weights: ['100 900'],
-        styles: ['normal'],
-        global: true,
-      },
-    ],
+    families: [],
   },
   runtimeConfig: {
     public: {
