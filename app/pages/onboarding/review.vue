@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { AlertCircleIcon, CancelCircleIcon, CheckmarkCircle01Icon, Clock01Icon, InformationCircleIcon, PencilEdit01Icon, ArrowDown01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import { inject, onBeforeUnmount, onMounted, ref } from 'vue'
+import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { formatScnForDisplay } from '~/lib/scn'
-import { formatPracticeAreaYears } from '~/lib/practice-areas'
+import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,6 +22,41 @@ const step = getLawyerStepDisplay('review')
 const store = useLawyerOnboardingStore()
 const summary = computed(() => store.summary)
 
+const registerValidate = inject<
+  ((fn: (() => Promise<boolean>) | null) => void) | undefined
+>('registerLawyerOnboardingStepValidate', undefined)
+
+const legalSubmitAttempted = ref(false)
+
+const legalError = computed(() => {
+  if (!legalSubmitAttempted.value) return null
+  if (!store.practiceInfo.termsAccepted) {
+    return 'You must accept the Terms and Conditions to continue.'
+  }
+  if (!store.practiceInfo.refundPolicyAccepted) {
+    return 'You must accept the refund policy to continue.'
+  }
+  return null
+})
+
+onMounted(() => {
+  registerValidate?.(async () => {
+    legalSubmitAttempted.value = true
+    store.practiceInfo.termsVersion = CURRENT_TERMS_VERSION
+    if (!store.practiceInfo.termsAccepted || !store.practiceInfo.refundPolicyAccepted) {
+      store.validationError = legalError.value
+        ?? 'Accept the Terms and refund policy to submit.'
+      return false
+    }
+    store.validationError = null
+    return true
+  })
+})
+
+onBeforeUnmount(() => {
+  registerValidate?.(null)
+})
+
 const { data: specData, isPending: isLoadingSpecs } = useSpecializations()
 const specializations = computed(() => specData.value || [])
 
@@ -31,7 +68,6 @@ const practiceAreaRows = computed(() => {
     name:
       list.find((s: { id: string; name: string }) => s.id === row.practiceAreaId)?.name
       ?? row.practiceAreaId,
-    yearsLabel: formatPracticeAreaYears(row.yearsOfExperience),
   }))
 })
 
@@ -101,10 +137,10 @@ const residenceDisplay = computed(() => {
 })
 
 const cardClass =
-  'relative w-full rounded-2xl border border-border bg-card shadow-sm'
+  'relative w-full rounded-xl border border-foreground/15 bg-card shadow-xs'
 
 const sectionTitleClass = 'text-base font-medium text-foreground'
-const fieldLabelClass = 'text-sm font-medium uppercase tracking-wide text-muted-foreground/70'
+const fieldLabelClass = 'text-xs font-medium tracking-wide text-muted-foreground uppercase'
 const fieldValueClass = 'text-base font-medium leading-snug text-foreground'
 
 const isAboutExpanded = ref(true)
@@ -113,7 +149,7 @@ const isPracticeExpanded = ref(true)
 </script>
 
 <template>
-  <div class="w-full space-y-8 pb-20">
+  <div class="flex w-full flex-col gap-5">
     <OnboardingClientStepHeader
       :step="step.step"
       :total="step.total"
@@ -124,20 +160,20 @@ const isPracticeExpanded = ref(true)
 
     <div
       v-if="ninDisplay.variant === 'action'"
-      class="flex gap-3 rounded-2xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5"
+      class="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 px-4 py-4 sm:px-5"
       role="status"
     >
       <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
-      <div class="min-w-0 flex-1 space-y-2">
-        <p class="text-base font-medium text-foreground">
-          Identity verification is incomplete
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
+        <p class="text-sm font-medium text-foreground">
+          NIN still needed
         </p>
-        <p class="text-base leading-relaxed text-muted-foreground">
-          Add your NIN before submitting. Our team verifies it during application review.
+        <p class="text-sm leading-relaxed text-muted-foreground">
+          Add your NIN before you submit. We’ll verify it when we review your application.
         </p>
-        <Button variant="outline" size="sm" class="border-primary/30 bg-card hover:bg-primary/10" as-child>
+        <Button variant="outline" size="sm" class="w-fit cursor-pointer border-primary/30 bg-card hover:bg-primary/10" as-child>
           <NuxtLink to="/onboarding/nin-verification">
-            Complete NIN verification
+            Add NIN
           </NuxtLink>
         </Button>
       </div>
@@ -145,17 +181,17 @@ const isPracticeExpanded = ref(true)
 
     <div
       v-else
-      class="flex gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-4 sm:px-5"
+      class="flex gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 sm:px-5"
       role="status"
     >
       <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 shrink-0 text-primary" />
-      <p class="text-base leading-relaxed text-foreground">
-        <span class="font-medium">You’re ready to submit.</span>
-        Review each section below. Use Edit to change anything before our team reviews your application.
+      <p class="text-sm leading-relaxed text-foreground">
+        <span class="font-medium">Ready to submit.</span>
+        Check each section below. Use Edit if anything needs changing.
       </p>
     </div>
 
-    <div class="space-y-4">
+    <div class="flex flex-col gap-3">
       <!-- About you -->
       <Collapsible v-model:open="isAboutExpanded" class="w-full">
         <Card :class="cardClass">
@@ -176,25 +212,25 @@ const isPracticeExpanded = ref(true)
             </Button>
           </div>
           <CollapsibleContent>
-            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8">
-              <div class="grid gap-5 sm:grid-cols-2">
-                <div class="space-y-1 sm:col-span-2">
+            <div class="border-t border-border/40 p-4 pt-5 sm:p-6 sm:pt-6">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="flex flex-col gap-1 sm:col-span-2">
                   <p :class="fieldLabelClass">Name on government ID</p>
                   <p :class="fieldValueClass">{{ publicLegalName }}</p>
                 </div>
-                <div class="space-y-1">
+                <div class="flex flex-col gap-1">
                   <p :class="fieldLabelClass">Gender</p>
                   <p :class="[fieldValueClass, 'capitalize']">{{ summary.personal?.gender || 'Not provided' }}</p>
                 </div>
-                <div class="space-y-1">
+                <div class="flex flex-col gap-1">
                   <p :class="fieldLabelClass">Date of birth</p>
                   <p :class="fieldValueClass">{{ formatDate(summary.personal?.dateOfBirth) }}</p>
                 </div>
-                <div class="space-y-1 sm:col-span-2">
+                <div class="flex flex-col gap-1 sm:col-span-2">
                   <p :class="fieldLabelClass">Residence</p>
                   <p :class="fieldValueClass">{{ residenceDisplay }}</p>
                 </div>
-                <div class="space-y-2 sm:col-span-2">
+                <div class="flex flex-col gap-2 sm:col-span-2">
                   <p :class="fieldLabelClass">NIN verification</p>
                   <div class="flex flex-wrap items-center gap-2">
                     <Badge
@@ -243,21 +279,21 @@ const isPracticeExpanded = ref(true)
             </Button>
           </div>
           <CollapsibleContent>
-            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8">
-              <div class="grid gap-5 sm:grid-cols-2">
-                <div class="space-y-1">
+            <div class="border-t border-border/40 p-4 pt-5 sm:p-6 sm:pt-6">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="flex flex-col gap-1">
                   <p :class="fieldLabelClass">SCN</p>
                   <p :class="[fieldValueClass, 'font-mono tabular-nums']">{{ formatScn(summary.professional?.barNumber) }}</p>
                 </div>
-                <div class="space-y-1">
+                <div class="flex flex-col gap-1">
                   <p :class="fieldLabelClass">Year of call</p>
                   <p :class="fieldValueClass">{{ summary.professional?.yearOfCall ?? 'Not provided' }}</p>
                 </div>
-                <div class="space-y-1 sm:col-span-2">
+                <div class="flex flex-col gap-1 sm:col-span-2">
                   <p :class="fieldLabelClass">Name on SCN</p>
                   <p :class="fieldValueClass">{{ scnLegalName }}</p>
                 </div>
-                <div class="space-y-1 sm:col-span-2">
+                <div class="flex flex-col gap-1 sm:col-span-2">
                   <p :class="fieldLabelClass">Practice arrangement</p>
                   <p :class="fieldValueClass">{{ firmDisplay }}</p>
                 </div>
@@ -287,36 +323,30 @@ const isPracticeExpanded = ref(true)
             </Button>
           </div>
           <CollapsibleContent>
-            <div class="border-t border-border/40 p-4 pt-6 sm:p-6 sm:pt-8 space-y-6">
-              <div class="grid gap-5 sm:grid-cols-2">
-                <div class="space-y-1">
+            <div class="flex flex-col gap-5 border-t border-border/40 p-4 pt-5 sm:p-6 sm:pt-6">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="flex flex-col gap-1">
                   <p :class="fieldLabelClass">Primary state</p>
                   <p :class="fieldValueClass">{{ primaryStateDisplay }}</p>
                 </div>
-                <div class="space-y-1">
-                  <p :class="fieldLabelClass">Additional states</p>
+                <div class="flex flex-col gap-1">
+                  <p :class="fieldLabelClass">Also practises in</p>
                   <p :class="fieldValueClass">{{ additionalStatesDisplay }}</p>
                 </div>
               </div>
 
-              <div class="space-y-2">
-                <p :class="fieldLabelClass">States of practice</p>
-                <div v-if="statesList.length" class="flex flex-wrap gap-2">
-                  <Badge v-for="state in statesList" :key="state" variant="outline" class="rounded-md border-primary/25 bg-primary/5 px-2.5 py-1 text-sm font-medium text-primary">
-                    {{ state }}
+              <div class="flex flex-col gap-2">
+                <p :class="fieldLabelClass">Practice areas</p>
+                <div v-if="practiceAreaRows.length" class="flex flex-wrap gap-2">
+                  <Badge
+                    v-for="row in practiceAreaRows"
+                    :key="row.id"
+                    variant="outline"
+                    class="rounded-md border-primary/25 bg-primary/5 px-2.5 py-1 text-sm font-medium text-primary"
+                  >
+                    {{ row.name }}
                   </Badge>
                 </div>
-                <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
-              </div>
-
-              <div class="space-y-3">
-                <p :class="fieldLabelClass">Legal specializations</p>
-                <ul v-if="practiceAreaRows.length" class="divide-y divide-border/30 overflow-hidden rounded-xl border border-border/40 bg-muted/50">
-                  <li v-for="row in practiceAreaRows" :key="row.id" class="flex items-center justify-between gap-4 px-4 py-3">
-                    <span class="text-base font-medium text-foreground">{{ row.name }}</span>
-                    <span class="shrink-0 text-sm font-medium text-muted-foreground tabular-nums">{{ row.yearsLabel }}</span>
-                  </li>
-                </ul>
                 <p v-else :class="[fieldValueClass, 'text-muted-foreground']">None selected</p>
                 <p v-if="isLoadingSpecs && practiceAreaRows.length" class="text-xs text-muted-foreground">Loading specialization names…</p>
               </div>
@@ -326,19 +356,38 @@ const isPracticeExpanded = ref(true)
       </Collapsible>
     </div>
 
-    <!-- Submit notice -->
-    <Card class="rounded-2xl border border-border bg-card shadow-sm">
-      <div class="flex gap-3 p-5 sm:p-6">
+    <LegalAcceptanceFields
+      :terms-accepted="store.practiceInfo.termsAccepted === true"
+      :refund-policy-accepted="store.practiceInfo.refundPolicyAccepted === true"
+      :error="legalError"
+      @update:terms-accepted="(v) => {
+        store.practiceInfo.termsAccepted = v
+        if (v && store.practiceInfo.refundPolicyAccepted) {
+          legalSubmitAttempted = false
+          store.validationError = null
+        }
+      }"
+      @update:refund-policy-accepted="(v) => {
+        store.practiceInfo.refundPolicyAccepted = v
+        if (v && store.practiceInfo.termsAccepted) {
+          legalSubmitAttempted = false
+          store.validationError = null
+        }
+      }"
+    />
+
+    <Card class="gap-0 rounded-xl border-foreground/15 p-5 shadow-xs sm:p-6">
+      <div class="flex gap-3">
         <HugeiconsIcon :icon="InformationCircleIcon" class="mt-0.5 size-5 shrink-0 text-primary" />
-        <div class="space-y-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          <p class="font-medium text-foreground">What happens after you submit</p>
+        <div class="flex flex-col gap-1.5 text-sm leading-relaxed text-muted-foreground">
+          <p class="font-medium text-foreground">After you submit</p>
           <p>
-            Your application goes into a pending state while our team manually reviews your credentials.
-            This usually takes one to two business days. You’ll be notified when a decision is made.
+            Your application moves to review while we check your credentials — usually one to two
+            business days. We’ll notify you when there’s a decision.
           </p>
-          <p class="text-sm text-muted-foreground">
-            You won’t be able to change these details from this screen after submitting.
-            Use Edit above if something needs correcting.
+          <p>
+            You can’t edit these details from this screen after submitting. Use Edit above first if
+            something needs fixing.
           </p>
         </div>
       </div>

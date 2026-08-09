@@ -24,7 +24,7 @@ const refundId = useId()
 </script>
 
 <template>
-  <div class="space-y-4 rounded-xl border border-border/50 bg-white/80 p-4">
+  <div class="flex flex-col gap-4 rounded-xl border border-border/50 bg-background/80 p-4">
     <p class="text-sm font-semibold text-foreground">
       Legal agreements
     </p>

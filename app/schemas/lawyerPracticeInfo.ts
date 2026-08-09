@@ -1,7 +1,16 @@
 import * as z from 'zod'
 import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 
-export function createLawyerPracticeInfoSchema(yearOfCall?: number) {
+type PracticeSchemaOptions = {
+  /** Enforce Terms + refund acceptances (submit / review). Off for the practice step. */
+  requireLegalAcceptances?: boolean
+}
+
+export function createLawyerPracticeInfoSchema(
+  yearOfCall?: number,
+  options: PracticeSchemaOptions = {},
+) {
+  const { requireLegalAcceptances = false } = options
   const careerCap =
     yearOfCall != null && Number.isFinite(yearOfCall)
       ? Math.max(0, new Date().getFullYear() - yearOfCall)
@@ -34,13 +43,17 @@ export function createLawyerPracticeInfoSchema(yearOfCall?: number) {
         .max(37),
       primaryState: z.string().trim().min(2, { error: 'Select your primary state of practice.' }),
       additionalPracticeStates: z.array(z.string().trim().min(2)).default([]),
-      termsAccepted: z.boolean().refine((v) => v === true, {
-        error: 'You must accept the Terms and Conditions to continue.',
-      }),
+      termsAccepted: requireLegalAcceptances
+        ? z.boolean().refine((v) => v === true, {
+            error: 'You must accept the Terms and Conditions to continue.',
+          })
+        : z.boolean(),
       termsVersion: z.string().min(1, { error: 'Terms version is required.' }).default(CURRENT_TERMS_VERSION),
-      refundPolicyAccepted: z.boolean().refine((v) => v === true, {
-        error: 'You must accept the refund policy to continue.',
-      }),
+      refundPolicyAccepted: requireLegalAcceptances
+        ? z.boolean().refine((v) => v === true, {
+            error: 'You must accept the refund policy to continue.',
+          })
+        : z.boolean(),
     })
     .superRefine((data, ctx) => {
       if (!data.soloPractitioner && !String(data.firmName ?? '').trim()) {

@@ -47,21 +47,21 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
   },
   professional_info: {
     label: 'Credentials & practice',
-    title: 'Bar admission',
+    title: 'Your bar credentials',
     description:
-      'Your Supreme Court enrolment number and year of call help us validate your NBA credentials.',
+      'We use these to confirm you’re called to the Nigerian Bar.',
   },
   practice_info: {
     label: 'Credentials & practice',
     title: 'How you practise',
     description:
-      'Share where you practise, your firm or solo status, and the legal areas you focus on.',
+      'Firm setup, the areas you focus on, and where you practise.',
   },
   review: {
     label: 'Review & submit',
     title: 'Review your application',
     description:
-      'Check everything before you submit. Our team typically reviews applications within one to two business days.',
+      'Confirm your details, accept the legal terms, then submit. We usually review within one to two business days.',
   },
 }
 
