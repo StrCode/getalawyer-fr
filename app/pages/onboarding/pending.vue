@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileSearchIcon, Home01Icon, HourglassIcon, Loading03Icon, Logout01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { AlertCircleIcon, CheckmarkCircle01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
@@ -14,8 +14,28 @@ import {
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
 } from '~/lib/lawyerOnboardingStatus'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Stepper,
+  StepperDescription,
+  StepperIndicator,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+  StepperTrigger,
+} from '@/components/ui/stepper'
 
 definePageMeta({
   layout: 'onboarding-draft',
@@ -34,7 +54,6 @@ useHead({
 
 const router = useRouter()
 const { session } = useAuth()
-const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 const queryClient = useQueryClient()
 
 await useAsyncData('onboarding-pending-status', () =>
@@ -60,6 +79,7 @@ const {
 } = useSubscriptionStatus({
   enabled: computed(() => isAwaiting.value),
 })
+
 const applicationNotice = computed(() =>
   statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
 )
@@ -98,10 +118,10 @@ const submittedAt = computed(() => {
   return st ? onboardingSubmittedAt(st) : null
 })
 
-const formatSubmitted = (iso: string | null) => {
-  if (!iso) return null
+const submittedLabel = computed(() => {
+  if (!submittedAt.value) return null
   try {
-    return new Date(iso).toLocaleDateString('en-GB', {
+    return new Date(submittedAt.value).toLocaleDateString('en-GB', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -109,40 +129,29 @@ const formatSubmitted = (iso: string | null) => {
   } catch {
     return null
   }
-}
+})
 
-const progressSteps = [
-  { id: 'about', label: 'About you', status: 'done' as const },
-  { id: 'credentials', label: 'Credentials', status: 'done' as const },
-  { id: 'review', label: 'Under review', status: 'current' as const },
-]
+const hasActiveSubscription = computed(
+  () => subscriptionStatus.value?.hasActiveSubscription === true,
+)
 
-const timelineSteps = computed(() => [
+const currentStep = computed(() => (hasActiveSubscription.value ? 3 : 2))
+
+const progressSteps = computed(() => [
   {
-    id: 'submitted',
-    label: 'Application submitted',
-    detail: formatSubmitted(submittedAt.value)
-      ? `Submitted on ${formatSubmitted(submittedAt.value)}`
-      : 'Your application is in the review queue',
-    status: 'done' as const,
+    step: 1,
+    title: 'Applied',
+    description: 'Done',
   },
   {
-    id: 'review',
-    label: 'Verification review',
-    detail: 'Our verification team will review your submitted credentials.',
-    status: 'current' as const,
+    step: 2,
+    title: 'Paid',
+    description: hasActiveSubscription.value ? 'Done' : 'Now',
   },
   {
-    id: 'notify',
-    label: 'Email notification',
-    detail: 'We will email you once approved or if we need more information.',
-    status: 'upcoming' as const,
-  },
-  {
-    id: 'time',
-    label: 'Processing time',
-    detail: 'This usually takes one to two business days.',
-    status: 'upcoming' as const,
+    step: 3,
+    title: 'Review',
+    description: hasActiveSubscription.value ? 'Now' : 'Next',
   },
 ])
 
@@ -160,10 +169,6 @@ watchEffect(() => {
     router.replace('/dashboard')
   }
 })
-
-const hasActiveSubscription = computed(
-  () => subscriptionStatus.value?.hasActiveSubscription === true,
-)
 
 watchEffect(() => {
   if (showSpinner.value) return
@@ -195,283 +200,181 @@ async function retryStatus() {
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-2xl pb-12">
-    <!-- Loading -->
+  <div class="mx-auto flex w-full max-w-md flex-col items-stretch gap-8">
     <div
       v-if="showSpinner"
-      class="flex flex-col items-center justify-center gap-4 py-28 text-center"
+      class="flex flex-col items-center gap-3 py-16"
+      aria-busy="true"
+      aria-live="polite"
     >
-      <div
-        class="flex size-16 items-center justify-center rounded-full border border-border/40 bg-card shadow-sm"
-      >
-        <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" aria-hidden="true" />
+      <Skeleton class="size-11 rounded-full" />
+      <div class="flex w-full flex-col items-center gap-2">
+        <Skeleton class="h-6 w-48" />
+        <Skeleton class="h-4 w-64 max-w-full" />
+        <Skeleton class="h-4 w-40" />
       </div>
-      <p class="text-sm font-medium text-muted-foreground">Loading your application status…</p>
+      <Skeleton class="mt-1 h-14 w-full rounded-xl" />
+      <Skeleton class="h-36 w-full rounded-xl" />
     </div>
 
-    <!-- Error -->
-    <div v-else-if="statusUnavailable" class="space-y-8 py-8 text-center">
-      <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
-      >
-        <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
-      </div>
-      <div class="space-y-2">
-        <p class="eyebrow text-primary-strong">
-          Application status
-        </p>
-       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
-          Could not load status
-        </h1>
-        <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
+    <Card v-else-if="statusUnavailable" class="gap-4 py-5">
+      <CardHeader class="px-5 text-center">
+        <CardTitle>Could not load status</CardTitle>
+        <CardDescription>
           Check your connection and try again.
-        </p>
-      </div>
-      <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">
-        <div class="space-y-4 p-6">
-          <p class="text-sm leading-relaxed text-muted-foreground">
-            We could not reach the server to confirm your application status.
-          </p>
-          <Button class="w-full font-medium" @click="retryStatus">
-            Try again
-          </Button>
-        </div>
-      </Card>
+        </CardDescription>
+      </CardHeader>
+      <CardFooter class="justify-center px-5">
+        <Button class="cursor-pointer" @click="retryStatus">
+          Try again
+        </Button>
+      </CardFooter>
+    </Card>
+
+    <div
+      v-else-if="isVerificationFailed"
+      class="flex flex-col gap-3"
+    >
+      <Alert variant="destructive">
+        <HugeiconsIcon :icon="AlertCircleIcon" />
+        <AlertTitle>Verification could not be completed</AlertTitle>
+        <AlertDescription>
+          We could not verify your credentials. If you paid, a refund minus the admin fee will return
+          to your payment method.
+        </AlertDescription>
+      </Alert>
+      <p class="text-center text-sm text-muted-foreground">
+        Questions?
+        <a
+          href="mailto:support@getalawyer.ng"
+          class="font-medium text-primary underline underline-offset-2"
+        >
+          support@getalawyer.ng
+        </a>
+      </p>
     </div>
 
-    <!-- Verification failed — refund initiated -->
-    <div v-else-if="isVerificationFailed" class="space-y-8 py-8 text-center">
-      <div
-        class="mx-auto flex size-20 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-background shadow-lg"
+    <template v-else-if="isAwaiting">
+      <div class="flex flex-col items-center gap-3 text-center">
+        <div class="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-5" aria-hidden="true" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <h1 class="text-balance text-xl font-medium tracking-tight text-foreground sm:text-2xl">
+            Application in review
+          </h1>
+          <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
+            We’re checking your credentials. You’ll get an email when there’s a decision — usually within
+            one to two business days.
+          </p>
+        </div>
+        <Badge v-if="submittedLabel" variant="soft">
+          Submitted {{ submittedLabel }}
+        </Badge>
+      </div>
+
+      <Stepper
+        :model-value="currentStep"
+        class="w-full items-start justify-between gap-1"
       >
-        <HugeiconsIcon :icon="HourglassIcon" class="size-10" />
-      </div>
-      <div class="space-y-2">
-        <p class="eyebrow text-primary-strong">
-          Verification outcome
-        </p>
-       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
-          Verification could not be completed
-        </h1>
-        <p class="mx-auto max-w-md text-base leading-relaxed text-muted-foreground">
-          We could not verify your credentials. If you paid a subscription fee, a refund minus the
-          admin processing fee will be returned to your payment method.
-        </p>
-      </div>
-      <Card class="overflow-hidden rounded-2xl border border-border bg-card text-left shadow-sm">
-        <div class="space-y-4 p-6 text-sm text-muted-foreground">
-          <p>
-            Questions? Email
-            <a href="mailto:support@getalawyer.ng" class="font-medium text-primary underline">
+        <StepperItem
+          v-for="(item, index) in progressSteps"
+          :key="item.step"
+          :step="item.step"
+          class="relative flex flex-1 flex-col items-center"
+        >
+          <StepperSeparator
+            v-if="index < progressSteps.length - 1"
+            class="absolute left-[calc(50%+1.25rem)] right-[calc(-50%+0.75rem)] top-4 block h-px shrink-0 bg-border group-data-[state=completed]:bg-primary"
+          />
+          <StepperTrigger class="pointer-events-none flex flex-col items-center gap-2 rounded-none bg-transparent p-0">
+            <StepperIndicator
+              class="size-8 border border-border bg-muted text-muted-foreground group-data-[state=active]:border-transparent group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground group-data-[state=completed]:border-transparent group-data-[state=completed]:bg-primary group-data-[state=completed]:text-primary-foreground"
+            >
+              <HugeiconsIcon
+                v-if="currentStep > item.step"
+                :icon="Tick01Icon"
+              />
+              <span
+                v-else-if="currentStep === item.step"
+                class="size-1.5 rounded-full bg-current"
+              />
+              <span v-else class="size-1.5 rounded-full bg-current opacity-40" />
+            </StepperIndicator>
+            <div class="flex flex-col items-center gap-0.5 text-center">
+              <StepperTitle class="text-xs font-medium leading-none">
+                {{ item.title }}
+              </StepperTitle>
+              <StepperDescription
+                class="leading-none"
+                :class="currentStep === item.step ? 'font-medium text-primary' : undefined"
+              >
+                {{ item.description }}
+              </StepperDescription>
+            </div>
+          </StepperTrigger>
+        </StepperItem>
+      </Stepper>
+
+      <Card class="gap-0 overflow-hidden py-0">
+        <CardHeader class="gap-1.5 px-5 pt-5 pb-4">
+          <CardTitle class="text-sm font-medium">
+            {{ applicationNotice?.title || 'We’re reviewing your details' }}
+          </CardTitle>
+          <CardDescription class="text-sm leading-relaxed">
+            {{
+              applicationNotice?.description
+                || 'No further action is needed unless we contact you.'
+            }}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent
+          v-if="!subscriptionStatusPending && hasActiveSubscription"
+          class="px-5 pb-5"
+        >
+          <Alert variant="success">
+            <HugeiconsIcon :icon="Tick01Icon" />
+            <AlertDescription>
+              <span class="font-medium text-foreground">Membership paid.</span>
+              You’re covered while we finish review.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+
+        <Separator />
+
+        <CardFooter class="px-5 py-4">
+          <p class="text-xs leading-relaxed text-muted-foreground">
+            We’ll email you when approved, or if we need anything else.
+            Questions?
+            <a
+              href="mailto:support@getalawyer.ng"
+              class="font-medium text-primary underline underline-offset-2"
+            >
               support@getalawyer.ng
             </a>
           </p>
-          <Button
-            variant="outline"
-            class="w-full"
-            :disabled="isSigningOut"
-            @click="handleSignOut()"
-          >
-            {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
-          </Button>
-        </div>
+        </CardFooter>
       </Card>
-    </div>
 
-    <!-- Pending (Mobbin: Coinbase / Airwallex / Mercury) -->
-    <div v-else-if="isAwaiting" class="space-y-10 py-4 sm:py-8">
-        <!-- Hero -->
-        <div class="text-center">
-          <div
-            class="relative mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-primary/10 ring-4 ring-background shadow-lg shadow-primary/10"
-          >
-            <div
-              class="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background"
-            >
-              <HugeiconsIcon :icon="Tick01Icon" class="size-5" />
-            </div>
-            <HugeiconsIcon :icon="FileSearchIcon" class="size-11 text-primary" />
-          </div>
-
-          <p class="mb-2 eyebrow text-primary-strong">
-            Step 3 of 3 · Application status
-          </p>
-         <h1 class="text-balance text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
-            Application submitted
-          </h1>
-          <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
-            Our team is reviewing your profile and credentials. We will notify you when a decision is made.
-          </p>
-        </div>
-
-        <div
-          v-if="applicationNotice"
-          class="rounded-xl border border-primary/20 bg-primary/5 px-4 py-4 text-foreground sm:px-5"
-          role="status"
-        >
-          <p class="text-sm font-medium">
-            {{ applicationNotice.title }}
-          </p>
-          <p class="mt-1 text-sm leading-relaxed opacity-90">
-            {{ applicationNotice.description }}
-          </p>
-        </div>
-
-        <!-- Horizontal progress (Airwallex-style) -->
-        <div class="rounded-2xl border border-border/40 bg-card/80 px-4 py-5 shadow-sm sm:px-6">
-          <ol class="flex items-start justify-between gap-2">
-            <li
-              v-for="(step, index) in progressSteps"
-              :key="step.id"
-              class="flex min-w-0 flex-1 flex-col items-center text-center"
-            >
-              <div class="flex w-full items-center">
-                <span
-                  class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-medium transition-colors"
-                  :class="
-                    step.status === 'done'
-                      ? 'bg-primary text-primary-foreground'
-                      : step.status === 'current'
-                        ? 'bg-primary/15 text-primary ring-2 ring-primary/30'
-                        : 'bg-muted text-muted-foreground'
-                  "
-                >
-                  <HugeiconsIcon :icon="Tick01Icon" v-if="step.status === 'done'" class="size-4" />
-                  <span v-else class="size-2 rounded-full bg-current" />
-                </span>
-                <span
-                  v-if="index < progressSteps.length - 1"
-                  class="mx-1 h-0.5 min-w-2 flex-1 rounded-full"
-                  :class="step.status === 'done' ? 'bg-primary' : 'bg-border/60'"
-                />
-              </div>
-              <p class="mt-2 text-2xs font-medium leading-tight text-foreground sm:text-xs">
-                {{ step.label }}
-              </p>
-              <p
-                v-if="step.status === 'current'"
-                class="mt-0.5 text-2xs font-medium text-primary sm:text-xs"
-              >
-                In review
-              </p>
-              <p
-                v-else-if="step.status === 'done'"
-                class="mt-0.5 text-2xs font-medium text-muted-foreground sm:text-xs"
-              >
-                Completed
-              </p>
-            </li>
-          </ol>
-        </div>
-
-        <!-- Status card -->
-        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <div class="border-b border-border/40 px-6 py-5">
-           <h2 class="text-base font-medium text-foreground">
-              We are reviewing your details
-            </h2>
-          </div>
-          <div class="space-y-1 px-6 py-5">
-            <p class="text-sm font-medium text-foreground">You are all set for now</p>
-            <p class="text-sm leading-relaxed text-muted-foreground">
-              <template v-if="formatSubmitted(submittedAt)">
-                Submitted on {{ formatSubmitted(submittedAt) }}.
-              </template>
-              <template v-else>
-                Your application is in the review queue.
-              </template>
-              No further action is needed unless we contact you.
-            </p>
-          </div>
-        </Card>
-
-        <Card
-          v-if="!subscriptionStatusPending && hasActiveSubscription"
-          class="overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
-        >
-          <div class="px-6 py-5">
-            <p class="text-sm font-medium text-foreground">
-              Subscription active
-            </p>
-            <p class="mt-1 text-sm text-muted-foreground">
-              Your annual membership payment is confirmed. No further payment is needed while your application is reviewed.
-            </p>
-          </div>
-        </Card>
-
-        <!-- Timeline (Mercury-style) -->
-        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <div class="border-b border-border/40 px-6 py-4">
-           <h2 class="eyebrow text-primary-strong">
-              What happens next
-            </h2>
-          </div>
-          <ol class="space-y-0 px-6 py-2">
-            <li
-              v-for="(item, index) in timelineSteps"
-              :key="item.id"
-              class="relative flex gap-4 pb-6 last:pb-4"
-            >
-              <div class="flex flex-col items-center">
-                <span
-                  class="relative z-10 flex size-3 shrink-0 rounded-full ring-4 ring-background"
-                  :class="{
-                    'bg-primary': item.status === 'done' || item.status === 'current',
-                    'bg-border': item.status === 'upcoming',
-                  }"
-                />
-                <span
-                  v-if="index < timelineSteps.length - 1"
-                  class="mt-1 w-px flex-1 min-h-[2.5rem] bg-border/60"
-                  :class="item.status === 'done' ? 'bg-primary/40' : 'bg-border/60'"
-                />
-              </div>
-              <div class="min-w-0 flex-1 pt-0">
-                <p
-                  class="text-sm font-medium"
-                  :class="item.status === 'upcoming' ? 'text-muted-foreground' : 'text-foreground'"
-                >
-                  {{ item.label }}
-                </p>
-                <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {{ item.detail }}
-                </p>
-              </div>
-            </li>
-          </ol>
-        </Card>
-
-        <!-- Actions -->
-        <div class="flex flex-col items-center gap-4 pt-2">
-          <Button
-            class="h-12 w-full max-w-xs text-base font-medium shadow-md sm:w-auto sm:min-w-52"
-            as-child
-          >
-            <NuxtLink to="/" class="inline-flex items-center justify-center gap-2">
-              <HugeiconsIcon :icon="Home01Icon" class="size-4" />
-              Home
-            </NuxtLink>
-          </Button>
-          <div class="flex flex-wrap items-center justify-center gap-4">
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
-              :disabled="isSigningOut"
-              @click="handleSignOut()"
-            >
-              <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
-              {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
-            </button>
-            <button
-              v-if="statusError"
-              type="button"
-              class="text-sm font-medium text-primary underline-offset-4 hover:underline"
-              @click="retryStatus"
-            >
-              Refresh status
-            </button>
-          </div>
-        </div>
-    </div>
+      <Button
+        variant="outline"
+        class="h-10 w-full cursor-pointer"
+        as-child
+      >
+        <NuxtLink to="/">
+          Back to home
+        </NuxtLink>
+      </Button>
+      <Button
+        v-if="statusError"
+        variant="link"
+        class="h-auto cursor-pointer px-0"
+        @click="retryStatus"
+      >
+        Refresh status
+      </Button>
+    </template>
   </div>
 </template>
