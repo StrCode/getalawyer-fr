@@ -77,11 +77,11 @@ const TIER_META: Record<
     description: 'Required before clients can find you in search.',
   },
   2: {
-    title: 'Good profile',
+    title: 'Good listing',
     description: 'Helps your page look credible and complete.',
   },
   3: {
-    title: 'Premium profile',
+    title: 'Premium listing',
     description: 'Optional polish for trust and conversion.',
   },
 }
@@ -113,4 +113,38 @@ export function getTier1IncompleteItems(
   return buildProfileChecklist(strength)
     .find((group) => group.tier === 1)
     ?.items.filter((item) => !item.complete) ?? []
+}
+
+/** Maps listing editor section ids → check ids that live in that section. */
+const SECTION_CHECK_IDS: Record<string, ProfileCheckId[]> = {
+  photo: ['photo'],
+  about: ['headline', 'aboutBio'],
+  office: ['office', 'firm'],
+  'practice-areas': ['practiceAreas'],
+  experience: ['experience'],
+  education: ['education'],
+  licenses: ['licenses'],
+  skills: ['skills'],
+  articles: ['articles'],
+}
+
+/** Section ids that still have incomplete listing checks (for nav dots). */
+export function getIncompleteListingSectionIds(
+  strength: LawyerProfileStrengthSummary | null | undefined,
+): Set<string> {
+  const incomplete = new Set(strength?.incompleteCheckIds ?? [])
+  const sections = new Set<string>()
+  for (const [sectionId, checkIds] of Object.entries(SECTION_CHECK_IDS)) {
+    if (checkIds.some((id) => incomplete.has(id)))
+      sections.add(sectionId)
+  }
+  return sections
+}
+
+export function getIncompleteListingItems(
+  strength: LawyerProfileStrengthSummary | null | undefined,
+): ProfileChecklistItem[] {
+  return buildProfileChecklist(strength)
+    .flatMap((group) => group.items)
+    .filter((item) => !item.complete)
 }

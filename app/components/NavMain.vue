@@ -31,6 +31,7 @@ const {
   activeCasesBadge,
   lawyerPendingAppointmentsBadge,
   lawyerSubscriptionBadge,
+  lawyerListingBadge,
 } = useDashboardNavBadges()
 
 const navLinks = computed(() => {
@@ -63,6 +64,7 @@ const badgeMap = computed<Record<string, string | undefined>>(() => ({
   '/dashboard/cases': activeCasesBadge.value,
   '/dashboard/appointments': lawyerPendingAppointmentsBadge.value,
   '/dashboard/subscription': lawyerSubscriptionBadge.value,
+  '/dashboard/profile': lawyerListingBadge.value,
 }))
 
 function onNavClick() {

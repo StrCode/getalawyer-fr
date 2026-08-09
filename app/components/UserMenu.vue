@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { getSessionUserType } from '@/lib/session-user'
 
 const props = withDefaults(
   defineProps<{
@@ -44,6 +45,8 @@ const afterSignOutBehavior = computed(
 )
 
 const user = computed(() => session.value?.user ?? null)
+const isLawyer = computed(() => getSessionUserType(user.value) === 'lawyer')
+const profileMenuLabel = computed(() => (isLawyer.value ? 'Listing' : 'Profile'))
 const displayName = computed(() => user.value?.name || user.value?.email || 'User')
 const displayEmail = computed(() => user.value?.email || '')
 const avatarUrl = computed(() => (user.value as { image?: string } | null)?.image ?? '')
@@ -127,7 +130,7 @@ async function handleLogout() {
               <DropdownMenuItem as-child>
                 <NuxtLink to="/dashboard/profile" class="flex cursor-pointer items-center gap-2">
                   <HugeiconsIcon :icon="UserCircleIcon" />
-                  Profile
+                  {{ profileMenuLabel }}
                 </NuxtLink>
               </DropdownMenuItem>
               <DropdownMenuItem as-child>

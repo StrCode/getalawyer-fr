@@ -31,7 +31,7 @@ const emit = defineEmits<{
         v-if="isOwnProfile"
         class="mb-6 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground"
       >
-        You’re viewing your public profile — this is exactly what clients see.
+        You’re viewing your listing — this is exactly what clients see.
       </div>
 
       <NuxtLink

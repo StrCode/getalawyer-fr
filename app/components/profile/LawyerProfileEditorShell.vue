@@ -14,14 +14,16 @@ import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSecti
 import ProfilePracticeAreasSection from '@/components/profile/sections/ProfilePracticeAreasSection.vue'
 import ProfileSkillSection from '@/components/profile/sections/ProfileSkillSection.vue'
 import LawyerPublishReadinessBanner from '@/components/profile/LawyerPublishReadinessBanner.vue'
+import ListingProgressPanel from '@/components/profile/ListingProgressPanel.vue'
 import ProfileSectionNav from '@/components/profile/ProfileSectionNav.vue'
 import ProfileMobileSectionSelect from '@/components/profile/ProfileMobileSectionSelect.vue'
 import LawyerProfilePreviewCard from '@/components/profile/LawyerProfilePreviewCard.vue'
-import ProfileStrengthChecklist from '@/components/profile/ProfileStrengthChecklist.vue'
-import LawyerDirectoryEligibilityCard from '@/components/profile/LawyerDirectoryEligibilityCard.vue'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getIncompleteListingSectionIds } from '~/lib/profile-check-catalog'
 import { ApiError } from '~/lib/api/client'
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import {
@@ -40,7 +42,7 @@ import {
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 
-const LAWYER_SECTIONS = [
+const LAWYER_SECTION_DEFS = [
   { id: 'photo', label: 'Photo' },
   { id: 'about', label: 'About' },
   { id: 'office', label: 'Office' },
@@ -52,7 +54,7 @@ const LAWYER_SECTIONS = [
   { id: 'articles', label: 'Articles' },
 ] as const
 
-const mobileSection = ref(LAWYER_SECTIONS[0].id)
+const mobileSection = ref(LAWYER_SECTION_DEFS[0].id)
 
 const { session, isPending: authPending, refetchSession } = useAuth()
 
@@ -137,7 +139,7 @@ const previewOfficeLocation = computed(() => {
   return parts.length > 0 ? parts.join(', ') : info.primaryState
 })
 
-const displayName = computed(() => session.value?.user?.name?.trim() || 'Your profile')
+const displayName = computed(() => session.value?.user?.name?.trim() || 'Your listing')
 
 const avatarPreview = ref<string | null>(null)
 
@@ -146,6 +148,25 @@ const avatarSrc = computed(
 )
 
 const isUploadingAvatar = computed(() => uploadAvatar.isPending.value)
+
+const incompleteSectionIds = computed(() =>
+  getIncompleteListingSectionIds(profileStrength.value),
+)
+
+const lawyerSections = computed(() =>
+  LAWYER_SECTION_DEFS.map((section) => ({
+    ...section,
+    incomplete: incompleteSectionIds.value.has(section.id),
+  })),
+)
+
+const listingPercent = computed(() => profileStrength.value?.percent ?? null)
+
+const listingStatusLabel = computed(() => {
+  if (isDirectoryVisible.value) return 'Live in search'
+  if ((profileStrength.value?.percent ?? 0) < 100) return 'In progress'
+  return 'Hidden from search'
+})
 
 const isLoading = computed(
   () =>
@@ -160,7 +181,7 @@ const loadErrorMessage = computed(() => {
   const err = profileQuery.error.value
   if (err instanceof ApiError) return err.message
   if (err instanceof Error) return err.message
-  return 'We could not load your profile.'
+  return 'We could not load your listing.'
 })
 
 async function runProfileMutation<T>(
@@ -169,7 +190,7 @@ async function runProfileMutation<T>(
   errorMessage: string,
 ): Promise<T> {
   if (!canEdit.value) {
-    toast.error('Profile editing is available after admin approval')
+    toast.error('Listing edits unlock after admin approval')
     throw new Error('not allowed')
   }
 
@@ -373,38 +394,36 @@ onBeforeUnmount(() => {
 
 <template>
   <motion.div
-    class="space-y-6"
+    class="space-y-6 md:space-y-8"
     :initial="{ opacity: 0, y: 8 }"
     :animate="{ opacity: 1, y: 0 }"
     :transition="{ duration: 0.25 }"
   >
-    <div class="sticky top-0 z-10 -mx-1 flex flex-wrap items-start justify-between gap-4 border-b border-border/40 bg-background px-1 pb-5">
-      <div class="min-w-0 flex-1">
-        <h1 class="text-2xl font-medium text-foreground">
-          Profile
-        </h1>
-        <p class="mt-1 font-sans text-base text-muted-foreground">
-          How clients see you on GetALawyer.
-          Practice setup and billing are in
-          <NuxtLink
-            to="/dashboard/settings"
-            class="font-medium text-primary underline-offset-4 hover:underline"
-          >
-            Settings
-          </NuxtLink>.
-        </p>
-      </div>
-      <div
-        v-if="publicProfileUrl"
-        class="flex shrink-0 flex-wrap items-center gap-2"
-      >
-        <TooltipProvider>
+    <DashboardPageHeader
+      class="snapshot-rise"
+      eyebrow="Practice"
+      description="How clients see you in search. Consultation types, availability, and billing stay in Settings."
+    >
+      <template #title>
+        Your listing
+      </template>
+      <template #actions>
+        <Badge
+          v-if="listingPercent != null"
+          variant="outline"
+          class="rounded-full border-foreground/15 px-3 py-1 text-xs font-semibold tabular-nums"
+          :class="isDirectoryVisible ? 'border-primary/40 bg-primary/10 text-primary' : 'text-muted-foreground'"
+        >
+          {{ listingPercent }}% · {{ listingStatusLabel }}
+        </Badge>
+        <TooltipProvider v-if="publicProfileUrl">
           <Tooltip :disabled="isDirectoryVisible">
             <TooltipTrigger as-child>
               <Button
                 as-child
+                size="lg"
                 variant="outline"
-                size="sm"
+                class="cursor-pointer"
               >
                 <NuxtLink
                   :to="publicProfileUrl"
@@ -412,8 +431,11 @@ onBeforeUnmount(() => {
                   rel="noopener noreferrer"
                   class="gap-2"
                 >
-                  View public profile
-                  <HugeiconsIcon :icon="LinkSquare01Icon" class="size-4" />
+                  View in directory
+                  <HugeiconsIcon
+                    :icon="LinkSquare01Icon"
+                    class="size-4"
+                  />
                 </NuxtLink>
               </Button>
             </TooltipTrigger>
@@ -422,8 +444,8 @@ onBeforeUnmount(() => {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </div>
-    </div>
+      </template>
+    </DashboardPageHeader>
 
     <LawyerPublishReadinessBanner
       v-if="!isLoading && !isError && profile"
@@ -440,8 +462,9 @@ onBeforeUnmount(() => {
       v-if="isLoading"
       class="space-y-4"
     >
-      <Skeleton class="h-36 w-full rounded-xl" />
-      <Skeleton class="h-64 w-full rounded-xl" />
+      <Skeleton class="h-40 w-full rounded-xl" />
+      <Skeleton class="h-56 w-full rounded-xl" />
+      <Skeleton class="h-72 w-full rounded-xl" />
     </motion.div>
 
     <Card
@@ -449,9 +472,12 @@ onBeforeUnmount(() => {
       class="border-dashed"
     >
       <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-        <HugeiconsIcon :icon="AlertCircleIcon" class="size-9 text-muted-foreground" />
+        <HugeiconsIcon
+          :icon="AlertCircleIcon"
+          class="size-9 text-muted-foreground"
+        />
         <p class="text-sm font-medium text-foreground">
-          Couldn't load profile
+          Couldn't load listing
         </p>
         <p class="text-sm text-muted-foreground">
           {{ loadErrorMessage }}
@@ -465,6 +491,7 @@ onBeforeUnmount(() => {
         <Button
           variant="outline"
           size="sm"
+          class="cursor-pointer"
           @click="() => profileQuery.refetch()"
         >
           Retry
@@ -473,14 +500,16 @@ onBeforeUnmount(() => {
     </Card>
 
     <template v-else-if="profile">
-      <LawyerDirectoryEligibilityCard
+      <ListingProgressPanel
+        class="snapshot-rise"
+        style="animation-delay: 40ms"
         :eligibility="directoryEligibility"
         :profile-strength="profileStrength"
       />
 
-      <ProfileStrengthChecklist :profile-strength="profileStrength" />
-
       <LawyerProfilePreviewCard
+        class="snapshot-rise"
+        style="animation-delay: 80ms"
         :name="displayName"
         :image-url="avatarSrc"
         :headline="profile.about.headline"
@@ -493,109 +522,110 @@ onBeforeUnmount(() => {
 
       <ProfileMobileSectionSelect
         v-model="mobileSection"
-        :sections="[...LAWYER_SECTIONS]"
+        :sections="lawyerSections"
         class="lg:hidden"
       />
 
-      <div class="lg:grid lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-8">
+      <div class="snapshot-rise lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:items-start lg:gap-8" style="animation-delay: 120ms">
         <aside class="hidden lg:block">
-          <div class="sticky top-24">
-            <ProfileSectionNav :sections="[...LAWYER_SECTIONS]" />
+          <div class="sticky top-24 rounded-xl border border-foreground/15 bg-card p-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+            <ProfileSectionNav :sections="lawyerSections" />
           </div>
         </aside>
 
         <div class="space-y-6">
-      <div id="photo">
-        <ProfilePhotoSection
-          :name="displayName"
-          :email="session?.user?.email"
-          :image-url="avatarSrc"
-          :uploading="isUploadingAvatar"
-          @upload="onAvatarUpload"
-        />
-      </div>
+          <div id="photo">
+            <ProfilePhotoSection
+              :name="displayName"
+              :email="session?.user?.email"
+              :image-url="avatarSrc"
+              :uploading="isUploadingAvatar"
+              description="Shown on your listing and in search results."
+              @upload="onAvatarUpload"
+            />
+          </div>
 
-      <div id="about">
-        <ProfileAboutSection
-          :about="profile.about"
-          :disabled="!canEdit"
-          :saving="updateAbout.isPending.value"
-          @save="handleSaveAbout"
-        />
-      </div>
+          <div id="about">
+            <ProfileAboutSection
+              :about="profile.about"
+              :disabled="!canEdit"
+              :saving="updateAbout.isPending.value"
+              @save="handleSaveAbout"
+            />
+          </div>
 
-      <div id="office">
-        <ProfileOfficeSection
-          :practice-info="profile.practiceInfo"
-          :disabled="!canEdit"
-          :saving="updateOffice.isPending.value"
-          @save="handleSaveOffice"
-        />
-      </div>
+          <div id="office">
+            <ProfileOfficeSection
+              :practice-info="profile.practiceInfo"
+              :disabled="!canEdit"
+              :saving="updateOffice.isPending.value"
+              @save="handleSaveOffice"
+            />
+          </div>
 
-      <div id="practice-areas">
-        <ProfilePracticeAreasSection
-          :practice-areas="profile.practiceAreas"
-          :disabled="!canEdit"
-          :saving="replacePracticeAreas.isPending.value"
-          @save="handleSavePracticeAreas"
-        />
-      </div>
+          <div id="practice-areas">
+            <ProfilePracticeAreasSection
+              :practice-areas="profile.practiceAreas"
+              :disabled="!canEdit"
+              :saving="replacePracticeAreas.isPending.value"
+              @save="handleSavePracticeAreas"
+            />
+          </div>
 
-      <div id="experience">
-        <ProfileExperienceSection
-          :items="profile.experiences"
-          :disabled="!canEdit"
-          :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
-          :on-create="createExperienceItem"
-          :on-update="updateExperienceItem"
-          :on-delete="deleteExperienceItem"
-        />
-      </div>
+          <div id="experience">
+            <ProfileExperienceSection
+              :items="profile.experiences"
+              :disabled="!canEdit"
+              :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
+              :on-create="createExperienceItem"
+              :on-update="updateExperienceItem"
+              :on-delete="deleteExperienceItem"
+            />
+          </div>
 
-      <div id="education">
-        <ProfileEducationSection
-          :items="profile.education"
-          :disabled="!canEdit"
-          :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
-          :on-create="createEducationItem"
-          :on-update="updateEducationItem"
-          :on-delete="deleteEducationItem"
-        />
-      </div>
+          <div id="education">
+            <ProfileEducationSection
+              :items="profile.education"
+              :disabled="!canEdit"
+              :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
+              :on-create="createEducationItem"
+              :on-update="updateEducationItem"
+              :on-delete="deleteEducationItem"
+            />
+          </div>
 
-      <div id="licenses">
-        <ProfileLicenseSection
-          :items="profile.licenses"
-          :disabled="!canEdit"
-          :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
-          :on-create="createLicenseItem"
-          :on-update="updateLicenseItem"
-          :on-delete="deleteLicenseItem"
-        />
-      </div>
+          <div id="licenses">
+            <ProfileLicenseSection
+              :items="profile.licenses"
+              :disabled="!canEdit"
+              :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
+              :on-create="createLicenseItem"
+              :on-update="updateLicenseItem"
+              :on-delete="deleteLicenseItem"
+            />
+          </div>
 
-      <div id="skills">
-        <ProfileSkillSection
-          :items="profile.skills"
-          :disabled="!canEdit"
-          :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
-          :on-create="createSkillItem"
-          :on-update="updateSkillItem"
-          :on-delete="deleteSkillItem"
-        />
-      </div>
+          <div id="skills">
+            <ProfileSkillSection
+              :items="profile.skills"
+              :disabled="!canEdit"
+              :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
+              :on-create="createSkillItem"
+              :on-update="updateSkillItem"
+              :on-delete="deleteSkillItem"
+            />
+          </div>
 
-      <div id="articles">
-        <ProfileArticlesSection
-          :items="profile.articles"
-          :disabled="!canEdit"
-          :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
-          :on-create="createArticleItem"
-          :on-update="updateArticleItem"
-          :on-delete="deleteArticleItem"
-        />
-      </div>
+          <div id="articles">
+            <ProfileArticlesSection
+              :items="profile.articles"
+              :disabled="!canEdit"
+              :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
+              :on-create="createArticleItem"
+              :on-update="updateArticleItem"
+              :on-delete="deleteArticleItem"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -605,7 +635,7 @@ onBeforeUnmount(() => {
       class="border-dashed"
     >
       <CardContent class="py-10 text-center text-sm text-muted-foreground">
-        No profile data available. Try refreshing the page.
+        No listing data available. Try refreshing the page.
       </CardContent>
     </Card>
   </motion.div>

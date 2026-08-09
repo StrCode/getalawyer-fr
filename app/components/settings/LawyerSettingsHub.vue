@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const links = [
   {
-    title: 'Public profile',
+    title: 'Listing',
     description: 'Photo, about, experience, and everything clients see in search.',
     href: '/dashboard/profile',
     icon: UserCircleIcon,

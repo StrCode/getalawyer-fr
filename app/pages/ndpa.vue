@@ -27,7 +27,7 @@ useHead({
       <li><strong>Lawfulness, fairness, transparency</strong> — every processing purpose and its lawful basis is listed in our <NuxtLink to="/privacy">Privacy Policy</NuxtLink>; we don't process data for undisclosed purposes.</li>
       <li><strong>Purpose limitation</strong> — verification data (NIN, SCN) is used to verify lawyers, and for nothing else.</li>
       <li><strong>Data minimisation</strong> — we collect what the service needs. Clients can search and browse without providing more than an account.</li>
-      <li><strong>Accuracy</strong> — lawyers can correct their professional data at any time in the profile editor; clients can correct account data in settings.</li>
+      <li><strong>Accuracy</strong> — lawyers can correct their professional data at any time in the listing editor; clients can correct account data in settings.</li>
       <li><strong>Storage limitation</strong> — retention periods are defined per data category in the Privacy Policy.</li>
       <li><strong>Integrity and confidentiality</strong> — encryption in transit, hashed credentials, participant-scoped access to conversations, and access controls on verification records.</li>
       <li><strong>Accountability</strong> — processing activities and vendor relationships are documented, and data-protection review is part of how we ship features.</li>

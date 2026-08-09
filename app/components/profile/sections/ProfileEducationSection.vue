@@ -170,7 +170,7 @@ async function onDeleteConfirm() {
   <ProfileEntryDialog
     v-model:open="dialogOpen"
     :title="dialogTitle"
-    description="Add a school or degree to your profile."
+    description="Add a school or degree to your listing."
     :save-label="editingId ? 'Update' : 'Add'"
     :saving="saving"
     :save-disabled="!canSave"
@@ -258,7 +258,7 @@ async function onDeleteConfirm() {
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
     title="Remove education?"
-    description="This entry will no longer appear on your public profile."
+    description="This entry will no longer appear on your listing."
     :deleting="saving"
     @confirm="onDeleteConfirm"
   />

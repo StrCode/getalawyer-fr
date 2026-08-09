@@ -16,7 +16,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Profile photo',
-    description: 'Shown on your public profile and in search results.',
+    description: 'Shown wherever you appear on GetALawyer.',
     fileHint: 'JPEG, PNG, GIF, or WebP · max 5 MB',
   },
 )

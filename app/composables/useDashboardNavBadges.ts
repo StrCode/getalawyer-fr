@@ -8,7 +8,8 @@ function badgeFromCount(count: number): string | undefined {
 }
 
 /**
- * Sidebar badge counts. Returns undefined until data is fetched and only when count > 0.
+ * Sidebar badge counts. Returns undefined until data is fetched and only when count > 0
+ * (except listing progress, which shows a percent until complete).
  */
 export function useDashboardNavBadges() {
   const { session } = useAuth()
@@ -33,6 +34,13 @@ export function useDashboardNavBadges() {
   const { data: casesData, isFetched: casesFetched } = useCasesList()
 
   const { data: subscriptionStatus, isFetched: subscriptionFetched } = useSubscriptionStatus({
+    enabled: computed(() => role.value === 'lawyer'),
+  })
+
+  const {
+    profileQuery,
+    profileStrength,
+  } = useLawyerProfileEditor({
     enabled: computed(() => role.value === 'lawyer'),
   })
 
@@ -72,11 +80,24 @@ export function useDashboardNavBadges() {
     return subscriptionStatus.value?.hasActiveSubscription ? undefined : '!'
   })
 
+  /**
+   * Listing progress (Mobbin/Aboard-style percent). Hidden once the listing
+   * checklist is complete so the nav stays quiet for finished profiles.
+   */
+  const lawyerListingBadge = computed(() => {
+    if (role.value !== 'lawyer' || !profileQuery.isFetched.value) return undefined
+    const percent = profileStrength.value?.percent
+    if (percent == null) return undefined
+    if (percent >= 100) return undefined
+    return `${percent}%`
+  })
+
   return {
     clientUpcomingBookingsBadge,
     unreadMessagesBadge,
     activeCasesBadge,
     lawyerPendingAppointmentsBadge,
     lawyerSubscriptionBadge,
+    lawyerListingBadge,
   }
 }

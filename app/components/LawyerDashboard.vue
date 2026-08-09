@@ -275,7 +275,7 @@ function confirmDecline() {
                 :icon="UserCircleIcon"
                 class="size-4"
               />
-              View Profile
+              Edit listing
             </NuxtLink>
           </Button>
         </template>
@@ -303,7 +303,7 @@ function confirmDecline() {
         :detail-path="nextBooking ? `/dashboard/appointments/${nextBooking.id}` : undefined"
         empty-label="All clear"
         empty-title="No upcoming appointments. Ready for clients."
-        empty-description="Keep your profile and availability current so new requests can land."
+        empty-description="Keep your listing and availability current so new requests can land."
         empty-cta-label="Set availability"
         empty-cta-to="/dashboard/availability"
       />
@@ -332,7 +332,7 @@ function confirmDecline() {
             v-if="showFullEmpty"
             :icon="Calendar03Icon"
             title="No consultations yet"
-            description="Your consultation requests will appear here. Make sure your profile is complete and your availability is set."
+            description="Your consultation requests will appear here. Make sure your listing is complete and your availability is set."
           >
             <template #actions>
               <Button
@@ -340,7 +340,7 @@ function confirmDecline() {
                 class="cursor-pointer"
               >
                 <NuxtLink to="/dashboard/profile">
-                  Complete Profile
+                  Complete listing
                 </NuxtLink>
               </Button>
               <Button

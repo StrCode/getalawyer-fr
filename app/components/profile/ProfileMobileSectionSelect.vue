@@ -10,6 +10,7 @@ import {
 interface ProfileSectionLink {
   id: string
   label: string
+  incomplete?: boolean
 }
 
 const props = defineProps<{
@@ -32,9 +33,7 @@ const selected = computed({
 </script>
 
 <template>
-  <Select
-    v-model="selected"
-  >
+  <Select v-model="selected">
     <SelectTrigger class="w-full">
       <SelectValue placeholder="Jump to section" />
     </SelectTrigger>
@@ -44,7 +43,7 @@ const selected = computed({
         :key="section.id"
         :value="section.id"
       >
-        {{ section.label }}
+        {{ section.incomplete ? `${section.label} · needs attention` : section.label }}
       </SelectItem>
     </SelectContent>
   </Select>

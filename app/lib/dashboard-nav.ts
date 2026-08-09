@@ -17,14 +17,15 @@ export interface DashboardNavLink {
 // Nav is grouped by what the user is doing, not by feature name:
 // "Today" = time-sensitive surfaces, "Practice"/"My legal life" = the
 // durable objects they manage, "Account" = self-service.
+// Lawyer "Listing" is the public directory object (not personal account profile).
 const lawyerDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
   { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true, group: 'Today' },
   { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
-  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Practice' },
+  { title: 'Listing', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Practice' },
   { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true, group: 'Practice' },
-  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Account' },
+  { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true, group: 'Account' },
   { title: 'Settings', to: '/dashboard/settings', icon: Settings01Icon, group: 'Account' },
 ]
@@ -85,24 +86,22 @@ export function getNavBadgeKey(to: string): string {
   return to
 }
 
-const ACCOUNT_PATHS = new Set([
-  '/dashboard/profile',
-  '/dashboard/settings',
-  '/dashboard/subscription',
-])
-
 /** @deprecated Use filterNavForRole with dashboardNavByRole */
 export function getFilteredNavSections(role: 'lawyer' | 'client') {
   const items = filterNavForRole(getDashboardNavForRole(role) ?? [], role)
+  // Lawyer listing lives under Practice; client profile stays under Account.
+  const accountPaths = role === 'lawyer'
+    ? new Set(['/dashboard/settings', '/dashboard/subscription'])
+    : new Set(['/dashboard/profile', '/dashboard/settings'])
 
   return {
     main: {
       label: 'Platform',
-      items: items.filter(link => !ACCOUNT_PATHS.has(link.to)),
+      items: items.filter(link => !accountPaths.has(link.to)),
     },
     account: {
       label: 'Account',
-      items: items.filter(link => ACCOUNT_PATHS.has(link.to)),
+      items: items.filter(link => accountPaths.has(link.to)),
     },
     primaryCta: role === 'lawyer'
       ? { label: 'Set availability', to: '/dashboard/availability', icon: Clock01Icon }

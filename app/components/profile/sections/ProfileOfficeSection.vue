@@ -88,7 +88,7 @@ function onSave() {
         Office & firm
       </CardTitle>
       <CardDescription>
-        Your firm name and office location appear on your public profile and in search results.
+        Your firm name and office location appear on your listing and in search results.
       </CardDescription>
     </CardHeader>
     <CardContent class="space-y-6">

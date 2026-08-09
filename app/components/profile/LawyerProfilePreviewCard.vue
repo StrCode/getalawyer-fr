@@ -43,7 +43,7 @@ const aboutPreview = computed(() => {
             How clients see you
           </CardTitle>
           <CardDescription>
-            Preview of your public directory profile.
+            Preview of your public directory listing.
           </CardDescription>
         </div>
         <Button

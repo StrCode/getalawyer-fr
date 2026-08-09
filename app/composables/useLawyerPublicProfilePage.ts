@@ -58,14 +58,14 @@ export async function useLawyerPublicProfilePage(lawyerId: MaybeRef<string>) {
     isLawyerSession.value ? '/dashboard/profile' : '/find-lawyers',
   )
   const errorBackLabel = computed(() =>
-    isLawyerSession.value ? 'Back to profile editor' : 'Browse lawyers',
+    isLawyerSession.value ? 'Back to listing editor' : 'Browse lawyers',
   )
 
   const backLink = computed(() =>
     isOwnProfile.value ? '/dashboard/profile' : '/find-lawyers',
   )
   const backLinkLabel = computed(() =>
-    isOwnProfile.value ? 'Back to profile editor' : 'Back to directory',
+    isOwnProfile.value ? 'Back to listing editor' : 'Back to directory',
   )
 
   const displayLocation = computed(() => {

@@ -118,7 +118,7 @@ const actionItems = computed((): LawyerDashboardActionItem[] => {
       title: 'Not visible in search yet',
       description: 'Complete your publish checklist to appear in the lawyer directory.',
       to: '/dashboard/profile',
-      ctaLabel: 'Complete profile',
+      ctaLabel: 'Complete listing',
     })
   }
 

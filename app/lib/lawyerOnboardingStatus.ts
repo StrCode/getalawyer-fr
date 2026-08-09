@@ -202,7 +202,7 @@ export interface ProfileEditorApprovalNotice {
   description: string
 }
 
-/** Banner copy for /dashboard/profile when writes are blocked. */
+/** Banner copy for the lawyer listing editor when writes are blocked. */
 export function getProfileEditorApprovalNotice(
   payload: OnboardingStatusPayload,
 ): ProfileEditorApprovalNotice | null {
@@ -213,9 +213,9 @@ export function getProfileEditorApprovalNotice(
   if (isLawyerVerificationFailed(payload)) {
     return {
       variant: 'destructive',
-      title: 'Profile editing unavailable',
+      title: 'Listing edits unavailable',
       description:
-        'Your verification did not complete. Profile changes are disabled until your account status is resolved.',
+        'Your verification did not complete. Listing changes are disabled until your account status is resolved.',
     }
   }
 
@@ -224,7 +224,7 @@ export function getProfileEditorApprovalNotice(
       variant: 'destructive',
       title: 'Application not approved',
       description:
-        'Update and resubmit your application from onboarding before you can edit your public profile.',
+        'Update and resubmit your application from onboarding before you can edit your listing.',
     }
   }
 
@@ -233,15 +233,15 @@ export function getProfileEditorApprovalNotice(
   if (appStatus === 'pending_verification') {
     return {
       variant: 'info',
-      title: 'Profile preview — editing locked',
+      title: 'Listing preview — editing locked',
       description:
-        'We are verifying your NIN and Supreme Court Number. You can preview your profile here; saving changes unlocks once you are approved.',
+        'We are verifying your NIN and Supreme Court Number. You can preview your listing here; saving changes unlocks once you are approved.',
     }
   }
 
   return {
     variant: 'info',
-    title: 'Profile preview — editing locked',
+    title: 'Listing preview — editing locked',
     description:
       'Your application is under review. You can preview sections below; saving changes unlocks once an admin approves your account.',
   }

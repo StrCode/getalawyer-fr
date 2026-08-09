@@ -133,7 +133,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
               v-if="isOwnProfile && item.source === 'onboarding'"
               class="mt-2 text-xs text-muted-foreground"
             >
-              From onboarding — update in profile editor for full details.
+              From onboarding — update in the listing editor for full details.
             </p>
           </div>
         </article>

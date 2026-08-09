@@ -36,7 +36,7 @@ function close() {
       <DialogHeader>
         <DialogTitle>{{ title ?? 'Remove item?' }}</DialogTitle>
         <DialogDescription>
-          {{ description ?? 'This will be removed from your public profile.' }}
+          {{ description ?? 'This will be removed from your listing.' }}
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>

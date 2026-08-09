@@ -2,6 +2,7 @@
 export interface ProfileSectionLink {
   id: string
   label: string
+  incomplete?: boolean
 }
 
 const props = defineProps<{
@@ -51,7 +52,7 @@ onUnmounted(() => {
 
 <template>
   <nav
-    aria-label="Profile sections"
+    aria-label="Listing sections"
     class="space-y-1"
   >
     <p class="mb-3 eyebrow text-muted-foreground">
@@ -61,7 +62,7 @@ onUnmounted(() => {
       v-for="section in sections"
       :key="section.id"
       type="button"
-      class="flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left text-sm transition-colors"
+      class="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors"
       :class="
         activeSection === section.id
           ? 'bg-primary/10 font-medium text-primary'
@@ -69,7 +70,12 @@ onUnmounted(() => {
       "
       @click="scrollToSection(section.id)"
     >
-      {{ section.label }}
+      <span class="min-w-0 flex-1 truncate">{{ section.label }}</span>
+      <span
+        v-if="section.incomplete"
+        class="size-1.5 shrink-0 rounded-full bg-amber-500"
+        aria-label="Needs attention"
+      />
     </button>
   </nav>
 </template>

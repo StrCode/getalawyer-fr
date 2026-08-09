@@ -18,7 +18,7 @@ defineProps<{
     <HugeiconsIcon :icon="Megaphone01Icon" aria-hidden="true" />
     <AlertTitle>Approved — not visible in search yet</AlertTitle>
     <AlertDescription>
-      Your profile is approved but clients cannot find you in the directory until all
+      Your account is approved but clients cannot find you in the directory until all
       visibility gates pass. Complete the checklist below to go live.
     </AlertDescription>
   </Alert>

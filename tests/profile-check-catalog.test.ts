@@ -3,6 +3,7 @@ import {
   PROFILE_CHECK_CATALOG,
   PROFILE_STRENGTH_TOTAL,
   buildProfileChecklist,
+  getIncompleteListingSectionIds,
   getTier1IncompleteItems,
 } from '../app/lib/profile-check-catalog'
 
@@ -43,5 +44,17 @@ describe('profile-check-catalog', () => {
     })
 
     expect(items.map((item) => item.id)).toEqual(['headline'])
+  })
+
+  it('maps incomplete checks to listing editor section ids', () => {
+    const sections = getIncompleteListingSectionIds({
+      percent: 40,
+      score: 40,
+      totalWeight: 130,
+      isStrong: false,
+      incompleteCheckIds: ['photo', 'headline', 'skills', 'consultationType'],
+    })
+
+    expect([...sections].sort()).toEqual(['about', 'photo', 'skills'])
   })
 })

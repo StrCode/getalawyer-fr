@@ -1,5 +1,8 @@
 <template>
-  <div v-if="authPending" class="space-y-4">
+  <div
+    v-if="authPending"
+    class="space-y-4"
+  >
     <Skeleton class="h-36 w-full rounded-xl" />
     <Skeleton class="h-64 w-full rounded-xl" />
   </div>
@@ -15,13 +18,6 @@ import LawyerProfileEditorShell from '@/components/profile/LawyerProfileEditorSh
 import { Skeleton } from '@/components/ui/skeleton'
 import { getSessionUserType } from '~/lib/session-user'
 
-useHead({
-  title: 'Profile - GetALawyer',
-  meta: [
-    { name: 'description', content: 'Manage your profile and contact details' },
-  ],
-})
-
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
@@ -30,4 +26,16 @@ definePageMeta({
 const { session, isPending: authPending } = useAuth()
 const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
 const isClient = computed(() => getSessionUserType(session.value?.user) === 'client')
+
+useHead(() => ({
+  title: isLawyer.value ? 'Listing - GetALawyer' : 'Profile - GetALawyer',
+  meta: [
+    {
+      name: 'description',
+      content: isLawyer.value
+        ? 'Edit your public directory listing'
+        : 'Manage your profile and contact details',
+    },
+  ],
+}))
 </script>

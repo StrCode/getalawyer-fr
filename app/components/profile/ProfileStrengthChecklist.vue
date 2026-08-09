@@ -20,7 +20,7 @@ const hasStrength = computed(() => Boolean(props.profileStrength))
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <CardTitle>
-            Profile checklist
+            Listing checklist
           </CardTitle>
           <CardDescription>
             Tier 1 gates directory visibility. Tiers 2–3 improve how your page looks.
@@ -31,7 +31,7 @@ const hasStrength = computed(() => Boolean(props.profileStrength))
           variant="secondary"
           class="border-primary/20 bg-primary/10 text-primary"
         >
-          Strong profile
+          Strong listing
         </Badge>
       </div>
     </CardHeader>

@@ -3,7 +3,7 @@
     <template v-if="isLawyer">
       <DashboardPageHeader
         title="Settings"
-        description="Practice setup, billing, and account security."
+        description="Shortcuts to your listing and practice tools, plus account security."
       />
 
       <LawyerSettingsHub />

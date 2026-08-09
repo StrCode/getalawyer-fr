@@ -87,7 +87,7 @@ const showTier1Details = computed(
             Directory visibility
           </CardTitle>
           <CardDescription>
-            Clients can find your public profile in search when all gates pass.
+            Clients can find your listing in search when all gates pass.
           </CardDescription>
         </div>
         <div
@@ -184,7 +184,7 @@ const showTier1Details = computed(
       >
         <div class="flex items-end justify-between gap-2">
           <p class="text-sm font-medium text-foreground">
-            Profile strength
+            Listing strength
           </p>
           <p class="text-sm tabular-nums text-muted-foreground">
             {{ strengthPercent }}%

@@ -167,7 +167,7 @@ async function onDeleteConfirm() {
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
     title="Remove skill?"
-    description="This skill will no longer appear on your public profile."
+    description="This skill will no longer appear on your listing."
     :deleting="saving"
     @confirm="onDeleteConfirm"
   />
