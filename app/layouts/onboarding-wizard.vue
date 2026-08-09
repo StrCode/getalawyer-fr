@@ -652,6 +652,12 @@ export default defineComponent({
           v-if="progressStepTotal > 0 && progressStepNumber > 0"
           class="z-40 shrink-0 border-t border-border/40 bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm"
         >
+          <!-- Step pages can Teleport sticky content here (e.g. review legal acceptances). -->
+          <div
+            id="onboarding-wizard-footer-above"
+            class="mx-auto w-full max-w-3xl border-b border-border/40 px-4 py-3 empty:hidden sm:px-6 md:px-8"
+          />
+
           <div class="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-4 md:px-8">
             <p class="text-center text-sm font-medium tabular-nums text-muted-foreground sm:text-left lg:hidden">
               Step {{ progressStepNumber }} of {{ progressStepTotal }}<template v-if="currentSubStep"> · {{ currentSubStep.label }} ({{ currentSubStep.index }}/{{ currentSubStep.total }})</template>

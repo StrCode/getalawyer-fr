@@ -61,7 +61,7 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
     label: 'Review & submit',
     title: 'Review your application',
     description:
-      'Confirm your details, accept the legal terms, then submit. We usually review within one to two business days.',
+      'Confirm everything looks right, accept the terms, then submit.',
   },
 }
 
