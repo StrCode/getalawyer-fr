@@ -7,8 +7,16 @@ import { isValidScnDigits, normalizeScnDigitsOnly, SCN_MAX_DIGITS } from '~/lib/
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { Card } from '@/components/ui/card'
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import {
   Select,
   SelectContent,
@@ -16,6 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
+const fieldControlClass =
+  'h-11 w-full rounded-xl border-border/50 bg-background text-base shadow-none focus:bg-background'
+
+const fieldLabelClass = 'text-sm'
+const fieldClass = 'gap-2'
 
 definePageMeta({
   layout: 'onboarding-wizard',
@@ -111,7 +125,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
 </script>
 
 <template>
-  <div class="w-full space-y-8 pb-20">
+  <div class="flex w-full flex-col gap-6">
     <OnboardingClientStepHeader
       :step="step.step"
       :total="step.total"
@@ -120,105 +134,115 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
       :description="step.description"
     />
 
-    <Card class="p-6 sm:p-8">
-        <FieldGroup class="gap-6">
-          <form.Field v-slot="{ field }" name="barNumber">
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                Supreme Court enrolment number (SCN)
-                <span class="text-primary">*</span>
-              </FieldLabel>
-              <div class="flex gap-2">
-                <span
-                  class="flex h-11 shrink-0 items-center rounded-xl border border-border/50 bg-card/80 px-3 font-mono text-sm font-medium text-foreground"
-                >
-                  SCN
-                </span>
+    <Card class="gap-0 p-6 sm:p-8">
+      <FieldGroup class="gap-6">
+        <FieldSet class="gap-4">
+          <FieldGroup class="gap-5">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <form.Field v-slot="{ field }" name="barNumber">
+                <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" :class="fieldLabelClass">
+                    Supreme Court number (SCN)
+                  </FieldLabel>
+                  <InputGroup class="h-11 rounded-xl border-border/50 bg-background shadow-none">
+                    <InputGroupAddon>
+                      <span class="font-mono text-sm font-medium text-foreground">SCN</span>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      placeholder="12345"
+                      autocomplete="off"
+                      inputmode="numeric"
+                      :maxlength="SCN_MAX_DIGITS"
+                      class="font-mono text-base tabular-nums"
+                      :aria-invalid="isInvalid(field)"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => onScnInput(field, v)"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <span
+                        class="text-xs font-medium tracking-wider uppercase tabular-nums"
+                        :class="isValidScnDigits(barNumberStr) ? 'text-primary' : 'text-muted-foreground/60'"
+                      >
+                        {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
+                      </span>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <FieldDescription>
+                    Enter the digits only (4–6) — not the “SCN” prefix.
+                  </FieldDescription>
+                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </form.Field>
+
+              <form.Field v-slot="{ field }" name="yearOfCall">
+                <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" :class="fieldLabelClass">
+                    Year of call
+                  </FieldLabel>
+                  <Select
+                    :model-value="field.state.value != null ? String(field.state.value) : undefined"
+                    @update:model-value="(v) => {
+                      field.handleChange(v ? Number(v) : undefined)
+                      field.handleBlur()
+                    }"
+                  >
+                    <SelectTrigger
+                      :id="field.name"
+                      :class="fieldControlClass"
+                      :aria-invalid="isInvalid(field)"
+                    >
+                      <SelectValue placeholder="Select year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        v-for="y in yearOptions"
+                        :key="y"
+                        :value="String(y)"
+                      >
+                        {{ y }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    The year you were admitted to the Nigerian Bar.
+                  </FieldDescription>
+                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </form.Field>
+            </div>
+
+            <form.Field v-slot="{ field }" name="scnFullNameAtCallToBar">
+              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="fieldLabelClass">
+                  Name on your SCN
+                </FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  placeholder="12345"
-                  autocomplete="off"
-                  inputmode="numeric"
-                  :maxlength="SCN_MAX_DIGITS"
-                  class="flex-1 font-mono tabular-nums"
+                  :class="fieldControlClass"
+                  placeholder="Exactly as on your call-to-bar records"
+                  autocomplete="name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="(v) => onScnInput(field, v)"
+                  @update:model-value="field.handleChange"
                 />
-              </div>
-              <FieldDescription>
-                Digits only (4–6), e.g. for SCN12345 enter
-                <span class="font-mono font-medium">12345</span>.
-                <span
-                  class="ml-2 tabular-nums"
-                  :class="isValidScnDigits(barNumberStr) ? 'text-primary' : 'text-muted-foreground'"
-                >
-                  {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
-                </span>
-              </FieldDescription>
-              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-            </Field>
-          </form.Field>
+                <FieldDescription>
+                  For bar verification only — not shown on your public profile.
+                </FieldDescription>
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+          </FieldGroup>
+        </FieldSet>
 
-          <form.Field v-slot="{ field }" name="scnFullNameAtCallToBar">
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                Full name on Supreme Court Number
-                <span class="text-primary">*</span>
-              </FieldLabel>
-              <Input
-                :id="field.name"
-                :name="field.name"
-                :model-value="field.state.value"
-                placeholder="Exactly as on your call-to-bar records"
-                autocomplete="name"
-               
-                :aria-invalid="isInvalid(field)"
-                @blur="field.handleBlur"
-                @update:model-value="field.handleChange"
-              />
-              <FieldDescription>
-                For bar verification only — not shown on your public profile.
-              </FieldDescription>
-              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-            </Field>
-          </form.Field>
-
-          <form.Field v-slot="{ field }" name="yearOfCall">
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                Year called to the Nigerian Bar
-                <span class="text-primary">*</span>
-              </FieldLabel>
-              <Select
-                :model-value="field.state.value != null ? String(field.state.value) : undefined"
-                @update:model-value="(v) => {
-                  field.handleChange(v ? Number(v) : undefined)
-                  field.handleBlur()
-                }"
-              >
-                <SelectTrigger class="w-full"
-                  :id="field.name"
-                 
-                  :aria-invalid="isInvalid(field)"
-                >
-                  <SelectValue placeholder="Select year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="y in yearOptions" :key="y" :value="String(y)">
-                    {{ y }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldDescription>
-                Calendar year you were admitted to the Nigerian Bar.
-              </FieldDescription>
-              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-            </Field>
-          </form.Field>
-        </FieldGroup>
-      </Card>
+        <p class="text-sm leading-relaxed text-muted-foreground">
+          All fields are required for verification.
+        </p>
+      </FieldGroup>
+    </Card>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CreditCardIcon, Loading03Icon, Logout01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { Alert01Icon, Loading03Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
@@ -19,14 +19,13 @@ import { ApiError } from '~/lib/api/client'
 import { toast } from 'vue-sonner'
 import { queryKeys } from '~/lib/query-client'
 import {
-  getLawyerApplicationStatusNotice,
   isLawyerAwaitingApproval,
   isLawyerRejected,
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
 } from '~/lib/lawyerOnboardingStatus'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 
 definePageMeta({
   layout: 'onboarding-draft',
@@ -45,7 +44,6 @@ useHead({
 
 const router = useRouter()
 const { session } = useAuth()
-const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 const queryClient = useQueryClient()
 
 await useAsyncData('onboarding-subscription-status', () =>
@@ -63,6 +61,8 @@ const {
 const {
   data: pricing,
   isPending: pricingPending,
+  isError: pricingError,
+  refetch: refetchPricing,
 } = useSubscriptionPricing()
 
 const {
@@ -96,21 +96,6 @@ const hasCheckoutFailure = computed(() =>
   hasPendingCheckoutFailure(subscriptionStatus.value?.subscription),
 )
 
-const applicationNotice = computed(() =>
-  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
-)
-
-const noticeToneClass = computed(() => {
-  const tone = applicationNotice.value?.tone
-  if (tone === 'approved') {
-    return 'border-primary/20 bg-primary/5 text-foreground'
-  }
-  if (tone === 'failed') {
-    return 'border-primary/30 bg-primary/10 text-foreground'
-  }
-  return 'border-primary/20 bg-primary/5 text-foreground'
-})
-
 const submittedLabel = computed(() => {
   const iso = statusPayload.value ? onboardingSubmittedAt(statusPayload.value) : null
   if (!iso) return null
@@ -139,11 +124,15 @@ const subscriptionEndLabel = computed(() => {
   }
 })
 
-const nextRenewalLabel = computed(() => subscriptionEndLabel.value)
-
 const pageLoading = computed(
   () => statusPending.value || subscriptionStatusPending.value || pricingPending.value,
 )
+
+const benefits = [
+  'Directory listing after approval',
+  'Secure client messaging',
+  'Zero commission on your fees',
+] as const
 
 watchEffect(() => {
   const u = session.value?.user as {
@@ -205,9 +194,9 @@ async function confirmPendingPayment() {
       return
     }
     if (
-      result?.status === 'failed' ||
-      result?.status === 'abandoned' ||
-      result?.status === 'cancelled'
+      result?.status === 'failed'
+      || result?.status === 'abandoned'
+      || result?.status === 'cancelled'
     ) {
       toast.error('Payment not completed', {
         description: result.message ?? 'You can try again below.',
@@ -216,6 +205,11 @@ async function confirmPendingPayment() {
     }
   } catch (error) {
     console.error('[Subscription] Failed to confirm pending payment', error)
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : 'We could not confirm your payment right now. Please try again.'
+    toast.error('Could not confirm payment', { description: message })
   } finally {
     confirmingPendingPayment.value = false
   }
@@ -258,222 +252,192 @@ const paymentBusy = computed(
   () => navigatingToPayment.value || paymentInitPending.value || confirmingPendingPayment.value,
 )
 
+const firstPaymentTotalNaira = computed(() => {
+  const p = pricing.value
+  if (!p) return null
+  if (Number.isFinite(p.firstPaymentTotalNaira) && p.firstPaymentTotalNaira! > 0) {
+    return p.firstPaymentTotalNaira!
+  }
+  return p.subscriptionPriceNaira + p.verificationAdminFeeNaira
+})
+
+const payButtonLabel = computed(() => {
+  if (paymentBusy.value) {
+    return syncPendingPending.value || confirmingPendingPayment.value
+      ? 'Confirming payment…'
+      : 'Opening Paystack…'
+  }
+  if (hasCheckoutFailure.value) return 'Try payment again'
+  if (firstPaymentTotalNaira.value != null) {
+    return `Pay ${formatNairaAmount(firstPaymentTotalNaira.value)}`
+  }
+  return 'Continue to payment'
+})
+
 async function retry() {
   await Promise.all([
     refetchStatus(),
+    refetchPricing(),
     queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status }),
-    queryClient.invalidateQueries({ queryKey: queryKeys.subscription.pricing }),
   ])
 }
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-5xl pb-12">
-    <div v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)" class="mx-auto w-full max-w-2xl space-y-8 py-28 text-center">
-      <Skeleton class="mx-auto size-16 rounded-full" />
-      <Skeleton class="mx-auto h-8 w-1/2 rounded-xl" />
-      <div class="grid gap-6 sm:grid-cols-2 mt-8">
-        <Skeleton class="h-64 rounded-2xl" />
-        <Skeleton class="h-64 rounded-2xl" />
-      </div>
+  <div class="mx-auto flex w-full max-w-md flex-col items-stretch gap-8">
+    <div
+      v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
+      class="flex flex-col items-center gap-4 py-20 text-center"
+    >
+      <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" aria-hidden="true" />
+      <p class="text-sm text-muted-foreground">
+        {{ confirmingPendingPayment ? 'Confirming your payment…' : 'Loading…' }}
+      </p>
     </div>
 
-    <div v-else-if="statusError" class="space-y-6 py-8 text-center">
-     <h1 class="text-2xl font-medium tracking-[-0.02em] text-foreground">
+    <div v-else-if="statusError" class="flex flex-col items-center gap-5 text-center">
+      <h1 class="text-2xl font-medium tracking-tight text-foreground">
         Could not load your application
       </h1>
-      <Button @click="retry">
+      <p class="text-sm text-muted-foreground">
+        Check your connection and try again.
+      </p>
+      <Button class="cursor-pointer" @click="retry">
         Try again
       </Button>
     </div>
 
-    <div v-else class="space-y-8 py-6 sm:py-10">
-      <div class="text-center lg:text-left">
-        <p class="mb-2 eyebrow text-primary-strong">
+    <template v-else>
+      <div class="flex flex-col items-center gap-2 text-center">
+        <h1 class="text-balance text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
           Annual membership
-        </p>
-       <h1 class="text-3xl font-medium tracking-[-0.02em] text-foreground sm:text-4xl">
-          Complete your subscription
         </h1>
-        <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground lg:mx-0">
-          Pay your yearly fee while we review your application. Your membership activates once you are approved.
+        <p class="text-sm leading-relaxed text-muted-foreground">
+          Pay while we review your application. Your listing goes live after approval.
+        </p>
+        <p v-if="submittedLabel" class="text-xs text-muted-foreground">
+          Application submitted {{ submittedLabel }}
         </p>
       </div>
 
-      <div
-        v-if="applicationNotice"
-        class="rounded-xl border px-4 py-4 sm:px-5"
-        :class="noticeToneClass"
-        role="status"
-      >
-        <p class="text-sm font-medium">
-          {{ applicationNotice.title }}
-        </p>
-        <p class="mt-1 text-sm leading-relaxed opacity-90">
-          {{ applicationNotice.description }}
-        </p>
-        <p v-if="submittedLabel" class="mt-2 text-xs font-medium opacity-80">
-          Submitted {{ submittedLabel }}
-        </p>
-      </div>
+      <Alert v-if="hasCheckoutFailure" variant="warning">
+        <HugeiconsIcon :icon="Alert01Icon" aria-hidden="true" />
+        <AlertTitle>Payment did not complete</AlertTitle>
+        <AlertDescription>
+          {{ paymentFailureMessage }}
+        </AlertDescription>
+      </Alert>
 
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-        <Card class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <div class="border-b border-border/40 px-6 py-5">
-            <div class="flex items-center gap-3">
-              <div
-                class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"
-              >
-                <HugeiconsIcon :icon="CreditCardIcon" class="size-5" />
-              </div>
-              <div>
-               <h2 class="text-base font-medium text-foreground">
-                  Payment
-                </h2>
-                <p class="text-xs text-muted-foreground">
-                  Secure checkout via Paystack
-                </p>
-              </div>
-            </div>
+      <Alert v-if="pricingError || (!pricing && !pricingPending)" variant="destructive">
+        <AlertTitle>Could not load pricing</AlertTitle>
+        <AlertDescription class="flex flex-col items-start gap-3">
+          <p>We need the current price before checkout.</p>
+          <Button
+            variant="outline"
+            size="sm"
+            class="cursor-pointer border-destructive/25 bg-background"
+            @click="refetchPricing()"
+          >
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+
+      <!-- Plan card -->
+      <div class="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+        <div class="flex flex-col gap-6 p-6 sm:p-7">
+          <div class="flex flex-col items-center gap-1 text-center">
+            <p class="text-sm font-medium text-foreground">
+              Lawyer membership
+            </p>
+            <p
+              v-if="firstPaymentTotalNaira != null"
+              class="text-4xl font-medium tracking-tight tabular-nums text-foreground"
+            >
+              {{ formatNairaAmount(firstPaymentTotalNaira) }}
+            </p>
+            <Skeleton v-else class="h-10 w-36 rounded-lg" />
+            <p class="text-sm text-muted-foreground">
+              first year · then
+              <template v-if="pricing">
+                {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year
+              </template>
+              <template v-else>
+                annual renewal
+              </template>
+            </p>
+            <p
+              v-if="pricing"
+              class="mt-1 text-xs text-muted-foreground"
+            >
+              {{ formatNairaAmount(pricing.subscriptionPriceNaira) }} membership
+              + {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }} verification
+            </p>
           </div>
 
-          <CardContent class="space-y-4 px-6 py-5">
-            <div
-              v-if="hasCheckoutFailure"
-              class="rounded-lg border border-warning-border bg-warning-subtle px-3 py-3 text-sm text-warning-subtle-foreground"
-              role="alert"
-            >
-              <p class="font-medium">
-                Your last payment attempt did not complete
-              </p>
-              <p class="mt-1 leading-relaxed">
-                {{ paymentFailureMessage }}
-              </p>
-            </div>
-
-            <div
-              v-if="hasActiveSubscription"
-              class="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground"
+          <ul class="flex flex-col gap-3">
+            <li
+              v-for="item in benefits"
+              :key="item"
+              class="flex items-start gap-2.5 text-sm text-foreground"
             >
               <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-              <div>
-                <p class="font-medium text-foreground">
-                  Payment received
-                </p>
-                <p class="mt-0.5 text-muted-foreground">
-                  Your subscription is active
-                  <template v-if="subscriptionEndLabel">
-                    until {{ subscriptionEndLabel }}.
-                  </template>
-                  <template v-else>
-                    .
-                  </template>
-                </p>
-              </div>
-            </div>
+              {{ item }}
+            </li>
+          </ul>
 
-            <template v-else>
-              <p class="text-sm leading-relaxed text-muted-foreground">
-                You will be redirected to Paystack to pay by card or bank transfer. Your card can be saved for easy renewal next year.
-              </p>
+          <div
+            v-if="hasActiveSubscription"
+            class="flex items-start gap-2.5 rounded-xl bg-primary/5 px-4 py-3 text-sm"
+          >
+            <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
+            <p class="text-muted-foreground">
+              <span class="font-medium text-foreground">Payment received.</span>
+              Subscription active
+              <template v-if="subscriptionEndLabel">
+                until {{ subscriptionEndLabel }}
+              </template>
+              — redirecting…
+            </p>
+          </div>
 
-              <Button
-                class="w-full font-medium"
-                :disabled="paymentBusy || !pricing"
-                @click="startPayment"
-              >
-                <HugeiconsIcon
-                  v-if="paymentBusy"
-                  :icon="Loading03Icon"
-                  class="mr-2 size-4 animate-spin"
-                />
-                {{ paymentBusy ? (syncPendingPending ? 'Confirming payment…' : 'Opening Paystack…') : hasCheckoutFailure ? 'Try payment again' : 'Pay annual subscription' }}
-              </Button>
+          <div v-else class="flex flex-col gap-3">
+            <Button
+              class="h-12 w-full cursor-pointer rounded-xl text-base font-semibold"
+              :disabled="paymentBusy || !pricing"
+              @click="startPayment"
+            >
+              <HugeiconsIcon
+                v-if="paymentBusy"
+                :icon="Loading03Icon"
+                data-icon="inline-start"
+                class="animate-spin"
+              />
+              {{ payButtonLabel }}
+            </Button>
 
-              <button
-                v-if="hasPendingSubscription && !paymentBusy"
-                type="button"
-                class="w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
-                @click="confirmPendingPayment"
-              >
-                I already paid — confirm my payment
-              </button>
-            </template>
-          </CardContent>
-        </Card>
+            <button
+              v-if="hasPendingSubscription && !paymentBusy"
+              type="button"
+              class="cursor-pointer text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+              @click="confirmPendingPayment"
+            >
+              I already paid — confirm my payment
+            </button>
+          </div>
+        </div>
 
-        <aside class="space-y-4 lg:sticky lg:top-24">
-          <Card class="rounded-2xl border border-border bg-card shadow-sm">
-            <CardContent class="space-y-4 px-5 py-5">
-              <div>
-                <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Order summary
-                </p>
-                <p
-                  v-if="pricing"
-                  class="mt-2 text-3xl font-medium tabular-nums tracking-tight text-foreground"
-                >
-                  {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}
-                  <span class="text-base font-normal text-muted-foreground">/ year</span>
-                </p>
-              </div>
-
-              <ul class="space-y-2 text-sm text-muted-foreground">
-                <li class="flex gap-2">
-                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-                  Directory listing and client bookings
-                </li>
-                <li class="flex gap-2">
-                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-                  Secure messaging with clients
-                </li>
-                <li class="flex gap-2">
-                  <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-                  Zero commission on your fees
-                </li>
-              </ul>
-
-              <p class="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-                <template v-if="nextRenewalLabel">
-                  Renews annually on {{ nextRenewalLabel }} unless you turn off auto-renew in your dashboard.
-                </template>
-                <template v-else>
-                  Renews annually unless you turn off auto-renew in your dashboard.
-                </template>
-              </p>
-
-              <p class="text-xs leading-relaxed text-muted-foreground">
-                If verification fails after payment, your subscription is refunded minus a
-                <template v-if="pricing">
-                  {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
-                </template>
-                <template v-else>
-                  small
-                </template>
-                admin fee.
-              </p>
-            </CardContent>
-          </Card>
-        </aside>
+        <div class="border-t border-border/50 bg-muted/40 px-6 py-4 text-center sm:px-7">
+          <p class="text-xs leading-relaxed text-muted-foreground">
+            Secure checkout via Paystack.
+            Renewals are membership only
+            <template v-if="pricing">
+              ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year)
+            </template>.
+            Failed verification: membership refunded; verification fee kept.
+          </p>
+        </div>
       </div>
-
-      <div class="flex flex-col items-center gap-3 pt-2">
-        <p
-          v-if="hasActiveSubscription"
-          class="text-center text-sm text-muted-foreground"
-        >
-          Payment complete — you are being sent to your application status.
-        </p>
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
-          :disabled="isSigningOut"
-          @click="handleSignOut()"
-        >
-          <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
-          {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
-        </button>
-      </div>
-    </div>
+    </template>
   </div>
 </template>

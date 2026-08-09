@@ -37,31 +37,31 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
     label: 'About you',
     title: 'Tell us about yourself',
     description:
-      'We use this for identity verification. Your details are kept private and are not shown on your public profile.',
+      'These details help us confirm who you are. They stay private — nothing here appears on your public profile.',
   },
   nin_verification: {
     label: 'About you',
-    title: 'Submit your NIN for verification',
+    title: 'Confirm your NIN',
     description:
-      'Enter your National Identification Number. We store it securely and review it during application verification.',
+      'Add your National Identification Number so we can verify your identity before you join the platform.',
   },
   professional_info: {
     label: 'Credentials & practice',
-    title: 'Bar admission',
+    title: 'Your bar credentials',
     description:
-      'Your Supreme Court enrolment number and year of call help us validate your NBA credentials.',
+      'We use these to confirm you’re called to the Nigerian Bar.',
   },
   practice_info: {
     label: 'Credentials & practice',
     title: 'How you practise',
     description:
-      'Share where you practise, your firm or solo status, and the legal areas you focus on.',
+      'Firm setup, the areas you focus on, and where you practise.',
   },
   review: {
     label: 'Review & submit',
     title: 'Review your application',
     description:
-      'Check everything before you submit. Our team typically reviews applications within one to two business days.',
+      'Confirm everything looks right, accept the terms, then submit.',
   },
 }
 

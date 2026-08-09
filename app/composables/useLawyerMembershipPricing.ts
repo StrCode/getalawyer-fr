@@ -2,6 +2,8 @@
 export interface LawyerMembershipPricing {
   subscriptionPriceNaira: number
   verificationAdminFeeNaira: number
+  firstPaymentTotalNaira: number
+  renewalPriceNaira: number
   currency: 'NGN'
 }
 

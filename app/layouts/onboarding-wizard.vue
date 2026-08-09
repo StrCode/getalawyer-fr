@@ -120,7 +120,7 @@ export default defineComponent({
             await router.push('/dashboard')
           } else if (!isLast.value && nextStep.value) {
             toast.success('Saved', { duration: 1500 })
-            router.push(nextStep.value.path)
+            await router.push(nextStep.value.path)
           }
         } else if (!validationErrorBanner.value && !(store.value as { termsError?: string | null }).termsError) {
           // Validation failures surface in the banner (or inline for terms);
@@ -232,45 +232,73 @@ export default defineComponent({
       return steps.value.length
     })
 
+    const CLIENT_UX_STEPS = [
+      { label: 'Location', description: 'Where you need legal help' },
+      { label: 'Legal needs', description: 'The kinds of matters you care about' },
+    ] as const
+
+    const LAWYER_UX_DESCRIPTIONS = [
+      'Identity details and NIN verification',
+      'Bar credentials and how you practise',
+      'Check everything, then submit',
+    ] as const
+
+    const sidebarHeading = computed(() =>
+      userType.value === 'client' ? 'Set up your account' : 'Lawyer application',
+    )
+
+    const sidebarProgressPct = computed(() => {
+      if (progressStepTotal.value <= 0) return 0
+      return Math.round((progressStepNumber.value / progressStepTotal.value) * 100)
+    })
+
+    const accountInitials = computed(() => {
+      const parts = String(accountName.value || '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+      if (parts.length >= 2) {
+        return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase()
+      }
+      return (parts[0] ?? 'A').slice(0, 2).toUpperCase()
+    })
+
     const sidebarSteps = computed(() => {
       const isClient = userType.value === 'client'
       const total = progressStepTotal.value
-      
+
       return Array.from({ length: total }).map((_, idx) => {
         const stepNum = idx + 1
         const isActive = progressStepNumber.value === stepNum
         const isCompleted = progressStepNumber.value > stepNum
-        
-        let label = ''
-        if (isClient) {
-           label = idx === 0 ? 'Location' : 'Legal needs'
-        } else {
-           label = LAWYER_UX_STEP_LABELS[idx]
-        }
-        
-        // Find sub-routes (paths) for this UX step
-        const subRoutes = steps.value.filter(s => {
+
+        const label = isClient
+          ? (CLIENT_UX_STEPS[idx]?.label ?? `Step ${stepNum}`)
+          : (LAWYER_UX_STEP_LABELS[idx] ?? `Step ${stepNum}`)
+
+        const description = isClient
+          ? (CLIENT_UX_STEPS[idx]?.description ?? '')
+          : (LAWYER_UX_DESCRIPTIONS[idx] ?? '')
+
+        const subRoutes = steps.value.filter((s) => {
           if (isClient) {
-            // Client: index maps 1:1 to step
-            const currentStepIdx = steps.value.indexOf(s)
-            return currentStepIdx === idx
-          } else {
-            // Lawyer: use mapping
-            return LAWYER_STEP_UX_NUMBER[s.key as keyof typeof LAWYER_STEP_UX_NUMBER] === stepNum
+            return steps.value.indexOf(s) === idx
           }
+          return LAWYER_STEP_UX_NUMBER[s.key as keyof typeof LAWYER_STEP_UX_NUMBER] === stepNum
         })
-        
+
         return {
           stepNum,
           label,
+          description,
           isActive,
           isCompleted,
           isUpcoming: progressStepNumber.value < stepNum,
           subRoutes: subRoutes.map(s => ({
             label: s.label,
             isCurrent: currentStep.value?.key === s.key,
-            isDone: isCompleted || (isActive && steps.value.indexOf(s) < currentIndex.value)
-          }))
+            isDone: isCompleted || (isActive && steps.value.indexOf(s) < currentIndex.value),
+          })),
         }
       })
     })
@@ -306,6 +334,9 @@ export default defineComponent({
       progressStepNumber,
       progressStepTotal,
       sidebarSteps,
+      sidebarHeading,
+      sidebarProgressPct,
+      accountInitials,
       currentSubStep,
       isFirst,
       isLast,
@@ -327,251 +358,346 @@ export default defineComponent({
 
 <template>
   <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
-    <!-- Header -->
+    <!-- Header (mobile / tablet) -->
     <header
-      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-3 transition-all duration-200 sm:px-8 sm:py-3 lg:hidden"
+      class="z-30 flex shrink-0 flex-col border-b border-border/40 bg-background transition-all duration-200 lg:hidden"
       :class="isScrolled ? 'shadow-sm' : ''"
     >
-      <LandingBrandLogo class="min-w-0 shrink" />
+      <div class="flex items-center justify-between gap-4 px-4 py-3 sm:px-8">
+        <LandingBrandLogo class="min-w-0 shrink" />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            class="size-9 shrink-0 cursor-pointer rounded-full border-border bg-background shadow-sm transition-all hover:border-foreground/20 hover:bg-muted hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring/30 data-[state=open]:border-foreground/30 data-[state=open]:bg-muted data-[state=open]:shadow-md"
-            aria-label="Open account menu"
-          >
-            <HugeiconsIcon :icon="UserCircleIcon" class="size-4" aria-hidden="true" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-60" :side-offset="8">
-          <DropdownMenuLabel class="font-normal">
-            <div class="truncate text-sm font-medium text-foreground">{{ accountName }}</div>
-            <div v-if="accountEmail" class="truncate text-xs text-muted-foreground">{{ accountEmail }}</div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
-            <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
-            Save progress
-          </DropdownMenuItem>
-          <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
-            <HugeiconsIcon :icon="Home01Icon" class="size-4" />
-            {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            :disabled="isSaving || isSigningOut"
-            @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
-          >
-            <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
-            {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              class="size-9 shrink-0 cursor-pointer rounded-full border-border bg-background shadow-sm transition-all hover:border-foreground/20 hover:bg-muted hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring/30 data-[state=open]:border-foreground/30 data-[state=open]:bg-muted data-[state=open]:shadow-md"
+              aria-label="Open account menu"
+            >
+              <HugeiconsIcon :icon="UserCircleIcon" class="size-4" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" class="w-60" :side-offset="8">
+            <DropdownMenuLabel class="font-normal">
+              <div class="truncate text-sm font-medium text-foreground">{{ accountName }}</div>
+              <div v-if="accountEmail" class="truncate text-xs text-muted-foreground">{{ accountEmail }}</div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
+              <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
+              Save progress
+            </DropdownMenuItem>
+            <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
+              <HugeiconsIcon :icon="Home01Icon" class="size-4" />
+              {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              :disabled="isSaving || isSigningOut"
+              @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
+            >
+              <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+              {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div
+        v-if="progressStepTotal > 0 && progressStepNumber > 0"
+        class="flex gap-1.5 px-4 pb-3 sm:px-8"
+        aria-hidden="true"
+      >
+        <div
+          v-for="n in progressStepTotal"
+          :key="n"
+          class="h-1 flex-1 rounded-full transition-colors duration-300"
+          :class="n <= progressStepNumber ? 'bg-primary' : 'bg-border'"
+        />
+      </div>
     </header>
 
     <!-- Flex container for Sidebar + Main -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar (lg+ only) -->
-      <aside class="app-scrollbar hidden w-80 shrink-0 flex-col overflow-y-auto border-r border-border/50 bg-card/35 lg:flex">
-        <div class="border-b border-border/40 px-8 py-7">
-          <LandingBrandLogo class="min-w-0" />
-        </div>
+      <aside
+        class="app-scrollbar relative hidden w-84 shrink-0 flex-col overflow-y-auto bg-foreground text-background lg:flex"
+      >
+        <div
+          class="pointer-events-none absolute inset-x-0 bottom-0 top-1/3 opacity-[0.06]"
+          aria-hidden="true"
+          style="background-image: radial-gradient(circle at 85% 90%, oklch(0.55 0.06 161) 0%, transparent 45%);"
+        />
 
-        <nav aria-label="Progress" class="px-8 py-10">
-          <Stepper
-            orientation="vertical"
-            :model-value="progressStepNumber"
-            class="flex flex-col gap-0"
-          >
-            <StepperItem
-              v-for="(step, stepIdx) in sidebarSteps"
-              :key="step.label"
-              v-slot="{ state }"
-              :step="step.stepNum"
-              class="relative flex w-full items-start gap-4"
-              :class="stepIdx === sidebarSteps.length - 1 ? 'pb-1' : 'pb-9'"
+        <div class="relative z-10 flex flex-1 flex-col px-7 py-8">
+          <LandingBrandLogo
+            class="min-w-0"
+            on-dark
+            :show-wordmark="false"
+          />
+
+          <div class="mt-10">
+            <p class="text-2xs font-medium tracking-[0.14em] text-background/45 uppercase">
+              {{ sidebarHeading }}
+            </p>
+            <div class="mt-3 flex items-end justify-between gap-3">
+              <p class="text-sm font-medium text-background/80">
+                Step {{ progressStepNumber }} of {{ progressStepTotal }}
+              </p>
+              <p class="text-xs tabular-nums text-background/40">
+                {{ sidebarProgressPct }}%
+              </p>
+            </div>
+            <div
+              class="mt-3 h-1 overflow-hidden rounded-full bg-background/10"
+              role="progressbar"
+              :aria-valuenow="sidebarProgressPct"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-label="`Application progress ${sidebarProgressPct} percent`"
             >
-              <StepperSeparator
-                v-if="stepIdx !== sidebarSteps.length - 1"
-                class="absolute left-[13px] top-8 block h-[calc(100%-1rem)] w-px shrink-0 rounded-full bg-border/70 group-data-[state=completed]:bg-primary"
+              <div
+                class="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+                :style="{ width: `${sidebarProgressPct}%` }"
               />
+            </div>
+          </div>
 
-              <StepperTrigger as-child>
-                <Button
-                  type="button"
-                  :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
-                  size="icon"
-                  class="z-10 size-7 shrink-0 rounded-full"
-                  :class="state === 'active' ? 'ring-1 ring-primary ring-offset-2 ring-offset-card' : ''"
+          <nav
+            aria-label="Progress"
+            class="mt-10 flex flex-1 flex-col"
+          >
+            <Stepper
+              orientation="vertical"
+              :model-value="progressStepNumber"
+              class="flex w-full flex-col justify-start gap-10"
+            >
+              <StepperItem
+                v-for="(step, stepIdx) in sidebarSteps"
+                :key="step.label"
+                v-slot="{ state }"
+                :step="step.stepNum"
+                class="relative flex w-full items-start gap-4"
+              >
+                <StepperSeparator
+                  v-if="stepIdx !== sidebarSteps.length - 1"
+                  class="absolute top-[38px] left-[18px] block h-[105%] w-0.5 shrink-0 rounded-full bg-background/15 group-data-[state=completed]:bg-primary"
+                />
+
+                <StepperTrigger
+                  class="relative z-10 flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-xs font-semibold tabular-nums transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/50"
+                  :class="
+                    state === 'completed'
+                      ? 'bg-primary text-primary-foreground'
+                      : state === 'active'
+                        ? 'bg-background text-foreground shadow-xs ring-2 ring-primary ring-offset-2 ring-offset-foreground'
+                        : 'border border-background/25 bg-background/5 text-background/55'
+                  "
+                  :aria-current="state === 'active' ? 'step' : undefined"
                 >
                   <HugeiconsIcon
                     v-if="state === 'completed'"
                     :icon="Tick01Icon"
                     class="size-3.5"
+                    aria-hidden="true"
                   />
-                  <span
-                    v-else
-                    class="size-2.5 rounded-full"
-                    :class="state === 'active' ? 'bg-primary-foreground' : 'bg-muted-foreground/30'"
-                  />
-                </Button>
-              </StepperTrigger>
+                  <span v-else>{{ step.stepNum }}</span>
+                </StepperTrigger>
 
-              <div class="min-w-0 flex-1 pt-0.5">
-                <StepperTitle
-                  class="text-sm font-medium tracking-normal whitespace-normal"
-                  :class="[
-                    state === 'active' || state === 'completed' ? 'text-foreground' : 'text-muted-foreground',
-                    state === 'active' ? 'font-semibold text-primary' : ''
-                  ]"
-                >
-                  {{ step.label }}
-                </StepperTitle>
-
-                <StepperDescription
-                  v-if="step.isActive && step.subRoutes.length > 1"
-                  class="mt-2.5 flex flex-col gap-2 text-xs"
-                >
-                  <span
-                    v-for="sub in step.subRoutes"
-                    :key="sub.label"
-                    class="flex items-center gap-2"
-                    :class="sub.isCurrent ? 'font-medium text-primary' : (sub.isDone ? 'text-foreground' : 'text-muted-foreground')"
+                <div class="flex min-w-0 flex-1 flex-col gap-1 pt-1">
+                  <StepperTitle
+                    class="text-sm font-medium tracking-normal whitespace-normal transition-colors"
+                    :class="
+                      state === 'active'
+                        ? 'font-semibold text-background'
+                        : state === 'completed'
+                          ? 'text-background/80'
+                          : 'text-background/40'
+                    "
                   >
-                    <span
-                      class="size-1.5 rounded-full"
-                      :class="sub.isCurrent ? 'bg-primary' : (sub.isDone ? 'bg-foreground/40' : 'bg-muted-foreground/30')"
-                    />
-                    {{ sub.label }}
-                  </span>
-                </StepperDescription>
-              </div>
-            </StepperItem>
-          </Stepper>
-        </nav>
+                    {{ step.label }}
+                  </StepperTitle>
 
-        <div class="mt-auto border-t border-border/40 px-8 py-6">
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                type="button"
-                variant="ghost"
-                class="group h-auto w-full cursor-pointer justify-start gap-3 rounded-lg border border-transparent px-2 py-2 text-left transition-all hover:border-border hover:bg-background hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring/30 data-[state=open]:border-border data-[state=open]:bg-background data-[state=open]:shadow-sm"
-              >
-                <span class="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-background transition-colors group-hover:border-foreground/20 group-hover:text-foreground">
-                  <HugeiconsIcon :icon="UserCircleIcon" class="size-4 text-muted-foreground transition-colors group-hover:text-foreground" aria-hidden="true" />
-                </span>
-                <span class="min-w-0 flex-1">
-                  <span class="block truncate text-sm font-medium text-foreground">{{ accountName }}</span>
-                  <span v-if="accountEmail" class="block truncate text-xs text-muted-foreground">{{ accountEmail }}</span>
-                </span>
-                <span class="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors group-hover:bg-muted group-hover:text-foreground">
-                  <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4" aria-hidden="true" />
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent class="w-64" side="top" align="end" :side-offset="8">
-              <DropdownMenuLabel class="font-normal text-muted-foreground">
-                Account
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
-                <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
-                Save progress
-              </DropdownMenuItem>
-              <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
-                <HugeiconsIcon :icon="Home01Icon" class="size-4" />
-                {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                :disabled="isSaving || isSigningOut"
-                @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
-              >
-                <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
-                {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <StepperDescription
+                    class="text-xs leading-relaxed transition-colors"
+                    :class="state === 'active' ? 'text-background/60' : 'text-background/35'"
+                  >
+                    {{ step.description }}
+                  </StepperDescription>
+
+                  <ul
+                    v-if="step.isActive && step.subRoutes.length > 1"
+                    class="mt-2 flex flex-col gap-2 border-t border-background/10 pt-3"
+                  >
+                    <li
+                      v-for="sub in step.subRoutes"
+                      :key="sub.label"
+                      class="flex items-center gap-2 text-xs"
+                      :class="
+                        sub.isCurrent
+                          ? 'font-medium text-background'
+                          : sub.isDone
+                            ? 'text-background/55'
+                            : 'text-background/35'
+                      "
+                    >
+                      <span
+                        class="size-1.5 shrink-0 rounded-full"
+                        :class="
+                          sub.isCurrent
+                            ? 'bg-primary'
+                            : sub.isDone
+                              ? 'bg-background/45'
+                              : 'bg-background/20'
+                        "
+                        aria-hidden="true"
+                      />
+                      {{ sub.label }}
+                    </li>
+                  </ul>
+                </div>
+              </StepperItem>
+            </Stepper>
+          </nav>
+
+          <div class="relative mt-8 border-t border-background/10 pt-5">
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <button
+                  type="button"
+                  class="group flex h-auto w-full cursor-pointer items-center justify-start gap-3 rounded-xl border border-transparent px-2 py-2 text-left text-background transition-colors hover:border-background/10 hover:bg-background/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-background/25 data-[state=open]:border-background/10 data-[state=open]:bg-background/10"
+                >
+                  <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/25 text-xs font-semibold tracking-wide text-background">
+                    {{ accountInitials }}
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate text-sm font-medium text-background">{{ accountName }}</span>
+                    <span
+                      v-if="accountEmail"
+                      class="block truncate text-xs text-background/45"
+                    >{{ accountEmail }}</span>
+                  </span>
+                  <span class="flex size-7 shrink-0 items-center justify-center rounded-md text-background/45 transition-colors group-hover:bg-background/10 group-hover:text-background">
+                    <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4" aria-hidden="true" />
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent class="w-64" side="top" align="end" :side-offset="8">
+                <DropdownMenuLabel class="font-normal text-muted-foreground">
+                  Account
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem v-if="userType === 'lawyer'" :disabled="isSaving" @click="handleSaveProgress">
+                  <HugeiconsIcon :icon="Tick01Icon" class="size-4" />
+                  Save progress
+                </DropdownMenuItem>
+                <DropdownMenuItem :disabled="isSaving" @select="openLeaveConfirm">
+                  <HugeiconsIcon :icon="Home01Icon" class="size-4" />
+                  {{ userType === 'lawyer' ? 'Save and leave' : 'Leave onboarding' }}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  :disabled="isSaving || isSigningOut"
+                  @click="userType === 'lawyer' ? handleSaveAndSignOut() : handleSignOut('login')"
+                >
+                  <HugeiconsIcon :icon="Logout01Icon" class="size-4" />
+                  {{ isSigningOut ? 'Signing out...' : userType === 'lawyer' ? 'Save and sign out' : 'Sign out' }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </aside>
 
-      <!-- Main Content -->
-      <main ref="scrollContainer" class="app-scrollbar relative flex flex-1 flex-col overflow-y-auto bg-background">
-        <div class="relative mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 md:px-8 lg:py-12">
-           <div class="relative w-full">
-            <!-- Subtle fetch indicator -->
-            <transition name="fade">
-              <div v-if="isFetching || isPending" class="absolute -top-10 right-0 flex items-center gap-2">
-                 <span class="text-xs font-bold text-primary/40 uppercase tracking-widest">Syncing</span>
-                 <HugeiconsIcon :icon="Loading03Icon" class="w-4 h-4 text-primary/40 animate-spin" />
-              </div>
-            </transition>
-            
-            <slot />
-          </div>
+      <!-- Main column: scrollable body + sticky footer -->
+      <div class="relative flex min-w-0 flex-1 flex-col bg-background">
+        <main
+          ref="scrollContainer"
+          class="app-scrollbar relative flex-1 overflow-y-auto"
+        >
+          <div class="relative mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 md:px-8 lg:py-12">
+            <div class="relative w-full">
+              <transition name="fade">
+                <div
+                  v-if="isFetching || isPending"
+                  class="absolute -top-8 right-0 flex items-center gap-2"
+                >
+                  <span class="text-xs font-bold tracking-widest text-primary/40 uppercase">Syncing</span>
+                  <HugeiconsIcon :icon="Loading03Icon" class="h-4 w-4 animate-spin text-primary/40" />
+                </div>
+              </transition>
 
-          <!-- Validation error -->
-          <div
-            v-if="validationErrorBanner"
-            class="mt-8 w-full"
-          >
+              <slot />
+            </div>
+
             <div
-              class="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-destructive shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
-              role="alert"
+              v-if="validationErrorBanner"
+              class="mt-8 w-full"
             >
-              <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-4 shrink-0 sm:size-5" />
-              <span class="whitespace-pre-line">{{ validationErrorBanner }}</span>
-            </div>
-          </div>
-
-          <!-- Integrated Footer / Navigation -->
-          <template v-if="progressStepTotal > 0 && progressStepNumber > 0">
-            <div class="mt-6 flex flex-col gap-4 pt-5 border-t border-border/40 sm:flex-row sm:items-center sm:justify-between">
-              <p class="text-center text-sm font-medium tabular-nums text-muted-foreground sm:text-left lg:hidden">
-                Step {{ progressStepNumber }} of {{ progressStepTotal }}<template v-if="currentSubStep"> · {{ currentSubStep.label }} ({{ currentSubStep.index }}/{{ currentSubStep.total }})</template>
-              </p>
-
-              <div class="flex items-center justify-end w-full sm:w-auto gap-3">
-                <Button
-                  variant="outline"
-                  class="h-11 shrink-0 px-5 text-base font-medium"
-                  :disabled="isFirst || isSaving"
-                  @click="handleBack"
-                >
-                  Back
-                </Button>
-                <Button
-                  class="inline-flex h-11 min-w-36 flex-1 items-center justify-center px-8 text-base font-semibold sm:flex-initial"
-                  :disabled="isSaving"
-                  @click="handleNext"
-                >
-                  <HugeiconsIcon :icon="Loading03Icon"
-                    v-if="isSaving && !isExiting"
-                    class="mr-2 h-4 w-4 shrink-0 animate-spin"
-                  />
-                  <span>
-                    {{
-                      isSaving && !isExiting
-                        ? 'Please wait...'
-                        : !isLast
-                          ? 'Continue'
-                          : userType === 'client'
-                            ? 'Save and continue'
-                            : 'Submit application'
-                    }}
-                  </span>
-                </Button>
+              <div
+                class="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-left text-xs font-semibold leading-relaxed text-destructive shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:text-sm"
+                role="alert"
+              >
+                <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-4 shrink-0 sm:size-5" />
+                <span class="whitespace-pre-line">{{ validationErrorBanner }}</span>
               </div>
             </div>
-          </template>
-        </div>
-      </main>
+          </div>
+        </main>
+
+        <footer
+          v-if="progressStepTotal > 0 && progressStepNumber > 0"
+          class="z-40 shrink-0 border-t border-border/40 bg-background/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm"
+        >
+          <!-- Step pages can Teleport sticky content here (e.g. review legal acceptances). -->
+          <div
+            id="onboarding-wizard-footer-above"
+            class="mx-auto w-full max-w-3xl border-b border-border/40 px-4 py-3 empty:hidden sm:px-6 md:px-8"
+          />
+
+          <div class="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-4 md:px-8">
+            <p class="text-center text-sm font-medium tabular-nums text-muted-foreground sm:text-left lg:hidden">
+              Step {{ progressStepNumber }} of {{ progressStepTotal }}<template v-if="currentSubStep"> · {{ currentSubStep.label }} ({{ currentSubStep.index }}/{{ currentSubStep.total }})</template>
+            </p>
+
+            <div class="flex w-full items-center justify-end gap-3 sm:ml-auto sm:w-auto">
+              <Button
+                variant="outline"
+                class="h-11 shrink-0 cursor-pointer px-5 text-base font-medium"
+                :disabled="isFirst || isSaving"
+                @click="handleBack"
+              >
+                Back
+              </Button>
+              <Button
+                class="inline-flex h-11 min-w-36 flex-1 cursor-pointer items-center justify-center px-8 text-base font-semibold sm:flex-initial"
+                :disabled="isSaving"
+                @click="handleNext"
+              >
+                <HugeiconsIcon
+                  v-if="isSaving && !isExiting"
+                  :icon="Loading03Icon"
+                  class="mr-2 h-4 w-4 shrink-0 animate-spin"
+                />
+                <span>
+                  {{
+                    isSaving && !isExiting
+                      ? 'Please wait...'
+                      : !isLast
+                        ? 'Continue'
+                        : userType === 'client'
+                          ? 'Save and continue'
+                          : 'Submit application'
+                  }}
+                </span>
+              </Button>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
     <AlertDialog v-model:open="showLeaveConfirm">
       <AlertDialogContent>

@@ -72,7 +72,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     const practiceInfo = reactive<PracticeInfoData>({
-        soloPractitioner: false,
+        soloPractitioner: true,
         firmName: '',
         practiceAreas: [],
         statesOfPractice: [],
@@ -129,6 +129,8 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 const hasFirm = String(practiceInfo.firmName ?? '').trim().length > 0
                 if (hasFirm) {
                     practiceInfo.soloPractitioner = false
+                } else if (raw.soloPractitioner == null) {
+                    practiceInfo.soloPractitioner = true
                 }
                 if (practiceInfo.soloPractitioner) {
                     practiceInfo.firmName = ''
@@ -228,6 +230,17 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
+            const submitSchema = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall, {
+                requireLegalAcceptances: true,
+            })
+            const legalOk = submitSchema.safeParse(toRaw(practiceInfo))
+            if (!legalOk.success) {
+                const first = legalOk.error.issues[0]
+                validationError.value = first?.message ?? 'Accept the Terms and refund policy to submit.'
+                return false
+            }
+            Object.assign(practiceInfo, legalOk.data)
+
             const draftSaved = await saveDraftState('review')
             if (!draftSaved) return false
 
@@ -275,7 +288,9 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
 
         if (stepKey === 'practice_info') {
-            const schema = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall)
+            const schema = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall, {
+                requireLegalAcceptances: false,
+            })
             const parsed = schema.safeParse(toRaw(practiceInfo))
             if (!parsed.success) {
                 const first = parsed.error.issues[0]
@@ -303,7 +318,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         Object.assign(ninVerification, { nin: '', consent: false, verified: false, isSubmitted: false })
         Object.assign(professionalInfo, { barNumber: '', scnFullNameAtCallToBar: '', yearOfCall: undefined })
         Object.assign(practiceInfo, {
-            soloPractitioner: false,
+            soloPractitioner: true,
             firmName: '',
             practiceAreas: [],
             statesOfPractice: [],

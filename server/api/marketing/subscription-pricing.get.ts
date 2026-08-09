@@ -6,17 +6,21 @@
 interface PublicSubscriptionPricingData {
   subscriptionPriceNaira: number
   verificationAdminFeeNaira: number
+  firstPaymentTotalNaira: number
+  renewalPriceNaira: number
   currency: 'NGN'
 }
 
 interface PublicSubscriptionPricingResponse {
   success?: boolean
-  data?: PublicSubscriptionPricingData
+  data?: Partial<PublicSubscriptionPricingData>
 }
 
 const FALLBACK_PRICING: PublicSubscriptionPricingData = {
   subscriptionPriceNaira: 30_000,
   verificationAdminFeeNaira: 500,
+  firstPaymentTotalNaira: 30_500,
+  renewalPriceNaira: 30_000,
   currency: 'NGN',
 }
 
@@ -34,13 +38,22 @@ export default defineEventHandler(async (_event) => {
     if (
       data
       && Number.isFinite(data.subscriptionPriceNaira)
-      && data.subscriptionPriceNaira > 0
+      && data.subscriptionPriceNaira! > 0
       && Number.isFinite(data.verificationAdminFeeNaira)
-      && data.verificationAdminFeeNaira >= 0
+      && data.verificationAdminFeeNaira! >= 0
     ) {
+      const subscriptionPriceNaira = Math.round(data.subscriptionPriceNaira!)
+      const verificationAdminFeeNaira = Math.round(data.verificationAdminFeeNaira!)
+      const firstPaymentTotalNaira = Number.isFinite(data.firstPaymentTotalNaira)
+        ? Math.round(data.firstPaymentTotalNaira!)
+        : subscriptionPriceNaira + verificationAdminFeeNaira
       return {
-        subscriptionPriceNaira: Math.round(data.subscriptionPriceNaira),
-        verificationAdminFeeNaira: Math.round(data.verificationAdminFeeNaira),
+        subscriptionPriceNaira,
+        verificationAdminFeeNaira,
+        firstPaymentTotalNaira,
+        renewalPriceNaira: Number.isFinite(data.renewalPriceNaira)
+          ? Math.round(data.renewalPriceNaira!)
+          : subscriptionPriceNaira,
         currency: 'NGN' as const,
       }
     }

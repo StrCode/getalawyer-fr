@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { cn } from '@/lib/utils'
 
 withDefaults(
   defineProps<{
@@ -10,8 +11,12 @@ withDefaults(
     variant?: 'client' | 'lawyer'
     /** Validation message rendered inline under the terms checkbox. */
     error?: string | null
+    /** Drop outer chrome when nested inside another card/section. */
+    embedded?: boolean
+    /** Tighter sticky-footer layout: shorter copy, denser spacing. */
+    compact?: boolean
   }>(),
-  { variant: 'lawyer', error: null },
+  { variant: 'lawyer', error: null, embedded: false, compact: false },
 )
 
 const emit = defineEmits<{
@@ -24,60 +29,86 @@ const refundId = useId()
 </script>
 
 <template>
-  <div class="space-y-4 rounded-xl border border-border/50 bg-white/80 p-4">
-    <p class="text-sm font-semibold text-foreground">
+  <div
+    :class="cn(
+      'flex flex-col',
+      compact ? 'gap-2.5' : 'gap-4',
+      !embedded && !compact && 'rounded-xl border border-border/50 bg-background/80 p-4',
+      compact && 'rounded-xl border border-border/50 bg-muted/40 p-3 sm:p-3.5',
+    )"
+  >
+    <p v-if="!embedded && !compact" class="text-sm font-semibold text-foreground">
       Legal agreements
     </p>
 
-    <Field>
-      <div class="flex items-start gap-3">
-        <Checkbox
-          :id="termsId"
-          :model-value="termsAccepted === true"
-          class="mt-0.5"
-          @update:model-value="(v) => emit('update:termsAccepted', !!v)"
-        />
-        <div class="grid gap-1">
-          <FieldLabel :for="termsId" class="cursor-pointer font-normal leading-snug">
-            I accept the
-            <NuxtLink
-              to="/terms"
-              class="font-semibold text-primary underline underline-offset-2"
-              target="_blank"
+    <div
+      :class="cn(
+        'flex flex-col',
+        compact ? 'gap-3 sm:grid sm:grid-cols-2 sm:gap-4' : 'gap-4',
+      )"
+    >
+      <Field>
+        <div class="flex items-start gap-3">
+          <Checkbox
+            :id="termsId"
+            :model-value="termsAccepted === true"
+            class="mt-0.5"
+            @update:model-value="(v) => emit('update:termsAccepted', !!v)"
+          />
+          <div class="grid gap-0.5">
+            <FieldLabel
+              :for="termsId"
+              class="cursor-pointer text-sm font-normal leading-snug"
             >
-              Terms &amp; Conditions
-            </NuxtLink>
-            <span class="text-destructive">*</span>
-          </FieldLabel>
-          <FieldDescription>
-            Required to complete registration on GetaLawyer.
-          </FieldDescription>
-          <p v-if="error" class="text-sm font-medium text-destructive" role="alert">
-            {{ error }}
-          </p>
+              I accept the
+              <NuxtLink
+                to="/terms"
+                class="font-medium text-primary underline underline-offset-2"
+                target="_blank"
+              >
+                Terms &amp; Conditions
+              </NuxtLink>
+              <span class="text-destructive">*</span>
+            </FieldLabel>
+            <FieldDescription v-if="!compact">
+              Required to complete registration on GetaLawyer.
+            </FieldDescription>
+          </div>
         </div>
-      </div>
-    </Field>
+      </Field>
 
-    <Field v-if="variant === 'lawyer'">
-      <div class="flex items-start gap-3">
-        <Checkbox
-          :id="refundId"
-          :model-value="refundPolicyAccepted === true"
-          class="mt-0.5"
-          @update:model-value="(v) => emit('update:refundPolicyAccepted', !!v)"
-        />
-        <div class="grid gap-1">
-          <FieldLabel :for="refundId" class="cursor-pointer font-normal leading-snug">
-            I understand the verification refund policy
-            <span class="text-destructive">*</span>
-          </FieldLabel>
-          <FieldDescription>
-            If identity or SCN verification fails after payment, your subscription is refunded minus a
-            small admin fee (as stated at checkout).
-          </FieldDescription>
+      <Field v-if="variant === 'lawyer'">
+        <div class="flex items-start gap-3">
+          <Checkbox
+            :id="refundId"
+            :model-value="refundPolicyAccepted === true"
+            class="mt-0.5"
+            @update:model-value="(v) => emit('update:refundPolicyAccepted', !!v)"
+          />
+          <div class="grid gap-0.5">
+            <FieldLabel
+              :for="refundId"
+              class="cursor-pointer text-sm font-normal leading-snug"
+            >
+              I understand the verification refund policy
+              <span class="text-destructive">*</span>
+            </FieldLabel>
+            <FieldDescription :class="compact ? 'text-xs' : undefined">
+              <template v-if="compact">
+                Failed verification: membership refunded; verification fee kept.
+              </template>
+              <template v-else>
+                If identity or SCN verification fails after payment, your membership fee is refunded and
+                the verification fee is kept (as stated at checkout).
+              </template>
+            </FieldDescription>
+          </div>
         </div>
-      </div>
-    </Field>
+      </Field>
+    </div>
+
+    <p v-if="error" class="text-sm font-medium text-destructive" role="alert">
+      {{ error }}
+    </p>
   </div>
 </template>
