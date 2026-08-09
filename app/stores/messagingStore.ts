@@ -56,6 +56,13 @@ export const useMessagingStore = defineStore('messaging', () => {
     globalUnreadCount.value = count
   }
 
+  const resetStore = () => {
+    activeConversationId.value = null
+    typingUsers.value = {}
+    globalUnreadCount.value = 0
+    optimisticMessages.value = {}
+  }
+
   return {
     activeConversationId,
     typingUsers,
@@ -71,6 +78,7 @@ export const useMessagingStore = defineStore('messaging', () => {
     setOptimisticState,
     resolveOptimisticMessage,
     optimisticForConversation,
-    queuedOptimisticMessages
+    queuedOptimisticMessages,
+    resetStore,
   }
 })

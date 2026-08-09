@@ -1,3 +1,6 @@
+import { useQueryClient } from '@tanstack/vue-query'
+import { clearAuthClientState } from '~/lib/clear-auth-client-state'
+
 export type SignOutRedirect = 'login' | 'home' | 'stay'
 
 type UseSignOutOptions = {
@@ -6,12 +9,13 @@ type UseSignOutOptions = {
 }
 
 /**
- * Shared sign-out flow: clears session, disconnects realtime socket, then navigates.
+ * Shared sign-out flow: clears session, caches, storage, disconnects socket, then navigates.
  */
 export function useSignOut(options: UseSignOutOptions = {}) {
   const { signOut } = useAuth()
   const router = useRouter()
   const nuxtApp = useNuxtApp()
+  const queryClient = useQueryClient()
 
   const isSigningOut = ref(false)
 
@@ -28,6 +32,7 @@ export function useSignOut(options: UseSignOutOptions = {}) {
         return result
       }
 
+      clearAuthClientState(queryClient)
       nuxtApp.$disconnectSocket?.()
 
       const redirect = redirectOverride ?? options.redirectTo ?? 'login'

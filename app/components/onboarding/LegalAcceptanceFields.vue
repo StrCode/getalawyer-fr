@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
 import { cn } from '@/lib/utils'
 
 withDefaults(
@@ -94,13 +95,7 @@ const refundId = useId()
               <span class="text-destructive">*</span>
             </FieldLabel>
             <FieldDescription :class="compact ? 'text-xs' : undefined">
-              <template v-if="compact">
-                Failed verification: membership refunded; verification fee kept.
-              </template>
-              <template v-else>
-                If identity or SCN verification fails after payment, your membership fee is refunded and
-                the verification fee is kept (as stated at checkout).
-              </template>
+              {{ VERIFICATION_FAILED_COPY.refundNote }}
             </FieldDescription>
           </div>
         </div>

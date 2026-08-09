@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { AlertCircleIcon, CheckmarkCircle01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import {
+  AlertCircleIcon,
+  ArrowRight01Icon,
+  CheckmarkCircle01Icon,
+  Loading03Icon,
+  Tick01Icon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
+import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import {
   getLawyerApplicationStatusNotice,
@@ -13,7 +21,9 @@ import {
   isLawyerRejected,
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
+  VERIFICATION_FAILED_COPY,
 } from '~/lib/lawyerOnboardingStatus'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -180,7 +190,8 @@ watchEffect(() => {
     return
   }
 
-  if (isAwaiting.value) return
+  // Stay put for review queue and for verification-failure (refund) messaging.
+  if (isAwaiting.value || isVerificationFailed.value) return
 
   router.replace('/onboarding')
 })
@@ -194,8 +205,26 @@ watchEffect(() => {
   }
 })
 
+const { restart, isPending: isRestarting } = useOnboardingRestart()
+const lawyerOnboardingStore = useLawyerOnboardingStore()
+
 async function retryStatus() {
   await refetchStatus()
+}
+
+async function startNewApplication() {
+  try {
+    await restart()
+    lawyerOnboardingStore.resetStore()
+    toast.success('Application unlocked', {
+      description: 'Update your details, then submit and pay again.',
+    })
+    await router.push('/onboarding')
+  } catch (error) {
+    toast.error('Could not start a new application', {
+      description: error instanceof Error ? error.message : 'Please try again or contact support.',
+    })
+  }
 }
 </script>
 
@@ -233,25 +262,97 @@ async function retryStatus() {
 
     <div
       v-else-if="isVerificationFailed"
-      class="flex flex-col gap-3"
+      class="flex flex-col items-stretch gap-6"
     >
-      <Alert variant="destructive">
-        <HugeiconsIcon :icon="AlertCircleIcon" />
-        <AlertTitle>Verification could not be completed</AlertTitle>
-        <AlertDescription>
-          We could not verify your credentials. If you paid, your membership fee will be refunded and
-          the verification fee will be kept.
-        </AlertDescription>
-      </Alert>
-      <p class="text-center text-sm text-muted-foreground">
-        Questions?
-        <a
-          href="mailto:support@getalawyer.ng"
-          class="font-medium text-primary underline underline-offset-2"
-        >
-          support@getalawyer.ng
-        </a>
-      </p>
+      <div class="flex flex-col items-center gap-3 text-center">
+        <div class="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" aria-hidden="true" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <h1 class="text-balance text-xl font-medium tracking-tight text-foreground sm:text-2xl">
+            {{ VERIFICATION_FAILED_COPY.title }}
+          </h1>
+          <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {{ VERIFICATION_FAILED_COPY.description }}
+          </p>
+        </div>
+      </div>
+
+      <Card class="gap-0 overflow-hidden py-0">
+        <CardHeader class="gap-1.5 px-5 pt-5 pb-4">
+          <CardTitle class="text-sm font-medium">
+            {{ VERIFICATION_FAILED_COPY.resubmitTitle }}
+          </CardTitle>
+          <CardDescription class="text-sm leading-relaxed">
+            {{ VERIFICATION_FAILED_COPY.resubmitDescription }}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent class="flex flex-col gap-3 px-5 pb-5">
+          <Alert variant="destructive">
+            <HugeiconsIcon :icon="AlertCircleIcon" />
+            <AlertTitle>Refund</AlertTitle>
+            <AlertDescription>
+              {{ VERIFICATION_FAILED_COPY.refundNote }}
+            </AlertDescription>
+          </Alert>
+
+          <ol class="flex flex-col gap-3">
+            <li
+              v-for="(step, index) in VERIFICATION_FAILED_COPY.resubmitSteps"
+              :key="step"
+              class="flex items-start gap-3 text-sm text-foreground"
+            >
+              <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                {{ index + 1 }}
+              </span>
+              <span class="leading-snug">{{ step }}</span>
+            </li>
+          </ol>
+        </CardContent>
+
+        <Separator />
+
+        <CardFooter class="flex flex-col items-stretch gap-3 px-5 py-4">
+          <Button
+            class="h-10 w-full cursor-pointer"
+            :disabled="isRestarting"
+            @click="startNewApplication"
+          >
+            <HugeiconsIcon
+              v-if="isRestarting"
+              :icon="Loading03Icon"
+              data-icon="inline-start"
+              class="animate-spin"
+            />
+            <HugeiconsIcon
+              v-else
+              :icon="ArrowRight01Icon"
+              data-icon="inline-start"
+            />
+            {{ VERIFICATION_FAILED_COPY.ctaLabel }}
+          </Button>
+          <p class="text-center text-xs text-muted-foreground">
+            {{ VERIFICATION_FAILED_COPY.supportLabel }}
+            <a
+              :href="`mailto:${VERIFICATION_FAILED_COPY.supportEmail}`"
+              class="font-medium text-primary underline underline-offset-2"
+            >
+              {{ VERIFICATION_FAILED_COPY.supportEmail }}
+            </a>
+          </p>
+        </CardFooter>
+      </Card>
+
+      <Button
+        variant="outline"
+        class="h-10 w-full cursor-pointer"
+        as-child
+      >
+        <NuxtLink to="/">
+          Back to home
+        </NuxtLink>
+      </Button>
     </div>
 
     <template v-else-if="isAwaiting">

@@ -19,6 +19,8 @@ export interface OnboardingStatusPayload {
   submittedAt?: string | null
   application_status?: ApplicationStatus
   applicationStatus?: ApplicationStatus
+  reviewNotes?: string | null
+  review_notes?: string | null
 }
 
 function unwrapData<T extends Record<string, unknown>>(res: unknown): T {
@@ -45,6 +47,8 @@ export function parseOnboardingStatus(res: unknown): OnboardingStatusPayload {
   const applicationStatus =
     (pickString(o, 'applicationStatus', 'application_status') as ApplicationStatus) ?? undefined
 
+  const reviewNotes = pickString(o, 'reviewNotes', 'review_notes') ?? null
+
   return {
     current_state: current,
     currentState: current,
@@ -52,6 +56,8 @@ export function parseOnboardingStatus(res: unknown): OnboardingStatusPayload {
     submittedAt: submitted,
     application_status: applicationStatus,
     applicationStatus,
+    reviewNotes,
+    review_notes: reviewNotes,
   }
 }
 
@@ -87,6 +93,10 @@ const AWAITING_REVIEW_APPLICATION_STATUSES = new Set([
 
 /** Lawyer application is in the admin review queue (from onboarding status). */
 export function isLawyerAwaitingApproval(payload: OnboardingStatusPayload): boolean {
+  if (isLawyerVerificationFailed(payload) || isLawyerRejected(payload)) {
+    return false
+  }
+
   const cs = onboardingCurrentState(payload)
   if (cs != null && LAWYER_ONBOARDING_DRAFT_STATES.has(cs)) {
     return false
@@ -100,10 +110,13 @@ export function isLawyerVerificationFailed(payload: OnboardingStatusPayload): bo
   return onboardingApplicationStatus(payload) === 'verification_failed'
 }
 
+/**
+ * Application-level rejection (admin "Reject application").
+ * Do not treat `currentState: 'rejected'` alone — NIN/SCN verification failures also set that
+ * while `applicationStatus` is `verification_failed` (refund path → pending page).
+ */
 export function isLawyerRejected(payload: OnboardingStatusPayload): boolean {
-  const cs = onboardingCurrentState(payload)
-  const appStatus = onboardingApplicationStatus(payload)
-  return appStatus === 'rejected' || cs === 'rejected'
+  return onboardingApplicationStatus(payload) === 'rejected'
 }
 
 export type ApplicationStatusNoticeTone = 'pending' | 'approved' | 'failed'
@@ -114,6 +127,26 @@ export interface ApplicationStatusNotice {
   description: string
 }
 
+/** Centralized copy for NIN/SCN verification failure (pending page + notices). */
+export const VERIFICATION_FAILED_COPY = {
+  title: 'Verification could not be completed',
+  description:
+    'We could not verify your identity (NIN) or bar enrolment (SCN) against the details you submitted.',
+  refundNote:
+    'If you paid, your membership fee is refunded. The verification fee is kept to cover the check that was already run.',
+  resubmitTitle: 'Start a new application',
+  resubmitDescription:
+    'You can correct your details and submit again on the same account. Your saved draft is kept so you can edit what needs fixing. After you resubmit, you’ll pay the first-year total again (membership + verification fee) before review.',
+  resubmitSteps: [
+    'Update the details that failed verification (NIN and/or SCN).',
+    'Review and submit the application again.',
+    'Complete payment, then wait for a new review.',
+  ],
+  ctaLabel: 'Start a new application',
+  supportLabel: 'Questions?',
+  supportEmail: 'support@getalawyer.ng',
+} as const
+
 /** Human-readable application decision for post-submit subscription and status pages. */
 export function getLawyerApplicationStatusNotice(
   payload: OnboardingStatusPayload,
@@ -121,9 +154,8 @@ export function getLawyerApplicationStatusNotice(
   if (isLawyerVerificationFailed(payload)) {
     return {
       tone: 'failed',
-      title: 'Verification could not be completed',
-      description:
-        'Your application was not approved. If you paid, your membership fee will be refunded and the verification fee will be kept.',
+      title: VERIFICATION_FAILED_COPY.title,
+      description: `${VERIFICATION_FAILED_COPY.description} ${VERIFICATION_FAILED_COPY.refundNote}`,
     }
   }
 

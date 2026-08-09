@@ -85,10 +85,22 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
         }
     }
 
+    const resetStore = () => {
+        clientState.country = 'NG'
+        clientState.state = ''
+        clientState.specializationIds = []
+        clientState.termsAccepted = false
+        clientState.termsVersion = CURRENT_TERMS_VERSION
+        validationError.value = null
+        termsError.value = null
+        if (import.meta.client) localStorage.removeItem(STORAGE_KEY)
+    }
+
     return {
         clientState,
         validationError,
         termsError,
         saveStep,
+        resetStore,
     }
 })

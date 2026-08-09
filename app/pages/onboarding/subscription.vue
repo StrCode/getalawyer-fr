@@ -23,6 +23,7 @@ import {
   isLawyerRejected,
   isLawyerVerificationFailed,
   onboardingSubmittedAt,
+  VERIFICATION_FAILED_COPY,
 } from '~/lib/lawyerOnboardingStatus'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -133,6 +134,8 @@ const benefits = [
   'Secure client messaging',
   'Zero commission on your fees',
 ] as const
+
+const verificationRefundNote = VERIFICATION_FAILED_COPY.refundNote
 
 watchEffect(() => {
   const u = session.value?.user as {
@@ -434,7 +437,7 @@ async function retry() {
             <template v-if="pricing">
               ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year)
             </template>.
-            Failed verification: membership refunded; verification fee kept.
+            {{ verificationRefundNote }}
           </p>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/vue-query'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { resolveLawyerAwaitingApprovalPath } from '~/composables/useLawyerOnboardingEntry'
 import {
