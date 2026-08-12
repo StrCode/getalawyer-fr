@@ -14,19 +14,32 @@ const open = defineModel<boolean>('open', { default: false })
 
 const { refetchSession } = useAuth()
 const { user, needsLinkEmail, needsVerifyEmail, needsEmailAction } = useEmailVerificationPrompt()
+const { requestLinkEmail, verifyLinkEmail } = useAccountLinking()
 
 const isSending = ref(false)
+const isVerifyingOtp = ref(false)
 const sent = ref(false)
 const apiError = ref('')
+const otpError = ref('')
+
+/** Phone-signup link-email flow */
+const linkEmail = ref('')
+const linkOtpSent = ref(false)
+const linkOtp = ref('')
 
 const title = computed(() => {
-  if (needsLinkEmail.value) return 'Link your email'
+  if (needsLinkEmail.value) {
+    return linkOtpSent.value ? 'Enter verification code' : 'Link your email'
+  }
   if (sent.value || needsVerifyEmail.value) return 'Check your inbox'
   return 'Email verified'
 })
 
 const description = computed(() => {
   if (needsLinkEmail.value) {
+    if (linkOtpSent.value) {
+      return `We sent a 6-digit code to ${linkEmail.value}. Enter it to finish linking.`
+    }
     return 'Add a real email for notifications and account recovery.'
   }
   if (sent.value) {
@@ -39,7 +52,8 @@ const description = computed(() => {
 })
 
 const inboxUrl = computed(() => {
-  const domain = user.value?.email?.split('@')[1]?.toLowerCase()
+  const email = needsLinkEmail.value ? linkEmail.value : user.value?.email
+  const domain = email?.split('@')[1]?.toLowerCase()
   if (!domain) return null
 
   const providers: Record<string, string> = {
@@ -55,10 +69,20 @@ const inboxUrl = computed(() => {
   return providers[domain] ?? null
 })
 
+function resetDialogState() {
+  sent.value = false
+  apiError.value = ''
+  otpError.value = ''
+  linkEmail.value = ''
+  linkOtpSent.value = false
+  linkOtp.value = ''
+  isSending.value = false
+  isVerifyingOtp.value = false
+}
+
 watch(open, (isOpen) => {
   if (!isOpen) {
-    sent.value = false
-    apiError.value = ''
+    resetDialogState()
   }
 })
 
@@ -78,7 +102,7 @@ async function sendVerificationLink() {
     const origin = import.meta.client ? window.location.origin : ''
     const { error } = await authClient.sendVerificationEmail({
       email,
-      callbackURL: `${origin}/dashboard`,
+      callbackURL: `${origin}/dashboard?emailVerified=1`,
     })
     if (error) {
       apiError.value = error.message || 'Could not send verification email.'
@@ -92,9 +116,58 @@ async function sendVerificationLink() {
   }
 }
 
-async function onLinkCompleted() {
-  await refetchSession()
-  open.value = false
+async function sendLinkEmailCode() {
+  const email = linkEmail.value.trim()
+  if (!email) {
+    apiError.value = 'Enter an email address.'
+    return
+  }
+
+  apiError.value = ''
+  otpError.value = ''
+  isSending.value = true
+  try {
+    await requestLinkEmail(email)
+    linkOtpSent.value = true
+    linkOtp.value = ''
+  } catch (err: unknown) {
+    apiError.value = err instanceof Error ? err.message : 'Could not send verification code.'
+  } finally {
+    isSending.value = false
+  }
+}
+
+async function confirmLinkEmailOtp() {
+  if (linkOtp.value.length < 6) {
+    otpError.value = 'Please enter the full 6-digit code.'
+    return
+  }
+
+  otpError.value = ''
+  apiError.value = ''
+  isVerifyingOtp.value = true
+  try {
+    await verifyLinkEmail(linkEmail.value.trim(), linkOtp.value)
+    await refetchSession()
+    open.value = false
+  } catch (err: unknown) {
+    otpError.value = err instanceof Error ? err.message : 'Invalid or expired verification code.'
+  } finally {
+    isVerifyingOtp.value = false
+  }
+}
+
+watch(linkOtp, (value) => {
+  if (value.length === 6 && linkOtpSent.value && needsLinkEmail.value && !isVerifyingOtp.value) {
+    void confirmLinkEmailOtp()
+  }
+})
+
+function changeLinkEmail() {
+  linkOtpSent.value = false
+  linkOtp.value = ''
+  otpError.value = ''
+  apiError.value = ''
 }
 
 function openInbox() {
@@ -119,15 +192,15 @@ function handleOpenChange(value: boolean) {
       <div class="px-6 pb-6 pt-8 text-center">
         <div
           class="mx-auto mb-5 flex size-16 items-center justify-center rounded-full"
-          :class="sent ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'"
+          :class="(sent || linkOtpSent) ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'"
         >
           <HugeiconsIcon
-            :icon="sent ? CheckmarkCircle01Icon : SentIcon"
+            :icon="(sent || linkOtpSent) ? CheckmarkCircle01Icon : SentIcon"
             class="size-8"
           />
         </div>
 
-       <h2 class="text-xl font-medium text-foreground">
+        <h2 class="text-xl font-medium text-foreground">
           {{ title }}
         </h2>
         <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
@@ -149,42 +222,41 @@ function handleOpenChange(value: boolean) {
       </div>
 
       <div class="border-t border-foreground/15 px-6 py-5">
-        <div v-if="needsLinkEmail" class="space-y-4">
-          <form @submit.prevent="async () => {
-            isSending = true
-            apiError = ''
-            const formElement = $event.target as HTMLFormElement
-            const formData = new FormData(formElement)
-            const email = formData.get('email') as string
-            try {
-              const { error } = await authClient.updateUser({ email })
-              if (error) throw error
-              await onLinkCompleted()
-            } catch (err: any) {
-              apiError = err.message || 'Failed to update email'
-            } finally {
-              isSending = false
-            }
-          }" class="space-y-3">
+        <div
+          v-if="needsLinkEmail"
+          class="space-y-4"
+        >
+          <form
+            v-if="!linkOtpSent"
+            class="space-y-3"
+            @submit.prevent="sendLinkEmailCode"
+          >
             <div class="space-y-2 text-left">
               <Label for="link-email">Email address</Label>
               <Input
                 id="link-email"
-                name="email"
+                v-model="linkEmail"
                 type="email"
                 placeholder="you@example.com"
+                autocomplete="email"
                 required
               />
             </div>
-            
-            <div v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-              <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+
+            <div
+              v-if="apiError"
+              class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <HugeiconsIcon
+                :icon="AlertCircleIcon"
+                class="h-4 w-4 shrink-0"
+              />
               {{ apiError }}
             </div>
 
             <Button
               type="submit"
-              class="h-11 w-full"
+              class="h-11 w-full cursor-pointer"
               :disabled="isSending"
             >
               <HugeiconsIcon
@@ -192,9 +264,68 @@ function handleOpenChange(value: boolean) {
                 :icon="Loading03Icon"
                 class="mr-2 size-4 animate-spin"
               />
-              Update email
+              Send verification code
             </Button>
           </form>
+
+          <div
+            v-else
+            class="space-y-4"
+          >
+            <AuthOtpStep
+              v-model="linkOtp"
+              :error="otpError"
+              :is-submitting="isVerifyingOtp"
+              :is-resending="isSending"
+              @resend="sendLinkEmailCode"
+              @request-new-code="sendLinkEmailCode"
+            />
+            <AuthDevOtpHint />
+
+            <div
+              v-if="apiError"
+              class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <HugeiconsIcon
+                :icon="AlertCircleIcon"
+                class="h-4 w-4 shrink-0"
+              />
+              {{ apiError }}
+            </div>
+
+            <Button
+              type="button"
+              class="h-11 w-full cursor-pointer"
+              :disabled="isVerifyingOtp || linkOtp.length < 6"
+              @click="confirmLinkEmailOtp"
+            >
+              <HugeiconsIcon
+                v-if="isVerifyingOtp"
+                :icon="Loading03Icon"
+                class="mr-2 size-4 animate-spin"
+              />
+              Verify and link email
+            </Button>
+
+            <div class="flex flex-col gap-2">
+              <Button
+                v-if="inboxUrl"
+                type="button"
+                variant="outline"
+                class="h-11 w-full cursor-pointer"
+                @click="openInbox"
+              >
+                Open inbox
+              </Button>
+              <button
+                type="button"
+                class="cursor-pointer text-center text-xs font-medium text-primary hover:underline"
+                @click="changeLinkEmail"
+              >
+                Use a different email
+              </button>
+            </div>
+          </div>
         </div>
 
         <div
@@ -213,8 +344,14 @@ function handleOpenChange(value: boolean) {
             </p>
           </div>
 
-          <div v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-            <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
+          <div
+            v-if="apiError"
+            class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+          >
+            <HugeiconsIcon
+              :icon="AlertCircleIcon"
+              class="h-4 w-4 shrink-0"
+            />
             {{ apiError }}
           </div>
 

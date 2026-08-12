@@ -22,6 +22,11 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { SIDEBAR_COOKIE_NAME } from '@/components/ui/sidebar/utils'
 
 const { open: emailVerificationOpen } = useEmailVerificationDialog()
+const { handleEmailVerificationCallback } = useEmailVerificationCallback()
+
+onMounted(() => {
+  void handleEmailVerificationCallback()
+})
 
 // Read the persisted sidebar state via useCookie so SSR and client agree on the
 // initial open/collapsed value. SidebarProvider's own default reads
