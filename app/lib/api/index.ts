@@ -1,5 +1,4 @@
 import { httpClient } from "./client";
-import type { ApiResponse } from "./client";
 
 // Type definitions for API responses
 export interface Country {
@@ -147,9 +146,9 @@ export const api = {
   // Countries API
   countries: {
     getAll: () =>
-      httpClient.getAuth<ApiResponse<Country[]>>("/api/countries"),
+      httpClient.getAuth<{ data: Country[]; count?: number }>("/api/countries"),
     getStates: (countryCode: string) =>
-      httpClient.getAuth<ApiResponse<State[]>>(
+      httpClient.getAuth<{ data: State[]; count?: number }>(
         `/api/countries/${countryCode}/states`,
       ),
   },
@@ -184,36 +183,37 @@ export const api = {
       country?: string;
       state?: string;
       phoneNumber?: string;
-    }) => httpClient.patch<ApiResponse>("/api/clients/me", data),
+    }) => httpClient.patch<unknown>("/api/clients/me", data),
     updateSpecializations: (data: { specializationIds: string[] }) =>
       httpClient.put<{ specializations: Specialization[] }>(
         "/api/clients/me/specializations",
         data,
       ),
     uploadAvatar: (formData: FormData) =>
-      httpClient.postFormData<
-        ApiResponse<{ imageUrl: string }> & { imageUrl?: string }
-      >("/api/clients/upload-avatar", formData),
+      httpClient.postFormData<{ imageUrl: string }>(
+        "/api/clients/upload-avatar",
+        formData,
+      ),
     completeOnboarding: (data: {
       country: string;
       state: string;
       specializationIds: string[];
     }) =>
-      httpClient.post<ApiResponse>("/api/clients/onboarding/complete", data),
+      httpClient.post<unknown>("/api/clients/onboarding/complete", data),
   },
 
   // Lawyer API
   lawyer: {
     getAll: () =>
-      httpClient.get<ApiResponse<LawyerListItem[]>>("/api/lawyers"),
+      httpClient.get<LawyerListItem[]>("/api/lawyers"),
     getById: (id: string) =>
-      httpClient.get<ApiResponse<LawyerProfile>>(`/api/lawyers/${id}`),
+      httpClient.get<LawyerProfile>(`/api/lawyers/${id}`),
     getPublicProfile: (id: string) =>
-      httpClient.get<ApiResponse<LawyerProfile>>(
+      httpClient.get<LawyerProfile>(
         `/api/public/lawyers/${id}`,
       ),
     getProfile: () =>
-      httpClient.getAuth<ApiResponse<LawyerProfile>>("/api/lawyers/profile"),
+      httpClient.getAuth<LawyerProfile>("/api/lawyers/profile"),
     savePracticeInfo: (data: {
       phoneNumber: string;
       country: string;
@@ -223,7 +223,7 @@ export const api = {
       barAssociation: string;
       licenseStatus: string;
     }) =>
-      httpClient.patch<ApiResponse>(
+      httpClient.patch<unknown>(
         "/api/lawyers/onboarding/practice-info",
         data,
       ),
@@ -234,7 +234,7 @@ export const api = {
       }>;
       experienceDescription?: string;
     }) =>
-      httpClient.post<ApiResponse>(
+      httpClient.post<unknown>(
         "/api/lawyers/onboarding/complete",
         data,
       ),
@@ -244,9 +244,9 @@ export const api = {
   bookings: {
     // Client bookings
     getClientBookings: () =>
-      httpClient.getAuth<ApiResponse<Booking[]>>("/api/bookings"),
+      httpClient.getAuth<Booking[]>("/api/bookings"),
     getClientBooking: (id: string) =>
-      httpClient.getAuth<ApiResponse<Booking>>(`/api/bookings/${id}`),
+      httpClient.getAuth<Booking>(`/api/bookings/${id}`),
     createBooking: (data: {
       lawyerId: string;
       consultationTypeId: string;
@@ -254,7 +254,7 @@ export const api = {
       endTime: string;
       notes?: string;
     }) =>
-      httpClient.post<ApiResponse<Booking>>("/api/bookings", data),
+      httpClient.post<Booking>("/api/bookings", data),
     updateClientBooking: (
       id: string,
       data: {
@@ -264,13 +264,13 @@ export const api = {
         status?: "pending" | "confirmed" | "cancelled";
       },
     ) =>
-      httpClient.put<ApiResponse<Booking>>(`/api/bookings/${id}`, data),
+      httpClient.put<Booking>(`/api/bookings/${id}`, data),
 
     // Lawyer bookings
     getLawyerBookings: () =>
-      httpClient.getAuth<ApiResponse<Booking[]>>("/api/lawyer/bookings"),
+      httpClient.getAuth<Booking[]>("/api/lawyer/bookings"),
     getLawyerBooking: (id: string) =>
-      httpClient.getAuth<ApiResponse<Booking>>(
+      httpClient.getAuth<Booking>(
         `/api/lawyer/bookings/${id}`,
       ),
     updateLawyerBooking: (
@@ -280,7 +280,7 @@ export const api = {
         notes?: string;
       },
     ) =>
-      httpClient.put<ApiResponse<Booking>>(
+      httpClient.put<Booking>(
         `/api/lawyer/bookings/${id}`,
         data,
       ),
@@ -380,7 +380,7 @@ export const api = {
       );
     },
     autocomplete: (query: string) =>
-      httpClient.get<ApiResponse>(`/api/search/autocomplete?q=${query}`),
+      httpClient.get<unknown>(`/api/search/autocomplete?q=${query}`),
     getFilters: (params: { q?: string; minExperience?: number }) => {
       const searchParams = new URLSearchParams();
       if (params.q) searchParams.set("q", params.q);
@@ -388,7 +388,7 @@ export const api = {
         searchParams.set("minExperience", params.minExperience.toString());
       }
 
-      return httpClient.get<ApiResponse>(
+      return httpClient.get<unknown>(
         `/api/search/filters?${searchParams.toString()}`,
       );
     },

@@ -18,15 +18,31 @@ export class ApiError extends Error {
   }
 }
 
-// API Response Format
-export interface ApiResponse<T = unknown> {
-  success: boolean;
-  message?: string;
-  data?: T;
-  error?: string;
-  code?: string;
-  details?: string | ApiValidationDetail[];
-  errors?: unknown;
+// API Response Envelope (mirrors the backend's src/lib/http.ts).
+// `request()` unwraps success responses to `data` and throws `ApiError` on
+// failure, so application code receives the payload directly and never sees
+// this wrapper.
+export interface ApiErrorEnvelope {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: string | ApiValidationDetail[];
+    requestId?: string;
+  };
+}
+export interface ApiSuccessEnvelope<T = unknown> {
+  success: true;
+  data: T;
+}
+export type ApiResponse<T = unknown> = ApiSuccessEnvelope<T> | ApiErrorEnvelope;
+
+/** Unwrap a success envelope to its payload; pass through non-enveloped bodies. */
+function unwrapEnvelope<T>(body: unknown): T {
+  if (body && typeof body === "object" && (body as { success?: unknown }).success === true) {
+    return (body as ApiSuccessEnvelope<T>).data;
+  }
+  return body as T;
 }
 
 // Retry Configuration
@@ -104,9 +120,9 @@ async function request<T>(
     });
 
     if (!response.ok) {
-      let errorData: ApiResponse;
+      let body: ApiErrorEnvelope | undefined;
       try {
-        errorData = await response.json();
+        body = await response.json();
       } catch {
         throw new ApiError(
           response.statusText || "Request failed",
@@ -114,13 +130,14 @@ async function request<T>(
         );
       }
 
-      const details = errorData.details;
+      const err = body?.error;
+      const details = err?.details;
       throw new ApiError(
-        errorData.error || errorData.message || "Request failed",
+        err?.message || "Request failed",
         response.status,
-        errorData.code,
+        err?.code,
         typeof details === "string" ? details : undefined,
-        Array.isArray(details) ? details : errorData.errors,
+        Array.isArray(details) ? details : undefined,
       );
     }
 
@@ -130,7 +147,7 @@ async function request<T>(
       return {} as T;
     }
 
-    return response.json();
+    return unwrapEnvelope<T>(await response.json());
   });
 }
 
@@ -175,9 +192,9 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        let errorData: ApiResponse;
+        let body: ApiErrorEnvelope | undefined;
         try {
-          errorData = await response.json();
+          body = await response.json();
         } catch {
           throw new ApiError(
             response.statusText || "Request failed",
@@ -185,17 +202,18 @@ export const httpClient = {
           );
         }
 
-        const details = errorData.details;
+        const err = body?.error;
+        const details = err?.details;
         throw new ApiError(
-          errorData.error || errorData.message || "Request failed",
+          err?.message || "Request failed",
           response.status,
-          errorData.code,
+          err?.code,
           typeof details === "string" ? details : undefined,
-          Array.isArray(details) ? details : errorData.errors,
+          Array.isArray(details) ? details : undefined,
         );
       }
 
-      return response.json() as Promise<T>;
+      return unwrapEnvelope<T>(await response.json());
     });
   },
 

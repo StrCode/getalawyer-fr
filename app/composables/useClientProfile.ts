@@ -41,9 +41,6 @@ const clientProfileAPI = {
     if (res.imageUrl) {
       return res.imageUrl
     }
-    if (res.data?.imageUrl) {
-      return res.data.imageUrl
-    }
     throw new ApiError('Upload failed', 500)
   },
 

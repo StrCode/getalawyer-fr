@@ -64,11 +64,9 @@ export async function resolveLawyerAwaitingApprovalPath(
     const data = await queryClient.fetchQuery({
       queryKey: queryKeys.subscription.status,
       queryFn: async () => {
-        const res = await httpClient.getAuth<{
-          success: boolean
-          data: { hasActiveSubscription: boolean }
-        }>('/api/subscriptions/status')
-        return res.data
+        return await httpClient.getAuth<{ hasActiveSubscription: boolean }>(
+          '/api/subscriptions/status',
+        )
       },
       staleTime: 30_000,
     })

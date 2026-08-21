@@ -3,18 +3,18 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { ApiError, httpClient, type ApiResponse } from '~/lib/api/client'
+import { ApiError, httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 
 const onboardingRestartAPI = {
   restart: async () => {
-    const response = await httpClient.post<ApiResponse<Record<string, unknown>>>(
+    const response = await httpClient.post<Record<string, unknown>>(
       '/api/onboarding/restart',
     )
-    if (!response.success && !response.data) {
-      throw new ApiError(response.error || 'Failed to restart application', 400)
+    if (!response) {
+      throw new ApiError('Failed to restart application', 400)
     }
-    return response.data ?? response
+    return response
   },
 }
 

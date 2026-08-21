@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { httpClient, type ApiResponse } from '~/lib/api/client'
+import { httpClient } from '~/lib/api/client'
 import type { Booking, CreateBookingInput } from '~/types'
 
 // Types for available slots
@@ -128,12 +128,12 @@ const clientBookingAPI = {
 
   // Create booking
   createBooking: async (data: CreateBookingInput): Promise<Booking> => {
-    const response = await httpClient.post<ApiResponse<{ booking: Booking }> >(
+    const response = await httpClient.post<{ booking: Booking }>(
       '/api/bookings',
       data
     )
-    if (!response.data?.booking) throw new Error('Failed to create booking')
-    return response.data.booking
+    if (!response?.booking) throw new Error('Failed to create booking')
+    return response.booking
   }
 }
 
