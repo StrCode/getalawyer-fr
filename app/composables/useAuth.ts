@@ -37,28 +37,34 @@ export function useAuth() {
   const clientSession = computed(() => sessionData.value.data);
   const clientPending = computed(() => sessionData.value.isPending);
 
-  /** Refresh session from the auth server (e.g. after onboarding_completed is updated). */
+  /** Refresh session from the auth server (e.g. after onboarding_completed / emailVerified updates). */
   const refetchSession = async (): Promise<Session | null> => {
     if (import.meta.server) {
       return serverSession.value;
     }
 
     try {
-      // Bypass Better Auth cookie cache — onboarding_completed is often updated via Drizzle, not updateUser.
-      const { data: fresh } = await authClient.getSession({
-        query: { disableCookieCache: true },
-      });
-
-      if (fresh) {
-        serverSession.value = fresh;
-        const refetch = sessionData.value.refetch;
-        if (typeof refetch === 'function') {
-          await refetch();
+      // Must pass disableCookieCache on the useSession refetch itself. A plain
+      // getSession(...disableCookieCache) then refetch() without the flag re-reads
+      // the stale session cookie cache and overwrites the fresh result.
+      const refetch = sessionData.value.refetch
+      if (typeof refetch === 'function') {
+        await refetch({ query: { disableCookieCache: true } })
+      } else {
+        const { data: fresh } = await authClient.getSession({
+          query: { disableCookieCache: true },
+        })
+        if (fresh) {
+          serverSession.value = fresh
+          return fresh
         }
-        return fresh;
       }
 
-      return sessionData.value.data ?? null;
+      const next = sessionData.value.data ?? null
+      if (next) {
+        serverSession.value = next
+      }
+      return next
     } catch (error) {
       console.error('[useAuth] refetchSession failed:', error);
       return clientSession.value ?? null;

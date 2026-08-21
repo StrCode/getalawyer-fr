@@ -23,9 +23,18 @@ import { SIDEBAR_COOKIE_NAME } from '@/components/ui/sidebar/utils'
 
 const { open: emailVerificationOpen } = useEmailVerificationDialog()
 const { handleEmailVerificationCallback } = useEmailVerificationCallback()
+const { needsVerifyEmail } = useEmailVerificationPrompt()
+const { refetchSession } = useAuth()
 
 onMounted(() => {
-  void handleEmailVerificationCallback()
+  void (async () => {
+    await handleEmailVerificationCallback()
+    // Cover stale cookie-cache after verify even when callback query is missing
+    // (e.g. old email link without ?emailVerified=1).
+    if (needsVerifyEmail.value) {
+      await refetchSession()
+    }
+  })()
 })
 
 // Read the persisted sidebar state via useCookie so SSR and client agree on the

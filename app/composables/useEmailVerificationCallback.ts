@@ -38,19 +38,22 @@ export function useEmailVerificationCallback() {
     await router.replace({ path: route.path, query: nextQuery })
 
     // Always refresh after a verify redirect so emailVerified isn't stuck in cookie cache.
-    await refetchSession()
+    const fresh = await refetchSession()
+    const stillNeedsVerify = fresh?.user
+      ? (fresh.user as { emailVerified?: boolean }).emailVerified !== true
+      : needsVerifyEmail.value
 
     if (errorCode) {
       toast.error(
         VERIFY_ERROR_MESSAGES[errorCode] ?? 'Email verification failed. Please try again.',
       )
-      if (needsVerifyEmail.value) {
+      if (stillNeedsVerify) {
         openDialog()
       }
       return
     }
 
-    if (!needsVerifyEmail.value) {
+    if (!stillNeedsVerify) {
       toast.success('Email verified successfully.')
       return
     }
