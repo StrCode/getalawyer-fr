@@ -68,8 +68,12 @@ function snapshotFromStore() {
 const form = useForm({
   defaultValues: snapshotFromStore(),
   validators: {
-    onBlur: lawyerPersonalInfoSchema,
-    onSubmit: lawyerPersonalInfoSchema,
+    onChange: lawyerPersonalInfoSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
@@ -130,9 +134,9 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 const submitAttempted = ref(false)
 
 /** Show errors after blur or after a failed Continue. */
-function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
   if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isTouched && !field.state.meta.isValid
+  return field.state.meta.isBlurred && !field.state.meta.isValid
 }
 
 function resetFormFromStore() {

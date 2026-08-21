@@ -347,8 +347,12 @@ const form = useForm({
     password: '',
   },
   validators: {
-    onSubmit: loginSchema,
-    onBlur: loginSchema,
+    onChange: loginSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   onSubmit: async ({ value }) => {
     apiError.value = ''
@@ -388,7 +392,7 @@ const form = useForm({
   },
 })
 
-const { isInvalid } = useAuthFieldInvalid()
+const { isInvalid } = useAuthFieldInvalid(form)
 
 const forgotPasswordLink = computed(() => {
   if (authMethod.value === 'phone' && form.state.values.phone) {

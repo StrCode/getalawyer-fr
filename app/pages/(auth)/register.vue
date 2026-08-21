@@ -568,8 +568,12 @@ const form = useForm({
     password: '',
   },
   validators: {
-    onSubmit: registerSchema,
-    onBlur: registerSchema,
+    onChange: registerSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   onSubmit: async ({ value }) => {
     apiError.value = ''
@@ -619,7 +623,7 @@ const form = useForm({
   },
 })
 
-const { isInvalid } = useAuthFieldInvalid()
+const { isInvalid } = useAuthFieldInvalid(form)
 
 function startCooldown(seconds = 60) {
   resendCooldown.value = seconds

@@ -48,7 +48,12 @@ const form = useForm({
     revokeOtherSessions: true,
   },
   validators: {
-    onSubmit: schema,
+    onChange: schema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   onSubmit: async ({ value }) => {
     apiError.value = ''
@@ -85,7 +90,7 @@ const form = useForm({
   },
 })
 
-const { isInvalid } = useAuthFieldInvalid()
+const { isInvalid } = useAuthFieldInvalid(form)
 
 watch(open, (isOpen) => {
   if (!isOpen) {

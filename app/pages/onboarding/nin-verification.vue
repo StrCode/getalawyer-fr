@@ -71,8 +71,12 @@ function snapshotFromStore() {
 const form = useForm({
   defaultValues: snapshotFromStore(),
   validators: {
-    onBlur: lawyerNinSchema,
-    onSubmit: lawyerNinSchema,
+    onChange: lawyerNinSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
@@ -97,9 +101,9 @@ watch(
 
 const submitAttempted = ref(false)
 
-function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
   if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isTouched && !field.state.meta.isValid
+  return field.state.meta.isBlurred && !field.state.meta.isValid
 }
 
 const ninLength = computed(() => String(formValues.value.nin ?? '').length)

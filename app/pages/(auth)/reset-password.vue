@@ -135,8 +135,12 @@ const form = useForm({
     confirmPassword: '',
   },
   validators: {
-    onSubmit: resetSchema,
-    onBlur: resetSchema,
+    onChange: resetSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   onSubmit: async ({ value }) => {
     if (!otpParam.value) {
@@ -187,7 +191,7 @@ const form = useForm({
   },
 })
 
-const { isInvalid } = useAuthFieldInvalid()
+const { isInvalid } = useAuthFieldInvalid(form)
 
 onMounted(() => {
   if (!otpParam.value || (!emailParam.value && !phoneParam.value)) {

@@ -154,8 +154,12 @@ const form = useForm({
     phone: (route.query.phone as string) || '',
   },
   validators: {
-    onSubmit: forgotSchema,
-    onBlur: forgotSchema,
+    onChange: forgotSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
   },
   onSubmit: async ({ value }) => {
     if (authMethod.value === 'email' && isTempPhoneEmail(value.email)) {
@@ -187,7 +191,7 @@ const form = useForm({
   },
 })
 
-const { isInvalid } = useAuthFieldInvalid()
+const { isInvalid } = useAuthFieldInvalid(form)
 
 function checkTempEmail(email: string) {
   tempEmailWarning.value = isTempPhoneEmail(email)

@@ -149,9 +149,9 @@ watch(
 const submitAttempted = ref(false)
 const validationMessages = ref<Record<string, string>>({})
 
-function isInvalid(field: { state: { meta: { isTouched: boolean; isValid: boolean } } }) {
+function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
   if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isTouched && !field.state.meta.isValid
+  return field.state.meta.isBlurred && !field.state.meta.isValid
 }
 
 function fieldMessage(name: string) {
