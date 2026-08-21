@@ -130,10 +130,10 @@ export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }
     queryKey: queryKeys.subscription.pricing,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
     queryFn: async () => {
-      const res = await httpClient.getAuth<{ success: boolean; data: SubscriptionPricingPayload }>(
+      const res = await httpClient.getAuth<SubscriptionPricingPayload>(
         '/api/subscriptions/pricing',
       )
-      return res.data
+      return res
     },
     staleTime: 5 * 60 * 1000,
   })
@@ -144,10 +144,10 @@ export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> })
     queryKey: queryKeys.subscription.status,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
     queryFn: async () => {
-      const res = await httpClient.getAuth<{ success: boolean; data: SubscriptionStatusPayload }>(
+      const res = await httpClient.getAuth<SubscriptionStatusPayload>(
         '/api/subscriptions/status',
       )
-      return res.data
+      return res
     },
     staleTime: 30 * 1000,
   })
@@ -157,10 +157,10 @@ export function useInitializeSubscription() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async () => {
-      const res = await httpClient.post<{ success: boolean; data: InitializeSubscriptionPayload }>(
+      const res = await httpClient.post<InitializeSubscriptionPayload>(
         '/api/subscriptions/initialize',
       )
-      return res.data
+      return res
     },
     onSuccess: (data) => {
       if (import.meta.client && data?.reference) {
@@ -176,11 +176,11 @@ export function useUpdateSubscriptionAutoRenew() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (enabled: boolean) => {
-      const res = await httpClient.patch<{ success: boolean; data: { autoRenewEnabled: boolean } }>(
+      const res = await httpClient.patch<{ autoRenewEnabled: boolean }>(
         '/api/subscriptions/auto-renew',
         { enabled },
       )
-      return res.data
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
@@ -208,11 +208,10 @@ export function useSubscriptionNotifications(options?: { enabled?: MaybeRef<bool
     queryKey: queryKeys.subscription.notifications,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
     queryFn: async () => {
-      const res = await httpClient.getAuth<{
-        success: boolean
-        data: SubscriptionNotificationsPayload
-      }>('/api/subscriptions/notifications?limit=20')
-      return res.data
+      const res = await httpClient.getAuth<SubscriptionNotificationsPayload>(
+        '/api/subscriptions/notifications?limit=20',
+      )
+      return res
     },
     staleTime: 30 * 1000,
   })
@@ -272,11 +271,10 @@ export function useSubscriptionPaymentHistory(
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
     queryFn: async () => {
       const currentPage = unref(page)
-      const res = await httpClient.getAuth<{
-        success: boolean
-        data: SubscriptionPaymentHistoryPayload
-      }>(`/api/subscriptions/payment-history?page=${currentPage}&limit=10`)
-      return res.data
+      const res = await httpClient.getAuth<SubscriptionPaymentHistoryPayload>(
+        `/api/subscriptions/payment-history?page=${currentPage}&limit=10`,
+      )
+      return res
     },
     staleTime: 60 * 1000,
   })

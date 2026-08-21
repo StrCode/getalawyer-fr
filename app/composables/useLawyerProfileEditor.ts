@@ -187,8 +187,6 @@ export function useLawyerProfileEditor(options?: {
       formData.append('image', file)
       const res = await lawyerProfileAPI.uploadAvatar(formData)
       if (res.imageUrl) return res.imageUrl
-      const data = res as { data?: { imageUrl?: string } }
-      if (data.data?.imageUrl) return data.data.imageUrl
       throw new Error('Upload failed')
     },
     onSuccess: async () => {

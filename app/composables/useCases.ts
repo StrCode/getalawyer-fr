@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { httpClient, type ApiResponse } from '~/lib/api/client'
+import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import type { 
   Case, 
@@ -121,26 +121,24 @@ const casesAPI = {
 
   updateCase: async ({ id, updates, userType }: { id: string; updates: UpdateCaseRequest; userType?: 'client' | 'lawyer' }): Promise<Case> => {
     const basePath = getApiBasePath(userType)
-    const response = await httpClient.patch<ApiResponse<any>>(`${basePath}/${id}`, updates)
-    if (!response.data) throw new Error('Failed to update case')
-    return response.data
+    const response = await httpClient.patch<Case>(`${basePath}/${id}`, updates)
+    return response
   },
 
   updateCaseStatus: async ({ id, status, reason, userType }: { id: string; status: CaseStatus; reason?: string; userType?: 'client' | 'lawyer' }): Promise<Case> => {
     // Only lawyers can update case status
     const basePath = getApiBasePath('lawyer')
-    const response = await httpClient.patch<ApiResponse<any>>(`${basePath}/${id}/status`, { status, reason })
-    if (!response.data) throw new Error('Failed to update case status')
-    return response.data
+    const response = await httpClient.patch<Case>(`${basePath}/${id}/status`, { status, reason })
+    return response
   },
 
   createCaseFromBooking: async (bookingId: string): Promise<Case> => {
     // This is done through the engagement endpoint, not directly
-    const response = await httpClient.post<ApiResponse<{ case: any }>>(`/api/lawyer/bookings/${bookingId}/engagement`, {
+    const response = await httpClient.post<{ case: Case }>(`/api/lawyer/bookings/${bookingId}/engagement`, {
       outcome: 'client_hired'
     })
-    if (!response.data?.case) throw new Error('Failed to create case')
-    return response.data.case
+    if (!response.case) throw new Error('Failed to create case')
+    return response.case
   },
 }
 

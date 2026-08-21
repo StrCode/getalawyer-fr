@@ -44,8 +44,8 @@ const clientOnboardingAPI = {
     )
   },
 
-  getCountries: async (): Promise<{ data: Country[] }> => {
-    return await httpClient.get<{ data: Country[] }>('/api/countries')
+  getCountries: async (): Promise<{ data: Country[]; count?: number }> => {
+    return await httpClient.get<{ data: Country[]; count?: number }>('/api/countries')
   },
 
   getSpecializations: async (): Promise<{ specializations: Specialization[] }> => {

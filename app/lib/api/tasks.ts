@@ -3,7 +3,7 @@
  * Feature: case-management-system
  */
 
-import { httpClient, type ApiResponse } from '~/lib/api/client'
+import { httpClient } from '~/lib/api/client'
 import type { Task, TasksResponse, CreateTaskRequest, TaskFilters, TaskStatus } from '~/types'
 
 const BASE_PATH = '/api/tasks'
@@ -19,13 +19,10 @@ export interface TaskUpdateRequest {
 export const tasksAPI = {
   // Get tasks for a case
   getCaseTasks: async (caseId: string): Promise<TasksResponse> => {
-    const response = await httpClient.getAuth<ApiResponse<TasksResponse>>(
+    const response = await httpClient.getAuth<TasksResponse>(
       `/api/cases/${caseId}/tasks`
     )
-    if (!response.data) {
-      throw new Error('No tasks data received')
-    }
-    return response.data
+    return response
   },
 
   // Get user's tasks (role-based filtering handled by API)
@@ -39,66 +36,51 @@ export const tasksAPI = {
     if (filters?.dueDateTo) queryParams.append('dueDateTo', filters.dueDateTo.toISOString())
     
     const url = `${BASE_PATH}/my-tasks${queryParams.toString() ? `?${queryParams}` : ''}`
-    const response = await httpClient.getAuth<ApiResponse<TasksResponse>>(url)
-    
-    if (!response.data) {
-      throw new Error('No tasks data received')
-    }
-    return response.data
+    const response = await httpClient.getAuth<TasksResponse>(url)
+
+    return response
   },
 
   // Create task (lawyer only)
   createTask: async (caseId: string, taskData: CreateTaskRequest): Promise<Task> => {
-    const response = await httpClient.post<ApiResponse<Task>>(
+    const response = await httpClient.post<Task>(
       `/api/cases/${caseId}/tasks`,
       taskData
     )
-    if (!response.data) {
-      throw new Error('No task data received from creation')
-    }
-    return response.data
+    return response
   },
 
   // Update task status
   updateTaskStatus: async (taskId: string, status: TaskStatus): Promise<Task> => {
-    const response = await httpClient.patch<ApiResponse<Task>>(
+    const response = await httpClient.patch<Task>(
       `${BASE_PATH}/${taskId}`,
       { status }
     )
-    if (!response.data) {
-      throw new Error('No updated task data received')
-    }
-    return response.data
+    return response
   },
 
   // Update task details
   updateTask: async (taskId: string, updates: TaskUpdateRequest): Promise<Task> => {
-    const response = await httpClient.patch<ApiResponse<Task>>(
+    const response = await httpClient.patch<Task>(
       `${BASE_PATH}/${taskId}`,
       updates
     )
-    if (!response.data) {
-      throw new Error('No updated task data received')
-    }
-    return response.data
+    return response
   },
 
   // Delete task (lawyer only)
   deleteTask: async (taskId: string): Promise<void> => {
-    await httpClient.delete<ApiResponse<void>>(
+    await httpClient.delete<void>(
       `${BASE_PATH}/${taskId}`
     )
   },
 
   // Get task by ID
   getTaskById: async (taskId: string): Promise<Task> => {
-    const response = await httpClient.getAuth<ApiResponse<Task>>(
+    const response = await httpClient.getAuth<Task>(
       `${BASE_PATH}/${taskId}`
     )
-    if (!response.data) {
-      throw new Error('Task not found')
-    }
-    return response.data
+    return response
   },
 
   // Get task statistics for a case
@@ -110,19 +92,16 @@ export const tasksAPI = {
     inProgress: number
     completionRate: number
   }> => {
-    const response = await httpClient.getAuth<ApiResponse<{
+    const response = await httpClient.getAuth<{
       total: number
       completed: number
       overdue: number
       pending: number
       inProgress: number
       completionRate: number
-    }>>(
+    }>(
       `/api/cases/${caseId}/tasks/stats`
     )
-    if (!response.data) {
-      throw new Error('No task statistics received')
-    }
-    return response.data
+    return response
   }
 }

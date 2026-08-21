@@ -79,28 +79,28 @@ export interface SubmitResponse {
 
 const lawyerOnboardingAPI = {
     getDraft: async (): Promise<PropertyDraftResponse> => {
-        const res = await httpClient.get<any>('/api/onboarding/draft')
-        return res.data || res
+        const res = await httpClient.get<PropertyDraftResponse>('/api/onboarding/draft')
+        return res
     },
 
     saveDraft: async (payload: { data: any; lastStep: string }) => {
-        const res = await httpClient.post<any>('/api/onboarding/draft', payload)
-        return res.data || res
+        const res = await httpClient.post<PropertyDraftResponse>('/api/onboarding/draft', payload)
+        return res
     },
 
     discardDraft: async () => {
-        const res = await httpClient.delete<any>('/api/onboarding')
-        return res.data || res
+        const res = await httpClient.delete<{ message: string }>('/api/onboarding')
+        return res
     },
 
     saveNin: async (data: NinSubmitData): Promise<NinSubmitResponse> => {
-        const res = await httpClient.put<any>('/api/onboarding/steps/nin', data)
-        return res.data || res
+        const res = await httpClient.put<NinSubmitResponse>('/api/onboarding/steps/nin', data)
+        return res
     },
 
     submitOnboarding: async (): Promise<SubmitResponse> => {
-        const res = await httpClient.post<any>('/api/onboarding/submit', {})
-        return res.data || res
+        const res = await httpClient.post<SubmitResponse>('/api/onboarding/submit', {})
+        return res
     },
 
     getOnboardingStatus: async (): Promise<unknown> => {

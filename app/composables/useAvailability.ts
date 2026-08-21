@@ -5,7 +5,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { MaybeRefOrGetter } from 'vue'
-import { httpClient, type ApiResponse } from '~/lib/api/client'
+import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
 import type {
   LawyerAvailabilitySchedule,
@@ -23,33 +23,32 @@ import type {
 // API functions
 const availabilityAPI = {
   getSchedule: async (): Promise<LawyerAvailabilitySchedule[]> => {
-    const response = await httpClient.getAuth<ApiResponse<WeeklyScheduleResponse>>(
+    const response = await httpClient.getAuth<WeeklyScheduleResponse>(
       '/api/lawyer/availability/schedule'
     )
-    // The API returns schedule directly on the response, not in response.data
-    return (response as any).schedule || response.data?.schedule || []
+    return response.schedule || []
   },
 
   setSchedule: async (data: CreateScheduleInput): Promise<LawyerAvailabilitySchedule> => {
-    const response = await httpClient.post<ApiResponse<{ schedule: LawyerAvailabilitySchedule }>>(
+    const response = await httpClient.post<{ schedule: LawyerAvailabilitySchedule }>(
       '/api/lawyer/availability/schedule',
       data
     )
-    if (!response.data?.schedule) throw new Error('Failed to set schedule')
-    return response.data.schedule
+    if (!response.schedule) throw new Error('Failed to set schedule')
+    return response.schedule
   },
 
   bulkSetSchedule: async (data: BulkScheduleInput): Promise<LawyerAvailabilitySchedule[]> => {
-    const response = await httpClient.post<ApiResponse<{ schedules: LawyerAvailabilitySchedule[] }>>(
+    const response = await httpClient.post<{ schedules: LawyerAvailabilitySchedule[] }>(
       '/api/lawyer/availability/schedule/bulk',
       data
     )
-    if (!response.data?.schedules) throw new Error('Failed to set bulk schedule')
-    return response.data.schedules
+    if (!response.schedules) throw new Error('Failed to set bulk schedule')
+    return response.schedules
   },
 
   deleteSchedule: async (id: string): Promise<void> => {
-    await httpClient.delete<ApiResponse>(`/api/lawyer/availability/schedule/${id}`)
+    await httpClient.delete(`/api/lawyer/availability/schedule/${id}`)
   },
 
   getExceptions: async (params?: { startDate?: string; endDate?: string; futureOnly?: boolean }): Promise<AvailabilityException[]> => {
@@ -59,38 +58,38 @@ const availabilityAPI = {
     if (params?.futureOnly !== undefined) queryParams.append('futureOnly', String(params.futureOnly))
     
     const url = `/api/lawyer/availability/exceptions${queryParams.toString() ? `?${queryParams}` : ''}`
-    const response = await httpClient.getAuth<ApiResponse<ExceptionsResponse>>(url)
-    return response.data?.exceptions || []
+    const response = await httpClient.getAuth<ExceptionsResponse>(url)
+    return response.exceptions || []
   },
 
   createException: async (data: CreateExceptionInput): Promise<AvailabilityException> => {
-    const response = await httpClient.post<ApiResponse<{ exception: AvailabilityException }>>(
+    const response = await httpClient.post<{ exception: AvailabilityException }>(
       '/api/lawyer/availability/exceptions',
       data
     )
-    if (!response.data?.exception) throw new Error('Failed to create exception')
-    return response.data.exception
+    if (!response.exception) throw new Error('Failed to create exception')
+    return response.exception
   },
 
   bulkCreateExceptions: async (data: BulkExceptionInput): Promise<AvailabilityException[]> => {
-    const response = await httpClient.post<ApiResponse<{ exceptions: AvailabilityException[] }>>(
+    const response = await httpClient.post<{ exceptions: AvailabilityException[] }>(
       '/api/lawyer/availability/exceptions/bulk',
       data
     )
-    if (!response.data?.exceptions) throw new Error('Failed to create bulk exceptions')
-    return response.data.exceptions
+    if (!response.exceptions) throw new Error('Failed to create bulk exceptions')
+    return response.exceptions
   },
 
   deleteException: async (id: string): Promise<void> => {
-    await httpClient.delete<ApiResponse>(`/api/lawyer/availability/exceptions/${id}`)
+    await httpClient.delete(`/api/lawyer/availability/exceptions/${id}`)
   },
 
   getAvailabilityRange: async (startDate: string, endDate: string): Promise<AvailabilityRangeResponse> => {
     const params = new URLSearchParams({ startDate, endDate })
-    const response = await httpClient.getAuth<ApiResponse<AvailabilityRangeResponse>>(
+    const response = await httpClient.getAuth<AvailabilityRangeResponse>(
       `/api/lawyer/availability/range?${params}`
     )
-    return response.data || { weeklySchedule: [], exceptions: [] }
+    return response || { weeklySchedule: [], exceptions: [] }
   },
 
   getAvailableSlots: async (
@@ -104,10 +103,10 @@ const availabilityAPI = {
       startDate,
       endDate,
     })
-    const response = await httpClient.get<ApiResponse<AvailableSlot[]>>(
+    const response = await httpClient.get<AvailableSlot[]>(
       `/api/lawyers/${lawyerId}/available-slots?${params}`
     )
-    return response.data || []
+    return response || []
   },
 }
 
