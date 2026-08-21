@@ -21,6 +21,20 @@ export default defineNuxtConfig({
     url: process.env.NUXT_SITE_URL || 'https://getalawyer.ng',
     name: 'getalawyer',
   },
+  sitemap: {
+    // Auth-gated and transactional routes have no business in the sitemap.
+    exclude: [
+      '/dashboard/**',
+      '/onboarding/**',
+      '/login',
+      '/register',
+      '/forgot-password',
+      '/reset-password',
+      '/verify',
+      '/verify-otp',
+      '/verify-payment',
+    ],
+  },
 
   css: ['~/assets/css/main.css'],
   vite: {
