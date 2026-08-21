@@ -56,6 +56,9 @@
     "vitest": "^4.1.11"
   },
   "overrides": {
-    "postcss-merge-longhand": "8.0.3"
+    "postcss-merge-longhand": "8.0.3",
+    "postcss-colormin": "8.0.3",
+    "postcss-minify-params": "8.0.3",
+    "postcss-normalize-unicode": "8.0.3"
   }
 }
