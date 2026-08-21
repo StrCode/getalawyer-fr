@@ -33,10 +33,24 @@ export default defineComponent({
     const {
       isPending: isLawyerPending,
       isFetching: isLawyerFetching,
+      isError: isLawyerDraftError,
+      error: lawyerDraftError,
       data: lawyerDraftData,
+      refetch: refetchLawyerDraft,
     } = useDraft({
       enabled: computed(() => userType.value === 'lawyer' && wizardMounted.value),
     })
+
+    /** Draft fetch failed for a reason other than "no draft yet" (404) — fields would silently render empty. */
+    const draftLoadFailed = computed(() => {
+      if (userType.value !== 'lawyer' || !wizardMounted.value) return false
+      if (!isLawyerDraftError.value || lawyerDraftData.value) return false
+      const status = (lawyerDraftError.value as { response?: { status?: number } } | null)?.response?.status
+      return status !== 404
+    })
+    const retryDraftLoad = () => {
+      void refetchLawyerDraft()
+    }
 
     const router = useRouter()
     const queryClient = useQueryClient()
@@ -81,6 +95,23 @@ export default defineComponent({
     provide('registerLawyerOnboardingStepValidate', (fn: (() => Promise<boolean>) | null) => {
       lawyerStepValidate.value = fn
     })
+
+    /**
+     * Step pages have no <form>, so Enter in a text input does nothing by default.
+     * Treat it as Continue, except in controls that use Enter themselves.
+     */
+    const onEnterKey = (e: KeyboardEvent) => {
+      const target = e.target
+      if (!(target instanceof HTMLInputElement)) return
+      if (e.isComposing || e.defaultPrevented || isSaving.value) return
+      if (
+        target.closest(
+          '[role="combobox"], [role="listbox"], [data-slot^="tags-input"], [data-slot="command-input"]',
+        )
+      ) return
+      e.preventDefault()
+      void handleNext()
+    }
 
     /** Navigate only — form state lives in Pinia and survives route changes. Persisting is Next / Exit. */
     const handleBack = () => {
@@ -324,6 +355,8 @@ export default defineComponent({
       validationErrorBanner,
       isPending,
       isFetching,
+      draftLoadFailed,
+      retryDraftLoad,
       isSaving,
       isExiting,
       isSigningOut,
@@ -345,6 +378,7 @@ export default defineComponent({
       scrollContainer,
       handleBack,
       handleNext,
+      onEnterKey,
       handleSaveProgress,
       handleExitToHome,
       showLeaveConfirm,
@@ -620,7 +654,7 @@ export default defineComponent({
           class="app-scrollbar relative flex-1 overflow-y-auto"
         >
           <div class="relative mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 md:px-8 lg:py-12">
-            <div class="relative w-full">
+            <div class="relative w-full" @keydown.enter="onEnterKey">
               <transition name="fade">
                 <div
                   v-if="isFetching || isPending"
@@ -630,6 +664,27 @@ export default defineComponent({
                   <HugeiconsIcon :icon="Loading03Icon" class="h-4 w-4 animate-spin text-primary/40" />
                 </div>
               </transition>
+
+              <div
+                v-if="draftLoadFailed"
+                class="mb-6 flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive sm:flex-row sm:items-center sm:justify-between"
+                role="alert"
+              >
+                <div class="flex items-start gap-2">
+                  <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 size-4 shrink-0 sm:size-5" />
+                  <span>We couldn't load your saved progress. Anything you enter now may overwrite it.</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  class="shrink-0"
+                  :disabled="isFetching"
+                  @click="retryDraftLoad"
+                >
+                  Retry
+                </Button>
+              </div>
 
               <slot />
             </div>

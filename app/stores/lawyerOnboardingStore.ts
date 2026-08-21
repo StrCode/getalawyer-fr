@@ -230,6 +230,14 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
+            // The guard only checks status, so /onboarding/review can be reached directly.
+            // Re-validate every earlier step before submitting instead of relying on the backend.
+            const incomplete = firstIncompleteStepMessage()
+            if (incomplete) {
+                validationError.value = incomplete
+                return false
+            }
+
             const submitSchema = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall, {
                 requireLegalAcceptances: true,
             })
@@ -301,6 +309,28 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
 
         return saveDraftState(stepKey)
+    }
+
+    /** Human-readable reason the application can't be submitted yet, or null when every step is complete. */
+    const firstIncompleteStepMessage = (): string | null => {
+        const personal = lawyerPersonalInfoSchema.safeParse(toRaw(personalInfo))
+        if (!personal.success) {
+            return `Personal details are incomplete: ${personal.error.issues[0]?.message ?? 'please review them.'} Go back to “Tell us about yourself” to fix this.`
+        }
+        if (!ninVerification.isSubmitted && !ninVerification.verified) {
+            return 'Your NIN has not been submitted yet. Go back to “Confirm your NIN” to complete it.'
+        }
+        const professional = lawyerProfessionalInfoSchema.safeParse(toRaw(professionalInfo))
+        if (!professional.success) {
+            return `Bar credentials are incomplete: ${professional.error.issues[0]?.message ?? 'please review them.'} Go back to “Your bar credentials” to fix this.`
+        }
+        const practice = createLawyerPracticeInfoSchema(professionalInfo.yearOfCall, {
+            requireLegalAcceptances: false,
+        }).safeParse(toRaw(practiceInfo))
+        if (!practice.success) {
+            return `Practice details are incomplete: ${practice.error.issues[0]?.message ?? 'please review them.'} Go back to “How you practise” to fix this.`
+        }
+        return null
     }
 
     const resetStore = () => {
