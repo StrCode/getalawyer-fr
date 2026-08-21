@@ -96,13 +96,43 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
-    // Satoshi is self-hosted in main.css (same as soroman-web). Keep @nuxt/fonts
-    // defaults minimal so Inter is not pulled in as a second face.
+    // Satoshi (Indian Type Foundry, Fontshare) — the variable face committed in
+    // public/fonts; byte-identical to Fontshare's CDN file. @nuxt/fonts owns the
+    // @font-face and fallback metrics. Not fetched through the Fontshare provider:
+    // that only exposes the static cuts (no 600, five files) and makes the build
+    // depend on the CDN. No italics are used in the UI.
+    families: [
+      {
+        name: 'Satoshi',
+        src: [
+          {
+            // `url` is what the CSS points at; `originalURL` lets @nuxt/fonts read the
+            // file for fallback metrics (size-adjust etc.), which it can't do from a web path.
+            url: '/fonts/Satoshi-Variable.woff2',
+            originalURL: new URL('./public/fonts/Satoshi-Variable.woff2', import.meta.url).href,
+            format: 'woff2',
+          },
+        ],
+        weight: '300 900',
+        style: 'normal',
+        display: 'swap',
+        fallbacks: ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans'],
+      },
+    ],
+    // Satoshi is the only web font; skip the remote providers' metadata fetches
+    // so builds don't depend on fonts.google.com / bunny / fontsource being reachable.
+    providers: {
+      google: false,
+      googleicons: false,
+      bunny: false,
+      fontsource: false,
+      fontshare: false,
+      adobe: false,
+    },
     defaults: {
       weights: [400, 500],
       styles: ['normal'],
     },
-    families: [],
   },
   runtimeConfig: {
     public: {

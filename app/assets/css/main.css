@@ -5,17 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Satoshi — self-hosted variable (wght 300–900). Matches soroman-web: one
- * family for UI; emphasis via weight/color, not a second face or italics.
+ * Satoshi — variable (wght 300–900), fetched from Fontshare at build time and
+ * self-hosted by @nuxt/fonts (see `fonts` in nuxt.config.ts). One family for
+ * UI; emphasis via weight/color, not a second face or italics.
  */
-@font-face {
-  font-family: "Satoshi";
-  src: url("/fonts/Satoshi-Variable.woff2") format("woff2");
-  font-weight: 300 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme inline {
   --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Satoshi", ui-sans-serif, system-ui, sans-serif;
