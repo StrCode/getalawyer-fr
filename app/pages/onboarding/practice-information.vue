@@ -3,7 +3,6 @@ import { ArrowDown01Icon, Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import {
   ListboxContent,
   ListboxFilter,
@@ -119,7 +118,6 @@ const practiceSchema = computed(() =>
 
 const form = useForm({
   defaultValues: snapshotFromStore(),
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     Object.assign(store.practiceInfo, {
       soloPractitioner: value.soloPractitioner,

@@ -7,7 +7,7 @@ function maxDateOfBirthForAdult() {
 }
 
 function parseIsoDatePart(iso: string) {
-  const datePart = iso.split('T')[0]
+  const datePart = iso.split('T')[0] ?? ''
   return parseDate(datePart)
 }
 
@@ -29,14 +29,10 @@ export function createLawyerPersonalInfoSchema() {
         .trim()
         .min(1, { error: 'Enter your last name.' })
         .max(100, { error: 'Last name is too long.' }),
-      middleName: z.preprocess(
-        (v) => {
-          if (v == null) return ''
-          const s = String(v).trim()
-          return s
-        },
-        z.string().max(100, { error: 'Middle name is too long.' })
-      ),
+      middleName: z
+        .string()
+        .trim()
+        .max(100, { error: 'Middle name is too long.' }),
       governmentIdLegalName: z
         .string()
         .trim()
@@ -47,13 +43,12 @@ export function createLawyerPersonalInfoSchema() {
         .string()
         .trim()
         .min(1, { error: 'Select your date of birth.' }),
-      gender: z.preprocess(
-        (v) => (v === '' || v == null ? undefined : v),
-        z.enum(['male', 'female', 'other'], {
-          error: (issue) =>
-            issue.input === undefined ? 'Select your gender.' : 'Select a valid gender.'
+      // union (not .optional()) keeps the key required so the input type matches the form's defaultValues
+      gender: z
+        .union([z.enum(['male', 'female', 'other']), z.undefined()], {
+          error: 'Select a valid gender.'
         })
-      ),
+        .refine((v) => v !== undefined, { error: 'Select your gender.' }),
       state: z
         .string()
         .trim()

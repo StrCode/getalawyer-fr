@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { isValidScnDigits, normalizeScnDigitsOnly, SCN_MAX_DIGITS } from '~/lib/scn'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
@@ -63,7 +62,6 @@ const form = useForm({
       fieldApi.validate('change')
     },
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     Object.assign(store.professionalInfo, value)
   },

@@ -3,7 +3,6 @@ import { CheckmarkCircle01Icon, IdentityCardIcon, SecurityCheckIcon, SquareLock0
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { lawyerNinSchema } from '~/schemas/lawyerNin'
@@ -78,7 +77,6 @@ const form = useForm({
       fieldApi.validate('change')
     },
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     ninState.nin = value.nin
     ninState.consent = value.consent

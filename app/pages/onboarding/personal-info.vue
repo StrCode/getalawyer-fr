@@ -3,7 +3,6 @@ import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, inject, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
-import { zodValidator } from '@tanstack/zod-form-adapter'
 import { type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
@@ -75,7 +74,6 @@ const form = useForm({
       fieldApi.validate('change')
     },
   },
-  validatorAdapter: zodValidator(),
   onSubmit: async ({ value }) => {
     Object.assign(store.personalInfo, value)
   },
