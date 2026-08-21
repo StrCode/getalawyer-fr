@@ -317,9 +317,17 @@ onMounted(() => {
   })
 })
 
+// No syncFormToStore() here: the deep watch(formValues) already keeps the store
+// current, and syncing on unmount would copy a not-yet-hydrated (empty) form
+// over draft data after a hard refresh.
 onBeforeUnmount(() => {
-  syncFormToStore()
   registerValidate?.(null)
+})
+
+useOnboardingDraftHydration('practice', () => {
+  submitAttempted.value = false
+  validationMessages.value = {}
+  form.reset(snapshotFromStore())
 })
 </script>
 

@@ -121,6 +121,11 @@ onBeforeUnmount(() => {
   registerValidate?.(null)
 })
 
+useOnboardingDraftHydration('professional', () => {
+  submitAttempted.value = false
+  form.reset(snapshotFromStore())
+})
+
 function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
   field.handleChange(normalizeScnDigitsOnly(String(v ?? '')))
 }

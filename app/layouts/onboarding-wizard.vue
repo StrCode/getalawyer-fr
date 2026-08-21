@@ -348,6 +348,7 @@ export default defineComponent({
       handleSaveProgress,
       handleExitToHome,
       showLeaveConfirm,
+      openLeaveConfirm,
       confirmLeave,
       handleSaveAndSignOut,
       handleSignOut

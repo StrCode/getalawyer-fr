@@ -103,7 +103,7 @@ function syncDobFromIso(iso: string | undefined) {
     return
   }
   try {
-    dobDate.value = parseDate(iso.split('T')[0])
+    dobDate.value = parseDate(iso.split('T')[0] ?? '')
   } catch {
     dobDate.value = undefined
   }
@@ -167,16 +167,10 @@ onBeforeUnmount(() => {
   registerValidate?.(null)
 })
 
-const hydratedFromDraft = ref(false)
-watch(
-  () => store.draft,
-  (draft) => {
-    if (hydratedFromDraft.value || !draft?.data?.personal) return
-    hydratedFromDraft.value = true
-    submitAttempted.value = false
-    resetFormFromStore()
-  },
-)
+useOnboardingDraftHydration('personal', () => {
+  submitAttempted.value = false
+  resetFormFromStore()
+})
 </script>
 
 <template>
@@ -326,7 +320,9 @@ watch(
                       layout="month-and-year"
                       @update:model-value="(val) => {
                         if (val) {
-                          field.handleChange(val.toDate(getLocalTimeZone()).toISOString())
+                          // Calendar-date only: toDate(localTZ).toISOString() lands on the previous
+                          // day in UTC+1 and drifts one day back on every save/reload round-trip.
+                          field.handleChange(`${val.toString()}T00:00:00.000Z`)
                           field.handleBlur()
                         }
                         close()
