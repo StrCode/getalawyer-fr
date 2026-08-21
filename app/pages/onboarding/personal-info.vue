@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed, inject, onBeforeUnmount, onMounted, watch } from 'vue'
-import { useForm } from '@tanstack/vue-form'
+import { computed, ref, watch } from 'vue'
 import { type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
@@ -36,13 +35,7 @@ definePageMeta({
 
 const step = getLawyerStepDisplay('personal_info')
 
-
-
 const store = useLawyerOnboardingStore()
-
-const registerValidate = inject<
-  ((fn: (() => Promise<boolean>) | null) => void) | undefined
->('registerLawyerOnboardingStepValidate', undefined)
 
 const genders = [
   { label: 'Male', value: 'male' as const },
@@ -64,36 +57,15 @@ function snapshotFromStore() {
   }
 }
 
-const form = useForm({
-  defaultValues: snapshotFromStore(),
-  validators: {
-    onChange: lawyerPersonalInfoSchema,
-  },
-  listeners: {
-    onBlur: ({ fieldApi }) => {
-      fieldApi.validate('change')
-    },
-  },
-  onSubmit: async ({ value }) => {
-    Object.assign(store.personalInfo, value)
-  },
+const { form, formValues, isInvalid } = useWizardStepForm({
+  draftSection: 'personal',
+  snapshot: snapshotFromStore,
+  parse: (values) => lawyerPersonalInfoSchema.safeParse(values),
+  sync: (values) => Object.assign(store.personalInfo, values),
+  commit: (parsed) => Object.assign(store.personalInfo, parsed),
+  // reset() seeds the form from the store, so the store holds the same value
+  onReset: () => syncDobFromIso(store.personalInfo.dateOfBirth ?? undefined),
 })
-
-/** Reactive snapshot — `form.state.values` is not tracked by Vue watchers. */
-const formValues = form.useStore((state) => state.values)
-const formFieldMeta = form.useStore((state) => state.fieldMeta)
-
-function syncFormToStore() {
-  Object.assign(store.personalInfo, { ...formValues.value })
-}
-
-watch(
-  formValues,
-  (v) => {
-    Object.assign(store.personalInfo, v)
-  },
-  { deep: true },
-)
 
 const dobDate = ref<DateValue | undefined>()
 
@@ -129,48 +101,6 @@ watch(formState, (state, prev) => {
 
 const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
-const submitAttempted = ref(false)
-
-/** Show errors after blur or after a failed Continue. */
-function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
-  if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isBlurred && !field.state.meta.isValid
-}
-
-function resetFormFromStore() {
-  form.reset(snapshotFromStore())
-  syncDobFromIso(formValues.value.dateOfBirth)
-}
-
-onMounted(() => {
-  resetFormFromStore()
-
-  registerValidate?.(async () => {
-    submitAttempted.value = true
-    syncFormToStore()
-
-    await form.validateAllFields('submit')
-    const meta = formFieldMeta.value
-    const invalid = meta && Object.values(meta).some((m) => !m.isValid)
-    if (invalid) return false
-
-    const parsed = lawyerPersonalInfoSchema.safeParse(formValues.value)
-    if (!parsed.success) return false
-
-    Object.assign(store.personalInfo, parsed.data)
-    submitAttempted.value = false
-    return true
-  })
-})
-
-onBeforeUnmount(() => {
-  registerValidate?.(null)
-})
-
-useOnboardingDraftHydration('personal', () => {
-  submitAttempted.value = false
-  resetFormFromStore()
-})
 </script>
 
 <template>

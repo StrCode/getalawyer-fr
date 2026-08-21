@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useForm } from '@tanstack/vue-form'
+import { computed } from 'vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { isValidScnDigits, normalizeScnDigitsOnly, SCN_MAX_DIGITS } from '~/lib/scn'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
@@ -39,10 +38,6 @@ const step = getLawyerStepDisplay('professional_info')
 
 const store = useLawyerOnboardingStore()
 
-const registerValidate = inject<
-  ((fn: (() => Promise<boolean>) | null) => void) | undefined
->('registerLawyerOnboardingStepValidate', undefined)
-
 function snapshotFromStore() {
   const p = store.professionalInfo
   return {
@@ -52,42 +47,13 @@ function snapshotFromStore() {
   }
 }
 
-const form = useForm({
-  defaultValues: snapshotFromStore(),
-  validators: {
-    onChange: lawyerProfessionalInfoSchema,
-  },
-  listeners: {
-    onBlur: ({ fieldApi }) => {
-      fieldApi.validate('change')
-    },
-  },
-  onSubmit: async ({ value }) => {
-    Object.assign(store.professionalInfo, value)
-  },
+const { form, formValues, isInvalid } = useWizardStepForm({
+  draftSection: 'professional',
+  snapshot: snapshotFromStore,
+  parse: (values) => lawyerProfessionalInfoSchema.safeParse(values),
+  sync: (values) => Object.assign(store.professionalInfo, values),
+  commit: (parsed) => Object.assign(store.professionalInfo, parsed),
 })
-
-const formValues = form.useStore((state) => state.values)
-const formFieldMeta = form.useStore((state) => state.fieldMeta)
-
-function syncFormToStore() {
-  Object.assign(store.professionalInfo, { ...formValues.value })
-}
-
-watch(
-  formValues,
-  (v) => {
-    Object.assign(store.professionalInfo, v)
-  },
-  { deep: true },
-)
-
-const submitAttempted = ref(false)
-
-function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
-  if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isBlurred && !field.state.meta.isValid
-}
 
 const currentYear = new Date().getFullYear()
 const yearMin = 1970
@@ -98,33 +64,6 @@ const yearOptions = computed(() => {
 })
 
 const barNumberStr = computed(() => String(formValues.value.barNumber ?? ''))
-
-onMounted(() => {
-  form.reset(snapshotFromStore())
-
-  registerValidate?.(async () => {
-    submitAttempted.value = true
-    syncFormToStore()
-    await form.validateAllFields('submit')
-    const meta = formFieldMeta.value
-    const invalid = meta && Object.values(meta).some((m) => !m.isValid)
-    if (invalid) return false
-    const parsed = lawyerProfessionalInfoSchema.safeParse(formValues.value)
-    if (!parsed.success) return false
-    Object.assign(store.professionalInfo, parsed.data)
-    submitAttempted.value = false
-    return true
-  })
-})
-
-onBeforeUnmount(() => {
-  registerValidate?.(null)
-})
-
-useOnboardingDraftHydration('professional', () => {
-  submitAttempted.value = false
-  form.reset(snapshotFromStore())
-})
 
 function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
   field.handleChange(normalizeScnDigitsOnly(String(v ?? '')))

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ArrowDown01Icon, Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed, inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
-import { useForm } from '@tanstack/vue-form'
+import { computed, ref, useId, watch } from 'vue'
 import {
   ListboxContent,
   ListboxFilter,
@@ -77,10 +76,6 @@ const step = getLawyerStepDisplay('practice_info')
 const store = useLawyerOnboardingStore()
 const soloPractitionerFieldId = useId()
 
-const registerValidate = inject<
-  ((fn: (() => Promise<boolean>) | null) => void) | undefined
->('registerLawyerOnboardingStepValidate', undefined)
-
 function snapshotFromStore() {
   const p = store.practiceInfo
   return {
@@ -98,8 +93,9 @@ function deriveStates(primary: string, additional: string[]) {
   return primary ? [primary, ...extras] : extras
 }
 
-function syncFormToStore() {
-  const v = formValues.value
+type PracticeFormValues = ReturnType<typeof snapshotFromStore>
+
+function applyToStore(v: PracticeFormValues) {
   Object.assign(store.practiceInfo, {
     soloPractitioner: v.soloPractitioner,
     firmName: v.firmName,
@@ -116,23 +112,18 @@ const practiceSchema = computed(() =>
   }),
 )
 
-const form = useForm({
-  defaultValues: snapshotFromStore(),
-  onSubmit: async ({ value }) => {
-    Object.assign(store.practiceInfo, {
-      soloPractitioner: value.soloPractitioner,
-      firmName: value.firmName,
-      practiceAreas: value.practiceAreas,
-      statesOfPractice: value.statesOfPractice,
-      primaryState: value.primaryState,
-      additionalPracticeStates: value.additionalPracticeStates,
-    })
-  },
+const { form, formValues, isInvalid } = useWizardStepForm({
+  draftSection: 'practice',
+  snapshot: snapshotFromStore,
+  // Legal acceptances live in the store (review step), not in this step's form.
+  parse: (values) => practiceSchema.value.safeParse({ ...store.practiceInfo, ...values }),
+  sync: applyToStore,
+  commit: applyToStore,
 })
 
-const formValues = form.useStore((state) => state.values)
-
-watch(formValues, () => syncFormToStore(), { deep: true })
+function syncFormToStore() {
+  applyToStore(formValues.value)
+}
 
 watch(
   () => formValues.value.soloPractitioner,
@@ -140,42 +131,8 @@ watch(
     if (solo && formValues.value.firmName) {
       form.setFieldValue('firmName', '')
     }
-    if (solo) clearValidationMessage('firmName')
   },
 )
-
-const submitAttempted = ref(false)
-const validationMessages = ref<Record<string, string>>({})
-
-function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
-  if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isBlurred && !field.state.meta.isValid
-}
-
-function fieldMessage(name: string) {
-  return validationMessages.value[name]
-}
-
-function hasFieldError(name: string) {
-  return submitAttempted.value && Boolean(fieldMessage(name))
-}
-
-function setValidationMessages(issues: Array<{ path: PropertyKey[]; message: string }>) {
-  const next: Record<string, string> = {}
-  for (const issue of issues) {
-    const key = String(issue.path[0] ?? 'form')
-    if (!next[key]) next[key] = issue.message
-  }
-  validationMessages.value = next
-  store.validationError = issues[0]?.message ?? 'Please check your practice details.'
-}
-
-function clearValidationMessage(name: string) {
-  if (!validationMessages.value[name]) return
-  const { [name]: _removed, ...rest } = validationMessages.value
-  validationMessages.value = rest
-  store.validationError = Object.values(rest)[0] ?? null
-}
 
 const { data: specData, isPending: isLoadingSpecs } = useSpecializations()
 const specializations = computed(() => specData.value || [])
@@ -209,7 +166,6 @@ const selectedPracticeAreaOptions = computed<PracticeAreaOption[]>({
         current.find((row) => row.practiceAreaId === opt.id)?.yearsOfExperience ?? null,
     }))
     form.setFieldValue('practiceAreas', mapped)
-    if (mapped.length > 0) clearValidationMessage('practiceAreas')
     syncFormToStore()
   },
 })
@@ -246,8 +202,6 @@ function applyPrimaryAndAdditional(primary: string, additional: string[]) {
   form.setFieldValue('primaryState', primary)
   form.setFieldValue('additionalPracticeStates', extras)
   form.setFieldValue('statesOfPractice', deriveStates(primary, extras))
-  if (primary) clearValidationMessage('primaryState')
-  if (extras.length || primary) clearValidationMessage('statesOfPractice')
   syncFormToStore()
 }
 
@@ -287,48 +241,6 @@ const listboxItemClass = cn(
   'data-disabled:pointer-events-none data-disabled:opacity-50',
 )
 
-onMounted(() => {
-  form.reset(snapshotFromStore())
-
-  registerValidate?.(async () => {
-    submitAttempted.value = true
-    syncFormToStore()
-    const parsed = practiceSchema.value.safeParse({
-      ...store.practiceInfo,
-      ...formValues.value,
-    })
-    if (!parsed.success) {
-      setValidationMessages(parsed.error.issues)
-      return false
-    }
-    validationMessages.value = {}
-    store.validationError = null
-    Object.assign(store.practiceInfo, {
-      soloPractitioner: parsed.data.soloPractitioner,
-      firmName: parsed.data.firmName,
-      practiceAreas: parsed.data.practiceAreas,
-      statesOfPractice: parsed.data.statesOfPractice,
-      primaryState: parsed.data.primaryState,
-      additionalPracticeStates: parsed.data.additionalPracticeStates,
-    })
-    syncFormToStore()
-    submitAttempted.value = false
-    return true
-  })
-})
-
-// No syncFormToStore() here: the deep watch(formValues) already keeps the store
-// current, and syncing on unmount would copy a not-yet-hydrated (empty) form
-// over draft data after a hard refresh.
-onBeforeUnmount(() => {
-  registerValidate?.(null)
-})
-
-useOnboardingDraftHydration('practice', () => {
-  submitAttempted.value = false
-  validationMessages.value = {}
-  form.reset(snapshotFromStore())
-})
 </script>
 
 <template>
@@ -380,7 +292,7 @@ useOnboardingDraftHydration('practice', () => {
             <form.Field v-if="!formValues.soloPractitioner" v-slot="{ field }" name="firmName">
               <Field
                 :class="fieldClass"
-                :data-invalid="isInvalid(field) || hasFieldError('firmName')"
+                :data-invalid="isInvalid(field)"
               >
                 <FieldLabel :for="field.name" :class="fieldLabelClass">
                   Firm or practice name
@@ -392,14 +304,8 @@ useOnboardingDraftHydration('practice', () => {
                   placeholder="e.g. Adeyemi & Partners"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="(v) => {
-                    field.handleChange(v)
-                    if (String(v ?? '').trim()) clearValidationMessage('firmName')
-                  }"
+                  @update:model-value="(v) => field.handleChange(String(v ?? ''))"
                 />
-                <p v-if="hasFieldError('firmName')" class="text-sm text-destructive" role="alert">
-                  {{ fieldMessage('firmName') }}
-                </p>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
@@ -410,7 +316,7 @@ useOnboardingDraftHydration('practice', () => {
           <form.Field v-slot="{ field }" name="practiceAreas">
             <Field
               :class="fieldClass"
-              :data-invalid="isInvalid(field) || hasFieldError('practiceAreas')"
+              :data-invalid="isInvalid(field)"
             >
               <FieldLabel :class="fieldLabelClass">
                 Practice areas
@@ -437,7 +343,7 @@ useOnboardingDraftHydration('practice', () => {
                         'justify-between px-3 font-normal',
                         !selectedCount && 'text-muted-foreground',
                       ]"
-                      :aria-invalid="isInvalid(field) || hasFieldError('practiceAreas') || undefined"
+                      :aria-invalid="isInvalid(field) || undefined"
                     >
                       <span class="truncate">{{ practiceAreasTriggerLabel }}</span>
                       <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 opacity-50" />
@@ -493,9 +399,6 @@ useOnboardingDraftHydration('practice', () => {
                 </button>
               </div>
 
-              <p v-if="hasFieldError('practiceAreas')" class="text-sm text-destructive" role="alert">
-                {{ fieldMessage('practiceAreas') }}
-              </p>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
@@ -506,7 +409,7 @@ useOnboardingDraftHydration('practice', () => {
             <form.Field v-slot="{ field }" name="primaryState">
               <Field
                 :class="fieldClass"
-                :data-invalid="isInvalid(field) || hasFieldError('primaryState') || hasFieldError('statesOfPractice')"
+                :data-invalid="isInvalid(field)"
               >
                 <FieldLabel :for="field.name" :class="fieldLabelClass">
                   Primary state
@@ -531,13 +434,6 @@ useOnboardingDraftHydration('practice', () => {
                 <FieldDescription>
                   Your main base for client matching.
                 </FieldDescription>
-                <p
-                  v-if="hasFieldError('primaryState') || hasFieldError('statesOfPractice')"
-                  class="text-sm text-destructive"
-                  role="alert"
-                >
-                  {{ fieldMessage('primaryState') || fieldMessage('statesOfPractice') }}
-                </p>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
@@ -545,7 +441,7 @@ useOnboardingDraftHydration('practice', () => {
             <form.Field v-slot="{ field }" name="additionalPracticeStates">
               <Field
                 :class="fieldClass"
-                :data-invalid="isInvalid(field) || hasFieldError('additionalPracticeStates')"
+                :data-invalid="isInvalid(field)"
                 :data-disabled="!formValues.primaryState || undefined"
               >
                 <FieldLabel :class="fieldLabelClass">
@@ -637,9 +533,6 @@ useOnboardingDraftHydration('practice', () => {
                 <FieldDescription>
                   Other states where you’re licensed or actively practising.
                 </FieldDescription>
-                <p v-if="hasFieldError('additionalPracticeStates')" class="text-sm text-destructive" role="alert">
-                  {{ fieldMessage('additionalPracticeStates') }}
-                </p>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { CheckmarkCircle01Icon, IdentityCardIcon, SecurityCheckIcon, SquareLock01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { inject, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
-import { useForm } from '@tanstack/vue-form'
+import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { lawyerNinSchema } from '~/schemas/lawyerNin'
@@ -34,10 +33,6 @@ const store = useLawyerOnboardingStore()
 const ninState = store.ninVerification
 const consentFieldId = useId()
 
-const registerValidate = inject<
-  ((fn: (() => Promise<boolean>) | null) => void) | undefined
->('registerLawyerOnboardingStepValidate', undefined)
-
 const isAdminVerified = computed(() => !!ninState.verified)
 const isSubmittedPending = computed(() => !!ninState.isSubmitted && !ninState.verified)
 
@@ -67,92 +62,39 @@ function snapshotFromStore() {
   }
 }
 
-const form = useForm({
-  defaultValues: snapshotFromStore(),
-  validators: {
-    onChange: lawyerNinSchema,
+const { form, formValues, isInvalid, reset } = useWizardStepForm({
+  snapshot: snapshotFromStore,
+  parse: (values) => lawyerNinSchema.safeParse(values),
+  sync: (values) => {
+    ninState.nin = String(values.nin ?? '').replace(/\D/g, '').slice(0, 11)
+    ninState.consent = values.consent === true
   },
-  listeners: {
-    onBlur: ({ fieldApi }) => {
-      fieldApi.validate('change')
-    },
+  commit: (parsed) => {
+    ninState.nin = parsed.nin
+    ninState.consent = parsed.consent
   },
-  onSubmit: async ({ value }) => {
-    ninState.nin = value.nin
-    ninState.consent = value.consent
+  // Already verified by admin or awaiting review: Continue just moves on.
+  skip: () => isAdminVerified.value || isSubmittedPending.value,
+  onValidated: () => {
+    suppressPendingUntilLeave.value = true
   },
 })
-
-const formValues = form.useStore((state) => state.values)
-const formFieldMeta = form.useStore((state) => state.fieldMeta)
-
-function syncFormToStore() {
-  ninState.nin = String(formValues.value.nin ?? '').replace(/\D/g, '').slice(0, 11)
-  ninState.consent = formValues.value.consent === true
-}
-
-watch(
-  formValues,
-  () => syncFormToStore(),
-  { deep: true },
-)
-
-const submitAttempted = ref(false)
-
-function isInvalid(field: { state: { meta: { isBlurred: boolean; isValid: boolean } } }) {
-  if (submitAttempted.value) return !field.state.meta.isValid
-  return field.state.meta.isBlurred && !field.state.meta.isValid
-}
 
 const ninLength = computed(() => String(formValues.value.nin ?? '').length)
 
-onMounted(() => {
-  form.reset(snapshotFromStore())
-
-  registerValidate?.(async () => {
-    if (isAdminVerified.value || isSubmittedPending.value) {
-      return true
-    }
-
-    submitAttempted.value = true
-    syncFormToStore()
-
-    await form.validateAllFields('submit')
-    const meta = formFieldMeta.value
-    const invalid = meta && Object.values(meta).some((m) => !m.isValid)
-    if (invalid) return false
-
-    const parsed = lawyerNinSchema.safeParse({
-      nin: ninState.nin,
-      consent: ninState.consent,
-    })
-    if (!parsed.success) return false
-
-    ninState.nin = parsed.data.nin
-    ninState.consent = parsed.data.consent
-    submitAttempted.value = false
-    suppressPendingUntilLeave.value = true
-    return true
-  })
-})
-
 onBeforeUnmount(() => {
-  registerValidate?.(null)
   store.clearNinResubmitMode()
 })
 
 watch(isSubmittedPending, (pending) => {
-  if (pending) {
-    submitAttempted.value = false
-  }
+  if (pending) reset()
 })
 
 watch(
   () => ninState.isSubmitted,
   (submitted) => {
     if (!submitted && !ninState.verified) {
-      form.reset(snapshotFromStore())
-      submitAttempted.value = false
+      reset()
       suppressPendingUntilLeave.value = false
     }
   },
