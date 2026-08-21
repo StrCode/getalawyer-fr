@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
+import type { LocationQuery } from 'vue-router'
 import type { LawyerSearchResult } from '~/lib/api'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -8,7 +9,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const props = defineProps<{
   lawyers: LawyerSearchResult[]
-  listingQuery?: Record<string, string | string[]>
+  listingQuery?: LocationQuery
 }>()
 
 const previewLawyers = computed(() => props.lawyers.slice(0, 6))
