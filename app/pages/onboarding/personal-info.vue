@@ -133,7 +133,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                   autocomplete="given-name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
@@ -154,7 +154,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                   autocomplete="additional-name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
@@ -172,7 +172,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                   autocomplete="family-name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
                 />
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
@@ -193,7 +193,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 autocomplete="name"
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
-                @update:model-value="field.handleChange"
+                @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
               />
               <FieldDescription>
                 Must match your NIN exactly. This is also the name shown on your public profile.
@@ -273,7 +273,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 <Select
                   :model-value="field.state.value"
                   @update:model-value="(v) => {
-                    field.handleChange(v)
+                    field.handleChange((v || undefined) as (typeof genders)[number]['value'] | undefined)
                     field.handleBlur()
                   }"
                 >
@@ -316,7 +316,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 <Select
                   :model-value="field.state.value || undefined"
                   @update:model-value="(v) => {
-                    field.handleChange(v ?? '')
+                    field.handleChange(String(v ?? ''))
                     field.handleBlur()
                   }"
                 >
@@ -353,7 +353,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                   :model-value="field.state.value || undefined"
                   :disabled="!selectedState"
                   @update:model-value="(v) => {
-                    field.handleChange(v ?? '')
+                    field.handleChange(String(v ?? ''))
                     field.handleBlur()
                   }"
                 >

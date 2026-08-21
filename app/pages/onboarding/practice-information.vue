@@ -170,8 +170,13 @@ const selectedPracticeAreaOptions = computed<PracticeAreaOption[]>({
   },
 })
 
-function onPracticeAreasChange(value: PracticeAreaOption[] | PracticeAreaOption | undefined) {
-  const next = Array.isArray(value) ? value : value ? [value] : []
+/** Combobox emits reka-ui's AcceptableValue; with `multiple` + `by="id"` it is our option objects. */
+function onPracticeAreasChange(value: unknown) {
+  const next = Array.isArray(value)
+    ? (value as PracticeAreaOption[])
+    : value
+      ? [value as PracticeAreaOption]
+      : []
   selectedPracticeAreaOptions.value = next
 }
 
@@ -215,9 +220,11 @@ function onPrimaryStateChange(
   applyPrimaryAndAdditional(primary, formValues.value.additionalPracticeStates ?? [])
 }
 
-function syncAdditionalStates(value: string[], field?: { handleBlur: () => void }) {
+/** Listbox / TagsInput emit reka-ui's AcceptableValue; we only ever store state names. */
+function syncAdditionalStates(value: unknown, field?: { handleBlur: () => void }) {
   const primary = formValues.value.primaryState ?? ''
-  applyPrimaryAndAdditional(primary, value)
+  const states = Array.isArray(value) ? value.map((s) => String(s)) : []
+  applyPrimaryAndAdditional(primary, states)
   field?.handleBlur()
 }
 
@@ -467,7 +474,7 @@ const listboxItemClass = cn(
                       >
                         <TagsInputItem
                           v-for="item in stateTags"
-                          :key="item"
+                          :key="String(item)"
                           :value="item"
                           class="rounded-md border border-primary/25 bg-primary/10 text-primary"
                         >

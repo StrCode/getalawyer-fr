@@ -48,6 +48,8 @@ export const authClient = createAuthClient({
         },
         onboarding_completed: {
           type: "boolean",
+          // Server declares `input: false`; mirror it so signUp.email doesn't require it.
+          input: false,
         },
       },
     }),

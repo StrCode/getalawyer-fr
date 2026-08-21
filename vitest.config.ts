@@ -7,6 +7,8 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    // Stale agent worktrees under .claude/ carry copies of the test files.
+    exclude: ['**/node_modules/**', '**/.nuxt/**', '**/.output/**', '**/.claude/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

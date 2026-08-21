@@ -140,17 +140,21 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
         if (ninResubmitMode.value || ninVerification.verified) return
 
-        const lastStep = draftRoot?.last_step ?? (draftRoot as { lastStep?: string | null })?.lastStep
-        if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) {
-            ninVerification.isSubmitted = true
-        }
-        const ninSubmittedFlag =
-            payload?.ninSubmitted === true ||
-            (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted === true
-        if (ninSubmittedFlag) {
+        if (draftImpliesNinSubmitted(draftRoot)) {
             ninVerification.isSubmitted = true
         }
     }, { immediate: true })
+
+    /** The server never returns the NIN itself; infer "already submitted" from last_step / flags. */
+    function draftImpliesNinSubmitted(draftRoot: typeof draftDataResponse.value): boolean {
+        const payload = draftRoot?.data
+        const lastStep = draftRoot?.last_step ?? (draftRoot as { lastStep?: string | null } | undefined)?.lastStep
+        if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) return true
+        return (
+            payload?.ninSubmitted === true ||
+            (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted === true
+        )
+    }
 
     const saveDraftState = async (stepKey: string) => {
         return new Promise<boolean>((resolve) => {
@@ -368,8 +372,17 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         ninVerification.consent = false
     }
 
+    /**
+     * Leaving the NIN step without saving a new NIN: restore the server-side
+     * state so the review badge doesn't flash "Not started" until the next
+     * draft refetch.
+     */
     const clearNinResubmitMode = () => {
+        if (!ninResubmitMode.value) return
         ninResubmitMode.value = false
+        if (!ninVerification.verified && draftImpliesNinSubmitted(draftDataResponse.value)) {
+            ninVerification.isSubmitted = true
+        }
     }
 
     const summary = computed(() => ({

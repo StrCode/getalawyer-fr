@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'vitest'
 import { computeProfileCompleteness } from '../app/lib/profile-completeness'
 import { PROFILE_STRENGTH_TOTAL } from '../app/lib/profile-check-catalog'
 import type { LawyerProfileEditorData } from '../app/types/lawyer-profile-editor'

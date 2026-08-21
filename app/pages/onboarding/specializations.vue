@@ -177,12 +177,12 @@ const visibleSpecializations = computed(() => {
     return specializations.value
   }
 
-  const selectedSpecs = specializations.value.filter((s: { id: string }) => storeState.specializationIds.includes(s.id))
+  const selectedSpecs = specializations.value.filter((s) => storeState.specializationIds.includes(s.id))
   const firstN = specializations.value.slice(0, FEATURED_LIMIT)
-  
+
   const combined = [...firstN]
-  selectedSpecs.forEach((s: { id: string }) => {
-    if (!combined.some((c: { id: string }) => c.id === s.id)) {
+  selectedSpecs.forEach((s) => {
+    if (!combined.some((c) => c.id === s.id)) {
       combined.push(s)
     }
   })

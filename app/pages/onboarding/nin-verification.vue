@@ -204,7 +204,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                     class="font-mono text-base tabular-nums"
                     :aria-invalid="isInvalid(field)"
                     @blur="field.handleBlur"
-                    @update:model-value="(v) => onNinInput(field, v)"
+                    @update:model-value="(v: unknown) => onNinInput(field, v)"
                   />
                   <InputGroupAddon align="inline-end">
                     <span

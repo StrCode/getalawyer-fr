@@ -105,7 +105,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                       class="font-mono text-base tabular-nums"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
-                      @update:model-value="(v) => onScnInput(field, v)"
+                      @update:model-value="(v: unknown) => onScnInput(field, v)"
                     />
                     <InputGroupAddon align="inline-end">
                       <span
@@ -174,7 +174,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                   autocomplete="name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
-                  @update:model-value="field.handleChange"
+                  @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
                 />
                 <FieldDescription>
                   For bar verification only — not shown on your public profile.

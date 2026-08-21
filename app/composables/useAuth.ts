@@ -98,7 +98,7 @@ export function useAuth() {
 
   const signOut = async (
     ...args: Parameters<typeof authClient.signOut>
-  ): ReturnType<typeof authClient.signOut> => {
+  ): Promise<Awaited<ReturnType<typeof authClient.signOut>>> => {
     serverSession.value = null;
     return authClient.signOut(...args);
   };
