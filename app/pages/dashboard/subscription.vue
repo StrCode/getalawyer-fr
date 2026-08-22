@@ -227,10 +227,18 @@ const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPendi
 const banner = computed<SubscriptionBanner | null>(() => {
   const notice = applicationNotice.value
   if (notice) {
+    // Payment is part of onboarding and happens WHILE the application is under
+    // review (the checkout panel below shows a Pay button). For a pending,
+    // unpaid lawyer the shared "we'll email you" copy reads as "wait to pay",
+    // which contradicts that button — so reframe it to say pay now.
+    const awaitingOnboardingPayment
+      = notice.tone === 'pending' && !hasActiveSubscription.value && canRetryPayment.value
     return {
       tone: notice.tone === 'failed' ? 'warning' : notice.tone === 'approved' ? 'success' : 'info',
       message: notice.title,
-      detail: notice.description,
+      detail: awaitingOnboardingPayment
+        ? 'Complete your membership payment below to finish onboarding. Your listing goes live once your application is approved.'
+        : notice.description,
     }
   }
 
