@@ -47,18 +47,7 @@
           <!-- Status Change Buttons -->
           <div v-if="canUpdateTask" class="flex gap-1">
             <Button
-              v-if="task.status === 'pending'"
-              size="sm"
-              variant="outline"
-              class="gap-1.5"
-              @click="updateStatus('in_progress')"
-            >
-              <HugeiconsIcon :icon="PlayIcon" class="size-3.5 shrink-0" aria-hidden="true" />
-              Start
-            </Button>
-
-            <Button
-              v-if="task.status === 'in_progress'"
+              v-if="task.status !== 'completed'"
               size="sm"
               variant="default"
               class="gap-1.5"
@@ -69,11 +58,11 @@
             </Button>
 
             <Button
-              v-if="task.status === 'completed'"
+              v-if="canManage && task.status === 'completed'"
               size="sm"
               variant="outline"
               class="gap-1.5"
-              @click="updateStatus('in_progress')"
+              @click="updateStatus('pending')"
             >
               <HugeiconsIcon :icon="ArrowReloadHorizontalIcon" class="size-3.5 shrink-0" aria-hidden="true" />
               Reopen
@@ -81,7 +70,7 @@
           </div>
 
           <!-- Task Actions Menu -->
-          <DropdownMenu v-if="role === 'lawyer'">
+          <DropdownMenu v-if="canManage">
             <DropdownMenuTrigger as-child>
               <Button variant="ghost" size="icon-sm" class="size-8 shrink-0" aria-label="Task actions">
                 <HugeiconsIcon :icon="MoreVerticalIcon" class="size-4 shrink-0" aria-hidden="true" />
@@ -104,8 +93,8 @@
     </CardContent>
   </Card>
 
-  <!-- Edit Task Modal -->
-  <Dialog v-model:open="showEditModal">
+  <!-- Edit Task Modal (lawyer only) -->
+  <Dialog v-if="canManage" v-model:open="showEditModal">
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Edit task</DialogTitle>
@@ -131,30 +120,13 @@
           />
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div class="space-y-2">
-            <Label :for="`task-priority-${task.id}`">Priority</Label>
-            <Select v-model="editingTask.priority">
-              <SelectTrigger :id="`task-priority-${task.id}`" class="w-full">
-                <SelectValue placeholder="Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div class="space-y-2">
-            <Label :for="`task-due-${task.id}`">Due date</Label>
-            <Input
-              :id="`task-due-${task.id}`"
-              v-model="editingDueDate"
-              type="date"
-            />
-          </div>
+        <div class="space-y-2">
+          <Label :for="`task-due-${task.id}`">Due date</Label>
+          <Input
+            :id="`task-due-${task.id}`"
+            v-model="editingDueDate"
+            type="date"
+          />
         </div>
       </div>
 
@@ -169,39 +141,45 @@
     </DialogContent>
   </Dialog>
 
-  <!-- Delete Confirmation -->
-  <Dialog v-model:open="showDeleteConfirm">
-    <DialogContent class="sm:max-w-md">
-      <DialogHeader>
-        <DialogTitle>Delete task</DialogTitle>
-        <DialogDescription>
-          This will permanently delete "{{ task.title }}". This action cannot be undone.
-        </DialogDescription>
-      </DialogHeader>
-
-      <DialogFooter>
-        <Button variant="outline" @click="showDeleteConfirm = false">
-          Cancel
-        </Button>
-        <ButtonBusy variant="destructive" :loading="deleting" :disabled="deleting" @click="confirmDelete">
-          Delete Task
-        </ButtonBusy>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+  <!-- Delete Confirmation (lawyer only) -->
+  <AlertDialog v-if="canManage" v-model:open="showDeleteConfirm">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Delete "{{ task.title }}"?</AlertDialogTitle>
+        <AlertDialogDescription>
+          This will permanently delete the task. This cannot be undone.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction :disabled="deleting" @click="confirmDelete">
+          Delete
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
 
 <script setup lang="ts">
-import { ArrowReloadHorizontalIcon, Calendar01Icon, Clock01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, PlayIcon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { ArrowReloadHorizontalIcon, Calendar01Icon, Clock01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -215,15 +193,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import type { CreateTaskRequest, Task, TaskStatus } from '~/types'
+import type { TaskUpdateRequest } from '~/lib/api/tasks'
+import { getSessionUserType } from '~/lib/session-user'
+import type { Task, TaskStatus } from '~/types'
 
 interface Props {
   task: Task
@@ -245,17 +218,21 @@ const { casePriorityBadge, taskStatusBadge } = useCaseDisplay()
 // Reactive data
 const showEditModal = ref(false)
 const showDeleteConfirm = ref(false)
-const editingTask = ref<Partial<CreateTaskRequest>>({})
+const editingTask = ref<Pick<TaskUpdateRequest, 'title' | 'description'>>({})
 const editingDueDate = ref('')
 const saving = ref(false)
 const deleting = ref(false)
 
 // Computed properties
-const role = computed(() => session.value?.user.userType)
+const role = computed(() => getSessionUserType(session.value?.user))
 
+/** Only the case lawyer can edit, delete, or move a task back to pending. */
+const canManage = computed(() => role.value === 'lawyer')
+
+/** Assignees (clients) can complete their own task; lawyers can change any status. */
 const canUpdateTask = computed(() => {
   const currentUserId = session.value?.user?.id
-  return currentUserId === props.task.assignedTo || role.value === 'lawyer'
+  return currentUserId === props.task.assignedTo || canManage.value
 })
 
 // Helper functions
@@ -278,8 +255,7 @@ const updateStatus = (status: TaskStatus) => {
 const openEditModal = () => {
   editingTask.value = {
     title: props.task.title,
-    description: props.task.description,
-    priority: props.task.priority
+    description: props.task.description
   }
   editingDueDate.value = props.task.dueDate
     ? new Date(props.task.dueDate).toLocaleDateString('en-CA')
@@ -290,10 +266,15 @@ const openEditModal = () => {
 const saveTaskEdit = async () => {
   saving.value = true
   try {
-    const updatedTask = await updateTask(props.task.id, {
-      ...editingTask.value,
-      dueDate: editingDueDate.value ? new Date(editingDueDate.value) : undefined
-    })
+    const updatedTask = await updateTask(
+      props.task.id,
+      {
+        ...editingTask.value,
+        // Empty date input clears the due date on the backend (null), not "leave unchanged".
+        dueDate: editingDueDate.value ? new Date(editingDueDate.value) : null
+      },
+      props.task.caseId
+    )
     emit('taskUpdated', updatedTask)
     showEditModal.value = false
 
@@ -312,9 +293,8 @@ const saveTaskEdit = async () => {
 const confirmDelete = async () => {
   deleting.value = true
   try {
-    await deleteTask(props.task.id)
+    await deleteTask(props.task.id, props.task.caseId)
     emit('taskDeleted', props.task.id)
-    showDeleteConfirm.value = false
 
     toast.success('Success', {
       description: 'Task deleted successfully'
