@@ -73,7 +73,10 @@
         value="tasks"
         class="mt-6"
       >
-        <CaseTasks :case-id="currentCase.id" />
+        <CaseTasks
+          ref="caseTasksRef"
+          :case-id="currentCase.id"
+        />
       </TabsContent>
 
       <TabsContent
@@ -83,6 +86,13 @@
         <CaseActivity :case-id="currentCase.id" />
       </TabsContent>
     </Tabs>
+
+    <CreateTaskDialog
+      v-model:open="showCreateTaskModal"
+      :case-id="currentCase.id"
+      :assigned-to="currentCase.clientId"
+      @created="handleTaskCreated"
+    />
   </div>
 </template>
 
@@ -111,12 +121,21 @@ const { useCase, useUpdateCase, useUpdateCaseStatus } = useCases()
 const caseId = computed(() => route.params.id as string)
 const { data: currentCase, isLoading: loading, error } = useCase(caseId)
 
+useHead({
+  title: computed(() => currentCase.value ? `Case ${currentCase.value.caseNumber} - GetALawyer` : 'Case details - GetALawyer'),
+})
+
 useCaseRealTime(caseId)
 
 const { mutateAsync: updateCase } = useUpdateCase()
 const { mutateAsync: updateCaseStatus } = useUpdateCaseStatus()
 
 const showCreateTaskModal = ref(false)
+const caseTasksRef = ref<{ refresh: () => Promise<void> } | null>(null)
+
+const handleTaskCreated = () => {
+  caseTasksRef.value?.refresh()
+}
 
 const role = computed(() => session.value?.user.userType)
 

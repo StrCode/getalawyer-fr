@@ -4,7 +4,6 @@
     :loading="loading"
     :error="error"
     :role="role"
-    @create-case="showCreateModal = true"
     @case-click="handleCaseClick"
     @retry="refetch"
     @filters-change="handleFiltersChange"
@@ -16,11 +15,14 @@ import type { CaseFilters } from '~/types'
 
 definePageMeta({ layout: 'dashboard' })
 
+useHead({
+  title: 'Cases - GetALawyer',
+})
+
 const { session } = useAuth()
 const { useCasesList } = useCases()
 
 // Reactive data
-const showCreateModal = ref(false)
 const filters = ref<CaseFilters>({})
 
 // Fetch cases with filters

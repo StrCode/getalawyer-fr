@@ -4,6 +4,7 @@
  */
 
 import { httpClient } from '~/lib/api/client'
+import { localDateKey } from '~/utils/date'
 import type { Task, TasksResponse, CreateTaskRequest, TaskFilters, TaskStatus } from '~/types'
 
 const BASE_PATH = '/api/tasks'
@@ -41,13 +42,19 @@ export const tasksAPI = {
     return response
   },
 
-  // Create task (lawyer only)
+  // Create task (lawyer only) — POST /api/lawyer/cases/:id/tasks
+  // Body matches Law-Backend createTaskSchema: taskTitle, taskDescription?, assignedTo (uuid), dueDate? (YYYY-MM-DD)
   createTask: async (caseId: string, taskData: CreateTaskRequest): Promise<Task> => {
-    const response = await httpClient.post<Task>(
-      `/api/cases/${caseId}/tasks`,
-      taskData
+    const response = await httpClient.post<{ task: Task }>(
+      `/api/lawyer/cases/${caseId}/tasks`,
+      {
+        taskTitle: taskData.title,
+        taskDescription: taskData.description || undefined,
+        assignedTo: taskData.assignedTo,
+        dueDate: taskData.dueDate ? localDateKey(taskData.dueDate) : undefined,
+      }
     )
-    return response
+    return response.task
   },
 
   // Update task status

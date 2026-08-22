@@ -473,6 +473,10 @@ const {
 
 const { data: booking, isLoading, isError } = useLawyerBooking(bookingId)
 
+useHead({
+  title: computed(() => booking.value?.bookingReference ? `Appointment ${booking.value.bookingReference} - GetALawyer` : 'Appointment details - GetALawyer'),
+})
+
 const canTakeAction = computed(() => {
   return booking.value && ['pending', 'confirmed'].includes(booking.value.status)
 })
@@ -492,7 +496,7 @@ const canRecordEngagement = computed(() => {
 const isEngagementModalOpen = ref(false)
 
 const navigateToCase = () => {
-  router.push('/dashboard/cases')
+  router.push(booking.value?.caseId ? `/dashboard/cases/${booking.value.caseId}` : '/dashboard/cases')
 }
 
 const lawyerNotes = ref('')

@@ -5,6 +5,16 @@ import { toast } from 'vue-sonner'
 import ButtonBusy from '@/components/ButtonBusy.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -23,10 +33,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import type { AvailabilityException } from '~/types/availability'
+import { localDateKey } from '~/utils/date'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth'],
+})
+
+useHead({
+  title: 'Availability exceptions - GetALawyer',
 })
 
 const {
@@ -47,6 +62,9 @@ const deleteMutation = useDeleteAvailabilityException()
 
 const isAddModalOpen = ref(false)
 const isVacationModalOpen = ref(false)
+const pendingDelete = ref<AvailabilityException | null>(null)
+// Id of the exception currently being deleted, so only that row shows a spinner.
+const deletingId = computed(() => (deleteMutation.isPending.value ? deleteMutation.variables.value : null))
 
 const exceptionForm = ref({
   date: '',
@@ -118,11 +136,12 @@ const handleAddException = async () => {
 
 const generateDateRange = (start: string, end: string): string[] => {
   const dates: string[] = []
-  const current = new Date(start)
-  const endDate = new Date(end)
+  // Parse as local midnight so day stepping and keys stay in local time.
+  const current = new Date(`${start}T00:00:00`)
+  const endDate = new Date(`${end}T00:00:00`)
 
   while (current <= endDate) {
-    const dateStr = current.toISOString().split('T')[0]
+    const dateStr = localDateKey(current)
     if (dateStr) {
       dates.push(dateStr)
     }
@@ -164,10 +183,14 @@ const handleBlockVacation = async () => {
   }
 }
 
-const handleDelete = async (exception: AvailabilityException) => {
-  if (!confirm('Are you sure you want to delete this exception?')) {
-    return
-  }
+const handleDelete = (exception: AvailabilityException) => {
+  pendingDelete.value = exception
+}
+
+const confirmDelete = async () => {
+  const exception = pendingDelete.value
+  pendingDelete.value = null
+  if (!exception) return
 
   try {
     await deleteMutation.mutateAsync(exception.id)
@@ -216,7 +239,7 @@ function exceptionStatusBadge(exception: AvailabilityException) {
   return { variant: 'destructive' as const, class: '' }
 }
 
-const minDate = new Date().toISOString().split('T')[0]
+const minDate = localDateKey()
 </script>
 
 <template>
@@ -349,7 +372,8 @@ const minDate = new Date().toISOString().split('T')[0]
             variant="ghost"
             size="icon"
             class="text-destructive hover:text-destructive"
-            :loading="deleteMutation.isPending.value"
+            :loading="deletingId === exception.id"
+            aria-label="Delete exception"
             @click="handleDelete(exception)"
           >
             <HugeiconsIcon :icon="Delete01Icon" class="size-4" />
@@ -543,5 +567,25 @@ const minDate = new Date().toISOString().split('T')[0]
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog
+      :open="pendingDelete !== null"
+      @update:open="(open) => { if (!open) pendingDelete = null }"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this exception?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ pendingDelete ? formatDate(pendingDelete.date) : '' }} will fall back to your weekly schedule. This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDelete">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

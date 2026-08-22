@@ -78,6 +78,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAvailability } from '~/composables/useAvailability'
+import { localDateKey } from '~/utils/date'
 
 const { useAvailabilitySchedule, useAvailabilityExceptions } = useAvailability()
 
@@ -91,7 +92,7 @@ const displayedSchedule = computed(() => {
 
 const upcomingExceptions = computed(() => {
   if (!exceptions.value) return []
-  const today = new Date().toISOString().split('T')[0]
+  const today = localDateKey()
   return exceptions.value
     .filter(e => e.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))

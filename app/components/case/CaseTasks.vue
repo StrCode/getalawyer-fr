@@ -248,12 +248,16 @@ const handleTaskStatusChange = async (taskId: string, status: TaskStatus) => {
   }
 }
 
-// Lifecycle
-onMounted(async () => {
+const refresh = async () => {
   try {
     await fetchCaseTasks(props.caseId)
   } catch (error) {
     console.error('Failed to load tasks:', error)
   }
-})
+}
+
+defineExpose({ refresh })
+
+// Lifecycle
+onMounted(refresh)
 </script>

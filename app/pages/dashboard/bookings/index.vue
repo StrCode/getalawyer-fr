@@ -246,6 +246,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
+import { localDateKey } from '~/utils/date'
 
 definePageMeta({
   layout: 'dashboard',
@@ -267,7 +268,7 @@ const { data: bookings, isLoading, isError } = useClientBookings()
 const allBookings = computed(() => bookings.value ?? [])
 
 const upcomingBookings = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+  const today = localDateKey()
   return allBookings.value.filter(b =>
     b.scheduledDate >= today
     && (b.status === 'pending' || b.status === 'confirmed'),
@@ -275,7 +276,7 @@ const upcomingBookings = computed(() => {
 })
 
 const pastBookings = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+  const today = localDateKey()
   return allBookings.value.filter(b =>
     b.scheduledDate < today
     || b.status === 'completed'

@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { Add01Icon, Clock01Icon, Delete02Icon, Edit02Icon, File01Icon, MoreHorizontalIcon } from '@hugeicons/core-free-icons'
+import { Add01Icon, AlertCircleIcon, Clock01Icon, Delete02Icon, Edit02Icon, File01Icon, MoreHorizontalIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,8 +49,10 @@ const showInactive = ref(false)
 const isCreateModalOpen = ref(false)
 const isEditModalOpen = ref(false)
 const selectedType = ref<ConsultationType | null>(null)
+const pendingDelete = ref<ConsultationType | null>(null)
+const pendingDeactivate = ref<ConsultationType | null>(null)
 
-const { data: consultationTypes, isPending, refetch } = useConsultationTypesList(showInactive)
+const { data: consultationTypes, isPending, isError, refetch } = useConsultationTypesList(showInactive)
 const deleteMutation = useDeleteConsultationType()
 const activateMutation = useActivateConsultationType()
 const deactivateMutation = useDeactivateConsultationType()
@@ -75,8 +87,14 @@ async function handleToggleActive(type: ConsultationType) {
   }
 }
 
-async function handleDelete(type: ConsultationType) {
-  if (!confirm(`Are you sure you want to delete "${type.name}"?`))
+function handleDelete(type: ConsultationType) {
+  pendingDelete.value = type
+}
+
+async function confirmDelete() {
+  const type = pendingDelete.value
+  pendingDelete.value = null
+  if (!type)
     return
 
   try {
@@ -85,17 +103,20 @@ async function handleDelete(type: ConsultationType) {
   }
   catch (error: unknown) {
     if (typeof error === 'object' && error !== null && 'statusCode' in error && (error as { statusCode: number }).statusCode === 409) {
-      const shouldDeactivate = confirm(
-        'This consultation type has existing bookings and cannot be deleted. Would you like to deactivate it instead?',
-      )
-      if (shouldDeactivate)
-        await handleToggleActive(type)
+      pendingDeactivate.value = type
     }
     else {
       const message = error instanceof Error ? error.message : 'Failed to delete consultation type'
       toast.error(message)
     }
   }
+}
+
+async function confirmDeactivateInstead() {
+  const type = pendingDeactivate.value
+  pendingDeactivate.value = null
+  if (type)
+    await handleToggleActive(type)
 }
 
 function formatPrice(price: string, currency: string) {
@@ -175,6 +196,30 @@ function getMeetingTypeLabel(type: string) {
         class="h-16 w-full rounded-xl"
       />
     </div>
+
+    <section
+      v-else-if="isError"
+      :class="cn(PANEL, 'flex flex-col items-center gap-3 px-6 py-14 text-center')"
+    >
+      <HugeiconsIcon
+        :icon="AlertCircleIcon"
+        class="size-10 text-muted-foreground"
+      />
+      <p class="text-sm font-medium text-foreground">
+        Failed to load consultation types
+      </p>
+      <p class="text-sm text-muted-foreground">
+        Please try again.
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        class="cursor-pointer"
+        @click="refetch()"
+      >
+        Retry
+      </Button>
+    </section>
 
     <EmptyState
       v-else-if="!consultationTypes?.length"
@@ -318,5 +363,45 @@ function getMeetingTypeLabel(type: string) {
       :consultation-type="selectedType"
       @success="refetch"
     />
+
+    <AlertDialog
+      :open="pendingDelete !== null"
+      @update:open="(open) => { if (!open) pendingDelete = null }"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete "{{ pendingDelete?.name }}"?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Clients will no longer be able to book this consultation type. This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDelete">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog
+      :open="pendingDeactivate !== null"
+      @update:open="(open) => { if (!open) pendingDeactivate = null }"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Deactivate instead?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This consultation type has existing bookings and cannot be deleted. Deactivating hides it from new bookings while keeping existing ones intact.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep active</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeactivateInstead">
+            Deactivate
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
