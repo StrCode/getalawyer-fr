@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircleIcon, InformationCircleIcon } from '@hugeicons/core-free-icons'
+import { Refresh01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { ApiError } from '~/lib/api/client'
@@ -22,14 +22,15 @@ import {
   getLawyerApplicationStatusNotice,
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Skeleton } from '@/components/ui/skeleton'
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
-import { cn } from '@/lib/utils'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
+import SubscriptionCheckoutPanel from '@/components/subscription/SubscriptionCheckoutPanel.vue'
+import SubscriptionPaymentHistoryCard from '@/components/subscription/SubscriptionPaymentHistoryCard.vue'
+import SubscriptionPlanCard from '@/components/subscription/SubscriptionPlanCard.vue'
+import SubscriptionStatusBanner from '@/components/subscription/SubscriptionStatusBanner.vue'
+import type { SubscriptionBanner } from '@/components/subscription/SubscriptionStatusBanner.vue'
 
 definePageMeta({
   layout: 'dashboard',
@@ -61,6 +62,7 @@ const { data: pricing, isPending: pricingPending } = useSubscriptionPricing({
 const {
   data: subscriptionStatus,
   isPending: subscriptionPending,
+  isFetching: subscriptionFetching,
   refetch: refetchSubscription,
 } = useSubscriptionStatus({ enabled: isLawyer })
 
@@ -83,7 +85,9 @@ const hasActiveSubscription = computed(
 const subscription = computed(() => subscriptionStatus.value?.subscription ?? null)
 
 const applicationNotice = computed(() =>
-  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
+  statusPayload.value && onboardingApplicationStatus(statusPayload.value) !== 'approved'
+    ? getLawyerApplicationStatusNotice(statusPayload.value)
+    : null,
 )
 
 function formatBillingDate(iso: string | null | undefined): string | null {
@@ -91,7 +95,7 @@ function formatBillingDate(iso: string | null | undefined): string | null {
   try {
     return new Date(iso).toLocaleDateString('en-GB', {
       day: 'numeric',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
     })
   }
@@ -179,27 +183,6 @@ const membershipActionTitle = computed(() =>
   isRenewal.value ? 'Renew membership' : 'Activate membership',
 )
 
-const membershipActionDescription = computed(() => {
-  const renewalPrice =
-    catalogPriceNaira.value != null ? formatNairaAmount(catalogPriceNaira.value) : null
-  const firstPrice =
-    firstPaymentTotalNaira.value != null
-      ? formatNairaAmount(firstPaymentTotalNaira.value)
-      : null
-
-  if (subscription.value?.status === 'refund_processing')
-    return 'Your subscription refund is being processed. Contact support if you need help.'
-  if (subscription.value?.status === 'verification_failed')
-    return 'Verification did not pass after payment. Check your application status or contact support.'
-  if (isExpired.value && subscriptionEndLabel.value) {
-    return `Your membership ended on ${subscriptionEndLabel.value}. Pay ${renewalPrice ?? 'the annual fee'} to restore your directory listing, bookings, and messaging.`
-  }
-  if (isRenewal.value) {
-    return `Pay ${renewalPrice ?? 'the annual subscription'} to restore your GetALawyer membership and directory visibility.`
-  }
-  return `Pay ${firstPrice ?? 'the first-year total'} to activate membership (membership + verification fee). If identity or SCN verification fails, the membership fee is refunded and the verification fee is kept. Renewals are membership only.`
-})
-
 const membershipActionButtonLabel = computed(() => {
   if (isRenewal.value) {
     return renewalPriceNaira.value != null
@@ -226,13 +209,67 @@ const showActivatePanel = computed(
     && !showExpiredBanner.value,
 )
 
+const checkoutPriceLabel = computed(() => {
+  const amount = isRenewal.value ? renewalPriceNaira.value : firstPaymentTotalNaira.value
+  return amount != null ? formatNairaAmount(amount) : null
+})
+
+const verificationFeeLabel = computed(() =>
+  pricing.value ? formatNairaAmount(pricing.value.verificationAdminFeeNaira) : null,
+)
+
 const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPending.value)
 
-const includedPriceLabel = computed(() => {
-  if (catalogPriceNaira.value != null)
-    return formatNairaAmount(catalogPriceNaira.value)
-  if (pricing.value)
-    return formatNairaAmount(pricing.value.subscriptionPriceNaira)
+/**
+ * At most one banner. Priority: application not approved → expired/cancelled
+ * → renewal failed → last checkout failed.
+ */
+const banner = computed<SubscriptionBanner | null>(() => {
+  const notice = applicationNotice.value
+  if (notice) {
+    return {
+      tone: notice.tone === 'failed' ? 'warning' : notice.tone === 'approved' ? 'success' : 'info',
+      message: notice.title,
+      detail: notice.description,
+    }
+  }
+
+  const retryLabel = canRetryPayment.value ? 'Renew membership' : null
+
+  if (showExpiredBanner.value) {
+    if (isExpired.value) {
+      return {
+        tone: 'warning',
+        message: subscriptionEndLabel.value
+          ? `Membership expired on ${subscriptionEndLabel.value}`
+          : 'Membership expired',
+        actionLabel: retryLabel,
+      }
+    }
+    return { tone: 'warning', message: 'Membership cancelled', actionLabel: retryLabel }
+  }
+
+  if (hasRenewalIssue.value) {
+    const card = subscription.value?.cardLast4
+      ? `···· ${subscription.value.cardLast4}`
+      : 'your saved card'
+    return {
+      tone: 'warning',
+      message: `Renewal payment failed — we couldn't charge ${card}`,
+      detail: paymentFailureMessage.value,
+      actionLabel: retryLabel,
+    }
+  }
+
+  if (hasCheckoutFailure.value) {
+    return {
+      tone: 'warning',
+      message: 'Last payment attempt didn\'t complete',
+      detail: paymentFailureMessage.value,
+      actionLabel: 'Try again',
+    }
+  }
+
   return null
 })
 
@@ -284,7 +321,7 @@ async function startPayment() {
     <DashboardPageHeader
       eyebrow="Account"
       title="Subscription"
-      description="Your annual membership, payment method, and invoices."
+      description="Your annual membership and invoices."
     >
       <template #actions>
         <Badge
@@ -295,262 +332,68 @@ async function startPayment() {
         >
           {{ statusLabel }}
         </Badge>
-        <ButtonBusy
-          v-if="!pageLoading && !hasActiveSubscription && canRetryPayment"
-          size="lg"
-          class="cursor-pointer"
-          :loading="paymentBusy"
-          @click="startPayment"
-        >
-          {{ membershipActionButtonLabel }}
-        </ButtonBusy>
         <Button
-          v-else-if="!pageLoading"
-          variant="outline"
-          size="lg"
-          class="cursor-pointer"
+          v-if="!pageLoading"
+          variant="ghost"
+          size="icon-sm"
+          class="cursor-pointer text-muted-foreground"
+          aria-label="Refresh status"
+          title="Refresh status"
+          :disabled="subscriptionFetching"
           @click="() => refetchSubscription()"
         >
-          Refresh status
+          <HugeiconsIcon
+            :icon="Refresh01Icon"
+            :class="subscriptionFetching ? 'animate-spin' : ''"
+          />
         </Button>
       </template>
     </DashboardPageHeader>
 
     <div
       v-if="pageLoading"
-      class="space-y-4"
+      class="space-y-6"
     >
-      <Skeleton class="h-56 w-full rounded-xl" />
-      <div class="grid gap-4 lg:grid-cols-12">
-        <Skeleton class="h-64 rounded-xl lg:col-span-8" />
-        <Skeleton class="h-64 rounded-xl lg:col-span-4" />
-      </div>
+      <Skeleton class="h-48 w-full rounded-xl" />
+      <Skeleton class="h-64 w-full rounded-xl" />
     </div>
 
     <template v-else>
-      <Alert
-        v-if="applicationNotice && statusPayload && onboardingApplicationStatus(statusPayload) !== 'approved'"
-        :variant="
-          applicationNotice.tone === 'approved'
-            ? 'success'
-            : applicationNotice.tone === 'failed'
-              ? 'warning'
-              : 'info'
-        "
-      >
-        <HugeiconsIcon
-          :icon="applicationNotice.tone === 'failed' ? AlertCircleIcon : InformationCircleIcon"
-          class="size-4"
-        />
-        <AlertTitle>{{ applicationNotice.title }}</AlertTitle>
-        <AlertDescription>{{ applicationNotice.description }}</AlertDescription>
-      </Alert>
+      <SubscriptionStatusBanner
+        v-if="banner"
+        :banner="banner"
+        :loading="paymentBusy"
+        @action="startPayment"
+      />
 
-      <section
-        v-if="showExpiredBanner"
-        :class="cn(PANEL, 'border-amber-500/30')"
-        role="status"
-      >
-        <div class="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-          <div class="min-w-0">
-            <p class="text-sm font-semibold text-foreground">
-              <template v-if="isExpired">
-                Your membership has expired
-              </template>
-              <template v-else-if="subscription?.status === 'cancelled'">
-                Your membership was cancelled
-              </template>
-              <template v-else>
-                Renew your membership
-              </template>
-            </p>
-            <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
-              <template v-if="isExpired && subscriptionEndLabel">
-                Listing and booking tools paused on {{ subscriptionEndLabel }}.
-              </template>
-              <template v-else>
-                Listing and booking tools are paused until you renew.
-              </template>
-              Pay
-              <template v-if="catalogPriceNaira != null">
-                {{ formatNairaAmount(catalogPriceNaira) }}
-              </template>
-              <template v-else>
-                the annual fee
-              </template>
-              to get back on GetALawyer.
-            </p>
-          </div>
-          <ButtonBusy
-            v-if="canRetryPayment"
-            class="shrink-0 cursor-pointer"
-            :loading="paymentBusy"
-            @click="startPayment"
-          >
-            Renew membership
-          </ButtonBusy>
-        </div>
-      </section>
+      <SubscriptionPlanCard
+        :subscription="subscription"
+        :has-active-subscription="hasActiveSubscription"
+        :status-label="statusLabel"
+        :subscription-end-label="subscriptionEndLabel"
+        :next-billing-label="nextBillingLabel"
+        :renewal-price-naira="renewalPriceNaira"
+        :last-paid-price-naira="lastPaidPriceNaira"
+        :show-price-changed-notice="showPriceChangedNotice"
+        :auto-renew-enabled="autoRenewEnabled"
+        :can-manage-auto-renew="canManageAutoRenew"
+        :auto-renew-pending="autoRenewPending"
+        :days-remaining="subscription?.daysRemaining"
+        @update:auto-renew="handleAutoRenewChange"
+      />
 
-      <Alert
-        v-if="hasRenewalIssue"
-        variant="warning"
-      >
-        <HugeiconsIcon
-          :icon="AlertCircleIcon"
-          class="size-4"
-        />
-        <AlertTitle>Renewal payment failed</AlertTitle>
-        <AlertDescription>
-          {{ paymentFailureMessage || 'We could not charge your saved payment method. Pay again to renew.' }}
-        </AlertDescription>
-        <div
-          v-if="canRetryPayment"
-          class="col-start-2 mt-3"
-        >
-          <ButtonBusy
-            size="sm"
-            class="cursor-pointer"
-            :loading="paymentBusy"
-            @click="startPayment"
-          >
-            Renew membership
-          </ButtonBusy>
-        </div>
-      </Alert>
+      <SubscriptionCheckoutPanel
+        v-if="showActivatePanel"
+        :title="membershipActionTitle"
+        :price-label="checkoutPriceLabel"
+        :is-renewal="isRenewal"
+        :verification-fee-label="verificationFeeLabel"
+        :button-label="membershipActionButtonLabel"
+        :loading="paymentBusy"
+        @pay="startPayment"
+      />
 
-      <Alert
-        v-else-if="hasCheckoutFailure"
-        variant="warning"
-      >
-        <HugeiconsIcon
-          :icon="AlertCircleIcon"
-          class="size-4"
-        />
-        <AlertTitle>Last payment attempt did not complete</AlertTitle>
-        <AlertDescription>{{ paymentFailureMessage }}</AlertDescription>
-        <div class="col-start-2 mt-3 flex flex-wrap gap-2">
-          <ButtonBusy
-            size="sm"
-            class="cursor-pointer"
-            :loading="paymentBusy"
-            @click="startPayment"
-          >
-            Try payment again
-          </ButtonBusy>
-          <Button
-            variant="outline"
-            size="sm"
-            class="cursor-pointer"
-            @click="() => refetchSubscription()"
-          >
-            Refresh status
-          </Button>
-        </div>
-      </Alert>
-
-      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-        <div class="space-y-6 lg:col-span-8">
-          <SubscriptionBillingOverview
-            :subscription="subscription"
-            :has-active-subscription="hasActiveSubscription"
-            :is-membership-renewal="isRenewal"
-            :status-label="statusLabel"
-            :subscription-end-label="subscriptionEndLabel"
-            :next-billing-label="nextBillingLabel"
-            :renewal-price-naira="renewalPriceNaira"
-            :last-paid-price-naira="lastPaidPriceNaira"
-            :show-price-changed-notice="showPriceChangedNotice"
-            :auto-renew-enabled="autoRenewEnabled"
-            :can-manage-auto-renew="canManageAutoRenew"
-            :auto-renew-pending="autoRenewPending"
-            :days-remaining="subscription?.daysRemaining"
-            @update:auto-renew="handleAutoRenewChange"
-          />
-
-          <section
-            v-if="showActivatePanel"
-            :class="cn(PANEL)"
-          >
-            <div :class="PANEL_HEADER">
-              <div>
-                <span :class="cn(MICRO, 'text-muted-foreground')">
-                  Checkout
-                </span>
-                <p class="mt-1 text-base font-semibold tracking-tight text-foreground">
-                  {{ membershipActionTitle }}
-                </p>
-              </div>
-            </div>
-            <div class="space-y-4 px-6 py-5">
-              <p class="text-sm leading-relaxed text-muted-foreground">
-                {{ membershipActionDescription }}
-              </p>
-              <div class="flex flex-wrap gap-2">
-                <ButtonBusy
-                  class="cursor-pointer"
-                  :loading="paymentBusy"
-                  @click="startPayment"
-                >
-                  {{ membershipActionButtonLabel }}
-                </ButtonBusy>
-                <Button
-                  variant="outline"
-                  class="cursor-pointer"
-                  @click="() => refetchSubscription()"
-                >
-                  Refresh status
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          <SubscriptionPaymentHistoryCard />
-        </div>
-
-        <aside class="space-y-6 lg:col-span-4">
-          <section
-            v-if="includedPriceLabel || pricing"
-            :class="cn(PANEL)"
-          >
-            <div :class="PANEL_HEADER">
-              <div>
-                <span :class="cn(MICRO, 'text-muted-foreground')">
-                  What&apos;s included
-                </span>
-                <p class="mt-0.5 text-xs text-muted-foreground">
-                  One annual fee. No commission.
-                </p>
-              </div>
-            </div>
-            <div class="space-y-4 px-6 py-5 text-sm text-muted-foreground">
-              <p v-if="includedPriceLabel">
-                <span class="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
-                  {{ includedPriceLabel }}
-                </span>
-                <span class="mt-1 block text-xs">
-                  / year · listing, bookings, messaging
-                </span>
-              </p>
-              <ul class="space-y-2">
-                <li>Appear in the public lawyer directory</li>
-                <li>Take bookings and message clients</li>
-                <li>Keep 100% of consultation fees</li>
-              </ul>
-              <p
-                v-if="pricing"
-                class="border-t border-foreground/10 pt-4 text-xs leading-relaxed"
-              >
-                First checkout adds
-                {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }}
-                verification fee (kept if verification fails; membership fee is refunded). Renewals are membership only.
-              </p>
-            </div>
-          </section>
-
-          <SubscriptionNotificationsCard />
-        </aside>
-      </div>
+      <SubscriptionPaymentHistoryCard />
     </template>
   </div>
 </template>
