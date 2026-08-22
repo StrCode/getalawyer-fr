@@ -47,6 +47,17 @@
           <!-- Status Change Buttons -->
           <div v-if="canUpdateTask" class="flex gap-1">
             <Button
+              v-if="canManage && task.status === 'pending'"
+              size="sm"
+              variant="outline"
+              class="gap-1.5"
+              @click="updateStatus('in_progress')"
+            >
+              <HugeiconsIcon :icon="PlayIcon" class="size-3.5 shrink-0" aria-hidden="true" />
+              Start
+            </Button>
+
+            <Button
               v-if="task.status !== 'completed'"
               size="sm"
               variant="default"
@@ -120,13 +131,30 @@
           />
         </div>
 
-        <div class="space-y-2">
-          <Label :for="`task-due-${task.id}`">Due date</Label>
-          <Input
-            :id="`task-due-${task.id}`"
-            v-model="editingDueDate"
-            type="date"
-          />
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="space-y-2">
+            <Label :for="`task-priority-${task.id}`">Priority</Label>
+            <Select v-model="editingTask.priority">
+              <SelectTrigger :id="`task-priority-${task.id}`" class="w-full">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="space-y-2">
+            <Label :for="`task-due-${task.id}`">Due date</Label>
+            <Input
+              :id="`task-due-${task.id}`"
+              v-model="editingDueDate"
+              type="date"
+            />
+          </div>
         </div>
       </div>
 
@@ -161,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowReloadHorizontalIcon, Calendar01Icon, Clock01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { ArrowReloadHorizontalIcon, Calendar01Icon, Clock01Icon, Delete02Icon, MoreVerticalIcon, PencilEdit01Icon, PlayIcon, Tick01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import {
@@ -193,6 +221,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import type { TaskUpdateRequest } from '~/lib/api/tasks'
 import { getSessionUserType } from '~/lib/session-user'
@@ -218,7 +253,7 @@ const { casePriorityBadge, taskStatusBadge } = useCaseDisplay()
 // Reactive data
 const showEditModal = ref(false)
 const showDeleteConfirm = ref(false)
-const editingTask = ref<Pick<TaskUpdateRequest, 'title' | 'description'>>({})
+const editingTask = ref<Pick<TaskUpdateRequest, 'title' | 'description' | 'priority'>>({})
 const editingDueDate = ref('')
 const saving = ref(false)
 const deleting = ref(false)
@@ -255,7 +290,8 @@ const updateStatus = (status: TaskStatus) => {
 const openEditModal = () => {
   editingTask.value = {
     title: props.task.title,
-    description: props.task.description
+    description: props.task.description,
+    priority: props.task.priority
   }
   editingDueDate.value = props.task.dueDate
     ? new Date(props.task.dueDate).toLocaleDateString('en-CA')

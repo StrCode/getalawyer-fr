@@ -41,17 +41,36 @@
           />
         </Field>
 
-        <Field>
-          <FieldLabel for="task-due">
-            Due date (optional)
-          </FieldLabel>
-          <Input
-            id="task-due"
-            v-model="form.dueDate"
-            type="date"
-            :min="minDate"
-          />
-        </Field>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field>
+            <FieldLabel for="task-priority">
+              Priority
+            </FieldLabel>
+            <Select v-model="form.priority">
+              <SelectTrigger id="task-priority" class="w-full">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field>
+            <FieldLabel for="task-due">
+              Due date (optional)
+            </FieldLabel>
+            <Input
+              id="task-due"
+              v-model="form.dueDate"
+              type="date"
+              :min="minDate"
+            />
+          </Field>
+        </div>
       </form>
       <DialogFooter>
         <Button
@@ -89,10 +108,17 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { tasksAPI } from '~/lib/api/tasks'
 import { queryKeys } from '~/lib/query-client'
-import type { Task } from '~/types'
+import type { Priority, Task } from '~/types'
 import { localDateKey } from '~/utils/date'
 
 const props = defineProps<{
@@ -109,16 +135,17 @@ const emit = defineEmits<{
 
 const queryClient = useQueryClient()
 
-const form = ref({
+const form = ref<{ title: string, description: string, priority: Priority, dueDate: string }>({
   title: '',
   description: '',
+  priority: 'medium',
   dueDate: '',
 })
 
 const minDate = localDateKey()
 
 const resetForm = () => {
-  form.value = { title: '', description: '', dueDate: '' }
+  form.value = { title: '', description: '', priority: 'medium', dueDate: '' }
 }
 
 const handleOpenChange = (open: boolean) => {
@@ -132,7 +159,7 @@ const createMutation = useMutation({
     title: form.value.title.trim(),
     description: form.value.description.trim() || undefined,
     assignedTo: props.assignedTo,
-    priority: 'medium',
+    priority: form.value.priority,
     dueDate: form.value.dueDate ? new Date(`${form.value.dueDate}T00:00:00`) : undefined,
   }),
   onSuccess: (task) => {
