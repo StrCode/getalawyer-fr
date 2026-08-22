@@ -363,6 +363,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
+import { localDateKey } from '~/utils/date'
 
 definePageMeta({
   layout: 'dashboard',
@@ -394,7 +395,7 @@ const pendingBookings = computed(() =>
 )
 
 const todayBookings = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+  const today = localDateKey()
   return bookings.value?.filter(b =>
     b.scheduledDate === today
     && (b.status === 'confirmed' || b.status === 'pending'),
@@ -402,7 +403,7 @@ const todayBookings = computed(() => {
 })
 
 const upcomingBookings = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+  const today = localDateKey()
   return bookings.value?.filter(b =>
     b.scheduledDate > today
     && (b.status === 'confirmed' || b.status === 'pending'),

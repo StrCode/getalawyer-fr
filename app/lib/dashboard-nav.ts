@@ -1,5 +1,5 @@
 import type { Hugeicon } from '@/lib/icon-types'
-import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Search01Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
+import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
 
 export type DashboardIcon = Hugeicon
 
@@ -85,27 +85,4 @@ export function isDashboardNavActive(
 
 export function getNavBadgeKey(to: string): string {
   return to
-}
-
-/** @deprecated Use filterNavForRole with dashboardNavByRole */
-export function getFilteredNavSections(role: 'lawyer' | 'client') {
-  const items = filterNavForRole(getDashboardNavForRole(role) ?? [], role)
-  // Lawyer listing lives under Practice; client profile stays under Account.
-  const accountPaths = role === 'lawyer'
-    ? new Set(['/dashboard/settings', '/dashboard/subscription'])
-    : new Set(['/dashboard/profile', '/dashboard/settings'])
-
-  return {
-    main: {
-      label: 'Platform',
-      items: items.filter(link => !accountPaths.has(link.to)),
-    },
-    account: {
-      label: 'Account',
-      items: items.filter(link => accountPaths.has(link.to)),
-    },
-    primaryCta: role === 'lawyer'
-      ? { label: 'Set availability', to: '/dashboard/availability', icon: Clock01Icon }
-      : { label: 'Find a lawyer', to: '/find-lawyers', icon: Search01Icon },
-  }
 }

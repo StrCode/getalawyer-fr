@@ -197,15 +197,6 @@ export const useAvailability = () => {
     })
   }
 
-  // Query: Get availability range
-  const useAvailabilityRange = (startDate: Ref<string>, endDate: Ref<string>) => {
-    return useQuery({
-      queryKey: computed(() => ['availability-range', startDate.value, endDate.value]),
-      queryFn: () => availabilityAPI.getAvailabilityRange(startDate.value, endDate.value),
-      enabled: computed(() => !!startDate.value && !!endDate.value),
-    })
-  }
-
   // Query: Get available slots
   const useAvailableSlots = (
     lawyerId: Ref<string>,
@@ -248,7 +239,6 @@ export const useAvailability = () => {
     useCreateAvailabilityException,
     useBulkCreateExceptions,
     useDeleteAvailabilityException,
-    useAvailabilityRange,
     useAvailableSlots,
   }
 }

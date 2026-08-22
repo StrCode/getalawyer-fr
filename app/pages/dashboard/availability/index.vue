@@ -29,7 +29,7 @@ const {
   useDeleteSchedule,
 } = useAvailability()
 
-const { data: schedules, isPending } = useAvailabilitySchedule()
+const { data: schedules, isPending, isError, refetch } = useAvailabilitySchedule()
 
 const setScheduleMutation = useSetSchedule()
 const bulkSetMutation = useBulkSetSchedule()
@@ -288,6 +288,30 @@ async function handleSaveAll() {
       <Skeleton class="h-24 w-full rounded-xl" />
       <Skeleton class="h-80 w-full rounded-xl" />
     </div>
+
+    <section
+      v-else-if="isError"
+      :class="cn(PANEL, 'flex flex-col items-center gap-3 px-6 py-14 text-center')"
+    >
+      <HugeiconsIcon
+        :icon="AlertCircleIcon"
+        class="size-10 text-muted-foreground"
+      />
+      <p class="text-sm font-medium text-foreground">
+        Failed to load availability
+      </p>
+      <p class="text-sm text-muted-foreground">
+        Please try again.
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        class="cursor-pointer"
+        @click="refetch()"
+      >
+        Retry
+      </Button>
+    </section>
 
     <template v-else>
       <section :class="cn(PANEL)">

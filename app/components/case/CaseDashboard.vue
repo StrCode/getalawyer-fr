@@ -9,16 +9,6 @@
         {{ role === 'lawyer' ? 'Manage and track all your legal cases.' : 'Track and manage your legal cases.' }}
       </p>
     </div>
-    <div class="flex shrink-0 flex-wrap items-center gap-2">
-      <Button
-          v-if="role === 'lawyer'"
-          class="gap-2"
-          @click="$emit('create-case')"
-        >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          New case
-        </Button>
-    </div>
   </div>
 
     <CaseSearch
@@ -123,9 +113,8 @@
 </template>
 
 <script setup lang="ts">
-import { Add01Icon, Alert01Icon, Briefcase01Icon, CheckmarkCircle01Icon, PlayIcon } from '@hugeicons/core-free-icons'
+import { Alert01Icon, Briefcase01Icon, CheckmarkCircle01Icon, PlayIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
@@ -150,7 +139,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'create-case': []
   'case-click': [caseId: string]
   retry: []
   'filters-change': [filters: CaseFilters]
