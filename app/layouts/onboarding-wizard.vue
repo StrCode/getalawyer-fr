@@ -150,7 +150,6 @@ export default defineComponent({
             })
             await router.push('/dashboard')
           } else if (!isLast.value && nextStep.value) {
-            toast.success('Saved', { duration: 1500 })
             await router.push(nextStep.value.path)
           }
         } else if (!validationErrorBanner.value && !(store.value as { termsError?: string | null }).termsError) {
