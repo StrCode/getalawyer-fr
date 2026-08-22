@@ -76,6 +76,7 @@
         <CaseTasks
           ref="caseTasksRef"
           :case-id="currentCase.id"
+          @add-task="showCreateTaskModal = true"
         />
       </TabsContent>
 

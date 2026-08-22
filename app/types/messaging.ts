@@ -137,6 +137,8 @@ export interface ServerToClientEvents {
   'typing:start': (data: { userId: string; userName: string }) => void
   'typing:stop': (data: { userId: string }) => void
   'conversation:joined': (data: { conversationId: string }) => void
+  /** Case-thread message (see useCaseRealTime / useCaseMessaging). */
+  'message:received': (data: { message: unknown; conversationId: string; caseId: string; senderId: string }) => void
   'error': (data: { message: string; code: string; clientId?: string }) => void
 }
 

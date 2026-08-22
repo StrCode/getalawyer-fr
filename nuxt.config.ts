@@ -36,6 +36,11 @@ export default defineNuxtConfig({
     ],
   },
 
+  routeRules: {
+    // Exceptions moved onto the Availability page as a tab.
+    '/dashboard/availability/exceptions': { redirect: { to: '/dashboard/availability?tab=exceptions', statusCode: 301 } },
+  },
+
   css: ['~/assets/css/main.css'],
   vite: {
     ssr: {

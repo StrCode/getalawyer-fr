@@ -1,167 +1,120 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { casesAPI, type CaseMessageRow, type CaseUserType } from '~/lib/api/cases'
 import { queryKeys } from '~/lib/query-client'
+import { getSessionUserType } from '~/lib/session-user'
 import type { Message } from '~/types/messaging'
 
-export const useCaseMessaging = (caseId: string, conversationId?: string) => {
+/** Map a backend `case_messages` row onto the shared `Message` shape used by the chat UI. */
+export function caseMessageRowToMessage(row: CaseMessageRow, currentUser?: { id: string, name?: string | null, image?: string | null } | null): Message {
+  const isOwn = currentUser?.id === row.senderId
+  return {
+    id: row.id,
+    conversationId: row.caseId,
+    senderId: row.senderId,
+    senderType: row.senderType,
+    content: row.messageContent,
+    metadata: null,
+    status: row.isRead ? 'read' : 'sent',
+    fileUrl: null,
+    filePublicId: null,
+    fileName: null,
+    fileType: null,
+    fileSize: null,
+    replyToId: null,
+    createdAt: row.createdAt,
+    updatedAt: row.readAt ?? row.createdAt,
+    sender: isOwn
+      ? { id: row.senderId, name: currentUser?.name || 'You', image: currentUser?.image ?? null }
+      : { id: row.senderId, name: row.senderType === 'lawyer' ? 'Lawyer' : 'Client', image: null },
+    isRead: row.isRead,
+  }
+}
+
+export const useCaseMessaging = (caseId: string) => {
   const { session } = useAuth()
+  const { $socket } = useNuxtApp()
+  const queryClient = useQueryClient()
 
-  // Reactive state
-  const searchQuery = ref('')
-  const messages = ref<Message[]>([])
-  const isSending = ref(false)
+  const userType = computed(() => getSessionUserType(session.value?.user) as CaseUserType | undefined)
+  const queryKey = queryKeys.cases.conversation(caseId)
 
-  // Get case conversation - using mock data for now
-  const { data: conversationData, isLoading, error } = useQuery({
-    queryKey: queryKeys.cases.conversation(caseId),
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey,
     queryFn: async () => {
-      // Mock data for now - replace with actual API call
-      return {
-        conversation: {
-          id: `conv-${caseId}`,
-          caseId,
-          messages: [
-            {
-              id: '1',
-              conversationId: `conv-${caseId}`,
-              senderId: 'lawyer-1',
-              senderType: 'lawyer' as const,
-              content: 'Hello! I\'ve reviewed your case details. Let me know if you have any questions.',
-              status: 'read' as const,
-              fileUrl: null,
-              filePublicId: null,
-              fileName: null,
-              fileType: null,
-              fileSize: null,
-              replyToId: null,
-              createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-              updatedAt: new Date(Date.now() - 86400000).toISOString(),
-              sender: {
-                id: 'lawyer-1',
-                name: 'John Smith',
-                image: null
-              },
-              isRead: true
-            },
-            {
-              id: '2',
-              conversationId: `conv-${caseId}`,
-              senderId: session.value?.user?.id || 'client-1',
-              senderType: 'client' as const,
-              content: 'Thank you for taking my case. When can we schedule our first meeting?',
-              status: 'read' as const,
-              fileUrl: null,
-              filePublicId: null,
-              fileName: null,
-              fileType: null,
-              fileSize: null,
-              replyToId: null,
-              createdAt: new Date(Date.now() - 43200000).toISOString(), // 12 hours ago
-              updatedAt: new Date(Date.now() - 43200000).toISOString(),
-              sender: {
-                id: session.value?.user?.id || 'client-1',
-                name: session.value?.user?.name || 'You',
-                image: session.value?.user?.image || null
-              },
-              isRead: true
-            }
-          ]
-        }
-      }
+      const rows = await casesAPI.getCaseMessages(caseId, userType.value)
+      return rows.map((row) => caseMessageRowToMessage(row, session.value?.user))
     },
-    enabled: computed(() => !!caseId)
+    enabled: computed(() => !!caseId),
   })
 
-  // Watch for conversation data changes
-  watch(conversationData, (data) => {
-    if (data?.conversation?.messages) {
-      messages.value = data.conversation.messages
-    }
-  }, { immediate: true })
+  const messages = computed<Message[]>(() => data.value ?? [])
 
-  // Computed properties
-  const filteredMessages = computed(() => {
-    if (!searchQuery.value) return messages.value
-    
-    const query = searchQuery.value.toLowerCase()
-    return messages.value.filter(message => 
-      message.content.toLowerCase().includes(query) ||
-      message.sender?.name.toLowerCase().includes(query) ||
-      message.fileName?.toLowerCase().includes(query)
-    )
-  })
+  const sendMutation = useMutation({
+    mutationFn: (content: string) => casesAPI.sendCaseMessage(caseId, content, userType.value),
+    onMutate: async (content) => {
+      await queryClient.cancelQueries({ queryKey })
+      const previous = queryClient.getQueryData<Message[]>(queryKey)
 
-  const currentConversationId = computed(() => {
-    return conversationId || conversationData.value?.conversation.id
-  })
-
-  // Methods
-  const sendMessage = async (content: string, file?: File) => {
-    if (!currentConversationId.value || isSending.value) {
-      throw new Error('Cannot send message')
-    }
-
-    try {
-      isSending.value = true
-
-      // Optimistically add message to local state
-      const optimisticMessage: Message = {
+      const user = session.value?.user
+      const optimistic: Message = {
         id: `temp-${Date.now()}`,
-        conversationId: currentConversationId.value,
-        senderId: session.value?.user?.id || '',
-        senderType: (session.value?.user?.userType === 'lawyer' ? 'lawyer' : 'client') as 'lawyer' | 'client',
+        conversationId: caseId,
+        senderId: user?.id ?? '',
+        senderType: userType.value === 'lawyer' ? 'lawyer' : 'client',
         content,
-        status: 'sent' as const,
-        fileUrl: file ? URL.createObjectURL(file) : null,
+        metadata: null,
+        status: 'sent',
+        fileUrl: null,
         filePublicId: null,
-        fileName: file?.name || null,
-        fileType: file?.type || null,
-        fileSize: file?.size || null,
+        fileName: null,
+        fileType: null,
+        fileSize: null,
         replyToId: null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        sender: {
-          id: session.value?.user?.id || '',
-          name: session.value?.user?.name || 'You',
-          image: session.value?.user?.image
-        },
-        isRead: false
+        sender: { id: user?.id ?? '', name: user?.name || 'You', image: user?.image ?? null },
+        isRead: false,
       }
 
-      messages.value.push(optimisticMessage)
+      queryClient.setQueryData<Message[]>(queryKey, (old = []) => [...old, optimistic])
+      return { previous }
+    },
+    onError: (_error, _content, context) => {
+      if (context?.previous)
+        queryClient.setQueryData(queryKey, context.previous)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey })
+    },
+  })
 
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Update message status to delivered
-      const messageIndex = messages.value.findIndex(m => m.id === optimisticMessage.id)
-      if (messageIndex !== -1) {
-        messages.value[messageIndex].status = 'delivered'
-        messages.value[messageIndex].id = `msg-${Date.now()}`
-      }
-
-    } catch (error) {
-      // Remove optimistic message on error
-      const messageIndex = messages.value.findIndex(m => m.id.startsWith('temp-'))
-      if (messageIndex !== -1) {
-        messages.value.splice(messageIndex, 1)
-      }
-      throw error
-    } finally {
-      isSending.value = false
-    }
+  const sendMessage = async (content: string) => {
+    const trimmed = content.trim()
+    if (!trimmed || sendMutation.isPending.value)
+      throw new Error('Cannot send message')
+    await sendMutation.mutateAsync(trimmed)
   }
 
+  // Refetch when the socket announces a new message on this case.
+  const handleMessageReceived = (payload: { caseId?: string }) => {
+    if (payload?.caseId === caseId)
+      refetch()
+  }
+
+  onMounted(() => {
+    $socket?.on('message:received', handleMessageReceived)
+  })
+
+  onUnmounted(() => {
+    $socket?.off('message:received', handleMessageReceived)
+  })
+
   return {
-    // State
-    messages: readonly(messages),
+    messages,
     isLoading: readonly(isLoading),
     error: readonly(error),
-    isSending: readonly(isSending),
-    searchQuery,
-    filteredMessages,
-    currentConversationId,
-
-    // Methods
-    sendMessage
+    isSending: readonly(sendMutation.isPending),
+    sendMessage,
+    refetch,
   }
 }

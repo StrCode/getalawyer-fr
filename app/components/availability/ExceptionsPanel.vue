@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Add01Icon, Calendar01Icon, CalendarRemove01Icon, Clock01Icon, Delete01Icon } from '@hugeicons/core-free-icons'
+import { Add01Icon, AlertCircleIcon, Calendar01Icon, CalendarRemove01Icon, Clock01Icon, Delete01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import ButtonBusy from '@/components/ButtonBusy.vue'
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import EmptyState from '@/components/dashboard/EmptyState.vue'
 import {
   AlertDialog,
@@ -35,15 +34,6 @@ import { Textarea } from '@/components/ui/textarea'
 import type { AvailabilityException } from '~/types/availability'
 import { localDateKey } from '~/utils/date'
 
-definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth'],
-})
-
-useHead({
-  title: 'Availability exceptions - GetALawyer',
-})
-
 const {
   useAvailabilityExceptions,
   useCreateAvailabilityException,
@@ -52,7 +42,7 @@ const {
 } = useAvailability()
 
 const showPast = ref(false)
-const { data: exceptions, isPending, refetch } = useAvailabilityExceptions(
+const { data: exceptions, isPending, isError, refetch } = useAvailabilityExceptions(
   computed(() => ({ futureOnly: !showPast.value })),
 )
 
@@ -244,26 +234,6 @@ const minDate = localDateKey()
 
 <template>
   <div class="space-y-6">
-    <DashboardPageHeader
-      title="Availability exceptions"
-      description="Override your weekly schedule for specific dates"
-    >
-      <template #actions>
-        <Button
-          variant="outline"
-          as-child
-        >
-          <NuxtLink
-            to="/dashboard/availability"
-            class="gap-2"
-          >
-            <HugeiconsIcon :icon="Calendar01Icon" class="size-4" />
-            Weekly schedule
-          </NuxtLink>
-        </Button>
-      </template>
-    </DashboardPageHeader>
-
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-2">
         <Switch
@@ -308,6 +278,30 @@ const minDate = localDateKey()
         :key="i"
         class="h-20 w-full rounded-xl"
       />
+    </div>
+
+    <div
+      v-else-if="isError"
+      class="flex flex-col items-center gap-3 rounded-xl border border-foreground/15 px-6 py-14 text-center"
+    >
+      <HugeiconsIcon
+        :icon="AlertCircleIcon"
+        class="size-10 text-muted-foreground"
+      />
+      <p class="text-sm font-medium text-foreground">
+        Failed to load exceptions
+      </p>
+      <p class="text-sm text-muted-foreground">
+        Please try again.
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        class="cursor-pointer"
+        @click="refetch()"
+      >
+        Retry
+      </Button>
     </div>
 
     <EmptyState

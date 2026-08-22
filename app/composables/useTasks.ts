@@ -4,6 +4,7 @@
  */
 
 import { tasksAPI } from '~/lib/api/tasks'
+import { getSessionUserType } from '~/lib/session-user'
 import type { 
   Task, 
   TaskFilters, 
@@ -19,6 +20,8 @@ export const useTasks = () => {
   
   // Integration composables
   const { handleApiError } = useApiErrorHandler()
+  const { session } = useAuth()
+  const userType = computed(() => getSessionUserType(session.value?.user) as 'client' | 'lawyer' | undefined)
 
   // Helper function to enrich task data with computed properties
   const enrichTaskData = (task: Task): Task => {
@@ -38,7 +41,7 @@ export const useTasks = () => {
     error.value = null
 
     try {
-      const response = await tasksAPI.getCaseTasks(caseId)
+      const response = await tasksAPI.getCaseTasks(caseId, userType.value)
       tasks.value = response.tasks.map(enrichTaskData)
       return response
     } catch (err: any) {

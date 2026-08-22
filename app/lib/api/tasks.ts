@@ -4,10 +4,44 @@
  */
 
 import { httpClient } from '~/lib/api/client'
+import { getCaseApiBasePath, type CaseUserType } from '~/lib/api/cases'
 import { localDateKey } from '~/utils/date'
 import type { Task, TasksResponse, CreateTaskRequest, TaskFilters, TaskStatus } from '~/types'
 
 const BASE_PATH = '/api/tasks'
+
+/**
+ * Raw `case_tasks` row (Law-Backend `src/db/schema/cases.ts`). The backend names
+ * the title/description columns `taskTitle`/`taskDescription`; the frontend
+ * `Task` type uses `title`/`description`, so rows are normalised on the way in.
+ */
+type CaseTaskRow = Partial<Task> & {
+  id: string
+  caseId: string
+  assignedTo: string
+  status: string
+  taskTitle?: string
+  taskDescription?: string | null
+  dueDate?: string | Date | null
+  createdAt: string | Date
+  completedAt?: string | Date | null
+}
+
+export function normalizeTask(row: CaseTaskRow): Task {
+  const { taskTitle, taskDescription, ...rest } = row
+  return {
+    ...rest,
+    title: row.title ?? taskTitle ?? '',
+    description: row.description ?? taskDescription ?? undefined,
+    createdBy: row.createdBy ?? '',
+    priority: row.priority ?? 'medium',
+    status: row.status as TaskStatus,
+    dueDate: row.dueDate ? new Date(row.dueDate) : undefined,
+    completedAt: row.completedAt ? new Date(row.completedAt) : undefined,
+    createdAt: new Date(row.createdAt),
+    updatedAt: row.updatedAt ? new Date(row.updatedAt) : new Date(row.createdAt),
+  }
+}
 
 export interface TaskUpdateRequest {
   title?: string
@@ -18,12 +52,13 @@ export interface TaskUpdateRequest {
 }
 
 export const tasksAPI = {
-  // Get tasks for a case
-  getCaseTasks: async (caseId: string): Promise<TasksResponse> => {
-    const response = await httpClient.getAuth<TasksResponse>(
-      `/api/cases/${caseId}/tasks`
+  // Get tasks for a case — GET /api/(lawyer/)cases/:id/tasks → { tasks }
+  getCaseTasks: async (caseId: string, userType?: CaseUserType): Promise<TasksResponse> => {
+    const response = await httpClient.getAuth<{ tasks: CaseTaskRow[] }>(
+      `${getCaseApiBasePath(userType)}/${caseId}/tasks`
     )
-    return response
+    const tasks = response.tasks.map(normalizeTask)
+    return { tasks, total: tasks.length, page: 1, limit: tasks.length }
   },
 
   // Get user's tasks (role-based filtering handled by API)
@@ -45,7 +80,7 @@ export const tasksAPI = {
   // Create task (lawyer only) — POST /api/lawyer/cases/:id/tasks
   // Body matches Law-Backend createTaskSchema: taskTitle, taskDescription?, assignedTo (uuid), dueDate? (YYYY-MM-DD)
   createTask: async (caseId: string, taskData: CreateTaskRequest): Promise<Task> => {
-    const response = await httpClient.post<{ task: Task }>(
+    const response = await httpClient.post<{ task: CaseTaskRow }>(
       `/api/lawyer/cases/${caseId}/tasks`,
       {
         taskTitle: taskData.title,
@@ -54,7 +89,7 @@ export const tasksAPI = {
         dueDate: taskData.dueDate ? localDateKey(taskData.dueDate) : undefined,
       }
     )
-    return response.task
+    return normalizeTask(response.task)
   },
 
   // Update task status
