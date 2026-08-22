@@ -3,11 +3,10 @@
  * Feature: case-management-system
  */
 
-import { tasksAPI } from '~/lib/api/tasks'
+import { tasksAPI, type TaskUpdateRequest } from '~/lib/api/tasks'
+import { getSessionUserType } from '~/lib/session-user'
 import type { 
   Task, 
-  TaskFilters, 
-  TasksResponse, 
   CreateTaskRequest,
   TaskStatus 
 } from '~/types'
@@ -19,6 +18,8 @@ export const useTasks = () => {
   
   // Integration composables
   const { handleApiError } = useApiErrorHandler()
+  const { session } = useAuth()
+  const userType = computed(() => getSessionUserType(session.value?.user) as 'client' | 'lawyer' | undefined)
 
   // Helper function to enrich task data with computed properties
   const enrichTaskData = (task: Task): Task => {
@@ -38,7 +39,7 @@ export const useTasks = () => {
     error.value = null
 
     try {
-      const response = await tasksAPI.getCaseTasks(caseId)
+      const response = await tasksAPI.getCaseTasks(caseId, userType.value)
       tasks.value = response.tasks.map(enrichTaskData)
       return response
     } catch (err: any) {
@@ -50,21 +51,17 @@ export const useTasks = () => {
     }
   }
 
-  const fetchUserTasks = async (filters?: TaskFilters) => {
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await tasksAPI.getUserTasks(filters)
-      tasks.value = response.tasks.map(enrichTaskData)
-      return response
-    } catch (err: any) {
-      handleApiError(err, 'fetchUserTasks')
-      error.value = err.message || 'Failed to fetch user tasks'
-      throw err
-    } finally {
-      loading.value = false
+  /**
+   * Every task route is nested under its case. Resolve the case from local state
+   * first; callers whose `useTasks()` instance holds no tasks (e.g. TaskCard,
+   * TaskList receive tasks via props) pass `caseId` explicitly.
+   */
+  const resolveCaseId = (taskId: string, caseId?: string): string => {
+    const resolved = caseId ?? tasks.value.find(t => t.id === taskId)?.caseId
+    if (!resolved) {
+      throw new Error(`Cannot resolve caseId for task ${taskId}; pass it explicitly.`)
     }
+    return resolved
   }
 
   const createTask = async (caseId: string, taskData: CreateTaskRequest) => {
@@ -80,9 +77,14 @@ export const useTasks = () => {
     }
   }
 
-  const updateTaskStatus = async (taskId: string, status: TaskStatus) => {
+  const updateTaskStatus = async (taskId: string, status: TaskStatus, caseId?: string) => {
     try {
-      const updatedTask = await tasksAPI.updateTaskStatus(taskId, status)
+      const updatedTask = await tasksAPI.updateTaskStatus(
+        resolveCaseId(taskId, caseId),
+        taskId,
+        status,
+        userType.value
+      )
       const enrichedTask = enrichTaskData(updatedTask)
       
       // Update in tasks list
@@ -99,9 +101,9 @@ export const useTasks = () => {
     }
   }
 
-  const updateTask = async (taskId: string, updates: Partial<CreateTaskRequest>) => {
+  const updateTask = async (taskId: string, updates: TaskUpdateRequest, caseId?: string) => {
     try {
-      const updatedTask = await tasksAPI.updateTask(taskId, updates)
+      const updatedTask = await tasksAPI.updateTask(resolveCaseId(taskId, caseId), taskId, updates)
       const enrichedTask = enrichTaskData(updatedTask)
       
       // Update in tasks list
@@ -118,9 +120,9 @@ export const useTasks = () => {
     }
   }
 
-  const deleteTask = async (taskId: string) => {
+  const deleteTask = async (taskId: string, caseId?: string) => {
     try {
-      await tasksAPI.deleteTask(taskId)
+      await tasksAPI.deleteTask(resolveCaseId(taskId, caseId), taskId)
 
       // Remove from local state
       const index = tasks.value.findIndex(t => t.id === taskId)
@@ -210,7 +212,6 @@ export const useTasks = () => {
 
     // Actions
     fetchCaseTasks,
-    fetchUserTasks,
     createTask,
     updateTaskStatus,
     updateTask,

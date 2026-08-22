@@ -1,51 +1,95 @@
 /**
  * Task Management API
  * Feature: case-management-system
+ *
+ * Routes (Law-Backend):
+ *   GET    /api/(lawyer/)cases/:caseId/tasks                    — list
+ *   POST   /api/lawyer/cases/:caseId/tasks                      — create (lawyer)
+ *   PATCH  /api/lawyer/cases/:caseId/tasks/:taskId              — edit (lawyer)
+ *   DELETE /api/lawyer/cases/:caseId/tasks/:taskId              — delete (lawyer)
+ *   PUT    /api/(lawyer/)cases/:caseId/tasks/:taskId/complete   — complete (both)
  */
 
 import { httpClient } from '~/lib/api/client'
+import { getCaseApiBasePath, type CaseUserType } from '~/lib/api/cases'
 import { localDateKey } from '~/utils/date'
-import type { Task, TasksResponse, CreateTaskRequest, TaskFilters, TaskStatus } from '~/types'
+import type { Task, TasksResponse, CreateTaskRequest, TaskStatus } from '~/types'
 
-const BASE_PATH = '/api/tasks'
+/**
+ * Raw `case_tasks` row (Law-Backend `src/db/schema/cases.ts`). The backend names
+ * the title/description columns `taskTitle`/`taskDescription`; the frontend
+ * `Task` type uses `title`/`description`, so rows are normalised on the way in.
+ */
+type CaseTaskRow = Partial<Task> & {
+  id: string
+  caseId: string
+  assignedTo: string
+  status: string
+  taskTitle?: string
+  taskDescription?: string | null
+  dueDate?: string | Date | null
+  createdAt: string | Date
+  completedAt?: string | Date | null
+}
+
+export function normalizeTask(row: CaseTaskRow): Task {
+  const { taskTitle, taskDescription, ...rest } = row
+  return {
+    ...rest,
+    title: row.title ?? taskTitle ?? '',
+    description: row.description ?? taskDescription ?? undefined,
+    createdBy: row.createdBy ?? '',
+    priority: row.priority ?? 'medium',
+    status: row.status as TaskStatus,
+    dueDate: row.dueDate ? new Date(row.dueDate) : undefined,
+    completedAt: row.completedAt ? new Date(row.completedAt) : undefined,
+    createdAt: new Date(row.createdAt),
+    updatedAt: row.updatedAt ? new Date(row.updatedAt) : new Date(row.createdAt),
+  }
+}
 
 export interface TaskUpdateRequest {
   title?: string
   description?: string
+  /** Not persisted — the backend has no priority column. Accepted so callers can spread form state. */
   priority?: string
-  dueDate?: Date
+  /** `undefined` = leave unchanged, `null` = clear. */
+  dueDate?: Date | null
   status?: TaskStatus
 }
 
+/** Backend `case_tasks.status` enum. */
+type BackendTaskStatus = 'pending' | 'completed'
+
+/** Lawyer PATCH body (Law-Backend updateTaskSchema). */
+interface UpdateTaskBody {
+  taskTitle?: string
+  taskDescription?: string | null
+  dueDate?: string | null
+  status?: BackendTaskStatus
+}
+
+/** The FE tracks `in_progress`/`overdue` locally; the backend only knows pending/completed. */
+export const toBackendTaskStatus = (status: TaskStatus): BackendTaskStatus =>
+  status === 'completed' ? 'completed' : 'pending'
+
+const lawyerTaskPath = (caseId: string, taskId: string) =>
+  `/api/lawyer/cases/${caseId}/tasks/${taskId}`
+
 export const tasksAPI = {
-  // Get tasks for a case
-  getCaseTasks: async (caseId: string): Promise<TasksResponse> => {
-    const response = await httpClient.getAuth<TasksResponse>(
-      `/api/cases/${caseId}/tasks`
+  // Get tasks for a case — GET /api/(lawyer/)cases/:id/tasks → { tasks }
+  getCaseTasks: async (caseId: string, userType?: CaseUserType): Promise<TasksResponse> => {
+    const response = await httpClient.getAuth<{ tasks: CaseTaskRow[] }>(
+      `${getCaseApiBasePath(userType)}/${caseId}/tasks`
     )
-    return response
-  },
-
-  // Get user's tasks (role-based filtering handled by API)
-  getUserTasks: async (filters?: TaskFilters): Promise<TasksResponse> => {
-    const queryParams = new URLSearchParams()
-    if (filters?.status) queryParams.append('status', filters.status)
-    if (filters?.priority) queryParams.append('priority', filters.priority)
-    if (filters?.assignedTo) queryParams.append('assignedTo', filters.assignedTo)
-    if (filters?.caseId) queryParams.append('caseId', filters.caseId)
-    if (filters?.dueDateFrom) queryParams.append('dueDateFrom', filters.dueDateFrom.toISOString())
-    if (filters?.dueDateTo) queryParams.append('dueDateTo', filters.dueDateTo.toISOString())
-    
-    const url = `${BASE_PATH}/my-tasks${queryParams.toString() ? `?${queryParams}` : ''}`
-    const response = await httpClient.getAuth<TasksResponse>(url)
-
-    return response
+    const tasks = response.tasks.map(normalizeTask)
+    return { tasks, total: tasks.length, page: 1, limit: tasks.length }
   },
 
   // Create task (lawyer only) — POST /api/lawyer/cases/:id/tasks
   // Body matches Law-Backend createTaskSchema: taskTitle, taskDescription?, assignedTo (uuid), dueDate? (YYYY-MM-DD)
   createTask: async (caseId: string, taskData: CreateTaskRequest): Promise<Task> => {
-    const response = await httpClient.post<{ task: Task }>(
+    const response = await httpClient.post<{ task: CaseTaskRow }>(
       `/api/lawyer/cases/${caseId}/tasks`,
       {
         taskTitle: taskData.title,
@@ -54,61 +98,55 @@ export const tasksAPI = {
         dueDate: taskData.dueDate ? localDateKey(taskData.dueDate) : undefined,
       }
     )
-    return response.task
+    return normalizeTask(response.task)
   },
 
-  // Update task status
-  updateTaskStatus: async (taskId: string, status: TaskStatus): Promise<Task> => {
-    const response = await httpClient.patch<Task>(
-      `${BASE_PATH}/${taskId}`,
-      { status }
+  // Update task status.
+  // Lawyer → PATCH /api/lawyer/cases/:caseId/tasks/:taskId { status }
+  // Client → PUT /api/cases/:caseId/tasks/:taskId/complete (completing is the only client transition)
+  updateTaskStatus: async (
+    caseId: string,
+    taskId: string,
+    status: TaskStatus,
+    userType?: CaseUserType
+  ): Promise<Task> => {
+    const backendStatus = toBackendTaskStatus(status)
+
+    if (userType === 'lawyer') {
+      const response = await httpClient.patch<{ task: CaseTaskRow }>(
+        lawyerTaskPath(caseId, taskId),
+        { status: backendStatus } satisfies UpdateTaskBody
+      )
+      return normalizeTask(response.task)
+    }
+
+    if (backendStatus !== 'completed') {
+      throw new Error('Clients can only mark a task as completed; other status changes require the case lawyer.')
+    }
+    const response = await httpClient.put<{ task: CaseTaskRow }>(
+      `${getCaseApiBasePath(userType)}/${caseId}/tasks/${taskId}/complete`
     )
-    return response
+    return normalizeTask(response.task)
   },
 
-  // Update task details
-  updateTask: async (taskId: string, updates: TaskUpdateRequest): Promise<Task> => {
-    const response = await httpClient.patch<Task>(
-      `${BASE_PATH}/${taskId}`,
-      updates
+  // Update task details (lawyer only) — PATCH /api/lawyer/cases/:caseId/tasks/:taskId
+  updateTask: async (caseId: string, taskId: string, updates: TaskUpdateRequest): Promise<Task> => {
+    const body: UpdateTaskBody = {}
+    if (updates.title !== undefined) body.taskTitle = updates.title
+    if (updates.description !== undefined) body.taskDescription = updates.description || null
+    if (updates.dueDate !== undefined) body.dueDate = updates.dueDate ? localDateKey(updates.dueDate) : null
+    if (updates.status !== undefined) body.status = toBackendTaskStatus(updates.status)
+    // `priority` is intentionally dropped — no backend column.
+
+    const response = await httpClient.patch<{ task: CaseTaskRow }>(
+      lawyerTaskPath(caseId, taskId),
+      body
     )
-    return response
+    return normalizeTask(response.task)
   },
 
-  // Delete task (lawyer only)
-  deleteTask: async (taskId: string): Promise<void> => {
-    await httpClient.delete<void>(
-      `${BASE_PATH}/${taskId}`
-    )
+  // Delete task (lawyer only) — DELETE /api/lawyer/cases/:caseId/tasks/:taskId
+  deleteTask: async (caseId: string, taskId: string): Promise<void> => {
+    await httpClient.delete<{ message: string }>(lawyerTaskPath(caseId, taskId))
   },
-
-  // Get task by ID
-  getTaskById: async (taskId: string): Promise<Task> => {
-    const response = await httpClient.getAuth<Task>(
-      `${BASE_PATH}/${taskId}`
-    )
-    return response
-  },
-
-  // Get task statistics for a case
-  getTaskStats: async (caseId: string): Promise<{
-    total: number
-    completed: number
-    overdue: number
-    pending: number
-    inProgress: number
-    completionRate: number
-  }> => {
-    const response = await httpClient.getAuth<{
-      total: number
-      completed: number
-      overdue: number
-      pending: number
-      inProgress: number
-      completionRate: number
-    }>(
-      `/api/cases/${caseId}/tasks/stats`
-    )
-    return response
-  }
 }

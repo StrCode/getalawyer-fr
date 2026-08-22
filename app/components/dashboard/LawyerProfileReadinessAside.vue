@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { CircleIcon } from '@hugeicons/core-free-icons'
+import { CircleIcon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~/types/lawyer-directory-eligibility'
+import { getDirectoryBlockerItems } from '~/lib/directory-blockers'
 import { getTier1IncompleteItems } from '~/lib/profile-check-catalog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -16,9 +17,17 @@ const percent = computed(() => props.profileStrength?.percent ?? 0)
 
 const tier1Incomplete = computed(() => getTier1IncompleteItems(props.profileStrength))
 
-const showCard = computed(
-  () => Boolean(props.profileStrength) && (!props.eligibility?.tier1Complete || percent.value < 100),
-)
+/** Non-profile reasons the lawyer is hidden from search (approval / subscription / payment). */
+const blockerItems = computed(() => getDirectoryBlockerItems(props.eligibility))
+
+const isVisible = computed(() => props.eligibility?.isDirectoryVisible === true)
+
+const showCard = computed(() => {
+  if (!props.profileStrength) return false
+  const profileIncomplete = !props.eligibility?.tier1Complete || percent.value < 100
+  const hiddenForOtherReason = props.eligibility ? !props.eligibility.isDirectoryVisible : false
+  return profileIncomplete || hiddenForOtherReason
+})
 
 const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
 </script>
@@ -46,6 +55,46 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
     </CardHeader>
 
     <CardContent class="px-6 py-5">
+      <div
+        v-if="eligibility"
+        class="mb-4"
+      >
+        <p
+          class="flex items-center gap-2 text-xs font-medium"
+          :class="isVisible ? 'text-primary' : 'text-foreground'"
+        >
+          <HugeiconsIcon
+            :icon="isVisible ? ViewIcon : ViewOffIcon"
+            class="size-3.5 shrink-0"
+            aria-hidden="true"
+          />
+          {{ isVisible ? 'Visible in search' : 'Hidden from search' }}
+        </p>
+
+        <ul
+          v-if="blockerItems.length > 0"
+          class="mt-2 space-y-1.5"
+        >
+          <li
+            v-for="item in blockerItems"
+            :key="item.id"
+            class="flex items-center gap-2 text-xs"
+          >
+            <HugeiconsIcon
+              :icon="CircleIcon"
+              class="size-3.5 shrink-0 text-destructive/60"
+              aria-hidden="true"
+            />
+            <NuxtLink
+              :to="item.href"
+              class="text-muted-foreground hover:text-primary hover:underline"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+
       <div class="h-1.5 overflow-hidden rounded-full bg-muted">
         <div
           class="h-full rounded-full bg-primary transition-all duration-500"

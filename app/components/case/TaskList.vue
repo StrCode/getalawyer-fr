@@ -289,7 +289,7 @@ const getEmptyMessage = () => {
 // Methods
 const handleTaskStatusChange = async (taskId: string, status: TaskStatus) => {
   try {
-    const updatedTask = await updateTaskStatus(taskId, status)
+    const updatedTask = await updateTaskStatus(taskId, status, props.caseId)
     emit('task-updated', updatedTask)
   } catch (error) {
     console.error('Failed to update task status:', error)

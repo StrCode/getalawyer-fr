@@ -84,6 +84,7 @@
             v-model="messageInput"
             placeholder="Type your message..."
             :rows="1"
+            :maxlength="CASE_MESSAGE_MAX_LENGTH"
             @keydown.enter.prevent="handleSendMessage"
           />
         </div>
@@ -110,6 +111,7 @@
 import { Alert01Icon, CheckmarkCircle01Icon, Message02Icon, MessageMultiple01Icon, SentIcon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
+import { CASE_MESSAGE_MAX_LENGTH } from '~/lib/api/cases'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
@@ -134,10 +136,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  conversationId: {
-    type: String,
-    default: undefined
-  },
   readonly: {
     type: Boolean,
     default: false
@@ -152,7 +150,7 @@ const {
   error,
   sendMessage,
   isSending
-} = useCaseMessaging(props.caseId, props.conversationId)
+} = useCaseMessaging(props.caseId)
 
 const messageInput = ref('')
 
