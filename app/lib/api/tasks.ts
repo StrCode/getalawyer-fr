@@ -13,7 +13,7 @@
 import { httpClient } from '~/lib/api/client'
 import { getCaseApiBasePath, type CaseUserType } from '~/lib/api/cases'
 import { localDateKey } from '~/utils/date'
-import type { Task, TasksResponse, CreateTaskRequest, TaskStatus } from '~/types'
+import type { Task, TasksResponse, CreateTaskRequest, Priority, TaskStatus } from '~/types'
 
 /**
  * Raw `case_tasks` row (Law-Backend `src/db/schema/cases.ts`). The backend names
@@ -51,15 +51,14 @@ export function normalizeTask(row: CaseTaskRow): Task {
 export interface TaskUpdateRequest {
   title?: string
   description?: string
-  /** Not persisted — the backend has no priority column. Accepted so callers can spread form state. */
-  priority?: string
+  priority?: Priority
   /** `undefined` = leave unchanged, `null` = clear. */
   dueDate?: Date | null
   status?: TaskStatus
 }
 
 /** Backend `case_tasks.status` enum. */
-type BackendTaskStatus = 'pending' | 'completed'
+type BackendTaskStatus = 'pending' | 'in_progress' | 'completed'
 
 /** Lawyer PATCH body (Law-Backend updateTaskSchema). */
 interface UpdateTaskBody {
@@ -67,11 +66,15 @@ interface UpdateTaskBody {
   taskDescription?: string | null
   dueDate?: string | null
   status?: BackendTaskStatus
+  priority?: Priority
 }
 
-/** The FE tracks `in_progress`/`overdue` locally; the backend only knows pending/completed. */
-export const toBackendTaskStatus = (status: TaskStatus): BackendTaskStatus =>
-  status === 'completed' ? 'completed' : 'pending'
+/** `overdue` is UI-derived; everything else maps 1:1 onto the backend enum. */
+export const toBackendTaskStatus = (status: TaskStatus): BackendTaskStatus => {
+  if (status === 'completed') return 'completed'
+  if (status === 'in_progress') return 'in_progress'
+  return 'pending'
+}
 
 const lawyerTaskPath = (caseId: string, taskId: string) =>
   `/api/lawyer/cases/${caseId}/tasks/${taskId}`
@@ -87,7 +90,7 @@ export const tasksAPI = {
   },
 
   // Create task (lawyer only) — POST /api/lawyer/cases/:id/tasks
-  // Body matches Law-Backend createTaskSchema: taskTitle, taskDescription?, assignedTo (uuid), dueDate? (YYYY-MM-DD)
+  // Body matches Law-Backend createTaskSchema: taskTitle, taskDescription?, assignedTo (uuid), priority?, dueDate? (YYYY-MM-DD)
   createTask: async (caseId: string, taskData: CreateTaskRequest): Promise<Task> => {
     const response = await httpClient.post<{ task: CaseTaskRow }>(
       `/api/lawyer/cases/${caseId}/tasks`,
@@ -95,6 +98,7 @@ export const tasksAPI = {
         taskTitle: taskData.title,
         taskDescription: taskData.description || undefined,
         assignedTo: taskData.assignedTo,
+        priority: taskData.priority,
         dueDate: taskData.dueDate ? localDateKey(taskData.dueDate) : undefined,
       }
     )
@@ -136,7 +140,7 @@ export const tasksAPI = {
     if (updates.description !== undefined) body.taskDescription = updates.description || null
     if (updates.dueDate !== undefined) body.dueDate = updates.dueDate ? localDateKey(updates.dueDate) : null
     if (updates.status !== undefined) body.status = toBackendTaskStatus(updates.status)
-    // `priority` is intentionally dropped — no backend column.
+    if (updates.priority !== undefined) body.priority = updates.priority
 
     const response = await httpClient.patch<{ task: CaseTaskRow }>(
       lawyerTaskPath(caseId, taskId),
