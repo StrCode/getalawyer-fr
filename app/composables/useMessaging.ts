@@ -227,10 +227,52 @@ export const useMessaging = () => {
   }
 
   // Query: Get notifications
+  // Unread notifications (badge, bell, overview widget).
   const useNotifications = () => {
     return useQuery({
       queryKey: queryKeys.messaging.notifications,
-      queryFn: messagingAPI.getNotifications,
+      queryFn: () => messagingAPI.getNotifications(),
+    })
+  }
+
+  // Full history for the notifications page (read + unread, newest first).
+  const NOTIFICATIONS_HISTORY_LIMIT = 200
+  const useAllNotifications = () => {
+    return useQuery({
+      queryKey: [...queryKeys.messaging.notifications, 'all'] as const,
+      queryFn: () => messagingAPI.getNotifications({ includeRead: true, limit: NOTIFICATIONS_HISTORY_LIMIT }),
+    })
+  }
+
+  // Mark-read: patch both the unread and the history caches optimistically
+  // (rows turn "read" in place), then invalidate by prefix once settled.
+  const patchNotifications = (predicate: (n: Notification) => boolean) => {
+    queryClient.setQueriesData(
+      { queryKey: queryKeys.messaging.notifications },
+      (old: Notification[] | undefined) => {
+        if (!old) return old
+        return old.map((n) => (predicate(n) ? { ...n, read: true } : n))
+      },
+    )
+  }
+
+  const useMarkNotificationRead = () => {
+    return useMutation({
+      mutationFn: (id: string) => messagingAPI.markNotificationRead(id),
+      onMutate: (id) => patchNotifications((n) => n.id === id),
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.messaging.notifications })
+      },
+    })
+  }
+
+  const useMarkAllNotificationsRead = () => {
+    return useMutation({
+      mutationFn: () => messagingAPI.markAllNotificationsRead(),
+      onMutate: () => patchNotifications(() => true),
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.messaging.notifications })
+      },
     })
   }
 
@@ -282,6 +324,9 @@ export const useMessaging = () => {
     useConversations,
     useConversation,
     useNotifications,
+    useAllNotifications,
+    useMarkNotificationRead,
+    useMarkAllNotificationsRead,
     useSendMessage,
     sendMessage,
     retryMessage,

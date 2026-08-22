@@ -107,8 +107,12 @@ export interface Notification {
   title: string
   body: string
   read: boolean
-  conversationId: string
-  messageId: string
+  conversationId: string | null
+  messageId: string | null
+  /** Not persisted by the backend yet; supported so booking/case links light up when it is. */
+  bookingId?: string | null
+  caseId?: string | null
+  data?: { conversationId?: string | null; bookingId?: string | null; caseId?: string | null } | null
   emailSent: boolean
   emailSentAt: string | null
   createdAt: string

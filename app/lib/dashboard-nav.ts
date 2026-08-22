@@ -1,5 +1,5 @@
 import type { Hugeicon } from '@/lib/icon-types'
-import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
+import { Briefcase01Icon, Calendar01Icon, Clock01Icon, CreditCardIcon, DashboardSquare01Icon, LegalDocument01Icon, Message01Icon, Notification03Icon, Settings01Icon, UserCircleIcon, UserIcon } from '@hugeicons/core-free-icons'
 
 export type DashboardIcon = Hugeicon
 
@@ -23,6 +23,7 @@ const lawyerDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
   { title: 'Appointments', to: '/dashboard/appointments', icon: Calendar01Icon, lawyerOnly: true, group: 'Today' },
   { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
+  { title: 'Notifications', to: '/dashboard/notifications', icon: Notification03Icon, group: 'Today' },
   { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Today' },
   { title: 'Listing', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Practice' },
   { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true, group: 'Practice' },
@@ -35,6 +36,7 @@ const clientDashboardNav: DashboardNavLink[] = [
   { title: 'Overview', to: '/dashboard', icon: DashboardSquare01Icon, exact: true },
   { title: 'My Bookings', to: '/dashboard/bookings', icon: Calendar01Icon, clientOnly: true, group: 'Today' },
   { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
+  { title: 'Notifications', to: '/dashboard/notifications', icon: Notification03Icon, group: 'Today' },
   { title: 'My Cases', to: '/dashboard/cases', icon: Briefcase01Icon, clientOnly: true, group: 'My legal life' },
   { title: 'My Lawyers', to: '/dashboard/my-lawyers', icon: UserIcon, clientOnly: true, group: 'My legal life' },
   { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, clientOnly: true, group: 'Account' },

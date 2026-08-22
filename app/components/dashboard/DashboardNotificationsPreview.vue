@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import DashboardPanel from '@/components/dashboard/DashboardPanel.vue'
 import { PANEL_LINK, PANEL_LINK_ARROW } from '@/lib/dashboard-panel'
+import {
+  countUnread,
+  NOTIFICATIONS_PREVIEW_COUNT,
+  notificationLink as buildNotificationLink,
+  sortNotificationsNewestFirst,
+} from '@/lib/notifications'
+import { getSessionUserType } from '~/lib/session-user'
 import type { Notification } from '~/types/messaging'
 
 const props = defineProps<{
@@ -20,20 +27,18 @@ function formatWhen(iso: string): string {
   }
 }
 
+const { session } = useAuth()
+const role = computed(() => getSessionUserType(session.value?.user))
+
 function notificationLink(notification: Notification): string {
-  if (notification.conversationId) {
-    return `/dashboard/messages?conversation=${notification.conversationId}`
-  }
-  return '/dashboard/messages'
+  return buildNotificationLink(notification, role.value)
 }
 
 const previewItems = computed(() =>
-  [...props.notifications]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 5),
+  sortNotificationsNewestFirst(props.notifications).slice(0, NOTIFICATIONS_PREVIEW_COUNT),
 )
 
-const unreadCount = computed(() => props.notifications.filter((item) => !item.read).length)
+const unreadCount = computed(() => countUnread(props.notifications))
 </script>
 
 <template>
@@ -43,7 +48,7 @@ const unreadCount = computed(() => props.notifications.filter((item) => !item.re
   >
     <template #headerMeta>
       <NuxtLink
-        to="/dashboard/messages"
+        to="/dashboard/notifications"
         :class="PANEL_LINK"
       >
         View all<span

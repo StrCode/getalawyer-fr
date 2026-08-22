@@ -91,8 +91,17 @@ export const messagingAPI = {
     return response
   },
 
-  getNotifications: async (): Promise<Notification[]> => {
-    const response = await httpClient.getAuth<Notification[]>(`${BASE_PATH}/notifications`)
+  /**
+   * Unread only by default (newest first, capped at 50 server-side).
+   * `includeRead` adds history; `limit` up to 200; `before` = ISO cursor (older rows).
+   */
+  getNotifications: async (params?: { includeRead?: boolean, limit?: number, before?: string }): Promise<Notification[]> => {
+    const query = new URLSearchParams()
+    if (params?.includeRead) query.set('includeRead', '1')
+    if (params?.limit) query.set('limit', String(params.limit))
+    if (params?.before) query.set('before', params.before)
+    const qs = query.toString()
+    const response = await httpClient.getAuth<Notification[]>(`${BASE_PATH}/notifications${qs ? `?${qs}` : ''}`)
     return response
   },
 

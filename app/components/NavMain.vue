@@ -33,6 +33,7 @@ const role = computed(() => getSessionUserType(session.value?.user) as 'lawyer' 
 const {
   clientUpcomingBookingsBadge,
   unreadMessagesBadge,
+  unreadNotificationsBadge,
   activeCasesBadge,
   lawyerPendingAppointmentsBadge,
   lawyerSubscriptionBadge,
@@ -68,6 +69,7 @@ const navSections = computed(() => {
 const badgeMap = computed<Record<string, DashboardNavBadge | undefined>>(() => ({
   '/dashboard/bookings': clientUpcomingBookingsBadge.value,
   '/dashboard/messages': unreadMessagesBadge.value,
+  '/dashboard/notifications': unreadNotificationsBadge.value,
   '/dashboard/cases': activeCasesBadge.value,
   '/dashboard/appointments': lawyerPendingAppointmentsBadge.value,
   '/dashboard/subscription': lawyerSubscriptionBadge.value,
