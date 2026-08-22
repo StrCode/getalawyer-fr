@@ -143,7 +143,7 @@ const statusFilterOptions = [
 // Methods
 const handleTaskStatusChange = async (taskId: string, status: TaskStatus) => {
   try {
-    await updateTaskStatus(taskId, status)
+    await updateTaskStatus(taskId, status, props.caseId)
   } catch (error) {
     console.error('Failed to update task status:', error)
   }
