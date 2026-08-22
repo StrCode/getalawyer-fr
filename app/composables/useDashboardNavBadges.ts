@@ -5,6 +5,7 @@ import {
   getListingProgressTone,
   LISTING_PROGRESS_NAV_BADGE_CLASS,
 } from '@/lib/listing-progress'
+import { countUnread } from '@/lib/notifications'
 import { getSessionUserType } from '~/lib/session-user'
 
 export type DashboardNavBadge = {
@@ -43,8 +44,9 @@ export function useDashboardNavBadges() {
     enabled: isLawyer,
   })
 
-  const { useConversations } = useMessaging()
+  const { useConversations, useNotifications } = useMessaging()
   const { data: conversations, isFetched: conversationsFetched } = useConversations()
+  const { data: notifications, isFetched: notificationsFetched } = useNotifications()
 
   const { useCasesList } = useCases()
   const { data: casesData, isFetched: casesFetched } = useCasesList()
@@ -84,6 +86,11 @@ export function useDashboardNavBadges() {
       0,
     )
     return badgeFromCount(count)
+  })
+
+  const unreadNotificationsBadge = computed((): DashboardNavBadge | undefined => {
+    if (!notificationsFetched.value) return undefined
+    return badgeFromCount(countUnread(notifications.value))
   })
 
   const activeCasesBadge = computed((): DashboardNavBadge | undefined => {
@@ -140,6 +147,7 @@ export function useDashboardNavBadges() {
   return {
     clientUpcomingBookingsBadge,
     unreadMessagesBadge,
+    unreadNotificationsBadge,
     activeCasesBadge,
     lawyerPendingAppointmentsBadge,
     lawyerSubscriptionBadge,
