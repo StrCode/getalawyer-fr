@@ -18,20 +18,15 @@ import {
 import { ApiError } from '~/lib/api/client'
 import { toast } from 'vue-sonner'
 import { queryKeys } from '~/lib/query-client'
-import {
-  isLawyerAwaitingApproval,
-  isLawyerRejected,
-  isLawyerVerificationFailed,
-  onboardingSubmittedAt,
-  VERIFICATION_FAILED_COPY,
-} from '~/lib/lawyerOnboardingStatus'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
+import { onboardingSubmittedAt, VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
 
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 useHead({
@@ -48,7 +43,7 @@ const router = useRouter()
 const { session } = useAuth()
 const queryClient = useQueryClient()
 
-await useAsyncData('onboarding-subscription-status', () =>
+await useAsyncData('application-membership-status', () =>
   ensureLawyerOnboardingStatus(queryClient),
 )
 
@@ -156,45 +151,15 @@ const benefits = [
 
 const verificationRefundNote = VERIFICATION_FAILED_COPY.refundNote
 
-watchEffect(() => {
-  const u = session.value?.user as {
-    onboarding_completed?: boolean
-    userType?: string
-    role?: string
-  } | null
-  const ut = u?.userType ?? u?.role
-  if (ut && ut !== 'lawyer') {
-    router.replace('/')
-  }
-  if (u?.onboarding_completed) {
-    router.replace('/dashboard')
-  }
-})
-
-watchEffect(() => {
-  if (pageLoading.value || statusFetching.value) return
-  const st = statusPayload.value
-  if (!st) return
-
-  if (isLawyerRejected(st)) {
-    router.replace('/onboarding/rejected')
-    return
-  }
-
-  if (isLawyerVerificationFailed(st)) {
-    router.replace('/onboarding/pending')
-    return
-  }
-
-  if (!isLawyerAwaitingApproval(st)) {
-    router.replace('/onboarding')
-    return
-  }
-
-  if (hasActiveSubscription.value) {
-    router.replace('/onboarding/pending')
-  }
-})
+// This page is for one state only: submitted, membership still to pay. In any
+// other state the application home is the place (it shows review, changes and
+// so on), and an approved lawyer belongs on the dashboard.
+const { state } = useApplicationState()
+watch(state, (value) => {
+  if (!import.meta.client) return
+  if (value === 'approved') void router.replace('/dashboard')
+  else if (value !== 'payment' && value !== 'loading' && value !== 'unavailable') void router.replace(APPLICATION_HOME)
+}, { immediate: true })
 
 async function confirmPendingPayment() {
   if (confirmingPendingPayment.value || hasActiveSubscription.value) return
@@ -206,7 +171,8 @@ async function confirmPendingPayment() {
         description: 'Taking you to your application status.',
       })
       await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
-      await router.replace('/onboarding/pending')
+      // Paid: the application is now in review, which the home shows.
+      await router.replace(APPLICATION_HOME)
       return
     }
     if (result?.status === 'pending') {
@@ -325,7 +291,7 @@ async function retry() {
       <Button variant="line" size="pill-sm" @click="retry">Try again</Button>
     </div>
 
-    <OnboardingApplicationStatus
+    <ApplicationStatus
       v-else
       kicker="Application submitted"
       title="One step left: membership"
@@ -408,6 +374,6 @@ async function retry() {
           <CanopyGlyph name="tick" :stroke="3" class="mt-[0.3rem] flex-none text-brand" />{{ item }}
         </li>
       </ul>
-    </OnboardingApplicationStatus>
+    </ApplicationStatus>
   </div>
 </template>

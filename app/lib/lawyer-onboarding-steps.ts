@@ -1,5 +1,3 @@
-import type { OnboardingStep } from '~/composables/useOnboardingNavigation'
-
 export type LawyerStepKey =
   | 'personal_info'
   | 'nin_verification'
@@ -77,12 +75,4 @@ export function getLawyerStepDisplay(key: LawyerStepKey): LawyerStepContent {
 export function getLawyerUxStepIndex(stepKey: string | undefined): number {
   if (!stepKey || !(stepKey in LAWYER_STEP_UX_NUMBER)) return 0
   return LAWYER_STEP_UX_NUMBER[stepKey as LawyerStepKey] - 1
-}
-
-export function getPathByLawyerStepKey(
-  key: string,
-  steps: OnboardingStep[],
-): string {
-  const step = steps.find((s) => s.key === key)
-  return step?.path ?? steps[0]?.path ?? '/onboarding/personal-info'
 }

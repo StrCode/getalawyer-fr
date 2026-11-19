@@ -2,12 +2,12 @@
 import { provide } from 'vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
-import { LAWYER_APPLICATION_HOME } from '~/composables/useLawyerOnboardingEntry'
+import { APPLICATION_HOME, applicationSectionKeyFor } from '~/lib/setup-paths'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
 /**
- * Lawyer application, direction C ("Application home"). There is no fixed
- * order: the home page lists the sections, each section opens on its own page
+ * Lawyer application ("Application home"). There is no fixed order: the home
+ * page (/application) lists the sections, each section opens on its own page
  * and returns to the home when saved. This layout frames both: the home, and a
  * section with its "Back to your application" link and "Save and return" bar.
  *
@@ -16,27 +16,22 @@ import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
  */
 useHead({ bodyAttrs: { class: 'canopy' } })
 
-/** Section pages and the store key each one saves under. */
-const SECTION_KEYS: Record<string, string> = {
-  '/onboarding/personal-info': 'personal_info',
-  '/onboarding/nin-verification': 'nin_verification',
-  '/onboarding/professional-information': 'professional_info',
-  '/onboarding/practice-information': 'practice_info',
-}
-
 const route = useRoute()
 const router = useRouter()
 const store = useLawyerOnboardingStore()
 const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
-const sectionKey = computed(() => SECTION_KEYS[route.path] ?? null)
+/** The store key the section on screen saves under; null on the home and the membership page. */
+const sectionKey = computed(() => applicationSectionKeyFor(route.path))
 const isHome = computed(() => !sectionKey.value)
 /**
- * True while the application can still be edited: a section, or the home it
- * is filled in from. After it is submitted (payment, in review, needs changes)
- * there is nothing to save, so saving is off and the menu is a plain sign-out.
+ * True while the application can still be edited: a section, or the home while
+ * it is being filled in. After it is submitted (payment, in review, needs
+ * changes) the home shows a status instead, there is nothing to save, so saving
+ * is off and the menu is a plain sign-out.
  */
-const editable = computed(() => Boolean(sectionKey.value) || route.path === LAWYER_APPLICATION_HOME)
+const { state } = useApplicationState()
+const editable = computed(() => Boolean(sectionKey.value) || (route.path === APPLICATION_HOME && state.value === 'draft'))
 
 // Section pages register their own check (field errors, async checks) here; the
 // "Save and return" button runs it before saving.
@@ -73,7 +68,7 @@ async function saveAndReturn() {
     if (sectionValidate.value && !(await sectionValidate.value())) return
     const saved = await store.saveStep(sectionKey.value)
     if (saved) {
-      await router.push(LAWYER_APPLICATION_HOME)
+      await router.push(APPLICATION_HOME)
     }
     else if (!store.validationError) {
       toast.error('Could not save this section', { description: 'Check your connection and try again.' })
@@ -90,7 +85,7 @@ async function backToHome() {
   busy.value = true
   try {
     if (sectionKey.value) await store.saveProgress(sectionKey.value)
-    await router.push(LAWYER_APPLICATION_HOME)
+    await router.push(APPLICATION_HOME)
   }
   finally {
     busy.value = false

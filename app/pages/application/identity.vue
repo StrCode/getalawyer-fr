@@ -16,11 +16,13 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { Label } from '@/components/ui/label'
 
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('nin_verification')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 const ninState = store.ninVerification
@@ -101,7 +103,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
 
 <template>
   <div>
-    <OnboardingClientStepHeader
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"
