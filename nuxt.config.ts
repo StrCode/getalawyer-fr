@@ -23,6 +23,12 @@ const THEMED_ROUTES = new Set<string>([
   '/find-lawyers',
   '/lawyers/:id()',
   '/pricing',
+  '/for-lawyers',
+  '/practice-areas',
+  '/contact',
+  '/privacy',
+  '/terms',
+  '/ndpa',
   // sign-in group (the `auth` layout)
   '/login',
   '/register',

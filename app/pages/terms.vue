@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import LegalPageShell from '@/components/legal/LegalPageShell.vue'
 
-definePageMeta({ layout: 'landing' })
+definePageMeta({ layout: 'site' })
 
 useHead({
-  title: 'Terms of Service · GetaLawyer',
+  title: 'Terms of service',
   meta: [{ name: 'description', content: 'The terms that govern your use of the GetaLawyer platform.' }],
 })
 </script>
