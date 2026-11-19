@@ -35,6 +35,15 @@ const THEMED_ROUTES = new Set<string>([
   '/forgot-password',
   '/verify-otp',
   '/reset-password',
+  // client onboarding (the `onboarding-client` layout)
+  '/onboarding/location',
+  '/onboarding/specializations',
+  // lawyer application (the `onboarding-lawyer` layout)
+  '/onboarding/application',
+  '/onboarding/personal-info',
+  '/onboarding/nin-verification',
+  '/onboarding/professional-information',
+  '/onboarding/practice-information',
 ])
 
 /** A committed variable font in public/fonts, self-hosted through @nuxt/fonts. */

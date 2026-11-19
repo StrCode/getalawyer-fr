@@ -23,7 +23,7 @@ const fieldLabelClass = 'text-sm'
 const fieldClass = 'gap-1.5'
 
 definePageMeta({
-  layout: 'onboarding-wizard',
+  layout: 'onboarding-lawyer',
   middleware: ['auth', 'lawyer-onboarding-guard'],
 })
 
@@ -156,8 +156,8 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
         </div>
         <p class="mb-1 text-lg font-medium text-foreground">NIN received</p>
         <p class="mx-auto mb-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-          We’ve saved your NIN securely. Continue to the next step, or change it if you entered it
-          incorrectly — until our team finishes verification.
+          We’ve saved your NIN securely. You can change it if you entered it
+          incorrectly, until our team finishes verification.
         </p>
         <Button
           type="button"
@@ -168,7 +168,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           Change NIN
         </Button>
         <p class="mt-5 text-sm text-muted-foreground">
-          Press <span class="font-medium text-foreground">Continue</span> to keep this NIN and move on.
+          Press <span class="font-medium text-foreground">Save and return</span> to keep this NIN.
         </p>
       </div>
     </Card>

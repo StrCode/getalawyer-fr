@@ -9,6 +9,7 @@ import {
 import { getSessionUserType } from '~/lib/session-user'
 
 const WIZARD_PATHS = new Set([
+  '/onboarding/application',
   '/onboarding/personal-info',
   '/onboarding/nin-verification',
   '/onboarding/professional-information',

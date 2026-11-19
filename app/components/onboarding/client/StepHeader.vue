@@ -1,7 +1,13 @@
 <script setup lang="ts">
+/**
+ * Heading of one section of the lawyer application: a small label, the title
+ * and a line of guidance. `step` and `total` are accepted for older callers
+ * but no longer shown: sections can be done in any order, so numbering them
+ * would be untrue.
+ */
 defineProps<{
-  step: number
-  total: number
+  step?: number
+  total?: number
   label: string
   title: string
   description: string
@@ -10,16 +16,8 @@ defineProps<{
 
 <template>
   <header class="w-full text-left">
-    <p class="eyebrow mb-2 text-primary-strong lg:hidden">
-      Step {{ step }} of {{ total }} · {{ label }}
-    </p>
-    <h1
-      class="text-balance text-2xl font-medium leading-tight tracking-[-0.02em] text-foreground sm:text-3xl"
-    >
-      {{ title }}
-    </h1>
-    <p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-      {{ description }}
-    </p>
+    <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ label }}</p>
+    <h1 class="mt-[0.6rem] text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h1>
+    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">{{ description }}</p>
   </header>
 </template>

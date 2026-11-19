@@ -207,6 +207,8 @@ export const useLawyerOnboarding = () => {
             mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
+                // The status says whether a NIN is saved; keep it in step.
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
             }
         })
     }

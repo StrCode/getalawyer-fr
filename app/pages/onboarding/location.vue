@@ -1,99 +1,80 @@
-<template>
-  <div class="w-full space-y-10 pb-20">
-    <OnboardingClientStepHeader
-      :step="1"
-      :total="2"
-      label="Location"
-      title="Where do you need legal help?"
-      description="Choose your state so we can surface lawyers who practise in your region and understand local rules."
-    />
-
-    <div v-if="isLoading" class="space-y-6">
-      <Skeleton class="h-16 w-full rounded-xl" />
-      <Skeleton class="h-16 w-full rounded-xl" />
-    </div>
-
-    <div
-      v-else-if="isError"
-      class="rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-14 text-center"
-    >
-      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-3 size-8 text-muted-foreground" />
-      <p class="text-sm font-medium text-muted-foreground">
-        We couldn't load location data. Refresh the page and try again.
-      </p>
-    </div>
-
-    <div v-else class="w-full">
-      <FieldGroup class="gap-6">
-        <Field>
-          <FieldLabel>Country</FieldLabel>
-          <Select disabled model-value="NG">
-            <SelectTrigger>
-              <SelectValue>
-                <div class="flex items-center gap-2">
-                  <span>🇳🇬</span> Nigeria
-                </div>
-              </SelectValue>
-            </SelectTrigger>
-          </Select>
-          <p class="text-xs text-muted-foreground mt-1">
-            GetaLawyer is available in Nigeria for now.
-          </p>
-        </Field>
-
-        <Field>
-          <FieldLabel>State</FieldLabel>
-          <Select v-model="storeState.state">
-            <SelectTrigger>
-              <SelectValue placeholder="Select state" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="s in availableStates"
-                :key="s.value"
-                :value="s.label"
-              >
-                {{ s.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
-      </FieldGroup>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { AlertCircleIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { useClientOnboarding } from '~/composables/useClientOnboarding'
+import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
+
+/**
+ * Client onboarding, step 1: the state the client needs legal help in.
+ * getalawyer only operates in Nigeria, so there is no country to choose: the
+ * step is the state alone, picked from the same list of states the directory
+ * and lawyers' profiles use (so a client's state matches lawyers' states).
+ */
 definePageMeta({
   middleware: ['auth'],
-  layout: 'onboarding-wizard',
+  layout: 'onboarding-client',
 })
+
+useHead({ title: 'Which state are you in?' })
 
 const store = useClientOnboardingStore()
 const storeState = store.clientState
 
-const { useCountries } = useClientOnboarding()
-const { data: countriesData, isPending: isLoading, isError } = useCountries()
+/** What each state is called on screen; the stored value stays the list's own name. */
+function displayName(state: string) {
+  return state === 'FCT' ? 'Abuja (FCT)' : state
+}
 
-const countries = computed(() => countriesData.value?.data || [])
-const availableStates = computed(() => {
-  const selected = countries.value.find((c: { code2: string }) => c.code2 === storeState.country)
-  const states = selected?.states || []
-  return states.map((s: { code: string; name: string }) => ({
-    label: s.name,
-    value: s.name,
-  }))
+// In the order people read them: "Abuja (FCT)" belongs with the A's, not under F.
+const ordered = [...NIGERIA_STATE_NAMES].sort((a, b) => displayName(a).localeCompare(displayName(b)))
+
+const query = ref('')
+const states = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return ordered
+  return ordered.filter(state => displayName(state).toLowerCase().includes(q) || state.toLowerCase().includes(q))
 })
 
-watch(
-  () => storeState.state,
-  (state) => {
-    if (state) store.validationError = null
-  },
-)
+function choose(state: string) {
+  storeState.state = state
+  store.validationError = null
+}
 </script>
+
+<template>
+  <div>
+    <h1 class="text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">Which state are you in?</h1>
+    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">We show you lawyers who practise there first. You can search any other state whenever you like.</p>
+
+    <label for="state-search" class="mt-[1.6rem] flex items-center gap-3 rounded-full border border-border bg-card py-[0.3rem] pr-[0.3rem] pl-4">
+      <CanopyGlyph name="search" :size="18" :stroke="2.2" class="flex-none text-muted-foreground" />
+      <span class="sr-only">Search states</span>
+      <input
+        id="state-search"
+        v-model="query"
+        type="search"
+        placeholder="Search states"
+        autocomplete="off"
+        class="min-h-11 min-w-0 flex-1 bg-transparent text-[1rem] outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
+      >
+    </label>
+
+    <div role="radiogroup" aria-label="State" class="mt-[1.1rem] flex flex-wrap gap-[0.4rem]">
+      <button
+        v-for="state in states"
+        :key="state"
+        type="button"
+        role="radio"
+        :aria-checked="storeState.state === state"
+        class="min-h-[2.6rem] cursor-pointer rounded-full border border-border bg-card px-[0.95rem] text-[0.92rem] font-semibold transition-colors duration-200 hover:border-brand aria-checked:border-foreground aria-checked:bg-foreground aria-checked:text-background"
+        @click="choose(state)"
+      >
+        {{ displayName(state) }}
+      </button>
+      <p v-if="states.length === 0" class="py-2 text-muted-foreground">No state matches “{{ query.trim() }}”.</p>
+    </div>
+
+    <p aria-live="polite" class="mt-[0.9rem] text-[0.85rem] text-muted-foreground">
+      <template v-if="storeState.state"><b class="font-semibold text-brand">{{ displayName(storeState.state) }}</b> selected.</template>
+      <template v-else>getalawyer covers all 36 states and the FCT.</template>
+    </p>
+  </div>
+</template>

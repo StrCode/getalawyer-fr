@@ -10,20 +10,12 @@ import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
 import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 import {
     useLawyerOnboarding,
+    useLawyerOnboardingStatus,
     type PersonalInfoData,
     type ProfessionalInfoData,
     type PracticeInfoData,
     type NinSubmitData,
 } from '~/composables/useLawyerOnboarding'
-
-/** Draft last_step values that imply NIN was already saved server-side */
-const STEPS_AFTER_NIN_VERIFICATION = new Set([
-    'professional_info',
-    'practice_info',
-    'review',
-    'submitted',
-    'approved'
-])
 
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
@@ -146,16 +138,27 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
     }, { immediate: true })
 
-    /** The server never returns the NIN itself; infer "already submitted" from last_step / flags. */
+    /**
+     * Whether a NIN has been saved for this application. The server never
+     * returns the NIN itself, only this fact (`nin_submitted` on the status
+     * endpoint, or a flag in the draft). It used to be guessed from the draft's
+     * last step ("a later step was reached, so the NIN must be saved"), which
+     * is wrong now that sections can be done in any order.
+     */
     function draftImpliesNinSubmitted(draftRoot: typeof draftDataResponse.value): boolean {
         const payload = draftRoot?.data
-        const lastStep = draftRoot?.last_step ?? (draftRoot as { lastStep?: string | null } | undefined)?.lastStep
-        if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) return true
         return (
             payload?.ninSubmitted === true ||
             (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted === true
         )
     }
+
+    const { data: statusResponse } = useLawyerOnboardingStatus({ enabled: import.meta.client })
+    watch(statusResponse, (status) => {
+        if (ninResubmitMode.value || ninVerification.verified) return
+        const saved = (status as { nin_submitted?: boolean } | null | undefined)?.nin_submitted
+        if (typeof saved === 'boolean') ninVerification.isSubmitted = saved
+    }, { immediate: true })
 
     const saveDraftState = async (stepKey: string) => {
         return new Promise<boolean>((resolve) => {
@@ -470,7 +473,21 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
     }))
 
+    /**
+     * Which sections of the application are complete, by the same rules Continue
+     * and submit use. The application home shows these as its task list.
+     * (Spread copies, not toRaw, so the checks re-run as the lawyer types.)
+     */
+    const sectionDone = computed(() => ({
+        personal: lawyerPersonalInfoSchema.safeParse({ ...personalInfo }).success,
+        nin: Boolean(ninVerification.verified || ninVerification.isSubmitted),
+        professional: lawyerProfessionalInfoSchema.safeParse({ ...professionalInfo }).success,
+        practice: createLawyerPracticeInfoSchema(professionalInfo.yearOfCall).safeParse({ ...practiceInfo }).success,
+    }))
+
     return {
+        sectionDone,
+        draftLoaded,
         personalInfo,
         ninVerification,
         professionalInfo,

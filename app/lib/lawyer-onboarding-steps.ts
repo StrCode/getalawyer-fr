@@ -40,19 +40,19 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
       'These details help us confirm who you are. They stay private — nothing here appears on your public profile.',
   },
   nin_verification: {
-    label: 'About you',
+    label: 'Identity',
     title: 'Confirm your NIN',
     description:
       'Add your National Identification Number so we can verify your identity before you join the platform.',
   },
   professional_info: {
-    label: 'Credentials & practice',
+    label: 'Bar credentials',
     title: 'Your bar credentials',
     description:
       'We use these to confirm you’re called to the Nigerian Bar.',
   },
   practice_info: {
-    label: 'Credentials & practice',
+    label: 'How you practise',
     title: 'How you practise',
     description:
       'Firm setup, the areas you focus on, and where you practise.',

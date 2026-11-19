@@ -30,7 +30,7 @@ const fieldLabelClass = 'text-sm'
 const fieldClass = 'gap-1.5'
 
 definePageMeta({
-  layout: 'onboarding-wizard',
+  layout: 'onboarding-lawyer',
   middleware: ['auth', 'lawyer-onboarding-guard'],
 })
 

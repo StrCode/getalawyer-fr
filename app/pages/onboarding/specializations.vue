@@ -1,130 +1,108 @@
+<script setup lang="ts">
+import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useClientOnboarding } from '~/composables/useClientOnboarding'
+import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
+
+/** Client onboarding, step 2: up to three practice areas, and the terms. */
+definePageMeta({
+  middleware: ['auth'],
+  layout: 'onboarding-client',
+})
+
+useHead({ title: 'Choose your legal interests' })
+
+const MAX = 3
+
+const store = useClientOnboardingStore()
+const storeState = store.clientState
+
+const legalFieldsEl = ref<HTMLElement | null>(null)
+watch(() => store.termsError, (error) => {
+  if (error) void nextTick(() => legalFieldsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
+})
+
+const { useSpecializations } = useClientOnboarding()
+const { data, isPending } = useSpecializations()
+const areas = computed(() => data.value?.specializations || [])
+
+const query = ref('')
+const visible = computed(() => {
+  const words = query.value.toLowerCase().split(/\s+/).filter(Boolean)
+  if (!words.length) return areas.value
+  return areas.value.filter((area: { name: string, description?: string, keywords?: string[] }) => {
+    const text = `${area.name} ${area.description ?? ''} ${(area.keywords ?? []).join(' ')}`.toLowerCase()
+    return words.some(word => text.includes(word))
+  })
+})
+
+const count = computed(() => storeState.specializationIds.length)
+const isSelected = (id: string) => storeState.specializationIds.includes(id)
+const isFull = computed(() => count.value >= MAX)
+
+function toggle(id: string) {
+  const chosen = storeState.specializationIds
+  if (chosen.includes(id)) storeState.specializationIds = chosen.filter(item => item !== id)
+  else if (!isFull.value) storeState.specializationIds = [...chosen, id]
+  if (storeState.specializationIds.length) store.validationError = null
+}
+
+/** The area picked last, described in a line under the list. */
+const lastPicked = computed(() => {
+  const id = storeState.specializationIds.at(-1)
+  return id ? areas.value.find((area: { id: string }) => area.id === id) ?? null : null
+})
+</script>
+
 <template>
-  <div class="w-full space-y-8 pb-20">
-    <OnboardingClientStepHeader
-      :step="2"
-      :total="2"
-      label="Legal needs"
-      title="Choose your legal interests"
-      description="Pick up to three areas. We'll use them to recommend lawyers who fit your situation."
-    />
+  <div>
+    <h1 class="text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">Choose your legal interests</h1>
+    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">Pick up to three areas. We use them to recommend lawyers who fit your situation.</p>
 
-    <!-- Selection status (Medium / Kit pattern) -->
-    <div class="space-y-3 text-center sm:text-left">
-      <p class="text-sm font-medium text-foreground">
-        <template v-if="selectedCount === 0">
-          Select at least one practice area
-        </template>
-        <template v-else-if="selectedCount < 3">
-          {{ selectedCount }} of 3 selected
-          <span class="font-normal text-muted-foreground">
-            · {{ slotsLeft }} more {{ slotsLeft === 1 ? 'slot' : 'slots' }} available
-          </span>
-        </template>
-        <template v-else>
-          3 of 3 selected
-          <span class="font-normal text-muted-foreground">
-            · remove one to choose a different area
-          </span>
-        </template>
-      </p>
-      <div
-        class="flex justify-center gap-1.5 sm:justify-start"
-        role="progressbar"
-        :aria-valuenow="selectedCount"
-        aria-valuemin="0"
-        aria-valuemax="3"
-        :aria-label="`${selectedCount} of 3 practice areas selected`"
-      >
-        <span
-          v-for="slot in 3"
-          :key="slot"
-          class="h-1.5 w-10 rounded-full transition-colors duration-300"
-          :class="slot <= selectedCount ? 'bg-primary' : 'bg-muted'"
-        />
-      </div>
+    <div v-if="isPending" class="mt-[1.6rem] flex flex-wrap gap-[0.4rem]" aria-busy="true" aria-label="Loading practice areas">
+      <Skeleton v-for="n in 9" :key="n" class="h-[2.6rem] w-32 rounded-full" />
     </div>
 
-    <!-- Search -->
-    <div class="relative w-full">
-      <HugeiconsIcon :icon="Search01Icon"
-        class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-      />
-      <Input
-        v-model="query"
-        type="search"
-        placeholder="Search practice areas..."
-        class="h-11 pl-9 text-base"
-        autocomplete="off"
-      />
-    </div>
-
-    <div v-if="isLoadingSpecializations" class="flex flex-wrap justify-center gap-2 sm:justify-start">
-      <Skeleton v-for="i in 12" :key="i" class="h-10 w-28 rounded-xl" />
-    </div>
-
-    <div
-      v-else-if="visibleSpecializations.length === 0"
-      class="rounded-lg border border-dashed border-border px-6 py-14 text-center"
-    >
-      <p class="text-sm text-muted-foreground">
-        No practice areas match
-        <span class="font-medium text-foreground">"{{ query }}"</span>.
-      </p>
-    </div>
-
-    <div v-else class="space-y-6">
-      <!-- Centered pill cloud (Kit / Care.com) -->
-      <div class="flex flex-wrap justify-center gap-2 sm:justify-start">
-        <button
-          v-for="spec in visibleSpecializations"
-          :key="spec.id"
-          type="button"
-          :disabled="isDisabled(spec.id)"
-          class="inline-flex items-center gap-1.5 rounded-md border h-8 px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          :class="
-            isSelected(spec.id)
-              ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-              : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground'
-          "
-          :title="spec.description"
-          @click="!isDisabled(spec.id) && toggle(spec.id)"
+    <template v-else>
+      <label v-if="areas.length > 8" for="area-filter" class="mt-[1.6rem] flex items-center gap-3 rounded-full border border-border bg-card py-[0.3rem] pr-[0.3rem] pl-4">
+        <CanopyGlyph name="search" :size="18" :stroke="2.2" class="flex-none text-muted-foreground" />
+        <span class="sr-only">Search practice areas</span>
+        <input
+          id="area-filter"
+          v-model="query"
+          type="search"
+          placeholder="Tenancy, divorce, unpaid salary…"
+          class="min-h-11 min-w-0 flex-1 bg-transparent text-[1rem] outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
         >
-          {{ spec.name }}
-          <HugeiconsIcon :icon="Tick01Icon"
-            v-if="isSelected(spec.id)"
-            class="size-3.5 shrink-0"
-            aria-hidden="true"
-          />
-          <HugeiconsIcon :icon="Add01Icon"
-            v-else
-            class="size-3.5 shrink-0 opacity-50"
-            aria-hidden="true"
-          />
-        </button>
+      </label>
 
+      <div role="group" aria-label="Practice areas" class="mt-[1.1rem] flex flex-wrap gap-[0.4rem]">
         <button
-          v-if="hiddenCount > 0"
+          v-for="area in visible"
+          :key="area.id"
           type="button"
-          class="inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-input bg-muted/30 h-8 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          @click="showAllSpecs = true"
+          :aria-pressed="isSelected(area.id)"
+          :disabled="isFull && !isSelected(area.id)"
+          class="min-h-[2.6rem] cursor-pointer rounded-full border border-border bg-card px-[0.95rem] text-[0.92rem] font-semibold transition-colors duration-200 hover:border-brand disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:border-border aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background"
+          @click="toggle(area.id)"
         >
-          +{{ hiddenCount }} more
+          {{ area.name }}
         </button>
+        <p v-if="visible.length === 0" class="py-2 text-muted-foreground">No practice area matches “{{ query.trim() }}”.</p>
       </div>
 
-      <!-- Context for last selection -->
-      <p
-        v-if="expandedSpec"
-        class="rounded-xl border border-border bg-muted/30 px-4 py-3 text-center text-sm leading-relaxed text-muted-foreground sm:text-left"
-      >
-        <span class="font-medium text-foreground">{{ expandedSpec.name }} — </span>
-        {{ expandedSpec.description }}
+      <p aria-live="polite" class="mt-[0.9rem] text-[0.85rem] font-semibold text-brand">
+        {{ count }} of {{ MAX }} selected<template v-if="isFull"> · remove one to choose a different area</template>
       </p>
-    </div>
+      <p v-if="lastPicked?.description" class="mt-[0.4rem] text-[0.92rem] text-muted-foreground">
+        <b class="font-semibold text-foreground">{{ lastPicked.name }}:</b> {{ lastPicked.description }}
+      </p>
+    </template>
 
-    <div ref="legalFieldsEl">
+    <div ref="legalFieldsEl" class="mt-[1.6rem] rounded-[1.1rem] border border-border bg-card p-4">
       <LegalAcceptanceFields
         variant="client"
+        embedded
         :terms-accepted="storeState.termsAccepted"
         :error="store.termsError"
         @update:terms-accepted="(v) => { storeState.termsAccepted = v }"
@@ -132,85 +110,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { Add01Icon, Search01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
-import { useClientOnboarding } from '~/composables/useClientOnboarding'
-import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
-definePageMeta({
-  middleware: ['auth'],
-  layout: 'onboarding-wizard',
-})
-
-const store = useClientOnboardingStore()
-const storeState = store.clientState
-
-const legalFieldsEl = ref<HTMLElement | null>(null)
-watch(() => store.termsError, (error) => {
-  if (error) {
-    nextTick(() => legalFieldsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
-  }
-})
-
-const query = ref('')
-
-const { useSpecializations } = useClientOnboarding()
-const { data: specializationsData, isPending: isLoadingSpecializations } = useSpecializations()
-
-const specializations = computed(() => specializationsData.value?.specializations || [])
-
-const showAllSpecs = ref(false)
-const FEATURED_LIMIT = 10
-
-const visibleSpecializations = computed(() => {
-  const q = query.value.trim().toLowerCase()
-  if (q) {
-    return specializations.value.filter(
-      (s: { name: string; description?: string }) =>
-        s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q),
-    )
-  }
-
-  if (showAllSpecs.value) {
-    return specializations.value
-  }
-
-  const selectedSpecs = specializations.value.filter((s) => storeState.specializationIds.includes(s.id))
-  const firstN = specializations.value.slice(0, FEATURED_LIMIT)
-
-  const combined = [...firstN]
-  selectedSpecs.forEach((s) => {
-    if (!combined.some((c) => c.id === s.id)) {
-      combined.push(s)
-    }
-  })
-  
-  return combined
-})
-
-const hiddenCount = computed(() => {
-  if (query.value.trim() || showAllSpecs.value) return 0
-  return Math.max(0, specializations.value.length - visibleSpecializations.value.length)
-})
-
-const selectedCount = computed(() => storeState.specializationIds.length)
-const slotsLeft = computed(() => Math.max(0, 3 - selectedCount.value))
-
-const expandedSpec = computed(() => {
-  const lastId = storeState.specializationIds.at(-1)
-  if (!lastId) return null
-  return specializations.value.find((s: { id: string }) => s.id === lastId) ?? null
-})
-
-const isSelected = (id: string) => storeState.specializationIds.includes(id)
-const isDisabled = (id: string) => !isSelected(id) && selectedCount.value >= 3
-
-const toggle = (id: string) => {
-  const specs = storeState.specializationIds
-  storeState.specializationIds = specs.includes(id)
-    ? specs.filter(s => s !== id)
-    : [...specs, id]
-}
-</script>
