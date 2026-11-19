@@ -385,10 +385,6 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
           </div>
         </div>
       </FieldSet>
-
-      <p :class="canopyHint">
-        Middle name is optional. Everything else is required.
-      </p>
     </div>
   </div>
 </template>

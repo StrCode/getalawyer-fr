@@ -35,6 +35,8 @@ const THEMED_ROUTES = new Set<string>([
   '/forgot-password',
   '/verify-otp',
   '/reset-password',
+  // any address that is not a page (pages/[...slug].vue)
+  '/:slug(.*)*',
   // a client's welcome steps (the `welcome` layout)
   '/welcome/location',
   '/welcome/legal-needs',

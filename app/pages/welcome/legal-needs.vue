@@ -99,10 +99,9 @@ const lastPicked = computed(() => {
       </p>
     </template>
 
-    <div ref="legalFieldsEl" class="mt-[1.6rem] rounded-[1.1rem] border border-border bg-card p-4">
+    <div ref="legalFieldsEl" class="mt-[1.6rem]">
       <LegalAcceptanceFields
         variant="client"
-        embedded
         :terms-accepted="storeState.termsAccepted"
         :error="store.termsError"
         @update:terms-accepted="(v) => { storeState.termsAccepted = v }"

@@ -128,6 +128,14 @@ export interface ApplicationStatusNotice {
   description: string
 }
 
+/**
+ * The refund policy as someone reads it before paying (the terms step and the
+ * checkout). After a failed verification, `VERIFICATION_FAILED_COPY.refundNote`
+ * says the same thing in the past tense.
+ */
+export const REFUND_POLICY_SUMMARY
+  = 'If we cannot verify you, your membership fee is refunded. The verification fee is kept to cover the check that was already run.'
+
 /** Centralized copy for NIN/SCN verification failure (pending page + notices). */
 export const VERIFICATION_FAILED_COPY = {
   title: 'Verification could not be completed',

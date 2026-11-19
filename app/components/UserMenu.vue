@@ -46,7 +46,7 @@ const afterSignOutBehavior = computed(
 
 const user = computed(() => session.value?.user ?? null)
 const isLawyer = computed(() => getSessionUserType(user.value) === 'lawyer')
-const profileMenuLabel = computed(() => (isLawyer.value ? 'Listing' : 'Profile'))
+const profileMenuLabel = computed(() => (isLawyer.value ? 'Your profile' : 'Profile'))
 const displayName = computed(() => user.value?.name || user.value?.email || 'User')
 const displayEmail = computed(() => user.value?.email || '')
 const avatarUrl = computed(() => (user.value as { image?: string } | null)?.image ?? '')

@@ -19,7 +19,7 @@ import { ApiError } from '~/lib/api/client'
 import { toast } from 'vue-sonner'
 import { queryKeys } from '~/lib/query-client'
 import { APPLICATION_HOME } from '~/lib/setup-paths'
-import { onboardingSubmittedAt, VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
+import { onboardingSubmittedAt, REFUND_POLICY_SUMMARY } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
@@ -149,7 +149,7 @@ const benefits = [
   'Zero commission on your fees',
 ] as const
 
-const verificationRefundNote = VERIFICATION_FAILED_COPY.refundNote
+const verificationRefundNote = REFUND_POLICY_SUMMARY
 
 // This page is for one state only: submitted, membership still to pay. In any
 // other state the application home is the place (it shows review, changes and
