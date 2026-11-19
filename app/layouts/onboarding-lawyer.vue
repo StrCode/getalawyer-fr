@@ -125,21 +125,24 @@ async function saveAndSignOut() {
 
 <template>
   <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col pt-[max(16px,env(safe-area-inset-top,0px))] font-text">
-    <div class="flex items-center justify-between gap-4 px-[clamp(0rem,3vw,2.5rem)] py-[0.4rem] safe-x">
-      <CanopyBrand condensed large />
-      <div class="flex items-center gap-1">
-        <span v-if="saveStatus" aria-live="polite" class="mr-2 inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground max-sm:hidden">
-          <i class="size-2 rounded-full" :class="store.autosave.status === 'error' ? 'bg-destructive' : 'bg-primary'" />{{ saveStatus }}
-        </span>
-        <CanopyThemeToggle />
-        <button
-          type="button"
-          class="inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
-          :disabled="busy || isSigningOut"
-          @click="saveAndSignOut"
-        >
-          {{ isSigningOut ? 'Signing out…' : editable ? 'Save and sign out' : 'Sign out' }}
-        </button>
+    <!-- side padding: the page gutter, plus room that grows with the window (none on phones, so the mark lines up with the page) -->
+    <div class="safe-x">
+      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
+        <CanopyBrand condensed large />
+        <div class="flex items-center gap-1">
+          <span v-if="saveStatus" aria-live="polite" class="mr-2 inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground max-sm:hidden">
+            <i class="size-2 rounded-full" :class="store.autosave.status === 'error' ? 'bg-destructive' : 'bg-primary'" />{{ saveStatus }}
+          </span>
+          <CanopyThemeToggle />
+          <button
+            type="button"
+            class="-mr-2 inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
+            :disabled="busy || isSigningOut"
+            @click="saveAndSignOut"
+          >
+            {{ isSigningOut ? 'Signing out…' : editable ? 'Save and sign out' : 'Sign out' }}
+          </button>
+        </div>
       </div>
     </div>
 

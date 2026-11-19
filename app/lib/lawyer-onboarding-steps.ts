@@ -37,7 +37,7 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
     label: 'About you',
     title: 'Tell us about yourself',
     description:
-      'These details help us confirm who you are. They stay private — nothing here appears on your public profile.',
+      'These details help us confirm who you are. Only your name appears on your public profile; the rest stays private.',
   },
   nin_verification: {
     label: 'Identity',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown01Icon, Cancel01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref, useId, watch } from 'vue'
 import {
@@ -34,13 +34,11 @@ import { useSpecializations } from '~/composables/useSpecializations'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
 import type { PracticeAreaSelection } from '~/lib/practice-areas'
-import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field'
@@ -60,11 +58,6 @@ type PracticeAreaOption = {
   name: string
   description?: string | null
 }
-
-const fieldControlClass =
-  'h-11 w-full rounded-xl border-border/50 bg-background text-base shadow-none focus:bg-background'
-const fieldLabelClass = 'text-sm'
-const fieldClass = 'gap-2'
 
 definePageMeta({
   layout: 'onboarding-lawyer',
@@ -243,7 +236,7 @@ watch(additionalStateQuery, (q) => {
 })
 
 const listboxItemClass = cn(
-  'relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden',
+  'relative flex cursor-default select-none items-center gap-2 rounded-[0.6rem] px-2.5 py-2 text-[0.95rem] outline-hidden',
   'data-highlighted:bg-accent data-highlighted:text-accent-foreground',
   'data-disabled:pointer-events-none data-disabled:opacity-50',
 )
@@ -251,14 +244,12 @@ const listboxItemClass = cn(
 </script>
 
 <template>
-  <div v-if="isLoadingSpecs" class="flex flex-col gap-4 py-8">
-    <Skeleton class="h-10 w-full rounded-lg" />
-    <div class="grid gap-4 sm:grid-cols-2">
-      <Skeleton v-for="i in 4" :key="i" class="h-24 rounded-xl" />
-    </div>
+  <div v-if="isLoadingSpecs" class="grid gap-[0.9rem] pt-4" aria-busy="true" aria-label="Loading practice areas">
+    <Skeleton class="h-10 w-2/3 rounded-full" />
+    <Skeleton v-for="i in 4" :key="i" class="h-[3.25rem] rounded-[1rem]" />
   </div>
 
-  <div v-else class="flex w-full flex-col gap-6">
+  <div v-else>
     <OnboardingClientStepHeader
       :step="step.step"
       :total="step.total"
@@ -267,29 +258,26 @@ const listboxItemClass = cn(
       :description="step.description"
     />
 
-    <Card class="gap-0 p-6 sm:p-8">
-      <FieldGroup class="gap-6">
-        <FieldSet class="gap-4">
-          <FieldGroup class="gap-5">
+    <div :class="canopyForm">
+        <FieldSet :class="canopyGroup">
+          <legend :class="canopyLegend">Your practice</legend>
+          <div class="grid gap-[0.9rem]">
             <form.Field v-slot="{ field }" name="soloPractitioner">
-              <Field :class="fieldClass">
-                <Label
-                  :for="soloPractitionerFieldId"
-                  class="flex cursor-pointer items-start gap-3 rounded-xl border border-border/50 bg-background p-4 transition-colors has-data-[state=checked]:border-primary/40 has-data-[state=checked]:bg-primary/5"
-                >
+              <Field :class="canopyField">
+                <Label :for="soloPractitionerFieldId" :class="canopyChoice">
                   <Checkbox
                     :id="soloPractitionerFieldId"
                     :model-value="field.state.value === true"
-                    class="mt-0.5"
+                    :class="canopyCheckbox"
                     @update:model-value="(v) => {
                       field.handleChange(!!v)
                       field.handleBlur()
                     }"
                   />
                   <span class="grid gap-1">
-                    <span class="text-sm font-medium text-foreground">I am a solo practitioner</span>
-                    <span class="text-xs text-muted-foreground">
-                      You practise under your own name — no firm on your profile.
+                    <span class="text-[0.95rem] leading-snug font-semibold text-foreground">I am a solo practitioner</span>
+                    <span class="text-[0.85rem] leading-normal font-normal text-muted-foreground">
+                      You practise under your own name, with no firm on your profile.
                     </span>
                   </span>
                 </Label>
@@ -298,16 +286,16 @@ const listboxItemClass = cn(
 
             <form.Field v-if="!formValues.soloPractitioner" v-slot="{ field }" name="firmName">
               <Field
-                :class="fieldClass"
+                :class="canopyField"
                 :data-invalid="isInvalid(field)"
               >
-                <FieldLabel :for="field.name" :class="fieldLabelClass">
+                <FieldLabel :for="field.name" :class="canopyLabel">
                   Firm or practice name
                 </FieldLabel>
                 <Input
                   :id="field.name"
                   :model-value="field.state.value"
-                  :class="fieldControlClass"
+                  :class="authInput"
                   placeholder="e.g. Adeyemi & Partners"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
@@ -316,21 +304,20 @@ const listboxItemClass = cn(
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
-          </FieldGroup>
+          </div>
         </FieldSet>
 
-        <FieldSet class="gap-4 border-t border-border/40 pt-6">
+        <FieldSet :class="canopyGroup">
+          <legend :class="canopyLegend">Practice areas</legend>
           <form.Field v-slot="{ field }" name="practiceAreas">
             <Field
-              :class="fieldClass"
+              :class="canopyField"
               :data-invalid="isInvalid(field)"
             >
-              <FieldLabel :class="fieldLabelClass">
-                Practice areas
+              <FieldLabel :class="canopyLabel">
+                What you take on
+                <span class="font-normal text-muted-foreground">{{ selectedCount }} of 5 chosen</span>
               </FieldLabel>
-              <FieldDescription>
-                Choose up to 5. You can add years of experience later on your profile.
-              </FieldDescription>
 
               <Combobox
                 :model-value="selectedPracticeAreaOptions"
@@ -345,11 +332,7 @@ const listboxItemClass = cn(
                       type="button"
                       variant="outline"
                       role="combobox"
-                      :class="[
-                        fieldControlClass,
-                        'justify-between px-3 font-normal',
-                        !selectedCount && 'text-muted-foreground',
-                      ]"
+                      :class="[canopyTrigger, !selectedCount && 'text-placeholder hover:text-placeholder']"
                       :aria-invalid="isInvalid(field) || undefined"
                     >
                       <span class="truncate">{{ practiceAreasTriggerLabel }}</span>
@@ -358,7 +341,7 @@ const listboxItemClass = cn(
                   </ComboboxTrigger>
                 </ComboboxAnchor>
 
-                <ComboboxList class="w-(--reka-combobox-trigger-width) p-0" align="start">
+                <ComboboxList class="w-(--reka-combobox-trigger-width) p-0" :class="canopyPanel" align="start">
                   <ComboboxInput placeholder="Search legal areas…" />
                   <ComboboxEmpty>No practice area found.</ComboboxEmpty>
                   <ComboboxGroup class="max-h-60 overflow-y-auto p-1">
@@ -389,36 +372,33 @@ const listboxItemClass = cn(
                 </ComboboxList>
               </Combobox>
 
-              <p class="text-xs text-muted-foreground">
-                Selected {{ selectedCount }}/5
-              </p>
+              <ul v-if="selectedCount > 0" class="flex flex-wrap gap-2" aria-label="Chosen practice areas">
+                <li v-for="opt in selectedPracticeAreaOptions" :key="opt.id">
+                  <button type="button" :class="canopyChip" class="cursor-pointer" :aria-label="`Remove ${opt.name}`" @click="removePracticeArea(opt.id)">
+                    {{ opt.name }}
+                    <CanopyGlyph name="close" :size="12" :stroke="2.6" />
+                  </button>
+                </li>
+              </ul>
 
-              <div v-if="selectedCount > 0" class="flex flex-wrap gap-2">
-                <button
-                  v-for="opt in selectedPracticeAreaOptions"
-                  :key="opt.id"
-                  type="button"
-                  class="inline-flex cursor-pointer items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
-                  @click="removePracticeArea(opt.id)"
-                >
-                  {{ opt.name }}
-                  <HugeiconsIcon :icon="Cancel01Icon" class="size-3" />
-                </button>
-              </div>
+              <FieldDescription :class="canopyHint">
+                Choose up to 5. You can add years of experience later on your profile.
+              </FieldDescription>
 
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
         </FieldSet>
 
-        <FieldSet class="gap-4 border-t border-border/40 pt-6">
-          <FieldGroup class="gap-5">
+        <FieldSet :class="canopyGroup">
+          <legend :class="canopyLegend">Where you practise</legend>
+          <div class="grid gap-[0.9rem]">
             <form.Field v-slot="{ field }" name="primaryState">
               <Field
-                :class="fieldClass"
+                :class="canopyField"
                 :data-invalid="isInvalid(field)"
               >
-                <FieldLabel :for="field.name" :class="fieldLabelClass">
+                <FieldLabel :for="field.name" :class="canopyLabel">
                   Primary state
                 </FieldLabel>
                 <Select
@@ -427,18 +407,18 @@ const listboxItemClass = cn(
                 >
                   <SelectTrigger
                     :id="field.name"
-                    :class="fieldControlClass"
+                    :class="canopySelect"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select your main state" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent :class="canopyPanel">
                     <SelectItem v-for="s in NIGERIA_STATE_NAMES" :key="s" :value="s">
                       {{ s }}
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <FieldDescription>
+                <FieldDescription :class="canopyHint">
                   Your main base for client matching.
                 </FieldDescription>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
@@ -447,11 +427,11 @@ const listboxItemClass = cn(
 
             <form.Field v-slot="{ field }" name="additionalPracticeStates">
               <Field
-                :class="fieldClass"
+                :class="canopyField"
                 :data-invalid="isInvalid(field)"
                 :data-disabled="!formValues.primaryState || undefined"
               >
-                <FieldLabel :class="fieldLabelClass">
+                <FieldLabel :class="canopyLabel">
                   Also practise in
                   <span class="font-normal text-muted-foreground">(optional)</span>
                 </FieldLabel>
@@ -469,16 +449,16 @@ const listboxItemClass = cn(
                         :model-value="additionalStates"
                         :disabled="!formValues.primaryState"
                         :aria-invalid="isInvalid(field)"
-                        class="h-auto min-h-11 w-full gap-1.5 rounded-xl border-border/50 bg-background px-2 py-1.5 shadow-none"
+                        class="h-auto min-h-[3.25rem] w-full gap-1.5 rounded-[1rem] border-border bg-card px-2 py-1.5 shadow-none focus-within:border-brand focus-within:ring-4 focus-within:ring-mint"
                         @update:model-value="(v) => syncAdditionalStates(v, field)"
                       >
                         <TagsInputItem
                           v-for="item in stateTags"
                           :key="String(item)"
                           :value="item"
-                          class="rounded-md border border-primary/25 bg-primary/10 text-primary"
+                          class="h-8 rounded-full bg-mint pl-1 text-deep"
                         >
-                          <TagsInputItemText class="text-xs font-medium" />
+                          <TagsInputItemText class="text-[0.85rem] font-semibold" />
                           <TagsInputItemDelete />
                         </TagsInputItem>
 
@@ -486,7 +466,7 @@ const listboxItemClass = cn(
                           <TagsInputInput
                             :placeholder="formValues.primaryState ? 'Add other states…' : 'Select primary state first'"
                             :disabled="!formValues.primaryState"
-                            class="min-h-8 text-base placeholder:text-muted-foreground"
+                            class="min-h-8 px-2 text-[1.02rem] placeholder:text-placeholder"
                             @keydown.enter.prevent
                             @keydown.down="additionalStatesPopoverOpen = true"
                           />
@@ -508,6 +488,7 @@ const listboxItemClass = cn(
                     </PopoverAnchor>
                     <PopoverContent
                       class="w-(--reka-popover-trigger-width) p-1"
+                      :class="canopyPanel"
                       align="start"
                       @open-auto-focus.prevent
                     >
@@ -537,15 +518,14 @@ const listboxItemClass = cn(
                     </PopoverContent>
                   </ListboxRoot>
                 </Popover>
-                <FieldDescription>
-                  Other states where you’re licensed or actively practising.
+                <FieldDescription :class="canopyHint">
+                  Other states where you actively practise.
                 </FieldDescription>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
-          </FieldGroup>
+          </div>
         </FieldSet>
-      </FieldGroup>
-    </Card>
+    </div>
   </div>
 </template>
