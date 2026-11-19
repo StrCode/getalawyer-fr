@@ -24,7 +24,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Find a lawyer · getalawyer',
+  title: 'Find a lawyer',
   meta: [
     { name: 'description', content: 'Search verified Nigerian lawyers by practice area and state, and message one free.' },
     { name: 'robots', content: 'noindex' },

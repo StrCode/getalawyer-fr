@@ -18,7 +18,7 @@ const betterAuthUrl =
  * to light until it is rebuilt and checked in dark. Add a route path here when
  * its page moves to the `site` (or rebuilt `auth`) layout.
  */
-const THEMED_ROUTES = new Set<string>(['/', '/find-lawyers'])
+const THEMED_ROUTES = new Set<string>(['/', '/find-lawyers', '/lawyers/:id()'])
 
 /** A committed variable font in public/fonts, self-hosted through @nuxt/fonts. */
 function localVariableFont(name: string, file: string, weight: string, fallbacks?: string[]) {

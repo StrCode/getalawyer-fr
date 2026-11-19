@@ -15,6 +15,8 @@ export interface LawyerPersonalInfo {
 export interface LawyerProfessionalInfo {
   barNumber?: string
   yearOfCall?: number
+  /** True once an admin has matched the lawyer against the Supreme Court roll (absent on older backends). */
+  enrolmentVerified?: boolean
   lawSchool?: string
   university?: string
   llbYear?: number
