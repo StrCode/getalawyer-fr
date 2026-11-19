@@ -1,114 +1,101 @@
 <template>
   <AuthFormShell
-    eyebrow="Account recovery"
-    :title="submitted ? 'Check your inbox' : 'Forgot your password?'"
+    :title="submitted ? (authMethod === 'phone' ? 'Check your phone' : 'Check your email') : 'Forgot your password?'"
     :description="submitted
       ? undefined
       : authMethod === 'phone'
         ? 'Enter your phone number and we\'ll send you a reset code.'
         : 'Enter your email and we\'ll send you a reset code.'"
   >
-    <div
-      v-if="submitted"
-      role="status"
-      class="mb-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4"
-    >
-      <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mt-0.5 size-5 shrink-0 text-primary" />
-      <div>
-        <p class="mb-0.5 text-base font-medium text-foreground">
-          {{ authMethod === 'phone' ? 'Check your phone' : 'Check your email' }}
-        </p>
-        <p class="text-base leading-relaxed text-muted-foreground">
-          We&apos;ve sent a verification code to
-          <strong class="text-foreground">{{ submittedIdentifier }}</strong>.
-        </p>
-      </div>
-    </div>
+    <template #back>
+      <NuxtLink to="/login" :class="authBack">← Back to sign in</NuxtLink>
+    </template>
+    <template v-if="submitted" #description>
+      <span role="status">We sent a 6-digit code to <b class="text-foreground">{{ submittedIdentifier }}</b>.</span>
+    </template>
 
-    <div v-if="submitted">
-      <Button class="h-12 w-full cursor-pointer" size="lg" @click="goToVerifyOTP">
-        Enter verification code
-      </Button>
-    </div>
+    <AuthSubmit v-if="submitted" type="button" @click="goToVerifyOTP">
+      Enter the code
+    </AuthSubmit>
 
-    <form v-else @submit.prevent="form.handleSubmit">
-      <FieldGroup class="space-y-5">
-        <AuthMethodTabs v-model="authMethod" :disabled="isSubmitting || submitted">
-          <template #email>
-            <div class="space-y-5">
-              <div
-                v-if="tempEmailWarning"
-                class="rounded-xl border border-warning/30 bg-warning/5 p-4 text-sm text-warning-subtle-foreground"
-              >
-                This account uses phone sign-in. Switch to the <strong>Phone</strong> tab to reset your password.
+    <form v-else novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <!-- Email or phone, switched with a quiet link in the label row as on
+             sign in. Both fields stay mounted (v-show) so each mounts once. -->
+        <div v-show="authMethod === 'email'" class="grid gap-[1.1rem]">
+          <div
+            v-if="tempEmailWarning"
+            class="rounded-[1rem] border border-warning/30 bg-warning/5 p-4 text-sm text-warning-subtle-foreground"
+          >
+            This account signs in with a phone number.
+            <button type="button" :class="authLink" @click="authMethod = 'phone'">Use phone instead</button>
+            to reset your password.
+          </div>
+
+          <form.Field v-slot="{ field }" name="email">
+            <Field :data-invalid="isInvalid(field)">
+              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
+                <FieldLabel :for="field.name" class="w-auto font-semibold">Email address</FieldLabel>
+                <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'phone'">
+                  Use phone instead
+                </button>
               </div>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                type="email"
+                inputmode="email"
+                placeholder="alex@example.com"
+                autocomplete="email"
+                :class="authInput"
+                :aria-invalid="isInvalid(field)"
+                :disabled="isSubmitting"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => { field.handleChange(v as any); checkTempEmail(v as string) }"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
 
-              <form.Field v-slot="{ field }" name="email">
-                <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name">Email address</FieldLabel>
-                  <Input
-                    :id="field.name"
-                    :name="field.name"
-                    :model-value="field.state.value"
-                    type="email"
-                    placeholder="alex@example.com"
-                    autocomplete="email"
-                    class="h-11 text-base"
-                    :aria-invalid="isInvalid(field)"
-                    :disabled="isSubmitting"
-                    @blur="field.handleBlur"
-                    @update:model-value="(v) => { field.handleChange(v as any); checkTempEmail(v as string) }"
-                  />
-                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                </Field>
-              </form.Field>
-            </div>
-          </template>
-
-          <template #phone>
-            <form.Field v-slot="{ field }" name="phone">
-              <Field :data-invalid="isInvalid(field)">
-                <AuthPhoneInput
-                  :model-value="field.state.value"
-                  :invalid="isInvalid(field)"
-                  :disabled="isSubmitting"
-                  @blur="field.handleBlur"
-                  @update:model-value="(v) => field.handleChange(v as any)"
-                />
-                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-              </Field>
-            </form.Field>
-          </template>
-        </AuthMethodTabs>
+        <div v-show="authMethod === 'phone'">
+          <form.Field v-slot="{ field }" name="phone">
+            <Field :data-invalid="isInvalid(field)">
+              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
+                <span class="font-semibold">Phone number</span>
+                <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'email'">
+                  Use email instead
+                </button>
+              </div>
+              <AuthPhoneInput
+                label=""
+                :model-value="field.state.value"
+                :invalid="isInvalid(field)"
+                :disabled="isSubmitting"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(v as any)"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
 
         <AuthFormError :message="apiError" />
 
-        <Button type="submit" class="h-12 w-full cursor-pointer gap-2" size="lg" :disabled="isSubmitting || tempEmailWarning">
-          <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
-          <span>{{ isSubmitting ? 'Sending…' : 'Send reset code' }}</span>
-        </Button>
+        <AuthSubmit :loading="isSubmitting" :disabled="tempEmailWarning" class="mt-[0.3rem]">
+          {{ isSubmitting ? 'Sending…' : 'Send reset code' }}
+        </AuthSubmit>
       </FieldGroup>
     </form>
-
-    <template #after>
-      <p class="text-center text-base">
-        <NuxtLink to="/login" class="font-medium text-primary underline-offset-4 hover:underline">
-          Back to login
-        </NuxtLink>
-      </p>
-    </template>
   </AuthFormShell>
 </template>
 
 <script setup lang="ts">
-import { CheckmarkCircle01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import type { AuthMethod } from '@/components/auth/MethodTabs.vue'
 import { authClient } from '~/lib/auth-client'
 import { isTempPhoneEmail } from '~/lib/auth-constants'
 import { isValidNgPhone } from '~/lib/phone'
@@ -120,11 +107,13 @@ definePageMeta({
   authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
 
+useHead({ title: 'Forgot your password' })
+
 const route = useRoute()
 const router = useRouter()
 const { requestPhonePasswordReset } = usePhoneAuth()
 
-const authMethod = ref<AuthMethod>(
+const authMethod = ref<'email' | 'phone'>(
   route.query.method === 'phone' ? 'phone' : 'email',
 )
 

@@ -3,6 +3,7 @@ import {
   isOnboardingIncomplete,
   type SessionUserWithOnboarding,
 } from '~/lib/session-user'
+import { isSetupPath, setupHomeFor } from '~/lib/setup-paths'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const { session, isPending, refetchSession } = useAuth()
@@ -33,7 +34,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   let user = session.value.user as SessionUserWithOnboarding
 
   if (isLawyerOrClientUser(user)) {
-    // Stale session after onboarding API: refetch before sending to /onboarding again
+    // Stale session after onboarding API: refetch before sending them back to set-up
     if (
       import.meta.client &&
       isOnboardingIncomplete(user) &&
@@ -44,11 +45,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (isOnboardingIncomplete(user)) {
-      const inOnboardingFlow = to.path.startsWith('/onboarding')
-      if (!inOnboardingFlow) {
-        return navigateTo('/onboarding', { replace: true })
+      // Not set up yet: lawyers finish their application, clients their welcome steps.
+      if (!isSetupPath(to.path)) {
+        return navigateTo(setupHomeFor(user), { replace: true })
       }
-    } else if (to.path.startsWith('/onboarding')) {
+    } else if (isSetupPath(to.path)) {
       return navigateTo('/dashboard', { replace: true })
     }
   }

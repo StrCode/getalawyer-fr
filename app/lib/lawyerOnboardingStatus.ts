@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from '~/utils/site-facts'
 /**
  * Normalizes GET /api/onboarding/status payloads for onboarding UI.
  */
@@ -136,7 +137,7 @@ export const VERIFICATION_FAILED_COPY = {
     'If you paid, your membership fee is refunded. The verification fee is kept to cover the check that was already run.',
   resubmitTitle: 'Start a new application',
   resubmitDescription:
-    'You can correct your details and submit again on the same account. Your saved draft is kept so you can edit what needs fixing. After you resubmit, you’ll pay the first-year total again (membership + verification fee) before review.',
+    'You can correct your details and submit again on the same account. Your saved draft is kept so you can edit what needs fixing. After you resubmit, you’ll pay the first payment again (membership + verification fee) before review.',
   resubmitSteps: [
     'Update the details that failed verification (NIN and/or SCN).',
     'Review and submit the application again.',
@@ -144,7 +145,7 @@ export const VERIFICATION_FAILED_COPY = {
   ],
   ctaLabel: 'Start a new application',
   supportLabel: 'Questions?',
-  supportEmail: 'support@getalawyer.ng',
+  supportEmail: SUPPORT_EMAIL,
 } as const
 
 /** Human-readable application decision for post-submit subscription and status pages. */

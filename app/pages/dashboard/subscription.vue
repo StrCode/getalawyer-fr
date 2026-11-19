@@ -4,7 +4,6 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import { ApiError } from '~/lib/api/client'
 import {
-  formatNairaAmount,
   formatSubscriptionStatusLabel,
   getSubscriptionPaymentFailureMessage,
   hasPendingCheckoutFailure,
@@ -12,6 +11,9 @@ import {
   hadPriorMembership,
   isExpiredMembership,
   needsMembershipRenewal,
+  pickPlanKey,
+  plansOnSale,
+  useChangeSubscriptionPlan,
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -24,11 +26,21 @@ import {
 } from '~/lib/lawyerOnboardingStatus'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import ButtonBusy from '@/components/ButtonBusy.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import SubscriptionCheckoutPanel from '@/components/subscription/SubscriptionCheckoutPanel.vue'
 import SubscriptionPaymentHistoryCard from '@/components/subscription/SubscriptionPaymentHistoryCard.vue'
 import SubscriptionPlanCard from '@/components/subscription/SubscriptionPlanCard.vue'
+import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
 import SubscriptionStatusBanner from '@/components/subscription/SubscriptionStatusBanner.vue'
 import type { SubscriptionBanner } from '@/components/subscription/SubscriptionStatusBanner.vue'
 
@@ -112,35 +124,39 @@ const nextBillingLabel = computed(() =>
   formatBillingDate(subscription.value?.nextBillingDate),
 )
 
-const catalogPriceNaira = computed(
-  () =>
-    subscription.value?.renewalPriceNaira
-    ?? pricing.value?.subscriptionPriceNaira
-    ?? null,
+// ---- plans ----
+// Every plan on sale comes from the pricing response; nothing about the set is assumed.
+const plans = computed(() => plansOnSale(pricing.value))
+const verificationFeeNaira = computed(() => pricing.value?.verificationAdminFeeNaira ?? 0)
+
+/** The plan to pay for in the checkout panel (first payment, or renewal after a lapse). */
+const checkoutPlanKey = ref<string | null>(null)
+// Start on the plan the lawyer asked to move to, else the one they were on (or
+// began paying for), else the one picked on the pricing page, else the default.
+watch(
+  [plans, () => subscription.value?.nextPlan?.key, () => subscription.value?.plan?.key],
+  ([list, requestedKey, currentKey]) => {
+    if (checkoutPlanKey.value && list.some(plan => plan.key === checkoutPlanKey.value)) return
+    checkoutPlanKey.value = pickPlanKey(list, requestedKey, currentKey, readPreferredPlan())
+  },
+  { immediate: true },
 )
 
-const firstPaymentTotalNaira = computed(() => {
-  const p = pricing.value
-  if (!p) return null
-  if (Number.isFinite(p.firstPaymentTotalNaira) && p.firstPaymentTotalNaira! > 0)
-    return p.firstPaymentTotalNaira!
-  return p.subscriptionPriceNaira + p.verificationAdminFeeNaira
-})
-
+/** What the next automatic renewal charges, as the status endpoint reports it. */
+const renewalPriceNaira = computed(
+  () => subscription.value?.renewalPriceNaira ?? null,
+)
 const lastPaidPriceNaira = computed(() => subscription.value?.priceNaira ?? null)
-const renewalPriceNaira = computed(() => catalogPriceNaira.value)
 
+/** The catalog price moved since the last payment, for no reason the lawyer chose. */
 const showPriceChangedNotice = computed(() => {
   const last = lastPaidPriceNaira.value
   const next = renewalPriceNaira.value
   if (last == null || next == null || last === next) return false
-  if (
-    firstPaymentTotalNaira.value != null
-    && last === firstPaymentTotalNaira.value
-    && next === pricing.value?.subscriptionPriceNaira
-  ) {
-    return false
-  }
+  // A requested plan change explains the difference; the card says so itself.
+  if (subscription.value?.nextPlan) return false
+  // The first payment included the one-off verification fee.
+  if (last === next + verificationFeeNaira.value) return false
   return true
 })
 
@@ -183,40 +199,83 @@ const membershipActionTitle = computed(() =>
   isRenewal.value ? 'Renew membership' : 'Activate membership',
 )
 
-const membershipActionButtonLabel = computed(() => {
-  if (isRenewal.value) {
-    return renewalPriceNaira.value != null
-      ? `Renew · ${formatNairaAmount(renewalPriceNaira.value)}`
-      : 'Renew membership'
-  }
-  if (firstPaymentTotalNaira.value != null)
-    return `Pay ${formatNairaAmount(firstPaymentTotalNaira.value)}`
-  return 'Pay annual subscription'
-})
-
 const canRetryPayment = computed(() => {
   const status = subscription.value?.status
   if (!status) return true
   return ['pending', 'failed_renewal', 'expired', 'cancelled', 'refunded'].includes(status)
 })
 
-const showActivatePanel = computed(
+const canPay = computed(
+  () => !hasActiveSubscription.value && canRetryPayment.value && plans.value.length > 0,
+)
+const hasChoice = computed(() => plans.value.length > 1)
+/** A banner about a lapsed or failed payment is showing (the application notice outranks it). */
+const paymentBannerShown = computed(
   () =>
-    !hasActiveSubscription.value
-    && canRetryPayment.value
-    && !hasRenewalIssue.value
-    && !hasCheckoutFailure.value
-    && !showExpiredBanner.value,
+    !applicationNotice.value
+    && (showExpiredBanner.value || hasRenewalIssue.value || hasCheckoutFailure.value),
+)
+// With plans to choose from, payment always goes through the checkout panel, so
+// nobody is charged for a plan they never saw; the banner's button leads there.
+// With a single plan there is nothing to choose, so the banner pays directly
+// and the panel would only repeat it.
+const showCheckoutPanel = computed(
+  () => canPay.value && (hasChoice.value || !paymentBannerShown.value),
 )
 
-const checkoutPriceLabel = computed(() => {
-  const amount = isRenewal.value ? renewalPriceNaira.value : firstPaymentTotalNaira.value
-  return amount != null ? formatNairaAmount(amount) : null
-})
+function onBannerAction() {
+  if (!hasChoice.value) {
+    void startPayment()
+    return
+  }
+  document.getElementById('membership-checkout')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
-const verificationFeeLabel = computed(() =>
-  pricing.value ? formatNairaAmount(pricing.value.verificationAdminFeeNaira) : null,
+// ---- change plan (takes effect at the next renewal) ----
+const { mutateAsync: changePlan, isPending: changePlanPending } = useChangeSubscriptionPlan()
+const changePlanOpen = ref(false)
+const changePlanKey = ref<string | null>(null)
+/** The plan the next renewal is set to: a requested change, else the current plan. */
+const scheduledPlanKey = computed(
+  () => subscription.value?.nextPlan?.key ?? subscription.value?.plan?.key ?? null,
 )
+const canChangePlan = computed(
+  () => canManageAutoRenew.value && plans.value.length > 1 && Boolean(subscription.value?.plan),
+)
+
+function openChangePlan() {
+  changePlanKey.value = pickPlanKey(plans.value, scheduledPlanKey.value)
+  changePlanOpen.value = true
+}
+
+async function confirmChangePlan() {
+  const key = changePlanKey.value
+  if (!key || key === scheduledPlanKey.value) return
+  try {
+    const result = await changePlan(key)
+    if (result.nextPlan) {
+      const when = formatBillingDate(result.effectiveFrom)
+      toast.success(`Moving to ${result.nextPlan.name}`, {
+        description: when
+          ? `Your plan changes on ${when}. Nothing is charged until then.`
+          : 'Your plan changes at your next renewal. Nothing is charged until then.',
+      })
+    }
+    else {
+      toast.success(`Staying on ${result.plan.name}`, {
+        description: 'The plan change was cancelled.',
+      })
+    }
+    changePlanOpen.value = false
+  }
+  catch (error) {
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : 'Could not change your plan. Please try again.'
+    toast.error('Plan not changed', { description: message })
+  }
+}
 
 const paymentBusy = computed(() => navigatingToPayment.value || paymentInitPending.value)
 
@@ -234,7 +293,7 @@ const banner = computed<SubscriptionBanner | null>(() => {
     }
   }
 
-  const retryLabel = canRetryPayment.value ? 'Renew membership' : null
+  const retryLabel = canPay.value ? (hasChoice.value ? 'Choose a plan' : 'Renew membership') : null
 
   if (showExpiredBanner.value) {
     if (isExpired.value) {
@@ -266,7 +325,7 @@ const banner = computed<SubscriptionBanner | null>(() => {
       tone: 'warning',
       message: 'Last payment attempt didn\'t complete',
       detail: paymentFailureMessage.value,
-      actionLabel: 'Try again',
+      actionLabel: canPay.value ? (hasChoice.value ? 'Choose a plan' : 'Try again') : null,
     }
   }
 
@@ -278,7 +337,7 @@ async function handleAutoRenewChange(enabled: boolean) {
     await updateAutoRenew(enabled)
     toast.success(enabled ? 'Auto-renew turned on' : 'Auto-renew turned off', {
       description: enabled
-        ? 'Your membership will renew automatically at the current annual rate.'
+        ? 'Your membership will renew automatically at the end of each term.'
         : 'Your membership will not renew automatically. You can pay manually before it expires.',
     })
   }
@@ -294,8 +353,9 @@ async function handleAutoRenewChange(enabled: boolean) {
 async function startPayment() {
   navigatingToPayment.value = true
   try {
-    const data = await initializeSubscription()
+    const data = await initializeSubscription(checkoutPlanKey.value)
     if (data?.redirectUrl) {
+      forgetPreferredPlan()
       await navigateTo(data.redirectUrl, { external: true })
       return
     }
@@ -321,7 +381,7 @@ async function startPayment() {
     <DashboardPageHeader
       eyebrow="Account"
       title="Subscription"
-      description="Your annual membership and invoices."
+      description="Your membership and invoices."
     >
       <template #actions>
         <Badge
@@ -363,7 +423,7 @@ async function startPayment() {
         v-if="banner"
         :banner="banner"
         :loading="paymentBusy"
-        @action="startPayment"
+        @action="onBannerAction"
       />
 
       <SubscriptionPlanCard
@@ -379,21 +439,59 @@ async function startPayment() {
         :can-manage-auto-renew="canManageAutoRenew"
         :auto-renew-pending="autoRenewPending"
         :days-remaining="subscription?.daysRemaining"
+        :can-change-plan="canChangePlan"
         @update:auto-renew="handleAutoRenewChange"
+        @change-plan="openChangePlan"
       />
 
       <SubscriptionCheckoutPanel
-        v-if="showActivatePanel"
+        v-if="showCheckoutPanel"
+        v-model="checkoutPlanKey"
         :title="membershipActionTitle"
-        :price-label="checkoutPriceLabel"
+        :plans="plans"
         :is-renewal="isRenewal"
-        :verification-fee-label="verificationFeeLabel"
-        :button-label="membershipActionButtonLabel"
+        :verification-fee-naira="verificationFeeNaira"
         :loading="paymentBusy"
         @pay="startPayment"
       />
 
       <SubscriptionPaymentHistoryCard />
+
+      <Dialog v-model:open="changePlanOpen">
+        <DialogContent class="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change plan</DialogTitle>
+            <DialogDescription>
+              Nothing is charged now. The plan you choose starts when your current term ends<template v-if="nextBillingLabel"> on {{ nextBillingLabel }}</template>.
+            </DialogDescription>
+          </DialogHeader>
+          <SubscriptionPlanPicker
+            v-model="changePlanKey"
+            :plans="plans"
+            label="Plan from your next renewal"
+            :current-key="subscription?.plan?.key"
+            :disabled="changePlanPending"
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              class="cursor-pointer"
+              :disabled="changePlanPending"
+              @click="changePlanOpen = false"
+            >
+              Cancel
+            </Button>
+            <ButtonBusy
+              class="cursor-pointer"
+              :loading="changePlanPending"
+              :disabled="!changePlanKey || changePlanKey === scheduledPlanKey"
+              @click="confirmChangePlan"
+            >
+              {{ changePlanKey && changePlanKey === subscription?.plan?.key ? 'Keep current plan' : 'Change plan' }}
+            </ButtonBusy>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </template>
   </div>
 </template>

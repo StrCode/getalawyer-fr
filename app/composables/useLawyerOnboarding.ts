@@ -131,15 +131,27 @@ export function ensureLawyerOnboardingStatus(
   })
 }
 
+/** How often the "in review" page asks for the latest status. */
+const STATUS_POLL_MS = 60 * 1000
+
 /** Shared status query — prefer this over calling `fetchLawyerOnboardingStatus` directly. */
-export function useLawyerOnboardingStatus(options?: { enabled?: MaybeRef<boolean> }) {
+export function useLawyerOnboardingStatus(options?: {
+  enabled?: MaybeRef<boolean>
+  /**
+   * Keep checking while the screen is open: once a minute, and whenever the
+   * lawyer comes back to the tab. For the "in review" page, so a decision
+   * shows up without a manual refresh.
+   */
+  poll?: boolean
+}) {
   return useQuery({
     queryKey: queryKeys.lawyerOnboarding.status,
     queryFn: fetchLawyerOnboardingStatus,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
-    staleTime: LAWYER_ONBOARDING_STALE_MS,
+    staleTime: options?.poll ? 0 : LAWYER_ONBOARDING_STALE_MS,
     refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: options?.poll === true,
+    refetchInterval: options?.poll ? STATUS_POLL_MS : false,
   })
 }
 
@@ -170,6 +182,17 @@ export const useLawyerOnboarding = () => {
         })
     }
 
+    /**
+     * Save the draft without refreshing the cached copy afterwards. Used for
+     * saving as the lawyer types: a refetch would write the just-saved values
+     * back over the store and could undo keystrokes made while it was in flight.
+     */
+    const useSaveDraftQuietly = () => {
+        return useMutation({
+            mutationFn: lawyerOnboardingAPI.saveDraft,
+        })
+    }
+
     const useDiscardDraft = () => {
         return useMutation({
             mutationFn: lawyerOnboardingAPI.discardDraft,
@@ -184,6 +207,8 @@ export const useLawyerOnboarding = () => {
             mutationFn: lawyerOnboardingAPI.saveNin,
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.draft })
+                // The status says whether a NIN is saved; keep it in step.
+                queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status })
             }
         })
     }
@@ -226,6 +251,7 @@ export const useLawyerOnboarding = () => {
         /** @deprecated Use `useOnboardingSummary` */
         useSummary: useOnboardingSummary,
         useSaveDraft,
+        useSaveDraftQuietly,
         useDiscardDraft,
         useSaveNin,
         useSubmitOnboarding,

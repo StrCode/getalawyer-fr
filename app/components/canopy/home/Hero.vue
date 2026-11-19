@@ -53,7 +53,31 @@ const stats = [
 
 const need = ref('')
 const where = ref('')
-const popular = ['Family law', 'Property & tenancy', 'Criminal defence', 'Employment', 'Business']
+/**
+ * "Popular" chips: the featured practice areas from the catalog, each opening
+ * the directory filtered to that area. If the catalog has not loaded, the same
+ * needs go through keyword search instead.
+ */
+const FALLBACK_POPULAR = ['Family law', 'Property & tenancy', 'Criminal defence', 'Employment', 'Business']
+const { data: specializations, suspense: loadAreas } = useSpecializations()
+onServerPrefetch(async () => {
+  await loadAreas().catch(() => {})
+})
+/** Shown first when the catalog has them; any other featured area follows. */
+const POPULAR_FIRST = ['family law', 'property & tenancy', 'criminal defence', 'employment', 'corporate & business']
+const popular = computed(() => {
+  const rank = (name: string) => {
+    const index = POPULAR_FIRST.indexOf(name.toLowerCase())
+    return index === -1 ? POPULAR_FIRST.length : index
+  }
+  const featured = (specializations.value ?? [])
+    .filter(area => area.isFeatured)
+    .sort((a, b) => rank(a.name) - rank(b.name))
+    .slice(0, 5)
+  return featured.length
+    ? featured.map(area => ({ label: area.name, to: { path: '/find-lawyers', query: { areas: area.id } } }))
+    : FALLBACK_POPULAR.map(term => ({ label: term, to: directoryLink(term) }))
+})
 
 function directoryLink(keywords?: string, location?: string) {
   const query: Record<string, string> = {}
@@ -163,12 +187,12 @@ function search() {
       <div class="mt-[1.15rem] flex flex-wrap items-center gap-2 text-[0.9rem] text-on-forest">
         <span>Popular</span>
         <NuxtLink
-          v-for="term in popular"
-          :key="term"
-          :to="directoryLink(term)"
+          v-for="chip in popular"
+          :key="chip.label"
+          :to="chip.to"
           class="inline-flex min-h-[2.6rem] items-center rounded-full border border-white/20 px-4 font-medium text-white [transition:background-color_0.25s,color_0.25s,border-color_0.25s,transform_0.3s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-0.5 hover:border-lime hover:bg-lime hover:text-night"
         >
-          {{ term }}
+          {{ chip.label }}
         </NuxtLink>
       </div>
     </div>

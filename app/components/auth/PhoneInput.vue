@@ -1,20 +1,22 @@
 <template>
   <div class="space-y-2">
-    <Label v-if="label" :for="inputId">{{ label }}</Label>
-    <div class="flex gap-2">
-      <!-- Nigeria, locked — this is a Nigeria-only directory, so the country
-           is fixed rather than a selectable dropdown. -->
-      <div
-        class="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-border/50 bg-muted/40 px-3 text-sm font-medium text-muted-foreground"
-        aria-hidden="true"
-      >
-        <svg viewBox="0 0 6 3" class="h-3 w-5 shrink-0 rounded-[2px] ring-1 ring-black/10">
-          <rect width="6" height="3" fill="#008751" />
-          <rect x="2" width="2" height="3" fill="#fff" />
-        </svg>
-        +234
-      </div>
-      <Input
+    <Label v-if="label" :for="inputId" class="text-[0.9rem] font-semibold">{{ label }}</Label>
+    <!-- Nigeria, locked: this is a Nigeria-only directory, so the country code
+         is a fixed prefix inside the field rather than a selectable dropdown. -->
+    <InputGroup :class="authInputGroup">
+      <InputGroupAddon class="pl-4 text-[1.02rem] font-semibold">
+        <!-- The flag is drawn 3:2 and stretched to its 3:2 box, so it fills it edge
+             to edge. It sits in a wrapper because the addon forces bare svg
+             children to a 16px square. -->
+        <span aria-hidden="true" class="block h-[1.1rem] w-[1.65rem] shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/15 dark:ring-white/25">
+          <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="block size-full">
+            <rect width="3" height="2" fill="#008751" />
+            <rect x="1" width="1" height="2" fill="#fff" />
+          </svg>
+        </span>
+        <span aria-hidden="true">+234</span>
+      </InputGroupAddon>
+      <InputGroupInput
         :id="inputId"
         :model-value="formatted"
         type="tel"
@@ -23,18 +25,18 @@
         :autocomplete="autocomplete"
         :disabled="disabled"
         :aria-invalid="invalid"
-        aria-label="Nigerian phone number"
-        class="h-11 flex-1 text-base"
+        aria-label="Nigerian phone number, without the leading zero"
+        :class="authInputGroupControl"
         @update:model-value="onInput"
         @blur="$emit('blur')"
       />
-    </div>
+    </InputGroup>
   </div>
 </template>
 
 <script setup lang="ts">
 import { AsYouType } from "libphonenumber-js";
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { normalizeNgPhone, toE164Plus } from "~/lib/phone";
 
