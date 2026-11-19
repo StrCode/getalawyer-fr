@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 
 /**
  * Homepage hero: headline and proof points, a photo with practice-area tabs
@@ -161,32 +159,7 @@ function search() {
     </div>
 
     <div class="col-start-1 row-start-2 min-w-0 animate-rise-in [animation-delay:160ms] tab:relative tab:z-2 tab:col-span-2">
-      <form class="flex flex-wrap rounded-[1.4rem] bg-card text-foreground shadow-rail" @submit.prevent="search">
-        <div class="min-w-0 flex-[2_1_16rem] px-[1.4rem] py-4">
-          <label for="hero-need" class="block text-[0.78rem] font-bold text-muted-foreground">What do you need help with?</label>
-          <input
-            id="hero-need"
-            v-model="need"
-            type="text"
-            placeholder="Tenancy dispute, divorce, unpaid salary…"
-            class="mt-[0.15rem] w-full bg-transparent p-0 text-[1.05rem] text-foreground placeholder:text-placeholder"
-          >
-        </div>
-        <div class="min-w-0 flex-[1_1_11rem] border-l border-border px-[1.4rem] py-4 max-sm:border-t max-sm:border-l-0">
-          <label for="hero-where" class="block text-[0.78rem] font-bold text-muted-foreground">Where?</label>
-          <select
-            id="hero-where"
-            v-model="where"
-            class="mt-[0.15rem] w-full cursor-pointer appearance-none bg-transparent p-0 text-[1.05rem] text-foreground"
-          >
-            <option value="">All states</option>
-            <option v-for="state in NIGERIA_STATE_NAMES" :key="state" :value="state">{{ state }}</option>
-          </select>
-        </div>
-        <Button type="submit" variant="canopy" class="group/btn m-2 h-16 gap-4 self-center rounded-[1.1rem] pr-3 pl-8 text-[1.1rem] max-sm:w-[calc(100%-1rem)] max-sm:justify-between">
-          Search lawyers<CanopyArrowChip large />
-        </Button>
-      </form>
+      <CanopySearchRail v-model:need="need" v-model:where="where" id-prefix="hero" @submit="search" />
       <div class="mt-[1.15rem] flex flex-wrap items-center gap-2 text-[0.9rem] text-on-forest">
         <span>Popular</span>
         <NuxtLink

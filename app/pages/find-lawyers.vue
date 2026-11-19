@@ -1,627 +1,292 @@
 <script setup lang="ts">
-import { Alert01Icon, Cancel01Icon, LayoutGridIcon, LayoutTwoRowIcon, Search01Icon, Settings01Icon, UserIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import type { LocationQuery } from 'vue-router'
+import ButtonBusy from '@/components/ButtonBusy.vue'
+import { Button } from '@/components/ui/button'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useLawyerFilters } from '~/composables/useLawyerFilters'
 import { watchPersistRecentLawyerDirectorySearch } from '~/composables/useRecentLawyerDirectorySearches'
-import { useLawyers } from '~/composables/useLawyers'
-import { useSpecializations } from '~/composables/useSpecializations'
 import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 import type { Specialization } from '~/lib/api'
-import LawyerFilterPanel from '@/components/app/LawyerFilterPanel.vue'
-import { Button } from '@/components/ui/button'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer'
-import EmptyState from '@/components/dashboard/EmptyState.vue'
-import type { LocationQuery } from 'vue-router'
 
-/** `/find-lawyers` — directory listing with landing layout (same nav/footer as homepage). */
-
-const FIND_LAWYERS_LAYOUT_KEY = 'getalawyer-fr:find-lawyers-layout'
-
-function parseViewQuery(v: unknown): 'grid' | 'list' | undefined {
-  if (v === undefined || v === null) return undefined
-  const s = Array.isArray(v) ? v[0] : v
-  if (typeof s !== 'string') return undefined
-  if (s === 'list') return 'list'
-  if (s === 'grid') return 'grid'
-  return undefined
-}
-
-function readStoredResultsLayout(): 'grid' | 'list' | null {
-  if (!import.meta.client) return null
-  try {
-    const raw = localStorage.getItem(FIND_LAWYERS_LAYOUT_KEY)
-    return raw === 'list' || raw === 'grid' ? raw : null
-  }
-  catch {
-    return null
-  }
-}
-
-function writeStoredResultsLayout(v: 'grid' | 'list') {
-  if (!import.meta.client) return
-  try {
-    localStorage.setItem(FIND_LAWYERS_LAYOUT_KEY, v)
-  }
-  catch {
-    /* ignore quota */
-  }
-}
-
-const STATE_DIRECTORY_OPTIONS = NIGERIA_STATE_NAMES.map(name => ({
-  code: name,
-  label: name,
-}))
-
-/** One token (code, name, or legacy slug-style) → canonical state code. */
-function normalizeSingleStateCode(raw: string): string {
-  const t = raw.trim()
-  if (!t) return ''
-  const upper = t.toUpperCase()
-  if (STATE_DIRECTORY_OPTIONS.some(s => s.code === upper))
-    return upper
-  const byName = STATE_DIRECTORY_OPTIONS.find(
-    s => s.label.toLowerCase() === t.toLowerCase(),
-  )
-  return byName?.code ?? upper
-}
-
-/** `filters.location` stores comma-separated state codes (e.g. `LA,FC`). */
-function parseStateCodesFromLocation(location: string): string[] {
-  if (!location.trim()) return []
-  const parts = location.split(',').map(s => s.trim()).filter(Boolean)
-  const codes = parts.map(p => normalizeSingleStateCode(p)).filter(Boolean)
-  return [...new Set(codes)]
-}
-
-function serializeStateCodesForLocation(codes: string[]): string {
-  const normalized = [...new Set(codes.map(c => normalizeSingleStateCode(c)).filter(Boolean))]
-  normalized.sort((a, b) => a.localeCompare(b))
-  return normalized.join(',')
-}
-
-function normalizeLocationQueryField(raw: string): string {
-  return serializeStateCodesForLocation(parseStateCodesFromLocation(raw))
-}
-
-function specializationSlugFromName(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-}
-
-/** Map `areas` query tokens to API specialization ids when possible. */
-function resolvePracticeAreaToken(specs: Specialization[], token: string): string {
-  const t = token.trim()
-  if (!t) return t
-  if (specs.some(s => s.id === t)) return t
-  const bySlug = specs.find(s => specializationSlugFromName(s.name) === t.toLowerCase())
-  return bySlug?.id ?? t
-}
-
+/**
+ * `/find-lawyers` — the directory.
+ *
+ * Search by need and state, narrow by practice area and experience, sort, then
+ * load more. Every control maps to a parameter the search endpoint supports
+ * (q, state, specializations, minExperience, sortBy); the URL carries the same
+ * state (`keywords`, `location`, `areas`, `experience`, `sort`) so a search can
+ * be shared or reopened.
+ */
 definePageMeta({
-  layout: 'landing',
+  layout: 'site',
   middleware: ['client-directory'],
 })
 
 useHead({
-  title: 'Lawyers · GetaLawyer',
+  title: 'Find a lawyer · getalawyer',
   meta: [
-    { name: 'description', content: 'Search and find qualified lawyers by practice area, location, and consultation type.' },
-    { name: 'robots', content: 'noindex' }
-  ]
+    { name: 'description', content: 'Search verified Nigerian lawyers by practice area and state, and message one free.' },
+    { name: 'robots', content: 'noindex' },
+  ],
 })
+
+type Sort = 'relevance' | 'experience' | 'recent'
+const SORTS: Array<{ value: Sort, label: string }> = [
+  { value: 'relevance', label: 'Most relevant' },
+  { value: 'experience', label: 'Most experienced' },
+  { value: 'recent', label: 'Recently joined' },
+]
+const EXPERIENCE = [
+  { value: '', label: 'Any' },
+  { value: '5', label: '5+ years' },
+  { value: '10', label: '10+ years' },
+  { value: '15', label: '15+ years' },
+]
+const PAGE_SIZE = 12
 
 const route = useRoute()
-const router = useRouter()
-const { useLawyersInfiniteList } = useLawyers()
 
-const ITEMS_PER_PAGE = 12
-
-function directoryQueryMerge(base: LocationQuery): LocationQuery {
-  const q: LocationQuery = { ...base }
-  if (resultsLayout.value === 'list')
-    q.view = 'list'
-  else
-    delete q.view
-  delete q.page
-  return q
+function parseSort(value: unknown): Sort | null {
+  const s = Array.isArray(value) ? value[0] : value
+  return s === 'relevance' || s === 'experience' || s === 'recent' ? s : null
 }
 
-const resultsLayout = ref<'grid' | 'list'>(parseViewQuery(route.query.view) ?? 'grid')
+/** A sort the visitor picked; `null` follows the search (relevance with a keyword, else experience). */
+const chosenSort = ref<Sort | null>(parseSort(route.query.sort))
 
-const { filters, resetFilters, filtersFromQuery, filtersToQuery } = useLawyerFilters({
-  mergeQuery: directoryQueryMerge,
+const { filters, resetFilters } = useLawyerFilters({
+  mergeQuery(query: LocationQuery) {
+    const next = { ...query }
+    if (chosenSort.value) next.sort = chosenSort.value
+    else delete next.sort
+    return next
+  },
 })
-
-filters.value = {
-  ...filters.value,
-  location: normalizeLocationQueryField(filters.value.location),
-}
-
 watchPersistRecentLawyerDirectorySearch(filters)
 
-const { data: specData, isPending: specsLoading } = useSpecializations()
-
-const specializationsList = computed(() => specData.value ?? [])
-
-function specializationNameById(id: string): string {
-  return specializationsList.value.find(s => s.id === id)?.name ?? id
+/** The directory filters by one state; older links may carry a comma-separated list. */
+function singleState(location: string): string {
+  const first = location.split(',').map(s => s.trim()).find(Boolean) ?? ''
+  return NIGERIA_STATE_NAMES.find(name => name.toLowerCase() === first.toLowerCase()) ?? ''
 }
 
-function toggleSpecialization(id: string, checked: boolean) {
-  const next = new Set(filters.value.practiceAreas)
-  if (checked) next.add(id)
-  else next.delete(id)
+// ---- practice areas ----
+const { data: specializations, suspense: specializationsReady } = useSpecializations()
+const areas = computed<Specialization[]>(() => specializations.value ?? [])
+
+function slug(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}
+/** `areas` in a link may be ids or name slugs ("family-law"); resolve both to ids. */
+const chosenAreas = computed(() =>
+  filters.value.practiceAreas
+    .map(token => areas.value.find(a => a.id === token || slug(a.name) === token.toLowerCase())?.id)
+    .filter((id): id is string => Boolean(id)),
+)
+function toggleArea(id: string | null) {
+  if (id === null) {
+    filters.value = { ...filters.value, practiceAreas: [] }
+    return
+  }
+  const next = new Set(chosenAreas.value)
+  if (next.has(id)) next.delete(id)
+  else next.add(id)
   filters.value = { ...filters.value, practiceAreas: [...next] }
 }
 
-function removeSpecialization(id: string) {
-  toggleSpecialization(id, false)
+// ---- search rail (applied on submit, not per keystroke) ----
+const need = ref(filters.value.keywords)
+const where = ref(singleState(filters.value.location))
+watch(() => filters.value.keywords, (value) => { need.value = value })
+watch(() => filters.value.location, (value) => { where.value = singleState(value) })
+watch(where, (value) => {
+  if (value !== singleState(filters.value.location)) filters.value = { ...filters.value, location: value }
+})
+
+function submitSearch() {
+  const text = need.value.trim()
+  // Keyword search matches a lawyer's name or firm. If the text names a practice
+  // area instead ("Family law"), use it as an area filter so the search still lands.
+  const area = text ? areas.value.find(a => a.name.toLowerCase() === text.toLowerCase() || slug(a.name) === slug(text)) : undefined
+  if (area) {
+    need.value = ''
+    filters.value = { ...filters.value, keywords: '', practiceAreas: [...new Set([...chosenAreas.value, area.id])], location: where.value }
+    return
+  }
+  filters.value = { ...filters.value, keywords: text, location: where.value }
 }
 
-watch(
-  () => specData.value,
-  (specs) => {
-    if (!specs?.length) return
-    const raw = filters.value.practiceAreas
-    const next = [...new Set(raw.map(t => resolvePracticeAreaToken(specs, t)))]
-    const same = raw.length === next.length && raw.every((v, i) => v === next[i])
-    if (!same)
-      filters.value = { ...filters.value, practiceAreas: next }
+// ---- experience and sort ----
+const experience = computed({
+  get: () => (filters.value.minExperience ? String(filters.value.minExperience) : ''),
+  set: (value: string) => { filters.value = { ...filters.value, minExperience: value ? Number(value) : null } },
+})
+const sort = computed<Sort>({
+  get: () => chosenSort.value ?? (filters.value.keywords ? 'relevance' : 'experience'),
+  set: (value) => {
+    chosenSort.value = value
+    filters.value = { ...filters.value }
   },
+})
+
+// ---- results ----
+const searchParams = computed(() => ({
+  ...(filters.value.keywords ? { q: filters.value.keywords } : {}),
+  ...(singleState(filters.value.location) ? { state: singleState(filters.value.location) } : {}),
+  ...(chosenAreas.value.length ? { specializations: chosenAreas.value } : {}),
+  ...(filters.value.minExperience ? { minExperience: filters.value.minExperience } : {}),
+  limit: PAGE_SIZE,
+  sortBy: sort.value,
+}))
+
+const { useLawyersInfiniteList } = useLawyers()
+const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error, refetch, suspense } = useLawyersInfiniteList(searchParams)
+// Fetch during server render too, so the first results are in the HTML.
+onServerPrefetch(async () => {
+  await Promise.all([specializationsReady().catch(() => {}), suspense().catch(() => {})])
+})
+
+const lawyers = computed(() => data.value?.pages.flatMap(page => page.results) ?? [])
+
+const isFiltered = computed(() =>
+  Boolean(filters.value.keywords || singleState(filters.value.location) || chosenAreas.value.length || filters.value.minExperience),
 )
-
-const selectedStateCodes = computed(() => parseStateCodesFromLocation(filters.value.location))
-
-function stateLabel(code: string): string {
-  return STATE_DIRECTORY_OPTIONS.find(s => s.code === code)?.label ?? code
-}
-
-function toggleStateCode(code: string, checked: boolean) {
-  const norm = normalizeSingleStateCode(code)
-  const next = new Set(selectedStateCodes.value)
-  if (checked) next.add(norm)
-  else next.delete(norm)
-  filters.value = {
-    ...filters.value,
-    location: serializeStateCodesForLocation([...next]),
-  }
-}
-
-function removeStateCode(code: string) {
-  toggleStateCode(code, false)
-}
-
-function clearStatesFilter() {
-  filters.value = { ...filters.value, location: '' }
-}
-
-function clearSpecializationsFilter() {
-  filters.value = { ...filters.value, practiceAreas: [] }
-}
-
-onMounted(() => {
-  const fromRoute = filtersFromQuery(route.query)
-  filters.value = {
-    ...fromRoute,
-    location: normalizeLocationQueryField(fromRoute.location),
-  }
-
-  const viewFromUrl = parseViewQuery(route.query.view)
-  if (viewFromUrl !== undefined) {
-    resultsLayout.value = viewFromUrl
-    writeStoredResultsLayout(viewFromUrl)
-  }
-  else {
-    const saved = readStoredResultsLayout()
-    if (saved !== null)
-      resultsLayout.value = saved
-  }
+/** "in Family Law, Tax Law · Lagos · 10+ years · “okafor”", or "in all practice areas · all states" */
+const context = computed(() => {
+  const names = chosenAreas.value.map(id => areas.value.find(a => a.id === id)?.name).filter(Boolean)
+  const state = singleState(filters.value.location)
+  const parts = [`in ${names.length ? names.join(', ') : 'all practice areas'}`, state || 'all states']
+  if (filters.value.minExperience) parts.push(`${filters.value.minExperience}+ years`)
+  if (filters.value.keywords) parts.push(`“${filters.value.keywords}”`)
+  return parts.join(' · ')
+})
+/** The endpoint reports whether more exist, not a total, so the count is "12+" until the end. */
+const countLabel = computed(() => {
+  const n = lawyers.value.length
+  return `${n}${hasNextPage.value ? '+' : ''} ${n === 1 && !hasNextPage.value ? 'lawyer' : 'lawyers'}`
 })
 
-const searchParams = computed(() => {
-  const params: Record<string, unknown> = {}
-
-  if (filters.value.keywords) params.q = filters.value.keywords
-  if (filters.value.lawyerName) params.name = filters.value.lawyerName
-  if (filters.value.location) params.state = filters.value.location
-  if (filters.value.practiceAreas.length > 0) params.specializations = filters.value.practiceAreas
-  if (filters.value.minExperience) params.minExperience = filters.value.minExperience
-  if (filters.value.priceRange.max) params.maxExperience = filters.value.priceRange.max
-  params.limit = ITEMS_PER_PAGE
-
-  if (filters.value.keywords || filters.value.lawyerName) {
-    params.sortBy = 'relevance'
-  }
-  else {
-    params.sortBy = 'experience'
-  }
-
-  return params
-})
-
-const {
-  data: lawyersData,
-  isLoading,
-  isFetchingNextPage,
-  hasNextPage,
-  fetchNextPage,
-  error,
-  refetch,
-} = useLawyersInfiniteList(searchParams)
-
-const lawyers = computed(() => {
-  if (!lawyersData.value?.pages) return []
-  return lawyersData.value.pages.flatMap(page => page.results)
-})
-
-watch(resultsLayout, (v) => {
-  writeStoredResultsLayout(v)
-  router.replace({
-    query: directoryQueryMerge(filtersToQuery(filters.value)),
-  })
-})
-
-watch(
-  () => route.query.view,
-  () => {
-    const p = parseViewQuery(route.query.view)
-    if (p !== undefined && p !== resultsLayout.value) {
-      resultsLayout.value = p
-      writeStoredResultsLayout(p)
-    }
-  },
-)
-
-const activeFilterCount = computed(() => {
-  const f = filters.value
-  let count = 0
-  if (f.keywords) count++
-  if (f.lawyerName) count++
-  if (f.practiceAreas.length > 0) count++
-  if (parseStateCodesFromLocation(f.location).length > 0) count++
-  if (f.consultationTypes.length > 0) count++
-  if (f.minRating) count++
-  if (f.minExperience) count++
-  if (f.priceRange.min || f.priceRange.max) count++
-  if (f.certifications.length > 0) count++
-  if (f.languages.length > 0) count++
-  return count
-})
-
-function clearAllFilters(): void {
+function clearFilters() {
+  chosenSort.value = null
+  need.value = ''
+  where.value = ''
   resetFilters()
 }
 
-const mobileFiltersOpen = ref(false)
+const chip = 'min-h-11 cursor-pointer rounded-full border px-[1.1rem] text-[0.95rem] font-semibold whitespace-nowrap transition-colors duration-200'
+const chipOff = 'border-border bg-card text-foreground hover:border-brand'
+const chipOn = 'border-foreground bg-foreground text-card'
+const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem] font-semibold text-foreground shadow-none'
 </script>
 
 <template>
-  <div class="bg-background pb-16 font-sans text-foreground sm:pb-24">
-    <!-- Compact hero + unified search -->
-    <header class="relative overflow-hidden border-b border-border bg-background">
-      <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-linear-to-b from-primary/6 to-transparent" />
-      <div class="relative mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8">
-        <div class="mx-auto max-w-3xl text-center">
-          <div class="mb-5 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-3.5 py-2">
-            <span class="size-1.5 rounded-full bg-primary" />
-            <span class="eyebrow text-primary-strong">Verified directory</span>
-          </div>
-         <h1 class="text-4xl font-medium md:text-5xl text-balance text-foreground">
-            Find a verified lawyer
-          </h1>
-          <p class="mx-auto mt-4 max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Every profile is NIN &amp; SCN verified. Filter by name, topic, state, or specialization.
-          </p>
-        </div>
+  <div>
+    <section data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4.5vw,4.5rem)] py-[clamp(1.5rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]">
+      <nav aria-label="Breadcrumb" class="flex gap-2 text-[0.85rem] font-semibold text-on-forest">
+        <NuxtLink to="/" class="underline underline-offset-[3px]">Home</NuxtLink>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Find a lawyer</span>
+      </nav>
+      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.4vw,3.6rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Find a lawyer</h1>
+      <p class="mt-[0.8rem] max-w-[34rem] text-[1.1rem] text-on-forest">Every lawyer listed has passed identity and enrolment checks. Message any of them free.</p>
+      <CanopySearchRail
+        v-model:need="need"
+        v-model:where="where"
+        id-prefix="directory"
+        placeholder="A lawyer's name, a firm or a practice area…"
+        action="Search"
+        class="mt-[1.6rem]"
+        @submit="submitSearch"
+      />
+    </section>
 
-        <!-- Unified search bar (Glide / Fiverr pattern) -->
-        <div
-          role="search"
-          aria-label="Search lawyers"
-          class="mx-auto mt-8 max-w-3xl rounded-[1.25rem] border border-border bg-card p-2 shadow-lg shadow-foreground/4"
-        >
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2">
-              <HugeiconsIcon :icon="Search01Icon" class="size-4 shrink-0 text-primary" aria-hidden="true" />
-              <input
-                v-model="filters.keywords"
-                type="search"
-                enterkeyhint="search"
-                autocomplete="off"
-                aria-label="Topic or keywords"
-                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
-                placeholder="Search by topic or keyword…"
-              >
-            </label>
-            <div class="mx-2 hidden h-8 w-px bg-border sm:block" />
-            <label class="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2 sm:max-w-[14rem]">
-              <HugeiconsIcon :icon="UserIcon" class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              <input
-                v-model="filters.lawyerName"
-                type="search"
-                enterkeyhint="search"
-                autocomplete="off"
-                aria-label="Lawyer name"
-                class="min-w-0 flex-1 border-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
-                placeholder="Or by name…"
-              >
-            </label>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <!-- Mobile filters live in a bottom drawer; desktop keeps the sidebar. -->
-      <Button
-        variant="outline"
-        class="mb-4 w-full bg-card font-semibold lg:hidden"
-        @click="mobileFiltersOpen = true"
+    <div
+      v-if="areas.length"
+      role="group"
+      aria-label="Practice area"
+      class="mt-[1.4rem] flex flex-wrap gap-2 [scrollbar-width:thin] max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-[0.4rem]"
+    >
+      <button type="button" :class="[chip, chosenAreas.length ? chipOff : chipOn]" :aria-pressed="chosenAreas.length === 0" @click="toggleArea(null)">All areas</button>
+      <button
+        v-for="area in areas"
+        :key="area.id"
+        type="button"
+        :class="[chip, chosenAreas.includes(area.id) ? chipOn : chipOff]"
+        :aria-pressed="chosenAreas.includes(area.id)"
+        @click="toggleArea(area.id)"
       >
-        <HugeiconsIcon :icon="Settings01Icon" class="size-4" aria-hidden="true" />
-        Filters
-        <Badge v-if="activeFilterCount > 0" variant="soft" class="ms-1 rounded-full px-2 py-0 text-xs tabular-nums">
-          {{ activeFilterCount }}
-        </Badge>
-      </Button>
+        {{ area.name }}
+      </button>
+    </div>
 
-      <Drawer v-model:open="mobileFiltersOpen" swipe-direction="down">
-        <DrawerContent class="max-h-[85dvh]">
-          <DrawerHeader class="sr-only">
-            <DrawerTitle>Filters</DrawerTitle>
-            <DrawerDescription>Refine your lawyer search</DrawerDescription>
-          </DrawerHeader>
-          <div class="app-scrollbar min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-1">
-            <LawyerFilterPanel
-              :state-options="STATE_DIRECTORY_OPTIONS"
-              :selected-state-codes="selectedStateCodes"
-              :specializations="specializationsList"
-              :selected-specialization-ids="filters.practiceAreas"
-              :specs-loading="specsLoading"
-              :active-filter-count="activeFilterCount"
-              @toggle-state="toggleStateCode"
-              @clear-states="clearStatesFilter"
-              @toggle-specialization="toggleSpecialization"
-              @clear-specializations="clearSpecializationsFilter"
-              @clear-all="clearAllFilters"
-            />
-          </div>
-          <DrawerFooter class="border-t border-border">
-            <Button size="lg" @click="mobileFiltersOpen = false">
-              <template v-if="isLoading">Searching…</template>
-              <template v-else>
-                Show {{ lawyers.length }}{{ hasNextPage && lawyers.length > 0 ? '+' : '' }}
-                {{ lawyers.length === 1 ? 'lawyer' : 'lawyers' }}
-              </template>
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-
-      <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <!-- Sidebar filters (Webflow / Zendesk pattern) -->
-        <aside class="hidden w-full shrink-0 lg:block lg:w-72">
-          <div class="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-xs">
-            <LawyerFilterPanel
-              :state-options="STATE_DIRECTORY_OPTIONS"
-              :selected-state-codes="selectedStateCodes"
-              :specializations="specializationsList"
-              :selected-specialization-ids="filters.practiceAreas"
-              :specs-loading="specsLoading"
-              :active-filter-count="activeFilterCount"
-              @toggle-state="toggleStateCode"
-              @clear-states="clearStatesFilter"
-              @toggle-specialization="toggleSpecialization"
-              @clear-specializations="clearSpecializationsFilter"
-              @clear-all="clearAllFilters"
-            />
-          </div>
-        </aside>
-
-        <!-- Results column -->
-        <main class="min-w-0 flex-1">
-          <!-- Active filter chips -->
-          <div
-            v-if="activeFilterCount > 0"
-            class="mb-5 flex flex-wrap items-center gap-2"
-          >
-            <div v-if="filters.lawyerName" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
-              {{ filters.lawyerName }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20" aria-label="Remove name filter" @click="filters.lawyerName = ''">
-                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
-              </button>
-            </div>
-            <div v-if="filters.keywords" class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">
-              {{ filters.keywords }}
-              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20" aria-label="Remove keyword filter" @click="filters.keywords = ''">
-                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
-              </button>
-            </div>
-            <div
-              v-for="code in selectedStateCodes"
-              :key="code"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground"
-            >
-              <span class="truncate">{{ stateLabel(code) }}</span>
-              <button
-                type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                :aria-label="`Remove ${stateLabel(code)}`"
-                @click="removeStateCode(code)"
-              >
-                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
-              </button>
-            </div>
-            <div
-              v-for="sid in filters.practiceAreas"
-              :key="sid"
-              class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground"
-            >
-              <span class="truncate">{{ specializationNameById(sid) }}</span>
-              <button
-                type="button"
-                class="shrink-0 cursor-pointer border-0 bg-transparent p-0 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                :aria-label="`Remove ${specializationNameById(sid)}`"
-                @click="removeSpecialization(sid)"
-              >
-                <HugeiconsIcon :icon="Cancel01Icon" class="size-4" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-
-          <!-- Results toolbar -->
-          <div
-            class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-xs"
-          >
-            <div>
-              <p
-                v-if="isLoading"
-                class="text-base font-semibold text-muted-foreground"
-              >
-                Searching lawyers…
-              </p>
-              <p
-                v-else
-                class="text-base font-semibold text-foreground"
-              >
-                <span class="font-mono tabular-nums">{{ lawyers.length }}</span>
-                {{ lawyers.length === 1 ? ' lawyer' : ' lawyers' }}
-                <span v-if="hasNextPage && lawyers.length > 0" class="text-muted-foreground">+</span>
-              </p>
-              <p class="eyebrow mt-0.5 text-muted-foreground">
-                {{ isLoading ? 'Updating results' : (searchParams.sortBy === 'relevance' ? 'Sorted by relevance' : 'Sorted by experience') }}
-              </p>
-            </div>
-
-            <div
-              class="inline-flex items-center rounded-xl border border-border bg-muted p-0.5"
-              role="toolbar"
-              aria-label="Layout"
-            >
-              <button
-                type="button"
-                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                :class="resultsLayout === 'grid' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
-                :aria-pressed="resultsLayout === 'grid'"
-                title="Grid"
-                @click="resultsLayout = 'grid'"
-              >
-                <HugeiconsIcon :icon="LayoutGridIcon" class="size-5" aria-hidden="true" />
-                <span class="sr-only">Grid layout</span>
-              </button>
-              <button
-                type="button"
-                class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                :class="resultsLayout === 'list' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
-                :aria-pressed="resultsLayout === 'list'"
-                title="List"
-                @click="resultsLayout = 'list'"
-              >
-                <HugeiconsIcon :icon="LayoutTwoRowIcon" class="size-5" aria-hidden="true" />
-                <span class="sr-only">List layout</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Loading -->
-          <div
-            v-if="isLoading"
-            aria-busy="true"
-            aria-label="Loading lawyer results"
-            :class="resultsLayout === 'grid'
-              ? 'lawyers-catalog-grid grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-              : 'lawyers-catalog-list flex flex-col gap-4'"
-          >
-            <LawyerSearchCardSkeleton
-              v-for="i in resultsLayout === 'grid' ? 6 : 4"
-              :key="i"
-              :layout="resultsLayout"
-            />
-          </div>
-
-          <!-- Error -->
-          <div v-else-if="error" class="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-xs sm:px-8">
-            <EmptyState
-              :icon="Alert01Icon"
-              variant="error"
-              title="Error loading lawyers"
-              description="There was an error loading the lawyers list. Please try again."
-            >
-              <template #actions>
-                <Button type="button" @click="refetch()">
-                  Retry
-                </Button>
-              </template>
-            </EmptyState>
-          </div>
-
-          <!-- Empty -->
-          <div
-            v-else-if="lawyers.length === 0"
-            class="rounded-2xl border border-dashed border-border bg-card px-4 py-10 sm:px-8 sm:py-12"
-          >
-            <LawyerDirectoryEmpty
-              :active-filter-count="activeFilterCount"
-              :keyword="filters.keywords"
-              @reset="clearAllFilters"
-            />
-          </div>
-
-          <!-- Results grid / list -->
-          <div
-            v-else
-            :class="resultsLayout === 'grid'
-              ? 'lawyers-catalog-grid grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-              : 'lawyers-catalog-list flex w-full flex-col gap-4'"
-          >
-            <LawyerSearchCard
-              v-for="lawyer in lawyers"
-              :key="lawyer.id"
-              :density="resultsLayout === 'grid' ? 'grid' : 'row'"
-              :lawyer="lawyer"
-            />
-          </div>
-
-          <!-- Load more -->
-          <div
-            v-if="hasNextPage && lawyers.length > 0"
-            class="mt-10 flex justify-center"
-          >
-            <Button
-              variant="outline"
-              size="lg"
-              class="min-w-[12rem]"
-              :disabled="isFetchingNextPage"
-              @click="fetchNextPage()"
-            >
-              {{ isFetchingNextPage ? 'Loading…' : 'Load more lawyers' }}
-            </Button>
-          </div>
-        </main>
+    <div class="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-[0.9rem] border-b border-border pb-4">
+      <p aria-live="polite" class="flex flex-wrap items-baseline gap-x-[0.7rem] gap-y-[0.2rem] text-muted-foreground">
+        <b class="font-display text-[1.6rem] font-[650] tracking-[-0.03em] text-foreground">{{ isLoading ? 'Searching…' : countLabel }}</b>
+        <span>{{ context }}</span>
+      </p>
+      <div class="flex flex-wrap items-center gap-x-[1.1rem] gap-y-[0.6rem]">
+        <label for="directory-experience" class="inline-flex items-center gap-[0.6rem] text-[0.85rem] font-semibold whitespace-nowrap text-muted-foreground">
+          Experience
+          <NativeSelect id="directory-experience" v-model="experience" :class="control">
+            <NativeSelectOption v-for="option in EXPERIENCE" :key="option.value" :value="option.value">{{ option.label }}</NativeSelectOption>
+          </NativeSelect>
+        </label>
+        <label for="directory-sort" class="inline-flex items-center gap-[0.6rem] text-[0.85rem] font-semibold whitespace-nowrap text-muted-foreground">
+          Sort by
+          <NativeSelect id="directory-sort" v-model="sort" :class="control">
+            <NativeSelectOption v-for="option in SORTS" :key="option.value" :value="option.value">{{ option.label }}</NativeSelectOption>
+          </NativeSelect>
+        </label>
+        <button
+          v-if="isFiltered"
+          type="button"
+          class="min-h-11 cursor-pointer px-[0.4rem] text-[0.92rem] font-semibold text-brand underline underline-offset-[3px]"
+          @click="clearFilters"
+        >
+          Clear filters
+        </button>
       </div>
     </div>
+
+    <!-- loading -->
+    <div v-if="isLoading" class="mt-[1.4rem] grid grid-cols-2 gap-[1.1rem] max-tab:grid-cols-1" aria-busy="true" aria-label="Loading lawyers">
+      <div v-for="n in 6" :key="n" class="flex gap-[1.1rem] rounded-card border border-border bg-card p-[1.1rem]">
+        <Skeleton class="size-[6.5rem] flex-none rounded-[1.2rem] max-sm:size-[4.5rem]" />
+        <div class="flex-1 space-y-3 py-1">
+          <Skeleton class="h-3 w-24 rounded-full" />
+          <Skeleton class="h-6 w-2/3 rounded-full" />
+          <Skeleton class="h-4 w-1/2 rounded-full" />
+          <Skeleton class="h-9 w-full rounded-full" />
+        </div>
+      </div>
+    </div>
+
+    <!-- could not load -->
+    <div v-else-if="error" role="alert" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
+      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the directory.</h2>
+      <p class="max-w-[30rem] text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="line" size="pill" @click="refetch()">Try again</Button>
+    </div>
+
+    <!-- nothing matches -->
+    <div v-else-if="lawyers.length === 0" aria-live="polite" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
+      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
+        {{ isFiltered ? 'No lawyers match that search yet.' : 'No lawyers are listed yet.' }}
+      </h2>
+      <p class="max-w-[30rem] text-muted-foreground">
+        {{ isFiltered ? 'Try a different practice area or state, or clear the filters to see everyone.' : 'Lawyers appear here once their verification is complete. Check back soon.' }}
+      </p>
+      <Button v-if="isFiltered" variant="line" size="pill" @click="clearFilters">Clear filters</Button>
+    </div>
+
+    <template v-else>
+      <div class="mt-[1.4rem] grid grid-cols-2 gap-[1.1rem] max-tab:grid-cols-1">
+        <CanopyDirectoryCard v-for="lawyer in lawyers" :key="lawyer.id" :lawyer="lawyer" />
+      </div>
+      <div v-if="hasNextPage" class="mt-[1.6rem] grid justify-items-center">
+        <ButtonBusy variant="line" size="pill" :loading="isFetchingNextPage" @click="fetchNextPage()">Load more lawyers</ButtonBusy>
+      </div>
+    </template>
   </div>
 </template>
-
-<style scoped>
-.lawyers-catalog-grid :deep(.lawyer-search-card) {
-  height: 100%;
-}
-
-.lawyers-catalog-list :deep(.lawyer-search-card) {
-  height: auto;
-  width: 100%;
-}
-</style>
