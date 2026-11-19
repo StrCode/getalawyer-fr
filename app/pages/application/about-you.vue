@@ -17,11 +17,13 @@ import {
 } from '@/components/ui/field'
 
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('personal_info')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 
@@ -106,7 +108,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
 <template>
   <div>
-    <OnboardingClientStepHeader
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"

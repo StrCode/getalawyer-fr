@@ -22,11 +22,13 @@ import {
 } from '@/components/ui/select'
 
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('professional_info')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 
@@ -66,7 +68,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
 
 <template>
   <div>
-    <OnboardingClientStepHeader
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"

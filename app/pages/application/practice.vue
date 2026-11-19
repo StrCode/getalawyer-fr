@@ -60,11 +60,13 @@ type PracticeAreaOption = {
 }
 
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('practice_info')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 const soloPractitionerFieldId = useId()
@@ -250,7 +252,7 @@ const listboxItemClass = cn(
   </div>
 
   <div v-else>
-    <OnboardingClientStepHeader
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"

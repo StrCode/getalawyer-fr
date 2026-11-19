@@ -7,7 +7,7 @@ import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 /** Client onboarding, step 2: up to three practice areas, and the terms. */
 definePageMeta({
   middleware: ['auth'],
-  layout: 'onboarding-client',
+  layout: 'welcome',
 })
 
 useHead({ title: 'Choose your legal interests' })
