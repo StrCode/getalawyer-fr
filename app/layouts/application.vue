@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useWindowScroll } from '@vueuse/core'
 import { provide } from 'vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,10 @@ const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
 /** The store key the section on screen saves under; null on the home and the membership page. */
 const sectionKey = computed(() => applicationSectionKeyFor(route.path))
+
+// The pinned header gets a hairline once the page has moved under it.
+const { y: scrollY } = useWindowScroll()
+const scrolled = computed(() => scrollY.value > 8)
 const isHome = computed(() => !sectionKey.value)
 /**
  * True while the application can still be edited: a section, or the home while
@@ -119,9 +124,19 @@ async function saveAndSignOut() {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col pt-[max(16px,env(safe-area-inset-top,0px))] font-text">
-    <!-- side padding: the page gutter, plus room that grows with the window (none on phones, so the mark lines up with the page) -->
-    <div class="safe-x">
+  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col font-text">
+    <!--
+      Pinned to the top, so the save status and sign-out stay in reach. A section
+      on a phone is the exception: its "Save and return" bar is already pinned at
+      the bottom, and a second pinned bar leaves too little form once the keyboard
+      is open, so there the header scrolls away.
+      Side padding: the page gutter, plus room that grows with the window (none on
+      phones, so the mark lines up with the page).
+    -->
+    <div
+      class="top-0 z-20 border-b bg-background/92 pt-[max(0.6rem,env(safe-area-inset-top,0px))] backdrop-blur-[12px] transition-colors duration-300 safe-x"
+      :class="[sectionKey ? 'sm:sticky' : 'sticky', scrolled ? (sectionKey ? 'border-transparent sm:border-border' : 'border-border') : 'border-transparent']"
+    >
       <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
         <CanopyBrand condensed large />
         <div class="flex items-center gap-1">

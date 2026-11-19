@@ -180,10 +180,6 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
             </form.Field>
         </div>
       </FieldSet>
-
-      <p :class="canopyHint">
-        All fields are required for verification.
-      </p>
     </div>
   </div>
 </template>

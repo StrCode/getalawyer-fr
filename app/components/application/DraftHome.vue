@@ -158,17 +158,18 @@ async function submit() {
     </ul>
 
     <div class="mt-[1.4rem] grid gap-[0.8rem]">
-      <div class="rounded-[1.1rem] border border-border bg-card p-4">
+      <!-- agreed to at the point of submitting, not before there is anything to submit -->
+      <section v-if="allDone" aria-labelledby="before-submit-title" class="mt-[0.4rem] grid gap-[0.7rem]">
+        <h2 id="before-submit-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Before you submit</h2>
         <LegalAcceptanceFields
           variant="lawyer"
-          embedded
           :terms-accepted="store.practiceInfo.termsAccepted"
           :refund-policy-accepted="store.practiceInfo.refundPolicyAccepted"
           :error="legalError"
           @update:terms-accepted="(v) => { store.practiceInfo.termsAccepted = v }"
           @update:refund-policy-accepted="(v) => { store.practiceInfo.refundPolicyAccepted = v }"
         />
-      </div>
+      </section>
 
       <p v-if="store.validationError" role="alert" class="rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
         {{ store.validationError }}

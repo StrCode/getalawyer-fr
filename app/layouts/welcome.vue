@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQueryClient } from '@tanstack/vue-query'
+import { useWindowScroll } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { getSessionUserType } from '~/lib/session-user'
@@ -35,6 +36,10 @@ watchEffect(() => {
   else if (user.onboarding_completed) void router.replace('/dashboard')
 })
 
+// The pinned header gets a hairline once the page has moved under it.
+const { y: scrollY } = useWindowScroll()
+const scrolled = computed(() => scrollY.value > 8)
+
 const saving = ref(false)
 
 async function next() {
@@ -65,8 +70,16 @@ function back() {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col pt-[max(16px,env(safe-area-inset-top,0px))] font-text">
-    <div class="safe-x">
+  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col font-text">
+    <!--
+      The header and the progress bar are pinned from tablet width up. On phones
+      they scroll away: the Back / Continue bar is already pinned at the bottom,
+      and two pinned bars leave too little of the step once the keyboard is open.
+    -->
+    <div
+      class="top-0 z-20 border-b bg-background/92 pt-[max(0.6rem,env(safe-area-inset-top,0px))] pb-[0.7rem] backdrop-blur-[12px] transition-colors duration-300 safe-x sm:sticky"
+      :class="scrolled ? 'border-transparent sm:border-border' : 'border-transparent'"
+    >
       <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
         <CanopyBrand condensed large />
         <div class="flex items-center gap-1">

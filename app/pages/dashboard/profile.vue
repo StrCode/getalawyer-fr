@@ -28,7 +28,7 @@ const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'law
 const isClient = computed(() => getSessionUserType(session.value?.user) === 'client')
 
 useHead(() => ({
-  title: isLawyer.value ? 'Listing - GetALawyer' : 'Profile - GetALawyer',
+  title: 'Profile',
   meta: [
     {
       name: 'description',

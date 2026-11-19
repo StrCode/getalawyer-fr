@@ -199,7 +199,7 @@ const choice = 'cursor-pointer transition-colors duration-200'
 
     <template v-if="isOwnProfile">
       <Button as-child variant="line" size="pill" class="mt-[0.9rem] w-full">
-        <NuxtLink to="/dashboard/profile">Edit your listing</NuxtLink>
+        <NuxtLink to="/dashboard/profile">Edit your profile</NuxtLink>
       </Button>
     </template>
     <template v-else>

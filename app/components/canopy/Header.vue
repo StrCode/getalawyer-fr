@@ -1,17 +1,27 @@
 <script setup lang="ts">
-import UserMenu from '@/components/UserMenu.vue'
 import { Button } from '@/components/ui/button'
-import { getSessionUserType } from '~/lib/session-user'
+import { getSessionUserType, isOnboardingIncomplete } from '~/lib/session-user'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
 
 /**
  * Site header: a lime strip for the second audience (lawyers), then a bar that
  * condenses to a floating pill once the page scrolls. A highlight slides under
  * the hovered or current link; small screens get a full-screen menu.
+ *
+ * The menu goes to the site's pages. "How it works" has no page of its own, so
+ * it goes to that part of the homepage and lights up while it is on screen.
  */
 const route = useRoute()
 const { session } = useAuth()
 const isSignedIn = computed(() => Boolean(session.value?.user))
-const showFindLawyer = computed(() => getSessionUserType(session.value?.user) !== 'lawyer')
+const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
+/** The bar's one button: clients look for a lawyer; lawyers go to their own side of the site. */
+const primary = computed(() => {
+  if (!isLawyer.value) return { label: 'Find a lawyer', to: '/find-lawyers' }
+  return isOnboardingIncomplete(session.value?.user)
+    ? { label: 'Your application', to: APPLICATION_HOME }
+    : { label: 'Dashboard', to: '/dashboard' }
+})
 
 const { data: pricing } = useMembershipPlans()
 const fromPrice = computed(() => {
@@ -21,15 +31,26 @@ const fromPrice = computed(() => {
   return `${formatNairaAmount(cheapest.priceNaira)} ${cheapest.termMonths === 1 ? 'a month' : `for ${termPhrase(cheapest.termMonths)}`}`
 })
 
-// `label` is the short form for the bar; `full` is used where there is room (mobile menu).
-const links = [
-  { label: 'Areas', full: 'Practice areas', to: '/#areas', section: 'areas' },
-  { label: 'Why us', full: 'Why getalawyer', to: '/#why', section: 'why' },
-  { label: 'How it works', full: 'How it works', to: '/#how', section: 'how' },
-  { label: 'For lawyers', full: 'For lawyers', to: '/#join', section: 'join' },
+// `key` names the link for the sliding highlight. A link with `section` goes to
+// that part of the homepage and is current while it is on screen; the others
+// are pages, current while the visitor is on them.
+const links: { key: string, label: string, to: string, section?: string }[] = [
+  { key: 'areas', label: 'Practice areas', to: '/practice-areas' },
+  { key: 'how', label: 'How it works', to: '/#how', section: 'how' },
+  { key: 'lawyers', label: 'For lawyers', to: '/for-lawyers' },
+  { key: 'pricing', label: 'Pricing', to: '/pricing' },
 ]
 
-const menuLinks = [...links, { full: 'Pricing', to: '/pricing' }]
+const menuLinks = [
+  { label: 'Find a lawyer', to: '/find-lawyers' },
+  ...links,
+  { label: 'Contact', to: '/contact' },
+]
+
+/** The link for the page the visitor is on, if it is one of the menu's pages. */
+function pageKey() {
+  return links.find(link => !link.section && (route.path === link.to || route.path.startsWith(`${link.to}/`)))?.key ?? null
+}
 
 const stuck = ref(false)
 const menuOpen = ref(false)
@@ -37,8 +58,8 @@ const current = ref<string | null>(null)
 const linksEl = ref<HTMLElement | null>(null)
 const glider = ref({ width: 0, x: 0, visible: false })
 
-function moveTo(section: string | null) {
-  const el = section ? linksEl.value?.querySelector<HTMLElement>(`[data-section="${section}"]`) : null
+function moveTo(key: string | null) {
+  const el = key ? linksEl.value?.querySelector<HTMLElement>(`[data-key="${key}"]`) : null
   if (!el || !linksEl.value) {
     glider.value = { ...glider.value, visible: false }
     return
@@ -55,7 +76,7 @@ function onScroll() {
   requestAnimationFrame(() => {
     stuck.value = window.scrollY > 40
     // Back in the hero: no section is current, so drop the highlight.
-    if (window.scrollY < 300 && current.value) {
+    if (route.path === '/' && window.scrollY < 300 && current.value) {
       current.value = null
       if (!linksEl.value?.matches(':hover')) moveTo(null)
     }
@@ -66,18 +87,21 @@ function onScroll() {
 let spy: IntersectionObserver | null = null
 function watchSections() {
   spy?.disconnect()
-  current.value = null
-  moveTo(null)
+  current.value = pageKey()
+  moveTo(current.value)
   if (route.path !== '/' || !('IntersectionObserver' in window)) return
   spy = new IntersectionObserver((entries) => {
     for (const entry of entries) {
-      if (!entry.isIntersecting) continue
-      current.value = entry.target.id
+      const link = links.find(item => item.section === entry.target.id)
+      if (!link) continue
+      // Lit while its part of the homepage is on screen, and not after.
+      if (entry.isIntersecting) current.value = link.key
+      else if (current.value === link.key) current.value = null
       if (!linksEl.value?.matches(':hover')) moveTo(current.value)
     }
   }, { rootMargin: '-35% 0px -55% 0px' })
   for (const link of links) {
-    const el = document.getElementById(link.section)
+    const el = link.section ? document.getElementById(link.section) : null
     if (el) spy.observe(el)
   }
 }
@@ -137,20 +161,20 @@ watch(() => route.fullPath, () => {
           />
           <NuxtLink
             v-for="link in links"
-            :key="link.section"
+            :key="link.key"
             :to="link.to"
-            :data-section="link.section"
-            :aria-current="current === link.section ? 'true' : undefined"
+            :data-key="link.key"
+            :aria-current="current === link.key ? 'true' : undefined"
             class="relative z-1 inline-flex min-h-[2.6rem] items-center whitespace-nowrap rounded-full px-[0.95rem] transition-colors duration-[250ms] hover:text-foreground aria-[current=true]:text-foreground"
-            @mouseenter="moveTo(link.section)"
-            @focus="moveTo(link.section)"
+            @mouseenter="moveTo(link.key)"
+            @focus="moveTo(link.key)"
           >
             {{ link.label }}
           </NuxtLink>
         </nav>
         <div class="flex items-center gap-[0.4rem] text-[0.95rem] font-semibold">
           <ClientOnly><CanopyThemeToggle class="max-nav:hidden" /></ClientOnly>
-          <UserMenu v-if="isSignedIn" variant="nav" />
+          <CanopyAccountMenu v-if="isSignedIn" />
           <NuxtLink
             v-else
             to="/login"
@@ -158,8 +182,8 @@ watch(() => route.fullPath, () => {
           >
             Sign in
           </NuxtLink>
-          <Button v-if="showFindLawyer" as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:px-4">
-            <NuxtLink to="/find-lawyers">Find a lawyer<CanopyArrowChip class="max-sm:hidden" /></NuxtLink>
+          <Button as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:px-4">
+            <NuxtLink :to="primary.to">{{ primary.label }}<CanopyArrowChip class="max-sm:hidden" /></NuxtLink>
           </Button>
           <button
             type="button"
@@ -189,12 +213,12 @@ watch(() => route.fullPath, () => {
       class="border-b border-border py-[0.7rem] font-display text-[2rem] font-[650] tracking-[-0.03em]"
       @click="setMenu(false)"
     >
-      {{ link.full }}
+      {{ link.label }}
     </NuxtLink>
     <div class="mt-auto grid gap-[0.6rem] pt-6">
       <ClientOnly><CanopyThemeSwitch block /></ClientOnly>
-      <Button v-if="showFindLawyer" as-child variant="canopy" size="pill" class="h-13 w-full">
-        <NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink>
+      <Button v-if="isLawyer" as-child variant="canopy" size="pill" class="h-13 w-full">
+        <NuxtLink :to="primary.to">{{ primary.label }}</NuxtLink>
       </Button>
       <Button v-if="!isSignedIn" as-child variant="line" size="pill" class="h-13 w-full">
         <NuxtLink to="/login">Sign in</NuxtLink>

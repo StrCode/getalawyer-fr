@@ -25,7 +25,7 @@ const lawyerDashboardNav: DashboardNavLink[] = [
   { title: 'Messages', to: '/dashboard/messages', icon: Message01Icon, group: 'Today' },
   { title: 'Notifications', to: '/dashboard/notifications', icon: Notification03Icon, group: 'Today' },
   { title: 'Cases', to: '/dashboard/cases', icon: Briefcase01Icon, lawyerOnly: true, group: 'Today' },
-  { title: 'Listing', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Practice' },
+  { title: 'Profile', to: '/dashboard/profile', icon: UserCircleIcon, lawyerOnly: true, group: 'Practice' },
   { title: 'Consultation Types', to: '/dashboard/consultation-types', icon: LegalDocument01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Availability', to: '/dashboard/availability', icon: Clock01Icon, lawyerOnly: true, group: 'Practice' },
   { title: 'Subscription', to: '/dashboard/subscription', icon: CreditCardIcon, lawyerOnly: true, group: 'Account' },
