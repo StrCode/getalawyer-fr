@@ -2,6 +2,7 @@
 import { Briefcase01Icon, Calendar03Icon, CheckmarkCircle01Icon, Clock01Icon, CreditCardIcon, File01Icon, Message01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
 import BookingRow from '@/components/booking/BookingRow.vue'
 import { Badge } from '@/components/ui/badge'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
@@ -58,7 +59,7 @@ const approvalHeaderBadge = computed(() =>
 
 watch(applicationStatus, (status) => {
   if (status === 'rejected') {
-    router.push('/onboarding/rejected')
+    router.push(APPLICATION_HOME)
   }
 }, { immediate: true })
 
@@ -79,6 +80,10 @@ const { data: casesData, isPending: casesPending } = useCasesList()
 
 const { data: subscriptionStatus, isPending: subscriptionPending } = useSubscriptionStatus()
 const { data: subscriptionPricing } = useSubscriptionPricing()
+/** The "From ₦x" figure on the membership aside: the lowest-priced plan on sale. */
+const cheapestPlan = computed(
+  () => [...plansOnSale(subscriptionPricing.value)].sort((a, b) => a.priceNaira - b.priceNaira)[0] ?? null,
+)
 const { data: subscriptionNotifications } = useSubscriptionNotifications()
 
 const {
@@ -490,7 +495,8 @@ function confirmDecline() {
             v-if="!subscriptionPending"
             :has-active-subscription="subscriptionStatus?.hasActiveSubscription ?? false"
             :subscription="subscriptionStatus?.subscription"
-            :renewal-price-naira="subscriptionPricing?.subscriptionPriceNaira"
+            :renewal-price-naira="cheapestPlan?.priceNaira"
+            :renewal-term-months="cheapestPlan?.termMonths"
           />
 
           <DashboardMessagesPreview

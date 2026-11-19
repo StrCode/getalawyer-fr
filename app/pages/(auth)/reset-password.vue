@@ -1,33 +1,28 @@
 <template>
   <AuthFormShell
-    eyebrow="Account recovery"
     :title="submitted ? 'Password updated' : 'Set a new password'"
     :description="submitted
       ? undefined
-      : `Choose a new password for ${identifierLabel}. This will end all active sessions for your account.`"
+      : `Choose a new password for ${identifierLabel}. This signs you out everywhere else.`"
   >
     <Transition name="fade">
-      <div v-if="submitted" key="success" class="flex flex-col items-center py-2 text-center">
-        <div class="mb-5 flex size-16 items-center justify-center rounded-full border border-primary/15 bg-primary/10">
-          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-8 text-primary" />
-        </div>
-        <p class="mb-8 max-w-sm text-base leading-relaxed text-muted-foreground">
-          Your password has been reset. You can now log in with your new password.
+      <div v-if="submitted" key="success" role="status">
+        <p class="mb-[1.7rem] flex items-start gap-3 text-muted-foreground">
+          <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="13" :stroke="3.4" /></span>
+          Your password has been reset. You can now sign in with the new one.
         </p>
-        <Button class="h-12 w-full" size="lg" as-child>
-          <NuxtLink to="/login" class="inline-flex w-full items-center justify-center">
-            Go to login
-          </NuxtLink>
+        <Button as-child variant="canopy" size="pill" class="group/btn h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]">
+          <NuxtLink to="/login">Go to sign in<CanopyArrowChip /></NuxtLink>
         </Button>
       </div>
     </Transition>
 
     <Transition name="fade">
-      <form v-if="!submitted" key="form" @submit.prevent="form.handleSubmit">
-        <FieldGroup class="space-y-4">
+      <form v-if="!submitted" key="form" novalidate @submit.prevent="form.handleSubmit">
+        <FieldGroup class="gap-[1.1rem]">
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">New password</FieldLabel>
+              <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">New password</FieldLabel>
               <AuthPasswordInput
                 :id="field.name"
                 :name="field.name"
@@ -40,13 +35,13 @@
                 @update:model-value="(v) => field.handleChange(v as any)"
               />
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-              <AuthPasswordRequirements class="mt-2" :password="field.state.value" />
+              <AuthPasswordRequirements :password="field.state.value" />
             </Field>
           </form.Field>
 
           <form.Field v-slot="{ field }" name="confirmPassword">
             <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">Confirm new password</FieldLabel>
+              <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">Confirm password</FieldLabel>
               <AuthPasswordInput
                 :id="field.name"
                 :name="field.name"
@@ -64,31 +59,20 @@
 
           <AuthFormError :message="apiError" />
 
-          <Button type="submit" class="h-12 w-full gap-2" size="lg" :disabled="isSubmitting">
-            <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
-            <span>{{ isSubmitting ? 'Resetting…' : 'Reset password' }}</span>
-          </Button>
+          <AuthSubmit :loading="isSubmitting" class="mt-[0.3rem]">
+            {{ isSubmitting ? 'Resetting…' : 'Reset password' }}
+          </AuthSubmit>
         </FieldGroup>
       </form>
     </Transition>
 
-    <template
-      v-if="!submitted"
-      #after
-    >
-      <p class="text-center text-base text-muted-foreground">
-        Need help?
-        <NuxtLink to="/contact" class="font-medium text-primary underline-offset-4 hover:underline">
-          Contact us
-        </NuxtLink>
-      </p>
+    <template v-if="!submitted" #after>
+      Need help? <NuxtLink to="/contact" :class="authLink">Contact us</NuxtLink>
     </template>
   </AuthFormShell>
 </template>
 
 <script setup lang="ts">
-import { CheckmarkCircle01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -102,6 +86,8 @@ definePageMeta({
   authTitle: 'Recover your account.',
   authDescription: "Don't worry, it happens to the best of us. We'll help you get back to your legal dashboard securely.",
 })
+
+useHead({ title: 'Set a new password' })
 
 const route = useRoute()
 const router = useRouter()

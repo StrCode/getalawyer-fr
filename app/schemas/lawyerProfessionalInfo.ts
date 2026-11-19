@@ -1,7 +1,8 @@
 import * as z from 'zod'
 import { isValidScnDigits, normalizeScnDigitsOnly } from '~/lib/scn'
 
-const YEAR_MIN = 1970
+// Matches the backend's professionalInfoSchema.
+const YEAR_MIN = 1960
 
 function yearMax() {
   return new Date().getFullYear()
