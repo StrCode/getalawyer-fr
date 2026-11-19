@@ -133,7 +133,12 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
         if (ninResubmitMode.value || ninVerification.verified) return
 
-        if (draftImpliesNinSubmitted(draftRoot)) {
+        // The draft response carries the server's own answer to "is a NIN saved?".
+        // Follow it both ways: reopening an application removes the saved NIN.
+        const saved = (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted
+        if (typeof saved === 'boolean') {
+            ninVerification.isSubmitted = saved
+        } else if (draftImpliesNinSubmitted(draftRoot)) {
             ninVerification.isSubmitted = true
         }
     }, { immediate: true })

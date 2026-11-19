@@ -31,6 +31,12 @@ const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
 const sectionKey = computed(() => SECTION_KEYS[route.path] ?? null)
 const isHome = computed(() => !sectionKey.value)
+/**
+ * True while the application can still be edited: a section, or the home it
+ * is filled in from. After it is submitted (payment, in review, needs changes)
+ * there is nothing to save, so saving is off and the menu is a plain sign-out.
+ */
+const editable = computed(() => Boolean(sectionKey.value) || route.path === LAWYER_APPLICATION_HOME)
 
 // Section pages register their own check (field errors, async checks) here; the
 // "Save and return" button runs it before saving.
@@ -41,11 +47,16 @@ provide('registerLawyerOnboardingStepValidate', (fn: (() => Promise<boolean>) | 
 
 // Tell the store what is on screen so it can save as the lawyer types. On the
 // home page the only thing typed is the terms acceptance, saved under "review".
-watch(() => sectionKey.value ?? 'review', (key) => { store.activeStepKey = key }, { immediate: true })
+watch(
+  () => (editable.value ? sectionKey.value ?? 'review' : null),
+  (key) => { store.activeStepKey = key },
+  { immediate: true },
+)
 onBeforeUnmount(() => { store.activeStepKey = null })
 watch(() => route.path, () => { store.validationError = null })
 
 const saveStatus = computed(() => {
+  if (!editable.value) return ''
   if (store.autosave.status === 'saving') return 'Saving…'
   if (store.autosave.status === 'error') return 'Not saved yet'
   if (store.autosave.status === 'saved') return 'Saved'
@@ -88,6 +99,10 @@ async function backToHome() {
 
 async function saveAndSignOut() {
   if (busy.value || isSigningOut.value) return
+  if (!editable.value) {
+    await handleSignOut('login')
+    return
+  }
   busy.value = true
   try {
     const saved = await store.saveProgress(sectionKey.value ?? 'review')
@@ -123,7 +138,7 @@ async function saveAndSignOut() {
           :disabled="busy || isSigningOut"
           @click="saveAndSignOut"
         >
-          {{ isSigningOut ? 'Signing out…' : 'Save and sign out' }}
+          {{ isSigningOut ? 'Signing out…' : editable ? 'Save and sign out' : 'Sign out' }}
         </button>
       </div>
     </div>

@@ -44,6 +44,9 @@ const THEMED_ROUTES = new Set<string>([
   '/onboarding/nin-verification',
   '/onboarding/professional-information',
   '/onboarding/practice-information',
+  '/onboarding/subscription',
+  '/onboarding/pending',
+  '/onboarding/rejected',
 ])
 
 /** A committed variable font in public/fonts, self-hosted through @nuxt/fonts. */

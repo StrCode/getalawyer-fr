@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import {
-  AlertCircleIcon,
-  ArrowRight01Icon,
-  CheckmarkCircle01Icon,
-  Loading03Icon,
-  Tick01Icon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import { toast } from 'vue-sonner'
 import {
@@ -16,7 +8,6 @@ import {
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import {
-  getLawyerApplicationStatusNotice,
   isLawyerAwaitingApproval,
   isLawyerRejected,
   isLawyerVerificationFailed,
@@ -24,36 +15,16 @@ import {
   VERIFICATION_FAILED_COPY,
 } from '~/lib/lawyerOnboardingStatus'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Stepper,
-  StepperDescription,
-  StepperIndicator,
-  StepperItem,
-  StepperSeparator,
-  StepperTitle,
-  StepperTrigger,
-} from '@/components/ui/stepper'
 
 definePageMeta({
-  layout: 'onboarding-draft',
+  layout: 'onboarding-lawyer',
   middleware: ['auth'],
 })
 
 useHead({
-  title: 'Application pending — GetaLawyer',
+  title: 'Application in review',
   meta: [
     {
       name: 'description',
@@ -90,9 +61,6 @@ const {
   enabled: computed(() => isAwaiting.value),
 })
 
-const applicationNotice = computed(() =>
-  statusPayload.value ? getLawyerApplicationStatusNotice(statusPayload.value) : null,
-)
 
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
@@ -145,24 +113,13 @@ const hasActiveSubscription = computed(
   () => subscriptionStatus.value?.hasActiveSubscription === true,
 )
 
-const currentStep = computed(() => (hasActiveSubscription.value ? 3 : 2))
-
-const progressSteps = computed(() => [
-  {
-    step: 1,
-    title: 'Applied',
-    description: 'Done',
-  },
-  {
-    step: 2,
-    title: 'Paid',
-    description: hasActiveSubscription.value ? 'Done' : 'Now',
-  },
-  {
-    step: 3,
-    title: 'Review',
-    description: hasActiveSubscription.value ? 'Now' : 'Next',
-  },
+/** What happens from here, in order. "now" marks where the application is. */
+const timeline = computed(() => [
+  { state: 'done', title: 'Application submitted', note: submittedLabel.value ?? 'Received' },
+  { state: 'done', title: 'Membership paid', note: 'You are covered while we finish the review.' },
+  { state: 'now', title: 'Identity and enrolment checks', note: 'In progress' },
+  { state: 'next', title: 'Decision by email', note: `Usually within ${REVIEW_TIME}` },
+  { state: 'next', title: 'Your listing goes live', note: 'Clients can find and message you' },
 ])
 
 watchEffect(() => {
@@ -214,8 +171,11 @@ async function retryStatus() {
 
 async function startNewApplication() {
   try {
-    await restart()
+    // Clear first: the server rebuilds the draft when it reopens the
+    // application, and that draft must land after the reset, not before it
+    // (the other order left the reopened forms blank).
     lawyerOnboardingStore.resetStore()
+    await restart()
     toast.success('Application unlocked', {
       description: 'Update your details, then submit and pay again.',
     })
@@ -229,253 +189,90 @@ async function startNewApplication() {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-md flex-col items-stretch gap-8">
-    <div
-      v-if="showSpinner"
-      class="flex flex-col items-center gap-3 py-16"
-      aria-busy="true"
-      aria-live="polite"
-    >
-      <Skeleton class="size-11 rounded-full" />
-      <div class="flex w-full flex-col items-center gap-2">
-        <Skeleton class="h-6 w-48" />
-        <Skeleton class="h-4 w-64 max-w-full" />
-        <Skeleton class="h-4 w-40" />
-      </div>
-      <Skeleton class="mt-1 h-14 w-full rounded-xl" />
-      <Skeleton class="h-36 w-full rounded-xl" />
+  <div>
+    <div v-if="showSpinner" class="grid gap-[0.6rem] pt-4" aria-busy="true" aria-label="Loading your application status">
+      <Skeleton class="h-10 w-2/3 rounded-full" />
+      <Skeleton v-for="n in 5" :key="n" class="h-[3.6rem] rounded-[1.1rem]" />
     </div>
 
-    <Card v-else-if="statusUnavailable" class="gap-4 py-5">
-      <CardHeader class="px-5 text-center">
-        <CardTitle>Could not load status</CardTitle>
-        <CardDescription>
-          Check your connection and try again.
-        </CardDescription>
-      </CardHeader>
-      <CardFooter class="justify-center px-5">
-        <Button class="cursor-pointer" @click="retryStatus">
-          Try again
-        </Button>
-      </CardFooter>
-    </Card>
+    <div v-else-if="statusUnavailable" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
+      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application status.</h1>
+      <p class="text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="line" size="pill-sm" @click="retryStatus">Try again</Button>
+    </div>
 
-    <div
+    <!-- identity or enrolment could not be verified: refund, then a new application -->
+    <OnboardingApplicationStatus
       v-else-if="isVerificationFailed"
-      class="flex flex-col items-stretch gap-6"
+      kicker="Verification"
+      :title="VERIFICATION_FAILED_COPY.title"
+      :description="VERIFICATION_FAILED_COPY.description"
+      :pill="{ label: 'Not verified', tone: 'bad' }"
+      membership="refunded"
+      sections-state="reopen"
     >
-      <div class="flex flex-col items-center gap-3 text-center">
-        <div class="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-          <HugeiconsIcon :icon="AlertCircleIcon" class="size-5" aria-hidden="true" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <h1 class="text-balance text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-            {{ VERIFICATION_FAILED_COPY.title }}
-          </h1>
-          <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            {{ VERIFICATION_FAILED_COPY.description }}
-          </p>
-        </div>
-      </div>
+      <p class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
+        <b class="block font-semibold">About your payment</b>
+        {{ VERIFICATION_FAILED_COPY.refundNote }}
+      </p>
+      <section class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
+        <h2 class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ VERIFICATION_FAILED_COPY.resubmitTitle }}</h2>
+        <p class="mt-1 text-muted-foreground">{{ VERIFICATION_FAILED_COPY.resubmitDescription }}</p>
+        <ol class="mt-4 grid gap-[0.6rem]">
+          <li v-for="(step, index) in VERIFICATION_FAILED_COPY.resubmitSteps" :key="step" class="flex items-start gap-3">
+            <span class="grid size-7 flex-none place-items-center rounded-full bg-mint font-display text-[0.9rem] font-bold text-deep">{{ index + 1 }}</span>
+            <span>{{ step }}</span>
+          </li>
+        </ol>
+        <AuthSubmit type="button" :loading="isRestarting" class="mt-5" @click="startNewApplication">
+          {{ VERIFICATION_FAILED_COPY.ctaLabel }}
+        </AuthSubmit>
+      </section>
+      <p class="text-[0.9rem] text-muted-foreground">
+        {{ VERIFICATION_FAILED_COPY.supportLabel }}
+        <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>
+      </p>
+    </OnboardingApplicationStatus>
 
-      <Card class="gap-0 overflow-hidden py-0">
-        <CardHeader class="gap-1.5 px-5 pt-5 pb-4">
-          <CardTitle class="text-sm font-medium">
-            {{ VERIFICATION_FAILED_COPY.resubmitTitle }}
-          </CardTitle>
-          <CardDescription class="text-sm leading-relaxed">
-            {{ VERIFICATION_FAILED_COPY.resubmitDescription }}
-          </CardDescription>
-        </CardHeader>
+    <!-- submitted and paid: waiting for a decision -->
+    <OnboardingApplicationStatus
+      v-else-if="isAwaiting"
+      kicker="Application submitted"
+      title="Application in review"
+      :pill="{ label: 'In review', tone: 'ok' }"
+      :membership="!subscriptionStatusPending && hasActiveSubscription ? 'paid' : 'due'"
+    >
+      <template #description>
+        We are checking your credentials. You will get an email when there is a decision, usually within {{ REVIEW_TIME }}.
+      </template>
 
-        <CardContent class="flex flex-col gap-3 px-5 pb-5">
-          <Alert variant="destructive">
-            <HugeiconsIcon :icon="AlertCircleIcon" />
-            <AlertTitle>Refund</AlertTitle>
-            <AlertDescription>
-              {{ VERIFICATION_FAILED_COPY.refundNote }}
-            </AlertDescription>
-          </Alert>
-
-          <ol class="flex flex-col gap-3">
-            <li
-              v-for="(step, index) in VERIFICATION_FAILED_COPY.resubmitSteps"
-              :key="step"
-              class="flex items-start gap-3 text-sm text-foreground"
+      <section aria-labelledby="timeline-title" class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
+        <h2 id="timeline-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">What happens next</h2>
+        <ol class="mt-4 grid">
+          <li v-for="(item, index) in timeline" :key="item.title" class="relative grid grid-cols-[1.9rem_minmax(0,1fr)] gap-[0.8rem] pb-[1.1rem] last:pb-0">
+            <i v-if="index < timeline.length - 1" aria-hidden="true" class="absolute top-[1.9rem] bottom-0 left-[0.92rem] w-[2px] bg-border" />
+            <span
+              class="grid size-[1.9rem] place-items-center rounded-full border-2 text-[0.8rem] font-bold"
+              :class="item.state === 'done' ? 'border-primary bg-primary text-white' : item.state === 'now' ? 'border-primary text-brand ring-4 ring-mint' : 'border-border text-muted-foreground'"
             >
-              <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
-                {{ index + 1 }}
-              </span>
-              <span class="leading-snug">{{ step }}</span>
-            </li>
-          </ol>
-        </CardContent>
-
-        <Separator />
-
-        <CardFooter class="flex flex-col items-stretch gap-3 px-5 py-4">
-          <Button
-            class="h-10 w-full cursor-pointer"
-            :disabled="isRestarting"
-            @click="startNewApplication"
-          >
-            <HugeiconsIcon
-              v-if="isRestarting"
-              :icon="Loading03Icon"
-              data-icon="inline-start"
-              class="animate-spin"
-            />
-            <HugeiconsIcon
-              v-else
-              :icon="ArrowRight01Icon"
-              data-icon="inline-start"
-            />
-            {{ VERIFICATION_FAILED_COPY.ctaLabel }}
-          </Button>
-          <p class="text-center text-xs text-muted-foreground">
-            {{ VERIFICATION_FAILED_COPY.supportLabel }}
-            <a
-              :href="`mailto:${VERIFICATION_FAILED_COPY.supportEmail}`"
-              class="font-medium text-primary underline underline-offset-2"
-            >
-              {{ VERIFICATION_FAILED_COPY.supportEmail }}
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-
-      <Button
-        variant="outline"
-        class="h-10 w-full cursor-pointer"
-        as-child
-      >
-        <NuxtLink to="/">
-          Back to home
-        </NuxtLink>
-      </Button>
-    </div>
-
-    <template v-else-if="isAwaiting">
-      <div class="flex flex-col items-center gap-3 text-center">
-        <div class="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="size-5" aria-hidden="true" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <h1 class="text-balance text-xl font-medium tracking-tight text-foreground sm:text-2xl">
-            Application in review
-          </h1>
-          <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            We’re checking your credentials. You’ll get an email when there’s a decision — usually within
-            {{ REVIEW_TIME }}.
-          </p>
-        </div>
-        <Badge v-if="submittedLabel" variant="soft">
-          Submitted {{ submittedLabel }}
-        </Badge>
-      </div>
-
-      <Stepper
-        :model-value="currentStep"
-        class="w-full items-start justify-between gap-1"
-      >
-        <StepperItem
-          v-for="(item, index) in progressSteps"
-          :key="item.step"
-          :step="item.step"
-          class="relative flex flex-1 flex-col items-center"
-        >
-          <StepperSeparator
-            v-if="index < progressSteps.length - 1"
-            class="absolute left-[calc(50%+1.25rem)] right-[calc(-50%+0.75rem)] top-4 block h-px shrink-0 bg-border group-data-[state=completed]:bg-primary"
-          />
-          <StepperTrigger class="pointer-events-none flex flex-col items-center gap-2 rounded-none bg-transparent p-0">
-            <StepperIndicator
-              class="size-8 border border-border bg-muted text-muted-foreground group-data-[state=active]:border-transparent group-data-[state=active]:bg-primary group-data-[state=active]:text-primary-foreground group-data-[state=completed]:border-transparent group-data-[state=completed]:bg-primary group-data-[state=completed]:text-primary-foreground"
-            >
-              <HugeiconsIcon
-                v-if="currentStep > item.step"
-                :icon="Tick01Icon"
-              />
-              <span
-                v-else-if="currentStep === item.step"
-                class="size-1.5 rounded-full bg-current"
-              />
-              <span v-else class="size-1.5 rounded-full bg-current opacity-40" />
-            </StepperIndicator>
-            <div class="flex flex-col items-center gap-0.5 text-center">
-              <StepperTitle class="text-xs font-medium leading-none">
-                {{ item.title }}
-              </StepperTitle>
-              <StepperDescription
-                class="leading-none"
-                :class="currentStep === item.step ? 'font-medium text-primary' : undefined"
-              >
-                {{ item.description }}
-              </StepperDescription>
+              <CanopyGlyph v-if="item.state === 'done'" name="tick" :size="12" :stroke="3.4" />
+              <template v-else>{{ index + 1 }}</template>
+            </span>
+            <div>
+              <b class="block">{{ item.title }}</b>
+              <small class="text-[0.88rem] text-muted-foreground">{{ item.note }}</small>
             </div>
-          </StepperTrigger>
-        </StepperItem>
-      </Stepper>
+          </li>
+        </ol>
+      </section>
 
-      <Card class="gap-0 overflow-hidden py-0">
-        <CardHeader class="gap-1.5 px-5 pt-5 pb-4">
-          <CardTitle class="text-sm font-medium">
-            {{ applicationNotice?.title || 'We’re reviewing your details' }}
-          </CardTitle>
-          <CardDescription class="text-sm leading-relaxed">
-            {{
-              applicationNotice?.description
-                || 'No further action is needed unless we contact you.'
-            }}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent
-          v-if="!subscriptionStatusPending && hasActiveSubscription"
-          class="px-5 pb-5"
-        >
-          <Alert variant="success">
-            <HugeiconsIcon :icon="Tick01Icon" />
-            <AlertDescription>
-              <span class="font-medium text-foreground">Membership paid.</span>
-              You’re covered while we finish review.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-
-        <Separator />
-
-        <CardFooter class="px-5 py-4">
-          <p class="text-xs leading-relaxed text-muted-foreground">
-            We’ll email you when approved, or if we need anything else.
-            Questions?
-            <a
-              :href="`mailto:${SUPPORT_EMAIL}`"
-              class="font-medium text-primary underline underline-offset-2"
-            >
-              {{ SUPPORT_EMAIL }}
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-
-      <Button
-        variant="outline"
-        class="h-10 w-full cursor-pointer"
-        as-child
-      >
-        <NuxtLink to="/">
-          Back to home
-        </NuxtLink>
-      </Button>
-      <Button
-        v-if="statusError"
-        variant="link"
-        class="h-auto cursor-pointer px-0"
-        @click="retryStatus"
-      >
-        Refresh status
-      </Button>
-    </template>
+      <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[0.9rem] text-muted-foreground">
+        <p>
+          This page checks for a decision by itself. Questions?
+          <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>
+        </p>
+        <Button variant="line" size="pill-sm" @click="retryStatus">Refresh status</Button>
+      </div>
+    </OnboardingApplicationStatus>
   </div>
 </template>

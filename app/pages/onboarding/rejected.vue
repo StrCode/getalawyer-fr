@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Alert01Icon, AlertCircleIcon, ArrowRight01Icon, File01Icon, Loading03Icon, Message02Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { toast } from 'vue-sonner'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -13,16 +12,17 @@ import {
   onboardingApplicationStatus,
 } from '~/lib/lawyerOnboardingStatus'
 import { httpClient } from '~/lib/api/client'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 definePageMeta({
-  layout: 'onboarding-draft',
+  layout: 'onboarding-lawyer',
   middleware: 'auth',
 })
 
 useHead({
-  title: 'Application Update Required - GetaLawyer',
+  title: 'Your application needs changes',
   meta: [
     { name: 'description', content: 'Your application needs updates' },
   ],
@@ -63,6 +63,7 @@ const {
 })
 
 const { restart, isPending: isRestarting } = useOnboardingRestart()
+const lawyerOnboardingStore = useLawyerOnboardingStore()
 
 const rejectionReason = computed(() => {
   const fromDashboard = dashboardState.value?.reason ?? dashboardState.value?.message
@@ -96,127 +97,60 @@ watchEffect(() => {
 })
 
 const handleRestart = async () => {
-  await restart()
-  await router.push('/onboarding')
+  try {
+    // Clear first, so the reopened draft the server sends back fills the forms.
+    lawyerOnboardingStore.resetStore()
+    await restart()
+    await router.push('/onboarding')
+  }
+  catch (error) {
+    // Without this the button just stopped; say what happened and how to go on.
+    toast.error('Could not reopen your application', {
+      description: error instanceof Error ? error.message : 'Please try again, or write to support.',
+    })
+  }
+}
+
+function reloadPage() {
+  if (import.meta.client) window.location.reload()
 }
 </script>
 
 <template>
-  <div class="py-12 text-center">
-    <div class="mb-12">
-      <div class="relative mx-auto mb-8 flex size-20 items-center justify-center rounded-full border-4 border-background bg-warning/10 text-warning shadow-lg">
-        <HugeiconsIcon :icon="Alert01Icon" class="size-10" />
-      </div>
-      <h1 class="mb-3 text-3xl font-medium tracking-[-0.02em] text-foreground">
-        Application Update Required
-      </h1>
-      <p class="mx-auto max-w-md font-medium leading-relaxed text-muted-foreground">
-        Your application needs some revisions before it can be approved for our legal network.
-      </p>
+  <div>
+    <div v-if="showSpinner" class="grid gap-[0.6rem] pt-4" aria-busy="true" aria-label="Loading your application">
+      <Skeleton class="h-10 w-2/3 rounded-full" />
+      <Skeleton v-for="n in 5" :key="n" class="h-[3.6rem] rounded-[1.1rem]" />
     </div>
 
-    <div
-      v-if="showSpinner"
-      class="mx-auto flex w-full max-w-2xl flex-col items-center gap-8 py-12"
-    >
-      <Skeleton class="size-12 rounded-full" />
-      <Skeleton class="h-8 w-2/3 rounded-xl" />
-      <Skeleton class="h-32 w-full rounded-2xl" />
+    <div v-else-if="showError" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
+      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>
+      <p class="text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="line" size="pill-sm" @click="reloadPage">Try again</Button>
     </div>
 
-    <div
-      v-else-if="showError"
-      class="py-12 text-center"
-    >
-      <HugeiconsIcon :icon="AlertCircleIcon" class="mx-auto mb-4 size-12 text-destructive" />
-      <p class="font-medium tracking-tight text-destructive">
-        Failed to load application details
-      </p>
-    </div>
-
-    <div
+    <OnboardingApplicationStatus
       v-else
-      class="flex flex-col gap-12"
+      kicker="Application reviewed"
+      title="Your application needs changes"
+      description="Our review team could not approve it yet. Read the feedback, reopen your application, fix what is listed and submit again."
+      :pill="{ label: 'Needs changes', tone: 'warn' }"
+      membership="later"
+      sections-state="reopen"
     >
-      <div class="rounded-2xl border border-border bg-card p-8 text-left shadow-sm transition-all hover:shadow-md">
-        <h2 class="mb-4 flex items-center gap-3 text-lg font-medium text-foreground">
-          <div class="rounded-lg bg-muted p-2">
-            <HugeiconsIcon :icon="Message02Icon" class="size-5 text-muted-foreground" />
-          </div>
-          Feedback from Review Team
-        </h2>
+      <section aria-labelledby="feedback-title" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.95rem] text-warning-subtle-foreground">
+        <h2 id="feedback-title" class="font-semibold">Feedback from the review team</h2>
+        <p v-if="rejectionReason" class="mt-1 whitespace-pre-line">{{ rejectionReason }}</p>
+        <p v-else class="mt-1">No detailed feedback was provided. Write to support if you need to know what to change.</p>
+      </section>
 
-        <div
-          v-if="rejectionReason"
-          class="rounded-xl border border-warning/30 bg-warning/10 p-6"
-        >
-          <div class="whitespace-pre-wrap text-sm font-medium leading-relaxed text-foreground">
-            {{ rejectionReason }}
-          </div>
-        </div>
-        <p
-          v-else
-          class="text-sm text-muted-foreground"
-        >
-          No detailed feedback was provided. Contact support if you need clarification.
-        </p>
-      </div>
-
-      <div class="rounded-2xl border border-border bg-muted p-8 text-left transition-all">
-        <h2 class="mb-6 flex items-center gap-3 text-lg font-medium text-foreground">
-          <div class="rounded-lg bg-accent p-2">
-            <HugeiconsIcon :icon="File01Icon" class="size-5 text-muted-foreground" />
-          </div>
-          Next Steps
-        </h2>
-
-        <ol class="flex flex-col gap-5 text-foreground">
-          <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">1</span>
-            <span class="text-sm font-medium">Carefully review the feedback provided above.</span>
-          </li>
-          <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">2</span>
-            <span class="text-sm font-medium">Update your credentials or application details as requested in the feedback.</span>
-          </li>
-          <li class="flex items-start gap-4">
-            <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">3</span>
-            <span class="text-sm font-medium">Click the button below to unlock your application for editing.</span>
-          </li>
-        </ol>
-
-        <div class="mt-10">
-          <Button
-            class="flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-xl font-medium shadow-lg transition-all active:scale-[0.98]"
-            :disabled="isRestarting"
-            @click="handleRestart"
-          >
-            <HugeiconsIcon
-              v-if="isRestarting"
-              :icon="Loading03Icon"
-              class="size-5 animate-spin"
-            />
-            <HugeiconsIcon
-              v-else
-              :icon="ArrowRight01Icon"
-              class="size-5"
-            />
-            Fix and Resubmit Application
-          </Button>
-        </div>
-      </div>
-
-      <div class="pt-8">
-        <p class="text-sm font-medium text-muted-foreground">
-          Having trouble?
-          <a
-            :href="`mailto:${SUPPORT_EMAIL}`"
-            class="font-medium text-primary hover:underline"
-          >
-            Contact Support
-          </a>
-        </p>
-      </div>
-    </div>
+      <AuthSubmit type="button" :loading="isRestarting" @click="handleRestart">
+        Reopen and fix my application
+      </AuthSubmit>
+      <p class="text-[0.9rem] text-muted-foreground">
+        Your details are kept, so you only edit what needs fixing. You will be asked for your NIN again. Having trouble?
+        <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>
+      </p>
+    </OnboardingApplicationStatus>
   </div>
 </template>
