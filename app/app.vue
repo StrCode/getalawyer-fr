@@ -9,7 +9,7 @@ import { Toaster } from '~/components/ui/sonner'
 const route = useRoute()
 
 const pageTransition = computed<TransitionProps | false>(() =>
-  route.path.startsWith('/dashboard') ? false : { name: 'page', mode: 'out-in' },
+  route.path.startsWith('/dashboard') ? false : { name: 'page' },
 )
 
 </script>

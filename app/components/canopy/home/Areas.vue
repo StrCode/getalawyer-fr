@@ -6,7 +6,7 @@ onServerPrefetch(async () => {
   await suspense().catch(() => {})
 })
 const areas = computed(() => (specializations.value ?? []).map(s => ({ id: s.id, name: s.name })))
-const pill = 'inline-flex min-h-12 items-center gap-[0.55rem] rounded-full border border-border bg-card px-[1.2rem] font-semibold whitespace-nowrap transition-transform duration-300 ease-canopy hover:-translate-y-[3px] hover:border-brand'
+const pill = 'inline-flex min-h-12 items-center gap-[0.55rem] rounded-full border border-border bg-card px-[1.2rem] font-semibold whitespace-nowrap transition-[translate,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand'
 const moving = ref(false)
 onMounted(() => {
   moving.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches

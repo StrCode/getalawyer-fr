@@ -133,7 +133,7 @@ watch(() => route.fullPath, () => {
       <span class="max-sm:hidden">Message any lawyer free. You only agree a fee if you need more.</span>
       <NuxtLink to="/for-lawyers" class="group/strip inline-flex items-center gap-[0.35rem] underline underline-offset-[3px]">
         Are you a lawyer? Join<template v-if="fromPrice"> from {{ fromPrice }}</template>
-        <CanopyGlyph name="arrow" :stroke="2.4" class="transition-transform duration-300 ease-canopy group-hover/strip:translate-x-[3px]" />
+        <CanopyGlyph name="arrow" :stroke="2.4" class="transition-[translate] duration-200 ease-canopy group-hover/strip:translate-x-[3px]" />
       </NuxtLink>
     </div>
   </div>
@@ -141,7 +141,7 @@ watch(() => route.fullPath, () => {
   <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-[0.7rem]">
     <div class="mx-auto max-w-site safe-x">
       <div
-        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-[0.45rem] pr-[0.45rem] [transition:max-width_0.6s_cubic-bezier(0.22,0.8,0.26,1),padding_0.6s_cubic-bezier(0.22,0.8,0.26,1),background-color_0.4s,border-color_0.4s,box-shadow_0.4s]"
+        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-[0.45rem] pr-[0.45rem] [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
         :class="stuck
           ? 'max-w-[58rem] border-border bg-glass pl-[1.1rem] shadow-pill backdrop-blur-[16px] backdrop-saturate-[1.4]'
           : 'max-w-site border-transparent pl-1'"
@@ -156,7 +156,7 @@ watch(() => route.fullPath, () => {
         >
           <span
             aria-hidden="true"
-            class="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-mint [transition:transform_0.45s_cubic-bezier(0.22,0.8,0.26,1),width_0.45s_cubic-bezier(0.22,0.8,0.26,1),opacity_0.25s]"
+            class="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-mint [transition:transform_0.2s_var(--ease-canopy),width_0.2s_var(--ease-canopy),opacity_0.15s]"
             :style="{ width: `${glider.width}px`, transform: `translateX(${glider.x}px)`, opacity: glider.visible ? 1 : 0 }"
           />
           <NuxtLink
@@ -200,10 +200,16 @@ watch(() => route.fullPath, () => {
     </div>
   </header>
 
+  <Transition
+    enter-active-class="transition-[opacity,translate] duration-200 ease-canopy"
+    enter-from-class="translate-y-2 opacity-0"
+    leave-active-class="transition-opacity duration-150 ease-out"
+    leave-to-class="opacity-0"
+  >
   <div
     v-if="menuOpen"
     id="site-menu"
-    class="fixed inset-0 z-29 flex animate-menu-in flex-col overflow-y-auto bg-background pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-[calc(5.5rem+env(safe-area-inset-top,0px))] safe-x"
+    class="fixed inset-0 z-29 flex flex-col overflow-y-auto bg-background pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-[calc(5.5rem+env(safe-area-inset-top,0px))] safe-x"
     @keydown.esc="setMenu(false)"
   >
     <NuxtLink
@@ -225,4 +231,5 @@ watch(() => route.fullPath, () => {
       </Button>
     </div>
   </div>
+  </Transition>
 </template>

@@ -17,6 +17,12 @@ import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
  */
 const store = useLawyerOnboardingStore()
 
+// Coming back from a section that was just saved: that one row's tick arrives
+// (a short fade and scale), so the change is seen. Read once, then forgotten.
+const justSavedState = useState<string | null>('application-just-saved', () => null)
+const justSaved = justSavedState.value
+onMounted(() => { justSavedState.value = null })
+
 const { data: specializations } = useSpecializations()
 const areaNames = computed(() => {
   const list = specializations.value ?? []
@@ -41,6 +47,7 @@ const sections = computed(() => {
   return [
     {
       key: 'personal' as const,
+      step: 'personal_info',
       to: APPLICATION_SECTION_PATHS.personal_info,
       title: 'About you',
       hint: 'Your name, date of birth and where you live',
@@ -48,6 +55,7 @@ const sections = computed(() => {
     },
     {
       key: 'nin' as const,
+      step: 'nin_verification',
       to: APPLICATION_SECTION_PATHS.nin_verification,
       title: 'Identity',
       hint: 'Your NIN and consent to verify it',
@@ -55,6 +63,7 @@ const sections = computed(() => {
     },
     {
       key: 'professional' as const,
+      step: 'professional_info',
       to: APPLICATION_SECTION_PATHS.professional_info,
       title: 'Bar credentials',
       hint: 'Supreme Court number and year of call',
@@ -62,6 +71,7 @@ const sections = computed(() => {
     },
     {
       key: 'practice' as const,
+      step: 'practice_info',
       to: APPLICATION_SECTION_PATHS.practice_info,
       title: 'How you practise',
       hint: 'Firm, practice areas and states',
@@ -132,9 +142,9 @@ async function submit() {
       <li v-for="(section, index) in sections" :key="section.key">
         <NuxtLink
           :to="section.to"
-          class="grid grid-cols-[2.6rem_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-[0.95rem] [transition:border-color_0.2s,transform_0.3s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-0.5 hover:border-brand max-sm:grid-cols-[2.6rem_minmax(0,1fr)]"
+          class="grid grid-cols-[2.6rem_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-[0.95rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-0.5 hover:border-brand max-sm:grid-cols-[2.6rem_minmax(0,1fr)]"
         >
-          <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] font-display font-bold" :class="section.done ? 'bg-primary text-white' : 'bg-background text-deep'">
+          <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] font-display font-bold" :class="[section.done ? 'bg-primary text-white' : 'bg-background text-deep', section.done && justSaved === section.step ? 'animate-tick-in' : '']">
             <CanopyGlyph v-if="section.done" name="tick" :size="16" :stroke="3.2" />
             <template v-else>{{ index + 1 }}</template>
           </span>

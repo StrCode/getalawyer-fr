@@ -40,6 +40,9 @@ const editable = computed(() => Boolean(sectionKey.value) || (route.path === APP
 
 // Section pages register their own check (field errors, async checks) here; the
 // "Save and return" button runs it before saving.
+/** The section saved a moment ago, read (and cleared) by the application home. */
+const justSaved = useState<string | null>('application-just-saved', () => null)
+
 const sectionValidate = ref<(() => Promise<boolean>) | null>(null)
 provide('registerLawyerOnboardingStepValidate', (fn: (() => Promise<boolean>) | null) => {
   sectionValidate.value = fn
@@ -73,6 +76,8 @@ async function saveAndReturn() {
     if (sectionValidate.value && !(await sectionValidate.value())) return
     const saved = await store.saveStep(sectionKey.value)
     if (saved) {
+      // The home marks this one section as just finished (its tick arrives once).
+      justSaved.value = sectionKey.value
       await router.push(APPLICATION_HOME)
     }
     else if (!store.validationError) {

@@ -72,12 +72,12 @@ const places = [
         v-for="place in places"
         :key="place.to"
         :to="place.to"
-        class="group/place grid content-start gap-[0.5rem] rounded-card border border-border bg-card p-[1.25rem] [transition:border-color_0.2s,transform_0.3s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-0.5 hover:border-brand"
+        class="group/place grid content-start gap-[0.5rem] rounded-card border border-border bg-card p-[1.25rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-0.5 hover:border-brand"
       >
         <span class="grid size-10 place-items-center rounded-[0.9rem] bg-mint text-deep"><CanopyGlyph :name="place.icon" :size="18" /></span>
         <b class="mt-[0.3rem] flex items-center justify-between gap-2 font-display text-[1.12rem] font-[650] tracking-[-0.02em]">
           {{ place.title }}
-          <CanopyGlyph name="arrow" :stroke="2.4" class="text-brand transition-transform duration-300 ease-canopy group-hover/place:translate-x-[3px]" />
+          <CanopyGlyph name="arrow" :stroke="2.4" class="text-brand transition-[translate] duration-200 ease-canopy group-hover/place:translate-x-[3px]" />
         </b>
         <span class="text-[0.92rem] text-muted-foreground">{{ place.body }}</span>
       </NuxtLink>

@@ -12,7 +12,7 @@ const perks = [
     id="join"
     data-rise
     data-surface="forest"
-    class="grid scroll-mt-24 grid-cols-2 overflow-hidden rounded-panel bg-forest text-white transition-transform duration-[900ms] ease-canopy max-tab:grid-cols-1"
+    class="grid scroll-mt-24 grid-cols-2 overflow-hidden rounded-panel bg-forest text-white max-tab:grid-cols-1"
   >
     <div class="self-center p-[clamp(1.75rem,5vw,4.5rem)]">
       <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">For lawyers</div>

@@ -45,9 +45,9 @@
                without the leaving field pulling the password field up. -->
           <div class="grid">
             <Transition
-              enter-active-class="transition-opacity duration-200 ease-out motion-reduce:transition-none"
+              enter-active-class="transition-opacity duration-200 ease-out"
               enter-from-class="opacity-0"
-              leave-active-class="transition-opacity duration-150 ease-in motion-reduce:transition-none"
+              leave-active-class="transition-opacity duration-150 ease-out"
               leave-to-class="opacity-0"
             >
               <div v-if="authMethod === 'email'" key="email" class="col-start-1 row-start-1">

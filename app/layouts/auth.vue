@@ -110,9 +110,9 @@ const panel = computed(() => PANELS[audience.value])
     >
       <Transition
         mode="out-in"
-        enter-active-class="transition-opacity duration-300 ease-out motion-reduce:transition-none"
+        enter-active-class="transition-opacity duration-300 ease-out"
         enter-from-class="opacity-0"
-        leave-active-class="transition-opacity duration-200 ease-in motion-reduce:transition-none"
+        leave-active-class="transition-opacity duration-200 ease-out"
         leave-to-class="opacity-0"
       >
         <div :key="audience" class="relative flex h-full flex-col justify-between gap-6 p-[clamp(1.5rem,3vw,2.75rem)]">
