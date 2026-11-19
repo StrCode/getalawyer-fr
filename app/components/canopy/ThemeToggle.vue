@@ -6,9 +6,8 @@ const icon = computed(() => (choice.value === 'light' ? 'sun' : choice.value ===
 
 <template>
   <button
-    class="c-theme-btn"
     type="button"
-    :data-mode="choice"
+    class="grid size-11 flex-none cursor-pointer place-items-center rounded-full text-foreground transition-colors duration-[250ms] hover:bg-mint"
     :aria-label="`Theme: ${choice}. Switch theme`"
     @click="cycle"
   >

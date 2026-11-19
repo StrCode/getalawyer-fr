@@ -1,14 +1,30 @@
 <script setup lang="ts">
-/** The getalawyer mark and wordmark, in the Canopy type. */
-withDefaults(defineProps<{ to?: string, size?: number }>(), { to: '/', size: 24 })
+/**
+ * The getalawyer mark and wordmark in the Canopy display face.
+ * `condensed` fades the wordmark out and leaves the mark (scrolled header).
+ */
+withDefaults(defineProps<{ to?: string, large?: boolean, condensed?: boolean }>(), {
+  to: '/',
+  large: false,
+  condensed: false,
+})
 </script>
 
 <template>
-  <NuxtLink class="c-brand" :to="to" aria-label="getalawyer home">
-    <svg :width="size" :height="size" viewBox="0 0 100 100" aria-hidden="true">
-      <polygon points="0,20 38,42 38,82 0,60" style="fill: var(--brand)" />
-      <polygon points="62,42 100,20 100,60 62,82" style="fill: var(--deep)" />
+  <NuxtLink
+    :to="to"
+    aria-label="getalawyer home"
+    class="flex items-center whitespace-nowrap font-display font-bold tracking-[-0.03em] transition-[gap] duration-[550ms] ease-canopy"
+    :class="[large ? 'text-[1.6rem]' : 'text-[1.3rem]', condensed ? 'gap-0' : 'gap-[0.55rem]']"
+  >
+    <svg :width="large ? 28 : 24" :height="large ? 28 : 24" viewBox="0 0 100 100" aria-hidden="true">
+      <polygon points="0,20 38,42 38,82 0,60" class="fill-brand" />
+      <polygon points="62,42 100,20 100,60 62,82" class="fill-deep" />
     </svg>
-    <span class="c-brand-word" aria-hidden="true">getalawyer</span>
+    <span
+      aria-hidden="true"
+      class="inline-block overflow-hidden whitespace-nowrap [transition:max-width_0.55s_cubic-bezier(0.22,0.8,0.26,1),opacity_0.3s]"
+      :class="condensed ? 'max-w-0 opacity-0' : 'max-w-36 opacity-100'"
+    >getalawyer</span>
   </NuxtLink>
 </template>

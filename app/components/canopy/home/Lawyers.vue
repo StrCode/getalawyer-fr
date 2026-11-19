@@ -19,20 +19,16 @@ defineExpose({ ready })
 </script>
 
 <template>
-  <section v-if="ready" id="lawyers" class="c-sec">
-    <div class="c-sec-head">
-      <div>
-        <div class="c-kicker">Verified directory</div>
-        <h2 class="c-display">Real lawyers. Checked before you meet them.</h2>
-      </div>
-      <div class="c-side">
-        <p class="c-lede">Nobody is listed until their identity and Supreme Court enrolment are checked. Each profile shows how they meet clients and what a first consultation costs.</p>
+  <section v-if="ready" id="lawyers" class="scroll-mt-24 py-[clamp(3.5rem,7vw,6.5rem)]">
+    <CanopySectionHead kicker="Verified directory" title="Real lawyers. Checked before you meet them.">
+      <div class="grid min-w-0 flex-[0_1_24rem] justify-items-start gap-[0.9rem]">
+        <p class="max-w-[34rem] text-muted-foreground">Nobody is listed until their identity and Supreme Court enrolment are checked. Each profile shows how they meet clients and what a first consultation costs.</p>
         <Button as-child variant="line" size="pill">
           <NuxtLink to="/find-lawyers">Browse all lawyers →</NuxtLink>
         </Button>
       </div>
-    </div>
-    <div class="c-cards">
+    </CanopySectionHead>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-[1.1rem] [scrollbar-width:thin] max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-[0.9rem] max-sm:overflow-x-auto max-sm:pb-[0.6rem]">
       <CanopyLawyerCard v-for="lawyer in featured" :key="lawyer.id" :lawyer="lawyer" />
     </div>
   </section>
