@@ -1,6 +1,9 @@
 @import "vue-sonner/style.css";
 @import "tailwindcss";
 @import "tw-animate-css";
+/* Marketing + sign-in design, scoped to body.canopy. In the components layer so
+   Tailwind utilities on the same element still win. */
+@import "./canopy.css" layer(components);
 
 @custom-variant dark (&:is(.dark *));
 
@@ -73,6 +76,17 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Canopy brand tokens (defined on body.canopy in canopy.css) */
+  --color-forest: var(--forest);
+  --color-forest-2: var(--forest-2);
+  --color-on-forest: var(--on-forest);
+  --color-lime: var(--lime);
+  --color-night: var(--night);
+  --color-mint: var(--mint);
+  --color-sand: var(--sand);
+  --color-stone: var(--stone);
+  --color-brand: var(--brand);
+  --color-deep: var(--deep);
 }
 
 /*
@@ -337,5 +351,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

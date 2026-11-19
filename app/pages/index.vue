@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'landing' })
+definePageMeta({ layout: 'site' })
 
 useSeoMeta({
   title: 'getalawyer — legal help without the runaround',
@@ -10,12 +10,12 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="bg-background">
-    <LandingHero />
-    <LandingHowItWorks />
-    <LandingPracticeAreas />
-    <LandingForLawyers />
-    <LandingTrust />
-    <LandingFinalCTA />
+  <div>
+    <CanopyHomeHero />
+    <CanopyHomeAreas />
+    <CanopyHomeLawyers />
+    <CanopyHomeWhy />
+    <CanopyHomeHow />
+    <CanopyHomeJoin />
   </div>
 </template>
