@@ -66,6 +66,23 @@ const meetingTypeChoices = computed(() => {
   return MEETING_TYPE_OPTIONS.filter(o => o.value === selectedType.value!.meetingType)
 })
 
+// The profile's booking card links here with the visitor's picks
+// (?type=…&date=YYYY-MM-DD&time=HH:mm), so they land on the step they reached.
+// The server re-checks the time on confirm; a stale one sends them back to step 2.
+const preset = route.query
+const presetType = consultationTypes.value.find(type => type.id === preset.type)
+if (presetType) {
+  selectedType.value = presetType
+  meetingType.value = presetType.meetingType === 'any' ? null : presetType.meetingType
+  step.value = 2
+  const date = typeof preset.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(preset.date) ? preset.date : null
+  const time = typeof preset.time === 'string' && /^\d{2}:\d{2}(:\d{2})?$/.test(preset.time) ? preset.time : null
+  if (date && time) {
+    selectedSlot.value = { date, time }
+    step.value = 3
+  }
+}
+
 function choosePriceLabel(type: ConsultationType): string {
   const price = Number(type.price)
   return price > 0 ? `₦${price.toLocaleString()}` : 'Free'

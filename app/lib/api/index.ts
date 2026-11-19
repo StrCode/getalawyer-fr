@@ -49,6 +49,12 @@ export interface LawyerSearchResult {
   reviewCount?: number;
   rating?: number | null;
   specializations: LawyerSpecialization[];
+  /** One-line summary from the lawyer's public profile, when they have written one. */
+  headline?: string | null;
+  /** Lowest active consultation price in naira; 0 = a free consultation; null = none set up. */
+  consultationFromNaira?: number | null;
+  /** How the lawyer meets clients: "video" | "phone" | "in_person". */
+  meetingTypes?: string[];
   relevanceScore?: number;
 }
 
@@ -56,6 +62,8 @@ export interface SearchPagination {
   page: number;
   limit: number;
   hasMore: boolean;
+  /** Lawyers matching the search across all pages (absent on older backends). */
+  total?: number;
 }
 
 export interface SearchFilters {

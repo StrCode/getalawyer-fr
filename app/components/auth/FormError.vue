@@ -2,7 +2,7 @@
   <div
     v-if="message"
     role="alert"
-    class="flex gap-2 items-start rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-destructive text-sm"
+    class="flex items-start gap-2 rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive"
   >
     <HugeiconsIcon :icon="AlertCircleIcon" class="mt-0.5 w-4 h-4 shrink-0" />
     <span>{{ message }}</span>

@@ -44,14 +44,18 @@ export function usePhoneAuth() {
     });
   }
 
-  /** Set password right after phone verify — uses server-only Better Auth setPassword (one OTP total). */
-  async function setPasswordAfterVerify(password: string) {
+  /**
+   * Set password right after phone verify — uses server-only Better Auth setPassword (one OTP total).
+   * `name` is the name typed on the sign-up form: the phone plugin creates the
+   * account with the phone number as its name, so it is sent here to be stored.
+   */
+  async function setPasswordAfterVerify(password: string, name?: string) {
     try {
       await $fetch<{ success: boolean; error?: string }>(
         `${apiBase.value}/api/account/set-phone-password`,
         {
           method: "POST",
-          body: { newPassword: password },
+          body: name?.trim() ? { newPassword: password, name: name.trim() } : { newPassword: password },
           credentials: "include",
         },
       );
@@ -96,11 +100,13 @@ export function usePhoneAuth() {
     phone: string;
     code: string;
     password: string;
+    /** The name typed at sign-up (first and last). */
+    name?: string;
   }) {
     if (getPhonePasswordStrategy() === "resetPassword") {
       return resetPasswordAfterSignup(params);
     }
-    return setPasswordAfterVerify(params.password);
+    return setPasswordAfterVerify(params.password, params.name);
   }
 
   async function signInWithPhone(phone: string, password: string) {
