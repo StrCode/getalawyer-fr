@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 import { completeClientOnboarding } from '~/composables/useClientOnboarding'
+import { ApiError } from '~/lib/api/client'
 import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 
 export interface ClientOnboardingData {
@@ -76,6 +77,12 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
                     if (import.meta.client) localStorage.removeItem(STORAGE_KEY)
                     return true
                 } catch (e) {
+                    // "Already completed": an earlier attempt succeeded but its reply
+                    // was lost (or the button was pressed twice). That is success.
+                    if (e instanceof ApiError && e.status === 409) {
+                        if (import.meta.client) localStorage.removeItem(STORAGE_KEY)
+                        return true
+                    }
                     console.error('[Store] Failed to complete client onboarding', e)
                     validationError.value = 'Could not save your preferences. Please try again.'
                     return false

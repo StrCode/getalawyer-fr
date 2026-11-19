@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 
 /** Site footer: brand and a closing action, contact, real page links, the legal line. */
 const year = new Date().getFullYear()
-const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
 
 const columns = [
   { title: 'Product', links: [

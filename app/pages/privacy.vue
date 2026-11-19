@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import LegalPageShell from '@/components/legal/LegalPageShell.vue'
 
-definePageMeta({ layout: 'landing' })
+definePageMeta({ layout: 'site' })
 
 useHead({
-  title: 'Privacy Policy · GetaLawyer',
+  title: 'Privacy policy',
   meta: [{ name: 'description', content: 'What personal data GetaLawyer collects, why, and your rights under the Nigeria Data Protection Act.' }],
 })
 </script>

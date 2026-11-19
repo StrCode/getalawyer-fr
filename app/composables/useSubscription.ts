@@ -28,6 +28,11 @@ interface SubscriptionRecord {
   plan?: SubscriptionPlanSummary | null
   /** A plan change requested for the next renewal, if any. */
   nextPlan?: SubscriptionPlanSummary | null
+  /**
+   * Whether the next checkout is a renewal (no verification fee), as the
+   * backend will price it. Absent on older backends.
+   */
+  nextCheckoutIsRenewal?: boolean
 }
 
 interface SubscriptionStatusPayload {
@@ -122,6 +127,10 @@ export function hadPriorMembership(
   subscription: SubscriptionRecord | null | undefined,
 ): boolean {
   if (!subscription) return false
+  // The backend says how it will price the next checkout; trust it when present.
+  // Status alone gets this wrong after a first Pay click on a lapsed membership,
+  // which turns the row to `pending` and used to make the screen add the fee.
+  if (typeof subscription.nextCheckoutIsRenewal === 'boolean') return subscription.nextCheckoutIsRenewal
   return ['expired', 'cancelled', 'failed_renewal'].includes(subscription.status)
 }
 
@@ -152,10 +161,15 @@ export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }
   })
 }
 
-export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> }) {
+export function useSubscriptionStatus(options?: {
+  enabled?: MaybeRef<boolean>
+  /** Check again once a minute while true: for a screen waiting on a refund to settle. */
+  poll?: MaybeRef<boolean>
+}) {
   return useQuery({
     queryKey: queryKeys.subscription.status,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    refetchInterval: () => (unref(options?.poll) ? 60 * 1000 : false),
     queryFn: async () => {
       const res = await httpClient.getAuth<SubscriptionStatusPayload>(
         '/api/subscriptions/status',
