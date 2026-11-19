@@ -1,0 +1,166 @@
+<script setup lang="ts">
+import { provide } from 'vue'
+import { toast } from 'vue-sonner'
+import { Button } from '@/components/ui/button'
+import { APPLICATION_HOME, applicationSectionKeyFor } from '~/lib/setup-paths'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+
+/**
+ * Lawyer application ("Application home"). There is no fixed order: the home
+ * page (/application) lists the sections, each section opens on its own page
+ * and returns to the home when saved. This layout frames both: the home, and a
+ * section with its "Back to your application" link and "Save and return" bar.
+ *
+ * Everything typed is saved as the lawyer goes (see the store), so leaving a
+ * section half-filled loses nothing.
+ */
+useHead({ bodyAttrs: { class: 'canopy' } })
+
+const route = useRoute()
+const router = useRouter()
+const store = useLawyerOnboardingStore()
+const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
+
+/** The store key the section on screen saves under; null on the home and the membership page. */
+const sectionKey = computed(() => applicationSectionKeyFor(route.path))
+const isHome = computed(() => !sectionKey.value)
+/**
+ * True while the application can still be edited: a section, or the home while
+ * it is being filled in. After it is submitted (payment, in review, needs
+ * changes) the home shows a status instead, there is nothing to save, so saving
+ * is off and the menu is a plain sign-out.
+ */
+const { state } = useApplicationState()
+const editable = computed(() => Boolean(sectionKey.value) || (route.path === APPLICATION_HOME && state.value === 'draft'))
+
+// Section pages register their own check (field errors, async checks) here; the
+// "Save and return" button runs it before saving.
+const sectionValidate = ref<(() => Promise<boolean>) | null>(null)
+provide('registerLawyerOnboardingStepValidate', (fn: (() => Promise<boolean>) | null) => {
+  sectionValidate.value = fn
+})
+
+// Tell the store what is on screen so it can save as the lawyer types. On the
+// home page the only thing typed is the terms acceptance, saved under "review".
+watch(
+  () => (editable.value ? sectionKey.value ?? 'review' : null),
+  (key) => { store.activeStepKey = key },
+  { immediate: true },
+)
+onBeforeUnmount(() => { store.activeStepKey = null })
+watch(() => route.path, () => { store.validationError = null })
+
+const saveStatus = computed(() => {
+  if (!editable.value) return ''
+  if (store.autosave.status === 'saving') return 'Saving…'
+  if (store.autosave.status === 'error') return 'Not saved yet'
+  if (store.autosave.status === 'saved') return 'Saved'
+  return ''
+})
+
+const busy = ref(false)
+
+/** Check the section, save it, and go back to the application home. */
+async function saveAndReturn() {
+  if (busy.value || !sectionKey.value) return
+  busy.value = true
+  try {
+    if (sectionValidate.value && !(await sectionValidate.value())) return
+    const saved = await store.saveStep(sectionKey.value)
+    if (saved) {
+      await router.push(APPLICATION_HOME)
+    }
+    else if (!store.validationError) {
+      toast.error('Could not save this section', { description: 'Check your connection and try again.' })
+    }
+  }
+  finally {
+    busy.value = false
+  }
+}
+
+/** Leave a section without finishing it: keep what is typed, as it is. */
+async function backToHome() {
+  if (busy.value) return
+  busy.value = true
+  try {
+    if (sectionKey.value) await store.saveProgress(sectionKey.value)
+    await router.push(APPLICATION_HOME)
+  }
+  finally {
+    busy.value = false
+  }
+}
+
+async function saveAndSignOut() {
+  if (busy.value || isSigningOut.value) return
+  if (!editable.value) {
+    await handleSignOut('login')
+    return
+  }
+  busy.value = true
+  try {
+    const saved = await store.saveProgress(sectionKey.value ?? 'review')
+    if (!saved) {
+      // Never trap someone in their account because a save failed.
+      toast.warning('Your latest changes could not be saved', {
+        description: 'Check your connection, or sign out without them.',
+        action: { label: 'Sign out anyway', onClick: () => { void handleSignOut('login') } },
+        duration: 10000,
+      })
+      return
+    }
+    await handleSignOut('login')
+  }
+  finally {
+    busy.value = false
+  }
+}
+</script>
+
+<template>
+  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col pt-[max(16px,env(safe-area-inset-top,0px))] font-text">
+    <!-- side padding: the page gutter, plus room that grows with the window (none on phones, so the mark lines up with the page) -->
+    <div class="safe-x">
+      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
+        <CanopyBrand condensed large />
+        <div class="flex items-center gap-1">
+          <span v-if="saveStatus" aria-live="polite" class="mr-2 inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground max-sm:hidden">
+            <i class="size-2 rounded-full" :class="store.autosave.status === 'error' ? 'bg-destructive' : 'bg-primary'" />{{ saveStatus }}
+          </span>
+          <CanopyThemeToggle />
+          <button
+            type="button"
+            class="-mr-2 inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
+            :disabled="busy || isSigningOut"
+            @click="saveAndSignOut"
+          >
+            {{ isSigningOut ? 'Signing out…' : editable ? 'Save and sign out' : 'Sign out' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main class="mx-auto w-[min(100%,44rem)] flex-1 pt-[clamp(1.25rem,3vw,2.5rem)] pb-10 safe-x">
+      <button v-if="!isHome" type="button" class="mb-[0.6rem] inline-flex min-h-11 cursor-pointer items-center text-[0.9rem] font-semibold text-muted-foreground hover:text-brand" :disabled="busy" @click="backToHome">
+        ← Back to your application
+      </button>
+      <slot />
+      <p v-if="store.validationError && !isHome" role="alert" class="mt-[1.2rem] rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
+        {{ store.validationError }}
+      </p>
+    </main>
+
+    <!-- a section's one action, always within reach -->
+    <div v-if="!isHome" class="sticky bottom-0 z-10 border-t border-border bg-background pt-[0.8rem] pb-[calc(0.8rem+env(safe-area-inset-bottom,0px))] safe-x">
+      <div class="mx-auto flex w-[min(100%,44rem)] items-center justify-between gap-3">
+        <span class="inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground">
+          <i class="size-2 rounded-full bg-primary" />Saved as you go
+        </span>
+        <Button type="button" variant="canopy" size="pill" class="group/btn min-w-[12rem] justify-between pr-2 pl-[1.4rem]" :disabled="busy" :aria-busy="busy" @click="saveAndReturn">
+          {{ busy ? 'Saving…' : 'Save and return' }}<CanopyArrowChip />
+        </Button>
+      </div>
+    </div>
+  </div>
+</template>

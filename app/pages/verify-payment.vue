@@ -10,6 +10,7 @@ import {
   useVerifySubscription,
 } from '~/composables/useSubscription'
 import { queryKeys } from '~/lib/query-client'
+import { APPLICATION_HOME, APPLICATION_MEMBERSHIP } from '~/lib/setup-paths'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -62,7 +63,7 @@ watch(
 
     if (status?.hasActiveSubscription) {
       resolvingReference.value = false
-      await navigateTo('/onboarding/pending', { replace: true })
+      await navigateTo(APPLICATION_HOME, { replace: true })
       return
     }
 
@@ -74,7 +75,7 @@ watch(
           toast.success('Payment confirmed', {
             description: 'Taking you to your application status.',
           })
-          await navigateTo('/onboarding/pending', { replace: true })
+          await navigateTo(APPLICATION_HOME, { replace: true })
           return
         }
       } catch {
@@ -83,7 +84,7 @@ watch(
     }
 
     resolvingReference.value = false
-    await navigateTo('/onboarding/subscription', { replace: true })
+    await navigateTo(APPLICATION_MEMBERSHIP, { replace: true })
   },
   { immediate: true },
 )
@@ -131,7 +132,7 @@ watch(
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.pricing }),
       queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status }),
     ])
-    await navigateTo('/onboarding/pending', { replace: true })
+    await navigateTo(APPLICATION_HOME, { replace: true })
   },
   { immediate: true },
 )
@@ -216,7 +217,7 @@ function retryVerify() {
             Check again
           </Button>
           <Button as-child :class="isFailed ? 'w-full' : ''">
-            <NuxtLink to="/onboarding/subscription">
+            <NuxtLink :to="APPLICATION_MEMBERSHIP">
               {{ isFailed ? 'Try again' : 'Back to subscription' }}
             </NuxtLink>
           </Button>
