@@ -14,7 +14,7 @@ withDefaults(defineProps<{
   /** Small status mark beside the title. */
   pill?: { label: string, tone: 'ok' | 'warn' | 'bad' } | null
   /** Where membership stands. */
-  membership: 'due' | 'paid' | 'refunded' | 'later'
+  membership: 'due' | 'paid' | 'refunding' | 'refunded' | 'later'
   /** What to call the four sections' state. */
   sectionsState?: 'submitted' | 'reopen'
 }>(), { description: '', pill: null, sectionsState: 'submitted' })
@@ -37,7 +37,8 @@ const PILL = {
 const MEMBERSHIP = {
   due: { status: 'Next', text: 'Choose a plan and pay. Refunded if verification does not pass.' },
   paid: { status: 'Paid', text: 'You are covered while we finish the review.' },
-  refunded: { status: 'Refunded', text: 'Your membership fee is being returned to you.' },
+  refunding: { status: 'Refund on its way', text: 'Your membership fee is being returned to you.' },
+  refunded: { status: 'Refunded', text: 'Your membership fee has been returned to you.' },
   later: { status: 'After you resubmit', text: 'Choose a plan and pay once your application is back with us.' },
 } as const
 </script>

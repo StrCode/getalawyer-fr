@@ -5,6 +5,7 @@ import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
+import { LAWYER_APPLICATION_HOME } from '~/composables/useLawyerOnboardingEntry'
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import {
@@ -21,16 +22,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 definePageMeta({
   layout: 'onboarding-lawyer',
   middleware: ['auth'],
-})
-
-useHead({
-  title: 'Application in review',
-  meta: [
-    {
-      name: 'description',
-      content: 'Your lawyer application is under review.',
-    },
-  ],
 })
 
 const router = useRouter()
@@ -54,21 +45,52 @@ const isAwaiting = computed(() => {
   return st != null && isLawyerAwaitingApproval(st)
 })
 
+const isVerificationFailed = computed(() => {
+  const st = statusPayload.value
+  return st != null && isLawyerVerificationFailed(st)
+})
+
+// A failed verification refunds the membership; the application cannot be
+// started again until that refund has gone through, so keep checking on it.
+const refundInFlight = ref(false)
 const {
   data: subscriptionStatus,
   isPending: subscriptionStatusPending,
 } = useSubscriptionStatus({
-  enabled: computed(() => isAwaiting.value),
+  enabled: computed(() => isAwaiting.value || isVerificationFailed.value),
+  poll: refundInFlight,
+})
+watchEffect(() => {
+  const status = subscriptionStatus.value?.subscription?.status
+  // `verification_failed` on the subscription means the refund has not started yet.
+  refundInFlight.value = isVerificationFailed.value && (status === 'refund_processing' || status === 'verification_failed')
 })
 
+/** Where the money stands after a failed verification. */
+const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
+  if (refundInFlight.value) return 'refunding'
+  return subscriptionStatus.value?.subscription?.status === 'refunded' ? 'refunded' : 'later'
+})
+
+/** What the review team wrote when they could not verify the lawyer. */
+const failureReason = computed(() => statusPayload.value?.reviewNotes?.trim() || '')
+
+useHead({
+  title: () => (isVerificationFailed.value ? VERIFICATION_FAILED_COPY.title : 'Application in review'),
+  meta: [
+    {
+      name: 'description',
+      content: 'Where your lawyer application stands.',
+    },
+  ],
+})
 
 const showSpinner = computed(() => {
   if (statusPending.value || statusLoading.value) return true
   const st = statusPayload.value
-  if (
-    st != null
-    && (isLawyerAwaitingApproval(st) || isRejectedState(st) || isLawyerVerificationFailed(st))
-  ) {
+  // The failed-verification screen says where the refund stands: wait for it.
+  if (st != null && isLawyerVerificationFailed(st)) return subscriptionStatusPending.value
+  if (st != null && (isLawyerAwaitingApproval(st) || isRejectedState(st))) {
     return false
   }
   if (statusError.value) return false
@@ -84,11 +106,6 @@ function isRejectedState(st: Parameters<typeof isLawyerRejected>[0]) {
 const isRejected = computed(() => {
   const st = statusPayload.value
   return st != null && isRejectedState(st)
-})
-
-const isVerificationFailed = computed(() => {
-  const st = statusPayload.value
-  return st != null && isLawyerVerificationFailed(st)
 })
 
 const submittedAt = computed(() => {
@@ -137,7 +154,14 @@ watchEffect(() => {
   }
 })
 
+// Set once the lawyer starts a new application: from then on this page is
+// being left, and its own redirects must stay out of the way. (They used to
+// fire again when the session refreshed, cancel the move to the application
+// home and leave the lawyer on a loading screen.)
+const leaving = ref(false)
+
 watchEffect(() => {
+  if (leaving.value) return
   if (showSpinner.value) return
   if ((session.value?.user as { onboarding_completed?: boolean })?.onboarding_completed) return
   if (statusUnavailable.value) return
@@ -154,6 +178,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  if (leaving.value) return
   if (showSpinner.value) return
   if (!isAwaiting.value) return
   if (subscriptionStatusPending.value) return
@@ -171,16 +196,17 @@ async function retryStatus() {
 
 async function startNewApplication() {
   try {
-    // Clear first: the server rebuilds the draft when it reopens the
-    // application, and that draft must land after the reset, not before it
-    // (the other order left the reopened forms blank).
-    lawyerOnboardingStore.resetStore()
+    leaving.value = true
+    // `restart` resolves once the rebuilt application has been fetched; load
+    // the forms from it.
     await restart()
-    toast.success('Application unlocked', {
+    lawyerOnboardingStore.reloadFromDraft()
+    toast.success('Application reopened', {
       description: 'Update your details, then submit and pay again.',
     })
-    await router.push('/onboarding')
+    await router.push(LAWYER_APPLICATION_HOME)
   } catch (error) {
+    leaving.value = false
     toast.error('Could not start a new application', {
       description: error instanceof Error ? error.message : 'Please try again or contact support.',
     })
@@ -208,10 +234,14 @@ async function startNewApplication() {
       :title="VERIFICATION_FAILED_COPY.title"
       :description="VERIFICATION_FAILED_COPY.description"
       :pill="{ label: 'Not verified', tone: 'bad' }"
-      membership="refunded"
+      :membership="failedMembership"
       sections-state="reopen"
     >
-      <p class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
+      <section v-if="failureReason" aria-labelledby="failure-title" class="rounded-[1.1rem] border border-destructive/30 bg-destructive/10 px-4 py-[0.95rem]">
+        <h2 id="failure-title" class="font-semibold text-destructive">What the review team found</h2>
+        <p class="mt-1 whitespace-pre-line">{{ failureReason }}</p>
+      </section>
+      <p v-if="failedMembership !== 'later'" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
         <b class="block font-semibold">About your payment</b>
         {{ VERIFICATION_FAILED_COPY.refundNote }}
       </p>
@@ -224,9 +254,12 @@ async function startNewApplication() {
             <span>{{ step }}</span>
           </li>
         </ol>
-        <AuthSubmit type="button" :loading="isRestarting" class="mt-5" @click="startNewApplication">
+        <AuthSubmit type="button" :loading="isRestarting" :disabled="refundInFlight" class="mt-5" @click="startNewApplication">
           {{ VERIFICATION_FAILED_COPY.ctaLabel }}
         </AuthSubmit>
+        <p v-if="refundInFlight" role="status" class="mt-3 text-[0.9rem] text-muted-foreground">
+          Your refund is still being processed. You can start a new application as soon as it has gone through; this page checks by itself.
+        </p>
       </section>
       <p class="text-[0.9rem] text-muted-foreground">
         {{ VERIFICATION_FAILED_COPY.supportLabel }}

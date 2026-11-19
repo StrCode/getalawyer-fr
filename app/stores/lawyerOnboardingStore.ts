@@ -77,7 +77,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     // Sync draft data with the reactive store state
-    watch(draftDataResponse, (draftRoot) => {
+    function applyDraft(draftRoot: typeof draftDataResponse.value) {
         const payload = draftRoot?.data
         if (payload) {
             if (payload.personal) Object.assign(personalInfo, payload.personal)
@@ -141,7 +141,8 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         } else if (draftImpliesNinSubmitted(draftRoot)) {
             ninVerification.isSubmitted = true
         }
-    }, { immediate: true })
+    }
+    watch(draftDataResponse, applyDraft, { immediate: true })
 
     /**
      * Whether a NIN has been saved for this application. The server never
@@ -446,6 +447,18 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         })
     }
 
+    /**
+     * Start over from what the server has saved: clear everything, then fill in
+     * the saved application. Used after an application is reopened, once the
+     * rebuilt application has been fetched. Clearing alone is not enough: if the
+     * fetched application is the same as the one already held, nothing would
+     * put it back.
+     */
+    const reloadFromDraft = () => {
+        resetStore()
+        applyDraft(draftDataResponse.value)
+    }
+
     /** Reveal the NIN form again so the user can correct or replace their NIN (backend overwrites until verified). */
     const beginChangeNin = () => {
         ninResubmitMode.value = true
@@ -505,6 +518,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         autosave,
         activeStepKey,
         resetStore,
+        reloadFromDraft,
         beginChangeNin,
         clearNinResubmitMode
     }

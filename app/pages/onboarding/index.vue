@@ -27,6 +27,7 @@ const { mutateAsync: discardDraftApi } = useDiscardDraft()
 const isRouting = ref(true)
 const isError = ref(false)
 const hasRouted = ref(false)
+let rerouteAttempts = 0
 
 const isLawyer = computed(() => userType.value === 'lawyer')
 
@@ -81,6 +82,14 @@ async function routeLawyerToDestination() {
 
     hasRouted.value = true
     await navigateTo(destination, { replace: true })
+    // A late redirect from the page being left can cancel this move and strand
+    // the visitor on the loading screen. If we are still here, go again.
+    if (route.path === '/onboarding' && rerouteAttempts < 2) {
+      rerouteAttempts += 1
+      hasRouted.value = false
+      await nextTick()
+      await routeLawyerToDestination()
+    }
   } catch (e) {
     console.error('[Onboarding] Failed to resolve lawyer entry route', e)
     isError.value = true

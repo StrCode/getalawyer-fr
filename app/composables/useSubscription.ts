@@ -161,10 +161,15 @@ export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }
   })
 }
 
-export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> }) {
+export function useSubscriptionStatus(options?: {
+  enabled?: MaybeRef<boolean>
+  /** Check again once a minute while true: for a screen waiting on a refund to settle. */
+  poll?: MaybeRef<boolean>
+}) {
   return useQuery({
     queryKey: queryKeys.subscription.status,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    refetchInterval: () => (unref(options?.poll) ? 60 * 1000 : false),
     queryFn: async () => {
       const res = await httpClient.getAuth<SubscriptionStatusPayload>(
         '/api/subscriptions/status',

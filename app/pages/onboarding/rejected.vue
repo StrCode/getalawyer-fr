@@ -5,6 +5,7 @@ import {
   ensureLawyerOnboardingStatus,
   useLawyerOnboardingStatus,
 } from '~/composables/useLawyerOnboarding'
+import { LAWYER_APPLICATION_HOME } from '~/composables/useLawyerOnboardingEntry'
 import { useOnboardingRestart } from '~/composables/useOnboardingRestart'
 import {
   isLawyerRejected,
@@ -80,7 +81,12 @@ const showError = computed(() => {
   return statusError.value && dashboardError.value
 })
 
+// Set once the lawyer reopens the application: this page is being left, so its
+// own redirects must not compete with the move to the application home.
+const leaving = ref(false)
+
 watchEffect(() => {
+  if (leaving.value) return
   if (statusPending.value) return
   const st = statusPayload.value
   if (!st) return
@@ -98,12 +104,15 @@ watchEffect(() => {
 
 const handleRestart = async () => {
   try {
-    // Clear first, so the reopened draft the server sends back fills the forms.
-    lawyerOnboardingStore.resetStore()
+    leaving.value = true
+    // `restart` resolves once the rebuilt application has been fetched; load
+    // the forms from it.
     await restart()
-    await router.push('/onboarding')
+    lawyerOnboardingStore.reloadFromDraft()
+    await router.push(LAWYER_APPLICATION_HOME)
   }
   catch (error) {
+    leaving.value = false
     // Without this the button just stopped; say what happened and how to go on.
     toast.error('Could not reopen your application', {
       description: error instanceof Error ? error.message : 'Please try again, or write to support.',
