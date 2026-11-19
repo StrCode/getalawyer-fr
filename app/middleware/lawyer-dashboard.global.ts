@@ -1,16 +1,14 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import { useAuth } from '~/composables/useAuth'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
-import { resolveLawyerAwaitingApprovalPath } from '~/composables/useLawyerOnboardingEntry'
-import {
-  isLawyerAwaitingApproval,
-  isLawyerRejected,
-  onboardingCurrentState,
-} from '~/lib/lawyerOnboardingStatus'
+import { onboardingCurrentState } from '~/lib/lawyerOnboardingStatus'
 import { getSessionUserType } from '~/lib/session-user'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
 
 /**
- * On /dashboard/* routes: pending lawyers → pending page; incomplete → onboarding.
+ * On /dashboard/* routes: a lawyer whose application is not approved yet goes
+ * to the application, which shows where it stands (to fill in, to pay, in
+ * review, needing changes).
  */
 export default defineNuxtRouteMiddleware(async (to) => {
   if (!to.path.startsWith('/dashboard')) return
@@ -27,24 +25,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   try {
-    const queryClient = useQueryClient()
-    const status = await ensureLawyerOnboardingStatus(queryClient)
-
-    if (isLawyerRejected(status)) {
-      return navigateTo('/onboarding/rejected', { replace: true })
-    }
-
-    if (onboardingCurrentState(status) === 'approved') {
-      return
-    }
-
-    if (isLawyerAwaitingApproval(status)) {
-      const path = await resolveLawyerAwaitingApprovalPath(queryClient)
-      return navigateTo(path, { replace: true })
-    }
-
-    return navigateTo('/onboarding', { replace: true })
+    const status = await ensureLawyerOnboardingStatus(useQueryClient())
+    if (onboardingCurrentState(status) === 'approved') return
   } catch {
-    return navigateTo('/onboarding/subscription', { replace: true })
+    // Status unavailable: the application page says so and offers a retry.
   }
+  return navigateTo(APPLICATION_HOME, { replace: true })
 })

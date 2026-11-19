@@ -1,5 +1,3 @@
-import type { OnboardingStep } from '~/composables/useOnboardingNavigation'
-
 export type LawyerStepKey =
   | 'personal_info'
   | 'nin_verification'
@@ -37,22 +35,22 @@ export const LAWYER_STEP_CONTENT: Record<LawyerStepKey, Omit<LawyerStepContent, 
     label: 'About you',
     title: 'Tell us about yourself',
     description:
-      'These details help us confirm who you are. They stay private — nothing here appears on your public profile.',
+      'These details help us confirm who you are. Only your name appears on your public profile; the rest stays private.',
   },
   nin_verification: {
-    label: 'About you',
+    label: 'Identity',
     title: 'Confirm your NIN',
     description:
       'Add your National Identification Number so we can verify your identity before you join the platform.',
   },
   professional_info: {
-    label: 'Credentials & practice',
+    label: 'Bar credentials',
     title: 'Your bar credentials',
     description:
       'We use these to confirm you’re called to the Nigerian Bar.',
   },
   practice_info: {
-    label: 'Credentials & practice',
+    label: 'How you practise',
     title: 'How you practise',
     description:
       'Firm setup, the areas you focus on, and where you practise.',
@@ -77,12 +75,4 @@ export function getLawyerStepDisplay(key: LawyerStepKey): LawyerStepContent {
 export function getLawyerUxStepIndex(stepKey: string | undefined): number {
   if (!stepKey || !(stepKey in LAWYER_STEP_UX_NUMBER)) return 0
   return LAWYER_STEP_UX_NUMBER[stepKey as LawyerStepKey] - 1
-}
-
-export function getPathByLawyerStepKey(
-  key: string,
-  steps: OnboardingStep[],
-): string {
-  const step = steps.find((s) => s.key === key)
-  return step?.path ?? steps[0]?.path ?? '/onboarding/personal-info'
 }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { toRaw } from 'vue'
+import { nextTick, toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
 import { formatOnboardingApiError } from '~/lib/onboarding-api-errors'
 import { normalizeScnDigitsOnly } from '~/lib/scn'
@@ -10,32 +10,25 @@ import { createLawyerPracticeInfoSchema } from '~/schemas/lawyerPracticeInfo'
 import { CURRENT_TERMS_VERSION } from '~/lib/legal'
 import {
     useLawyerOnboarding,
+    useLawyerOnboardingStatus,
     type PersonalInfoData,
     type ProfessionalInfoData,
     type PracticeInfoData,
     type NinSubmitData,
 } from '~/composables/useLawyerOnboarding'
 
-/** Draft last_step values that imply NIN was already saved server-side */
-const STEPS_AFTER_NIN_VERIFICATION = new Set([
-    'professional_info',
-    'practice_info',
-    'review',
-    'submitted',
-    'approved'
-])
-
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
-    const { useDraft, useSaveDraft, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
+    const { useDraft, useSaveDraft, useSaveDraftQuietly, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
 
-    /** Shares TanStack cache with /onboarding index and wizard layout (one network fetch). */
-    const { data: draftDataResponse } = useDraft({
+    /** Shares the TanStack cache with the application pages and their layout (one network fetch). */
+    const { data: draftDataResponse, isSuccess: draftLoaded } = useDraft({
         enabled: import.meta.client,
     })
 
     // Initialize mutations here (in the setup context) to avoid injection errors in async actions
     const saveDraftMutation = useSaveDraft()
+    const saveProgressMutation = useSaveDraftQuietly()
     const saveNinMutation = useSaveNin()
     const submitOnboardingMutation = useSubmitOnboarding()
 
@@ -84,7 +77,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     // Sync draft data with the reactive store state
-    watch(draftDataResponse, (draftRoot) => {
+    function applyDraft(draftRoot: typeof draftDataResponse.value) {
         const payload = draftRoot?.data
         if (payload) {
             if (payload.personal) Object.assign(personalInfo, payload.personal)
@@ -140,21 +133,38 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
         if (ninResubmitMode.value || ninVerification.verified) return
 
-        if (draftImpliesNinSubmitted(draftRoot)) {
+        // The draft response carries the server's own answer to "is a NIN saved?".
+        // Follow it both ways: reopening an application removes the saved NIN.
+        const saved = (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted
+        if (typeof saved === 'boolean') {
+            ninVerification.isSubmitted = saved
+        } else if (draftImpliesNinSubmitted(draftRoot)) {
             ninVerification.isSubmitted = true
         }
-    }, { immediate: true })
+    }
+    watch(draftDataResponse, applyDraft, { immediate: true })
 
-    /** The server never returns the NIN itself; infer "already submitted" from last_step / flags. */
+    /**
+     * Whether a NIN has been saved for this application. The server never
+     * returns the NIN itself, only this fact (`nin_submitted` on the status
+     * endpoint, or a flag in the draft). It used to be guessed from the draft's
+     * last step ("a later step was reached, so the NIN must be saved"), which
+     * is wrong now that sections can be done in any order.
+     */
     function draftImpliesNinSubmitted(draftRoot: typeof draftDataResponse.value): boolean {
         const payload = draftRoot?.data
-        const lastStep = draftRoot?.last_step ?? (draftRoot as { lastStep?: string | null } | undefined)?.lastStep
-        if (lastStep && STEPS_AFTER_NIN_VERIFICATION.has(lastStep)) return true
         return (
             payload?.ninSubmitted === true ||
             (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted === true
         )
     }
+
+    const { data: statusResponse } = useLawyerOnboardingStatus({ enabled: import.meta.client })
+    watch(statusResponse, (status) => {
+        if (ninResubmitMode.value || ninVerification.verified) return
+        const saved = (status as { nin_submitted?: boolean } | null | undefined)?.nin_submitted
+        if (typeof saved === 'boolean') ninVerification.isSubmitted = saved
+    }, { immediate: true })
 
     const saveDraftState = async (stepKey: string) => {
         return new Promise<boolean>((resolve) => {
@@ -167,7 +177,10 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 },
                 lastStep: stepKey
             }, {
-                onSuccess: () => resolve(true),
+                onSuccess: () => {
+                    savedSnapshot = draftSnapshot()
+                    resolve(true)
+                },
                 onError: (e) => {
                     console.error('[Store] Failed to save draft', e)
                     resolve(false)
@@ -175,6 +188,76 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
             })
         })
     }
+
+    // ---- saving progress: what is typed so far, as it is ----
+    // Never validates and never submits, so it is safe from any step, including
+    // Review. Used by the menu's save actions and by saving-as-you-type.
+
+    /** What a draft save would send, as text, to tell whether anything changed. */
+    const draftSnapshot = () => JSON.stringify({
+        personal: personalInfo,
+        professional: professionalInfo,
+        practice: practiceInfo,
+    })
+    /** The snapshot the server already has. */
+    let savedSnapshot = ''
+    watch(draftLoaded, (loaded) => {
+        // Wait for the draft watcher above to copy the server's values into the store.
+        if (loaded) void nextTick(() => { savedSnapshot = draftSnapshot() })
+    }, { immediate: true })
+
+    const autosave = reactive<{ status: 'idle' | 'saving' | 'saved' | 'error', savedAt: number | null }>({
+        status: 'idle',
+        savedAt: null,
+    })
+
+    const saveProgress = async (stepKey: string): Promise<boolean> => {
+        const snapshot = draftSnapshot()
+        // Keep the furthest step already recorded: a save from an earlier step
+        // must not move the lawyer's place backwards.
+        const root = draftDataResponse.value as { last_step?: string | null, lastStep?: string | null } | undefined
+        const lastStep = root?.last_step ?? root?.lastStep ?? stepKey
+        autosave.status = 'saving'
+        try {
+            await saveProgressMutation.mutateAsync({
+                data: {
+                    personal: toRaw(personalInfo),
+                    professional: toRaw(professionalInfo),
+                    practice: toRaw(practiceInfo),
+                    ninVerified: ninVerification.verified,
+                },
+                lastStep,
+            })
+            savedSnapshot = snapshot
+            autosave.status = 'saved'
+            autosave.savedAt = Date.now()
+            return true
+        }
+        catch (e) {
+            console.error('[Store] Failed to save progress', e)
+            autosave.status = 'error'
+            return false
+        }
+    }
+
+    /** The step on screen, set by the wizard layout; null turns saving-as-you-type off. */
+    const activeStepKey = ref<string | null>(null)
+    const AUTOSAVE_DELAY_MS = 1500
+    let autosaveTimer: ReturnType<typeof setTimeout> | null = null
+    watch([personalInfo, professionalInfo, practiceInfo], () => {
+        // Only once the saved draft has loaded: saving before then could replace it with blanks.
+        if (!import.meta.client || !draftLoaded.value || !activeStepKey.value) return
+        if (draftSnapshot() === savedSnapshot) return
+        if (autosaveTimer) clearTimeout(autosaveTimer)
+        autosaveTimer = setTimeout(() => {
+            autosaveTimer = null
+            const stepKey = activeStepKey.value
+            if (!stepKey || draftSnapshot() === savedSnapshot) return
+            // A Continue or an earlier save is in flight; the next change will try again.
+            if (saveDraftMutation.isPending.value || saveProgressMutation.isPending.value) return
+            void saveProgress(stepKey)
+        }, AUTOSAVE_DELAY_MS)
+    }, { deep: true })
 
     // Generic save function to be called by the layout
     const saveStep = async (stepKey: string): Promise<boolean> => {
@@ -234,7 +317,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
-            // The guard only checks status, so /onboarding/review can be reached directly.
+            // Submit can be reached with sections unfinished (the button is only hidden).
             // Re-validate every earlier step before submitting instead of relying on the backend.
             const incomplete = firstIncompleteStepMessage()
             if (incomplete) {
@@ -364,6 +447,18 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         })
     }
 
+    /**
+     * Start over from what the server has saved: clear everything, then fill in
+     * the saved application. Used after an application is reopened, once the
+     * rebuilt application has been fetched. Clearing alone is not enough: if the
+     * fetched application is the same as the one already held, nothing would
+     * put it back.
+     */
+    const reloadFromDraft = () => {
+        resetStore()
+        applyDraft(draftDataResponse.value)
+    }
+
     /** Reveal the NIN form again so the user can correct or replace their NIN (backend overwrites until verified). */
     const beginChangeNin = () => {
         ninResubmitMode.value = true
@@ -396,7 +491,21 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
     }))
 
+    /**
+     * Which sections of the application are complete, by the same rules Continue
+     * and submit use. The application home shows these as its task list.
+     * (Spread copies, not toRaw, so the checks re-run as the lawyer types.)
+     */
+    const sectionDone = computed(() => ({
+        personal: lawyerPersonalInfoSchema.safeParse({ ...personalInfo }).success,
+        nin: Boolean(ninVerification.verified || ninVerification.isSubmitted),
+        professional: lawyerProfessionalInfoSchema.safeParse({ ...professionalInfo }).success,
+        practice: createLawyerPracticeInfoSchema(professionalInfo.yearOfCall).safeParse({ ...practiceInfo }).success,
+    }))
+
     return {
+        sectionDone,
+        draftLoaded,
         personalInfo,
         ninVerification,
         professionalInfo,
@@ -405,7 +514,11 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         summary,
         validationError,
         saveStep,
+        saveProgress,
+        autosave,
+        activeStepKey,
         resetStore,
+        reloadFromDraft,
         beginChangeNin,
         clearNinResubmitMode
     }

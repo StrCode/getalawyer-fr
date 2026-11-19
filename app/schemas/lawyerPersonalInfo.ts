@@ -14,25 +14,33 @@ function parseIsoDatePart(iso: string) {
 /**
  * Lawyer onboarding — personal step (Pinia `personalInfo` + API draft).
  */
+/** Same characters the backend accepts in a name. */
+const NAME_CHARACTERS = /^[a-zA-Z\s'-]+$/
+
 export function createLawyerPersonalInfoSchema() {
   const maxDob = maxDateOfBirthForAdult()
 
   return z
     .object({
+      // Lengths and characters match the backend's personalInfoSchema, so a name
+      // accepted here is not rejected later at Review.
       firstName: z
         .string()
         .trim()
-        .min(1, { error: 'Enter your first name.' })
-        .max(100, { error: 'First name is too long.' }),
+        .min(2, { error: 'Enter your first name (at least 2 letters).' })
+        .max(50, { error: 'First name is too long.' })
+        .regex(NAME_CHARACTERS, { error: 'Use letters, spaces, hyphens and apostrophes only.' }),
       lastName: z
         .string()
         .trim()
-        .min(1, { error: 'Enter your last name.' })
-        .max(100, { error: 'Last name is too long.' }),
+        .min(2, { error: 'Enter your last name (at least 2 letters).' })
+        .max(50, { error: 'Last name is too long.' })
+        .regex(NAME_CHARACTERS, { error: 'Use letters, spaces, hyphens and apostrophes only.' }),
       middleName: z
         .string()
         .trim()
-        .max(100, { error: 'Middle name is too long.' }),
+        .max(50, { error: 'Middle name is too long.' })
+        .regex(/^[a-zA-Z\s'-]*$/, { error: 'Use letters, spaces, hyphens and apostrophes only.' }),
       governmentIdLegalName: z
         .string()
         .trim()

@@ -23,6 +23,17 @@ export const buttonVariants = cva(
           "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_2px_4px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.25)] active:scale-[0.98]",
         ink:
           "bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98]",
+        // Canopy (marketing + sign-in) pills. Pair with size="pill" / "pill-sm".
+        canopy:
+          "rounded-full bg-primary font-semibold text-white shadow-[0_10px_24px_rgba(0,122,85,0.28)] hover:-translate-y-0.5",
+        lime:
+          "rounded-full bg-lime font-semibold text-night hover:-translate-y-0.5",
+        "ink-pill":
+          "rounded-full bg-foreground font-semibold text-background hover:-translate-y-0.5",
+        line:
+          "rounded-full border border-border bg-card font-semibold text-foreground hover:-translate-y-0.5",
+        "on-forest":
+          "rounded-full border border-white/30 bg-transparent font-semibold text-white hover:-translate-y-0.5",
       },
       size: {
         "default": "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -33,6 +44,8 @@ export const buttonVariants = cva(
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-11",
+        "pill": "h-12 px-[1.4rem]",
+        "pill-sm": "h-11 px-5",
       },
     },
     defaultVariants: {

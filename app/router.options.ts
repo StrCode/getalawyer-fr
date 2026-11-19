@@ -1,18 +1,14 @@
 import type { RouterConfig } from 'nuxt/schema'
 
 /**
- * Ensure in-app navigations like `/#how-it-works` scroll to the target (fixes fixed-header offset via `scroll-mt-*` on the section).
+ * Scrolling is left to Nuxt's built-in behaviour, which this file used to
+ * replace. The built-in one waits for the new page before scrolling to a
+ * `#section` (so "/#how" works from any page, not only from the homepage),
+ * stops short by the section's `scroll-mt-*` so the sticky header does not
+ * cover it, restores the position on back/forward, and leaves the page where
+ * it is when only the query changes (directory filters). The one thing set
+ * here is that jumps to a section glide instead of snapping.
  */
 export default {
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) return savedPosition
-    if (to.hash) {
-      return { el: to.hash, behavior: 'smooth', top: 0 }
-    }
-    // Same-route query tweaks (directories, pagination); don't jump to top.
-    if (from && to.path === from.path && !to.hash) {
-      return false
-    }
-    return { top: 0, behavior: 'smooth' }
-  },
+  scrollBehaviorType: 'smooth',
 } satisfies RouterConfig

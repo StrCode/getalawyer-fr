@@ -15,7 +15,9 @@ import {
 const props = defineProps<{
   hasActiveSubscription: boolean
   subscription: SubscriptionRecord | null | undefined
+  /** Lowest plan price on sale, with the months it buys. */
   renewalPriceNaira?: number | null
+  renewalTermMonths?: number | null
 }>()
 
 const statusLabel = computed(() =>
@@ -88,7 +90,9 @@ const showPrice = computed(
         <span class="font-medium text-foreground">
           {{ formatNairaAmount(renewalPriceNaira!) }}
         </span>
-        / year
+        <template v-if="renewalTermMonths">
+          {{ renewalTermMonths === 1 ? 'a month' : `for ${termPhrase(renewalTermMonths)}` }}
+        </template>
       </p>
 
       <Button
