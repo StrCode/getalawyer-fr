@@ -30,7 +30,7 @@
               Email support
             </p>
             <p class="text-xs text-muted-foreground">
-              support@getalawyer.ng
+              {{ SUPPORT_EMAIL }}
             </p>
           </div>
           <Button
@@ -38,7 +38,7 @@
             variant="outline"
             size="sm"
           >
-            <a href="mailto:support@getalawyer.ng">
+            <a :href="`mailto:${SUPPORT_EMAIL}`">
               Email
             </a>
           </Button>

@@ -1,165 +1,138 @@
 <script setup lang="ts">
-import { ArrowDown01Icon, ArrowRight01Icon, Location01Icon, Mail01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import { ref } from 'vue'
-definePageMeta({ layout: 'landing' })
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Textarea } from '@/components/ui/textarea'
 
+/**
+ * Contact. There is no endpoint that sends a message for the visitor, so the
+ * form does not pretend to: it prepares the message and opens it in their own
+ * email app, addressed to support. Nothing is "sent" by this page.
+ */
+definePageMeta({ layout: 'site' })
+
+useHead({ title: 'Contact' })
 useSeoMeta({
-  title: 'Contact Us — getalawyer',
-  description: 'Have a question? We are here to help. Reach out to the getalawyer team.',
+  description: 'Questions about finding a lawyer, your account or joining as a lawyer? Email the getalawyer team.',
 })
 
-const form = ref({
-  name: '',
-  email: '',
-  subject: '',
-  message: ''
-})
+const TOPICS = [
+  { value: 'support', label: 'General support' },
+  { value: 'client', label: 'I am a client (finding or contacting a lawyer)' },
+  { value: 'lawyer', label: 'I am a lawyer (registration or billing)' },
+  { value: 'partnership', label: 'Partnerships' },
+]
 
-const showUnavailableNotice = ref(false)
-
-const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
+const form = reactive({ name: '', topic: '', message: '' })
 
 const mailtoHref = computed(() => {
-  const subject = encodeURIComponent(`[${form.value.subject || 'support'}] Message from ${form.value.name || 'the contact form'}`)
-  const body = encodeURIComponent(form.value.message)
+  const topic = TOPICS.find(item => item.value === form.topic)?.label ?? 'General support'
+  const subject = encodeURIComponent(`[${topic}] Message from ${form.name.trim() || 'the contact page'}`)
+  const body = encodeURIComponent(form.message.trim())
   return `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`
 })
 
-// No sending endpoint exists yet — never fake a success. The draft is kept
-// and handed to the user's mail client instead.
-const handleSubmit = () => {
-  showUnavailableNotice.value = true
+// Runs only when the browser has accepted the required fields.
+function openInEmailApp() {
+  window.location.href = mailtoHref.value
 }
+
+const label = 'text-[0.9rem] font-semibold'
+const card = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.6rem)]'
 </script>
 
 <template>
-  <div class="min-h-screen bg-background pb-32">
+  <div class="pb-[clamp(3.5rem,7vw,6.5rem)]">
+    <header class="max-w-[54rem] pt-[clamp(1.5rem,4vw,3.25rem)] pb-[clamp(1.5rem,3vw,2.5rem)]">
+      <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Contact</div>
+      <h1 class="mt-[0.9rem] text-[clamp(2.5rem,5.4vw,4.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+        Get in touch. <em class="text-brand not-italic">We read every message.</em>
+      </h1>
+      <p class="mt-[1.2rem] max-w-[40rem] text-[1.15rem] text-muted-foreground">
+        Whether you are looking for a lawyer, already have an account, or want to join as a lawyer, write to us and we will help.
+      </p>
+    </header>
 
-    <!-- Editorial split -->
-    <section class="mx-auto max-w-7xl px-6 pt-32 pb-20 md:px-8">
-      <div class="grid items-start gap-12 lg:grid-cols-12 lg:gap-20">
+    <div class="grid grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] items-start gap-[1.1rem] max-tab:grid-cols-1">
+      <div class="grid gap-[1.1rem]">
+        <a :href="`mailto:${SUPPORT_EMAIL}`" :class="card" class="group/mail flex items-start gap-4 [transition:border-color_0.2s,transform_0.35s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-[3px] hover:border-brand">
+          <span class="grid size-12 flex-none place-items-center rounded-[1rem] bg-mint text-deep"><CanopyGlyph name="mail" :size="22" /></span>
+          <span class="min-w-0">
+            <b class="block font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Email support</b>
+            <span class="mt-1 block text-muted-foreground">We usually reply within 24 hours.</span>
+            <span class="mt-3 inline-flex items-center gap-2 font-semibold break-all text-brand underline underline-offset-[3px]">{{ SUPPORT_EMAIL }}</span>
+          </span>
+        </a>
 
-        <!-- Left: copy & trust -->
-        <div class="lg:col-span-5">
-          <p class="eyebrow mb-4 text-primary-strong">Contact</p>
-         <h1 class="text-4xl font-medium md:text-5xl mb-6 text-foreground">
-            Get in touch.
-          </h1>
-          <p class="mb-12 text-lg leading-relaxed text-muted-foreground">
-            Whether you're a lawyer looking to join our network or a client needing support, our team in Lagos is ready to assist you.
-          </p>
-
-          <!-- Email Card -->
-          <a
-            href="mailto:support@getalawyer.com.ng"
-            class="group relative mb-6 block overflow-hidden rounded-2xl border border-border bg-card p-8 no-underline shadow-sm transition-all duration-300 hover:border-primary/25 hover:shadow-md"
-          >
-            <div class="mb-6 flex size-14 items-center justify-center rounded-xl bg-muted text-primary transition-transform duration-300 group-hover:scale-105">
-              <HugeiconsIcon :icon="Mail01Icon" class="size-7" />
+        <div :class="card">
+          <div class="flex items-start gap-4">
+            <span class="grid size-12 flex-none place-items-center rounded-[1rem] bg-mint text-deep"><CanopyGlyph name="pin" :size="22" /></span>
+            <div>
+              <b class="block font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Lagos office</b>
+              <p class="mt-1 text-muted-foreground">14a Admiralty Way<br>Lekki Phase 1, Lagos, Nigeria</p>
             </div>
-           <h3 class="mb-2 text-lg font-semibold text-foreground">Email support</h3>
-            <p class="mb-8 text-sm leading-relaxed text-muted-foreground">Our team usually responds within 24 hours.</p>
-            <div class="inline-flex items-center gap-2 text-base font-medium text-primary transition-colors group-hover:text-foreground">
-              support@getalawyer.com.ng <HugeiconsIcon :icon="ArrowRight01Icon" class="size-4" />
-            </div>
-          </a>
-
-          <!-- Office / Map Card -->
-          <div class="rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div class="relative mb-6 h-[240px] overflow-hidden rounded-xl bg-accent">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.7174665476313!2d3.4542289153723365!3d6.430296795345719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf57416301aa3%3A0x6b139db0bb145b2e!2sAdmiralty%20Way%2C%20Lekki%20Phase%20I%2C%20Lagos%2C%20Nigeria!5e0!3m2!1sen!2sus!4v1689000000000!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                class="absolute inset-0 opacity-90 contrast-[1.1] grayscale"
-              ></iframe>
-            </div>
-            <div class="px-2 pb-2">
-              <div class="mb-2 flex items-center gap-2">
-                <HugeiconsIcon :icon="Location01Icon" class="size-5 text-primary" />
-               <h3 class="text-lg font-semibold text-foreground">Lagos HQ</h3>
-              </div>
-              <p class="text-sm leading-relaxed text-muted-foreground">
-                14a Admiralty Way<br>Lekki Phase 1, Lagos, Nigeria
-              </p>
-            </div>
+          </div>
+          <div class="relative mt-4 h-56 overflow-hidden rounded-[1.25rem] bg-stone">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.7174665476313!2d3.4542289153723365!3d6.430296795345719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf57416301aa3%3A0x6b139db0bb145b2e!2sAdmiralty%20Way%2C%20Lekki%20Phase%20I%2C%20Lagos%2C%20Nigeria!5e0!3m2!1sen!2sus!4v1689000000000!5m2!1sen!2sus"
+              title="Map showing Admiralty Way, Lekki Phase 1, Lagos"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              class="absolute inset-0 size-full border-0 grayscale dark:invert-[0.92] dark:hue-rotate-180"
+            />
           </div>
         </div>
 
-        <!-- Right: contact form -->
-        <div class="rounded-2xl border border-border bg-card p-8 shadow-sm md:p-12 lg:col-span-7">
-         <h2 class="text-2xl font-medium md:text-3xl mb-8 text-foreground">Send a message</h2>
-
-          <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
-
-            <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0">
-              <Alert v-if="showUnavailableNotice" variant="info">
-                <HugeiconsIcon :icon="Mail01Icon" class="size-4" aria-hidden="true" />
-                <AlertTitle>Direct sending isn't available yet</AlertTitle>
-                <AlertDescription>
-                  <p>
-                    Your message hasn't been sent. Email us instead — we usually respond within 24 hours.
-                  </p>
-                  <Button as-child variant="outline" size="sm" class="mt-2 w-fit">
-                    <a :href="mailtoHref">Open in your email app</a>
-                  </Button>
-                </AlertDescription>
-              </Alert>
-            </Transition>
-
-            <div class="grid gap-6 md:grid-cols-2">
-              <!-- Name -->
-              <div class="flex flex-col gap-2.5">
-                <label for="contact-name" class="text-sm font-medium text-foreground">Full name</label>
-                <input id="contact-name" v-model="form.name" required type="text" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="Jane Doe" />
-              </div>
-
-              <!-- Email -->
-              <div class="flex flex-col gap-2.5">
-                <label for="contact-email" class="text-sm font-medium text-foreground">Email address</label>
-                <input id="contact-email" v-model="form.email" required type="email" class="w-full rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="jane@example.com" />
-              </div>
-            </div>
-
-            <!-- Subject -->
-            <div class="flex flex-col gap-2.5">
-              <label for="contact-subject" class="text-sm font-medium text-foreground">Subject</label>
-              <div class="relative">
-                <select id="contact-subject" v-model="form.subject" required class="w-full cursor-pointer appearance-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10">
-                  <option value="" disabled selected>Select a topic</option>
-                  <option value="support">General Support</option>
-                  <option value="lawyer">I'm a lawyer (Registration/Billing)</option>
-                  <option value="client">I'm a client (Help finding or contacting a lawyer)</option>
-                  <option value="partnership">Partnerships</option>
-                </select>
-                <HugeiconsIcon :icon="ArrowDown01Icon" class="pointer-events-none absolute top-1/2 right-5 size-5 -translate-y-1/2 text-muted-foreground" />
-              </div>
-            </div>
-
-            <!-- Message -->
-            <div class="flex flex-col gap-2.5">
-              <label for="contact-message" class="text-sm font-medium text-foreground">Message</label>
-              <textarea id="contact-message" v-model="form.message" required rows="5" class="w-full resize-none rounded-xl border border-border bg-muted/60 px-5 py-4 text-base text-foreground outline-none transition-all hover:border-border focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/10" placeholder="How can we help you?"></textarea>
-            </div>
-
-            <!-- Submit -->
-            <Button
-              type="submit"
-              size="lg"
-              class="mt-2 w-full cursor-pointer"
-            >
-              Send message
-            </Button>
-          </form>
+        <div class="grid grid-cols-2 gap-[1.1rem] max-sm:grid-cols-1">
+          <NuxtLink to="/find-lawyers" :class="card" class="[transition:border-color_0.2s] hover:border-brand">
+            <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">Looking for a lawyer?</b>
+            <span class="mt-1 block text-[0.95rem] text-muted-foreground">Search the directory and message one free. →</span>
+          </NuxtLink>
+          <NuxtLink to="/for-lawyers" :class="card" class="[transition:border-color_0.2s] hover:border-brand">
+            <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">Are you a lawyer?</b>
+            <span class="mt-1 block text-[0.95rem] text-muted-foreground">See what membership includes. →</span>
+          </NuxtLink>
         </div>
-
       </div>
-    </section>
 
+      <section aria-labelledby="contact-form-title" class="rounded-card bg-stone p-[clamp(1.4rem,3vw,2.25rem)]">
+        <h2 id="contact-form-title" class="text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Write to us</h2>
+        <p class="mt-2 max-w-[34rem] text-muted-foreground">
+          Fill this in and we will open the message in your email app, addressed to our team. You press send there.
+        </p>
+
+        <form class="mt-[1.4rem] grid gap-[1.1rem]" @submit.prevent="openInEmailApp">
+          <div class="grid gap-2">
+            <label for="contact-name" :class="label">Your name</label>
+            <Input id="contact-name" v-model="form.name" required autocomplete="name" placeholder="Ada Obi" :class="authInput" />
+          </div>
+          <!-- the select's own wrapper is sized to its content; stretch it to the field -->
+          <div class="grid gap-2 *:data-[slot=native-select-wrapper]:w-full">
+            <label for="contact-topic" :class="label">What is it about?</label>
+            <NativeSelect id="contact-topic" v-model="form.topic" required class="h-[3.25rem] rounded-[1rem] border-border bg-card px-4 text-[1.02rem] shadow-none dark:bg-card">
+              <NativeSelectOption value="" disabled>Choose a topic</NativeSelectOption>
+              <NativeSelectOption v-for="topic in TOPICS" :key="topic.value" :value="topic.value">{{ topic.label }}</NativeSelectOption>
+            </NativeSelect>
+          </div>
+          <div class="grid gap-2">
+            <label for="contact-message" :class="label">Message</label>
+            <Textarea
+              id="contact-message"
+              v-model="form.message"
+              required
+              rows="6"
+              placeholder="How can we help?"
+              class="min-h-[9.5rem] resize-y rounded-[1rem] border-border bg-card px-4 py-3 text-[1.02rem] shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint"
+            />
+          </div>
+          <Button type="submit" variant="canopy" size="pill" class="group/btn mt-[0.3rem] h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]">
+            Continue in your email app<CanopyArrowChip />
+          </Button>
+          <p class="text-[0.85rem] text-muted-foreground">
+            No email app on this device? Write to <a :href="`mailto:${SUPPORT_EMAIL}`" class="font-semibold text-brand underline underline-offset-[3px]">{{ SUPPORT_EMAIL }}</a> from any mailbox.
+          </p>
+        </form>
+      </section>
+    </div>
   </div>
 </template>

@@ -2,6 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { unref, type MaybeRef } from 'vue'
 import { httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
+import type { SubscriptionPlanOption, SubscriptionPlanSummary } from '~/lib/subscription-plans'
+
+export { pickPlanKey, plansOnSale } from '~/lib/subscription-plans'
+export type { SubscriptionPlanOption, SubscriptionPlanSummary } from '~/lib/subscription-plans'
 
 interface SubscriptionRecord {
   id: string
@@ -18,6 +22,17 @@ interface SubscriptionRecord {
   priceNaira?: number | null
   /** Current catalog price — used for the next checkout or auto-renewal. */
   renewalPriceNaira?: number | null
+  /** Months bought with the last payment. */
+  termMonths?: number | null
+  /** The plan this subscription is on (absent on backends from before plans). */
+  plan?: SubscriptionPlanSummary | null
+  /** A plan change requested for the next renewal, if any. */
+  nextPlan?: SubscriptionPlanSummary | null
+  /**
+   * Whether the next checkout is a renewal (no verification fee), as the
+   * backend will price it. Absent on older backends.
+   */
+  nextCheckoutIsRenewal?: boolean
 }
 
 interface SubscriptionStatusPayload {
@@ -55,6 +70,9 @@ export interface SubscriptionPricingPayload {
   firstPaymentTotalNaira?: number
   /** Annual renewal / restore price (subscription only). */
   renewalPriceNaira?: number
+  /** Every plan on sale. The single-price fields above describe the default one. */
+  plans?: SubscriptionPlanOption[]
+  defaultPlanKey?: string | null
 }
 
 export function formatNairaAmount(amount: number): string {
@@ -109,6 +127,10 @@ export function hadPriorMembership(
   subscription: SubscriptionRecord | null | undefined,
 ): boolean {
   if (!subscription) return false
+  // The backend says how it will price the next checkout; trust it when present.
+  // Status alone gets this wrong after a first Pay click on a lapsed membership,
+  // which turns the row to `pending` and used to make the screen add the fee.
+  if (typeof subscription.nextCheckoutIsRenewal === 'boolean') return subscription.nextCheckoutIsRenewal
   return ['expired', 'cancelled', 'failed_renewal'].includes(subscription.status)
 }
 
@@ -139,10 +161,15 @@ export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }
   })
 }
 
-export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> }) {
+export function useSubscriptionStatus(options?: {
+  enabled?: MaybeRef<boolean>
+  /** Check again once a minute while true: for a screen waiting on a refund to settle. */
+  poll?: MaybeRef<boolean>
+}) {
   return useQuery({
     queryKey: queryKeys.subscription.status,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    refetchInterval: () => (unref(options?.poll) ? 60 * 1000 : false),
     queryFn: async () => {
       const res = await httpClient.getAuth<SubscriptionStatusPayload>(
         '/api/subscriptions/status',
@@ -156,9 +183,12 @@ export function useSubscriptionStatus(options?: { enabled?: MaybeRef<boolean> })
 export function useInitializeSubscription() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
+    // `planKey` is the plan to buy. Without one the backend charges its default
+    // plan, so checkout screens should always pass the visitor's choice.
+    mutationFn: async (planKey?: string | null) => {
       const res = await httpClient.post<InitializeSubscriptionPayload>(
         '/api/subscriptions/initialize',
+        planKey ? { planKey } : undefined,
       )
       return res
     },
@@ -185,6 +215,33 @@ export function useUpdateSubscriptionAutoRenew() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
       queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })
+    },
+  })
+}
+
+interface ChangeSubscriptionPlanPayload {
+  plan: SubscriptionPlanSummary
+  nextPlan: SubscriptionPlanSummary | null
+  /** When the new plan starts (the next renewal date); null if the change was cancelled. */
+  effectiveFrom: string | null
+}
+
+/**
+ * Move to another plan from the next renewal. Nothing is charged now; choosing
+ * the plan the subscription is already on cancels a pending change.
+ */
+export function useChangeSubscriptionPlan() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (planKey: string) => {
+      const res = await httpClient.patch<ChangeSubscriptionPlanPayload>(
+        '/api/subscriptions/plan',
+        { planKey },
+      )
+      return res
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
     },
   })
 }
@@ -284,7 +341,7 @@ export type SubscriptionPaymentHistoryStatus = 'paid' | 'failed' | 'refund' | 'p
 
 export function formatSubscriptionHistoryAction(action: string): string {
   const labels: Record<string, string> = {
-    created: 'Annual membership',
+    created: 'Membership',
     renewed: 'Membership renewal',
     payment_failed: 'Payment failed',
     failed_renewal: 'Renewal failed',

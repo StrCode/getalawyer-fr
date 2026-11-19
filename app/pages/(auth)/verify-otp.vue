@@ -1,21 +1,15 @@
 <template>
-  <AuthFormShell
-    eyebrow="Verification"
-    :title="isPhoneMethod ? 'Check your phone' : 'Check your email'"
-  >
-    <p class="mb-6 text-base leading-relaxed text-muted-foreground">
-      We sent a 6-digit code to
-      <strong class="font-medium text-foreground">{{ identifier }}</strong>.
-      <NuxtLink
-        :to="forgotPasswordLink"
-        class="ms-1 text-sm font-medium text-primary underline-offset-4 hover:underline"
-      >
-        Wrong {{ isPhoneMethod ? 'number' : 'email' }}?
-      </NuxtLink>
-    </p>
+  <AuthFormShell :title="isPhoneMethod ? 'Check your phone' : 'Check your email'">
+    <template #back>
+      <NuxtLink :to="forgotPasswordLink" :class="authBack">← Back</NuxtLink>
+    </template>
+    <template #description>
+      We sent a 6-digit code to <b class="text-foreground">{{ identifier }}</b>.
+      <NuxtLink :to="forgotPasswordLink" :class="authLink" class="text-[0.9rem]">Wrong {{ isPhoneMethod ? 'number' : 'email' }}?</NuxtLink>
+    </template>
 
-    <form @submit.prevent="handleSubmit">
-      <FieldGroup class="space-y-6">
+    <form novalidate @submit.prevent="handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
         <AuthOtpStep
           v-model="otp"
           :error="fieldError"
@@ -26,39 +20,19 @@
           @resend="handleResend"
           @request-new-code="handleRequestNew"
         />
-        <AuthDevOtpHint />
 
+        <AuthDevOtpHint />
         <AuthFormError :message="apiError" />
 
-        <Button
-          type="submit"
-          class="h-12 w-full cursor-pointer gap-2"
-          size="lg"
-          :disabled="isSubmitting || otp.length < 6"
-        >
-          <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="size-4 shrink-0 animate-spin" />
-          <span>{{ isSubmitting ? 'Verifying…' : 'Verify code' }}</span>
-        </Button>
+        <AuthSubmit :loading="isSubmitting" :disabled="otp.length < 6" class="mt-[0.3rem]">
+          {{ isSubmitting ? 'Verifying…' : 'Verify code' }}
+        </AuthSubmit>
       </FieldGroup>
     </form>
-
-    <template #after>
-      <p class="text-center text-base">
-        <NuxtLink
-          :to="forgotPasswordLink"
-          class="font-medium text-primary underline-offset-4 hover:underline"
-        >
-          Back to forgot password
-        </NuxtLink>
-      </p>
-    </template>
   </AuthFormShell>
 </template>
 
 <script setup lang="ts">
-import { Loading03Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'
 
@@ -68,6 +42,8 @@ definePageMeta({
   authTitle: 'Verify your identity.',
   authDescription: 'Enter the code we sent to continue resetting your password securely.',
 })
+
+useHead({ title: 'Enter your code' })
 
 const route = useRoute()
 const router = useRouter()

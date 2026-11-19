@@ -1,243 +1,129 @@
 <script setup lang="ts">
-import { ArrowDown01Icon, Calendar01Icon, Message01Icon, Money01Icon, Shield01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import type { Hugeicon } from '@/lib/icon-types'
-import { ref, computed } from 'vue'
-import { useLawyerMembershipPricing } from '~/composables/useLawyerMembershipPricing'
-import { formatNairaAmount } from '~/composables/useSubscription'
+import { Button } from '@/components/ui/button'
 
-definePageMeta({ layout: 'landing' })
+/**
+ * For lawyers: what membership gives a practice, how joining works, and the
+ * questions lawyers ask first. Prices are never written here: the membership
+ * card reads the plans on sale, and the copy points to it and to /pricing.
+ */
+definePageMeta({ layout: 'site' })
 
-const { data: pricing } = await useLawyerMembershipPricing()
+const { data: pricing } = await useMembershipPlans()
+const fee = computed(() => pricing.value?.verificationAdminFeeNaira ?? 0)
 
-const subscriptionPriceLabel = computed(() =>
-  pricing.value ? formatNairaAmount(pricing.value.subscriptionPriceNaira) : '₦30,000',
-)
-
+useHead({ title: 'For lawyers' })
 useSeoMeta({
-  title: 'For Lawyers — getalawyer',
-  description: () =>
-    `Grow your practice. Keep every naira you earn. Join verified lawyers across Nigeria for ${subscriptionPriceLabel.value}/year.`,
+  description: 'Join getalawyer as a verified lawyer: a listing in the directory, messages from clients and bookings, with no commission on your fees.',
 })
 
-const features: { title: string, desc: string, icon: Hugeicon }[] = [
-  {
-    title: 'Bar-verified credentials',
-    desc: 'NIN and SCN verified. Build instant trust with clients before they even message you.',
-    icon: Shield01Icon,
-  },
-  {
-    title: 'Your schedule, your rules',
-    desc: 'Set your availability and consultation types. You decide when and how you take consultations.',
-    icon: Calendar01Icon,
-  },
-  {
-    title: 'Direct messaging',
-    desc: 'Built-in secure messaging. Talk to clients, exchange files, and manage your pipeline.',
-    icon: Message01Icon,
-  },
-  {
-    title: 'Zero commission',
-    desc: 'We do not take a cut of your consultation fees. You keep 100% of what you earn.',
-    icon: Money01Icon,
-  }
+const REGISTER = '/register?role=lawyer'
+
+const benefits = [
+  { icon: 'tick', title: 'Verified credentials', body: 'Your identity and Supreme Court enrolment are checked once. Clients see the verified mark before they write to you.' },
+  { icon: 'calendar', title: 'Your schedule, your terms', body: 'Set your consultation types, fees and hours, and sync your calendar. You decide when and how you meet clients.' },
+  { icon: 'chat', title: 'Clients write to you directly', body: 'Enquiries arrive as messages. Answer, exchange files and agree next steps in one thread.' },
+  { icon: 'office', title: 'No commission', body: 'Clients pay you directly, on terms you set. Membership is the only payment to getalawyer.' },
+] as const
+
+const steps = [
+  { title: 'Create your profile', body: 'Register, then add your practice areas, experience and enrolment details.' },
+  { title: 'Pay and get verified', body: `Choose a membership term. We check your identity and enrolment, usually within ${REVIEW_TIME}.` },
+  { title: 'Set your availability', body: 'Add your consultation types, fees and working hours.' },
+  { title: 'Receive enquiries', body: 'Clients find you in the directory, message you free and book the consultations you offer.' },
 ]
 
-const lawyerSteps = [
-  { num: '01', title: 'Create your profile', desc: 'Sign up and submit your NIN and SCN for verification. Our team reviews applications within 24 hours.' },
-  { num: '02', title: 'Set your schedule', desc: 'Sync your calendar and set your availability. You have full control over when you take consultations.' },
-  { num: '03', title: 'Receive enquiries', desc: 'Clients find you in our directory and message you directly. Answer questions and agree consultation fees in chat.' },
-  { num: '04', title: 'Consult & get paid', desc: 'Meet by video, phone, or in person. Clients pay your fees directly to you — GetaLawyer does not process consultation payments.' },
-]
-
-const faqItems = computed(() => [
-  { q: 'How long does verification take?', a: 'We typically verify your NIN and Supreme Court Number within 24-48 hours. Once approved, your profile goes live immediately.' },
-  { q: 'Do you take a percentage of my fees?', a: `No. We charge a flat ${subscriptionPriceLabel.value} annual subscription (first checkout also includes a small verification fee). That is the only payment processed on GetaLawyer. You keep 100% of the consultation fees you agree with clients.` },
-  { q: 'Do clients pay through GetaLawyer?', a: 'No. Client consultation fees are not processed on our site. You agree fees with clients in messaging or before your session, and they pay you directly on terms you set (for example, bank transfer).' },
-  { q: 'What happens if a client cancels?', a: 'You set your own cancellation policy. If a client cancels a booking, handle rescheduling or any refund directly with them — GetaLawyer does not hold or refund consultation fees.' },
+const questions = computed(() => [
+  { q: 'How long does verification take?', a: `We usually verify your National Identification Number and Supreme Court enrolment within ${REVIEW_TIME}. Your profile goes live once you are approved.` },
+  {
+    q: 'Do you take a percentage of my fees?',
+    a: fee.value > 0
+      ? 'No. Membership is the only payment to getalawyer; your first payment also includes a one-off verification fee. You keep the consultation fees you agree with clients.'
+      : 'No. Membership is the only payment to getalawyer. You keep the consultation fees you agree with clients.',
+  },
+  { q: 'Do clients pay through getalawyer?', a: 'No. You agree fees with clients in messages or before the session, and they pay you directly on the terms you set, for example by bank transfer.' },
+  { q: 'What happens if a client cancels?', a: 'You set your own cancellation policy. Rescheduling and any refund are handled between you and the client; getalawyer does not hold consultation fees.' },
+  { q: 'What if my verification does not pass?', a: fee.value > 0 ? 'Your membership payment is refunded. The verification fee is kept because the checks were carried out.' : 'Your membership payment is refunded.' },
 ])
-
-const openFaqs = ref([false, false, false, false])
-
-const toggleFaq = (index: number) => {
-  openFaqs.value[index] = !openFaqs.value[index]
-}
 </script>
 
 <template>
-  <div class="bg-background">
-
-    <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-foreground text-background section-y-lg">
-      <div class="pointer-events-none absolute -top-48 left-1/2 size-[800px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-
-      <div class="relative mx-auto max-w-7xl px-6 text-center md:px-8">
-        <p class="eyebrow mb-6 text-primary">For legal professionals</p>
-       <h1 class="text-5xl font-medium md:text-6xl mx-auto max-w-3xl text-background">
-          Grow your practice.<br>
-          <em class="font-semibold not-italic">Keep every naira you earn.</em>
+  <div>
+    <section data-surface="forest" class="grid grid-cols-2 overflow-hidden rounded-panel bg-forest text-white max-tab:grid-cols-1 max-sm:rounded-[1.75rem]">
+      <div class="self-center p-[clamp(1.75rem,5vw,4.5rem)]">
+        <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">For lawyers</div>
+        <h1 class="mt-4 text-[clamp(2.5rem,4.8vw,4.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+          Grow your practice. <em class="text-lime not-italic">Keep every naira you earn.</em>
         </h1>
-        <p class="mx-auto mt-8 mb-10 max-w-xl text-lg leading-relaxed text-background/70">
-          Join verified lawyers across Nigeria reaching clients who are ready to book. Zero commission. Flat subscription.
+        <p class="mt-[1.2rem] max-w-[34rem] text-[1.1rem] text-on-forest">
+          Clients across Nigeria search the directory by practice area and state, and message you directly. One membership, paid for the term you choose, and no commission on your fees.
         </p>
-
-        <Button size="lg" class="cursor-pointer" as-child>
-          <NuxtLink to="/register?role=lawyer">
-            Register as a lawyer
-          </NuxtLink>
-        </Button>
+        <div class="mt-[1.7rem] flex flex-wrap gap-[0.7rem]">
+          <Button as-child variant="lime" size="pill"><NuxtLink :to="REGISTER">Register as a lawyer</NuxtLink></Button>
+          <Button as-child variant="on-forest" size="pill"><NuxtLink to="/pricing">See pricing</NuxtLink></Button>
+        </div>
+      </div>
+      <div class="relative grid min-h-80 place-items-center p-[clamp(1.1rem,3vw,2.5rem)] max-tab:py-6">
+        <NuxtImg
+          src="/images/canopy/desk.jpg"
+          width="1000"
+          height="1100"
+          sizes="100vw lg:640px"
+          alt="A lawyer going through documents with a client at a desk"
+          preload
+          class="absolute inset-0 size-full object-cover"
+        />
+        <span aria-hidden="true" class="absolute inset-0 bg-forest/38" />
+        <CanopyPlanCard />
       </div>
     </section>
 
-    <!-- Features Grid -->
-    <section class="bg-background section-y">
-      <div class="mx-auto max-w-7xl px-6 md:px-8">
-        <div class="mb-16 text-center">
-         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-foreground">
-            Everything you need to succeed
-          </h2>
-          <p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-            We provide the infrastructure and the clients. You provide the counsel. No hidden fees.
-          </p>
+    <section class="pt-[clamp(3.5rem,7vw,6.5rem)]">
+      <CanopySectionHead kicker="What you get" title="Everything a practice needs to be found." />
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(15.5rem,1fr))] gap-[1.1rem]">
+        <div v-for="item in benefits" :key="item.title" data-rise class="rounded-card border border-border bg-card p-6 transition-transform duration-[900ms] ease-canopy">
+          <span class="grid size-12 place-items-center rounded-[1rem] bg-mint text-deep"><CanopyGlyph :name="item.icon" :size="22" :stroke="item.icon === 'tick' ? 3 : 2" /></span>
+          <h3 class="mt-[1.1rem] text-[1.3rem] font-[650] tracking-[-0.02em]">{{ item.title }}</h3>
+          <p class="mt-2 text-muted-foreground">{{ item.body }}</p>
         </div>
+      </div>
+    </section>
 
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div
-            v-for="feat in features"
-            :key="feat.title"
-            class="rounded-2xl border border-border bg-card p-8 shadow-sm transition-shadow hover:shadow-md"
-          >
-            <div
-              class="mb-6 flex size-12 items-center justify-center rounded-xl bg-muted text-primary"
-            >
-              <HugeiconsIcon :icon="feat.icon" class="size-6" aria-hidden="true" />
-            </div>
-           <h4 class="mb-3 text-base font-semibold text-foreground">{{ feat.title }}</h4>
-            <p class="text-sm leading-relaxed text-muted-foreground">{{ feat.desc }}</p>
+    <section class="pt-[clamp(3.5rem,7vw,6.5rem)]">
+      <CanopySectionHead kicker="How joining works" title="From sign-up to your first enquiry." />
+      <ol class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-[1.1rem]">
+        <li v-for="(step, index) in steps" :key="step.title" data-rise class="rounded-card border border-border bg-card p-[1.4rem] transition-transform duration-[900ms] ease-canopy">
+          <div class="flex items-center gap-3">
+            <span class="grid size-10 flex-none place-items-center rounded-full bg-mint font-display text-[1.15rem] font-bold text-deep">{{ index + 1 }}</span>
+            <i class="h-px flex-1 bg-border" />
           </div>
-        </div>
+          <h3 class="mt-[1.2rem] text-[1.35rem] font-[650] tracking-[-0.02em]">{{ step.title }}</h3>
+          <p class="mt-[0.4rem] text-muted-foreground">{{ step.body }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="py-[clamp(3.5rem,7vw,6.5rem)]">
+      <CanopySectionHead kicker="Questions" title="Asked before joining." />
+      <div class="max-w-[52rem] border-t border-border">
+        <details v-for="(item, index) in questions" :key="item.q" :open="index === 0" class="group/faq border-b border-border">
+          <summary class="flex min-h-[3.6rem] cursor-pointer list-none items-center justify-between gap-4 py-[0.4rem] font-display text-[1.2rem] font-[650] tracking-[-0.02em] [&::-webkit-details-marker]:hidden">
+            {{ item.q }}
+            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-text font-semibold text-deep transition-transform duration-300 ease-canopy group-open/faq:rotate-45">+</span>
+          </summary>
+          <p class="max-w-[44rem] pr-12 pb-[1.2rem] text-muted-foreground max-sm:pr-0">{{ item.a }}</p>
+        </details>
       </div>
     </section>
 
-    <!-- How it works for lawyers -->
-    <section class="border-t border-background/20 bg-foreground text-background section-y">
-      <div class="mx-auto max-w-7xl px-6 md:px-8">
-        <div class="mb-16">
-          <p class="eyebrow mb-4 text-primary">Onboarding</p>
-         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-background">
-            How to get started
-          </h2>
-          <p class="max-w-2xl text-lg text-background/70">
-            Four simple steps to start growing your digital practice.
-          </p>
-        </div>
-
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div
-            v-for="step in lawyerSteps"
-            :key="step.num"
-            class="rounded-2xl border border-background/20 bg-background/5 p-8"
-          >
-            <div class="mb-6 text-5xl font-semibold leading-none tracking-tight text-primary tabular-nums">
-              {{ step.num }}
-            </div>
-           <h3 class="mb-3 text-base font-semibold text-background">{{ step.title }}</h3>
-            <p class="text-sm leading-relaxed text-background/70">{{ step.desc }}</p>
-          </div>
-        </div>
+    <section data-rise data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)] text-center text-white transition-transform duration-[900ms] ease-canopy max-sm:rounded-[1.75rem]">
+      <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">Ready when you are</div>
+      <h2 class="mx-auto mt-4 max-w-[44rem] text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">
+        Put your practice <em class="text-lime not-italic">in front of clients.</em>
+      </h2>
+      <div class="mt-[1.7rem] flex flex-wrap justify-center gap-[0.7rem]">
+        <Button as-child variant="lime" size="pill"><NuxtLink :to="REGISTER">Register as a lawyer</NuxtLink></Button>
+        <Button as-child variant="on-forest" size="pill"><NuxtLink to="/contact">Talk to us first</NuxtLink></Button>
       </div>
     </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="border-t border-border bg-muted section-y">
-      <div class="mx-auto max-w-7xl px-6 md:px-8">
-
-        <div class="mx-auto mb-16 max-w-2xl text-center">
-         <h2 class="text-4xl font-medium md:text-5xl mb-4 text-foreground">
-            Simple, transparent pricing.
-          </h2>
-          <p class="text-lg leading-relaxed text-muted-foreground">
-            Stop paying 20-30% in platform fees. Reach thousands of clients for a flat annual rate.
-          </p>
-        </div>
-
-        <!-- Pricing Card -->
-        <div class="relative mx-auto max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-10 shadow-sm ring-2 ring-primary/30">
-          <p class="eyebrow mb-6 text-center text-primary-strong">Annual membership</p>
-
-          <div class="mb-8 mt-2 text-center">
-           <h3 class="mb-3 text-base font-semibold text-foreground">Annual Subscription</h3>
-            <div class="mb-2 flex items-end justify-center gap-1.5">
-              <span class="font-heading text-5xl leading-none tabular-nums text-foreground">{{ subscriptionPriceLabel }}</span>
-              <span class="mb-1.5 text-sm text-muted-foreground">/ year</span>
-            </div>
-            <p class="text-sm text-muted-foreground">The only payment on GetaLawyer. Consultation fees are paid directly to you.</p>
-          </div>
-
-          <Button size="lg" class="w-full cursor-pointer" as-child>
-            <NuxtLink to="/register?role=lawyer">
-              Start your membership
-            </NuxtLink>
-          </Button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="bg-background section-y">
-      <div class="mx-auto max-w-3xl px-6 md:px-8">
-        <div class="mb-16 text-center">
-         <h2 class="text-4xl font-medium md:text-5xl text-foreground">
-            Frequently asked questions
-          </h2>
-        </div>
-
-        <div class="space-y-4">
-          <div
-            v-for="(faq, idx) in faqItems"
-            :key="idx"
-            class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200"
-          >
-            <button
-              @click="toggleFaq(idx)"
-              class="group flex w-full cursor-pointer items-center justify-between border-none bg-transparent p-6 text-left"
-            >
-              <span class="pr-8 text-base font-semibold text-foreground">{{ faq.q }}</span>
-              <div
-                class="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-primary transition-transform duration-300"
-                :class="{ 'rotate-180': openFaqs[idx] }"
-              >
-                <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4" />
-              </div>
-            </button>
-            <div
-              v-show="openFaqs[idx]"
-              class="px-6 pb-6 text-sm leading-relaxed text-muted-foreground"
-            >
-              {{ faq.a }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Bottom CTA -->
-    <section class="border-t border-background/20 bg-foreground text-center text-background section-y-lg">
-      <div class="mx-auto max-w-2xl px-6 md:px-8">
-       <h2 class="text-4xl font-medium md:text-5xl mb-6 text-background">
-          Ready to grow your digital practice?
-        </h2>
-        <p class="mb-10 text-lg leading-relaxed text-background/70">
-          Join hundreds of verified lawyers securely acquiring clients on our platform today.
-        </p>
-        <Button size="lg" class="cursor-pointer" as-child>
-          <NuxtLink to="/register?role=lawyer">
-            Create your lawyer profile
-          </NuxtLink>
-        </Button>
-      </div>
-    </section>
-
   </div>
 </template>
