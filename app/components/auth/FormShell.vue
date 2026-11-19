@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * One screen of the sign-in group: an optional back control, the title, a line
+ * One screen of the sign-in group: an optional back control (centred, a little
+ * above the title), the title, a line
  * of supporting copy, the form (default slot) and a closing line under it
  * (`after`, e.g. "New here? Create an account"). No card: the form sits
  * directly on the page ground, as in the approved concept.
@@ -14,7 +15,9 @@ defineProps<{
 
 <template>
   <div class="w-full">
-    <div v-if="$slots.back" class="mb-[0.6rem]">
+    <!-- centred, with room between it and the title, so it reads as a way out
+         of the step rather than as part of the heading -->
+    <div v-if="$slots.back" class="mb-[1.6rem] flex justify-center">
       <slot name="back" />
     </div>
     <h1 class="text-[clamp(2.1rem,3.6vw,2.9rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">

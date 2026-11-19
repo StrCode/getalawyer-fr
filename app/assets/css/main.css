@@ -286,8 +286,8 @@
 /* Sign-in panel photo: a light forest wash behind the chip, solid forest behind the text at the foot. */
 @utility auth-photo-fade {
   background:
-    linear-gradient(180deg, rgba(11, 51, 39, 0.6) 0%, rgba(11, 51, 39, 0) 28%),
-    linear-gradient(0deg, var(--forest) 0%, rgba(11, 51, 39, 0.92) 24%, rgba(11, 51, 39, 0) 62%);
+    linear-gradient(180deg, rgba(11, 51, 39, 0.6) 0%, rgba(11, 51, 39, 0) 26%),
+    linear-gradient(0deg, var(--forest) 0%, rgba(11, 51, 39, 0.94) 26%, rgba(11, 51, 39, 0) 64%);
 }
 @utility tile-foot-fade {
   background: linear-gradient(0deg, rgba(11, 51, 39, 0.78), rgba(11, 51, 39, 0));

@@ -279,6 +279,19 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
 const step = ref<'role' | 'form' | 'verify'>('role')
 const authMethod = ref<'email' | 'phone'>('email')
 
+// Tell the layout's brand panel who is signing up, so it can speak to them.
+// Client-side only: on the server the panel reads `?role=` from the address.
+const panelRole = useState<'client' | 'lawyer' | null>('auth-panel-role', () => null)
+onMounted(() => {
+  panelRole.value = selectedRole.value ?? null
+})
+watch(selectedRole, (role) => {
+  panelRole.value = role ?? null
+})
+onUnmounted(() => {
+  panelRole.value = null
+})
+
 // Lawyers register with email only — their onboarding is email/NIN-gated.
 // Clients keep the phone-or-email choice.
 const canUsePhone = computed(() => selectedRole.value === 'client')

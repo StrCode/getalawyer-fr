@@ -7,10 +7,80 @@
  *
  * The two-column shape follows the shadcn-vue `login-02` / `otp-02` blocks
  * (form column plus a cover column hidden on small screens).
+ *
+ * The panel is built the way the homepage hero is (a photo that fills it and
+ * fades into the forest, with product cards on top) but with its own photos,
+ * cards and words, and a version for whoever is on the page: a general one for
+ * sign in and password recovery, one for clients and one for lawyers when an
+ * account is being created, switching as soon as a role is picked.
  */
 useHead({ bodyAttrs: { class: 'canopy' } })
 
-const proof = ['Free to message', 'No commission on fees', 'All 36 states + FCT']
+type Audience = 'general' | 'client' | 'lawyer'
+
+const PANELS: Record<Audience, {
+  photo: string
+  /** The photo's real size. Asking the image service for another shape would crop it to the centre before `focus` applies. */
+  size: [number, number]
+  alt: string
+  focus: string
+  chip: string
+  /** A small product card on the photo; `tags` adds a row of labels under it. */
+  card: { icon: 'chat' | 'mail' | 'tick', label: string, value: string, tags?: string[] }
+  kicker: string
+  title: string
+  accent: string
+  body: string
+}> = {
+  general: {
+    photo: '/images/canopy/desk.jpg',
+    size: [1000, 1100],
+    alt: 'A lawyer going through documents with a client at a desk',
+    focus: 'object-[42%_30%]',
+    chip: 'Private to you and your lawyer',
+    card: { icon: 'chat', label: 'New reply', value: 'Your lawyer answered your question' },
+    kicker: 'Welcome back',
+    title: 'Pick up',
+    accent: 'where you left off.',
+    body: 'Your conversations, bookings and documents are where you left them.',
+  },
+  client: {
+    photo: '/images/canopy/meet.jpg',
+    size: [1200, 800],
+    alt: 'A client and a lawyer talking across a table, both smiling',
+    focus: 'object-[84%_50%]',
+    chip: 'Free to message',
+    card: { icon: 'tick', label: 'Verified lawyer', value: 'Family law · Lagos', tags: ['Video', 'Phone', 'In person'] },
+    kicker: 'For clients',
+    title: 'Ask a lawyer first.',
+    accent: 'Decide after.',
+    body: 'Write to any lawyer in the directory without paying. A fee comes in only if you book a consultation, and you agree it with the lawyer.',
+  },
+  lawyer: {
+    photo: '/images/canopy/hero.jpg',
+    size: [1201, 1800],
+    alt: 'A lawyer seated between shelves of law books, smiling',
+    focus: 'object-[50%_12%]',
+    chip: 'No commission on your fees',
+    card: { icon: 'mail', label: 'New enquiry', value: 'Tenancy dispute · Lagos', tags: ['Reply free', 'Offer a consultation'] },
+    kicker: 'For lawyers',
+    title: 'Clients find you.',
+    accent: 'You keep your fees.',
+    body: 'A verified listing, messages from clients and bookings, for one membership. Clients pay you directly.',
+  },
+}
+
+// The create-account page reports the role picked there (client-side only);
+// until it does, a `?role=` in the address decides, so the server render and
+// the first client render always agree.
+const route = useRoute()
+const pickedRole = useState<'client' | 'lawyer' | null>('auth-panel-role', () => null)
+const audience = computed<Audience>(() => {
+  if (route.path !== '/register') return 'general'
+  if (pickedRole.value) return pickedRole.value
+  return route.query.role === 'lawyer' ? 'lawyer' : route.query.role === 'client' ? 'client' : 'general'
+})
+const panel = computed(() => PANELS[audience.value])
 </script>
 
 <template>
@@ -34,49 +104,58 @@ const proof = ['Free to message', 'No commission on fees', 'All 36 states + FCT'
     </div>
 
     <aside
-      aria-label="About getalawyer"
+      :aria-label="`getalawyer: ${panel.kicker.toLowerCase()}`"
       data-surface="forest"
-      class="sticky top-4 flex h-[calc(100svh-2rem)] min-h-[36rem] flex-col justify-between gap-6 overflow-hidden rounded-[2.5rem] bg-forest p-[clamp(1.5rem,3vw,2.75rem)] text-white max-tab:hidden"
+      class="sticky top-4 h-[calc(100svh-2rem)] min-h-[36rem] overflow-hidden rounded-[2.5rem] bg-forest text-white max-tab:hidden"
     >
-      <!-- the photo fills the panel and fades into it, as on the homepage hero -->
-      <NuxtImg
-        src="/images/canopy/hero.jpg"
-        width="1201"
-        height="1800"
-        sizes="46vw"
-        alt="A lawyer seated between shelves of law books, smiling"
-        class="absolute inset-0 size-full object-cover object-[50%_12%]"
-      />
-      <span aria-hidden="true" class="pointer-events-none absolute inset-0 auth-photo-fade" />
+      <Transition
+        mode="out-in"
+        enter-active-class="transition-opacity duration-300 ease-out motion-reduce:transition-none"
+        enter-from-class="opacity-0"
+        leave-active-class="transition-opacity duration-200 ease-in motion-reduce:transition-none"
+        leave-to-class="opacity-0"
+      >
+        <div :key="audience" class="relative flex h-full flex-col justify-between gap-6 p-[clamp(1.5rem,3vw,2.75rem)]">
+          <!-- the photo fills the panel and fades into it, as on the homepage hero -->
+          <NuxtImg
+            :src="panel.photo"
+            :width="panel.size[0]"
+            :height="panel.size[1]"
+            sizes="46vw"
+            :alt="panel.alt"
+            class="absolute inset-0 size-full object-cover"
+            :class="panel.focus"
+          />
+          <span aria-hidden="true" class="pointer-events-none absolute inset-0 auth-photo-fade" />
 
-      <div class="relative flex items-start justify-between gap-4">
-        <div class="inline-flex items-center gap-2 rounded-full border border-white/14 bg-forest-2 px-[0.9rem] py-[0.4rem] text-[0.85rem] font-semibold">
-          <i class="size-2 rounded-full bg-lime" />Every lawyer NIN &amp; SCN verified
-        </div>
-        <div aria-hidden="true" class="relative size-[6rem] flex-none">
-          <svg viewBox="0 0 120 120" class="size-full animate-seal">
-            <defs><path id="auth-seal-ring" d="M60 60m-43 0a43 43 0 1 1 86 0a43 43 0 1 1-86 0" /></defs>
-            <circle cx="60" cy="60" r="59" fill="#CDF36B" />
-            <text font-size="10.5" font-weight="700" letter-spacing="2.1" fill="#0B3327"><textPath href="#auth-seal-ring">NIN VERIFIED · SCN VERIFIED · </textPath></text>
-          </svg>
-          <div class="absolute inset-0 grid place-items-center text-forest"><CanopyGlyph name="tick" :size="28" :stroke="3" /></div>
-        </div>
-      </div>
+          <div class="relative inline-flex items-center gap-2 self-start rounded-full border border-white/14 bg-forest-2 px-[0.9rem] py-[0.4rem] text-[0.85rem] font-semibold">
+            <i class="size-2 rounded-full bg-lime" />{{ panel.chip }}
+          </div>
 
-      <div class="relative">
-        <div aria-hidden="true" class="mb-6 inline-flex items-center gap-[0.7rem] rounded-[1.25rem] bg-card px-4 py-[0.8rem] text-[0.95rem] font-semibold text-foreground shadow-widget">
-          <span class="grid size-9 flex-none place-items-center rounded-full bg-mint text-deep"><CanopyGlyph name="calendar" :size="18" /></span>
-          <span><small class="block text-[0.78rem] font-normal text-muted-foreground">Consultation booked</small>Thu, 10:30 AM</span>
+          <div class="relative">
+            <div aria-hidden="true" class="mb-6 inline-grid max-w-full gap-[0.7rem] rounded-[1.25rem] bg-card p-[0.9rem] text-foreground shadow-widget">
+              <div class="flex items-center gap-[0.7rem] pr-2">
+                <span class="grid size-10 flex-none place-items-center rounded-full bg-primary text-white">
+                  <CanopyGlyph :name="panel.card.icon" :size="18" :stroke="panel.card.icon === 'tick' ? 3.2 : 2" />
+                </span>
+                <span class="min-w-0 leading-[1.3]">
+                  <small class="block text-[0.78rem] font-bold tracking-[0.06em] text-brand uppercase">{{ panel.card.label }}</small>
+                  <b class="font-display text-[1.05rem] font-[650] tracking-[-0.02em]">{{ panel.card.value }}</b>
+                </span>
+              </div>
+              <ul v-if="panel.card.tags" class="flex flex-wrap gap-[0.3rem] text-[0.72rem] font-bold tracking-[0.06em] text-deep uppercase">
+                <li v-for="tag in panel.card.tags" :key="tag" class="rounded-[0.5rem] border border-border bg-background px-[0.55rem] py-[0.25rem]">{{ tag }}</li>
+              </ul>
+            </div>
+
+            <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">{{ panel.kicker }}</div>
+            <h2 class="mt-3 max-w-[28rem] text-[clamp(1.9rem,3vw,2.8rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+              {{ panel.title }} <em class="text-lime not-italic">{{ panel.accent }}</em>
+            </h2>
+            <p class="mt-[0.9rem] max-w-[30rem] text-on-forest">{{ panel.body }}</p>
+          </div>
         </div>
-        <h2 class="max-w-[26rem] text-[clamp(1.9rem,3vw,2.8rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
-          Legal help <em class="text-lime not-italic">without the runaround.</em>
-        </h2>
-        <ul class="mt-[1.1rem] flex flex-wrap gap-x-5 gap-y-2 text-[0.78rem] font-bold tracking-[0.08em] uppercase">
-          <li v-for="item in proof" :key="item" class="inline-flex items-center gap-[0.45rem]">
-            <CanopyGlyph name="tick" :stroke="3" class="flex-none text-lime" />{{ item }}
-          </li>
-        </ul>
-      </div>
+      </Transition>
     </aside>
   </div>
 </template>
