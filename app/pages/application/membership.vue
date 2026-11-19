@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Alert01Icon, Loading03Icon, Tick01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useQueryClient } from '@tanstack/vue-query'
 import {
   ensureLawyerOnboardingStatus,
@@ -20,24 +18,19 @@ import {
 import { ApiError } from '~/lib/api/client'
 import { toast } from 'vue-sonner'
 import { queryKeys } from '~/lib/query-client'
-import {
-  isLawyerAwaitingApproval,
-  isLawyerRejected,
-  isLawyerVerificationFailed,
-  onboardingSubmittedAt,
-  VERIFICATION_FAILED_COPY,
-} from '~/lib/lawyerOnboardingStatus'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
+import { onboardingSubmittedAt, VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
 
 definePageMeta({
-  layout: 'onboarding-draft',
-  middleware: ['auth'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 useHead({
-  title: 'Lawyer membership — GetaLawyer',
+  title: 'Lawyer membership',
   meta: [
     {
       name: 'description',
@@ -50,7 +43,7 @@ const router = useRouter()
 const { session } = useAuth()
 const queryClient = useQueryClient()
 
-await useAsyncData('onboarding-subscription-status', () =>
+await useAsyncData('application-membership-status', () =>
   ensureLawyerOnboardingStatus(queryClient),
 )
 
@@ -158,45 +151,15 @@ const benefits = [
 
 const verificationRefundNote = VERIFICATION_FAILED_COPY.refundNote
 
-watchEffect(() => {
-  const u = session.value?.user as {
-    onboarding_completed?: boolean
-    userType?: string
-    role?: string
-  } | null
-  const ut = u?.userType ?? u?.role
-  if (ut && ut !== 'lawyer') {
-    router.replace('/')
-  }
-  if (u?.onboarding_completed) {
-    router.replace('/dashboard')
-  }
-})
-
-watchEffect(() => {
-  if (pageLoading.value || statusFetching.value) return
-  const st = statusPayload.value
-  if (!st) return
-
-  if (isLawyerRejected(st)) {
-    router.replace('/onboarding/rejected')
-    return
-  }
-
-  if (isLawyerVerificationFailed(st)) {
-    router.replace('/onboarding/pending')
-    return
-  }
-
-  if (!isLawyerAwaitingApproval(st)) {
-    router.replace('/onboarding')
-    return
-  }
-
-  if (hasActiveSubscription.value) {
-    router.replace('/onboarding/pending')
-  }
-})
+// This page is for one state only: submitted, membership still to pay. In any
+// other state the application home is the place (it shows review, changes and
+// so on), and an approved lawyer belongs on the dashboard.
+const { state } = useApplicationState()
+watch(state, (value) => {
+  if (!import.meta.client) return
+  if (value === 'approved') void router.replace('/dashboard')
+  else if (value !== 'payment' && value !== 'loading' && value !== 'unavailable') void router.replace(APPLICATION_HOME)
+}, { immediate: true })
 
 async function confirmPendingPayment() {
   if (confirmingPendingPayment.value || hasActiveSubscription.value) return
@@ -208,7 +171,8 @@ async function confirmPendingPayment() {
         description: 'Taking you to your application status.',
       })
       await queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
-      await router.replace('/onboarding/pending')
+      // Paid: the application is now in review, which the home shows.
+      await router.replace(APPLICATION_HOME)
       return
     }
     if (result?.status === 'pending') {
@@ -309,166 +273,107 @@ async function retry() {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-md flex-col items-stretch gap-8">
+  <div>
     <div
       v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
-      class="flex flex-col items-center gap-4 py-20 text-center"
+      class="grid gap-[0.6rem] pt-4"
+      aria-busy="true"
+      :aria-label="confirmingPendingPayment ? 'Confirming your payment' : 'Loading your application'"
     >
-      <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-primary" aria-hidden="true" />
-      <p class="text-sm text-muted-foreground">
-        {{ confirmingPendingPayment ? 'Confirming your payment…' : 'Loading…' }}
-      </p>
+      <Skeleton class="h-10 w-2/3 rounded-full" />
+      <Skeleton v-for="n in 5" :key="n" class="h-[3.6rem] rounded-[1.1rem]" />
+      <p class="text-[0.9rem] text-muted-foreground">{{ confirmingPendingPayment ? 'Confirming your payment…' : 'Loading…' }}</p>
     </div>
 
-    <div v-else-if="statusError" class="flex flex-col items-center gap-5 text-center">
-      <h1 class="text-2xl font-medium tracking-tight text-foreground">
-        Could not load your application
-      </h1>
-      <p class="text-sm text-muted-foreground">
-        Check your connection and try again.
-      </p>
-      <Button class="cursor-pointer" @click="retry">
-        Try again
-      </Button>
+    <div v-else-if="statusError" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
+      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>
+      <p class="text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="line" size="pill-sm" @click="retry">Try again</Button>
     </div>
 
-    <template v-else>
-      <div class="flex flex-col items-center gap-2 text-center">
-        <h1 class="text-balance text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-          Lawyer membership
-        </h1>
-        <p class="text-sm leading-relaxed text-muted-foreground">
-          Pay while we review your application. Your listing goes live after approval.
-        </p>
-        <p v-if="submittedLabel" class="text-xs text-muted-foreground">
-          Application submitted {{ submittedLabel }}
-        </p>
+    <ApplicationStatus
+      v-else
+      kicker="Application submitted"
+      title="One step left: membership"
+      description="Pay while we review your application. Your listing goes live after approval."
+      membership="due"
+    >
+      <template v-if="submittedLabel" #description>
+        Pay while we review your application. Your listing goes live after approval. Submitted {{ submittedLabel }}.
+      </template>
+
+      <p v-if="hasCheckoutFailure" role="alert" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
+        <b class="block font-semibold">Payment did not complete</b>
+        {{ paymentFailureMessage }}
+      </p>
+
+      <div v-if="pricingError || (!pricing && !pricingPending)" role="alert" class="grid justify-items-start gap-[0.6rem] rounded-[1.1rem] border border-dashed border-border p-4">
+        <b class="font-semibold">Prices are not loading right now.</b>
+        <p class="text-muted-foreground">We need the current price before checkout. Nothing has been charged.</p>
+        <Button variant="line" size="pill-sm" @click="refetchPricing()">Try again</Button>
       </div>
 
-      <Alert v-if="hasCheckoutFailure" variant="warning">
-        <HugeiconsIcon :icon="Alert01Icon" aria-hidden="true" />
-        <AlertTitle>Payment did not complete</AlertTitle>
-        <AlertDescription>
-          {{ paymentFailureMessage }}
-        </AlertDescription>
-      </Alert>
+      <section v-else aria-labelledby="membership-title" class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
+        <h2 id="membership-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ plans.length > 1 ? 'Choose your plan' : 'Lawyer membership' }}</h2>
+        <p v-if="plans.length > 1" class="mt-1 text-[0.9rem] text-muted-foreground">
+          Every plan includes the same listing, messages and bookings. You can change plan at any renewal.
+        </p>
 
-      <Alert v-if="pricingError || (!pricing && !pricingPending)" variant="destructive">
-        <AlertTitle>Could not load pricing</AlertTitle>
-        <AlertDescription class="flex flex-col items-start gap-3">
-          <p>We need the current price before checkout.</p>
-          <Button
-            variant="outline"
-            size="sm"
-            class="cursor-pointer border-destructive/25 bg-background"
-            @click="refetchPricing()"
+        <SubscriptionPlanPicker
+          v-if="plans.length > 1"
+          v-model="selectedPlanKey"
+          :plans="plans"
+          label="Membership plan"
+          :disabled="paymentBusy || hasActiveSubscription"
+          class="mt-4"
+        />
+
+        <dl v-if="selectedPlan" aria-live="polite" class="mt-4 grid">
+          <div class="flex justify-between gap-4 border-b border-dashed border-border py-[0.6rem] text-muted-foreground">
+            <dt>{{ selectedPlan.name }} membership</dt>
+            <dd class="font-semibold text-foreground tabular-nums">{{ formatNairaAmount(selectedPlan.priceNaira) }}</dd>
+          </div>
+          <div v-if="verificationFeeNaira > 0" class="flex justify-between gap-4 border-b border-dashed border-border py-[0.6rem] text-muted-foreground">
+            <dt>One-off verification fee</dt>
+            <dd class="font-semibold text-foreground tabular-nums">{{ formatNairaAmount(verificationFeeNaira) }}</dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-4 pt-[0.85rem] font-bold">
+            <dt>Due today</dt>
+            <dd class="font-display text-[1.9rem] leading-none font-bold tracking-[-0.03em] tabular-nums">{{ firstPaymentTotalNaira != null ? formatNairaAmount(firstPaymentTotalNaira) : '' }}</dd>
+          </div>
+        </dl>
+        <p v-if="renewalLine" class="mt-2 text-[0.9rem] text-muted-foreground">Then {{ renewalLine }}. You can turn auto-renew off at any time.</p>
+
+        <p v-if="hasActiveSubscription" role="status" class="mt-4 flex items-start gap-3 rounded-[1.1rem] bg-mint px-4 py-3 text-deep">
+          <span class="grid size-[1.6rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
+          <span><b class="font-semibold">Payment received.</b> Membership active<template v-if="subscriptionEndLabel"> until {{ subscriptionEndLabel }}</template>. Taking you to your application status…</span>
+        </p>
+
+        <template v-else>
+          <AuthSubmit type="button" :loading="paymentBusy" :disabled="!selectedPlan" class="mt-4" @click="startPayment">
+            {{ payButtonLabel }}
+          </AuthSubmit>
+          <button
+            v-if="hasPendingSubscription && !paymentBusy"
+            type="button"
+            :class="authLink"
+            class="mt-3 block min-h-11 w-full text-center text-[0.92rem]"
+            @click="confirmPendingPayment"
           >
-            Retry
-          </Button>
-        </AlertDescription>
-      </Alert>
+            I already paid: confirm my payment
+          </button>
+        </template>
 
-      <!-- Plan card -->
-      <div class="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
-        <div class="flex flex-col gap-6 p-6 sm:p-7">
-          <div v-if="plans.length > 1" class="flex flex-col gap-3">
-            <p class="text-sm font-medium text-foreground">
-              Choose your plan
-            </p>
-            <SubscriptionPlanPicker
-              v-model="selectedPlanKey"
-              :plans="plans"
-              label="Membership plan"
-              :disabled="paymentBusy || hasActiveSubscription"
-            />
-            <p class="text-xs leading-relaxed text-muted-foreground">
-              Every plan includes the same listing, messages and bookings. You can change plan at any renewal.
-            </p>
-          </div>
+        <p class="mt-3 text-[0.82rem] text-muted-foreground">
+          Secure checkout via Paystack. Renewals are membership only<template v-if="renewalLine"> ({{ renewalLine }})</template>. {{ verificationRefundNote }}
+        </p>
+      </section>
 
-          <div class="flex flex-col items-center gap-1 text-center" aria-live="polite">
-            <p class="text-sm font-medium text-foreground">
-              {{ selectedPlan ? `${selectedPlan.name} membership · due today` : 'Lawyer membership' }}
-            </p>
-            <p
-              v-if="firstPaymentTotalNaira != null"
-              class="text-4xl font-medium tracking-tight tabular-nums text-foreground"
-            >
-              {{ formatNairaAmount(firstPaymentTotalNaira) }}
-            </p>
-            <Skeleton v-else class="h-10 w-36 rounded-lg" />
-            <p v-if="renewalLine" class="text-sm text-muted-foreground">
-              then {{ renewalLine }}
-            </p>
-            <p
-              v-if="selectedPlan && verificationFeeNaira > 0"
-              class="mt-1 text-xs text-muted-foreground"
-            >
-              {{ formatNairaAmount(selectedPlan.priceNaira) }} membership
-              + {{ formatNairaAmount(verificationFeeNaira) }} one-off verification
-            </p>
-          </div>
-
-          <ul class="flex flex-col gap-3">
-            <li
-              v-for="item in benefits"
-              :key="item"
-              class="flex items-start gap-2.5 text-sm text-foreground"
-            >
-              <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-              {{ item }}
-            </li>
-          </ul>
-
-          <div
-            v-if="hasActiveSubscription"
-            class="flex items-start gap-2.5 rounded-xl bg-primary/5 px-4 py-3 text-sm"
-          >
-            <HugeiconsIcon :icon="Tick01Icon" class="mt-0.5 size-4 shrink-0 text-primary" />
-            <p class="text-muted-foreground">
-              <span class="font-medium text-foreground">Payment received.</span>
-              Subscription active
-              <template v-if="subscriptionEndLabel">
-                until {{ subscriptionEndLabel }}
-              </template>
-              — redirecting…
-            </p>
-          </div>
-
-          <div v-else class="flex flex-col gap-3">
-            <Button
-              class="h-12 w-full cursor-pointer rounded-xl text-base font-semibold"
-              :disabled="paymentBusy || !selectedPlan"
-              @click="startPayment"
-            >
-              <HugeiconsIcon
-                v-if="paymentBusy"
-                :icon="Loading03Icon"
-                data-icon="inline-start"
-                class="animate-spin"
-              />
-              {{ payButtonLabel }}
-            </Button>
-
-            <button
-              v-if="hasPendingSubscription && !paymentBusy"
-              type="button"
-              class="cursor-pointer text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
-              @click="confirmPendingPayment"
-            >
-              I already paid — confirm my payment
-            </button>
-          </div>
-        </div>
-
-        <div class="border-t border-border/50 bg-muted/40 px-6 py-4 text-center sm:px-7">
-          <p class="text-xs leading-relaxed text-muted-foreground">
-            Secure checkout via Paystack.
-            Renewals are membership only<template v-if="renewalLine"> ({{ renewalLine }})</template>.
-            {{ verificationRefundNote }}
-          </p>
-        </div>
-      </div>
-    </template>
+      <ul class="grid gap-2 text-[0.95rem]">
+        <li v-for="item in benefits" :key="item" class="flex items-start gap-[0.6rem]">
+          <CanopyGlyph name="tick" :stroke="3" class="mt-[0.3rem] flex-none text-brand" />{{ item }}
+        </li>
+      </ul>
+    </ApplicationStatus>
   </div>
 </template>

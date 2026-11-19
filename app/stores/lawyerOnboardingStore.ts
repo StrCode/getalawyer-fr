@@ -21,7 +21,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
     const { useDraft, useSaveDraft, useSaveDraftQuietly, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
 
-    /** Shares TanStack cache with /onboarding index and wizard layout (one network fetch). */
+    /** Shares the TanStack cache with the application pages and their layout (one network fetch). */
     const { data: draftDataResponse, isSuccess: draftLoaded } = useDraft({
         enabled: import.meta.client,
     })
@@ -77,7 +77,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     })
 
     // Sync draft data with the reactive store state
-    watch(draftDataResponse, (draftRoot) => {
+    function applyDraft(draftRoot: typeof draftDataResponse.value) {
         const payload = draftRoot?.data
         if (payload) {
             if (payload.personal) Object.assign(personalInfo, payload.personal)
@@ -133,10 +133,16 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
 
         if (ninResubmitMode.value || ninVerification.verified) return
 
-        if (draftImpliesNinSubmitted(draftRoot)) {
+        // The draft response carries the server's own answer to "is a NIN saved?".
+        // Follow it both ways: reopening an application removes the saved NIN.
+        const saved = (payload as { nin_submitted?: boolean } | undefined)?.nin_submitted
+        if (typeof saved === 'boolean') {
+            ninVerification.isSubmitted = saved
+        } else if (draftImpliesNinSubmitted(draftRoot)) {
             ninVerification.isSubmitted = true
         }
-    }, { immediate: true })
+    }
+    watch(draftDataResponse, applyDraft, { immediate: true })
 
     /**
      * Whether a NIN has been saved for this application. The server never
@@ -311,7 +317,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
-            // The guard only checks status, so /onboarding/review can be reached directly.
+            // Submit can be reached with sections unfinished (the button is only hidden).
             // Re-validate every earlier step before submitting instead of relying on the backend.
             const incomplete = firstIncompleteStepMessage()
             if (incomplete) {
@@ -441,6 +447,18 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         })
     }
 
+    /**
+     * Start over from what the server has saved: clear everything, then fill in
+     * the saved application. Used after an application is reopened, once the
+     * rebuilt application has been fetched. Clearing alone is not enough: if the
+     * fetched application is the same as the one already held, nothing would
+     * put it back.
+     */
+    const reloadFromDraft = () => {
+        resetStore()
+        applyDraft(draftDataResponse.value)
+    }
+
     /** Reveal the NIN form again so the user can correct or replace their NIN (backend overwrites until verified). */
     const beginChangeNin = () => {
         ninResubmitMode.value = true
@@ -500,6 +518,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         autosave,
         activeStepKey,
         resetStore,
+        reloadFromDraft,
         beginChangeNin,
         clearNinResubmitMode
     }

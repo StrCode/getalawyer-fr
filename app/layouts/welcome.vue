@@ -4,19 +4,17 @@ import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { getSessionUserType } from '~/lib/session-user'
 import { queryKeys } from '~/lib/query-client'
+import { APPLICATION_HOME, WELCOME_STEPS } from '~/lib/setup-paths'
 
 /**
- * Client onboarding, direction B ("Focused steps"): one column, one question
+ * A client's welcome steps ("Focused steps"): one column, one question
  * group at a time, a progress bar on top and the actions pinned at the bottom.
  * Two short steps (where you need help, what you need help with), then the
  * dashboard. Lawyers have their own flow and never see this layout.
  */
 useHead({ bodyAttrs: { class: 'canopy' } })
 
-const STEPS = [
-  { key: 'location', path: '/onboarding/location', label: 'Your state' },
-  { key: 'specializations', path: '/onboarding/specializations', label: 'Legal needs' },
-] as const
+const STEPS = WELCOME_STEPS
 
 const route = useRoute()
 const router = useRouter()
@@ -33,7 +31,7 @@ const isLast = computed(() => index.value === STEPS.length - 1)
 watchEffect(() => {
   const user = session.value?.user as { onboarding_completed?: boolean } | undefined
   if (!user) return
-  if (getSessionUserType(user) === 'lawyer') void router.replace('/onboarding')
+  if (getSessionUserType(user) === 'lawyer') void router.replace(APPLICATION_HOME)
   else if (user.onboarding_completed) void router.replace('/dashboard')
 })
 
@@ -69,13 +67,13 @@ function back() {
 <template>
   <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col pt-[max(16px,env(safe-area-inset-top,0px))] font-text">
     <div class="safe-x">
-      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,3vw,2.5rem)] py-[0.4rem]">
+      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
         <CanopyBrand condensed large />
         <div class="flex items-center gap-1">
           <CanopyThemeToggle />
           <button
             type="button"
-            class="inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
+            class="-mr-2 inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
             :disabled="isSigningOut"
             @click="handleSignOut('login')"
           >
