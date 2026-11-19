@@ -139,7 +139,7 @@ export default defineComponent({
         if (success) {
           if (userType.value === 'lawyer' && isLast.value) {
             toast.success('Application submitted', {
-              description: 'Complete your annual subscription payment on the next screen.',
+              description: 'Choose a membership plan and pay on the next screen.',
             })
             await router.push('/onboarding/subscription')
           } else if (userType.value === 'client' && isLast.value) {

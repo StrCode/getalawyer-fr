@@ -29,11 +29,27 @@ const props = defineProps<{
   canManageAutoRenew: boolean
   autoRenewPending: boolean
   daysRemaining?: number | null
+  /** More than one plan is on sale and this membership can move between them. */
+  canChangePlan?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:autoRenew': [enabled: boolean]
+  'changePlan': []
 }>()
+
+const plan = computed(() => props.subscription?.plan ?? null)
+const nextPlan = computed(() => props.subscription?.nextPlan ?? null)
+/** Months the next charge buys: the requested plan, else the current one. */
+const renewalTermMonths = computed(
+  () => nextPlan.value?.termMonths ?? plan.value?.termMonths ?? props.subscription?.termMonths ?? null,
+)
+const planChangeLine = computed(() => {
+  if (!nextPlan.value) return null
+  return props.nextBillingLabel
+    ? `Changes to ${nextPlan.value.name} on ${props.nextBillingLabel}`
+    : `Changes to ${nextPlan.value.name} at your next renewal`
+})
 
 const statusBadgeClass = computed(() => {
   if (props.hasActiveSubscription)
@@ -48,7 +64,11 @@ const statusBadgeClass = computed(() => {
 
 const priceLabel = computed(() => {
   const amount = props.renewalPriceNaira ?? props.lastPaidPriceNaira
-  return amount != null ? `${formatNairaAmount(amount)} / year` : null
+  if (amount == null) return null
+  // A membership from before plans has no recorded term; say only the amount.
+  return renewalTermMonths.value
+    ? `${formatNairaAmount(amount)} every ${termNoun(renewalTermMonths.value)}`
+    : formatNairaAmount(amount)
 })
 
 const priceChangedLine = computed(() => {
@@ -95,9 +115,35 @@ const paymentMethodLabel = computed(() => {
     </div>
 
     <dl class="grid gap-x-8 gap-y-5 px-6 py-5 sm:grid-cols-2">
+      <div
+        v-if="plan"
+        class="min-w-0"
+      >
+        <dt class="text-xs text-muted-foreground">
+          Plan
+        </dt>
+        <dd class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium text-foreground">
+          {{ plan.name }}
+          <button
+            v-if="canChangePlan"
+            type="button"
+            class="cursor-pointer text-xs font-medium text-primary underline-offset-4 hover:underline"
+            @click="emit('changePlan')"
+          >
+            Change plan
+          </button>
+        </dd>
+        <dd
+          v-if="planChangeLine"
+          class="mt-1 text-xs text-muted-foreground"
+        >
+          {{ planChangeLine }}
+        </dd>
+      </div>
+
       <div class="min-w-0">
         <dt class="text-xs text-muted-foreground">
-          Price
+          {{ nextPlan ? 'Next charge' : 'Price' }}
         </dt>
         <dd class="mt-1 text-sm font-medium tabular-nums text-foreground">
           {{ priceLabel ?? '—' }}

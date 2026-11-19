@@ -10,6 +10,8 @@ import {
   formatNairaAmount,
   getSubscriptionPaymentFailureMessage,
   hasPendingCheckoutFailure,
+  pickPlanKey,
+  plansOnSale,
   useInitializeSubscription,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -27,6 +29,7 @@ import {
 } from '~/lib/lawyerOnboardingStatus'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
 
 definePageMeta({
   layout: 'onboarding-draft',
@@ -34,11 +37,11 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Annual subscription — GetaLawyer',
+  title: 'Lawyer membership — GetaLawyer',
   meta: [
     {
       name: 'description',
-      content: 'Pay your annual lawyer subscription while your application is reviewed.',
+      content: 'Choose a membership plan and pay while your application is reviewed.',
     },
   ],
 })
@@ -76,6 +79,24 @@ const { mutateAsync: initializeSubscription, isPending: paymentInitPending } =
 
 const { mutateAsync: syncPendingSubscription, isPending: syncPendingPending } =
   useSyncPendingSubscription()
+
+// ---- plan choice ----
+// Every plan on sale comes from the pricing response; nothing about the set is assumed.
+const plans = computed(() => plansOnSale(pricing.value))
+const selectedPlanKey = ref<string | null>(null)
+const selectedPlan = computed(
+  () => plans.value.find(plan => plan.key === selectedPlanKey.value) ?? null,
+)
+// Start on the plan of a checkout already begun, else the one picked on the
+// pricing page, else the default. A choice made here is kept while it stays on sale.
+watch(
+  [plans, () => subscriptionStatus.value?.subscription?.plan?.key],
+  ([list, begunKey]) => {
+    if (selectedPlanKey.value && list.some(plan => plan.key === selectedPlanKey.value)) return
+    selectedPlanKey.value = pickPlanKey(list, begunKey, readPreferredPlan())
+  },
+  { immediate: true },
+)
 
 const navigatingToPayment = ref(false)
 const confirmingPendingPayment = ref(false)
@@ -231,8 +252,10 @@ watch(
 async function startPayment() {
   navigatingToPayment.value = true
   try {
-    const data = await initializeSubscription()
+    const data = await initializeSubscription(selectedPlanKey.value)
     if (data?.redirectUrl) {
+      // The checkout now carries the plan; the pricing-page hint has done its job.
+      forgetPreferredPlan()
       await navigateTo(data.redirectUrl, { external: true })
       return
     }
@@ -255,14 +278,13 @@ const paymentBusy = computed(
   () => navigatingToPayment.value || paymentInitPending.value || confirmingPendingPayment.value,
 )
 
-const firstPaymentTotalNaira = computed(() => {
-  const p = pricing.value
-  if (!p) return null
-  if (Number.isFinite(p.firstPaymentTotalNaira) && p.firstPaymentTotalNaira! > 0) {
-    return p.firstPaymentTotalNaira!
-  }
-  return p.subscriptionPriceNaira + p.verificationAdminFeeNaira
-})
+/** Due today for the chosen plan: its price plus the one-off verification fee. */
+const firstPaymentTotalNaira = computed(() => selectedPlan.value?.firstPaymentTotalNaira ?? null)
+const verificationFeeNaira = computed(() => pricing.value?.verificationAdminFeeNaira ?? 0)
+/** "₦15,000 every year" */
+const renewalLine = computed(() => selectedPlan.value
+  ? `${formatNairaAmount(selectedPlan.value.priceNaira)} every ${termNoun(selectedPlan.value.termMonths)}`
+  : null)
 
 const payButtonLabel = computed(() => {
   if (paymentBusy.value) {
@@ -313,7 +335,7 @@ async function retry() {
     <template v-else>
       <div class="flex flex-col items-center gap-2 text-center">
         <h1 class="text-balance text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-          Annual membership
+          Lawyer membership
         </h1>
         <p class="text-sm leading-relaxed text-muted-foreground">
           Pay while we review your application. Your listing goes live after approval.
@@ -349,9 +371,24 @@ async function retry() {
       <!-- Plan card -->
       <div class="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
         <div class="flex flex-col gap-6 p-6 sm:p-7">
-          <div class="flex flex-col items-center gap-1 text-center">
+          <div v-if="plans.length > 1" class="flex flex-col gap-3">
             <p class="text-sm font-medium text-foreground">
-              Lawyer membership
+              Choose your plan
+            </p>
+            <SubscriptionPlanPicker
+              v-model="selectedPlanKey"
+              :plans="plans"
+              label="Membership plan"
+              :disabled="paymentBusy || hasActiveSubscription"
+            />
+            <p class="text-xs leading-relaxed text-muted-foreground">
+              Every plan includes the same listing, messages and bookings. You can change plan at any renewal.
+            </p>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 text-center" aria-live="polite">
+            <p class="text-sm font-medium text-foreground">
+              {{ selectedPlan ? `${selectedPlan.name} membership · due today` : 'Lawyer membership' }}
             </p>
             <p
               v-if="firstPaymentTotalNaira != null"
@@ -360,21 +397,15 @@ async function retry() {
               {{ formatNairaAmount(firstPaymentTotalNaira) }}
             </p>
             <Skeleton v-else class="h-10 w-36 rounded-lg" />
-            <p class="text-sm text-muted-foreground">
-              first year · then
-              <template v-if="pricing">
-                {{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year
-              </template>
-              <template v-else>
-                annual renewal
-              </template>
+            <p v-if="renewalLine" class="text-sm text-muted-foreground">
+              then {{ renewalLine }}
             </p>
             <p
-              v-if="pricing"
+              v-if="selectedPlan && verificationFeeNaira > 0"
               class="mt-1 text-xs text-muted-foreground"
             >
-              {{ formatNairaAmount(pricing.subscriptionPriceNaira) }} membership
-              + {{ formatNairaAmount(pricing.verificationAdminFeeNaira) }} verification
+              {{ formatNairaAmount(selectedPlan.priceNaira) }} membership
+              + {{ formatNairaAmount(verificationFeeNaira) }} one-off verification
             </p>
           </div>
 
@@ -407,7 +438,7 @@ async function retry() {
           <div v-else class="flex flex-col gap-3">
             <Button
               class="h-12 w-full cursor-pointer rounded-xl text-base font-semibold"
-              :disabled="paymentBusy || !pricing"
+              :disabled="paymentBusy || !selectedPlan"
               @click="startPayment"
             >
               <HugeiconsIcon
@@ -433,10 +464,7 @@ async function retry() {
         <div class="border-t border-border/50 bg-muted/40 px-6 py-4 text-center sm:px-7">
           <p class="text-xs leading-relaxed text-muted-foreground">
             Secure checkout via Paystack.
-            Renewals are membership only
-            <template v-if="pricing">
-              ({{ formatNairaAmount(pricing.subscriptionPriceNaira) }}/year)
-            </template>.
+            Renewals are membership only<template v-if="renewalLine"> ({{ renewalLine }})</template>.
             {{ verificationRefundNote }}
           </p>
         </div>

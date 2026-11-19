@@ -78,6 +78,8 @@ const questions = computed(() => [
   { q: 'Can I cancel?', a: 'Turn off auto-renew at any time. Your listing stays live until the end of the term you have paid for.' },
 ].filter(Boolean) as Array<{ q: string, a: string }>)
 
+// Checkout comes after registration and the application; the chosen plan is
+// remembered on this device so checkout can start on it (see utils/preferred-plan).
 const REGISTER = '/register?role=lawyer'
 const sectionTitle = 'text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance'
 const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase'
@@ -178,7 +180,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
             Then {{ formatNairaAmount(selected.priceNaira) }} every {{ termNoun(selected.termMonths) }}. We remind you 3 days before each renewal.
           </p>
           <Button as-child variant="canopy" size="pill" class="group/btn mt-[1.1rem] h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]">
-            <NuxtLink :to="REGISTER">Register as a lawyer<CanopyArrowChip /></NuxtLink>
+            <NuxtLink :to="REGISTER" @click="rememberPreferredPlan(selected.key)">Register as a lawyer<CanopyArrowChip /></NuxtLink>
           </Button>
           <p class="mt-[0.8rem] text-[0.8rem] text-muted-foreground">
             If your verification does not pass, the membership is refunded.<template v-if="fee > 0"> The verification fee is not.</template>
@@ -231,7 +233,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
       </h2>
       <div class="mt-[1.7rem] flex flex-wrap justify-center gap-[0.7rem]">
         <Button as-child variant="lime" size="pill">
-          <NuxtLink :to="REGISTER">Register as a lawyer</NuxtLink>
+          <NuxtLink :to="REGISTER" @click="rememberPreferredPlan(selected?.key)">Register as a lawyer</NuxtLink>
         </Button>
         <Button as-child variant="on-forest" size="pill">
           <NuxtLink to="/contact">Talk to us first</NuxtLink>
