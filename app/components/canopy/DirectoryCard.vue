@@ -8,19 +8,12 @@ import { Button } from '@/components/ui/button'
  * actions. The summary line, fee and meeting types render only when the search
  * result carries them.
  */
-const props = defineProps<{
-  lawyer: LawyerSearchResult & {
-    headline?: string | null
-    /** Lowest active consultation price; 0 means a free consultation exists. */
-    consultationFromNaira?: number | null
-    meetingTypes?: string[]
-  }
-}>()
+const props = defineProps<{ lawyer: LawyerSearchResult }>()
 
 const profile = computed(() => `/lawyers/${props.lawyer.id}`)
 const primaryArea = computed(() => props.lawyer.specializations[0]?.name ?? 'Legal services')
 const otherAreas = computed(() => props.lawyer.specializations.slice(1, 3).map(s => s.name))
-const years = computed(() => props.lawyer.yearsOfExperience)
+const years = computed(() => Number(props.lawyer.yearsOfExperience) || 0)
 const summary = computed(() => props.lawyer.headline || props.lawyer.bio || '')
 const MEETING_LABELS: Record<string, string> = { video: 'Video', phone: 'Phone', in_person: 'In person' }
 const meeting = computed(() => (props.lawyer.meetingTypes ?? []).map(t => MEETING_LABELS[t]).filter(Boolean))

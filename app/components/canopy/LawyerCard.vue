@@ -7,21 +7,17 @@ import { Button } from '@/components/ui/button'
  * mark is an icon beside the name, not a label. The fee line and meeting types
  * render only when the search result carries them.
  */
-const props = defineProps<{
-  lawyer: LawyerSearchResult & {
-    /** Lowest active consultation price; 0 means a free consultation exists. */
-    consultationFromNaira?: number | null
-    meetingTypes?: string[]
-  }
-}>()
+const props = defineProps<{ lawyer: LawyerSearchResult }>()
 
 const primaryArea = computed(() => props.lawyer.specializations[0]?.name ?? 'Legal services')
 const otherAreas = computed(() => props.lawyer.specializations.slice(1, 3).map(s => s.name))
-const years = computed(() => props.lawyer.yearsOfExperience)
+const years = computed(() => Number(props.lawyer.yearsOfExperience) || 0)
 const profile = computed(() => `/lawyers/${props.lawyer.id}`)
 const MEETING_LABELS: Record<string, string> = { video: 'Video', phone: 'Phone', in_person: 'In person' }
 const meeting = computed(() => (props.lawyer.meetingTypes ?? []).map(t => MEETING_LABELS[t]).filter(Boolean))
 const fee = computed(() => props.lawyer.consultationFromNaira)
+// A narrow card has room for one row: how they meet clients, or their other areas if that is unknown.
+const chips = computed(() => (meeting.value.length ? meeting.value : otherAreas.value))
 </script>
 
 <template>
@@ -49,8 +45,8 @@ const fee = computed(() => props.lawyer.consultationFromNaira)
       <p class="mt-[0.15rem] text-[0.95rem] text-muted-foreground">
         {{ lawyer.state }}<template v-if="years > 0"> · {{ years }} {{ years === 1 ? 'year' : 'years' }} at the Bar</template>
       </p>
-      <ul v-if="otherAreas.length || meeting.length" class="mt-[0.8rem] flex flex-wrap gap-[0.35rem] text-[0.74rem] font-bold tracking-[0.06em] text-deep uppercase">
-        <li v-for="label in [...otherAreas, ...meeting]" :key="label" class="rounded-[0.5rem] border border-border bg-background px-[0.6rem] py-[0.28rem]">{{ label }}</li>
+      <ul v-if="chips.length" class="mt-[0.8rem] flex flex-wrap gap-[0.35rem] text-[0.74rem] font-bold tracking-[0.06em] text-deep uppercase">
+        <li v-for="label in chips" :key="label" class="rounded-[0.5rem] border border-border bg-background px-[0.6rem] py-[0.28rem]">{{ label }}</li>
       </ul>
       <div v-if="fee != null" class="mt-[0.9rem] mb-4 flex items-baseline justify-between gap-2 border-t border-border pt-[0.85rem] text-[0.9rem] text-muted-foreground">
         <span>Consultation from</span>

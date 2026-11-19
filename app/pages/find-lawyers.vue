@@ -106,8 +106,9 @@ watch(where, (value) => {
 
 function submitSearch() {
   const text = need.value.trim()
-  // Keyword search matches a lawyer's name or firm. If the text names a practice
-  // area instead ("Family law"), use it as an area filter so the search still lands.
+  // If the text is exactly a practice area ("Family law"), select that area's
+  // chip. Anything else goes to keyword search, which matches names, firms,
+  // practice areas and their everyday keywords ("tenancy dispute").
   const area = text ? areas.value.find(a => a.name.toLowerCase() === text.toLowerCase() || slug(a.name) === slug(text)) : undefined
   if (area) {
     need.value = ''
@@ -161,8 +162,10 @@ const context = computed(() => {
   if (filters.value.keywords) parts.push(`“${filters.value.keywords}”`)
   return parts.join(' · ')
 })
-/** The endpoint reports whether more exist, not a total, so the count is "12+" until the end. */
+/** "38 lawyers". Backends that do not report a total yet get "12+" until the last page. */
 const countLabel = computed(() => {
+  const total = data.value?.pages[0]?.pagination.total
+  if (typeof total === 'number') return `${total.toLocaleString('en-NG')} ${total === 1 ? 'lawyer' : 'lawyers'}`
   const n = lawyers.value.length
   return `${n}${hasNextPage.value ? '+' : ''} ${n === 1 && !hasNextPage.value ? 'lawyer' : 'lawyers'}`
 })
@@ -194,7 +197,7 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
         v-model:need="need"
         v-model:where="where"
         id-prefix="directory"
-        placeholder="A lawyer's name, a firm or a practice area…"
+        placeholder="Tenancy dispute, divorce, unpaid salary, or a name…"
         action="Search"
         class="mt-[1.6rem]"
         @submit="submitSearch"
