@@ -1,135 +1,48 @@
 <template>
-  <div class="w-full font-sans">
-    <header class="mb-8 text-center">
-      <h1 class="text-balance text-2xl font-medium leading-tight tracking-[-0.02em] text-foreground sm:text-3xl">
-        Welcome back
-      </h1>
-      <p class="mt-2 text-sm text-muted-foreground">
-        Enter your details below to sign in to your account
-      </p>
-    </header>
+  <AuthFormShell
+    :title="showPhoneOtpStep ? 'Verify your phone' : 'Welcome back'"
+    :description="showPhoneOtpStep ? undefined : 'Sign in to message lawyers and manage your bookings.'"
+  >
+    <template v-if="showPhoneOtpStep" #description>
+      We sent a code to <b class="text-foreground">{{ pendingPhone }}</b>. Enter it below to finish signing in.
+    </template>
 
-    <div class="rounded-xl border border-foreground/15 bg-card p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)] sm:p-8">
-      <div v-if="!showPhoneOtpStep" class="mb-6">
-        <Button
-          type="button"
-          variant="outline"
-          class="w-full"
-          :disabled="isSubmitting"
-          @click="handleSocialLogin('google')"
-        >
-          <HugeiconsIcon :icon="Loading03Icon" v-if="socialProvider === 'google'" class="mr-2 h-4 w-4 animate-spin" />
-          <svg v-else viewBox="0 0 24 24" class="mr-2 h-5 w-5" aria-hidden="true">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          Continue with Google
-        </Button>
+    <!-- A phone number that was never verified: confirm it with a code, then sign in. -->
+    <div v-if="showPhoneOtpStep" class="grid gap-[1.1rem]">
+      <AuthOtpStep
+        v-model="phoneOtp"
+        :error="otpError"
+        :blocked="otpBlocked"
+        :is-submitting="isSubmitting"
+        :is-resending="isResending"
+        :resend-cooldown="resendCooldown"
+        @resend="handleOtpResend"
+        @request-new-code="handleOtpRequestNew"
+      />
+      <AuthDevOtpHint v-if="!otpBlocked" />
+      <AuthFormError :message="apiError" />
+      <button type="button" :class="authBack" class="justify-self-start" @click="cancelPhoneOtp">
+        ← Back to password sign-in
+      </button>
+    </div>
+
+    <template v-else>
+      <AuthGoogleButton
+        :loading="socialProvider === 'google'"
+        :disabled="isSubmitting"
+        @click="handleSocialLogin('google')"
+      />
+
+      <div class="my-[1.3rem] flex items-center gap-[0.9rem] text-[0.85rem] text-muted-foreground">
+        <span class="h-px flex-1 bg-border" />or<span class="h-px flex-1 bg-border" />
       </div>
 
-      <div v-if="!showPhoneOtpStep" class="relative mb-6 flex items-center gap-4">
-        <div class="h-px flex-1 bg-border" />
-        <span class="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Or continue with
-        </span>
-        <div class="h-px flex-1 bg-border" />
-      </div>
-
-      <!-- Inline OTP after unverified phone login -->
-      <div v-if="showPhoneOtpStep" class="flex flex-col gap-4">
-        <header>
-          <h2 class="text-lg font-medium text-foreground">
-            Verify your phone
-          </h2>
-          <p class="mt-1 text-sm text-muted-foreground">
-            We sent a code to <strong class="text-foreground">{{ pendingPhone }}</strong>.
-            Enter it below to complete sign-in.
-          </p>
-        </header>
-        
-        <div v-if="otpBlocked" class="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-center">
-          <p class="text-sm font-medium text-destructive">Too many attempts</p>
-          <p class="mt-1 text-sm text-muted-foreground">Please request a new verification code to continue.</p>
-          <Button
-            type="button"
-            variant="outline"
-            class="mt-4"
-            :disabled="resendCooldown > 0 || isResending"
-            @click="handleOtpRequestNew"
-          >
-            <template v-if="isResending">Sending…</template>
-            <template v-else-if="resendCooldown > 0">Request new code in {{ resendCooldown }}s</template>
-            <template v-else>Request new code</template>
-          </Button>
-        </div>
-        <template v-else>
-          <InputOTP
-            v-model="phoneOtp"
-            :maxlength="6"
-            :disabled="isSubmitting"
-            class="w-full justify-center gap-2"
-          >
-            <InputOTPGroup>
-              <InputOTPSlot v-for="i in 3" :key="i" :index="i - 1" :class="otpError ? 'border-destructive' : ''" />
-            </InputOTPGroup>
-            <InputOTPSeparator />
-            <InputOTPGroup>
-              <InputOTPSlot v-for="i in 3" :key="i + 3" :index="i + 2" :class="otpError ? 'border-destructive' : ''" />
-            </InputOTPGroup>
-          </InputOTP>
-
-          <p v-if="otpError" class="flex items-center justify-center gap-1.5 text-sm text-destructive">
-            <HugeiconsIcon :icon="AlertCircleIcon" class="size-3.5 shrink-0" />
-            {{ otpError }}
-          </p>
-
-          <p class="text-center text-sm text-muted-foreground">
-            Code expires in a few minutes.
-            <Button
-              type="button"
-              variant="link"
-              class="h-auto p-0 font-medium"
-              :disabled="isResending || resendCooldown > 0"
-              @click="handleOtpResend"
-            >
-              <template v-if="isResending">Sending…</template>
-              <template v-else-if="resendCooldown > 0">Resend in {{ resendCooldown }}s</template>
-              <template v-else>Resend code</template>
-            </Button>
-          </p>
-        </template>
-        
-        <!-- Dev Hint -->
-        <div v-if="isDev && !otpBlocked" class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-primary/80">
-          <p class="font-medium">Development Mode</p>
-          <p class="mt-1">Check your terminal or browser console for the verification code.</p>
-        </div>
-
-        <p v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-          <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
-          {{ apiError }}
-        </p>
-
-        <Button
-          type="button"
-          variant="ghost"
-          class="w-full"
-          @click="cancelPhoneOtp"
-        >
-          Back to password sign-in
-        </Button>
-      </div>
-
-      <form v-else @submit.prevent="form.handleSubmit">
-        <FieldGroup class="gap-5">
-<!-- One method at a time with a quiet toggle link, not tabs. The
-               inactive method is never validated (see loginSchema.superRefine),
-               so v-if lets the two fields crossfade cleanly. -->
-<!-- Grid-stacked crossfade: both fields share one cell, so they fade in
-               place without the leaving field going absolute (which yanked the
-               password field up underneath it). Motion-safe. -->
+      <form novalidate @submit.prevent="form.handleSubmit">
+        <FieldGroup class="gap-[1.1rem]">
+          <!-- One method at a time with a quiet switch link, not tabs. The
+               inactive method is never validated (see loginSchema.superRefine).
+               Both fields share one grid cell, so they crossfade in place
+               without the leaving field pulling the password field up. -->
           <div class="grid">
             <Transition
               enter-active-class="transition-opacity duration-200 ease-out motion-reduce:transition-none"
@@ -137,146 +50,99 @@
               leave-active-class="transition-opacity duration-150 ease-in motion-reduce:transition-none"
               leave-to-class="opacity-0"
             >
-            <div v-if="authMethod === 'email'" key="email" class="col-start-1 row-start-1">
-              <form.Field v-slot="{ field }" name="email">
-                <Field :data-invalid="isInvalid(field)">
-                  <div class="flex w-full items-center justify-between gap-3">
-                    <FieldLabel :for="field.name" class="w-auto">Email address</FieldLabel>
-                    <button
-                      type="button"
-                      class="shrink-0 text-sm font-medium text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:underline"
+              <div v-if="authMethod === 'email'" key="email" class="col-start-1 row-start-1">
+                <form.Field v-slot="{ field }" name="email">
+                  <Field :data-invalid="isInvalid(field)">
+                    <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
+                      <FieldLabel :for="field.name" class="w-auto font-semibold">Email address</FieldLabel>
+                      <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'phone'">
+                        Use phone instead
+                      </button>
+                    </div>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      type="email"
+                      inputmode="email"
+                      placeholder="alex@example.com"
+                      autocomplete="email"
+                      :class="authInput"
+                      :aria-invalid="isInvalid(field)"
                       :disabled="isSubmitting"
-                      @click="authMethod = 'phone'"
-                    >
-                      Use phone instead
-                    </button>
-                  </div>
-                  <Input
-                    :id="field.name"
-                    :name="field.name"
-                    :model-value="field.state.value"
-                    type="email"
-                    placeholder="alex@example.com"
-                    autocomplete="email"
-                    :aria-invalid="isInvalid(field)"
-                    :disabled="isSubmitting"
-                    @blur="field.handleBlur"
-                    @update:model-value="(v) => field.handleChange(v as any)"
-                  />
-                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                </Field>
-              </form.Field>
-            </div>
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(v as any)"
+                    />
+                    <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </form.Field>
+              </div>
 
-            <div v-else key="phone" class="col-start-1 row-start-1">
-              <form.Field v-slot="{ field }" name="phone">
-                <Field :data-invalid="isInvalid(field)">
-                  <div class="flex w-full items-center justify-between gap-3">
-                    <FieldLabel :for="field.name" class="w-auto">Phone number</FieldLabel>
-                    <button
-                      type="button"
-                      class="shrink-0 text-sm font-medium text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:underline"
+              <div v-else key="phone" class="col-start-1 row-start-1">
+                <form.Field v-slot="{ field }" name="phone">
+                  <Field :data-invalid="isInvalid(field)">
+                    <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
+                      <span class="font-semibold">Phone number</span>
+                      <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'email'">
+                        Use email instead
+                      </button>
+                    </div>
+                    <AuthPhoneInput
+                      label=""
+                      :model-value="field.state.value"
+                      :invalid="isInvalid(field)"
                       :disabled="isSubmitting"
-                      @click="authMethod = 'email'"
-                    >
-                      Use email instead
-                    </button>
-                  </div>
-<AuthPhoneInput
-                    label=""
-                    :model-value="field.state.value"
-                    :invalid="isInvalid(field)"
-                    :disabled="isSubmitting"
-                    @update:model-value="(v) => field.handleChange(v)"
-                    @blur="field.handleBlur"
-                  />
-                  <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-                </Field>
-              </form.Field>
-            </div>
+                      @update:model-value="(v) => field.handleChange(v)"
+                      @blur="field.handleBlur"
+                    />
+                    <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </form.Field>
+              </div>
             </Transition>
           </div>
 
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
-              <div class="flex w-full items-center justify-between gap-3">
-                <FieldLabel :for="field.name" class="w-auto">
-                  Password
-                </FieldLabel>
-                <NuxtLink
-                  :to="forgotPasswordLink"
-                  class="shrink-0 text-sm font-medium text-primary hover:text-primary/80"
-                >
-                  Forgot password?
-                </NuxtLink>
+              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
+                <FieldLabel :for="field.name" class="w-auto font-semibold">Password</FieldLabel>
+                <NuxtLink :to="forgotPasswordLink" :class="authLink">Forgot password?</NuxtLink>
               </div>
-              <div class="relative">
-                <Input
-                  :id="field.name"
-                  :name="field.name"
-                  :model-value="field.state.value"
-                  :type="passwordVisible ? 'text' : 'password'"
-                  placeholder="••••••••"
-                  autocomplete="current-password"
-                  class="pr-10"
-                  :aria-invalid="isInvalid(field)"
-                  :disabled="isSubmitting"
-                  @blur="field.handleBlur"
-                  @update:model-value="(v) => field.handleChange(v as any)"
-                />
-                <button
-                  type="button"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-                  :aria-label="passwordVisible ? 'Hide password' : 'Show password'"
-                  :disabled="isSubmitting"
-                  @click="passwordVisible = !passwordVisible"
-                >
-                  <HugeiconsIcon :icon="ViewOffIcon" v-if="passwordVisible" class="h-4 w-4" />
-                  <HugeiconsIcon :icon="ViewIcon" v-else class="h-4 w-4" />
-                </button>
-              </div>
+              <AuthPasswordInput
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                :aria-invalid="isInvalid(field)"
+                :disabled="isSubmitting"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(v as any)"
+              />
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
 
-          <p v-if="apiError" class="flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-            <HugeiconsIcon :icon="AlertCircleIcon" class="h-4 w-4 shrink-0" />
-            {{ apiError }}
-          </p>
+          <AuthFormError :message="apiError" />
 
-          <Button
-            type="submit"
-            class="w-full"
-            :disabled="isSubmitting"
-          >
-            <HugeiconsIcon :icon="Loading03Icon" v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
-            <span>{{ isSubmitting ? 'Signing in…' : 'Sign in' }}</span>
-          </Button>
+          <AuthSubmit :loading="isSubmitting" class="mt-[0.3rem]">
+            {{ isSubmitting ? 'Signing in…' : 'Sign in' }}
+          </AuthSubmit>
         </FieldGroup>
       </form>
-    </div>
+    </template>
 
-    <div class="mt-6 flex items-center justify-center gap-2 border-t border-foreground/10 pt-5">
-      <span class="text-sm text-muted-foreground">New to getalawyer?</span>
-      <NuxtLink
-        to="/register"
-        class="text-sm font-medium text-primary underline-offset-4 hover:underline"
-      >
-        Create an account
-      </NuxtLink>
-    </div>
-  </div>
+    <template v-if="!showPhoneOtpStep" #after>
+      New to getalawyer? <NuxtLink to="/register" :class="authLink">Create an account</NuxtLink>
+    </template>
+  </AuthFormShell>
 </template>
 
 <script setup lang="ts">
-import { AlertCircleIcon, Loading03Icon, ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'
 import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/session-user'
@@ -285,6 +151,8 @@ definePageMeta({
   layout: 'auth',
   middleware: 'guest',
 })
+
+useHead({ title: 'Sign in' })
 
 function sanitizeRedirect(raw: unknown): string {
   if (typeof raw !== 'string') return '/dashboard'
@@ -297,7 +165,6 @@ const route = useRoute()
 const redirectAfterLogin = computed(() => sanitizeRedirect(route.query.redirect))
 
 const authMethod = ref<'email' | 'phone'>('email')
-const passwordVisible = ref(false)
 
 // Phone OTP state
 const showPhoneOtpStep = ref(false)
@@ -305,8 +172,6 @@ const pendingPhone = ref('')
 const phoneOtp = ref('')
 const otpError = ref('')
 const otpBlocked = ref(false)
-// Bound in setup: `process.dev` is not reachable from templates in production builds.
-const isDev = import.meta.dev
 const isResending = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null

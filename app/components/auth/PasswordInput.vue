@@ -1,35 +1,38 @@
 <template>
-  <div class="relative">
-    <Input
+  <InputGroup :class="authInputGroup">
+    <InputGroupInput
       :id="id"
       :name="name"
       :model-value="modelValue"
       :type="visible ? 'text' : 'password'"
       :placeholder="placeholder"
       :autocomplete="autocomplete"
-      :class="cn('h-11 pr-11 text-base', inputClass)"
+      :class="cn(authInputGroupControl, inputClass)"
       :aria-invalid="ariaInvalid"
       :disabled="disabled"
       @blur="$emit('blur')"
       @update:model-value="$emit('update:modelValue', $event)"
     />
-    <button
-      type="button"
-      class="absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
-      :aria-label="visible ? 'Hide password' : 'Show password'"
-      :disabled="disabled"
-      @click="visible = !visible"
-    >
-      <HugeiconsIcon :icon="ViewOffIcon" v-if="visible" class="w-4 h-4" />
-      <HugeiconsIcon :icon="ViewIcon" v-else class="w-4 h-4" />
-    </button>
-  </div>
+    <InputGroupAddon align="inline-end" class="pr-1">
+      <InputGroupButton
+        type="button"
+        size="icon-sm"
+        class="size-11 cursor-pointer rounded-full text-muted-foreground hover:bg-mint hover:text-deep"
+        :aria-label="visible ? 'Hide password' : 'Show password'"
+        :aria-pressed="visible"
+        :disabled="disabled"
+        @click="visible = !visible"
+      >
+        <HugeiconsIcon :icon="visible ? ViewOffIcon : ViewIcon" class="size-5" />
+      </InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup>
 </template>
 
 <script setup lang="ts">
 import { ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { Input } from '@/components/ui/input'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 import { cn } from '@/lib/utils'
 
 defineProps<{
