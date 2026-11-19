@@ -84,7 +84,7 @@ const prose = [
         <aside class="mt-[clamp(2.5rem,5vw,4rem)] flex max-w-[44rem] flex-wrap items-center justify-between gap-x-8 gap-y-4 rounded-card bg-stone p-[clamp(1.2rem,2.4vw,1.75rem)]">
           <p class="min-w-0 flex-[1_1_16rem]">
             <b class="block font-display text-[1.2rem] font-[650] tracking-[-0.02em]">Questions about this page?</b>
-            <span class="text-muted-foreground">Write to <a href="mailto:support@getalawyer.com.ng" class="font-semibold text-brand underline underline-offset-[3px]">support@getalawyer.com.ng</a>.</span>
+            <span class="text-muted-foreground">Write to <a :href="`mailto:${SUPPORT_EMAIL}`" class="font-semibold text-brand underline underline-offset-[3px]">{{ SUPPORT_EMAIL }}</a>.</span>
           </p>
           <ul class="flex flex-wrap gap-x-5 gap-y-1 text-[0.95rem] font-semibold">
             <li v-for="page in others" :key="page.to">

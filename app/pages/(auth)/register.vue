@@ -254,6 +254,7 @@ import { cn } from '@/lib/utils'
 import { authPasswordSchema } from '~/lib/auth-password'
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'
+import { APPLICATION_HOME, WELCOME_HOME } from '~/lib/setup-paths'
 
 definePageMeta({
   layout: 'auth',
@@ -414,7 +415,7 @@ const form = useForm({
           email: value.email,
           password: value.password,
           userType: selectedRole.value || 'client',
-          callbackURL: '/onboarding',
+          callbackURL: selectedRole.value === 'lawyer' ? APPLICATION_HOME : WELCOME_HOME,
         })
 
         if (signUpError) {
@@ -423,7 +424,7 @@ const form = useForm({
         }
 
         await refetchSession()
-        await navigateTo('/onboarding')
+        await navigateTo(selectedRole.value === 'lawyer' ? APPLICATION_HOME : WELCOME_HOME)
         return
       }
 
@@ -494,6 +495,7 @@ async function completePhoneRegistration() {
       phone: pendingPhone.value,
       code: phoneOtp.value,
       password: pendingPassword.value,
+      name: pendingName.value,
     })
 
     if (pwdError) {
@@ -502,7 +504,7 @@ async function completePhoneRegistration() {
     }
 
     await refetchSession()
-    await navigateTo('/onboarding')
+    await navigateTo(selectedRole.value === 'lawyer' ? APPLICATION_HOME : WELCOME_HOME)
   } catch (err: unknown) {
     apiError.value = err instanceof Error ? err.message : 'Registration failed.'
   } finally {

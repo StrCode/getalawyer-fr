@@ -27,13 +27,13 @@ const benefits = [
 
 const steps = [
   { title: 'Create your profile', body: 'Register, then add your practice areas, experience and enrolment details.' },
-  { title: 'Pay and get verified', body: 'Choose a membership term. We check your identity and enrolment, usually within 24 to 48 hours.' },
+  { title: 'Pay and get verified', body: `Choose a membership term. We check your identity and enrolment, usually within ${REVIEW_TIME}.` },
   { title: 'Set your availability', body: 'Add your consultation types, fees and working hours.' },
   { title: 'Receive enquiries', body: 'Clients find you in the directory, message you free and book the consultations you offer.' },
 ]
 
 const questions = computed(() => [
-  { q: 'How long does verification take?', a: 'We usually verify your National Identification Number and Supreme Court enrolment within 24 to 48 hours. Your profile goes live once you are approved.' },
+  { q: 'How long does verification take?', a: `We usually verify your National Identification Number and Supreme Court enrolment within ${REVIEW_TIME}. Your profile goes live once you are approved.` },
   {
     q: 'Do you take a percentage of my fees?',
     a: fee.value > 0

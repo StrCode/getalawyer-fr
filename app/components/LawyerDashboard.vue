@@ -2,6 +2,7 @@
 import { Briefcase01Icon, Calendar03Icon, CheckmarkCircle01Icon, Clock01Icon, CreditCardIcon, File01Icon, Message01Icon, UserCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import DashboardAgendaRail from '@/components/dashboard/DashboardAgendaRail.vue'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
 import BookingRow from '@/components/booking/BookingRow.vue'
 import { Badge } from '@/components/ui/badge'
 import DashboardCaseRow from '@/components/dashboard/DashboardCaseRow.vue'
@@ -58,7 +59,7 @@ const approvalHeaderBadge = computed(() =>
 
 watch(applicationStatus, (status) => {
   if (status === 'rejected') {
-    router.push('/onboarding/rejected')
+    router.push(APPLICATION_HOME)
   }
 }, { immediate: true })
 

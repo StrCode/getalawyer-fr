@@ -1,4 +1,5 @@
 import { isOnboardingIncomplete } from '~/lib/session-user'
+import { setupHomeFor } from '~/lib/setup-paths'
 
 export default defineNuxtRouteMiddleware(async () => {
   const { session, isPending } = useAuth()
@@ -26,7 +27,7 @@ export default defineNuxtRouteMiddleware(async () => {
   }
 
   if (isOnboardingIncomplete(session.value.user)) {
-    return navigateTo('/onboarding', { replace: true })
+    return navigateTo(setupHomeFor(session.value.user), { replace: true })
   }
 
   return navigateTo('/dashboard', { replace: true })

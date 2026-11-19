@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from '~/utils/site-facts'
 /**
  * Normalizes GET /api/onboarding/status payloads for onboarding UI.
  */
@@ -144,7 +145,7 @@ export const VERIFICATION_FAILED_COPY = {
   ],
   ctaLabel: 'Start a new application',
   supportLabel: 'Questions?',
-  supportEmail: 'support@getalawyer.ng',
+  supportEmail: SUPPORT_EMAIL,
 } as const
 
 /** Human-readable application decision for post-submit subscription and status pages. */
