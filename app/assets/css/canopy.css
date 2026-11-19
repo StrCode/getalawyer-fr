@@ -837,19 +837,47 @@ body.canopy::before { content: ""; position: fixed; inset: 0 0 auto; height: env
    bottom, fading into the panel on its left; the tabs, seal and the two product
    cards sit on it, and the search rail runs across its foot. */
 @media (min-width: 62.01rem) {
-  .c-hero { position: relative; min-height: clamp(34rem, 76svh, 42rem); align-items: center; }
+  .c-hero { position: relative; min-height: clamp(36rem, 80svh, 45rem); align-items: center; }
   .c-hero .c-hero-text, .c-hero .c-hero-search { position: relative; z-index: 2; }
   .c-hero .c-collage { grid-area: auto; position: absolute; inset: 0 0 0 auto; width: 47%; max-width: none; margin: 0; padding: 0; }
   .c-hero .c-collage .c-photo { position: absolute; inset: 0; aspect-ratio: auto; border-radius: 0; background: var(--forest-2); }
-  .c-hero .c-collage .c-photo img { object-position: 50% 6%; }
+  .c-hero .c-collage .c-photo img { object-position: 50% 10%; }
   .c-hero .c-collage .c-photo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background:
       linear-gradient(90deg, var(--forest) 0%, rgba(11, 51, 39, 0.72) 16%, rgba(11, 51, 39, 0) 52%),
       linear-gradient(0deg, rgba(11, 51, 39, 0.94) 0%, rgba(11, 51, 39, 0.6) 20%, rgba(11, 51, 39, 0) 44%); }
   /* the tabs drive the question card, so they sit on top of it, clear of the face */
-  .c-hero .c-tabs { z-index: 2; left: 4%; right: auto; top: calc(48% - 3.75rem); width: 17.5rem; }
+  .c-hero .c-tabs { z-index: 2; left: calc(50% - 8.5rem); right: auto; top: calc(44% - 3.75rem); width: 17rem; }
   .c-hero .c-tabs button { font-size: 0.78rem; padding: 0 0.15rem; }
   .c-hero .c-seal { right: 1.75rem; top: 1.75rem; width: 6.4rem; height: 6.4rem; z-index: 2; }
-  .c-hero .c-w-chat { z-index: 2; left: 4%; right: auto; top: 48%; bottom: auto; width: 17.5rem; }
-  .c-hero .c-w-slot { z-index: 2; left: auto; right: 1.75rem; bottom: 11.5rem; }
+  .c-hero .c-w-chat { z-index: 2; left: calc(50% - 8.5rem); right: auto; top: 44%; bottom: auto; width: 17rem; }
+  .c-hero .c-w-slot { z-index: 2; left: auto; right: 1.5rem; top: 24%; bottom: auto; }
 }
+
+/* ---- hero: proof points as a quiet stat row (replaces the tick list) ---- */
+.c-proof { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1.1rem 0; }
+.c-proof li { display: grid; gap: 0.15rem; padding-inline: 1.4rem; border-left: 1px solid rgba(255, 255, 255, 0.18); }
+.c-proof li:first-child { padding-left: 0; border-left: 0; }
+.c-proof b { font-family: var(--font-display); font-size: clamp(1.5rem, 2.2vw, 1.9rem); font-weight: 650; letter-spacing: -0.03em; line-height: 1.05; color: var(--lime); white-space: nowrap; }
+.c-proof span { font-size: 0.86rem; color: var(--on-forest); white-space: nowrap; }
+@media (max-width: 40rem) {
+  /* three equal columns so no stat wraps onto its own line */
+  .c-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+  .c-proof li { padding-inline: 0.8rem; align-content: start; }
+  .c-proof b { font-size: 1.25rem; }
+  .c-proof span { white-space: normal; font-size: 0.78rem; line-height: 1.3; }
+}
+/* more air between the headline block and the search rail */
+.c-hero { row-gap: clamp(2.25rem, 4vw, 3.5rem); }
+.c-hero .c-popular { margin-top: 1.15rem; }
+
+/* ---- finer scrollbar on Canopy pages ---- */
+html:has(body.canopy) { scrollbar-width: thin; scrollbar-color: rgba(15, 34, 25, 0.28) transparent; }
+html.dark:has(body.canopy) { scrollbar-color: rgba(236, 242, 238, 0.26) transparent; }
+html:has(body.canopy)::-webkit-scrollbar { width: 8px; height: 8px; }
+html:has(body.canopy)::-webkit-scrollbar-track { background: transparent; }
+html:has(body.canopy)::-webkit-scrollbar-thumb { background: rgba(15, 34, 25, 0.26); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+html:has(body.canopy)::-webkit-scrollbar-thumb:hover { background-color: rgba(15, 34, 25, 0.42); }
+html.dark:has(body.canopy)::-webkit-scrollbar-thumb { background-color: rgba(236, 242, 238, 0.24); }
+html.dark:has(body.canopy)::-webkit-scrollbar-thumb:hover { background-color: rgba(236, 242, 238, 0.4); }
+.canopy .c-cards, .canopy .c-prof-nav, .canopy .c-dir-areas { scrollbar-width: thin; }

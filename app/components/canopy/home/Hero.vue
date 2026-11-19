@@ -69,16 +69,16 @@ function search() {
       <div class="c-chip c-a"><i />Every lawyer NIN &amp; SCN verified</div>
       <h1 class="c-display c-a">Get legal help <em>without the runaround.</em></h1>
       <p class="c-lede c-a">Search verified Nigerian lawyers by practice area and state, compare them, and message one in minutes.</p>
-      <ul class="c-ticks c-a">
-        <li><CanopyGlyph name="tick" :stroke="3" />Free to message</li>
-        <li><CanopyGlyph name="tick" :stroke="3" />No commission on fees</li>
-        <li><CanopyGlyph name="tick" :stroke="3" />All 36 states + FCT</li>
+      <ul class="c-proof c-a">
+        <li><b>Free</b><span>to message any lawyer</span></li>
+        <li><b>0%</b><span>commission on fees</span></li>
+        <li><b>36 + FCT</b><span>states covered</span></li>
       </ul>
     </div>
 
     <div class="c-collage">
       <div class="c-photo">
-        <NuxtImg src="/images/canopy/hero.jpg" width="900" height="1125" sizes="100vw lg:46vw" alt="A barrister in wig and gown, smiling" preload />
+        <NuxtImg src="/images/canopy/hero.jpg" width="1201" height="1800" sizes="100vw lg:46vw" alt="A lawyer seated between shelves of law books, smiling" preload />
         <div class="c-tabs" role="group" aria-label="Example questions by practice area">
           <button
             v-for="(example, index) in examples"
