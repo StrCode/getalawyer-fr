@@ -210,7 +210,7 @@ const handleRestart = async () => {
         <p class="text-sm font-medium text-muted-foreground">
           Having trouble?
           <a
-            href="mailto:support@getalawyer.ng"
+            :href="`mailto:${SUPPORT_EMAIL}`"
             class="font-medium text-primary hover:underline"
           >
             Contact Support

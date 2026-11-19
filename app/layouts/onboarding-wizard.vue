@@ -169,18 +169,42 @@ export default defineComponent({
       }
     }
 
-    const saveCurrentProgress = async () => {
+    /**
+     * Save what is typed so far, exactly as it is. This must never be the same
+     * call as Continue: Continue validates the step and, on Review, submits the
+     * application. Saving from the menu does neither.
+     */
+    const saveCurrentProgress = async (options?: { quiet?: boolean }) => {
       if (!currentStep.value || userType.value !== 'lawyer') return true
-      const saved = await store.value.saveStep(currentStep.value.key)
+      const saved = await lawyerStore.saveProgress(currentStep.value.key)
       if (saved) {
-        toast.success('Progress saved', { duration: 1800 })
+        if (!options?.quiet) toast.success('Progress saved', { duration: 1800 })
         return true
       }
-      toast.warning('Could not save progress', {
-        description: 'Please check this step and try again.',
-      })
+      if (!options?.quiet) {
+        toast.warning('Could not save progress', {
+          description: 'Check your connection and try again.',
+        })
+      }
       return false
     }
+
+    // Tell the store which step is on screen so it can save as the lawyer types.
+    watch(
+      () => (userType.value === 'lawyer' ? currentStep.value?.key ?? null : null),
+      (key) => { lawyerStore.activeStepKey = key },
+      { immediate: true },
+    )
+    onBeforeUnmount(() => { lawyerStore.activeStepKey = null })
+
+    /** "Saved" / "Saving…" beside the step, so nobody wonders whether typing was kept. */
+    const saveStatusLabel = computed(() => {
+      if (userType.value !== 'lawyer') return null
+      if (lawyerStore.autosave.status === 'saving') return 'Saving…'
+      if (lawyerStore.autosave.status === 'error') return 'Not saved. We will try again when you type.'
+      if (lawyerStore.autosave.status === 'saved') return 'Saved'
+      return null
+    })
 
     const handleSaveProgress = async () => {
       if (isSaving.value) return
@@ -219,8 +243,16 @@ export default defineComponent({
       isSaving.value = true
       try {
         if (userType.value === 'lawyer') {
-          const saved = await saveCurrentProgress()
-          if (!saved) return
+          const saved = await saveCurrentProgress({ quiet: true })
+          if (!saved) {
+            // Never trap someone in their account because a save failed.
+            toast.warning('Your latest changes could not be saved', {
+              description: 'Check your connection, or sign out without them.',
+              action: { label: 'Sign out anyway', onClick: () => { void handleSignOut('login') } },
+              duration: 10000,
+            })
+            return
+          }
         }
         await handleSignOut('login')
       } finally {
@@ -355,6 +387,7 @@ export default defineComponent({
       isPending,
       isFetching,
       draftLoadFailed,
+      saveStatusLabel,
       retryDraftLoad,
       isSaving,
       isExiting,
@@ -662,6 +695,13 @@ export default defineComponent({
                   <span class="text-xs font-bold tracking-widest text-primary/40 uppercase">Syncing</span>
                   <HugeiconsIcon :icon="Loading03Icon" class="h-4 w-4 animate-spin text-primary/40" />
                 </div>
+                <p
+                  v-else-if="saveStatusLabel"
+                  aria-live="polite"
+                  class="absolute -top-8 right-0 text-xs text-muted-foreground"
+                >
+                  {{ saveStatusLabel }}
+                </p>
               </transition>
 
               <div

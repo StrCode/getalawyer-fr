@@ -16,8 +16,6 @@ useSeoMeta({
   description: 'Questions about finding a lawyer, your account or joining as a lawyer? Email the getalawyer team.',
 })
 
-const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
-
 const TOPICS = [
   { value: 'support', label: 'General support' },
   { value: 'client', label: 'I am a client (finding or contacting a lawyer)' },

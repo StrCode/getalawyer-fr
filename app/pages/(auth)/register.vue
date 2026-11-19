@@ -494,6 +494,7 @@ async function completePhoneRegistration() {
       phone: pendingPhone.value,
       code: phoneOtp.value,
       password: pendingPassword.value,
+      name: pendingName.value,
     })
 
     if (pwdError) {

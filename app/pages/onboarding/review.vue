@@ -368,7 +368,7 @@ const ninIcon = computed(() => {
     </Card>
 
     <p class="pb-2 text-sm leading-relaxed text-muted-foreground">
-      After you submit, we usually review applications within one to two business days.
+      After you submit, we usually review applications within {{ REVIEW_TIME }}.
       You won’t be able to edit these details from here once submitted — use Edit above first if
       something needs fixing.
     </p>

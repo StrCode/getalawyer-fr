@@ -42,7 +42,9 @@ function snapshotFromStore() {
   const p = store.professionalInfo
   return {
     barNumber: p.barNumber ?? '',
-    scnFullNameAtCallToBar: p.scnFullNameAtCallToBar ?? '',
+    // Most lawyers are enrolled under the name on their ID; start from it so it
+    // is typed once. It stays editable for anyone enrolled under another name.
+    scnFullNameAtCallToBar: p.scnFullNameAtCallToBar || store.personalInfo.governmentIdLegalName || '',
     yearOfCall: p.yearOfCall,
   }
 }
@@ -56,7 +58,7 @@ const { form, formValues, isInvalid } = useWizardStepForm({
 })
 
 const currentYear = new Date().getFullYear()
-const yearMin = 1970
+const yearMin = 1960
 const yearOptions = computed(() => {
   const years: number[] = []
   for (let y = currentYear; y >= yearMin; y--) years.push(y)

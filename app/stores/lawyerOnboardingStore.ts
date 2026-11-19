@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { toRaw } from 'vue'
+import { nextTick, toRaw } from 'vue'
 import { ApiError } from '~/lib/api/client'
 import { formatOnboardingApiError } from '~/lib/onboarding-api-errors'
 import { normalizeScnDigitsOnly } from '~/lib/scn'
@@ -27,15 +27,16 @@ const STEPS_AFTER_NIN_VERIFICATION = new Set([
 
 export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
-    const { useDraft, useSaveDraft, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
+    const { useDraft, useSaveDraft, useSaveDraftQuietly, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
 
     /** Shares TanStack cache with /onboarding index and wizard layout (one network fetch). */
-    const { data: draftDataResponse } = useDraft({
+    const { data: draftDataResponse, isSuccess: draftLoaded } = useDraft({
         enabled: import.meta.client,
     })
 
     // Initialize mutations here (in the setup context) to avoid injection errors in async actions
     const saveDraftMutation = useSaveDraft()
+    const saveProgressMutation = useSaveDraftQuietly()
     const saveNinMutation = useSaveNin()
     const submitOnboardingMutation = useSubmitOnboarding()
 
@@ -167,7 +168,10 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
                 },
                 lastStep: stepKey
             }, {
-                onSuccess: () => resolve(true),
+                onSuccess: () => {
+                    savedSnapshot = draftSnapshot()
+                    resolve(true)
+                },
                 onError: (e) => {
                     console.error('[Store] Failed to save draft', e)
                     resolve(false)
@@ -175,6 +179,76 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
             })
         })
     }
+
+    // ---- saving progress: what is typed so far, as it is ----
+    // Never validates and never submits, so it is safe from any step, including
+    // Review. Used by the menu's save actions and by saving-as-you-type.
+
+    /** What a draft save would send, as text, to tell whether anything changed. */
+    const draftSnapshot = () => JSON.stringify({
+        personal: personalInfo,
+        professional: professionalInfo,
+        practice: practiceInfo,
+    })
+    /** The snapshot the server already has. */
+    let savedSnapshot = ''
+    watch(draftLoaded, (loaded) => {
+        // Wait for the draft watcher above to copy the server's values into the store.
+        if (loaded) void nextTick(() => { savedSnapshot = draftSnapshot() })
+    }, { immediate: true })
+
+    const autosave = reactive<{ status: 'idle' | 'saving' | 'saved' | 'error', savedAt: number | null }>({
+        status: 'idle',
+        savedAt: null,
+    })
+
+    const saveProgress = async (stepKey: string): Promise<boolean> => {
+        const snapshot = draftSnapshot()
+        // Keep the furthest step already recorded: a save from an earlier step
+        // must not move the lawyer's place backwards.
+        const root = draftDataResponse.value as { last_step?: string | null, lastStep?: string | null } | undefined
+        const lastStep = root?.last_step ?? root?.lastStep ?? stepKey
+        autosave.status = 'saving'
+        try {
+            await saveProgressMutation.mutateAsync({
+                data: {
+                    personal: toRaw(personalInfo),
+                    professional: toRaw(professionalInfo),
+                    practice: toRaw(practiceInfo),
+                    ninVerified: ninVerification.verified,
+                },
+                lastStep,
+            })
+            savedSnapshot = snapshot
+            autosave.status = 'saved'
+            autosave.savedAt = Date.now()
+            return true
+        }
+        catch (e) {
+            console.error('[Store] Failed to save progress', e)
+            autosave.status = 'error'
+            return false
+        }
+    }
+
+    /** The step on screen, set by the wizard layout; null turns saving-as-you-type off. */
+    const activeStepKey = ref<string | null>(null)
+    const AUTOSAVE_DELAY_MS = 1500
+    let autosaveTimer: ReturnType<typeof setTimeout> | null = null
+    watch([personalInfo, professionalInfo, practiceInfo], () => {
+        // Only once the saved draft has loaded: saving before then could replace it with blanks.
+        if (!import.meta.client || !draftLoaded.value || !activeStepKey.value) return
+        if (draftSnapshot() === savedSnapshot) return
+        if (autosaveTimer) clearTimeout(autosaveTimer)
+        autosaveTimer = setTimeout(() => {
+            autosaveTimer = null
+            const stepKey = activeStepKey.value
+            if (!stepKey || draftSnapshot() === savedSnapshot) return
+            // A Continue or an earlier save is in flight; the next change will try again.
+            if (saveDraftMutation.isPending.value || saveProgressMutation.isPending.value) return
+            void saveProgress(stepKey)
+        }, AUTOSAVE_DELAY_MS)
+    }, { deep: true })
 
     // Generic save function to be called by the layout
     const saveStep = async (stepKey: string): Promise<boolean> => {
@@ -405,6 +479,9 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         summary,
         validationError,
         saveStep,
+        saveProgress,
+        autosave,
+        activeStepKey,
         resetStore,
         beginChangeNin,
         clearNinResubmitMode

@@ -4,6 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { computed, ref, watch } from 'vue'
 import { type DateValue, getLocalTimeZone, today, parseDate } from '@internationalized/date'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
+import { joinFullName, splitAccountName } from '~/lib/account-name'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { getLgasForState, NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
@@ -43,11 +44,15 @@ const genders = [
   { label: 'Other', value: 'other' as const },
 ]
 
+// The name was already typed at sign-up: start from it instead of asking again.
+const { session } = useAuth()
+const fromAccount = computed(() => splitAccountName(session.value?.user?.name))
+
 function snapshotFromStore() {
   const p = store.personalInfo
   return {
-    firstName: p.firstName ?? '',
-    lastName: p.lastName ?? '',
+    firstName: p.firstName || fromAccount.value.firstName,
+    lastName: p.lastName || fromAccount.value.lastName,
     middleName: p.middleName ?? '',
     governmentIdLegalName: p.governmentIdLegalName ?? '',
     dateOfBirth: p.dateOfBirth ?? '',
@@ -65,6 +70,13 @@ const { form, formValues, isInvalid } = useWizardStepForm({
   commit: (parsed) => Object.assign(store.personalInfo, parsed),
   // reset() seeds the form from the store, so the store holds the same value
   onReset: () => syncDobFromIso(store.personalInfo.dateOfBirth ?? undefined),
+})
+
+/** One tap to fill the ID name from the three name fields, when it is still empty. */
+const suggestedLegalName = computed(() => {
+  const v = formValues.value
+  if (String(v.governmentIdLegalName ?? '').trim()) return ''
+  return joinFullName(v.firstName, v.middleName, v.lastName)
 })
 
 const dobDate = ref<DateValue | undefined>()
@@ -195,6 +207,14 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 @blur="field.handleBlur"
                 @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
               />
+              <button
+                v-if="suggestedLegalName"
+                type="button"
+                class="w-fit cursor-pointer text-sm font-medium text-primary underline underline-offset-4"
+                @click="field.handleChange(suggestedLegalName)"
+              >
+                Use “{{ suggestedLegalName }}”
+              </button>
               <FieldDescription>
                 Must match your NIN exactly. This is also the name shown on your public profile.
               </FieldDescription>

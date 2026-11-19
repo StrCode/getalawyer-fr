@@ -76,7 +76,7 @@ const {
   isLoading: statusLoading,
   isError: statusError,
   refetch: refetchStatus,
-} = useLawyerOnboardingStatus({ enabled: true })
+} = useLawyerOnboardingStatus({ enabled: true, poll: true })
 
 const isAwaiting = computed(() => {
   const st = statusPayload.value
@@ -366,7 +366,7 @@ async function startNewApplication() {
           </h1>
           <p class="max-w-sm text-sm leading-relaxed text-muted-foreground">
             We’re checking your credentials. You’ll get an email when there’s a decision — usually within
-            one to two business days.
+            {{ REVIEW_TIME }}.
           </p>
         </div>
         <Badge v-if="submittedLabel" variant="soft">
@@ -450,10 +450,10 @@ async function startNewApplication() {
             We’ll email you when approved, or if we need anything else.
             Questions?
             <a
-              href="mailto:support@getalawyer.ng"
+              :href="`mailto:${SUPPORT_EMAIL}`"
               class="font-medium text-primary underline underline-offset-2"
             >
-              support@getalawyer.ng
+              {{ SUPPORT_EMAIL }}
             </a>
           </p>
         </CardFooter>
