@@ -821,3 +821,35 @@ body.canopy::before { content: ""; position: fixed; inset: 0 0 auto; height: env
 #lawyers + #why { padding-top: 0; }
 /* the header's cycling theme button shows whichever icon it is given */
 .c-theme-btn svg { display: block; }
+
+/* ---- header: condensed state shows the mark only ---- */
+.c-brand-word { display: inline-block; overflow: hidden; max-width: 9rem; opacity: 1; white-space: nowrap; transition: max-width 0.55s var(--ease-canopy), opacity 0.3s; }
+.c-brand { transition: gap 0.55s var(--ease-canopy); }
+.c-nav.c-stuck .c-brand { gap: 0; }
+.c-nav.c-stuck .c-brand-word { max-width: 0; opacity: 0; }
+.c-nav.c-stuck .c-nav-bar { max-width: 58rem; padding-left: 1.1rem; }
+@media (prefers-reduced-motion: reduce) { .c-brand-word, .c-brand { transition: none; } }
+/* search rail: the arrow chip grows with the larger button */
+.c-search [data-slot="button"] .c-arrow { width: 2.5rem; height: 2.5rem; }
+
+/* ---- hero v3: the photo is part of the panel, not a card on it ----
+   On wide screens the photo fills the right side of the forest panel from top to
+   bottom, fading into the panel on its left; the tabs, seal and the two product
+   cards sit on it, and the search rail runs across its foot. */
+@media (min-width: 62.01rem) {
+  .c-hero { position: relative; min-height: clamp(34rem, 76svh, 42rem); align-items: center; }
+  .c-hero .c-hero-text, .c-hero .c-hero-search { position: relative; z-index: 2; }
+  .c-hero .c-collage { grid-area: auto; position: absolute; inset: 0 0 0 auto; width: 47%; max-width: none; margin: 0; padding: 0; }
+  .c-hero .c-collage .c-photo { position: absolute; inset: 0; aspect-ratio: auto; border-radius: 0; background: var(--forest-2); }
+  .c-hero .c-collage .c-photo img { object-position: 50% 6%; }
+  .c-hero .c-collage .c-photo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--forest) 0%, rgba(11, 51, 39, 0.72) 16%, rgba(11, 51, 39, 0) 52%),
+      linear-gradient(0deg, rgba(11, 51, 39, 0.94) 0%, rgba(11, 51, 39, 0.6) 20%, rgba(11, 51, 39, 0) 44%); }
+  /* the tabs drive the question card, so they sit on top of it, clear of the face */
+  .c-hero .c-tabs { z-index: 2; left: 4%; right: auto; top: calc(48% - 3.75rem); width: 17.5rem; }
+  .c-hero .c-tabs button { font-size: 0.78rem; padding: 0 0.15rem; }
+  .c-hero .c-seal { right: 1.75rem; top: 1.75rem; width: 6.4rem; height: 6.4rem; z-index: 2; }
+  .c-hero .c-w-chat { z-index: 2; left: 4%; right: auto; top: 48%; bottom: auto; width: 17.5rem; }
+  .c-hero .c-w-slot { z-index: 2; left: auto; right: 1.75rem; bottom: 11.5rem; }
+}

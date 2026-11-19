@@ -78,7 +78,7 @@ function search() {
 
     <div class="c-collage">
       <div class="c-photo">
-        <NuxtImg src="/images/canopy/hero.jpg" width="900" height="1125" sizes="360px" alt="A barrister in wig and gown, smiling" preload />
+        <NuxtImg src="/images/canopy/hero.jpg" width="900" height="1125" sizes="100vw lg:46vw" alt="A barrister in wig and gown, smiling" preload />
         <div class="c-tabs" role="group" aria-label="Example questions by practice area">
           <button
             v-for="(example, index) in examples"
@@ -123,7 +123,7 @@ function search() {
             <option v-for="state in NIGERIA_STATE_NAMES" :key="state" :value="state">{{ state }}</option>
           </select>
         </div>
-        <Button type="submit" variant="canopy" class="m-[0.45rem] h-[3.4rem] gap-3 rounded-2xl pl-6 pr-2 max-sm:w-[calc(100%-0.9rem)] max-sm:justify-between">
+        <Button type="submit" variant="canopy" class="m-2 h-16 gap-4 self-center rounded-[1.1rem] pl-8 pr-3 text-[1.1rem] max-sm:w-[calc(100%-1rem)] max-sm:justify-between">
           Search lawyers<CanopyArrowChip />
         </Button>
       </form>

@@ -21,11 +21,12 @@ const fromPrice = computed(() => {
   return `${formatNairaAmount(cheapest.priceNaira)} ${cheapest.termMonths === 1 ? 'a month' : `for ${termPhrase(cheapest.termMonths)}`}`
 })
 
+// `label` is the short form for the bar; `full` is used where there is room (mobile menu).
 const links = [
-  { label: 'Practice areas', to: '/#areas', section: 'areas' },
-  { label: 'Why getalawyer', to: '/#why', section: 'why' },
-  { label: 'How it works', to: '/#how', section: 'how' },
-  { label: 'For lawyers', to: '/#join', section: 'join' },
+  { label: 'Areas', full: 'Practice areas', to: '/#areas', section: 'areas' },
+  { label: 'Why us', full: 'Why getalawyer', to: '/#why', section: 'why' },
+  { label: 'How it works', full: 'How it works', to: '/#how', section: 'how' },
+  { label: 'For lawyers', full: 'For lawyers', to: '/#join', section: 'join' },
 ]
 
 const stuck = ref(false)
@@ -156,7 +157,7 @@ watch(() => route.fullPath, () => {
   </header>
 
   <div v-if="menuOpen" id="site-menu" class="c-menu" @keydown.esc="setMenu(false)">
-    <NuxtLink v-for="link in links" :key="link.section" class="c-big" :to="link.to" @click="setMenu(false)">{{ link.label }}</NuxtLink>
+    <NuxtLink v-for="link in links" :key="link.section" class="c-big" :to="link.to" @click="setMenu(false)">{{ link.full }}</NuxtLink>
     <NuxtLink class="c-big" to="/pricing" @click="setMenu(false)">Pricing</NuxtLink>
     <div class="c-acts">
       <ClientOnly><CanopyThemeSwitch /></ClientOnly>
