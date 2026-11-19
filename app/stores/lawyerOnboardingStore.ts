@@ -21,7 +21,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     // We use the existing composable to fetch initial data and perform mutations
     const { useDraft, useSaveDraft, useSaveDraftQuietly, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
 
-    /** Shares TanStack cache with /onboarding index and wizard layout (one network fetch). */
+    /** Shares the TanStack cache with the application pages and their layout (one network fetch). */
     const { data: draftDataResponse, isSuccess: draftLoaded } = useDraft({
         enabled: import.meta.client,
     })
@@ -317,7 +317,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
         }
         
         if (stepKey === 'review') {
-            // The guard only checks status, so /onboarding/review can be reached directly.
+            // Submit can be reached with sections unfinished (the button is only hidden).
             // Re-validate every earlier step before submitting instead of relying on the backend.
             const incomplete = firstIncompleteStepMessage()
             if (incomplete) {

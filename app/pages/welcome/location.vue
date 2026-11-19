@@ -10,7 +10,7 @@ import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
  */
 definePageMeta({
   middleware: ['auth'],
-  layout: 'onboarding-client',
+  layout: 'welcome',
 })
 
 useHead({ title: 'Which state are you in?' })

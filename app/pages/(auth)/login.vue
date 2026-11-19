@@ -146,6 +146,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'
 import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/session-user'
+import { setupHomeFor } from '~/lib/setup-paths'
 
 definePageMeta({
   layout: 'auth',
@@ -270,7 +271,7 @@ const forgotPasswordLink = computed(() => {
 async function navigateAfterLogin() {
   const freshSession = await refetchSession()
   if (isOnboardingIncomplete(freshSession?.user as SessionUserWithOnboarding)) {
-    await navigateTo('/onboarding', { replace: true })
+    await navigateTo(setupHomeFor(freshSession?.user as SessionUserWithOnboarding), { replace: true })
   } else {
     await navigateTo(redirectAfterLogin.value)
   }

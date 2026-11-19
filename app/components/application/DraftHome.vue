@@ -4,23 +4,17 @@ import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CURRENT_TERMS_VERSION } from '~/lib/legal'
+import { APPLICATION_SECTION_PATHS } from '~/lib/setup-paths'
 import { formatScnForDisplay } from '~/lib/scn'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
 /**
- * The lawyer's application home (direction C): the sections as a task list,
- * done in any order, each showing whether it is complete and a line of what
- * was entered. When every section is done the lawyer accepts the terms and
- * submits here, then goes on to choose a membership plan and pay.
+ * The lawyer's application home while it is being filled in: the sections as a
+ * task list, done in any order, each showing whether it is complete and a line
+ * of what was entered. When every section is done the lawyer accepts the terms
+ * and submits here. Submitting changes where the application stands, and the
+ * page that shows this moves on to the membership payment by itself.
  */
-definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
-})
-
-useHead({ title: 'Your application' })
-
-const router = useRouter()
 const store = useLawyerOnboardingStore()
 
 const { data: specializations } = useSpecializations()
@@ -47,28 +41,28 @@ const sections = computed(() => {
   return [
     {
       key: 'personal' as const,
-      to: '/onboarding/personal-info',
+      to: APPLICATION_SECTION_PATHS.personal_info,
       title: 'About you',
       hint: 'Your name, date of birth and where you live',
       summary: [p.governmentIdLegalName, p.state].filter(Boolean).join(' · '),
     },
     {
       key: 'nin' as const,
-      to: '/onboarding/nin-verification',
+      to: APPLICATION_SECTION_PATHS.nin_verification,
       title: 'Identity',
       hint: 'Your NIN and consent to verify it',
       summary: store.ninVerification.verified ? 'NIN verified' : 'NIN received',
     },
     {
       key: 'professional' as const,
-      to: '/onboarding/professional-information',
+      to: APPLICATION_SECTION_PATHS.professional_info,
       title: 'Bar credentials',
       hint: 'Supreme Court number and year of call',
       summary: [pro.barNumber ? formatScnForDisplay(pro.barNumber) : '', pro.yearOfCall ? `Called ${pro.yearOfCall}` : ''].filter(Boolean).join(' · '),
     },
     {
       key: 'practice' as const,
-      to: '/onboarding/practice-information',
+      to: APPLICATION_SECTION_PATHS.practice_info,
       title: 'How you practise',
       hint: 'Firm, practice areas and states',
       summary: [pr.soloPractitioner ? 'Solo practitioner' : pr.firmName, pr.primaryState, areaNames.value.join(', ')].filter(Boolean).join(' · '),
@@ -104,8 +98,8 @@ async function submit() {
     // 'review' is the store's submit: it re-checks every section, saves, then submits.
     const ok = await store.saveStep('review')
     if (!ok) return
+    // The submit refreshed the application's status; the page moves on from that.
     toast.success('Application submitted', { description: 'Choose a membership plan and pay on the next screen.' })
-    await router.push('/onboarding/subscription')
   }
   finally {
     submitting.value = false

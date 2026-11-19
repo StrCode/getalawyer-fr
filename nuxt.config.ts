@@ -35,18 +35,16 @@ const THEMED_ROUTES = new Set<string>([
   '/forgot-password',
   '/verify-otp',
   '/reset-password',
-  // client onboarding (the `onboarding-client` layout)
-  '/onboarding/location',
-  '/onboarding/specializations',
-  // lawyer application (the `onboarding-lawyer` layout)
-  '/onboarding/application',
-  '/onboarding/personal-info',
-  '/onboarding/nin-verification',
-  '/onboarding/professional-information',
-  '/onboarding/practice-information',
-  '/onboarding/subscription',
-  '/onboarding/pending',
-  '/onboarding/rejected',
+  // a client's welcome steps (the `welcome` layout)
+  '/welcome/location',
+  '/welcome/legal-needs',
+  // a lawyer's application (the `application` layout)
+  '/application',
+  '/application/about-you',
+  '/application/identity',
+  '/application/bar-credentials',
+  '/application/practice',
+  '/application/membership',
 ])
 
 /** A committed variable font in public/fonts, self-hosted through @nuxt/fonts. */
@@ -82,7 +80,9 @@ export default defineNuxtConfig({
     // Auth-gated and transactional routes have no business in the sitemap.
     exclude: [
       '/dashboard/**',
-      '/onboarding/**',
+      '/application',
+      '/application/**',
+      '/welcome/**',
       '/login',
       '/register',
       '/forgot-password',

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * The lawyer's application home after it has been submitted. The same page
- * shape as the home they filled in (see pages/onboarding/application.vue),
+ * shape as the home they filled in (see components/application/DraftHome.vue),
  * now showing where the application stands: waiting for payment, in review,
  * needing changes, or failed verification. The sections are listed as
  * submitted, then the membership row, then whatever the state needs (default

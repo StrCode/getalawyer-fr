@@ -3,8 +3,10 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { toast } from 'vue-sonner'
 import { ApiError, httpClient } from '~/lib/api/client'
 import { queryKeys } from '~/lib/query-client'
+import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
 const onboardingRestartAPI = {
   restart: async () => {
@@ -40,4 +42,38 @@ export const useOnboardingRestart = () => {
     isPending: mutation.isPending,
     useRestartApplication: () => mutation,
   }
+}
+
+/**
+ * Reopen a submitted application so it can be edited again (after the review
+ * team asked for changes, or verification failed), and load the forms from
+ * what the server rebuilt. `restart` resolves once the application's status and
+ * saved details have been fetched again, so the application page shows the
+ * editable home without any navigation.
+ */
+export function useReopenApplication() {
+  const { restart, isPending } = useOnboardingRestart()
+  const store = useLawyerOnboardingStore()
+
+  async function reopen(messages: {
+    /** Toast shown when it worked, if any. */
+    done?: { title: string, description?: string }
+    /** Title of the toast shown when it did not. */
+    failed: string
+  }): Promise<boolean> {
+    try {
+      await restart()
+      store.reloadFromDraft()
+      if (messages.done) toast.success(messages.done.title, { description: messages.done.description })
+      return true
+    }
+    catch (error) {
+      toast.error(messages.failed, {
+        description: error instanceof Error ? error.message : 'Please try again, or write to support.',
+      })
+      return false
+    }
+  }
+
+  return { reopen, isPending }
 }

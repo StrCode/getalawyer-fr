@@ -4,12 +4,10 @@ import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { isValidScnDigits, normalizeScnDigitsOnly, SCN_MAX_DIGITS } from '~/lib/scn'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
-import { Card } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field'
@@ -23,18 +21,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-const fieldControlClass =
-  'h-11 w-full rounded-xl border-border/50 bg-background text-base shadow-none focus:bg-background'
-
-const fieldLabelClass = 'text-sm'
-const fieldClass = 'gap-2'
-
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('professional_info')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 
@@ -73,8 +67,8 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
 </script>
 
 <template>
-  <div class="flex w-full flex-col gap-6">
-    <OnboardingClientStepHeader
+  <div>
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"
@@ -82,19 +76,19 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
       :description="step.description"
     />
 
-    <Card class="gap-0 p-6 sm:p-8">
-      <FieldGroup class="gap-6">
-        <FieldSet class="gap-4">
-          <FieldGroup class="gap-5">
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+    <div :class="canopyForm">
+      <FieldSet :class="canopyGroup">
+        <legend class="sr-only">Bar credentials</legend>
+        <div class="grid gap-[0.9rem]">
+            <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
               <form.Field v-slot="{ field }" name="barNumber">
-                <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name" :class="fieldLabelClass">
+                <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">
                     Supreme Court number (SCN)
                   </FieldLabel>
-                  <InputGroup class="h-11 rounded-xl border-border/50 bg-background shadow-none">
+                  <InputGroup :class="authInputGroup">
                     <InputGroupAddon>
-                      <span class="font-mono text-sm font-medium text-foreground">SCN</span>
+                      <span class="pl-1 font-display text-[0.95rem] font-[650] text-deep">SCN</span>
                     </InputGroupAddon>
                     <InputGroupInput
                       :id="field.name"
@@ -104,30 +98,30 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                       autocomplete="off"
                       inputmode="numeric"
                       :maxlength="SCN_MAX_DIGITS"
-                      class="font-mono text-base tabular-nums"
+                      :class="authInputGroupControl" class="tracking-[0.04em] placeholder:tracking-normal"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                       @update:model-value="(v: unknown) => onScnInput(field, v)"
                     />
                     <InputGroupAddon align="inline-end">
                       <span
-                        class="text-xs font-medium tracking-wider uppercase tabular-nums"
-                        :class="isValidScnDigits(barNumberStr) ? 'text-primary' : 'text-muted-foreground/60'"
+                        class="pr-1 text-[0.8rem] font-semibold"
+                        :class="isValidScnDigits(barNumberStr) ? 'text-brand' : 'text-muted-foreground'"
                       >
                         {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}
                       </span>
                     </InputGroupAddon>
                   </InputGroup>
-                  <FieldDescription>
-                    Enter the digits only (4–6) — not the “SCN” prefix.
+                  <FieldDescription :class="canopyHint">
+                    Digits only (4 to 6), without the “SCN” prefix.
                   </FieldDescription>
                   <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
                 </Field>
               </form.Field>
 
               <form.Field v-slot="{ field }" name="yearOfCall">
-                <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name" :class="fieldLabelClass">
+                <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">
                     Year of call
                   </FieldLabel>
                   <Select
@@ -139,12 +133,12 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                   >
                     <SelectTrigger
                       :id="field.name"
-                      :class="fieldControlClass"
+                      :class="canopySelect"
                       :aria-invalid="isInvalid(field)"
                     >
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent :class="canopyPanel">
                       <SelectItem
                         v-for="y in yearOptions"
                         :key="y"
@@ -154,7 +148,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  <FieldDescription>
+                  <FieldDescription :class="canopyHint">
                     The year you were admitted to the Nigerian Bar.
                   </FieldDescription>
                   <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
@@ -163,34 +157,33 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
             </div>
 
             <form.Field v-slot="{ field }" name="scnFullNameAtCallToBar">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">
                   Name on your SCN
                 </FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  :class="fieldControlClass"
+                  :class="authInput"
                   placeholder="Exactly as on your call-to-bar records"
                   autocomplete="name"
                   :aria-invalid="isInvalid(field)"
                   @blur="field.handleBlur"
                   @update:model-value="(v: string | number) => field.handleChange(String(v ?? ''))"
                 />
-                <FieldDescription>
-                  For bar verification only — not shown on your public profile.
+                <FieldDescription :class="canopyHint">
+                  Used for bar verification only. Not shown on your public profile.
                 </FieldDescription>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
               </Field>
             </form.Field>
-          </FieldGroup>
-        </FieldSet>
+        </div>
+      </FieldSet>
 
-        <p class="text-sm leading-relaxed text-muted-foreground">
-          All fields are required for verification.
-        </p>
-      </FieldGroup>
-    </Card>
+      <p :class="canopyHint">
+        All fields are required for verification.
+      </p>
+    </div>
   </div>
 </template>

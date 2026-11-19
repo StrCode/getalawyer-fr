@@ -8,33 +8,22 @@ import { joinFullName, splitAccountName } from '~/lib/account-name'
 import { lawyerPersonalInfoSchema } from '~/schemas/lawyerPersonalInfo'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { getLgasForState, NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
-import { Card } from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
-  FieldLegend,
   FieldSet,
 } from '@/components/ui/field'
 
-/** Taller touch targets + larger control text; labels stay text-sm for hierarchy. */
-const fieldControlClass =
-  'h-11 w-full rounded-xl border-border/50 bg-background text-base shadow-none focus:bg-background'
-
-/** FieldLabel defaults to text-base — keep labels smaller than control text. */
-const fieldLabelClass = 'text-sm'
-
-/** Tighter label → control gap than Field’s default gap-3. */
-const fieldClass = 'gap-1.5'
-
 definePageMeta({
-  layout: 'onboarding-lawyer',
-  middleware: ['auth', 'lawyer-onboarding-guard'],
+  layout: 'application',
+  middleware: ['auth', 'application'],
 })
 
 const step = getLawyerStepDisplay('personal_info')
+
+useHead({ title: step.label })
 
 const store = useLawyerOnboardingStore()
 
@@ -111,13 +100,15 @@ watch(formState, (state, prev) => {
   }
 })
 
+// The calendar opens on the chosen date, or on the latest date a lawyer can be
+// born on. It used to open on today's month, where every day is disabled.
 const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
 </script>
 
 <template>
-  <div class="flex w-full flex-col gap-5">
-    <OnboardingClientStepHeader
+  <div>
+    <ApplicationSectionHeader
       :step="step.step"
       :total="step.total"
       :label="step.label"
@@ -125,22 +116,19 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
       :description="step.description"
     />
 
-    <Card class="gap-0 p-5 sm:p-7">
-    <FieldGroup class="gap-5">
-      <FieldSet class="gap-3">
-        <FieldLegend variant="label" class="mb-1.5">
-          Name
-        </FieldLegend>
-        <FieldGroup class="gap-4">
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div :class="canopyForm">
+      <FieldSet :class="canopyGroup">
+        <legend :class="canopyLegend">Name</legend>
+        <div class="grid gap-[0.9rem]">
+          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-3">
             <form.Field v-slot="{ field }" name="firstName">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">First name</FieldLabel>
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">First name</FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  :class="fieldControlClass"
+                  :class="authInput"
                   placeholder="First name"
                   autocomplete="given-name"
                   :aria-invalid="isInvalid(field)"
@@ -152,8 +140,8 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
             </form.Field>
 
             <form.Field v-slot="{ field }" name="middleName">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">
                   Middle name
                   <span class="font-normal text-muted-foreground">(optional)</span>
                 </FieldLabel>
@@ -161,7 +149,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  :class="fieldControlClass"
+                  :class="authInput"
                   placeholder="Middle name"
                   autocomplete="additional-name"
                   :aria-invalid="isInvalid(field)"
@@ -173,13 +161,13 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
             </form.Field>
 
             <form.Field v-slot="{ field }" name="lastName">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">Last name</FieldLabel>
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">Last name</FieldLabel>
                 <Input
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  :class="fieldControlClass"
+                  :class="authInput"
                   placeholder="Last name"
                   autocomplete="family-name"
                   :aria-invalid="isInvalid(field)"
@@ -192,15 +180,15 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
           </div>
 
           <form.Field v-slot="{ field }" name="governmentIdLegalName">
-            <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name" :class="fieldLabelClass">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">
                 Full name on government-issued ID
               </FieldLabel>
               <Input
                 :id="field.name"
                 :name="field.name"
                 :model-value="field.state.value"
-                :class="fieldControlClass"
+                :class="authInput"
                 placeholder="As shown on NIN, passport, or driver licence"
                 autocomplete="name"
                 :aria-invalid="isInvalid(field)"
@@ -210,29 +198,27 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
               <button
                 v-if="suggestedLegalName"
                 type="button"
-                class="w-fit cursor-pointer text-sm font-medium text-primary underline underline-offset-4"
+                :class="authLink" class="w-fit text-[0.9rem]"
                 @click="field.handleChange(suggestedLegalName)"
               >
                 Use “{{ suggestedLegalName }}”
               </button>
-              <FieldDescription>
+              <FieldDescription :class="canopyHint">
                 Must match your NIN exactly. This is also the name shown on your public profile.
               </FieldDescription>
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </form.Field>
-        </FieldGroup>
+        </div>
       </FieldSet>
 
-      <FieldSet class="gap-3 border-t border-border/40 pt-5">
-        <FieldLegend variant="label" class="mb-1.5">
-          Personal details
-        </FieldLegend>
-        <FieldGroup class="gap-4">
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <FieldSet :class="canopyGroup">
+        <legend :class="canopyLegend">Personal details</legend>
+        <div class="grid gap-[0.9rem]">
+          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="dateOfBirth">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="`${field.name}-trigger`" :class="fieldLabelClass">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="`${field.name}-trigger`" :class="canopyLabel">
                   Date of birth
                 </FieldLabel>
                 <Popover v-slot="{ close }">
@@ -241,14 +227,11 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                       :id="`${field.name}-trigger`"
                       type="button"
                       variant="outline"
-                      :class="[
-                        fieldControlClass,
-                        'cursor-pointer justify-between font-normal text-foreground hover:bg-muted/40',
-                      ]"
+                      :class="canopyTrigger"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                     >
-                      <span :class="dobDate ? 'text-foreground' : 'text-muted-foreground/70'">
+                      <span :class="dobDate ? 'text-foreground' : 'text-placeholder'">
                         {{
                           dobDate
                             ? dobDate.toDate(getLocalTimeZone()).toLocaleDateString('en-GB', {
@@ -259,13 +242,14 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                             : 'Select your date of birth'
                         }}
                       </span>
-                      <HugeiconsIcon :icon="ArrowDown01Icon" class="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent class="w-auto overflow-hidden p-0" align="start">
+                  <PopoverContent class="w-auto overflow-hidden p-0" :class="canopyPanel" align="start">
                     <Calendar
                       v-model="dobDate"
                       :max-value="maxDate"
+                      :default-placeholder="dobDate ?? maxDate"
                       initial-focus
                       layout="month-and-year"
                       @update:model-value="(val) => {
@@ -280,7 +264,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                     />
                   </PopoverContent>
                 </Popover>
-                <FieldDescription>
+                <FieldDescription :class="canopyHint">
                   You must be 18 or older to register as a lawyer.
                 </FieldDescription>
                 <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
@@ -288,8 +272,8 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
             </form.Field>
 
             <form.Field v-slot="{ field }" name="gender">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">Gender</FieldLabel>
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">Gender</FieldLabel>
                 <Select
                   :model-value="field.state.value"
                   @update:model-value="(v) => {
@@ -299,12 +283,12 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 >
                   <SelectTrigger
                     :id="field.name"
-                    :class="fieldControlClass"
+                    :class="canopySelect"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent :class="canopyPanel">
                     <SelectItem
                       v-for="g in genders"
                       :key="g.value"
@@ -318,21 +302,19 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
               </Field>
             </form.Field>
           </div>
-        </FieldGroup>
+        </div>
       </FieldSet>
 
-      <FieldSet class="gap-3 border-t border-border/40 pt-5">
-        <FieldLegend variant="label" class="mb-1.5">
-          Location
-        </FieldLegend>
-        <FieldDescription>
+      <FieldSet :class="canopyGroup">
+        <legend :class="canopyLegend">Location</legend>
+        <p :class="canopyHint" class="-mt-[0.6rem]">
           Where you currently live in Nigeria.
-        </FieldDescription>
-        <FieldGroup class="gap-4">
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        </p>
+        <div class="grid gap-[0.9rem]">
+          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="state">
-              <Field :class="fieldClass" :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" :class="fieldLabelClass">State</FieldLabel>
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">State</FieldLabel>
                 <Select
                   :model-value="field.state.value || undefined"
                   @update:model-value="(v) => {
@@ -342,12 +324,12 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 >
                   <SelectTrigger
                     :id="field.name"
-                    :class="fieldControlClass"
+                    :class="canopySelect"
                     :aria-invalid="isInvalid(field)"
                   >
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent :class="canopyPanel">
                     <SelectItem
                       v-for="name in NIGERIA_STATE_NAMES"
                       :key="name"
@@ -363,11 +345,11 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
             <form.Field v-slot="{ field }" name="lga">
               <Field
-                :class="fieldClass"
+                :class="canopyField"
                 :data-invalid="isInvalid(field)"
                 :data-disabled="!selectedState || undefined"
               >
-                <FieldLabel :for="field.name" :class="fieldLabelClass">LGA</FieldLabel>
+                <FieldLabel :for="field.name" :class="canopyLabel">LGA</FieldLabel>
                 <Select
                   :key="`lga-${selectedState}`"
                   :model-value="field.state.value || undefined"
@@ -379,7 +361,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                 >
                   <SelectTrigger
                     :id="field.name"
-                    :class="fieldControlClass"
+                    :class="canopySelect"
                     :aria-invalid="isInvalid(field)"
                     :disabled="!selectedState"
                   >
@@ -387,7 +369,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
                       :placeholder="selectedState ? 'Select LGA' : 'Select state first'"
                     />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent :class="canopyPanel">
                     <SelectItem
                       v-for="lgaName in lgaOptions"
                       :key="lgaName"
@@ -401,13 +383,12 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
               </Field>
             </form.Field>
           </div>
-        </FieldGroup>
+        </div>
       </FieldSet>
 
-      <p class="text-sm leading-relaxed text-muted-foreground">
+      <p :class="canopyHint">
         Middle name is optional. Everything else is required.
       </p>
-    </FieldGroup>
-    </Card>
+    </div>
   </div>
 </template>
