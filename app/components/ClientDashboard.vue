@@ -228,7 +228,6 @@ const showFullEmpty = computed(
 
     <template v-if="!isOverviewLoading">
       <DashboardPageHeader
-        class="snapshot-rise"
         :eyebrow="todayLabel"
         description="Here's what's happening with your legal consultations."
       >
@@ -256,8 +255,6 @@ const showFullEmpty = computed(
       </DashboardPageHeader>
 
       <ClientDashboardActionRequired
-        class="snapshot-rise"
-        style="animation-delay: 40ms"
         :pending-bookings="pendingBookings"
         :soon-bookings="soonBookings"
         :unread-message-count="unreadMessageCount"
@@ -265,22 +262,17 @@ const showFullEmpty = computed(
       />
 
       <DashboardNextAppointment
-        class="snapshot-rise"
-        style="animation-delay: 80ms"
         :booking="nextBooking"
         :person-name="nextBooking?.lawyer?.name"
         :person-image="nextBooking?.lawyer?.profilePicture"
       />
 
       <DashboardQuickLinks
-        class="snapshot-rise"
-        style="animation-delay: 120ms"
         :links="quickLinks"
       />
 
       <div
-        class="snapshot-rise grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
-        style="animation-delay: 160ms"
+        class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
       >
         <div class="min-w-0 space-y-6 lg:col-span-7">
           <DashboardFigures

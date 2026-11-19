@@ -55,7 +55,7 @@ const card = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.
 
     <div class="grid grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] items-start gap-[1.1rem] max-tab:grid-cols-1">
       <div class="grid gap-[1.1rem]">
-        <a :href="`mailto:${SUPPORT_EMAIL}`" :class="card" class="group/mail flex items-start gap-4 [transition:border-color_0.2s,transform_0.35s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-[3px] hover:border-brand">
+        <a :href="`mailto:${SUPPORT_EMAIL}`" :class="card" class="group/mail flex items-start gap-4 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand">
           <span class="grid size-12 flex-none place-items-center rounded-[1rem] bg-mint text-deep"><CanopyGlyph name="mail" :size="22" /></span>
           <span class="min-w-0">
             <b class="block font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Email support</b>

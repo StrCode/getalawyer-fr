@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { AlertCircleIcon, Building01Icon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import ClientProfileShell from '@/components/profile/ClientProfileShell.vue'
 import ClientProfileCompletenessAside from '@/components/profile/ClientProfileCompletenessAside.vue'
@@ -258,11 +257,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <motion.div
+  <div
     class="space-y-6"
-    :initial="{ opacity: 0, y: 8 }"
-    :animate="{ opacity: 1, y: 0 }"
-    :transition="{ duration: 0.25 }"
   >
     <div class="flex flex-wrap items-start justify-between gap-4">
     <div class="min-w-0 flex-1">
@@ -275,14 +271,14 @@ onBeforeUnmount(() => {
     </div>
   </div>
 
-    <motion.div
+    <div
       v-if="isLoading"
       class="space-y-4"
     >
       <Skeleton class="h-24 w-full rounded-xl" />
       <Skeleton class="h-36 w-full rounded-xl" />
       <Skeleton class="h-64 w-full rounded-xl" />
-    </motion.div>
+    </div>
 
     <Card
       v-else-if="isError"
@@ -557,5 +553,5 @@ onBeforeUnmount(() => {
         </NuxtLink>.
       </p>
     </template>
-  </motion.div>
+  </div>
 </template>

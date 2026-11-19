@@ -145,8 +145,10 @@ export default defineNuxtConfig({
   app: {
     head: {
     },
-    pageTransition: { name: 'page', mode: 'out-in' },
-    layoutTransition: { name: 'layout', mode: 'out-in' },
+    // Enter-only fades (see the `.page-enter-*` rules): no `out-in`, so a new
+    // page never waits for the old one to fade away first.
+    pageTransition: { name: 'page' },
+    layoutTransition: { name: 'layout' },
   },
   image: {
     inject: true,

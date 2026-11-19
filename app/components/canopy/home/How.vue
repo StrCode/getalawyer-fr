@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 /** "How it works": three connected steps, each with a small product view and a cost tag. */
 
 // Class lists shared by the three steps (full strings, so Tailwind sees them).
-const step = 'flex flex-col rounded-card border border-border bg-card p-[1.4rem] transition-transform duration-[900ms] ease-canopy'
+const step = 'flex flex-col rounded-card border border-border bg-card p-[1.4rem]'
 const number = 'grid size-10 flex-none place-items-center rounded-full bg-mint font-display text-[1.15rem] font-bold text-deep'
 const cost = 'rounded-[0.5rem] border px-[0.65rem] py-[0.3rem] text-[0.74rem] font-bold tracking-[0.06em] whitespace-nowrap uppercase'
 const costFree = 'border-border bg-background text-deep'

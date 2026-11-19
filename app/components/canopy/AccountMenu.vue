@@ -65,7 +65,7 @@ async function signOut() {
           <AvatarFallback class="bg-primary font-display text-[0.85rem] font-bold text-white">{{ initials }}</AvatarFallback>
         </Avatar>
         <span class="max-w-[7.5rem] truncate text-[0.95rem] font-semibold max-sm:hidden">{{ firstName }}</span>
-        <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="text-muted-foreground transition-transform duration-300 ease-canopy group-data-[state=open]/acct:rotate-180 max-sm:hidden" />
+        <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="text-muted-foreground transition-[rotate] duration-200 ease-canopy group-data-[state=open]/acct:rotate-180 max-sm:hidden" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" :side-offset="10" class="w-[min(19rem,calc(100vw-2rem))] rounded-[1.5rem] border-border bg-card p-2 font-text text-foreground shadow-widget">

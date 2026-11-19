@@ -105,7 +105,7 @@ function directory(id: string) {
         <li v-for="area in matches" :key="area.id" class="flex">
           <NuxtLink
             :to="directory(area.id)"
-            class="group/area flex w-full flex-col rounded-card border border-border bg-card p-[1.3rem] [transition:border-color_0.2s,transform_0.35s_cubic-bezier(0.22,0.8,0.26,1),box-shadow_0.35s] hover:-translate-y-[3px] hover:border-brand hover:shadow-lift"
+            class="group/area flex w-full flex-col rounded-card border border-border bg-card p-[1.3rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand hover:shadow-lift"
           >
             <span class="flex items-center gap-2 text-[0.78rem] font-bold tracking-[0.08em] text-brand uppercase">
               <i class="size-2 rounded-full bg-brand" />{{ area.isFeatured ? 'Popular' : 'Practice area' }}

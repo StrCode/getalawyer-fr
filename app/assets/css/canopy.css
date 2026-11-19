@@ -99,8 +99,6 @@
   /* A solid strip behind the status bar on notched phones. */
   body.canopy::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--background); }
 
-  html:has(body.canopy) { scroll-behavior: smooth; }
-
   /* Finer scrollbar on Canopy pages. */
   html:has(body.canopy) { scrollbar-width: thin; scrollbar-color: rgba(15, 34, 25, 0.28) transparent; }
   html.dark:has(body.canopy) { scrollbar-color: rgba(236, 242, 238, 0.26) transparent; }
@@ -111,9 +109,4 @@
   html.dark:has(body.canopy)::-webkit-scrollbar-thumb { background-color: rgba(236, 242, 238, 0.24); }
   html.dark:has(body.canopy)::-webkit-scrollbar-thumb:hover { background-color: rgba(236, 242, 238, 0.4); }
 
-  /* Reduced motion: no animation or transition anywhere on a Canopy page. */
-  @media (prefers-reduced-motion: reduce) {
-    html:has(body.canopy) { scroll-behavior: auto; }
-    .canopy *, .canopy *::before, .canopy *::after { animation: none !important; transition: none !important; }
-  }
 }

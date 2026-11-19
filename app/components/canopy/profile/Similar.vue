@@ -72,7 +72,7 @@ function line(lawyer: { state?: string, yearsOfExperience?: number | string, spe
         v-for="lawyer in others"
         :key="lawyer.id"
         :to="`/lawyers/${lawyer.id}`"
-        class="flex items-center gap-[0.9rem] rounded-[1.4rem] border border-border bg-card p-[0.9rem] [transition:border-color_0.2s,transform_0.35s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-[3px] hover:border-brand"
+        class="flex items-center gap-[0.9rem] rounded-[1.4rem] border border-border bg-card p-[0.9rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand"
       >
         <span class="grid size-[3.4rem] flex-none place-items-center overflow-hidden rounded-[1rem] bg-mint">
           <NuxtImg v-if="lawyer.image" :src="lawyer.image" width="108" height="108" alt="" loading="lazy" class="size-full object-cover object-[50%_20%]" />

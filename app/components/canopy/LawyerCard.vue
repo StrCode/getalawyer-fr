@@ -23,7 +23,7 @@ const chips = computed(() => (meeting.value.length ? meeting.value : otherAreas.
 <template>
   <article
     data-rise
-    class="group/card flex flex-col rounded-card border border-border bg-card px-[0.6rem] pt-[0.6rem] pb-[1.1rem] transition-transform duration-[900ms] ease-canopy hover:-translate-y-1.5 hover:shadow-lift max-sm:flex-[0_0_82%] max-sm:snap-start"
+    class="group/card flex flex-col rounded-card border border-border bg-card px-[0.6rem] pt-[0.6rem] pb-[1.1rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-1 hover:shadow-lift max-sm:flex-[0_0_82%] max-sm:snap-start"
   >
     <NuxtLink :to="profile" :aria-label="`${lawyer.name}: view profile`" class="relative block aspect-[6/5] max-w-full overflow-hidden rounded-[1.3rem] bg-mint">
       <NuxtImg
@@ -34,7 +34,7 @@ const chips = computed(() => (meeting.value.length ? meeting.value : otherAreas.
         sizes="320px"
         alt=""
         loading="lazy"
-        class="size-full object-cover transition-transform duration-[900ms] ease-canopy group-hover/card:scale-105"
+        class="size-full object-cover transition-[scale] duration-300 ease-canopy group-hover/card:scale-[1.03]"
       />
     </NuxtLink>
     <div class="flex flex-1 flex-col px-[0.55rem] pt-[0.95rem]">

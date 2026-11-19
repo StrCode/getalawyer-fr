@@ -122,7 +122,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
           :data-on="plan.key === selected.key ? '' : undefined"
           :data-surface="plan.key === selected.key ? 'forest' : undefined"
           :class="several ? 'cursor-pointer hover:-translate-y-[3px] hover:border-brand' : ''"
-          class="group/plan grid grid-rows-[auto_auto_auto_1fr] content-start gap-[0.55rem] rounded-card border border-border bg-card p-6 text-left [transition:border-color_0.2s,box-shadow_0.35s_cubic-bezier(0.22,0.8,0.26,1),transform_0.35s_cubic-bezier(0.22,0.8,0.26,1)] data-on:border-forest data-on:bg-forest data-on:text-white data-on:shadow-[0_26px_54px_rgba(11,51,39,0.28)]"
+          class="group/plan grid grid-rows-[auto_auto_auto_1fr] content-start gap-[0.55rem] rounded-card border border-border bg-card p-6 text-left [transition:background-color_0.2s,color_0.2s,border-color_0.2s,box-shadow_0.2s_var(--ease-canopy),translate_0.2s_var(--ease-canopy)] data-on:border-forest data-on:bg-forest data-on:text-white data-on:shadow-[0_26px_54px_rgba(11,51,39,0.28)]"
           @click="selectedKey = plan.key"
         >
           <span class="flex min-h-[1.8rem] items-center justify-between gap-2 font-display text-[1.2rem] font-[650] tracking-[-0.02em]">
@@ -192,7 +192,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
     <section class="pt-[clamp(3.5rem,7vw,6.5rem)]">
       <CanopySectionHead kicker="Billing" title="No lock-in, no surprises." />
       <div class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-[1.1rem]">
-        <div v-for="fact in billingFacts" :key="fact.title" data-rise class="rounded-card border border-border bg-card p-6 transition-transform duration-[900ms] ease-canopy">
+        <div v-for="fact in billingFacts" :key="fact.title" data-rise class="rounded-card border border-border bg-card p-6">
           <h3 class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ fact.title }}</h3>
           <p class="mt-2 text-muted-foreground">{{ fact.body }}</p>
         </div>
@@ -202,7 +202,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
     <section class="pt-[clamp(3.5rem,7vw,6.5rem)]">
       <CanopySectionHead kicker="Getting started" title="From sign-up to your first enquiry." />
       <ol class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-[1.1rem]">
-        <li v-for="(step, index) in steps" :key="step.title" data-rise class="rounded-card border border-border bg-card p-[1.4rem] transition-transform duration-[900ms] ease-canopy">
+        <li v-for="(step, index) in steps" :key="step.title" data-rise class="rounded-card border border-border bg-card p-[1.4rem]">
           <div class="flex items-center gap-3">
             <span class="grid size-10 flex-none place-items-center rounded-full bg-mint font-display text-[1.15rem] font-bold text-deep">{{ index + 1 }}</span>
             <i class="h-px flex-1 bg-border" />
@@ -216,17 +216,17 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
     <section class="py-[clamp(3.5rem,7vw,6.5rem)]">
       <CanopySectionHead kicker="Questions" title="Asked before joining." />
       <div class="max-w-[52rem] border-t border-border">
-        <details v-for="(item, index) in questions" :key="item.q" :open="index === 0" class="group/faq border-b border-border">
+        <details v-for="(item, index) in questions" :key="item.q" :open="index === 0" class="reveal group/faq border-b border-border">
           <summary class="flex min-h-[3.6rem] cursor-pointer list-none items-center justify-between gap-4 py-[0.4rem] font-display text-[1.2rem] font-[650] tracking-[-0.02em] [&::-webkit-details-marker]:hidden">
             {{ item.q }}
-            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-text font-semibold text-deep transition-transform duration-300 ease-canopy group-open/faq:rotate-45">+</span>
+            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-text font-semibold text-deep transition-[rotate] duration-200 ease-canopy group-open/faq:rotate-45">+</span>
           </summary>
           <p class="max-w-[44rem] pr-12 pb-[1.2rem] text-muted-foreground max-sm:pr-0">{{ item.a }}</p>
         </details>
       </div>
     </section>
 
-    <section data-rise data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)] text-center text-white transition-transform duration-[900ms] ease-canopy max-sm:rounded-[1.75rem]">
+    <section data-rise data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4vw,3rem)] py-[clamp(2rem,6vw,4.5rem)] text-center text-white max-sm:rounded-[1.75rem]">
       <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">Ready when you are</div>
       <h2 class="mx-auto mt-4 max-w-[44rem]" :class="sectionTitle">
         Grow your practice. <em class="text-lime not-italic">Keep every naira you earn.</em>

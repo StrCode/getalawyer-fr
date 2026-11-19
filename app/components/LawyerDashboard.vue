@@ -262,7 +262,6 @@ function confirmDecline() {
 
     <template v-if="!isOverviewLoading">
       <DashboardPageHeader
-        class="snapshot-rise"
         :eyebrow="todayLabel"
         description="Manage your consultations and grow your practice."
       >
@@ -299,8 +298,6 @@ function confirmDecline() {
       </DashboardPageHeader>
 
       <LawyerDashboardActionRequired
-        class="snapshot-rise"
-        style="animation-delay: 40ms"
         :pending-bookings="pendingBookings"
         :soon-bookings="soonBookings"
         :follow-up-bookings="followUpBookings"
@@ -312,8 +309,6 @@ function confirmDecline() {
       />
 
       <DashboardNextAppointment
-        class="snapshot-rise"
-        style="animation-delay: 80ms"
         :booking="nextBooking"
         :person-name="nextBooking?.client?.name ?? 'Client'"
         :consultation-name="nextBooking?.consultationType?.name ?? 'Consultation'"
@@ -326,14 +321,11 @@ function confirmDecline() {
       />
 
       <DashboardQuickLinks
-        class="snapshot-rise"
-        style="animation-delay: 120ms"
         :links="quickLinks"
       />
 
       <div
-        class="snapshot-rise grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
-        style="animation-delay: 160ms"
+        class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12"
       >
         <div class="min-w-0 space-y-6 lg:col-span-7">
           <DashboardFigures

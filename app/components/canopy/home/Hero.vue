@@ -24,7 +24,7 @@ function show(index: number) {
   swapTimer = setTimeout(() => {
     shown.value = index
     swapping.value = false
-  }, 280)
+  }, 200)
 }
 
 function pick(index: number) {
@@ -150,8 +150,8 @@ function search() {
         </div>
       </div>
 
-      <div aria-hidden="true" class="absolute top-[4.2rem] -right-[1.8rem] size-[6.4rem] animate-widget [animation-delay:0.4s,0.8s] max-sm:-right-2 tab:top-7 tab:right-7 tab:z-2">
-        <svg viewBox="0 0 120 120" class="size-full animate-seal">
+      <div aria-hidden="true" class="absolute top-[4.2rem] -right-[1.8rem] size-[6.4rem] animate-widget [animation-delay:0.3s] max-sm:-right-2 tab:top-7 tab:right-7 tab:z-2">
+        <svg viewBox="0 0 120 120" class="size-full">
           <defs><path id="hero-seal-ring" d="M60 60m-43 0a43 43 0 1 1 86 0a43 43 0 1 1-86 0" /></defs>
           <circle cx="60" cy="60" r="59" fill="#CDF36B" />
           <text font-size="10.5" font-weight="700" letter-spacing="2.1" fill="#0B3327"><textPath href="#hero-seal-ring">NIN VERIFIED · SCN VERIFIED · </textPath></text>
@@ -161,12 +161,12 @@ function search() {
 
       <div
         aria-live="polite"
-        class="absolute -right-[2.6rem] bottom-[5.4rem] w-[14.5rem] animate-widget rounded-[1.25rem] bg-card px-4 py-[0.85rem] text-[0.9rem] leading-[1.35] text-foreground shadow-widget [animation-delay:0.75s,2.2s] max-sm:-right-[0.4rem] max-sm:w-[13rem] tab:top-[44%] tab:right-auto tab:bottom-auto tab:left-[calc(50%-8.5rem)] tab:z-2 tab:w-[17rem]"
+        class="absolute -right-[2.6rem] bottom-[5.4rem] w-[14.5rem] animate-widget rounded-[1.25rem] bg-card px-4 py-[0.85rem] text-[0.9rem] leading-[1.35] text-foreground shadow-widget [animation-delay:0.38s] max-sm:-right-[0.4rem] max-sm:w-[13rem] tab:top-[44%] tab:right-auto tab:bottom-auto tab:left-[calc(50%-8.5rem)] tab:z-2 tab:w-[17rem]"
       >
-        <div class="flex items-center gap-[0.55rem] text-[0.85rem] font-bold transition-opacity duration-[280ms]" :class="{ 'opacity-0': swapping }">
+        <div class="flex items-center gap-[0.55rem] text-[0.85rem] font-bold transition-opacity duration-200" :class="{ 'opacity-0': swapping }">
           <CanopyGlyph name="chat" :size="18" class="flex-none" /><span>{{ examples[shown]!.area }}</span>
         </div>
-        <p class="mt-2 rounded-[0.9rem_0.9rem_0.9rem_0.3rem] bg-mint px-3 py-[0.55rem] transition-opacity duration-[280ms]" :class="{ 'opacity-0': swapping }">
+        <p class="mt-2 rounded-[0.9rem_0.9rem_0.9rem_0.3rem] bg-mint px-3 py-[0.55rem] transition-opacity duration-200" :class="{ 'opacity-0': swapping }">
           {{ examples[shown]!.text }}
         </p>
         <span role="img" aria-label="A lawyer is typing a reply" class="mt-2 inline-flex gap-1 rounded-full bg-primary px-[0.7rem] py-2">
@@ -176,13 +176,14 @@ function search() {
         </span>
       </div>
 
-      <div class="absolute bottom-[0.4rem] -left-[1.2rem] flex animate-widget items-center gap-[0.7rem] rounded-[1.25rem] bg-lime px-4 py-[0.85rem] text-[0.9rem] leading-[1.35] font-bold text-night shadow-widget [animation-delay:0.95s,3s] max-sm:-left-[0.2rem] tab:top-[24%] tab:right-6 tab:bottom-auto tab:left-auto tab:z-2">
+      <div class="absolute bottom-[0.4rem] -left-[1.2rem] flex animate-widget items-center gap-[0.7rem] rounded-[1.25rem] bg-lime px-4 py-[0.85rem] text-[0.9rem] leading-[1.35] font-bold text-night shadow-widget [animation-delay:0.46s] max-sm:-left-[0.2rem] tab:top-[24%] tab:right-6 tab:bottom-auto tab:left-auto tab:z-2">
         <CanopyGlyph name="calendar" :size="22" />
         <div><small class="block text-[0.76rem] font-semibold text-[#2C4A12]">Consultation booked</small>Thu, 10:30 AM</div>
       </div>
     </div>
 
-    <div class="col-start-1 row-start-2 min-w-0 animate-rise-in [animation-delay:160ms] tab:relative tab:z-2 tab:col-span-2">
+    <!-- the search is what the page is for: it is there from the first frame, no entrance -->
+    <div class="col-start-1 row-start-2 min-w-0 tab:relative tab:z-2 tab:col-span-2">
       <CanopySearchRail v-model:need="need" v-model:where="where" id-prefix="hero" @submit="search" />
       <div class="mt-[1.15rem] flex flex-wrap items-center gap-2 text-[0.9rem] text-on-forest">
         <span>Popular</span>
@@ -190,7 +191,7 @@ function search() {
           v-for="chip in popular"
           :key="chip.label"
           :to="chip.to"
-          class="inline-flex min-h-[2.6rem] items-center rounded-full border border-white/20 px-4 font-medium text-white [transition:background-color_0.25s,color_0.25s,border-color_0.25s,transform_0.3s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-0.5 hover:border-lime hover:bg-lime hover:text-night"
+          class="inline-flex min-h-[2.6rem] items-center rounded-full border border-white/20 px-4 font-medium text-white [transition:background-color_0.2s,color_0.2s,border-color_0.2s,translate_0.2s_var(--ease-canopy)] hover:-translate-y-0.5 hover:border-lime hover:bg-lime hover:text-night"
         >
           {{ chip.label }}
         </NuxtLink>

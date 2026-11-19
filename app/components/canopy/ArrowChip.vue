@@ -9,7 +9,7 @@ withDefaults(defineProps<{ large?: boolean }>(), { large: false })
 <template>
   <span
     aria-hidden="true"
-    class="grid flex-none place-items-center rounded-full bg-lime text-night transition-transform duration-[350ms] ease-canopy group-hover/btn:translate-x-[3px]"
+    class="grid flex-none place-items-center rounded-full bg-lime text-night transition-[translate] duration-200 ease-canopy group-hover/btn:translate-x-[3px]"
     :class="large ? 'size-10' : 'size-[1.95rem]'"
   >
     <CanopyGlyph name="arrow" :stroke="2.6" />

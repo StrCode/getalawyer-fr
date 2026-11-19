@@ -24,7 +24,7 @@ const initials = computed(() =>
 </script>
 
 <template>
-  <article class="grid grid-cols-[6.5rem_minmax(0,1fr)] grid-rows-[1fr_auto] gap-x-[1.1rem] rounded-card border border-border bg-card p-[1.1rem] [transition:transform_0.4s_cubic-bezier(0.22,0.8,0.26,1),box-shadow_0.4s_cubic-bezier(0.22,0.8,0.26,1)] hover:-translate-y-1 hover:shadow-lift max-sm:grid-cols-[4.5rem_minmax(0,1fr)] max-sm:p-[0.95rem]">
+  <article class="grid grid-cols-[6.5rem_minmax(0,1fr)] grid-rows-[1fr_auto] gap-x-[1.1rem] rounded-card border border-border bg-card p-[1.1rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-1 hover:shadow-lift max-sm:grid-cols-[4.5rem_minmax(0,1fr)] max-sm:p-[0.95rem]">
     <NuxtLink :to="profile" :aria-label="`${lawyer.name}: view profile`" class="grid aspect-square place-items-center self-start overflow-hidden rounded-[1.2rem] bg-mint">
       <NuxtImg v-if="lawyer.image" :src="lawyer.image" width="208" height="208" sizes="104px" alt="" loading="lazy" class="size-full object-cover object-[50%_20%]" />
       <span v-else aria-hidden="true" class="font-display text-[1.9rem] font-[650] tracking-[-0.03em] text-deep max-sm:text-[1.4rem]">{{ initials }}</span>

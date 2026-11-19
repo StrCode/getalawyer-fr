@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority"
 export { default as Button } from "./Button.vue"
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-base font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-base font-medium [transition:translate_160ms_ease-out,scale_160ms_ease-out,background-color_200ms_ease,border-color_200ms_ease,color_200ms_ease,box-shadow_200ms_ease,opacity_200ms_ease] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -25,15 +25,15 @@ export const buttonVariants = cva(
           "bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98]",
         // Canopy (marketing + sign-in) pills. Pair with size="pill" / "pill-sm".
         canopy:
-          "rounded-full bg-primary font-semibold text-white shadow-[0_10px_24px_rgba(0,122,85,0.28)] hover:-translate-y-0.5",
+          "rounded-full bg-primary font-semibold text-white shadow-[0_10px_24px_rgba(0,122,85,0.28)] hover:-translate-y-0.5 active:scale-[0.97]",
         lime:
-          "rounded-full bg-lime font-semibold text-night hover:-translate-y-0.5",
+          "rounded-full bg-lime font-semibold text-night hover:-translate-y-0.5 active:scale-[0.97]",
         "ink-pill":
-          "rounded-full bg-foreground font-semibold text-background hover:-translate-y-0.5",
+          "rounded-full bg-foreground font-semibold text-background hover:-translate-y-0.5 active:scale-[0.97]",
         line:
-          "rounded-full border border-border bg-card font-semibold text-foreground hover:-translate-y-0.5",
+          "rounded-full border border-border bg-card font-semibold text-foreground hover:-translate-y-0.5 active:scale-[0.97]",
         "on-forest":
-          "rounded-full border border-white/30 bg-transparent font-semibold text-white hover:-translate-y-0.5",
+          "rounded-full border border-white/30 bg-transparent font-semibold text-white hover:-translate-y-0.5 active:scale-[0.97]",
       },
       size: {
         "default": "h-9 px-4 py-2 has-[>svg]:px-3",

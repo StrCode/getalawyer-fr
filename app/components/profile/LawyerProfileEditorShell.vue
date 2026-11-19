@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { AlertCircleIcon, LinkSquare01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import { motion } from 'motion-v'
 import { toast } from 'vue-sonner'
 import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
 import ProfileAboutSection from '@/components/profile/sections/ProfileAboutSection.vue'
@@ -411,14 +410,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <motion.div
+  <div
     class="space-y-6 md:space-y-8"
-    :initial="{ opacity: 0, y: 8 }"
-    :animate="{ opacity: 1, y: 0 }"
-    :transition="{ duration: 0.25 }"
   >
     <DashboardPageHeader
-      class="snapshot-rise"
       eyebrow="Practice"
       description="How clients see you in search. Consultation types, availability, and billing live under Practice and Account."
     >
@@ -484,14 +479,14 @@ onBeforeUnmount(() => {
       :notice="approvalNotice"
     />
 
-    <motion.div
+    <div
       v-if="isLoading"
       class="space-y-4"
     >
       <Skeleton class="h-40 w-full rounded-xl" />
       <Skeleton class="h-56 w-full rounded-xl" />
       <Skeleton class="h-72 w-full rounded-xl" />
-    </motion.div>
+    </div>
 
     <Card
       v-else-if="isError"
@@ -527,15 +522,11 @@ onBeforeUnmount(() => {
 
     <template v-else-if="profile">
       <ListingProgressPanel
-        class="snapshot-rise"
-        style="animation-delay: 40ms"
         :eligibility="directoryEligibility"
         :profile-strength="profileStrength"
       />
 
       <LawyerProfilePreviewCard
-        class="snapshot-rise"
-        style="animation-delay: 80ms"
         :name="displayName"
         :image-url="avatarSrc"
         :headline="profile.about.headline"
@@ -552,7 +543,7 @@ onBeforeUnmount(() => {
         class="lg:hidden"
       />
 
-      <div class="snapshot-rise lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8" style="animation-delay: 120ms">
+      <div class="lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8">
         <aside class="relative hidden lg:block">
           <div class="sticky top-6 rounded-xl border border-foreground/15 bg-card p-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
             <ProfileSectionNav :sections="lawyerSections" />
@@ -664,5 +655,5 @@ onBeforeUnmount(() => {
         No listing data available. Try refreshing the page.
       </CardContent>
     </Card>
-  </motion.div>
+  </div>
 </template>
