@@ -464,6 +464,15 @@ const panel = 'rounded-card border border-border bg-card'
                   {{ PAYMENT_STATE[getSubscriptionHistoryStatus(payment.action)].label }}
                 </span>
                 <b class="min-w-[5.5rem] text-right font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ paymentAmount(payment.action, payment.amountNaira) }}</b>
+                <!-- the same width on every row, so the amounts line up whether or not there is a receipt -->
+                <span class="flex min-w-[4.6rem] justify-end" :class="{ 'max-sm:hidden': !payment.hasReceipt }">
+                  <NuxtLink
+                    v-if="payment.hasReceipt"
+                    :to="`/dashboard/subscription/receipts/${payment.id}`"
+                    class="inline-flex min-h-[2.75rem] items-center font-semibold text-brand underline underline-offset-[3px] transition-colors hover:text-foreground"
+                    :aria-label="`Receipt for the payment on ${longDate(payment.createdAt)}`"
+                  >Receipt</NuxtLink>
+                </span>
               </div>
             </li>
           </ul>

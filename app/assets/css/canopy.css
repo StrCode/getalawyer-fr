@@ -126,4 +126,25 @@
   html.dark:has(body.canopy)::-webkit-scrollbar-thumb { background-color: rgba(236, 242, 238, 0.24); }
   html.dark:has(body.canopy)::-webkit-scrollbar-thumb:hover { background-color: rgba(236, 242, 238, 0.4); }
 
+  /*
+   * Paper. A page marked `data-paper` (a receipt) prints as a white sheet with
+   * dark ink whatever theme the screen is in: browsers leave backgrounds out of
+   * a print, so dark mode's pale text would land on white and vanish.
+   */
+  @media print {
+    .canopy, .dark .canopy { background: #FFFFFF; color-scheme: light; }
+    .dark .canopy [data-paper] {
+      --mint: #DFF2E5;
+      --brand: #007A55;
+      --deep: #0B3327;
+      --foreground: #0F2219;
+      --card: #FFFFFF;
+      --card-foreground: #0F2219;
+      --muted: #E8EDE9;
+      --muted-foreground: #40504A;
+      --border: #DDE6DF;
+      color: var(--foreground);
+    }
+  }
+
 }
