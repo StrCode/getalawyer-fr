@@ -21,6 +21,7 @@
             containedScroll ? 'min-h-0' : '',
           ]"
         >
+          <ClientOnly><WorkspaceReadOnlyNotice class="mb-6" /></ClientOnly>
           <slot />
         </div>
       </div>

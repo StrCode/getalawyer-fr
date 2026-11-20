@@ -764,12 +764,15 @@ function rowActions(booking: Booking): 'pending' | 'finish' | 'cancel' | 'none' 
 // ---------------------------------------------------------------------------
 // Mutations
 // ---------------------------------------------------------------------------
+const { membershipBlocks } = useMembershipAccess()
 const { mutate: confirmBooking } = useConfirmBooking()
 const { mutate: completeBooking } = useCompleteBooking()
 const { mutate: markAsNoShow } = useMarkAsNoShow()
 const { mutate: cancelBooking, isPending: isCanceling } = useCancelLawyerBooking()
 
 function handleConfirm(bookingId: string) {
+  // Accepting a request is taking a new booking, which needs a membership that is on.
+  if (membershipBlocks('accept new bookings')) return
   confirmBooking(bookingId, {
     onSuccess: () => {
       toast.success('Appointment confirmed. Client has been notified.')

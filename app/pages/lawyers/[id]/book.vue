@@ -165,6 +165,13 @@ function handleConfirm() {
       },
       onError: (err: any) => {
         const message = err?.message || 'Failed to create the booking'
+        // The lawyer's membership is not on: no time will work, so do not send the client back to pick one.
+        if (err?.code === 'LAWYER_NOT_TAKING_BOOKINGS') {
+          toast.error('Not taking bookings', {
+            description: 'This lawyer is not taking new bookings at the moment. You can still message them, or find another lawyer.',
+          })
+          return
+        }
         // 409: someone else took the time between picking it and confirming.
         if (err?.status === 409 || err?.code === 'SLOT_NOT_AVAILABLE' || message.includes('no longer available')) {
           toast.error('Slot unavailable', {

@@ -91,6 +91,7 @@ const {
   directoryEligibility,
 } = useLawyerProfileEditor()
 
+const { membershipBlocks } = useMembershipAccess()
 const { mutate: confirmBooking, isPending: isConfirming } = useConfirmBooking()
 const { mutate: cancelBooking, isPending: isDeclining } = useCancelLawyerBooking()
 
@@ -215,6 +216,8 @@ const showFullEmpty = computed(
 )
 
 function handleConfirm(bookingId: string) {
+  // Accepting a request is taking a new booking, which needs a membership that is on.
+  if (membershipBlocks('accept new bookings')) return
   confirmingBookingId.value = bookingId
   confirmBooking(bookingId, {
     onSuccess: () => {

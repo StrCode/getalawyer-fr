@@ -48,7 +48,7 @@ describe('membershipHeadline', () => {
   })
 
   it('gives the reason a payment failed, ending it with a full stop', () => {
-    expect(membershipHeadline('payment_issue', { failureReason: 'Insufficient funds' }).detail).toBe('Insufficient funds. Pay now to stay in the directory.')
+    expect(membershipHeadline('payment_issue', { failureReason: 'Insufficient funds' }).detail).toMatch(/^Insufficient funds\. Pay now to take new bookings/)
     expect(membershipHeadline('unfinished', { failureReason: 'Card declined.' }).detail).toMatch(/^Card declined\. Nothing was taken\./)
   })
 
@@ -58,6 +58,15 @@ describe('membershipHeadline', () => {
       expect(h.lead && h.accent && h.detail).toBeTruthy()
       expect(`${h.lead} ${h.accent} ${h.detail}`).not.toMatch(/undefined|null/)
     }
+  })
+})
+
+describe('read-only', () => {
+  it('tells a lawyer without an active membership what they can still do', () => {
+    for (const mode of ['none', 'payment_issue', 'ended'] as const) {
+      expect(membershipHeadline(mode).detail).toMatch(/still read and reply to your clients/)
+    }
+    expect(membershipHeadline('active', { autoRenew: true }).detail).not.toMatch(/still read and reply/)
   })
 })
 

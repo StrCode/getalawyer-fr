@@ -73,8 +73,11 @@ const approvalNotice = computed(() =>
   onboardingStatus.value ? getProfileEditorApprovalNotice(onboardingStatus.value) : null
 )
 
+const { readOnly: membershipReadOnly, membershipBlocks } = useMembershipAccess()
 const canEdit = computed(() => {
   if (!onboardingStatus.value) return false
+  // A lawyer whose membership is not on can look at their profile but not change it.
+  if (membershipReadOnly.value) return false
   return canEditLawyerPublicProfile(onboardingApplicationStatus(onboardingStatus.value))
 })
 
@@ -207,7 +210,7 @@ async function runProfileMutation<T>(
   errorMessage: string,
 ): Promise<T> {
   if (!canEdit.value) {
-    toast.error('Profile edits unlock after admin approval')
+    if (!membershipBlocks('change your profile')) toast.error('Profile edits unlock after admin approval')
     throw new Error('not allowed')
   }
 
