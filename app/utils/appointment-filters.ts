@@ -10,12 +10,13 @@
 import type { Booking, BookingStatus } from '~/types/booking'
 import { localDateKey } from '~/utils/date'
 
-export type AppointmentStatusTab = 'all' | 'upcoming' | 'pending' | 'completed' | 'cancelled'
+export type AppointmentStatusTab = 'all' | 'upcoming' | 'pending' | 'to_close' | 'completed' | 'cancelled'
 
 export const APPOINTMENT_STATUS_TABS: { key: AppointmentStatusTab, label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'upcoming', label: 'Upcoming' },
   { key: 'pending', label: 'Pending' },
+  { key: 'to_close', label: 'To close' },
   { key: 'completed', label: 'Completed' },
   { key: 'cancelled', label: 'Cancelled / No-show' },
 ]
@@ -95,17 +96,31 @@ const ACTIVE_STATUSES: BookingStatus[] = ['confirmed', 'pending']
 const CLOSED_STATUSES: BookingStatus[] = ['cancelled', 'no_show']
 
 /**
- * Tab membership. "Upcoming" is today-or-later *and* still live
- * (confirmed/pending); a confirmed booking that already passed is not upcoming.
+ * A confirmed appointment whose time has passed. Nothing closes these on their
+ * own: the lawyer marks each one completed or a no-show, and until then it is
+ * neither upcoming nor history.
  */
-export function matchesStatusTab(booking: Booking, tab: AppointmentStatusTab, todayKey: string = localDateKey()): boolean {
+export function needsClosing(booking: Booking, now: Date = new Date()): boolean {
+  if (booking.status !== 'confirmed') return false
+  const end = new Date(`${booking.scheduledDate.slice(0, 10)}T${booking.scheduledEndTime ?? booking.scheduledStartTime ?? '23:59:59'}`)
+  return end.getTime() < now.getTime()
+}
+
+/**
+ * Tab membership. "Upcoming" is today-or-later *and* still live
+ * (confirmed/pending); a confirmed booking that already passed is not upcoming:
+ * it is "to close".
+ */
+export function matchesStatusTab(booking: Booking, tab: AppointmentStatusTab, todayKey: string = localDateKey(), now: Date = new Date()): boolean {
   switch (tab) {
     case 'all':
       return true
     case 'upcoming':
-      return booking.scheduledDate >= todayKey && ACTIVE_STATUSES.includes(booking.status)
+      return booking.scheduledDate >= todayKey && ACTIVE_STATUSES.includes(booking.status) && !needsClosing(booking, now)
     case 'pending':
       return booking.status === 'pending'
+    case 'to_close':
+      return needsClosing(booking, now)
     case 'completed':
       return booking.status === 'completed'
     case 'cancelled':
@@ -142,20 +157,23 @@ function bookingTime(b: Booking) {
 }
 
 /**
- * Apply all filters and sort. Live tabs (all/upcoming/pending) read soonest
- * first; history tabs (completed/cancelled) read most recent first.
+ * Apply all filters and sort. What is still to be dealt with (upcoming,
+ * pending, to close) reads soonest first; history (completed, cancelled) and
+ * the whole diary ("all") read most recent first, so years of past
+ * appointments never sit above this week's.
  */
 export function filterAppointments(
   bookings: readonly Booking[],
   state: AppointmentFilterState,
   todayKey: string = localDateKey(),
+  now: Date = new Date(),
 ): Booking[] {
   const out = bookings.filter(b =>
-    matchesStatusTab(b, state.tab, todayKey)
+    matchesStatusTab(b, state.tab, todayKey, now)
     && matchesDateRange(b, state.range)
     && matchesSearch(b, state.search),
   )
-  const newestFirst = state.tab === 'completed' || state.tab === 'cancelled'
+  const newestFirst = state.tab === 'completed' || state.tab === 'cancelled' || state.tab === 'all'
   return out.sort((a, b) => {
     const cmp = bookingTime(a).localeCompare(bookingTime(b))
     return newestFirst ? -cmp : cmp
@@ -181,6 +199,7 @@ export function emptyMessage(tab: AppointmentStatusTab, hasRange: boolean, hasSe
     all: 'appointments',
     upcoming: 'upcoming appointments',
     pending: 'pending appointments',
+    to_close: 'appointments to close',
     completed: 'completed appointments',
     cancelled: 'cancelled or no-show appointments',
   }

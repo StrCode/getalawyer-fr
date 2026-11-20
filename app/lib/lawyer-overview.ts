@@ -13,6 +13,7 @@ export interface OverviewBooking {
   scheduledDate: string
   /** HH:mm or HH:mm:ss */
   scheduledStartTime: string
+  scheduledEndTime?: string | null
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
   meetingType: 'video' | 'in_person' | 'phone'
   engagementOutcome?: string | null
@@ -40,6 +41,11 @@ export function bookingStart(booking: Pick<OverviewBooking, 'scheduledDate' | 's
   const [hours, minutes] = booking.scheduledStartTime.split(':').map(Number)
   start.setHours(hours || 0, minutes || 0, 0, 0)
   return start
+}
+
+/** When a booking ends; its start when no end time was kept. */
+export function bookingEnd(booking: Pick<OverviewBooking, 'scheduledDate' | 'scheduledStartTime' | 'scheduledEndTime'>): Date {
+  return bookingStart({ scheduledDate: booking.scheduledDate, scheduledStartTime: booking.scheduledEndTime || booking.scheduledStartTime })
 }
 
 /** "2:30 PM" from "14:30" or "14:30:00". */
@@ -100,6 +106,11 @@ export interface OverviewDiary {
   next: OverviewBooking | null
   /** Finished consultations with no outcome recorded, most recent first. */
   followUps: OverviewBooking[]
+  /**
+   * Confirmed appointments whose time has passed. Nothing closes these on its
+   * own: the lawyer marks each completed or a no-show. Oldest first.
+   */
+  toClose: OverviewBooking[]
 }
 
 export function sortDiary(bookings: OverviewBooking[], now: Date): OverviewDiary {
@@ -114,6 +125,9 @@ export function sortDiary(bookings: OverviewBooking[], now: Date): OverviewDiary
     followUps: bookings
       .filter(booking => booking.status === 'completed' && !booking.engagementOutcome)
       .sort((a, b) => byStart(b, a)),
+    toClose: bookings
+      .filter(booking => booking.status === 'confirmed' && bookingEnd(booking) < now)
+      .sort(byStart),
   }
 }
 
@@ -146,7 +160,7 @@ const bookingPath = (booking: OverviewBooking) => `/dashboard/appointments/${boo
 
 /** The single most pressing thing, said as a sentence, with where to go for it. */
 export function overviewHeadline(facts: OverviewFacts, now: Date): OverviewHeadline {
-  const { requests, laterToday, next, followUps } = facts.diary
+  const { requests, laterToday, next, followUps, toClose } = facts.diary
   const nextLine = next
     ? `Your next consultation is with ${clientName(next)} ${dayPhrase(next.scheduledDate, now)} at ${clockLabel(next.scheduledStartTime)}, ${CHANNEL[next.meetingType]?.by ?? 'as booked'}.`
     : null
@@ -176,6 +190,16 @@ export function overviewHeadline(facts: OverviewFacts, now: Date): OverviewHeadl
       accent: 'for a reply.',
       detail: nextLine ?? 'Clients choose the lawyer who answers first more often than not.',
       primary: { label: 'Open messages', to: '/dashboard/messages' },
+    }
+  }
+  if (toClose.length > 0) {
+    return {
+      lead: toClose.length === 1 ? 'One past appointment' : `${countWord(toClose.length)} past appointments`,
+      accent: toClose.length === 1 ? 'is still open.' : 'are still open.',
+      detail: nextLine ?? 'Mark each one completed or a no-show, so your diary and your record with the client are right.',
+      primary: toClose.length === 1
+        ? { label: 'Close it', to: bookingPath(toClose[0]!) }
+        : { label: 'Close them', to: '/dashboard/appointments?status=to_close' },
     }
   }
   if (followUps.length > 0) {
@@ -274,6 +298,16 @@ export function overviewTodos(input: TodoInput): OverviewTodo[] {
       note: listNames(input.unreadFrom ?? [], conversations),
       action: 'Open messages',
       to: '/dashboard/messages',
+    })
+  }
+
+  for (const booking of input.diary.toClose) {
+    todos.push({
+      id: `close-${booking.id}`,
+      title: `Close your appointment with ${clientName(booking)}`,
+      note: `${typeName(booking)} on ${fullDayLabel(booking.scheduledDate)}. Mark it completed or a no-show.`,
+      action: 'Close it',
+      to: bookingPath(booking),
     })
   }
 

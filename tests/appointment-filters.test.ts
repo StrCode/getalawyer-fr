@@ -4,6 +4,7 @@ import {
   filterAppointments,
   matchesSearch,
   matchesStatusTab,
+  needsClosing,
   paginate,
   resolveDateRange,
 } from '~/utils/appointment-filters'
@@ -26,6 +27,10 @@ function make(over: Partial<Booking> & { status: BookingStatus, scheduledDate: s
 }
 
 const TODAY = '2026-08-22' // Saturday
+/** Eight in the morning that day: before the 10:00 bookings `make` builds. */
+const MORNING = new Date(2026, 7, 22, 8, 0)
+/** Noon that day: after them. */
+const NOON = new Date(2026, 7, 22, 12, 0)
 
 describe('resolveDateRange', () => {
   // Local-time construction so the result is independent of the runner's TZ.
@@ -50,17 +55,41 @@ describe('resolveDateRange', () => {
 })
 
 describe('matchesStatusTab', () => {
-  it('upcoming = today or later and still live', () => {
-    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: TODAY }), 'upcoming', TODAY)).toBe(true)
-    expect(matchesStatusTab(make({ status: 'pending', scheduledDate: '2026-09-01' }), 'upcoming', TODAY)).toBe(true)
-    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: '2026-08-21' }), 'upcoming', TODAY)).toBe(false)
-    expect(matchesStatusTab(make({ status: 'completed', scheduledDate: '2026-09-01' }), 'upcoming', TODAY)).toBe(false)
+  it('upcoming = today or later, still live, and not yet over', () => {
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: TODAY }), 'upcoming', TODAY, MORNING)).toBe(true)
+    expect(matchesStatusTab(make({ status: 'pending', scheduledDate: '2026-09-01' }), 'upcoming', TODAY, MORNING)).toBe(true)
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: '2026-08-21' }), 'upcoming', TODAY, MORNING)).toBe(false)
+    expect(matchesStatusTab(make({ status: 'completed', scheduledDate: '2026-09-01' }), 'upcoming', TODAY, MORNING)).toBe(false)
+    // held this morning: no longer to come
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: TODAY }), 'upcoming', TODAY, NOON)).toBe(false)
+  })
+
+  it('to close = confirmed and already over, whatever the day', () => {
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: TODAY }), 'to_close', TODAY, NOON)).toBe(true)
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: '2026-08-01' }), 'to_close', TODAY, MORNING)).toBe(true)
+    expect(matchesStatusTab(make({ status: 'confirmed', scheduledDate: TODAY }), 'to_close', TODAY, MORNING)).toBe(false)
+    // a request that was never answered is not an appointment to close
+    expect(matchesStatusTab(make({ status: 'pending', scheduledDate: '2026-08-01' }), 'to_close', TODAY, NOON)).toBe(false)
+    expect(matchesStatusTab(make({ status: 'completed', scheduledDate: '2026-08-01' }), 'to_close', TODAY, NOON)).toBe(false)
   })
 
   it('cancelled tab groups cancelled and no_show', () => {
     expect(matchesStatusTab(make({ status: 'cancelled', scheduledDate: TODAY }), 'cancelled', TODAY)).toBe(true)
     expect(matchesStatusTab(make({ status: 'no_show', scheduledDate: TODAY }), 'cancelled', TODAY)).toBe(true)
     expect(matchesStatusTab(make({ status: 'completed', scheduledDate: TODAY }), 'cancelled', TODAY)).toBe(false)
+  })
+})
+
+describe('needsClosing', () => {
+  it('goes by when the appointment ends, not when it starts', () => {
+    const held = make({ status: 'confirmed', scheduledDate: TODAY })
+    expect(needsClosing(held, new Date(2026, 7, 22, 10, 15))).toBe(false)
+    expect(needsClosing(held, new Date(2026, 7, 22, 10, 31))).toBe(true)
+  })
+
+  it('falls back to the start when no end time was kept', () => {
+    const held = make({ status: 'confirmed', scheduledDate: TODAY, scheduledEndTime: undefined })
+    expect(needsClosing(held, new Date(2026, 7, 22, 10, 1))).toBe(true)
   })
 })
 
@@ -84,12 +113,20 @@ describe('filterAppointments', () => {
 
   it('history tabs sort newest first, live tabs soonest first', () => {
     expect(filterAppointments(list, { tab: 'completed', range: { from: null, to: null }, search: '' }, TODAY).map(b => b.id)).toEqual(['b', 'a'])
-    expect(filterAppointments(list, { tab: 'upcoming', range: { from: null, to: null }, search: '' }, TODAY).map(b => b.id)).toEqual(['d', 'c'])
+    expect(filterAppointments(list, { tab: 'upcoming', range: { from: null, to: null }, search: '' }, TODAY, MORNING).map(b => b.id)).toEqual(['d', 'c'])
   })
 
-  it('applies the date range inclusively', () => {
+  it('applies the date range inclusively, and shows the whole diary most recent first', () => {
     const out = filterAppointments(list, { tab: 'all', range: { from: '2026-08-20', to: '2026-08-23' }, search: '' }, TODAY)
-    expect(out.map(b => b.id)).toEqual(['b', 'd'])
+    expect(out.map(b => b.id)).toEqual(['d', 'b'])
+  })
+
+  it('lists what needs closing oldest first', () => {
+    const open = [
+      make({ id: 'x', status: 'confirmed', scheduledDate: '2026-08-20' }),
+      make({ id: 'y', status: 'confirmed', scheduledDate: '2026-08-10' }),
+    ]
+    expect(filterAppointments(open, { tab: 'to_close', range: { from: null, to: null }, search: '' }, TODAY, NOON).map(b => b.id)).toEqual(['y', 'x'])
   })
 })
 
