@@ -79,6 +79,8 @@ export interface SubscriptionPricingPayload {
   /** Every plan on sale. The single-price fields above describe the default one. */
   plans?: SubscriptionPlanOption[]
   defaultPlanKey?: string | null
+  /** The small charge taken, and refunded, to check a new card when the saved card is changed. */
+  cardCheckNaira?: number
 }
 
 export function formatNairaAmount(amount: number): string {
@@ -315,6 +317,46 @@ export interface SubscriptionPaymentHistoryRecord {
   createdAt: string
   /** A successful payment: it has a receipt to open. */
   hasReceipt?: boolean
+  /** For a card-check row: the card it saved (none when refused) and where the refund stands. */
+  cardCheck?: {
+    saved: boolean
+    card: { last4: string | null, brand: string | null, bank: string | null } | null
+    refund: CardCheckRefund
+  } | null
+}
+
+export type CardCheckRefund = 'sent' | 'processed' | 'failed'
+
+/** Where a change of card stands, as the backend reports it. */
+export type CardChangeResult
+  = | { status: 'changed', card: { last4: string | null, brand: string | null, bank: string | null } | null, refund: CardCheckRefund }
+    | { status: 'rejected', message: string, refund: CardCheckRefund }
+    | { status: 'pending' }
+    | { status: 'not_paid', message: string }
+
+/** Starts a change of the saved card: returns Paystack's page for the small check charge. */
+export function useStartCardChange() {
+  return useMutation({
+    mutationFn: () => httpClient.post<{ redirectUrl: string, reference: string, amountNaira: number }>(
+      '/api/subscriptions/card/change',
+    ),
+  })
+}
+
+/** Back from Paystack: asks the backend to finish the change and say where it stands. */
+export function useConfirmCardChange() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (reference: string) => httpClient.post<CardChangeResult>(
+      '/api/subscriptions/card/confirm',
+      { reference },
+    ),
+    onSuccess: (result) => {
+      if (result.status === 'pending' || result.status === 'not_paid') return
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
+      queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })
+    },
+  })
 }
 
 interface SubscriptionPaymentHistoryPayload {
@@ -392,6 +434,8 @@ export function formatSubscriptionHistoryAction(action: string): string {
     refund_initiated: 'Refund processing',
     refunded: 'Refund',
     refund_failed: 'Refund failed',
+    card_changed: 'Card changed',
+    card_check_rejected: 'Card check: card not saved',
   }
   return labels[action] ?? action.replace(/_/g, ' ')
 }
