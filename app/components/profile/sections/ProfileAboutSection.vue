@@ -52,7 +52,7 @@ async function onSave() {
         About & headline
       </CardTitle>
       <CardDescription>
-        A short headline and bio appear at the top of your listing.
+        A short headline and bio appear at the top of your profile.
       </CardDescription>
     </CardHeader>
     <CardContent class="space-y-4">

@@ -133,7 +133,7 @@ async function onDeleteConfirm() {
             Articles
           </CardTitle>
           <CardDescription>
-            Share insights on your listing. Only published articles are visible to clients.
+            Share insights on your profile. Only published articles are visible to clients.
           </CardDescription>
         </div>
         <Button
@@ -153,7 +153,7 @@ async function onDeleteConfirm() {
         v-if="items.length === 0"
         class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
       >
-        No articles yet. Publish legal insights for clients visiting your listing.
+        No articles yet. Publish legal insights for clients visiting your profile.
       </p>
       <div
         v-else
@@ -179,7 +179,7 @@ async function onDeleteConfirm() {
     <ProfileEntryDialog
       v-model:open="dialogOpen"
       :title="dialogTitle"
-      description="Articles appear on your listing when published."
+      description="Articles appear on your profile when published."
       :save-label="editingId ? 'Update' : 'Add'"
       :saving="saving"
       :save-disabled="!canSave"
@@ -206,7 +206,7 @@ async function onDeleteConfirm() {
             id="article-excerpt"
             v-model="excerpt"
             maxlength="400"
-            placeholder="Short summary shown on your listing"
+            placeholder="Short summary shown on your profile"
           />
         </Field>
         <Field>
@@ -236,7 +236,7 @@ async function onDeleteConfirm() {
                 Draft — only you can see this
               </SelectItem>
               <SelectItem value="published">
-                Published — visible on your listing
+                Published — visible on your profile
               </SelectItem>
             </SelectContent>
           </Select>
@@ -247,7 +247,7 @@ async function onDeleteConfirm() {
     <ProfileDeleteConfirmDialog
       v-model:open="deleteOpen"
       title="Delete article?"
-      description="This article will be permanently removed from your listing."
+      description="This article will be permanently removed from your profile."
       :deleting="saving"
       @confirm="onDeleteConfirm"
     />

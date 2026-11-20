@@ -86,7 +86,7 @@ const actionItems = computed((): LawyerDashboardActionItem[] => {
       title: isExpiredMembership(props.subscription)
         ? 'Membership expired'
         : 'Activate your membership',
-      description: 'Your directory listing requires an active subscription.',
+      description: 'Your profile needs an active subscription to show in the directory.',
       to: '/dashboard/subscription',
       ctaLabel: isExpiredMembership(props.subscription) ? 'Renew membership' : 'View plans',
     })
@@ -118,7 +118,7 @@ const actionItems = computed((): LawyerDashboardActionItem[] => {
       title: 'Not visible in search yet',
       description: 'Complete your publish checklist to appear in the lawyer directory.',
       to: '/dashboard/profile',
-      ctaLabel: 'Complete listing',
+      ctaLabel: 'Complete profile',
     })
   }
 

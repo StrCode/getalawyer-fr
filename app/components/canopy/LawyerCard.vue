@@ -50,7 +50,7 @@ const chips = computed(() => (meeting.value.length ? meeting.value : otherAreas.
       </ul>
       <div v-if="fee != null" class="mt-[0.9rem] mb-4 flex items-baseline justify-between gap-2 border-t border-border pt-[0.85rem] text-[0.9rem] text-muted-foreground">
         <span>Consultation from</span>
-        <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em] text-foreground tabular-nums">{{ fee > 0 ? formatNairaAmount(fee) : 'Free' }}</b>
+        <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em] text-foreground">{{ fee > 0 ? formatNairaAmount(fee) : 'Free' }}</b>
       </div>
       <div class="mt-auto flex items-center gap-[0.9rem]" :class="{ 'pt-4': fee == null }">
         <Button as-child variant="ink-pill" size="pill-sm" class="flex-1">

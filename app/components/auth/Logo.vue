@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 </script>
 
 <template>
-  <LandingBrandLogo v-bind="$attrs" />
+  <BrandLogo v-bind="$attrs" />
 </template>

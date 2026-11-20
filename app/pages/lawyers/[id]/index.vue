@@ -192,8 +192,8 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
       </nav>
 
       <p v-if="isOwnProfile" class="mb-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-[1.25rem] bg-mint px-[1.2rem] py-[0.9rem] text-[0.95rem] font-semibold text-deep">
-        This is your listing, exactly as clients see it.
-        <NuxtLink to="/dashboard/profile" class="underline underline-offset-[3px]">Edit your listing</NuxtLink>
+        This is your profile, exactly as clients see it.
+        <NuxtLink to="/dashboard/profile" class="underline underline-offset-[3px]">Edit your profile</NuxtLink>
       </p>
 
       <div class="grid grid-cols-[minmax(0,1fr)_24rem] items-start gap-[clamp(1.5rem,3vw,2.75rem)] max-tab:grid-cols-1">
@@ -217,10 +217,10 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
 
           <!-- the owner's own empty listing: say what to do next -->
           <section v-if="isOwnProfile && !hasProfileContent" class="mt-[1.6rem] rounded-card border border-dashed border-border px-6 py-8 text-center">
-            <h2 class="text-[1.3rem] font-[650] tracking-[-0.02em]">Your listing is still empty</h2>
+            <h2 class="text-[1.3rem] font-[650] tracking-[-0.02em]">Your profile is still empty</h2>
             <p class="mx-auto mt-2 max-w-md text-muted-foreground">Add a short summary and an about section. Clients decide in the first few seconds.</p>
             <Button as-child variant="line" size="pill-sm" class="mt-4">
-              <NuxtLink to="/dashboard/profile#about">Complete your listing</NuxtLink>
+              <NuxtLink to="/dashboard/profile#about">Complete your profile</NuxtLink>
             </Button>
           </section>
 
@@ -294,7 +294,7 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
                   <p v-if="item.description?.trim()" class="mt-[0.45rem] whitespace-pre-line text-muted-foreground">{{ item.description }}</p>
                   <!-- for the owner only: visitors should not see editor notes -->
                   <p v-if="isOwnProfile && item.source === 'onboarding'" class="mt-[0.45rem] text-[0.85rem] text-muted-foreground">
-                    Taken from your registration. Add the details in the listing editor.
+                    Taken from your registration. Add the details in the profile editor.
                   </p>
                 </div>
               </li>
@@ -378,7 +378,7 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
         <div class="min-w-0 flex-1">
           <template v-if="feeLabel">
             <small class="block text-[0.74rem] text-muted-foreground">Consultation</small>
-            <b class="font-display font-[650] whitespace-nowrap tabular-nums">{{ feeLabel }}</b>
+            <b class="font-display font-[650] whitespace-nowrap">{{ feeLabel }}</b>
           </template>
           <b v-else class="font-display font-[650]">Free to message</b>
         </div>

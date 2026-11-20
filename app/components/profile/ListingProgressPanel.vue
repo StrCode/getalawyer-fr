@@ -252,7 +252,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
           v-if="incompleteItems.length === 0"
           class="text-sm text-muted-foreground"
         >
-          Nothing left on the checklist. Keep your listing current as you grow.
+          Nothing left on the checklist. Keep your profile current as you grow.
         </p>
 
         <ul

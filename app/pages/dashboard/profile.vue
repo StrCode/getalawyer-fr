@@ -33,7 +33,7 @@ useHead(() => ({
     {
       name: 'description',
       content: isLawyer.value
-        ? 'Edit your public directory listing'
+        ? 'Edit your public profile'
         : 'Manage your profile and contact details',
     },
   ],

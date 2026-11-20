@@ -42,7 +42,7 @@ const buttonLabel = computed(() => {
 })
 
 const benefits = [
-  'Public directory listing',
+  'Public profile in the directory',
   'Client bookings and messaging',
   'Keep 100% of consultation fees',
 ] as const

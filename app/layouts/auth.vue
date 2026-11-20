@@ -66,7 +66,7 @@ const PANELS: Record<Audience, {
     kicker: 'For lawyers',
     title: 'Clients find you.',
     accent: 'You keep your fees.',
-    body: 'A verified listing, messages from clients and bookings, for one membership. Clients pay you directly.',
+    body: 'A verified profile, messages from clients and bookings, for one membership. Clients pay you directly.',
   },
 }
 

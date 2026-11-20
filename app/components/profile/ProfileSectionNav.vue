@@ -52,7 +52,7 @@ onUnmounted(() => {
 
 <template>
   <nav
-    aria-label="Listing sections"
+    aria-label="Profile sections"
     class="space-y-1"
   >
     <p class="mb-3 eyebrow text-muted-foreground">

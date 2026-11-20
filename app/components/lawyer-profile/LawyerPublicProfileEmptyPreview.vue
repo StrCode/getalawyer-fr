@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
       id="profile-empty-heading"
       class="text-base font-semibold text-foreground"
     >
-      Your listing is still empty
+      Your profile is still empty
     </h2>
     <p class="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
       Add your about section — clients decide in the first 10 seconds.
@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button'
       class="mt-4"
     >
       <NuxtLink to="/dashboard/profile#about">
-        Complete your listing
+        Complete your profile
       </NuxtLink>
     </Button>
   </section>

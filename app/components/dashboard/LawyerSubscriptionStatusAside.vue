@@ -49,7 +49,7 @@ const subtitle = computed(() => {
     }
   }
   if (needsMembershipRenewal(props.subscription)) {
-    return 'Your directory listing is inactive'
+    return 'Your profile is hidden from the directory'
   }
   return 'Required to appear in search'
 })

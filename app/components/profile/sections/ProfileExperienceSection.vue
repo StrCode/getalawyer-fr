@@ -133,7 +133,7 @@ async function onDeleteConfirm() {
             Experience
           </CardTitle>
           <CardDescription>
-            Roles and positions clients see on your listing.
+            Roles and positions clients see on your profile.
           </CardDescription>
         </div>
         <Button
@@ -259,7 +259,7 @@ async function onDeleteConfirm() {
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
     title="Remove experience?"
-    description="This role will no longer appear on your listing."
+    description="This role will no longer appear on your profile."
     :deleting="saving"
     @confirm="onDeleteConfirm"
   />

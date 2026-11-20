@@ -138,7 +138,7 @@ const choice = 'cursor-pointer transition-colors duration-200'
             <b class="block text-[0.97rem]">{{ type.name }}</b>
             <small class="text-[0.82rem] opacity-75">{{ type.durationMinutes }} min · {{ MEETING[type.meetingType] }}</small>
           </span>
-          <em class="flex-none font-display font-[650] not-italic tabular-nums">{{ priceLabel(type) }}</em>
+          <em class="flex-none font-display font-[650] not-italic">{{ priceLabel(type) }}</em>
         </button>
       </div>
 

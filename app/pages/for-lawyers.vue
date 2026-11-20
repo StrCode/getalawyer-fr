@@ -13,7 +13,7 @@ const fee = computed(() => pricing.value?.verificationAdminFeeNaira ?? 0)
 
 useHead({ title: 'For lawyers' })
 useSeoMeta({
-  description: 'Join getalawyer as a verified lawyer: a listing in the directory, messages from clients and bookings, with no commission on your fees.',
+  description: 'Join getalawyer as a verified lawyer: a profile in the directory, messages from clients and bookings, with no commission on your fees.',
 })
 
 const REGISTER = '/register?role=lawyer'
