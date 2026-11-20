@@ -39,6 +39,8 @@ const THEMED_ROUTES = new Set<string>([
   '/dashboard/bookings/:id()',
   '/dashboard/bookings/:id()/reschedule',
   '/dashboard/my-lawyers',
+  '/dashboard/cases',
+  '/dashboard/cases/:id()',
   '/dashboard/subscription',
   '/dashboard/subscription/receipts/:id()',
   // sign-in group (the `auth` layout)
