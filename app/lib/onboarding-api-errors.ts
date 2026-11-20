@@ -133,6 +133,10 @@ export function formatOnboardingApiError(error: unknown, fallback = 'Something w
     return 'Complete NIN verification before submitting.'
   }
 
+  if (error.code === 'EMAIL_NOT_VERIFIED') {
+    return 'Confirm your email address before you submit. The code box is under your sections.'
+  }
+
   if (error.code === 'DUPLICATE_BAR_NUMBER') {
     return 'This SCN is already registered to another account.'
   }

@@ -120,6 +120,7 @@ function back() {
     </div>
 
     <main class="mx-auto w-[min(100%,44rem)] flex-1 pt-[clamp(1.5rem,4vw,3rem)] pb-8 safe-x">
+      <ClientOnly><AuthFinishPassword /></ClientOnly>
       <slot />
       <p v-if="store.validationError" role="alert" class="mt-[1.2rem] rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
         {{ store.validationError }}
