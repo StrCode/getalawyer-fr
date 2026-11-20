@@ -6,55 +6,9 @@ import { Button } from '@/components/ui/button'
  * The product views play once, in order, when the section scrolls into view: a
  * search is typed and lawyers appear, a question is sent, a booking is confirmed.
  * Each piece arrives at its own moment (`piece(at)`), about three seconds in all.
- * Nothing loops. With reduced motion, without IntersectionObserver, or when the
- * page opens already on this section, the views are simply shown complete.
+ * See usePlayOnce for when the sequence is skipped.
  */
-const list = ref<HTMLElement | null>(null)
-/** Pieces are hidden, waiting for the section to arrive. */
-const armed = ref(false)
-const played = ref(false)
-let io: IntersectionObserver | null = null
-
-onMounted(() => {
-  const el = list.value
-  if (!el || !('IntersectionObserver' in window)) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  // Already on screen (a link to #how): leave it still rather than blank it and replay.
-  if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return
-  armed.value = true
-  io = new IntersectionObserver(([entry]) => {
-    if (!entry?.isIntersecting) return
-    played.value = true
-    io?.disconnect()
-  }, { threshold: 0.35 })
-  io.observe(el)
-})
-onBeforeUnmount(() => io?.disconnect())
-
-// How a piece waits and how it arrives (full strings, so Tailwind sees them).
-const WAITING = {
-  step: 'opacity-0',
-  pop: 'opacity-0',
-  type: '[clip-path:inset(0_100%_0_0)]',
-  draw: 'scale-x-0',
-} as const
-const ARRIVING = {
-  step: 'animate-step-in',
-  pop: 'animate-pop-in',
-  type: 'animate-type-in',
-  draw: 'animate-draw-in',
-} as const
-
-/** Bindings for one piece of a product view: arrives `at` milliseconds into the sequence. */
-function piece(at: number, how: keyof typeof WAITING = 'step') {
-  if (!armed.value) return {}
-  if (!played.value) return { class: WAITING[how] }
-  return { class: ARRIVING[how], style: { animationDelay: `${at}ms` } }
-}
-/** The send button dips as the question is sent; it is never hidden. */
-function press(at: number) {
-  return played.value ? { class: 'animate-press', style: { animationDelay: `${at}ms` } } : {}
-}
+const { target: list, piece, press } = usePlayOnce()
 
 // Class lists shared by the three steps (full strings, so Tailwind sees them).
 const step = 'flex flex-col rounded-card border border-border bg-card p-[1.4rem]'
