@@ -5,7 +5,6 @@ import {
   clientHeadline,
   clientTodos,
   initials,
-  lawyerTie,
   sortClientDiary,
   todoSummary,
   type ClientTodo,
@@ -210,31 +209,7 @@ const face = 'grid size-[3rem] flex-none place-items-center overflow-hidden roun
       <section v-if="lawyers.length || suggestions.length" aria-labelledby="lawyers-title">
         <h2 id="lawyers-title" :class="sectionTitle">{{ lawyers.length ? 'Your lawyers' : 'Lawyers who match what you need' }}</h2>
         <div class="mt-[1rem] grid gap-[0.75rem] sm:grid-cols-2 tab:grid-cols-3">
-          <article v-for="lawyer in lawyers.slice(0, 5)" :key="lawyer.userId ?? lawyer.lawyerProfileId ?? lawyer.name" :class="[card, 'flex flex-col']">
-            <div class="flex items-center gap-[0.8rem]">
-              <span :class="face">
-                <img v-if="lawyer.image" :src="lawyer.image" alt="" class="size-full object-cover">
-                <template v-else>{{ initials(lawyer.name) }}</template>
-              </span>
-              <span class="min-w-0">
-                <component
-                  :is="lawyer.lawyerProfileId ? RowLink : 'span'"
-                  :to="lawyer.lawyerProfileId ? `/lawyers/${lawyer.lawyerProfileId}` : undefined"
-                  class="block truncate font-display text-[1.1rem] font-[650] tracking-[-0.02em]"
-                  :class="lawyer.lawyerProfileId ? 'hover:text-brand' : ''"
-                >{{ lawyer.name }}</component>
-                <span class="block text-[0.9rem] text-muted-foreground">{{ lawyerTie(lawyer) }}</span>
-              </span>
-            </div>
-            <div class="mt-auto flex gap-[0.4rem] pt-[0.9rem]">
-              <Button v-if="lawyer.conversationId" as-child variant="line" size="pill-sm" class="flex-1">
-                <NuxtLink :to="`/dashboard/messages?conversation=${lawyer.conversationId}`">Message</NuxtLink>
-              </Button>
-              <Button v-if="lawyer.lawyerProfileId" as-child variant="canopy" size="pill-sm" class="flex-1 shadow-none hover:translate-y-0">
-                <NuxtLink :to="`/lawyers/${lawyer.lawyerProfileId}/book`">{{ lawyer.bookingCount ? 'Book again' : 'Book' }}</NuxtLink>
-              </Button>
-            </div>
-          </article>
+          <WorkspaceLawyerContactCard v-for="lawyer in lawyers.slice(0, 5)" :key="lawyer.userId ?? lawyer.lawyerProfileId ?? lawyer.name" :lawyer="lawyer" />
 
           <article v-for="lawyer in suggestions" :key="lawyer.id" :class="[card, 'flex flex-col']">
             <div class="flex items-center gap-[0.8rem]">
