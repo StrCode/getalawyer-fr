@@ -74,6 +74,14 @@ describe('sortDiary', () => {
     expect(diary.laterToday.map(b => b.id)).toEqual([today.id])
     expect(diary.next?.id).toBe(today.id)
     expect(diary.followUps.map(b => b.id)).toEqual([noOutcome.id])
+    // held this morning and never marked: still open
+    expect(diary.toClose.map(b => b.id)).toEqual([thisMorning.id])
+  })
+
+  it('goes by the end time when deciding an appointment is over', () => {
+    const running = booking({ scheduledStartTime: '08:45', scheduledEndTime: '09:15' })
+    const over = booking({ scheduledDate: '2026-11-19', scheduledStartTime: '16:00', scheduledEndTime: '16:30' })
+    expect(sortDiary([running, over], now).toClose.map(b => b.id)).toEqual([over.id])
   })
 })
 
@@ -115,6 +123,17 @@ describe('overviewHeadline', () => {
     expect(outcome.primary?.to).toBe(`/dashboard/appointments/${done.id}`)
   })
 
+  it('then past appointments still open, ahead of outcomes', () => {
+    const open = booking({ scheduledDate: '2026-11-19', scheduledStartTime: '16:00' })
+    const one = overviewHeadline(facts([open, booking({ status: 'completed', scheduledDate: '2026-11-18' })]), now)
+    expect(`${one.lead} ${one.accent}`).toBe('One past appointment is still open.')
+    expect(one.primary).toEqual({ label: 'Close it', to: `/dashboard/appointments/${open.id}` })
+
+    const two = overviewHeadline(facts([open, booking({ scheduledDate: '2026-11-18' })]), now)
+    expect(`${two.lead} ${two.accent}`).toBe('Two past appointments are still open.')
+    expect(two.primary?.to).toBe('/dashboard/appointments?status=to_close')
+  })
+
   it('then the next consultation, on whichever day it is', () => {
     const headline = overviewHeadline(facts([booking({ scheduledDate: '2026-11-23', scheduledStartTime: '10:00', meetingType: 'phone' })]), now)
     expect(`${headline.lead} ${headline.accent}`).toBe('Your next consultation is on Monday 23 November.')
@@ -154,6 +173,14 @@ describe('overviewTodos', () => {
     expect(todos.map(todo => todo.id)).toEqual([
       `request-${request.id}`, 'messages', `outcome-${done.id}`, 'confirm-email', 'hours', 'consultation-types', 'profile',
     ])
+
+    const open = booking({ scheduledDate: '2026-11-19', scheduledStartTime: '16:00', client: { name: 'Ibrahim Musa' } })
+    const withOpen = overviewTodos({ diary: sortDiary([request, done, open], now), unreadMessages: 1 })
+    expect(withOpen.map(todo => todo.id)).toEqual([`request-${request.id}`, 'messages', `close-${open.id}`, `outcome-${done.id}`])
+    expect(withOpen[2]).toMatchObject({
+      title: 'Close your appointment with Ibrahim Musa',
+      note: 'Initial consultation on Thursday 19 November. Mark it completed or a no-show.',
+    })
     expect(todos[0]).toMatchObject({
       title: 'Answer Ngozi Eze\'s request',
       note: 'Initial consultation · Monday 23 November, 10:00 AM · Video call',

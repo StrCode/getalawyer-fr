@@ -33,6 +33,7 @@ const THEMED_ROUTES = new Set<string>([
   // dashboard pages rebuilt on the `workspace` layout
   // the overview, for lawyers and for clients
   '/dashboard',
+  '/dashboard/appointments',
   '/dashboard/subscription',
   '/dashboard/subscription/receipts/:id()',
   // sign-in group (the `auth` layout)

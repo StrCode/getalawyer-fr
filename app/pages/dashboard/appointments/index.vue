@@ -1,426 +1,192 @@
 <template>
-  <div class="space-y-6">
-    <DashboardPageHeader
-      title="Appointments"
-    >
-      <template #description>
-        <template v-if="isLoading">
-          Loading your consultation bookings…
-        </template>
-        <template v-else-if="isError">
-          Manage your consultation bookings and appointments.
-        </template>
-        <template v-else>
-          {{ summaryLabel }}
-        </template>
-      </template>
-    </DashboardPageHeader>
+  <!-- one column that may shrink: the row of status pills scrolls sideways instead of widening the page -->
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+    <!-- ───────── title and what is in the diary ───────── -->
+    <header>
+      <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your diary</p>
+      <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Appointments</h1>
+      <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
+        <template v-if="isLoading">Loading your appointments…</template>
+        <template v-else-if="isError">Requests to answer, consultations to come and everything already held.</template>
+        <template v-else>{{ summaryLabel }}</template>
+      </p>
+    </header>
 
-    <!-- Filter bar: wraps on narrow screens; each control has a sensible min width. -->
-    <div class="flex flex-wrap items-center gap-3">
-      <Tabs
-        :model-value="tab"
-        class="hidden w-auto sm:block"
-        @update:model-value="onTabChange"
-      >
-        <TabsList class="flex-wrap">
-          <TabsTrigger
-            v-for="t in APPOINTMENT_STATUS_TABS"
-            :key="t.key"
-            :value="t.key"
-            class="flex-none"
-          >
-            {{ t.label }}
-            <span
-              v-if="tabCounts[t.key] > 0"
-              class="ml-1 rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground"
-            >
-              {{ tabCounts[t.key] }}
-            </span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      <Select
-        :model-value="tab"
-        @update:model-value="onTabChange"
-      >
-        <SelectTrigger
-          class="w-full sm:hidden"
-          aria-label="Status"
+    <!-- ───────── filters: which ones, when, and a search ───────── -->
+    <div class="flex min-w-0 flex-wrap items-center gap-[0.6rem]">
+      <div role="group" aria-label="Show" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-[0.35rem] overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+        <button
+          v-for="t in tabs"
+          :key="t.key"
+          type="button"
+          :aria-pressed="tab === t.key"
+          class="inline-flex min-h-[2.75rem] flex-none cursor-pointer items-center gap-[0.45rem] rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+          :class="tab === t.key ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
+          @click="onTabChange(t.key)"
         >
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="t in APPOINTMENT_STATUS_TABS"
-            :key="t.key"
-            :value="t.key"
-          >
-            {{ t.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+          {{ t.label }}
+          <span
+            v-if="tabCounts[t.key] > 0"
+            class="rounded-full px-[0.45rem] text-[0.78rem] font-bold"
+            :class="tab === t.key ? 'bg-white/20' : 'bg-muted text-foreground'"
+          >{{ tabCounts[t.key] }}</span>
+        </button>
+      </div>
 
-      <Select
-        :model-value="rangePreset"
-        @update:model-value="onRangePresetChange"
-      >
-        <SelectTrigger
-          class="w-full sm:w-44"
-          aria-label="Date range"
-        >
-          <HugeiconsIcon :icon="Calendar01Icon" class="size-4 text-muted-foreground" aria-hidden="true" />
-          <SelectValue placeholder="Date range" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="p in APPOINTMENT_RANGE_PRESETS"
-            :key="p.key"
-            :value="p.key"
-          >
-            {{ p.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <div class="flex min-w-0 flex-[1_1_22rem] flex-wrap items-center gap-[0.6rem] tab:justify-end">
+        <Select :model-value="rangePreset" @update:model-value="onRangePresetChange">
+          <SelectTrigger class="h-[2.75rem]! w-full rounded-full border-border bg-card px-[1rem] font-semibold sm:w-[11rem]" aria-label="Date range">
+            <CanopyGlyph name="calendar" :size="16" class="text-muted-foreground" />
+            <SelectValue placeholder="Date range" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="p in APPOINTMENT_RANGE_PRESETS" :key="p.key" :value="p.key">{{ p.label }}</SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Popover
-        v-if="rangePreset === 'custom'"
-        v-model:open="isRangePickerOpen"
-      >
-        <PopoverTrigger as-child>
-          <Button
-            variant="outline"
-            class="w-full justify-start font-normal sm:w-auto"
-            :aria-expanded="isRangePickerOpen"
-          >
-            {{ customRangeLabel }}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          class="w-auto p-0"
-        >
-          <RangeCalendar
-            :model-value="calendarRange"
-            :number-of-months="1"
-            initial-focus
-            @update:model-value="onCalendarRangeChange"
+        <Popover v-if="rangePreset === 'custom'" v-model:open="isRangePickerOpen">
+          <PopoverTrigger as-child>
+            <Button variant="line" size="pill-sm" class="w-full justify-start sm:w-auto" :aria-expanded="isRangePickerOpen">{{ customRangeLabel }}</Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" class="w-auto rounded-[1.25rem] p-0">
+            <RangeCalendar :model-value="calendarRange" :number-of-months="1" initial-focus @update:model-value="onCalendarRangeChange" />
+            <div class="flex items-center justify-end gap-2 border-t border-border p-2">
+              <Button variant="line" size="pill-sm" @click="clearCustomRange">Clear</Button>
+              <Button variant="canopy" size="pill-sm" class="shadow-none hover:translate-y-0" @click="isRangePickerOpen = false">Done</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <label class="relative block w-full min-w-0 sm:w-[16rem]">
+          <span class="sr-only">Search appointments</span>
+          <CanopyGlyph name="search" :size="17" class="pointer-events-none absolute top-1/2 left-[1rem] -translate-y-1/2 text-muted-foreground" />
+          <Input
+            v-model="searchInput"
+            type="search"
+            autocomplete="off"
+            placeholder="Client name or reference"
+            class="h-[2.75rem] rounded-full border-border bg-card pr-[1rem] pl-[2.6rem]"
           />
-          <div class="flex items-center justify-end gap-2 border-t border-border/60 p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              @click="clearCustomRange"
-            >
-              Clear
-            </Button>
-            <Button
-              size="sm"
-              @click="isRangePickerOpen = false"
-            >
-              Done
-            </Button>
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      <div class="relative w-full min-w-0 sm:ml-auto sm:w-64">
-        <HugeiconsIcon
-          :icon="Search01Icon"
-          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        />
-        <Input
-          v-model="searchInput"
-          type="search"
-          autocomplete="off"
-          placeholder="Search client or reference…"
-          aria-label="Search appointments"
-          class="pl-9"
-        />
+        </label>
       </div>
     </div>
 
-    <div
-      v-if="isLoading"
-      class="space-y-4"
-    >
-      <Skeleton class="h-40 w-full rounded-xl" />
-      <Skeleton class="h-56 w-full rounded-xl" />
+    <!-- ───────── loading / could not load ───────── -->
+    <div v-if="isLoading" role="status" aria-label="Loading your appointments" class="grid gap-2">
+      <div v-for="n in 4" :key="n" class="h-[5.4rem] animate-pulse rounded-[1.25rem] bg-muted" />
     </div>
 
-    <Card
-      v-else-if="isError"
-      class="border-dashed"
-    >
-      <CardContent class="flex flex-col items-center gap-3 py-14 text-center text-sm text-muted-foreground">
-        <p>Error loading appointments. Please try again.</p>
-        <ButtonBusy
-          variant="outline"
-          size="sm"
-          :loading="isFetching"
-          @click="refetch()"
-        >
-          Retry
-        </ButtonBusy>
-      </CardContent>
-    </Card>
+    <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+      <h2 :class="sectionTitle">We could not load your appointments.</h2>
+      <p class="mt-2 text-muted-foreground">Nothing has changed in your diary. Check your connection and try again.</p>
+      <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
+    </section>
 
     <template v-else>
-      <Card class="overflow-hidden py-0">
-        <CardHeader class="flex flex-row flex-wrap items-center justify-between gap-2 border-b border-border/40 px-5 py-4 sm:px-6">
-          <div class="flex items-center gap-2">
-            <CardTitle class="text-lg">
-              {{ activeTab.label }}
-            </CardTitle>
-            <Badge
-              v-if="filtered.length > 0"
-              variant="secondary"
-            >
-              {{ filtered.length }}
-            </Badge>
-          </div>
-          <span class="text-sm text-muted-foreground">
-            {{ rangeLabel }}
-          </span>
-        </CardHeader>
-        <CardContent class="p-0">
-          <div
-            v-if="filtered.length === 0"
-            class="px-6 py-12 text-center text-muted-foreground"
+      <section aria-labelledby="list-title">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 id="list-title" :class="sectionTitle">
+            {{ activeTab.label }}<span v-if="filtered.length > 0" class="ml-[0.5rem] text-muted-foreground">{{ filtered.length }}</span>
+          </h2>
+          <p class="text-[0.95rem] text-muted-foreground">{{ rangeLabel }}</p>
+        </div>
+
+        <div v-if="filtered.length === 0" :class="[panel, 'mt-[0.9rem] px-[1.3rem] py-[clamp(1.6rem,4vw,2.6rem)] text-center']">
+          <p class="text-muted-foreground">{{ emptyLabel }}</p>
+          <Button v-if="hasActiveFilters" variant="line" size="pill-sm" class="mt-[0.9rem]" @click="clearFilters">Clear filters</Button>
+          <Button v-else as-child variant="line" size="pill-sm" class="mt-[0.9rem]">
+            <NuxtLink to="/dashboard/availability">Check your working hours</NuxtLink>
+          </Button>
+        </div>
+
+        <ul v-else :class="[panel, 'mt-[0.9rem] divide-y divide-border overflow-hidden']">
+          <WorkspaceBookingRow
+            v-for="booking in pageItems"
+            :key="booking.id"
+            :to="`/dashboard/appointments/${booking.id}`"
+            :name="booking.client?.name || 'Client'"
+            :type="booking.consultationType?.name || 'Consultation'"
+            :date="booking.scheduledDate"
+            :start="booking.scheduledStartTime"
+            :end="booking.scheduledEndTime"
+            :meeting-type="booking.meetingType"
+            :status="booking.status"
+            :reference="booking.bookingReference"
           >
-            <HugeiconsIcon :icon="CalendarCheckIn01Icon" class="mx-auto mb-3 size-12 text-muted-foreground/40" />
-            <p>{{ emptyLabel }}</p>
-            <Button
-              v-if="hasActiveFilters"
-              variant="link"
-              size="sm"
-              class="mt-1"
-              @click="clearFilters"
-            >
-              Clear filters
-            </Button>
-          </div>
-          <div
-            v-else
-            class="min-w-0 divide-y divide-border/60"
-          >
-            <BookingRow
-              v-for="booking in pageItems"
-              :key="booking.id"
-              :booking="booking"
-              :title="booking.client?.name || 'Client'"
-              :subtitle="booking.consultationType?.name || 'Consultation'"
-              :to="`/dashboard/appointments/${booking.id}`"
-            >
-              <template
-                v-if="isToday(booking) && isLive(booking)"
-                #header-extra
-              >
-                <span
-                  v-if="isUpcomingBookingTime(booking)"
-                  class="text-sm font-medium text-primary"
-                >
-                  Starts in {{ timeUntil(booking) }}
-                </span>
-                <span
-                  v-else-if="isPastBooking(booking)"
-                  class="text-sm text-muted-foreground"
-                >
-                  Ended {{ timeSince(booking) }} ago
-                </span>
-                <span
-                  v-else
-                  class="text-sm font-medium text-primary"
-                >
-                  In progress
-                </span>
-              </template>
-
-              <template
-                v-if="booking.conversationId || booking.engagementOutcome || booking.clientNotes || (isToday(booking) && booking.meetingType === 'video' && booking.meetingUrl && isLive(booking))"
-                #body
-              >
-                <div class="flex flex-col gap-3">
-                  <div
-                    v-if="booking.conversationId || booking.engagementOutcome"
-                    class="flex flex-wrap items-center gap-2"
-                  >
-                    <Badge
-                      v-if="booking.conversationId"
-                      variant="secondary"
-                      class="gap-1"
-                    >
-                      <HugeiconsIcon :icon="MessageMultiple01Icon" class="size-3" />
-                      Conversation
-                    </Badge>
-                    <Badge
-                      v-if="booking.engagementOutcome === 'client_hired'"
-                      variant="verified"
-                      class="gap-1"
-                    >
-                      <HugeiconsIcon :icon="Briefcase01Icon" class="size-3" />
-                      Case Created
-                    </Badge>
-                    <Badge
-                      v-if="booking.engagementOutcome === 'consultation_only'"
-                      variant="outline"
-                    >
-                      Consultation Only
-                    </Badge>
-                  </div>
-                  <div
-                    v-if="isToday(booking) && isLive(booking) && booking.meetingType === 'video' && booking.meetingUrl"
-                  >
-                    <Button
-                      size="sm"
-                      as-child
-                    >
-                      <NuxtLink
-                        :to="booking.meetingUrl"
-                        target="_blank"
-                        class="gap-2"
-                      >
-                        <HugeiconsIcon :icon="Video01Icon" class="size-4" />
-                        Join meeting
-                      </NuxtLink>
-                    </Button>
-                  </div>
-                  <div
-                    v-if="booking.clientNotes"
-                    class="text-sm text-muted-foreground"
-                  >
-                    <p class="font-medium text-foreground">
-                      Client notes
-                    </p>
-                    <p class="line-clamp-2">
-                      {{ booking.clientNotes }}
-                    </p>
-                  </div>
-                </div>
-              </template>
-
-              <template
-                v-if="rowActions(booking) !== 'none'"
-                #actions
-              >
-                <template v-if="rowActions(booking) === 'pending'">
-                  <Button
-                    size="sm"
-                    @click="handleConfirm(booking.id)"
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    @click="handleCancelBooking(booking.id, 'decline')"
-                  >
-                    Decline
-                  </Button>
-                </template>
-                <template v-else-if="rowActions(booking) === 'finish'">
-                  <Button
-                    size="sm"
-                    @click="handleComplete(booking.id)"
-                  >
-                    Mark completed
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    @click="handleNoShow(booking.id)"
-                  >
-                    Mark no-show
-                  </Button>
-                </template>
-                <Button
-                  v-else-if="rowActions(booking) === 'cancel'"
-                  variant="ghost"
-                  size="sm"
-                  @click="handleCancelBooking(booking.id, 'cancel')"
-                >
-                  Cancel
-                </Button>
-              </template>
-            </BookingRow>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div
-        v-if="totalPages > 1"
-        class="flex flex-wrap items-center justify-between gap-3"
-      >
-        <p class="text-sm text-muted-foreground">
-          Showing {{ pageStart }}–{{ pageEnd }} of {{ filtered.length }}
-        </p>
-        <Pagination
-          v-slot="{ page: current }"
-          :page="page"
-          :total="filtered.length"
-          :items-per-page="APPOINTMENTS_PAGE_SIZE"
-          :sibling-count="1"
-          show-edges
-          class="mx-0 w-auto"
-          @update:page="setPage"
-        >
-          <PaginationContent v-slot="{ items }">
-            <PaginationPrevious />
-            <template v-for="(item, index) in items" :key="index">
-              <PaginationItem
-                v-if="item.type === 'page'"
-                :value="item.value"
-                :is-active="item.value === current"
-              >
-                {{ item.value }}
-              </PaginationItem>
-              <PaginationEllipsis
-                v-else
-                :index="index"
-              />
+            <template v-if="isToday(booking) && isLive(booking)" #extra>
+              <span v-if="isUpcomingBookingTime(booking)" class="text-brand">Starts in {{ timeUntil(booking) }}</span>
+              <span v-else-if="isPastBooking(booking)" class="text-muted-foreground">Ended {{ timeSince(booking) }} ago</span>
+              <span v-else class="text-brand">In progress</span>
             </template>
-            <PaginationNext />
-          </PaginationContent>
-        </Pagination>
-      </div>
+
+            <template
+              v-if="booking.engagementOutcome || booking.clientNotes || (isToday(booking) && booking.meetingType === 'video' && booking.meetingUrl && isLive(booking))"
+              #body
+            >
+              <div class="grid gap-[0.5rem]">
+                <p v-if="booking.clientNotes" class="line-clamp-2 max-w-[44rem] text-[0.92rem]">
+                  <b class="font-semibold">From the client:</b> {{ booking.clientNotes }}
+                </p>
+                <div class="flex flex-wrap items-center gap-[0.5rem]">
+                  <span v-if="booking.engagementOutcome === 'client_hired'" class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Case opened</span>
+                  <span v-else-if="booking.engagementOutcome === 'consultation_only'" class="rounded-full bg-muted px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold">Consultation only</span>
+                  <Button v-if="isToday(booking) && isLive(booking) && booking.meetingType === 'video' && booking.meetingUrl" as-child variant="canopy" size="pill-sm" class="shadow-none hover:translate-y-0">
+                    <a :href="booking.meetingUrl" target="_blank" rel="noopener"><CanopyGlyph name="video" :size="16" />Join the meeting</a>
+                  </Button>
+                </div>
+              </div>
+            </template>
+
+            <template v-if="rowActions(booking) !== 'none'" #actions>
+              <template v-if="rowActions(booking) === 'pending'">
+                <Button variant="canopy" size="pill-sm" class="shadow-none hover:translate-y-0" @click="handleConfirm(booking.id)">Accept</Button>
+                <Button variant="line" size="pill-sm" @click="handleCancelBooking(booking.id, 'decline')">Decline</Button>
+              </template>
+              <template v-else-if="rowActions(booking) === 'finish'">
+                <Button variant="canopy" size="pill-sm" class="shadow-none hover:translate-y-0" @click="handleComplete(booking.id)">Mark completed</Button>
+                <Button variant="line" size="pill-sm" @click="handleNoShow(booking.id)">No-show</Button>
+              </template>
+              <Button v-else-if="rowActions(booking) === 'cancel'" variant="line" size="pill-sm" @click="handleCancelBooking(booking.id, 'cancel')">Cancel</Button>
+            </template>
+          </WorkspaceBookingRow>
+        </ul>
+
+        <nav v-if="totalPages > 1" aria-label="Appointments pages" class="mt-[0.8rem] flex flex-wrap items-center justify-between gap-3">
+          <span class="text-[0.9rem] text-muted-foreground">Showing {{ pageStart }} to {{ pageEnd }} of {{ filtered.length }}</span>
+          <span class="flex gap-[0.5rem]">
+            <Button variant="line" size="pill-sm" :disabled="paged.page <= 1" @click="setPage(paged.page - 1)">Previous</Button>
+            <Button variant="line" size="pill-sm" :disabled="paged.page >= totalPages" @click="setPage(paged.page + 1)">Next</Button>
+          </span>
+        </nav>
+      </section>
     </template>
 
+    <!-- ───────── declining a request, or cancelling a confirmed one: always with a reason ───────── -->
     <Dialog v-model:open="isCancelModalOpen">
-      <DialogContent class="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{{ cancelMode === 'decline' ? 'Decline request' : 'Cancel appointment' }}</DialogTitle>
-          <DialogDescription>
+      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
+        <DialogHeader class="gap-[0.5rem] text-left">
+          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ cancelMode === 'decline' ? 'Decline this request' : 'Cancel this appointment' }}</DialogTitle>
+          <DialogDescription class="text-[1rem] text-muted-foreground">
             {{ cancelMode === 'decline'
-              ? 'Let the client know why you can\'t take this booking. They will be notified.'
-              : 'Are you sure you want to cancel this appointment? The client will be notified.' }}
+              ? 'The client is told you cannot take this booking, with the reason you give.'
+              : 'The client is told the appointment is cancelled, with the reason you give.' }}
           </DialogDescription>
         </DialogHeader>
-        <div class="space-y-2">
-          <Label for="cancel-reason">Reason</Label>
+        <div class="grid gap-[0.4rem]">
+          <Label for="cancel-reason" class="font-semibold">Reason</Label>
           <Textarea
             id="cancel-reason"
             v-model="cancelReason"
-            :placeholder="cancelMode === 'decline' ? 'Let the client know why you\'re declining...' : 'Let the client know why you\'re cancelling...'"
+            :placeholder="cancelMode === 'decline' ? 'For example: I am in court that day.' : 'For example: a hearing has been moved to that time.'"
             :rows="3"
+            class="rounded-[1rem] bg-card"
           />
         </div>
-        <DialogFooter>
-          <Button
-            variant="ghost"
-            @click="isCancelModalOpen = false"
-          >
-            Nevermind
+        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+          <Button variant="line" size="pill" :disabled="isCanceling" @click="isCancelModalOpen = false">{{ cancelMode === 'decline' ? 'Keep the request' : 'Keep the appointment' }}</Button>
+          <Button variant="destructive" size="pill" class="rounded-full" :disabled="!cancelReason.trim() || isCanceling" :aria-busy="isCanceling" @click="confirmCancel">
+            {{ isCanceling ? 'Sending…' : cancelMode === 'decline' ? 'Decline the request' : 'Cancel the appointment' }}
           </Button>
-          <ButtonBusy
-            variant="destructive"
-            :loading="isCanceling"
-            :disabled="!cancelReason"
-            @click="confirmCancel"
-          >
-            {{ cancelMode === 'decline' ? 'Decline request' : 'Cancel appointment' }}
-          </ButtonBusy>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -428,19 +194,12 @@
 </template>
 
 <script setup lang="ts">
-import { Briefcase01Icon, Calendar01Icon, CalendarCheckIn01Icon, MessageMultiple01Icon, Search01Icon, Video01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { parseDate } from '@internationalized/date'
 import { refDebounced } from '@vueuse/core'
 import type { DateRange } from 'reka-ui'
 import { computed, ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import BookingRow from '~/components/booking/BookingRow.vue'
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -451,14 +210,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import {
@@ -468,8 +219,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 import type { Booking } from '~/types'
@@ -485,21 +234,27 @@ import {
   isAppointmentStatusTab,
   isDateKey,
   matchesStatusTab,
+  needsClosing,
   paginate,
   resolveDateRange,
 } from '~/utils/appointment-filters'
 import { localDateKey } from '~/utils/date'
 
+/**
+ * A lawyer's appointments: requests to answer, consultations to come, and
+ * everything already held. One list, narrowed by status, date range and a
+ * search; the filters live in the address, so a view can be bookmarked.
+ *
+ * The backend returns the whole diary at once, so narrowing and paging happen
+ * here (rules in `utils/appointment-filters`).
+ */
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'workspace',
+  middleware: ['auth'],
 })
 
-useHead({
-  title: 'Appointments - GetaLawyer',
-  meta: [
-    { name: 'description', content: 'Manage your consultation appointments' },
-  ],
-})
+useHead({ title: 'Appointments' })
+useSeoMeta({ description: 'Your consultation requests and appointments.', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const router = useRouter()
@@ -525,9 +280,19 @@ function firstQuery(value: unknown): string | undefined {
   return typeof v === 'string' ? v : undefined
 }
 
+// The page opens on what is coming, not on the oldest history.
+const DEFAULT_TAB: AppointmentStatusTab = 'upcoming'
 const tab = computed<AppointmentStatusTab>(() => {
   const v = firstQuery(route.query.status)
-  return isAppointmentStatusTab(v) ? v : 'all'
+  return isAppointmentStatusTab(v) ? v : DEFAULT_TAB
+})
+
+/** The tabs in the order a lawyer works through them, in the words the rest of the dashboard uses. */
+const TAB_ORDER: AppointmentStatusTab[] = ['upcoming', 'pending', 'to_close', 'completed', 'cancelled', 'all']
+const TAB_LABEL: Partial<Record<AppointmentStatusTab, string>> = { upcoming: 'To come', pending: 'To answer', cancelled: 'Cancelled or no-show' }
+const tabs = TAB_ORDER.map((key) => {
+  const known = APPOINTMENT_STATUS_TABS.find(t => t.key === key)!
+  return { key, label: TAB_LABEL[key] ?? known.label }
 })
 
 const rangePreset = computed<AppointmentRangePreset>(() => {
@@ -565,7 +330,7 @@ function updateQuery(patch: QueryPatch) {
     else next[k] = v
   }
   // Defaults don't need to live in the URL.
-  if (next.status === 'all') delete next.status
+  if (next.status === DEFAULT_TAB) delete next.status
   if (next.range === 'all') delete next.range
   if (next.page === '1') delete next.page
   router.replace({ query: next })
@@ -599,7 +364,7 @@ function setPage(p: number) {
 
 function clearFilters() {
   searchInput.value = ''
-  updateQuery({ status: null, range: null, from: null, to: null, q: null, page: null })
+  updateQuery({ range: null, from: null, to: null, q: null, page: null })
 }
 
 // Custom range picker --------------------------------------------------------
@@ -652,7 +417,7 @@ const dateRange = computed(() =>
 )
 
 const hasRange = computed(() => Boolean(dateRange.value.from || dateRange.value.to))
-const hasActiveFilters = computed(() => tab.value !== 'all' || hasRange.value || search.value.trim().length > 0)
+const hasActiveFilters = computed(() => hasRange.value || search.value.trim().length > 0)
 
 const filtered = computed(() =>
   filterAppointments(allBookings.value, {
@@ -674,14 +439,12 @@ watch(totalPages, (total) => {
     updateQuery({ page: total > 1 ? String(total) : null })
 })
 
-const activeTab = computed(() =>
-  APPOINTMENT_STATUS_TABS.find(t => t.key === tab.value) ?? APPOINTMENT_STATUS_TABS[0]!,
-)
+const activeTab = computed(() => tabs.find(t => t.key === tab.value) ?? tabs[0]!)
 
 // Per-tab counts respect the date range and search, so the numbers match
 // what clicking the tab will show.
 const tabCounts = computed(() => {
-  const counts = { all: 0, upcoming: 0, pending: 0, completed: 0, cancelled: 0 } as Record<AppointmentStatusTab, number>
+  const counts = { all: 0, upcoming: 0, pending: 0, to_close: 0, completed: 0, cancelled: 0 } as Record<AppointmentStatusTab, number>
   const base = filterAppointments(allBookings.value, {
     tab: 'all',
     range: dateRange.value,
@@ -698,24 +461,35 @@ const summaryLabel = computed(() => {
   const upcoming = allBookings.value.filter(b => matchesStatusTab(b, 'upcoming', today)).length
   const pending = allBookings.value.filter(b => b.status === 'pending').length
   const todayCount = allBookings.value.filter(b => b.scheduledDate === today && isLive(b)).length
-  const parts = [`${total} appointment${total === 1 ? '' : 's'}`]
+  if (total === 0) return 'Nothing in your diary yet. Requests from clients show here as they arrive.'
+  const toClose = allBookings.value.filter(b => needsClosing(b)).length
+  const parts = [`${total} in all`]
   if (todayCount > 0) parts.push(`${todayCount} today`)
-  if (upcoming > 0) parts.push(`${upcoming} upcoming`)
-  if (pending > 0) parts.push(`${pending} awaiting confirmation`)
-  return parts.join(' · ')
+  if (upcoming > 0) parts.push(`${upcoming} to come`)
+  if (pending > 0) parts.push(`${pending} to answer`)
+  if (toClose > 0) parts.push(`${toClose} to close`)
+  return `${parts.join(' · ')}.`
 })
 
 const rangeLabel = computed(() => {
   const preset = APPOINTMENT_RANGE_PRESETS.find(p => p.key === rangePreset.value)
   if (rangePreset.value === 'custom') return customRangeLabel.value
   if (rangePreset.value === 'today')
-    return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+    return new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
   return preset?.label ?? ''
 })
 
-const emptyLabel = computed(() =>
-  emptyMessage(tab.value, hasRange.value, search.value.trim().length > 0),
-)
+const EMPTY: Record<AppointmentStatusTab, string> = {
+  upcoming: 'Nothing to come. New requests show here once you accept them.',
+  pending: 'No requests to answer.',
+  to_close: 'Nothing to close. Appointments show here once their time has passed, for you to mark completed or a no-show.',
+  completed: 'No completed appointments yet.',
+  cancelled: 'Nothing cancelled and no no-shows.',
+  all: 'Nothing in your diary yet.',
+}
+const emptyLabel = computed(() => hasActiveFilters.value
+  ? `${emptyMessage(tab.value, hasRange.value, search.value.trim().length > 0)}.`
+  : EMPTY[tab.value])
 
 // ---------------------------------------------------------------------------
 // Row helpers
@@ -818,12 +592,12 @@ function handleCancelBooking(bookingId: string, mode: 'cancel' | 'decline') {
 }
 
 function confirmCancel() {
-  if (!bookingToCancel.value || !cancelReason.value)
+  if (!bookingToCancel.value || !cancelReason.value.trim())
     return
 
   const declined = cancelMode.value === 'decline'
   cancelBooking(
-    { id: bookingToCancel.value, data: { reason: cancelReason.value } },
+    { id: bookingToCancel.value, data: { reason: cancelReason.value.trim() } },
     {
       onSuccess: () => {
         toast.success(declined
@@ -839,4 +613,8 @@ function confirmCancel() {
     },
   )
 }
+
+// Class lists shared across the page (full strings, so Tailwind sees them).
+const sectionTitle = 'font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const panel = 'rounded-card border border-border bg-card'
 </script>
