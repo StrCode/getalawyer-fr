@@ -14,7 +14,6 @@ useSeoMeta({
     <CanopyHomeHero />
     <CanopyHomeAreas />
     <CanopyHomeLawyers />
-    <CanopyHomeWhy />
     <CanopyHomeHow />
     <CanopyHomeJoin />
   </div>
