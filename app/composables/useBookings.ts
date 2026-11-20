@@ -207,7 +207,8 @@ export const useBookings = () => {
         
         // If client was hired, invalidate cases queries
         if (result.case) {
-          queryClient.invalidateQueries({ queryKey: queryKeys.cases.lawyer })
+          // `queryKeys.cases.lawyer` never existed; every case query hangs off `all`.
+          queryClient.invalidateQueries({ queryKey: queryKeys.cases.all })
         }
       },
     })
