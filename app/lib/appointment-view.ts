@@ -109,7 +109,7 @@ export function stageLine(booking: AppointmentLike, now: Date): string {
     case 'cancelled':
       return 'This appointment was cancelled.'
     default:
-      return 'The client did not attend.'
+      return 'Recorded as a no-show. If the consultation was held, mark it completed.'
   }
 }
 
@@ -144,6 +144,11 @@ export function appointmentActions(stage: AppointmentStage): {
   cancel: boolean
   close: boolean
   recordOutcome: boolean
+  /**
+   * A no-show can be put right: one recorded automatically because the
+   * appointment was left open may well have been held.
+   */
+  markHeld: boolean
 } {
   return {
     accept: stage === 'request',
@@ -151,5 +156,6 @@ export function appointmentActions(stage: AppointmentStage): {
     cancel: stage === 'coming' || stage === 'underway',
     close: stage === 'to_close',
     recordOutcome: stage === 'outcome',
+    markHeld: stage === 'no_show',
   }
 }
