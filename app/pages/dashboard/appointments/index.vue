@@ -482,7 +482,7 @@ const rangeLabel = computed(() => {
 const EMPTY: Record<AppointmentStatusTab, string> = {
   upcoming: 'Nothing to come. New requests show here once you accept them.',
   pending: 'No requests to answer.',
-  to_close: 'Nothing to close. Appointments show here once their time has passed, for you to mark completed or a no-show.',
+  to_close: 'Nothing to close. An appointment shows here once its time has passed, for you to mark completed. One left open is recorded as a no-show automatically.',
   completed: 'No completed appointments yet.',
   cancelled: 'Nothing cancelled and no no-shows.',
   all: 'Nothing in your diary yet.',

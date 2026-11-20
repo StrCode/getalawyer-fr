@@ -107,8 +107,9 @@ export interface OverviewDiary {
   /** Finished consultations with no outcome recorded, most recent first. */
   followUps: OverviewBooking[]
   /**
-   * Confirmed appointments whose time has passed. Nothing closes these on its
-   * own: the lawyer marks each completed or a no-show. Oldest first.
+   * Confirmed appointments whose time has passed and that are not yet marked
+   * completed or a no-show. Oldest first. Left open, the backend records each
+   * as a no-show by itself, so these come before anything less urgent.
    */
   toClose: OverviewBooking[]
 }
@@ -196,7 +197,7 @@ export function overviewHeadline(facts: OverviewFacts, now: Date): OverviewHeadl
     return {
       lead: toClose.length === 1 ? 'One past appointment' : `${countWord(toClose.length)} past appointments`,
       accent: toClose.length === 1 ? 'is still open.' : 'are still open.',
-      detail: nextLine ?? 'Mark each one completed or a no-show, so your diary and your record with the client are right.',
+      detail: 'Mark each one completed, or a no-show if the client did not attend. Left open, it is recorded as a no-show automatically.',
       primary: toClose.length === 1
         ? { label: 'Close it', to: bookingPath(toClose[0]!) }
         : { label: 'Close them', to: '/dashboard/appointments?status=to_close' },
@@ -305,7 +306,7 @@ export function overviewTodos(input: TodoInput): OverviewTodo[] {
     todos.push({
       id: `close-${booking.id}`,
       title: `Close your appointment with ${clientName(booking)}`,
-      note: `${typeName(booking)} on ${fullDayLabel(booking.scheduledDate)}. Mark it completed or a no-show.`,
+      note: `${typeName(booking)} on ${fullDayLabel(booking.scheduledDate)}. Mark it completed, or it is recorded as a no-show.`,
       action: 'Close it',
       to: bookingPath(booking),
     })

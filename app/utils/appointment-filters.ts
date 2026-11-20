@@ -96,9 +96,12 @@ const ACTIVE_STATUSES: BookingStatus[] = ['confirmed', 'pending']
 const CLOSED_STATUSES: BookingStatus[] = ['cancelled', 'no_show']
 
 /**
- * A confirmed appointment whose time has passed. Nothing closes these on their
- * own: the lawyer marks each one completed or a no-show, and until then it is
- * neither upcoming nor history.
+ * A confirmed appointment whose time has passed and that the lawyer has not
+ * yet marked completed or a no-show. It is neither upcoming nor history.
+ *
+ * It does not stay open for ever: the backend's `autoMarkNoShows` job records
+ * an appointment left open as a no-show by itself. So this is the lawyer's
+ * chance to say it was held.
  */
 export function needsClosing(booking: Booking, now: Date = new Date()): boolean {
   if (booking.status !== 'confirmed') return false
