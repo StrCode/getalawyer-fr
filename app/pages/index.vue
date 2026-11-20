@@ -2,9 +2,9 @@
 definePageMeta({ layout: 'site' })
 
 useSeoMeta({
-  title: 'Legal help without the runaround',
+  title: 'Find a lawyer you can trust',
   description: 'Search verified Nigerian lawyers by practice area and state. Compare fees and availability, then book your consultation online with clear pricing.',
-  ogTitle: 'getalawyer — legal help without the runaround',
+  ogTitle: 'getalawyer — find a lawyer you can trust',
   ogDescription: 'Find and book verified Nigerian lawyers online. NIN & SCN verified. Clear pricing. Same-day consultations.',
 })
 </script>

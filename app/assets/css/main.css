@@ -284,11 +284,11 @@
 @utility mask-fade-x {
   mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
-/* Hero photo: fades into the forest panel on the left and at the foot. */
+/* Hero photo: fades into its white (card) panel on the left and at the foot. */
 @utility hero-photo-fade {
   background:
-    linear-gradient(90deg, var(--forest) 0%, rgba(11, 51, 39, 0.72) 16%, rgba(11, 51, 39, 0) 52%),
-    linear-gradient(0deg, rgba(11, 51, 39, 0.94) 0%, rgba(11, 51, 39, 0.6) 20%, rgba(11, 51, 39, 0) 44%);
+    linear-gradient(90deg, var(--card) 0%, color-mix(in srgb, var(--card) 72%, transparent) 16%, transparent 52%),
+    linear-gradient(0deg, color-mix(in srgb, var(--card) 94%, transparent) 0%, color-mix(in srgb, var(--card) 60%, transparent) 20%, transparent 44%);
 }
 /* Photo tile: forest scrim behind the caption (top) and under the card (foot). */
 @utility tile-cap-fade {
