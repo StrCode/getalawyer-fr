@@ -30,6 +30,8 @@ const THEMED_ROUTES = new Set<string>([
   '/privacy',
   '/terms',
   '/ndpa',
+  // dashboard pages rebuilt on the `workspace` layout
+  '/dashboard/subscription',
   // sign-in group (the `auth` layout)
   '/login',
   '/register',

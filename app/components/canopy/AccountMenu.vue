@@ -38,11 +38,22 @@ const initials = computed(() => {
   return displayName.value.slice(0, 2).toUpperCase() || '?'
 })
 
-const links = computed(() => [
-  { label: 'Dashboard', to: '/dashboard', icon: 'grid' as const },
-  { label: isLawyer.value ? 'Your profile' : 'Profile', to: '/dashboard/profile', icon: 'user' as const },
-  { label: 'Settings', to: '/dashboard/settings', icon: 'sliders' as const },
+type MenuIcon = 'grid' | 'user' | 'sliders' | 'card'
+interface MenuLink { label: string, to: string, icon: MenuIcon, /** Needs the person's attention: shown as a dot. */ alert?: boolean }
+
+/**
+ * `links` replaces the default set. The dashboard passes its own account pages
+ * (it is already the dashboard, so "Dashboard" would lead nowhere new).
+ */
+const props = defineProps<{ links?: MenuLink[] }>()
+
+const links = computed<MenuLink[]>(() => props.links ?? [
+  { label: 'Dashboard', to: '/dashboard', icon: 'grid' },
+  { label: isLawyer.value ? 'Your profile' : 'Profile', to: '/dashboard/profile', icon: 'user' },
+  { label: 'Settings', to: '/dashboard/settings', icon: 'sliders' },
 ])
+/** Something in the menu needs attention: the chip carries a dot too. */
+const attention = computed(() => links.value.some(link => link.alert))
 
 const item = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95rem] font-medium text-foreground focus:bg-mint focus:text-deep [&_svg]:size-[1.15rem] [&_svg]:text-muted-foreground focus:[&_svg]:text-deep'
 
@@ -60,10 +71,13 @@ async function signOut() {
         :aria-label="`Account menu for ${displayName}`"
         class="group/acct inline-flex h-11 flex-none cursor-pointer items-center gap-[0.55rem] rounded-full border border-border bg-card p-[0.2rem] transition-colors duration-[250ms] hover:border-brand data-[state=open]:border-brand sm:pr-[0.8rem]"
       >
-        <Avatar class="size-[2.25rem]">
-          <AvatarImage :src="avatarUrl" alt="" />
-          <AvatarFallback class="bg-primary font-display text-[0.85rem] font-bold text-white">{{ initials }}</AvatarFallback>
-        </Avatar>
+        <span class="relative flex-none">
+          <Avatar class="size-[2.25rem]">
+            <AvatarImage :src="avatarUrl" alt="" />
+            <AvatarFallback class="bg-primary font-display text-[0.85rem] font-bold text-white">{{ initials }}</AvatarFallback>
+          </Avatar>
+          <span v-if="attention" class="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-card bg-warning"><span class="sr-only">Something in your account needs attention</span></span>
+        </span>
         <span class="max-w-[7.5rem] truncate text-[0.95rem] font-semibold max-sm:hidden">{{ firstName }}</span>
         <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="text-muted-foreground transition-[rotate] duration-200 ease-canopy group-data-[state=open]/acct:rotate-180 max-sm:hidden" />
       </DropdownMenuTrigger>
@@ -96,7 +110,10 @@ async function signOut() {
 
         <template v-else>
           <DropdownMenuItem v-for="link in links" :key="link.to" as-child :class="item">
-            <NuxtLink :to="link.to"><CanopyGlyph :name="link.icon" />{{ link.label }}</NuxtLink>
+            <NuxtLink :to="link.to">
+              <CanopyGlyph :name="link.icon" />{{ link.label }}
+              <span v-if="link.alert" class="ml-auto inline-flex items-center gap-[0.4rem] text-[0.8rem] font-semibold text-warning-subtle-foreground"><i class="size-2 rounded-full bg-warning" />Needs attention</span>
+            </NuxtLink>
           </DropdownMenuItem>
         </template>
 
