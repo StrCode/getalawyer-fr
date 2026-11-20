@@ -27,19 +27,7 @@ withDefaults(
         ? 'bg-background/15 ring-background/35'
         : 'bg-card ring-border/80 shadow-xs'"
     >
-      <svg
-        class="size-5"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <polygon points="0,20 38,42 38,82 0,60" fill="currentColor" />
-        <polygon
-          points="62,42 100,20 100,60 62,82"
-          fill="currentColor"
-          :opacity="onDark ? 0.85 : 0.55"
-        />
-      </svg>
+      <BrandMark class="h-5 w-auto" :class="onDark ? 'fill-current' : 'fill-[#239261]'" />
     </span>
     <span
       v-if="showWordmark"

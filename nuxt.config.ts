@@ -145,6 +145,11 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      link: [
+        // The mark as a vector; the .ico is for browsers that do not take SVG icons.
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', sizes: '64x64', href: '/favicon.ico' },
+      ],
     },
     // Enter-only fades (see the `.page-enter-*` rules): no `out-in`, so a new
     // page never waits for the old one to fade away first.
