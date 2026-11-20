@@ -142,6 +142,36 @@ export function daysLeftLabel(days: number | null | undefined): string | null {
   return days === 1 ? '1 day left' : `${days} days left`
 }
 
+// ───────── the membership tile on the overview ─────────
+
+/** Membership in two short lines, with what the link to the membership page should say. */
+export function membershipTile(mode: MembershipMode, facts: MembershipFacts = {}): { lead: string, detail: string, action: string } {
+  switch (mode) {
+    case 'active':
+      return {
+        lead: facts.planName ? `${facts.planName} plan, active.` : 'Active.',
+        detail: facts.endLabel
+          ? `${facts.autoRenew === false ? 'Ends' : 'Renews'} on ${facts.endLabel}.`
+          : 'Your profile, messages and bookings are on.',
+        action: 'Manage membership',
+      }
+    case 'payment_issue':
+      return { lead: 'Renewal payment failed.', detail: 'Pay to keep taking new bookings and stay in the directory.', action: 'Pay now' }
+    case 'ended':
+      return { lead: 'Ended.', detail: facts.endLabel ? `It ran out on ${facts.endLabel}.` : 'Renew to take new bookings again.', action: 'Renew membership' }
+    case 'unfinished':
+      return { lead: 'Payment not finished.', detail: 'Choose a plan and pay to switch it on.', action: 'Finish payment' }
+    case 'refunding':
+      return { lead: 'Refund on its way.', detail: 'It can take a few working days to reach your account.', action: 'See the refund' }
+    case 'refund_stuck':
+      return { lead: 'Refund needs our help.', detail: 'Our team has been told and will complete it.', action: 'See the refund' }
+    case 'refunded':
+      return { lead: 'Refunded.', detail: 'Choose a plan if you want to join again.', action: 'Choose a plan' }
+    default:
+      return { lead: 'No membership yet.', detail: 'Join to appear in the directory and take bookings.', action: 'Choose a plan' }
+  }
+}
+
 // ───────── changing the saved card ─────────
 
 export type CardNoticeTone = 'good' | 'wait' | 'bad'
