@@ -313,6 +313,8 @@ export interface SubscriptionPaymentHistoryRecord {
   subscriptionStartDate: string | null
   subscriptionEndDate: string | null
   createdAt: string
+  /** A successful payment: it has a receipt to open. */
+  hasReceipt?: boolean
 }
 
 interface SubscriptionPaymentHistoryPayload {
@@ -340,6 +342,42 @@ export function useSubscriptionPaymentHistory(
       return res
     },
     staleTime: 60 * 1000,
+  })
+}
+
+/** One payment's receipt, as the backend recorded it on the day. */
+export interface SubscriptionPaymentReceipt {
+  id: string
+  kind: 'first_payment' | 'renewal'
+  paidAt: string
+  totalNaira: number
+  lines: Array<{ kind: 'membership' | 'verification_fee', label: string, amountNaira: number }>
+  planName: string | null
+  termMonths: number | null
+  coversFrom: string | null
+  coversUntil: string | null
+  paymentReference: string | null
+  card: { last4: string | null, brand: string | null, bank: string | null } | null
+  paidBy: { name: string, email: string }
+  refund: { amountNaira: number, refundedAt: string } | null
+}
+
+export function useSubscriptionPaymentReceipt(
+  paymentId: MaybeRef<string>,
+  options?: { enabled?: MaybeRef<boolean> },
+) {
+  return useQuery({
+    queryKey: computed(() => ['subscription', 'receipt', unref(paymentId)]),
+    enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
+    queryFn: async () => {
+      const res = await httpClient.getAuth<{ receipt: SubscriptionPaymentReceipt }>(
+        `/api/subscriptions/payments/${encodeURIComponent(unref(paymentId))}/receipt`,
+      )
+      return res.receipt
+    },
+    // A receipt is a record of something that already happened; only a refund can add to it.
+    staleTime: 5 * 60 * 1000,
+    retry: false,
   })
 }
 
