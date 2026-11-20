@@ -141,3 +141,64 @@ export function daysLeftLabel(days: number | null | undefined): string | null {
   if (days === 0) return 'Ends today'
   return days === 1 ? '1 day left' : `${days} days left`
 }
+
+// ───────── changing the saved card ─────────
+
+export type CardNoticeTone = 'good' | 'wait' | 'bad'
+
+export interface CardNotice {
+  tone: CardNoticeTone
+  title: string
+  detail: string
+}
+
+interface CardChangeOutcome {
+  status: 'changed' | 'rejected' | 'pending' | 'not_paid'
+  message?: string
+  refund?: 'sent' | 'processed' | 'failed'
+}
+
+/**
+ * What the membership page says when a lawyer comes back from Paystack after a
+ * card check. `cardLine` is the new card in words ("Visa ending 4081, Access
+ * Bank") and `check` the amount charged to check it ("₦50").
+ */
+export function cardChangeNotice(outcome: CardChangeOutcome, facts: { cardLine?: string | null, check?: string | null } = {}): CardNotice {
+  const check = facts.check ? `${facts.check} check` : 'check charge'
+  const refundLine = outcome.refund === 'failed'
+    ? `We could not send the ${check} back automatically. Our team has been told and will return it.`
+    : `The ${check} is on its way back to that card. Refunds can take a few working days to show.`
+  switch (outcome.status) {
+    case 'changed':
+      return {
+        tone: 'good',
+        title: 'Your card was changed.',
+        detail: `${facts.cardLine ? `Renewals will be taken from your ${facts.cardLine}. ` : 'Renewals will be taken from your new card. '}${refundLine}`,
+      }
+    case 'rejected':
+      return {
+        tone: 'bad',
+        title: 'That card could not be saved.',
+        detail: `${withFullStop(outcome.message?.trim() || 'It cannot be used for renewals')} Your current card stays. ${refundLine}`,
+      }
+    case 'not_paid':
+      return {
+        tone: 'bad',
+        title: 'Your card was not changed.',
+        detail: `${withFullStop(outcome.message?.trim() || 'The card check was not completed')} Nothing was taken and your current card stays.`,
+      }
+    default:
+      return {
+        tone: 'wait',
+        title: 'Still confirming your new card.',
+        detail: 'Paystack has not confirmed the check yet. This page will show the new card once it is saved; there is nothing more you need to do.',
+      }
+  }
+}
+
+/** The pill on a card-check row in Payments: where the check's refund stands. */
+export function cardCheckRefundLabel(refund: 'sent' | 'processed' | 'failed' | null | undefined): { label: string, state: 'refund' | 'pending' } {
+  if (refund === 'processed') return { label: 'Refunded', state: 'refund' }
+  if (refund === 'failed') return { label: 'Refund delayed', state: 'pending' }
+  return { label: 'Refunding', state: 'pending' }
+}

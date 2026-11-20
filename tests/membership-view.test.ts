@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canManage, canPayFor, daysLeftLabel, longDate, membershipHeadline, membershipMode } from '../app/lib/membership-view'
+import { canManage, canPayFor, cardChangeNotice, cardCheckRefundLabel, daysLeftLabel, longDate, membershipHeadline, membershipMode } from '../app/lib/membership-view'
 
 describe('membershipMode', () => {
   it('reads each backend status as the situation the lawyer is in', () => {
@@ -83,5 +83,52 @@ describe('dates and days', () => {
     expect(daysLeftLabel(0)).toBe('Ends today')
     expect(daysLeftLabel(-2)).toBeNull()
     expect(daysLeftLabel(null)).toBeNull()
+  })
+})
+
+describe('cardChangeNotice', () => {
+  it('says which card renewals now use and that the check is going back', () => {
+    const notice = cardChangeNotice({ status: 'changed', refund: 'sent' }, { cardLine: 'Visa ending 4081, Test Bank', check: '₦50' })
+    expect(notice.tone).toBe('good')
+    expect(notice.title).toBe('Your card was changed.')
+    expect(notice.detail).toContain('Renewals will be taken from your Visa ending 4081, Test Bank.')
+    expect(notice.detail).toContain('The ₦50 check is on its way back')
+  })
+
+  it('is honest when the refund could not be sent automatically', () => {
+    const notice = cardChangeNotice({ status: 'changed', refund: 'failed' }, { check: '₦50' })
+    expect(notice.detail).toContain('We could not send the ₦50 check back automatically')
+    expect(notice.detail).toContain('Our team has been told')
+    expect(notice.detail).not.toContain('on its way back')
+  })
+
+  it('keeps the old card when the new one cannot be saved', () => {
+    const notice = cardChangeNotice({ status: 'rejected', message: 'That payment method cannot be saved for renewals', refund: 'sent' }, { check: '₦50' })
+    expect(notice.tone).toBe('bad')
+    expect(notice.detail).toContain('That payment method cannot be saved for renewals.')
+    expect(notice.detail).toContain('Your current card stays.')
+    expect(notice.detail).toContain('on its way back')
+  })
+
+  it('says nothing was taken when the check was not paid', () => {
+    const notice = cardChangeNotice({ status: 'not_paid', message: 'The card was not accepted: Insufficient Funds' })
+    expect(notice.tone).toBe('bad')
+    expect(notice.title).toBe('Your card was not changed.')
+    expect(notice.detail).toBe('The card was not accepted: Insufficient Funds. Nothing was taken and your current card stays.')
+  })
+
+  it('asks for nothing while Paystack is still confirming', () => {
+    const notice = cardChangeNotice({ status: 'pending' })
+    expect(notice.tone).toBe('wait')
+    expect(notice.detail).toContain('nothing more you need to do')
+  })
+})
+
+describe('cardCheckRefundLabel', () => {
+  it('says where the refund of a card check stands', () => {
+    expect(cardCheckRefundLabel('sent')).toEqual({ label: 'Refunding', state: 'pending' })
+    expect(cardCheckRefundLabel('processed')).toEqual({ label: 'Refunded', state: 'refund' })
+    expect(cardCheckRefundLabel('failed')).toEqual({ label: 'Refund delayed', state: 'pending' })
+    expect(cardCheckRefundLabel(undefined)).toEqual({ label: 'Refunding', state: 'pending' })
   })
 })

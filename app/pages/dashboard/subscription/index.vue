@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { ApiError } from '~/lib/api/client'
 import {
@@ -11,7 +12,9 @@ import {
   pickPlanKey,
   plansOnSale,
   useChangeSubscriptionPlan,
+  useConfirmCardChange,
   useInitializeSubscription,
+  useStartCardChange,
   useSubscriptionPaymentHistory,
   useSubscriptionPricing,
   useSubscriptionStatus,
@@ -21,11 +24,15 @@ import {
 import {
   canManage,
   canPayFor,
+  cardChangeNotice,
+  cardCheckRefundLabel,
+  type CardNotice,
   daysLeftLabel,
   longDate,
   membershipHeadline,
   membershipMode,
 } from '~/lib/membership-view'
+import { receiptCardLine } from '~/lib/receipt-view'
 
 /**
  * Membership: what the lawyer is on, what happens at the next renewal, and
@@ -33,6 +40,10 @@ import {
  * never paid, payment unfinished, active, renewal failed, ended, and a refund
  * on its way after a failed verification. What each state says and allows is
  * decided in `lib/membership-view`.
+ *
+ * The card renewals are taken from can be changed while the membership is on:
+ * the lawyer pays a small check charge with the new card at Paystack, comes
+ * back here, and the page finishes the change and says how it went.
  *
  * Plans, prices and the verification fee all come from the backend.
  */
@@ -171,6 +182,73 @@ async function setAutoRenew(enabled: boolean) {
   }
 }
 
+// ───────── the card renewals are taken from ─────────
+// Only while the membership is on: in every other state the next payment is
+// made by hand, and the card used for it becomes the saved card.
+const canChangeCard = computed(() => mode.value === 'active')
+/** "₦50": the check charge, from the backend. Null until pricing has loaded. */
+const cardCheck = computed(() => pricing.value?.cardCheckNaira != null ? formatNairaAmount(pricing.value.cardCheckNaira) : null)
+const cardDialogOpen = ref(false)
+const { mutateAsync: startCardChange } = useStartCardChange()
+const { mutateAsync: confirmCardChange } = useConfirmCardChange()
+const leavingForCard = ref(false)
+/** How the last card change went; shown at the top of the page until dismissed. */
+const cardNotice = ref<CardNotice | null>(null)
+
+async function changeCard() {
+  if (leavingForCard.value) return
+  leavingForCard.value = true
+  try {
+    const data = await startCardChange()
+    if (data?.redirectUrl) {
+      await navigateTo(data.redirectUrl, { external: true })
+      return
+    }
+    toast.error('Card change could not start', { description: 'The Paystack page did not open. Try again.' })
+  }
+  catch (error) {
+    toast.error('Card change could not start', { description: error instanceof ApiError ? error.message : 'We could not reach Paystack. Try again in a moment.' })
+  }
+  finally {
+    leavingForCard.value = false
+  }
+}
+
+// Back from Paystack after a card check (`?card=check&reference=…`): finish the
+// change and say how it went. Paystack can take a moment to confirm a charge,
+// so a "not yet" answer is asked again a few times before the page says so.
+const route = useRoute()
+const router = useRouter()
+const CARD_CONFIRM_TRIES = 5
+onMounted(async () => {
+  if (route.query.card !== 'check') return
+  const reference = [route.query.reference, route.query.trxref].flat().find(value => typeof value === 'string' && value) as string | undefined
+  // Cleared first, so reloading the page does not ask again.
+  await router.replace({ query: {} })
+  if (!reference) return
+
+  cardNotice.value = { tone: 'wait', title: 'Checking your new card.', detail: 'One moment while we confirm it with Paystack.' }
+  for (let attempt = 1; attempt <= CARD_CONFIRM_TRIES; attempt++) {
+    try {
+      const result = await confirmCardChange(reference)
+      if (result.status !== 'pending' || attempt === CARD_CONFIRM_TRIES) {
+        cardNotice.value = cardChangeNotice(result, {
+          cardLine: result.status === 'changed' ? receiptCardLine(result.card) : null,
+          check: cardCheck.value,
+        })
+        return
+      }
+    }
+    catch (error) {
+      cardNotice.value = error instanceof ApiError && error.status === 404
+        ? { tone: 'bad', title: 'We could not find that card change.', detail: 'Your current card stays. Start again from "Change card" below.' }
+        : { tone: 'bad', title: 'We could not check your card change.', detail: 'Your current card stays for now. Reload this page in a minute to see whether the new card was saved.' }
+      return
+    }
+    await new Promise(resolve => setTimeout(resolve, 2500))
+  }
+})
+
 // ───────── paying (a first payment, or a renewal after a lapse) ─────────
 const { mutateAsync: initialize, isPending: startingPayment } = useInitializeSubscription()
 const { mutateAsync: syncPending, isPending: checkingPayment } = useSyncPendingSubscription()
@@ -243,6 +321,23 @@ const PAYMENT_STATE = {
   pending: { label: 'Processing', class: 'bg-warning/15 text-warning-subtle-foreground' },
 } as const
 
+type Payment = (typeof payments.value)[number]
+
+/** The pill on a row. A card check shows where its refund stands; everything else, how the payment went. */
+function paymentPill(payment: Payment): { label: string, class: string } {
+  if (payment.cardCheck) {
+    const refund = cardCheckRefundLabel(payment.cardCheck.refund)
+    return { label: refund.label, class: PAYMENT_STATE[refund.state].class }
+  }
+  return PAYMENT_STATE[getSubscriptionHistoryStatus(payment.action)]
+}
+
+const NOTICE_TONE = {
+  good: { class: 'border-brand/25 bg-mint text-deep', icon: 'tick' },
+  wait: { class: 'border-border bg-card', icon: 'clock' },
+  bad: { class: 'border-destructive/30 bg-card', icon: 'card' },
+} as const
+
 function paymentAmount(action: string, amount: number | null): string {
   if (amount == null) return '—'
   const money = formatNairaAmount(amount)
@@ -257,6 +352,30 @@ const panel = 'rounded-card border border-border bg-card'
 
 <template>
   <div class="grid gap-[clamp(1.75rem,3vw,2.75rem)]">
+    <!-- ───────── how the last card change went ───────── -->
+    <aside
+      v-if="cardNotice"
+      role="status"
+      class="-mb-[clamp(0.75rem,1.5vw,1.5rem)] flex items-start gap-[0.9rem] rounded-card border px-[1.2rem] py-[1rem]"
+      :class="NOTICE_TONE[cardNotice.tone].class"
+    >
+      <span class="mt-[0.15rem] grid size-[2rem] flex-none place-items-center rounded-full" :class="cardNotice.tone === 'bad' ? 'bg-destructive/10 text-destructive' : cardNotice.tone === 'good' ? 'bg-card text-brand' : 'bg-muted'">
+        <CanopyGlyph :name="NOTICE_TONE[cardNotice.tone].icon" :size="17" :class="{ 'motion-safe:animate-pulse': cardNotice.tone === 'wait' }" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <b class="block font-semibold">{{ cardNotice.title }}</b>
+        <p class="mt-[0.15rem] text-[0.95rem]" :class="cardNotice.tone === 'good' ? '' : 'text-muted-foreground'">{{ cardNotice.detail }}</p>
+      </div>
+      <button
+        v-if="cardNotice.tone !== 'wait'"
+        type="button"
+        class="-m-[0.35rem] grid size-[2.75rem] flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-foreground/5"
+        @click="cardNotice = null"
+      >
+        <CanopyGlyph name="close" :size="16" label="Dismiss" />
+      </button>
+    </aside>
+
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading" aria-busy="true" aria-label="Loading your membership" class="grid gap-4">
       <div class="h-[17rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
@@ -433,6 +552,20 @@ const panel = 'rounded-card border border-border bg-card'
         </label>
       </section>
 
+      <!-- ───────── the card renewals are taken from ───────── -->
+      <section v-if="canChangeCard" aria-labelledby="card-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-[clamp(1.2rem,2.4vw,1.6rem)]']">
+        <div class="min-w-0 flex-[1_1_20rem]">
+          <h2 id="card-title" class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Card for renewals</h2>
+          <p class="mt-[0.3rem] max-w-[38rem] text-muted-foreground">
+            <template v-if="cardLine">
+              Your <b class="font-semibold text-foreground">{{ cardLine }}</b>.<template v-if="!autoRenewOn"> It is not charged while auto-renew is off.</template>
+            </template>
+            <template v-else>No card is saved yet.</template>
+          </p>
+        </div>
+        <Button variant="line" size="pill-sm" @click="cardDialogOpen = true">{{ cardLine ? 'Change card' : 'Add a card' }}</Button>
+      </section>
+
       <!-- ───────── payments so far ───────── -->
       <section aria-labelledby="payments-title">
         <h2 id="payments-title" :class="sectionTitle">Payments</h2>
@@ -455,13 +588,14 @@ const panel = 'rounded-card border border-border bg-card'
             <li v-for="payment in payments" :key="payment.id" class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-[1.3rem] py-[0.95rem]">
               <div class="min-w-0 flex-[1_1_16rem]">
                 <b class="block font-semibold">{{ formatSubscriptionHistoryAction(payment.action) }}</b>
-                <span class="text-[0.9rem] text-muted-foreground">
-                  {{ longDate(payment.createdAt) }}<template v-if="payment.paymentReference"> · Reference {{ payment.paymentReference }}</template>
+                <span class="text-[0.9rem] break-words text-muted-foreground">
+                  {{ longDate(payment.createdAt) }}<template v-if="payment.cardCheck">
+                    · {{ payment.cardCheck.saved ? (receiptCardLine(payment.cardCheck.card) ?? 'New card saved') : 'Your card was not changed' }} · Card check</template><template v-else-if="payment.paymentReference"> · Reference {{ payment.paymentReference }}</template>
                 </span>
               </div>
               <div class="flex items-center gap-[0.8rem]">
-                <span class="rounded-full px-[0.7rem] py-[0.2rem] text-[0.8rem] font-bold" :class="PAYMENT_STATE[getSubscriptionHistoryStatus(payment.action)].class">
-                  {{ PAYMENT_STATE[getSubscriptionHistoryStatus(payment.action)].label }}
+                <span class="rounded-full px-[0.7rem] py-[0.2rem] text-[0.8rem] font-bold whitespace-nowrap" :class="paymentPill(payment).class">
+                  {{ paymentPill(payment).label }}
                 </span>
                 <b class="min-w-[5.5rem] text-right font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ paymentAmount(payment.action, payment.amountNaira) }}</b>
                 <!-- the same width on every row, so the amounts line up whether or not there is a receipt -->
@@ -487,5 +621,37 @@ const panel = 'rounded-card border border-border bg-card'
         </template>
       </section>
     </template>
+
+    <!-- ───────── changing the card: said plainly before anyone is charged ───────── -->
+    <Dialog v-model:open="cardDialogOpen">
+      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
+        <DialogHeader class="gap-[0.5rem] text-left">
+          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ cardLine ? 'Change the card for renewals' : 'Add a card for renewals' }}</DialogTitle>
+          <DialogDescription class="text-[1rem] text-muted-foreground">
+            You enter the new card on Paystack's secure page, then come back here.
+          </DialogDescription>
+        </DialogHeader>
+        <ul class="grid gap-[0.7rem]">
+          <li class="flex gap-[0.7rem]">
+            <CanopyGlyph name="card" :size="19" class="mt-[0.2rem] flex-none text-brand" />
+            <span>To check the card works, Paystack charges it <b class="font-semibold">{{ cardCheck ?? 'a small amount' }}</b>.</span>
+          </li>
+          <li class="flex gap-[0.7rem]">
+            <CanopyGlyph name="tick" :size="19" class="mt-[0.2rem] flex-none text-brand" />
+            <span>We send that {{ cardCheck ?? 'amount' }} straight back. A refund can take a few working days to show on your statement.</span>
+          </li>
+          <li class="flex gap-[0.7rem]">
+            <CanopyGlyph name="calendar" :size="19" class="mt-[0.2rem] flex-none text-brand" />
+            <span>Your plan and renewal date stay the same<template v-if="nextBillingLabel && autoRenewOn">: the next payment is still on {{ nextBillingLabel }}</template>.</span>
+          </li>
+        </ul>
+        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+          <Button variant="line" size="pill" :disabled="leavingForCard" @click="cardDialogOpen = false">Keep my current card</Button>
+          <Button variant="canopy" size="pill" :disabled="leavingForCard" :aria-busy="leavingForCard" @click="changeCard">
+            {{ leavingForCard ? 'Opening Paystack…' : 'Continue to Paystack' }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
