@@ -24,6 +24,13 @@ export type WizardStepFormOptions<TValues extends Record<string, unknown>, TPars
   sync: (values: TValues) => void
   /** Write the parsed (normalized) values to the store after a successful Continue. */
   commit: (parsed: TParsed) => void
+  /**
+   * A check only the server can make, run once the values pass the local rules
+   * (for example "is this Supreme Court number already taken?"). Return the
+   * message to show, or null when all is well. It should resolve to null if the
+   * server cannot be reached: the application is checked again when submitted.
+   */
+  check?: (parsed: TParsed) => Promise<string | null>
   /** Return true to treat Continue as valid without validating (e.g. step already completed). */
   skip?: () => boolean
   /** Runs after the form is (re)seeded from the store. */
@@ -95,6 +102,12 @@ export function useWizardStepForm<TValues extends Record<string, unknown>, TPars
       const first = parsed.success ? undefined : parsed.error.issues[0]?.message
       store.validationError = first ?? 'Please check the highlighted fields.'
       void nextTick(focusFirstInvalid)
+      return false
+    }
+
+    const problem = await options.check?.(parsed.data)
+    if (problem) {
+      store.validationError = problem
       return false
     }
 

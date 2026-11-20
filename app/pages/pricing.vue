@@ -36,8 +36,8 @@ function priceFor(plan: MembershipPlan) {
 useHead({ title: 'Pricing for lawyers' })
 useSeoMeta({
   description: computed(() => cheapest.value
-    ? `Lawyer membership on getalawyer from ${priceFor(cheapest.value)}. A verified listing, client messages and bookings, with no commission on your fees.`
-    : 'Lawyer membership on getalawyer: a verified listing, client messages and bookings, with no commission on your fees.'),
+    ? `Lawyer membership on getalawyer from ${priceFor(cheapest.value)}. A verified profile, client messages and bookings, with no commission on your fees.`
+    : 'Lawyer membership on getalawyer: a verified profile, client messages and bookings, with no commission on your fees.'),
 })
 
 const inclusions = [
@@ -49,7 +49,7 @@ const inclusions = [
 ]
 
 const billingFacts = computed(() => [
-  { title: 'Auto-renew is yours to control', body: 'It is on by default so your listing never lapses. Turn it off from your dashboard whenever you like.' },
+  { title: 'Auto-renew is yours to control', body: 'It is on by default so your profile never lapses. Turn it off from your dashboard whenever you like.' },
   several.value && { title: 'Change plan at renewal', body: 'Move to any other plan on sale. The new plan starts when your current term ends.' },
   { title: 'If your membership lapses', body: 'Your profile is hidden from the directory until you renew. Your account and history stay as they are.' },
 ].filter(Boolean) as Array<{ title: string, body: string }>)
@@ -75,7 +75,7 @@ const questions = computed(() => [
       ? 'Your membership payment is refunded. The verification fee is kept because the checks were carried out.'
       : 'Your membership payment is refunded.',
   },
-  { q: 'Can I cancel?', a: 'Turn off auto-renew at any time. Your listing stays live until the end of the term you have paid for.' },
+  { q: 'Can I cancel?', a: 'Turn off auto-renew at any time. Your profile stays live until the end of the term you have paid for.' },
 ].filter(Boolean) as Array<{ q: string, a: string }>)
 
 // Checkout comes after registration and the application; the chosen plan is
@@ -93,8 +93,8 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
         One membership. <em class="text-brand not-italic">{{ several ? 'Pay for the term that suits you.' : 'No commission on your fees.' }}</em>
       </h1>
       <p class="mt-[1.2rem] max-w-[40rem] text-[1.15rem] text-muted-foreground">
-        <template v-if="several">Every plan gives you the same listing, messages and bookings. The only difference is how long you pay for at a time. We take no commission on your fees.</template>
-        <template v-else>Membership gives you a verified listing, messages from clients and bookings. Clients pay you directly, and we never take a cut.</template>
+        <template v-if="several">Every plan gives you the same profile, messages and bookings. The only difference is how long you pay for at a time. We take no commission on your fees.</template>
+        <template v-else>Membership gives you a verified profile, messages from clients and bookings. Clients pay you directly, and we never take a cut.</template>
       </p>
     </section>
 
@@ -130,7 +130,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
             <span v-if="plan.savingsPercent > 0" class="rounded-full bg-lime px-[0.65rem] py-1 font-text text-[0.78rem] font-bold tracking-normal whitespace-nowrap text-night">Save {{ plan.savingsPercent }}%</span>
           </span>
           <span class="mt-[0.6rem] flex flex-wrap items-baseline gap-x-[0.6rem] gap-y-[0.15rem]">
-            <b class="font-display text-[clamp(2.4rem,4vw,3.3rem)] leading-none font-bold tracking-[-0.04em] tabular-nums">{{ formatNairaAmount(plan.priceNaira) }}</b>
+            <b class="font-display text-[clamp(2.4rem,4vw,3.3rem)] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
             <small class="text-[1rem] text-muted-foreground group-data-on/plan:text-on-forest">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</small>
           </span>
           <span class="text-[0.95rem] font-semibold text-brand group-data-on/plan:text-lime">
@@ -173,7 +173,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
             </div>
             <div class="flex items-baseline justify-between gap-4 pt-[0.85rem] pb-[0.6rem] font-bold">
               <dt>Due today</dt>
-              <dd class="font-display text-[1.6rem] font-bold tracking-[-0.03em] tabular-nums">{{ formatNairaAmount(selected.firstPaymentTotalNaira) }}</dd>
+              <dd class="font-display text-[1.6rem] font-bold tracking-[-0.03em]">{{ formatNairaAmount(selected.firstPaymentTotalNaira) }}</dd>
             </div>
           </dl>
           <p class="mt-[0.4rem] text-[0.9rem] text-muted-foreground">

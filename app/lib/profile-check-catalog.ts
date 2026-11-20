@@ -77,11 +77,11 @@ const TIER_META: Record<
     description: 'Required before clients can find you in search.',
   },
   2: {
-    title: 'Good listing',
+    title: 'Good profile',
     description: 'Helps your page look credible and complete.',
   },
   3: {
-    title: 'Premium listing',
+    title: 'Premium profile',
     description: 'Optional polish for trust and conversion.',
   },
 }

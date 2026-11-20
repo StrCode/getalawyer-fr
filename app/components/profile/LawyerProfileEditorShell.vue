@@ -143,7 +143,7 @@ const previewOfficeLocation = computed(() => {
   return parts.length > 0 ? parts.join(', ') : info.primaryState
 })
 
-const displayName = computed(() => session.value?.user?.name?.trim() || 'Your listing')
+const displayName = computed(() => session.value?.user?.name?.trim() || 'Your profile')
 
 const avatarPreview = ref<string | null>(null)
 
@@ -198,7 +198,7 @@ const loadErrorMessage = computed(() => {
   const err = profileQuery.error.value
   if (err instanceof ApiError) return err.message
   if (err instanceof Error) return err.message
-  return 'We could not load your listing.'
+  return 'We could not load your profile.'
 })
 
 async function runProfileMutation<T>(
@@ -207,7 +207,7 @@ async function runProfileMutation<T>(
   errorMessage: string,
 ): Promise<T> {
   if (!canEdit.value) {
-    toast.error('Listing edits unlock after admin approval')
+    toast.error('Profile edits unlock after admin approval')
     throw new Error('not allowed')
   }
 
@@ -418,7 +418,7 @@ onBeforeUnmount(() => {
       description="How clients see you in search. Consultation types, availability, and billing live under Practice and Account."
     >
       <template #title>
-        Your listing
+        Your profile
       </template>
       <template #actions>
         <Badge
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
           class="size-9 text-muted-foreground"
         />
         <p class="text-sm font-medium text-foreground">
-          Couldn't load listing
+          Couldn't load profile
         </p>
         <p class="text-sm text-muted-foreground">
           {{ loadErrorMessage }}
@@ -557,7 +557,7 @@ onBeforeUnmount(() => {
               :email="session?.user?.email"
               :image-url="avatarSrc"
               :uploading="isUploadingAvatar"
-              description="Shown on your listing and in search results."
+              description="Shown on your profile and in search results."
               @upload="onAvatarUpload"
             />
           </div>
@@ -652,7 +652,7 @@ onBeforeUnmount(() => {
       class="border-dashed"
     >
       <CardContent class="py-10 text-center text-sm text-muted-foreground">
-        No listing data available. Try refreshing the page.
+        No profile data available. Try refreshing the page.
       </CardContent>
     </Card>
   </div>

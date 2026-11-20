@@ -307,6 +307,8 @@ const pendingName = ref('')
 const phoneOtp = ref('')
 const otpError = ref('')
 const otpBlocked = ref(false)
+/** True once the code has been accepted. The account exists from then on, so a retry must not check the (now used) code again. */
+const phoneVerified = ref(false)
 const isResending = ref(false)
 const resendCooldown = ref(0)
 let cooldownTimer: ReturnType<typeof setInterval> | null = null
@@ -429,6 +431,7 @@ const form = useForm({
       }
 
       pendingPhone.value = value.phone
+      phoneVerified.value = false
       pendingPassword.value = value.password
       pendingName.value = fullName
 
@@ -475,20 +478,26 @@ async function completePhoneRegistration() {
   isSubmitting.value = true
 
   try {
-    const { error: verifyError } = await verifyPhoneAndRegister({
-      phone: pendingPhone.value,
-      code: phoneOtp.value,
-      name: pendingName.value,
-      userType: selectedRole.value || 'client',
-    })
+    // Two requests: the code (which creates the account and signs in), then the
+    // password. If the second one failed, the code is spent but the account is
+    // there, so pressing the button again only repeats the password step.
+    if (!phoneVerified.value) {
+      const { error: verifyError } = await verifyPhoneAndRegister({
+        phone: pendingPhone.value,
+        code: phoneOtp.value,
+        name: pendingName.value,
+        userType: selectedRole.value || 'client',
+      })
 
-    if (verifyError) {
-      if (isTooManyAttemptsError(verifyError)) {
-        otpBlocked.value = true
-      } else {
-        otpError.value = verifyError.message || 'Invalid verification code.'
+      if (verifyError) {
+        if (isTooManyAttemptsError(verifyError)) {
+          otpBlocked.value = true
+        } else {
+          otpError.value = verifyError.message || 'Invalid verification code.'
+        }
+        return
       }
-      return
+      phoneVerified.value = true
     }
 
     const { error: pwdError } = await completePhoneRegistrationPassword({
@@ -499,7 +508,7 @@ async function completePhoneRegistration() {
     })
 
     if (pwdError) {
-      apiError.value = pwdError.message || 'Failed to set password.'
+      apiError.value = `Your phone number is confirmed, but your password was not saved (${pwdError.message || 'something went wrong'}). Press the button again to retry.`
       return
     }
 

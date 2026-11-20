@@ -128,7 +128,7 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
         v-else
         class="mt-3 text-xs text-muted-foreground"
       >
-        Tier 1 checks are complete. Keep building your listing for better conversion.
+        Tier 1 checks are complete. Keep building your profile for better conversion.
       </p>
 
       <Button
@@ -138,7 +138,7 @@ const previewItems = computed(() => tier1Incomplete.value.slice(0, 4))
         class="mt-4 w-full cursor-pointer"
       >
         <NuxtLink to="/dashboard/profile">
-          Complete listing
+          Complete profile
         </NuxtLink>
       </Button>
     </CardContent>

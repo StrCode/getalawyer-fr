@@ -144,7 +144,7 @@ const pageLoading = computed(
 )
 
 const benefits = [
-  'Directory listing after approval',
+  'A profile in the directory after approval',
   'Secure client messaging',
   'Zero commission on your fees',
 ] as const
@@ -295,11 +295,11 @@ async function retry() {
       v-else
       kicker="Application submitted"
       title="One step left: membership"
-      description="Pay while we review your application. Your listing goes live after approval."
+      description="Pay while we review your application. Your profile goes live after approval."
       membership="due"
     >
       <template v-if="submittedLabel" #description>
-        Pay while we review your application. Your listing goes live after approval. Submitted {{ submittedLabel }}.
+        Pay while we review your application. Your profile goes live after approval. Submitted {{ submittedLabel }}.
       </template>
 
       <p v-if="hasCheckoutFailure" role="alert" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
@@ -316,7 +316,7 @@ async function retry() {
       <section v-else aria-labelledby="membership-title" class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
         <h2 id="membership-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ plans.length > 1 ? 'Choose your plan' : 'Lawyer membership' }}</h2>
         <p v-if="plans.length > 1" class="mt-1 text-[0.9rem] text-muted-foreground">
-          Every plan includes the same listing, messages and bookings. You can change plan at any renewal.
+          Every plan includes the same profile, messages and bookings. You can change plan at any renewal.
         </p>
 
         <SubscriptionPlanPicker
@@ -339,7 +339,7 @@ async function retry() {
           </div>
           <div class="flex items-baseline justify-between gap-4 pt-[0.85rem] font-bold">
             <dt>Due today</dt>
-            <dd class="font-display text-[1.9rem] leading-none font-bold tracking-[-0.03em] tabular-nums">{{ firstPaymentTotalNaira != null ? formatNairaAmount(firstPaymentTotalNaira) : '' }}</dd>
+            <dd class="font-display text-[1.9rem] leading-none font-bold tracking-[-0.03em]">{{ firstPaymentTotalNaira != null ? formatNairaAmount(firstPaymentTotalNaira) : '' }}</dd>
           </div>
         </dl>
         <p v-if="renewalLine" class="mt-2 text-[0.9rem] text-muted-foreground">Then {{ renewalLine }}. You can turn auto-renew off at any time.</p>

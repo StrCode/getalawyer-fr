@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavMain from '@/components/NavMain.vue'
 import UserMenu from '@/components/UserMenu.vue'
-import LandingBrandLogo from '@/components/landing/LandingBrandLogo.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 import { getSessionUserType } from '@/lib/session-user'
 import {
   Sidebar,
@@ -53,7 +53,7 @@ const showUpgradePrompt = computed(() => {
             size="lg"
             class="data-[slot=sidebar-menu-button]:!p-1.5"
           >
-            <LandingBrandLogo
+            <BrandLogo
               to="/dashboard"
               :show-wordmark="showWordmark"
             />

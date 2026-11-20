@@ -48,7 +48,7 @@ const initials = computed(() =>
     <div class="col-span-2 mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-[0.7rem] border-t border-border pt-[0.9rem]">
       <div v-if="fee != null" class="flex items-baseline gap-[0.6rem] text-[0.9rem] text-muted-foreground">
         <span>Consultation from</span>
-        <b class="font-display text-[1.2rem] font-[650] tracking-[-0.02em] text-foreground tabular-nums">{{ fee > 0 ? formatNairaAmount(fee) : 'Free' }}</b>
+        <b class="font-display text-[1.2rem] font-[650] tracking-[-0.02em] text-foreground">{{ fee > 0 ? formatNairaAmount(fee) : 'Free' }}</b>
       </div>
       <p v-else class="text-[0.9rem] text-muted-foreground">Free to message</p>
       <div class="flex items-center gap-[1.1rem] max-sm:w-full max-sm:justify-between">

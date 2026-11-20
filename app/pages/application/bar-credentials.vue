@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { isValidScnDigits, normalizeScnDigitsOnly, SCN_MAX_DIGITS } from '~/lib/scn'
 import { lawyerProfessionalInfoSchema } from '~/schemas/lawyerProfessionalInfo'
+import { httpClient } from '~/lib/api/client'
 import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import {
   Field,
@@ -43,12 +44,31 @@ function snapshotFromStore() {
   }
 }
 
+/**
+ * Is this Supreme Court number already on another lawyer's application? Asked
+ * when the section is saved, so the lawyer hears it here and not at submit,
+ * after everything else is filled in. If the question cannot be asked (offline,
+ * too many checks) the section still saves: submit checks again.
+ */
+async function scnTaken(barNumber: string): Promise<string | null> {
+  try {
+    const result = await httpClient.getAuth<{ available: boolean }>(
+      `/api/onboarding/checks/bar-number?barNumber=${encodeURIComponent(barNumber)}`,
+    )
+    return result?.available === false ? 'This SCN is already registered to another account. Check the number, or write to support if it is yours.' : null
+  }
+  catch {
+    return null
+  }
+}
+
 const { form, formValues, isInvalid } = useWizardStepForm({
   draftSection: 'professional',
   snapshot: snapshotFromStore,
   parse: (values) => lawyerProfessionalInfoSchema.safeParse(values),
   sync: (values) => Object.assign(store.professionalInfo, values),
   commit: (parsed) => Object.assign(store.professionalInfo, parsed),
+  check: (parsed) => scnTaken(parsed.barNumber),
 })
 
 const currentYear = new Date().getFullYear()

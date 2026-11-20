@@ -242,7 +242,9 @@ const form = useForm({
             showPhoneOtpStep.value = true
             return
           }
-          apiError.value = signInError.message || 'The phone number or password is incorrect.'
+          // Also covers a phone account whose password was never saved at sign-up:
+          // "Forgot password?" sets one with a code sent to the phone.
+          apiError.value = `${signInError.message || 'The phone number or password is incorrect.'} If you never finished setting a password, use “Forgot password?” to set one.`
           return
         }
       }

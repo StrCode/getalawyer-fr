@@ -241,7 +241,7 @@ async function onDeleteConfirm() {
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
     title="Remove license?"
-    description="This credential will no longer appear on your listing."
+    description="This credential will no longer appear on your profile."
     :deleting="saving"
     @confirm="onDeleteConfirm"
   />

@@ -46,7 +46,7 @@ const timeline = computed(() => [
   { state: 'done', title: 'Membership paid', note: 'You are covered while we finish the review.' },
   { state: 'now', title: 'Identity and enrolment checks', note: 'In progress' },
   { state: 'next', title: 'Decision by email', note: `Usually within ${REVIEW_TIME}` },
-  { state: 'next', title: 'Your listing goes live', note: 'Clients can find and message you' },
+  { state: 'next', title: 'Your profile goes live', note: 'Clients can find and message you' },
 ])
 </script>
 

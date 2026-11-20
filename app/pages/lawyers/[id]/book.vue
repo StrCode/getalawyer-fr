@@ -273,7 +273,7 @@ const actions = 'mt-[1.3rem] flex items-center justify-between gap-3 border-t bo
                     <span>{{ MEETING_LABEL[type.meetingType] }}</span>
                   </span>
                 </span>
-                <em class="flex-none font-display text-[1.25rem] font-[650] tracking-[-0.02em] not-italic tabular-nums">{{ choosePriceLabel(type) }}</em>
+                <em class="flex-none font-display text-[1.25rem] font-[650] tracking-[-0.02em] not-italic">{{ choosePriceLabel(type) }}</em>
               </span>
             </button>
           </div>

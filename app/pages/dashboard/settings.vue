@@ -74,7 +74,7 @@ const role = computed(() => {
 
 const pageDescription = computed(() =>
   isLawyer.value
-    ? 'Email, phone, password, and support. Listing, bookings tools, and billing have their own pages.'
+    ? 'Email, phone, password, and support. Profile, bookings tools, and billing have their own pages.'
     : 'Legal interests, security, and help.',
 )
 

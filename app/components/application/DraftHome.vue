@@ -88,10 +88,14 @@ const doneCount = computed(() => sections.value.filter(section => section.done).
 const allDone = computed(() => doneCount.value === sections.value.length)
 const nextSection = computed(() => sections.value.find(section => !section.done) ?? null)
 
-// ---- terms and submit ----
+// ---- email, terms and submit ----
+const { session } = useAuth()
+const emailVerified = computed(() => (session.value?.user as { emailVerified?: boolean } | undefined)?.emailVerified === true)
+
 const submitAttempted = ref(false)
 const legalError = computed(() => {
   if (!submitAttempted.value) return null
+  if (!emailVerified.value) return 'Confirm your email address to submit.'
   if (!store.practiceInfo.termsAccepted) return 'You must accept the Terms and Conditions to continue.'
   if (!store.practiceInfo.refundPolicyAccepted) return 'You must accept the refund policy to continue.'
   return null
@@ -171,6 +175,7 @@ async function submit() {
       <!-- agreed to at the point of submitting, not before there is anything to submit -->
       <section v-if="allDone" aria-labelledby="before-submit-title" class="mt-[0.4rem] grid gap-[0.7rem]">
         <h2 id="before-submit-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Before you submit</h2>
+        <ApplicationEmailConfirm />
         <LegalAcceptanceFields
           variant="lawyer"
           :terms-accepted="store.practiceInfo.termsAccepted"
