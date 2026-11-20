@@ -85,12 +85,14 @@ describe('howHeld', () => {
 
 describe('appointmentActions', () => {
   it('offers only what fits the stage', () => {
-    expect(appointmentActions('request')).toEqual({ accept: true, decline: true, cancel: false, close: false, recordOutcome: false })
+    expect(appointmentActions('request')).toEqual({ accept: true, decline: true, cancel: false, close: false, recordOutcome: false, markHeld: false })
     expect(appointmentActions('coming')).toMatchObject({ accept: false, cancel: true, close: false })
     expect(appointmentActions('to_close')).toMatchObject({ cancel: false, close: true })
     expect(appointmentActions('outcome')).toMatchObject({ recordOutcome: true, close: false })
-    for (const stage of ['done', 'cancelled', 'no_show'] as const) {
+    for (const stage of ['done', 'cancelled'] as const) {
       expect(Object.values(appointmentActions(stage)).some(Boolean)).toBe(false)
     }
+    // a no-show can be put right, and nothing else
+    expect(appointmentActions('no_show')).toEqual({ accept: false, decline: false, cancel: false, close: false, recordOutcome: false, markHeld: true })
   })
 })

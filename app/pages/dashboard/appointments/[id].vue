@@ -216,6 +216,7 @@ const quiet = 'shadow-none hover:translate-y-0'
               <Button variant="line" size="pill" :disabled="completing || markingNoShow" :aria-busy="markingNoShow" @click="noShow">{{ markingNoShow ? 'Saving…' : 'Client did not attend' }}</Button>
             </template>
             <Button v-if="can.recordOutcome" variant="canopy" size="pill" @click="outcomeOpen = true">Record the outcome</Button>
+            <Button v-if="can.markHeld" variant="line" size="pill" :disabled="completing" :aria-busy="completing" @click="complete">{{ completing ? 'Saving…' : 'It was held: mark completed' }}</Button>
             <Button v-if="stage === 'done' && booking.engagementOutcome === 'client_hired'" as-child variant="canopy" size="pill">
               <NuxtLink :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'">Open the case<CanopyArrowChip /></NuxtLink>
             </Button>

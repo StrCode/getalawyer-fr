@@ -27,7 +27,8 @@ export interface Booking {
   paymentStatus?: string
   cancellationReason?: string
   cancelledAt?: string
-  cancelledBy?: 'client' | 'lawyer' | 'system'
+  /** The account id of whoever cancelled; null when the booking closed by itself (an unanswered request). */
+  cancelledBy?: string | null
   rescheduledAt?: string
   createdAt: string
   updatedAt: string
