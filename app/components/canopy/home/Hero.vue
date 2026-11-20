@@ -8,32 +8,6 @@
 
 const need = ref('')
 const where = ref('')
-/**
- * "Popular" chips: the featured practice areas from the catalog, each opening
- * the directory filtered to that area. If the catalog has not loaded, the same
- * needs go through keyword search instead.
- */
-const FALLBACK_POPULAR = ['Family law', 'Property & tenancy', 'Criminal defence', 'Employment', 'Business']
-const { data: specializations, suspense: loadAreas } = useSpecializations()
-onServerPrefetch(async () => {
-  await loadAreas().catch(() => {})
-})
-/** Shown first when the catalog has them; any other featured area follows. */
-const POPULAR_FIRST = ['family law', 'property & tenancy', 'criminal defence', 'employment', 'corporate & business']
-const popular = computed(() => {
-  const rank = (name: string) => {
-    const index = POPULAR_FIRST.indexOf(name.toLowerCase())
-    return index === -1 ? POPULAR_FIRST.length : index
-  }
-  const featured = (specializations.value ?? [])
-    .filter(area => area.isFeatured)
-    .sort((a, b) => rank(a.name) - rank(b.name))
-    .slice(0, 5)
-  return featured.length
-    ? featured.map(area => ({ label: area.name, to: { path: '/find-lawyers', query: { areas: area.id } } }))
-    : FALLBACK_POPULAR.map(term => ({ label: term, to: directoryLink(term) }))
-})
-
 function directoryLink(keywords?: string, location?: string) {
   const query: Record<string, string> = {}
   if (keywords?.trim()) query.keywords = keywords.trim()
@@ -84,17 +58,6 @@ function search() {
          Wide screens: it stops about two-thirds across, where the photo becomes solid. -->
     <div class="col-start-1 row-start-2 min-w-0 tab:relative tab:z-2 tab:col-span-2 tab:max-w-[54rem]">
       <CanopySearchRail v-model:need="need" v-model:where="where" id-prefix="hero" on-light @submit="search" />
-      <div class="mt-[1.15rem] flex flex-wrap items-center gap-2 text-[0.9rem] text-muted-foreground">
-        <span>Popular</span>
-        <NuxtLink
-          v-for="chip in popular"
-          :key="chip.label"
-          :to="chip.to"
-          class="inline-flex min-h-[2.6rem] items-center rounded-full border border-border px-4 font-medium text-foreground [transition:background-color_0.2s,border-color_0.2s,translate_0.2s_var(--ease-canopy)] hover:-translate-y-0.5 hover:border-primary hover:bg-mint"
-        >
-          {{ chip.label }}
-        </NuxtLink>
-      </div>
       <p class="mt-[1.15rem] max-w-[44rem] text-[0.9rem] text-muted-foreground">
         getalawyer is not a law firm and does not give legal advice. We help you find a lawyer and talk to them.
       </p>
