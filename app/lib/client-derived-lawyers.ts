@@ -12,6 +12,8 @@ export interface ClientLawyerContact {
   conversationId: string | null
 }
 
+const UNNAMED = 'Lawyer'
+
 function upsertContact(
   map: Map<string, ClientLawyerContact>,
   key: string,
@@ -24,6 +26,8 @@ function upsertContact(
   }
 
   existing.bookingCount += contact.bookingCount
+  // A real name replaces the placeholder used when a booking arrived without one.
+  if (existing.name === UNNAMED && contact.name !== UNNAMED) existing.name = contact.name
   if (contact.hasActiveCase) existing.hasActiveCase = true
   if (contact.lawyerProfileId) existing.lawyerProfileId = contact.lawyerProfileId
   if (contact.conversationId) existing.conversationId = contact.conversationId
@@ -47,13 +51,15 @@ export function deriveClientLawyers(
     if (!['pending', 'confirmed', 'completed'].includes(booking.status)) continue
 
     const profileId = booking.lawyerId || lawyer?.id || null
-    const key = profileId ?? `booking-${booking.id}`
+    // Keyed by the lawyer's account when the booking says who that is, so the
+    // same lawyer met through a booking and through messages is one contact.
+    const key = lawyer?.userId ? `user-${lawyer.userId}` : profileId ?? `booking-${booking.id}`
     const interactionAt = booking.updatedAt || booking.createdAt
 
     upsertContact(map, key, {
       lawyerProfileId: profileId,
-      userId: null,
-      name: lawyer?.name ?? 'Lawyer',
+      userId: lawyer?.userId ?? null,
+      name: lawyer?.name ?? UNNAMED,
       image: lawyer?.profilePicture ?? null,
       lastInteractionAt: interactionAt,
       bookingCount: 1,

@@ -31,7 +31,7 @@ const THEMED_ROUTES = new Set<string>([
   '/terms',
   '/ndpa',
   // dashboard pages rebuilt on the `workspace` layout
-  // the overview: rebuilt for lawyers; clients are kept light by its own middleware
+  // the overview, for lawyers and for clients
   '/dashboard',
   '/dashboard/subscription',
   '/dashboard/subscription/receipts/:id()',
