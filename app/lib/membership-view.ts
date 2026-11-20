@@ -66,6 +66,9 @@ export interface MembershipHeadline {
   detail: string
 }
 
+/** What a lawyer without an active membership can still do, said once on the membership page. */
+const READ_ONLY_LINE = 'Until then you can still read and reply to your clients.'
+
 export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts = {}): MembershipHeadline {
   const reason = facts.failureReason?.trim()
   switch (mode) {
@@ -81,13 +84,13 @@ export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts 
       return {
         lead: 'We could not take',
         accent: 'your renewal payment.',
-        detail: `${reason ? `${withFullStop(reason)} ` : ''}Pay now to stay in the directory.`,
+        detail: `${reason ? `${withFullStop(reason)} ` : ''}Pay now to take new bookings and stay in the directory. ${READ_ONLY_LINE}`,
       }
     case 'ended':
       return {
         lead: 'Your membership ended',
         accent: facts.endLabel ? `on ${facts.endLabel}.` : 'and needs renewing.',
-        detail: 'Renew to return to the directory. Your profile, messages and cases are kept.',
+        detail: `Renew to take new bookings and return to the directory. ${READ_ONLY_LINE}`,
       }
     case 'unfinished':
       return reason
@@ -115,7 +118,7 @@ export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts 
       return {
         lead: 'You do not have',
         accent: 'a membership yet.',
-        detail: 'Choose a plan to appear in the directory and take bookings.',
+        detail: `Choose a plan to appear in the directory and take bookings. ${READ_ONLY_LINE}`,
       }
   }
 }

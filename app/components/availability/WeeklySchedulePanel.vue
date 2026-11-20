@@ -11,6 +11,9 @@ import { MICRO, PANEL, PANEL_FOOTER, PANEL_HEADER } from '@/lib/dashboard-panel'
 import { cn } from '@/lib/utils'
 import type { DayOfWeek, LawyerAvailabilitySchedule } from '~/types/availability'
 
+// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
+const { membershipBlocks } = useMembershipAccess()
+
 const {
   useAvailabilitySchedule,
   useSetSchedule,
@@ -106,6 +109,7 @@ watch(schedules, (newSchedules) => {
 }, { immediate: true })
 
 async function handleQuickSetup(preset: 'weekdays' | 'weekdays-sat') {
+  if (membershipBlocks('change your availability')) return
   const schedulesToSet = []
 
   if (preset === 'weekdays') {
@@ -151,6 +155,7 @@ async function handleQuickSetup(preset: 'weekdays' | 'weekdays-sat') {
 }
 
 async function handleSaveDay(dayOfWeek: DayOfWeek) {
+  if (membershipBlocks('change your availability')) return
   if (!validateDay(dayOfWeek)) {
     toast.error(validationErrors.value[dayOfWeek] || 'Invalid time range')
     return
@@ -194,6 +199,7 @@ async function handleSaveDay(dayOfWeek: DayOfWeek) {
 }
 
 async function handleSaveAll() {
+  if (membershipBlocks('change your availability')) return
   const schedulesToSet = []
   let hasErrors = false
 

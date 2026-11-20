@@ -34,6 +34,9 @@ import { Textarea } from '@/components/ui/textarea'
 import type { AvailabilityException } from '~/types/availability'
 import { localDateKey } from '~/utils/date'
 
+// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
+const { membershipBlocks } = useMembershipAccess()
+
 const {
   useAvailabilityExceptions,
   useCreateAvailabilityException,
@@ -98,6 +101,7 @@ const resetVacationForm = () => {
 }
 
 const handleAddException = async () => {
+  if (membershipBlocks('change your availability')) return
   const form = exceptionForm.value
 
   if (!form.date) {
@@ -142,6 +146,7 @@ const generateDateRange = (start: string, end: string): string[] => {
 }
 
 const handleBlockVacation = async () => {
+  if (membershipBlocks('change your availability')) return
   const form = vacationForm.value
 
   if (!form.startDate || !form.endDate) {
@@ -174,6 +179,7 @@ const handleBlockVacation = async () => {
 }
 
 const handleDelete = (exception: AvailabilityException) => {
+  if (membershipBlocks('change your availability')) return
   pendingDelete.value = exception
 }
 

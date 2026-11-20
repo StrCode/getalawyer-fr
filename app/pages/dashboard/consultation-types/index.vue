@@ -29,6 +29,9 @@ import { MICRO, PANEL } from '@/lib/dashboard-panel'
 import { cn } from '@/lib/utils'
 import type { ConsultationType } from '~/types/booking'
 
+// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
+const { membershipBlocks } = useMembershipAccess()
+
 definePageMeta({
   layout: 'dashboard',
   middleware: ['auth'],
@@ -62,15 +65,18 @@ const activeCount = computed(
 )
 
 function handleCreate() {
+  if (membershipBlocks('change your consultation types')) return
   isCreateModalOpen.value = true
 }
 
 function handleEdit(type: ConsultationType) {
+  if (membershipBlocks('change your consultation types')) return
   selectedType.value = type
   isEditModalOpen.value = true
 }
 
 async function handleToggleActive(type: ConsultationType) {
+  if (membershipBlocks('change your consultation types')) return
   try {
     if (type.isActive) {
       await deactivateMutation.mutateAsync(type.id)
@@ -88,6 +94,7 @@ async function handleToggleActive(type: ConsultationType) {
 }
 
 function handleDelete(type: ConsultationType) {
+  if (membershipBlocks('change your consultation types')) return
   pendingDelete.value = type
 }
 

@@ -29,6 +29,7 @@ onMounted(() => {
     <WorkspaceTopBar />
     <!-- room at the foot for the phone tab bar -->
     <main id="workspace-main" class="mx-auto w-full max-w-[76rem] flex-1 pt-[clamp(0.75rem,2vw,1.5rem)] pb-[7rem] safe-x tab:pb-16">
+      <ClientOnly><WorkspaceReadOnlyNotice class="mb-[clamp(1rem,2vw,1.5rem)]" /></ClientOnly>
       <slot />
     </main>
     <WorkspaceTabBar class="tab:hidden" />

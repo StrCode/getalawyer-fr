@@ -37,6 +37,12 @@ interface SubscriptionRecord {
 
 interface SubscriptionStatusPayload {
   hasActiveSubscription: boolean
+  /**
+   * What the lawyer may do right now. `read_only`: the membership is not on, so
+   * they can read and reply but not take new bookings or change their profile.
+   * Absent on backends from before this rule.
+   */
+  access?: 'full' | 'read_only'
   subscription: SubscriptionRecord | null
 }
 
