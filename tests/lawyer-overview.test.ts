@@ -179,7 +179,7 @@ describe('overviewTodos', () => {
     expect(withOpen.map(todo => todo.id)).toEqual([`request-${request.id}`, 'messages', `close-${open.id}`, `outcome-${done.id}`])
     expect(withOpen[2]).toMatchObject({
       title: 'Close your appointment with Ibrahim Musa',
-      note: 'Initial consultation on Thursday 19 November. Mark it completed or a no-show.',
+      note: 'Initial consultation on Thursday 19 November. Mark it completed, or it is recorded as a no-show.',
     })
     expect(todos[0]).toMatchObject({
       title: 'Answer Ngozi Eze\'s request',
