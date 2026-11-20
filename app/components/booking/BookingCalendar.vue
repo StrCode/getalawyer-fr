@@ -101,7 +101,7 @@ const selectedTime = ref<string | null>(null)
 const selectedDate = computed(() => selectedDateValue.value?.toString() ?? null)
 
 // One range query per visible month; day gating and the time list both derive from it.
-const visibleRange = computed(() => monthRange(placeholder.value))
+const visibleRange = computed(() => monthRange(placeholder.value, minDate))
 const { data: rangeData, isPending, isError, refetch } = useAvailableSlotsRange(
   computed(() => props.lawyerId),
   computed(() => visibleRange.value.start),

@@ -81,7 +81,8 @@ export interface CreateBookingInput {
   meetingType: 'video' | 'in_person' | 'phone'
   meetingUrl?: string
   meetingLocation?: string
-  phoneNumber?: string
+  /** The number the lawyer calls for a phone consultation (the API's name for it). */
+  meetingPhone?: string
   clientNotes?: string
   timezone: string
 }

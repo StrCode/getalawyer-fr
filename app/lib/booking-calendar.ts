@@ -22,11 +22,20 @@ export function buildSlotsByDate(
  * First and last day of the month containing `anchor`, as local
  * 'YYYY-MM-DD' strings. CalendarDate#toString never passes through
  * Date/toISOString, so there is no UTC shift for Africa/Lagos.
+ *
+ * Pass `earliest` (today) when the range is for open times: the availability
+ * API refuses a range that starts in the past, so for the current month the
+ * range has to start today, not on the 1st. Without it the current month came
+ * back as an error and every day looked closed.
  */
-export function monthRange(anchor: DateValue): { start: string; end: string } {
+export function monthRange(anchor: DateValue, earliest?: DateValue): { start: string; end: string } {
+  const first = startOfMonth(anchor)
+  const last = endOfMonth(anchor)
+  const start = earliest && earliest.compare(first) > 0 ? earliest : first
   return {
-    start: startOfMonth(anchor).toString(),
-    end: endOfMonth(anchor).toString()
+    // A month wholly in the past has nothing to ask for; keep the range valid.
+    start: (earliest && earliest.compare(last) > 0 ? last : start).toString(),
+    end: last.toString()
   }
 }
 

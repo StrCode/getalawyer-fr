@@ -1,34 +1,24 @@
 <script setup lang="ts">
-import { ArrowLeft01Icon, Building01Icon, CalendarCheckIn01Icon, CallIcon, Clock01Icon, Video01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import BookingCalendar from '~/components/booking/BookingCalendar.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Stepper,
-  StepperIndicator,
-  StepperItem,
-  StepperSeparator,
-  StepperTitle,
-  StepperTrigger,
-} from '@/components/ui/stepper'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 import { useLawyerPublicProfilePage } from '~/composables/useLawyerPublicProfilePage'
 import type { ConsultationType } from '~/types/lawyer'
 
 /**
- * Client booking flow: consultation type → date & time → review & confirm.
- * Persistent summary rail on desktop recaps each completed step.
+ * Booking a consultation, in the Canopy design: which consultation, then a day
+ * and time, then a check and confirm. A summary of the booking stays beside the
+ * steps (under them on a phone) and fills in as choices are made. It follows
+ * on from the booking card on the lawyer's profile, which links here with
+ * whatever was already picked.
  */
 definePageMeta({
-  layout: 'landing',
+  layout: 'site',
   middleware: ['require-login', 'client-directory'],
 })
 
@@ -43,8 +33,13 @@ const consultationTypes = computed(() =>
 )
 
 useHead({
-  title: computed(() => lawyer.value ? `Book ${lawyer.value.name} · GetaLawyer` : 'Book a consultation · GetaLawyer'),
+  title: computed(() => lawyer.value ? `Book ${lawyer.value.name}` : 'Book a consultation'),
+  meta: [{ name: 'robots', content: 'noindex' }],
 })
+
+const initials = computed(() =>
+  (lawyer.value?.name ?? '').split(/\s+/).filter(Boolean).map(part => part[0]).join('').toUpperCase().slice(0, 2),
+)
 
 // --- Flow state ---
 const step = ref(1)
@@ -53,11 +48,24 @@ const selectedSlot = ref<{ date: string, time: string } | null>(null)
 const meetingType = ref<'video' | 'phone' | 'in_person' | null>(null)
 const clientNotes = ref('')
 
+// A phone consultation needs a number for the lawyer to call. It starts as the
+// one on the account, and can be changed for this booking.
+const { session } = useAuth()
+const phone = ref('')
+watch(
+  () => (session.value?.user as { phoneNumber?: string | null } | undefined)?.phoneNumber,
+  (number) => { if (number && !phone.value) phone.value = number },
+  { immediate: true },
+)
+const phoneOk = computed(() => phone.value.replace(/[^\d+]/g, '').length >= 10)
+
 const MEETING_TYPE_OPTIONS = [
-  { value: 'video', label: 'Video call', icon: Video01Icon },
-  { value: 'phone', label: 'Phone call', icon: CallIcon },
-  { value: 'in_person', label: 'In person', icon: Building01Icon },
+  { value: 'video', label: 'Video call', icon: 'video' },
+  { value: 'phone', label: 'Phone call', icon: 'phone' },
+  { value: 'in_person', label: 'In person', icon: 'office' },
 ] as const
+
+const MEETING_LABEL = { video: 'Video call', phone: 'Phone call', in_person: 'In person', any: 'Video, phone or in person' } as const
 
 /** 'any' means the client picks; otherwise the type dictates it. */
 const meetingTypeChoices = computed(() => {
@@ -68,7 +76,7 @@ const meetingTypeChoices = computed(() => {
 
 // The profile's booking card links here with the visitor's picks
 // (?type=…&date=YYYY-MM-DD&time=HH:mm), so they land on the step they reached.
-// The server re-checks the time on confirm; a stale one sends them back to step 2.
+// If the time has been taken by the time they confirm, the server says so and they are sent back to step 2.
 const preset = route.query
 const presetType = consultationTypes.value.find(type => type.id === preset.type)
 if (presetType) {
@@ -98,10 +106,6 @@ function selectType(type: ConsultationType) {
   step.value = 2
 }
 
-function onSlotSelect(slot: { date: string, time: string }) {
-  selectedSlot.value = slot
-}
-
 function toReview() {
   if (!selectedSlot.value) return
   step.value = 3
@@ -124,8 +128,16 @@ const slotTimeLabel = computed(() => {
 })
 
 const canConfirm = computed(() =>
-  Boolean(selectedType.value && selectedSlot.value && meetingType.value),
+  Boolean(selectedType.value && selectedSlot.value && meetingType.value)
+  && (meetingType.value !== 'phone' || phoneOk.value),
 )
+
+/** Why Confirm is not available yet, said under the button. */
+const confirmHint = computed(() => {
+  if (!meetingType.value) return 'Choose how you want to meet to confirm.'
+  if (meetingType.value === 'phone' && !phoneOk.value) return 'Add a phone number the lawyer can call you on.'
+  return ''
+})
 
 const { useCreateBooking } = useBookings()
 const { mutate: createBooking, isPending: isBooking } = useCreateBooking()
@@ -140,6 +152,7 @@ function handleConfirm() {
       scheduledDate: selectedSlot.value.date,
       scheduledStartTime: selectedSlot.value.time,
       meetingType: meetingType.value,
+      meetingPhone: meetingType.value === 'phone' ? phone.value.trim() : undefined,
       clientNotes: clientNotes.value.trim() || undefined,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
@@ -152,7 +165,8 @@ function handleConfirm() {
       },
       onError: (err: any) => {
         const message = err?.message || 'Failed to create the booking'
-        if (err?.status === 400 && message.includes('not available')) {
+        // 409: someone else took the time between picking it and confirming.
+        if (err?.status === 409 || err?.code === 'SLOT_NOT_AVAILABLE' || message.includes('no longer available')) {
           toast.error('Slot unavailable', {
             description: 'That time was just taken. Pick another slot.',
           })
@@ -167,228 +181,220 @@ function handleConfirm() {
 }
 
 const steps = [
-  { step: 1, title: 'Consultation' },
-  { step: 2, title: 'Date & time' },
-  { step: 3, title: 'Review' },
-]
+  { step: 1, label: 'Consultation', title: 'Which consultation?' },
+  { step: 2, label: 'Day and time', title: 'Pick a day and time' },
+  { step: 3, label: 'Confirm', title: 'Check and confirm' },
+] as const
+const current = computed(() => steps[step.value - 1]!)
+
+/** A step can be opened once the ones before it are answered. */
+function canOpen(target: number): boolean {
+  if (target === 1) return true
+  if (target === 2) return Boolean(selectedType.value)
+  return Boolean(selectedType.value && selectedSlot.value)
+}
+
+// Class lists used more than once (full strings, so Tailwind sees them).
+const row = 'w-full cursor-pointer rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-4 text-left transition-[translate,box-shadow,border-color,background-color] duration-200 ease-canopy hover:-translate-y-0.5 hover:border-brand aria-checked:border-brand aria-checked:bg-mint aria-checked:text-deep'
+const panel = 'rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]'
+const actions = 'mt-[1.3rem] flex items-center justify-between gap-3 border-t border-border pt-4'
 </script>
 
 <template>
-  <div class="bg-background pb-20 font-sans text-foreground">
-    <div class="mx-auto max-w-6xl px-6 pt-8 md:px-8">
-      <Button variant="ghost" class="mb-4 gap-2" as-child>
-        <NuxtLink :to="`/lawyers/${lawyerId}`">
-          <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-5" aria-hidden="true" />
-          Back to profile
-        </NuxtLink>
-      </Button>
+  <div class="pb-[clamp(2.5rem,6vw,5rem)]">
+    <NuxtLink :to="`/lawyers/${lawyerId}`" :class="authBack">← Back to profile</NuxtLink>
 
-      <!-- Loading -->
-      <div v-if="pending" class="space-y-4 py-6" aria-busy="true" aria-label="Loading lawyer">
-        <Skeleton class="h-10 w-72 rounded-lg" />
-        <Skeleton class="h-64 w-full rounded-xl" />
-      </div>
+    <!-- loading -->
+    <div v-if="pending" class="mt-4 grid gap-[0.7rem]" aria-busy="true" aria-label="Loading the lawyer">
+      <Skeleton class="h-12 w-2/3 max-w-[32rem] rounded-full" />
+      <Skeleton v-for="n in 3" :key="n" class="h-[5.2rem] max-w-[44rem] rounded-[1.25rem]" />
+    </div>
 
-      <!-- Error -->
-      <div v-else-if="error || !lawyer" class="py-16 text-center">
-        <p class="text-lg font-medium text-foreground">We couldn't load this lawyer.</p>
-        <p class="mt-1 text-sm text-muted-foreground">The profile may have been removed, or something went wrong.</p>
-        <Button class="mt-6" as-child>
-          <NuxtLink to="/find-lawyers">Browse lawyers</NuxtLink>
-        </Button>
-      </div>
+    <!-- could not load -->
+    <div v-else-if="error || !lawyer" role="alert" class="mt-6 grid max-w-[36rem] justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
+      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this lawyer.</h1>
+      <p class="text-muted-foreground">The profile may have been removed, or something went wrong on our side.</p>
+      <Button as-child variant="canopy" size="pill-sm"><NuxtLink to="/find-lawyers">Browse lawyers</NuxtLink></Button>
+    </div>
 
-      <!-- No bookable consultations -->
-      <div v-else-if="consultationTypes.length === 0" class="py-16 text-center">
-        <HugeiconsIcon :icon="CalendarCheckIn01Icon" class="mx-auto mb-4 size-12 text-muted-foreground" aria-hidden="true" />
-        <p class="text-lg font-medium text-foreground">{{ lawyer.name }} isn't taking bookings yet</p>
-        <p class="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-          You can still message them — ask your question and agree next steps in chat.
-        </p>
-        <Button class="mt-6" as-child>
-          <NuxtLink :to="`/lawyers/${lawyerId}`">Back to profile</NuxtLink>
-        </Button>
-      </div>
+    <!-- nothing to book online -->
+    <div v-else-if="consultationTypes.length === 0" class="mt-6 grid max-w-[36rem] justify-items-start gap-[0.7rem] rounded-card border border-border bg-card p-6">
+      <span class="grid size-11 place-items-center rounded-[0.9rem] bg-mint text-deep"><CanopyGlyph name="calendar" :size="20" /></span>
+      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ lawyer.name }} is not taking bookings online yet.</h1>
+      <p class="text-muted-foreground">You can still send a message. It is free, and you can agree a time in the chat.</p>
+      <Button as-child variant="canopy" size="pill-sm"><NuxtLink :to="`/lawyers/${lawyerId}`">Back to profile</NuxtLink></Button>
+    </div>
 
-      <template v-else>
-        <div class="max-w-2xl">
-         <h1 class="text-3xl font-medium text-foreground md:text-4xl">
-            Book a consultation
-          </h1>
-          <p class="mt-2 text-base text-muted-foreground">
-            with <span class="font-medium text-foreground">{{ lawyer.name }}</span>
-          </p>
-        </div>
+    <template v-else>
+      <header class="mt-2 max-w-[44rem]">
+        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Book a consultation</p>
+        <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4vw,3.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">Book time with {{ lawyer.name }}</h1>
+      </header>
 
-        <!-- Stepper -->
-        <Stepper v-model="step" class="mt-8 flex w-full max-w-xl items-start gap-2">
-          <StepperItem
-            v-for="item in steps"
-            :key="item.step"
-            :step="item.step"
-            class="relative flex w-full flex-col items-center justify-center"
-          >
-            <StepperSeparator
-              v-if="item.step !== steps[steps.length - 1]?.step"
-              class="absolute left-[calc(50%+20px)] right-[calc(-50%+10px)] top-4 block h-0.5 shrink-0 rounded-full bg-border group-data-[state=completed]:bg-primary"
-            />
-            <StepperTrigger as-child>
-              <Button
-                :variant="step >= item.step ? 'default' : 'outline'"
-                size="icon"
-                class="z-10 shrink-0 rounded-full"
-                :disabled="item.step === 2 ? !selectedType : item.step === 3 ? !selectedSlot : false"
-              >
-                <StepperIndicator>{{ item.step }}</StepperIndicator>
-              </Button>
-            </StepperTrigger>
-            <StepperTitle class="mt-2 text-xs font-medium sm:text-sm" :class="step >= item.step ? 'text-foreground' : 'text-muted-foreground'">
-              {{ item.title }}
-            </StepperTitle>
-          </StepperItem>
-        </Stepper>
-
-        <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <!-- Step content -->
-          <div class="lg:col-span-2">
-            <!-- 1 · Consultation type -->
-            <div v-if="step === 1" class="space-y-3" role="radiogroup" aria-label="Consultation type">
+      <div class="mt-[clamp(1.25rem,3vw,2rem)] grid grid-cols-[minmax(0,1fr)_22rem] items-start gap-[clamp(1.25rem,3vw,2.5rem)] max-tab:grid-cols-1">
+        <div class="min-w-0">
+          <!-- where you are: three steps, each opened once the one before is answered -->
+          <ol class="grid grid-cols-3 gap-[0.35rem]" aria-label="Booking steps">
+            <li v-for="item in steps" :key="item.step">
               <button
-                v-for="type in consultationTypes"
-                :key="type.id"
                 type="button"
-                role="radio"
-                :aria-checked="selectedType?.id === type.id"
-                class="w-full cursor-pointer rounded-xl border bg-card p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                :class="selectedType?.id === type.id ? 'border-primary ring-2 ring-primary/20' : 'border-foreground/15'"
-                @click="selectType(type)"
+                class="group/step block w-full cursor-pointer text-left disabled:cursor-default"
+                :disabled="!canOpen(item.step)"
+                :aria-current="step === item.step ? 'step' : undefined"
+                @click="step = item.step"
               >
-                <div class="flex items-start justify-between gap-4">
-                  <div class="min-w-0">
-                    <p class="font-medium text-foreground">{{ type.name }}</p>
-                    <p v-if="type.description" class="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                      {{ type.description }}
-                    </p>
-                    <p class="mt-2 flex items-center gap-3 text-sm text-muted-foreground">
-                      <span class="inline-flex items-center gap-1.5">
-                        <HugeiconsIcon :icon="Clock01Icon" class="size-4" aria-hidden="true" />
-                        {{ type.durationMinutes }} min
-                      </span>
-                      <span v-if="type.meetingType !== 'any'" class="capitalize">
-                        {{ type.meetingType.replace('_', ' ') }}
-                      </span>
-                      <span v-else>Video · phone · in person</span>
-                    </p>
-                  </div>
-                  <p class="shrink-0 text-lg font-semibold text-primary tabular-nums">
-                    {{ choosePriceLabel(type) }}
-                  </p>
-                </div>
+                <i class="block h-[0.4rem] rounded-full transition-colors duration-300" :class="step >= item.step ? 'bg-primary' : 'bg-border'" />
+                <span class="mt-[0.5rem] block text-[0.85rem]" :class="step === item.step ? 'font-semibold text-foreground' : 'text-muted-foreground group-enabled/step:group-hover/step:text-brand'">
+                  {{ item.step }}. {{ item.label }}
+                </span>
               </button>
-            </div>
+            </li>
+          </ol>
 
-            <!-- 2 · Date & time -->
-            <Card v-else-if="step === 2">
-              <CardContent class="pt-6">
-                <BookingCalendar
-                  :lawyer-id="lawyerId"
-                  :consultation-type-id="selectedType!.id"
-                  @select="onSlotSelect"
-                />
-                <div class="mt-6 flex justify-between gap-3 border-t border-border pt-4">
-                  <Button variant="ghost" @click="step = 1">
-                    Back
-                  </Button>
-                  <Button :disabled="!selectedSlot" @click="toReview">
-                    Continue
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          <h2 class="mt-[1.4rem] font-display text-[1.5rem] font-[650] tracking-[-0.025em]">{{ current.title }}</h2>
 
-            <!-- 3 · Review & confirm -->
-            <Card v-else>
-              <CardContent class="space-y-6 pt-6">
-                <div v-if="meetingTypeChoices.length > 1">
-                  <Label class="mb-3 block">How do you want to meet?</Label>
-                  <div class="grid grid-cols-1 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Meeting type">
-                    <button
-                      v-for="option in meetingTypeChoices"
-                      :key="option.value"
-                      type="button"
-                      role="radio"
-                      :aria-checked="meetingType === option.value"
-                      class="flex cursor-pointer items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                      :class="meetingType === option.value
-                        ? 'border-primary bg-primary/5 text-foreground ring-2 ring-primary/20'
-                        : 'border-foreground/15 bg-card text-muted-foreground hover:border-primary/40'"
-                      @click="meetingType = option.value"
-                    >
-                      <HugeiconsIcon :icon="option.icon" class="size-4" aria-hidden="true" />
-                      {{ option.label }}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <Label for="booking-notes" class="mb-2 block">
-                    Anything the lawyer should know? <span class="font-normal text-muted-foreground">(optional)</span>
-                  </Label>
-                  <Textarea
-                    id="booking-notes"
-                    v-model="clientNotes"
-                    rows="4"
-                    placeholder="Briefly describe your matter — e.g. tenancy dispute over unreturned deposit in Lagos."
-                  />
-                </div>
-
-                <div class="flex justify-between gap-3 border-t border-border pt-4">
-                  <Button variant="ghost" @click="step = 2">
-                    Back
-                  </Button>
-                  <ButtonBusy
-                    :disabled="!canConfirm"
-                    :loading="isBooking"
-                    @click="handleConfirm"
-                  >
-                    Confirm booking
-                  </ButtonBusy>
-                </div>
-              </CardContent>
-            </Card>
+          <!-- 1 · which consultation -->
+          <div v-if="step === 1" class="mt-[0.9rem] grid gap-[0.6rem]" role="radiogroup" aria-label="Consultation">
+            <button
+              v-for="type in consultationTypes"
+              :key="type.id"
+              type="button"
+              role="radio"
+              :aria-checked="selectedType?.id === type.id"
+              :class="row"
+              @click="selectType(type)"
+            >
+              <span class="flex items-start justify-between gap-4">
+                <span class="min-w-0">
+                  <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">{{ type.name }}</b>
+                  <span v-if="type.description" class="mt-[0.2rem] line-clamp-2 block text-[0.92rem] opacity-80">{{ type.description }}</span>
+                  <span class="mt-[0.5rem] flex flex-wrap items-center gap-x-[0.9rem] gap-y-1 text-[0.88rem] opacity-80">
+                    <span class="inline-flex items-center gap-[0.35rem]"><CanopyGlyph name="clock" :size="15" />{{ type.durationMinutes }} min</span>
+                    <span>{{ MEETING_LABEL[type.meetingType] }}</span>
+                  </span>
+                </span>
+                <em class="flex-none font-display text-[1.25rem] font-[650] tracking-[-0.02em] not-italic tabular-nums">{{ choosePriceLabel(type) }}</em>
+              </span>
+            </button>
           </div>
 
-          <!-- Summary rail -->
-          <aside class="lg:col-span-1">
-            <Card class="lg:sticky lg:top-24">
-              <CardContent class="space-y-4 pt-6 text-sm">
-                <p class="eyebrow text-muted-foreground">Your booking</p>
-                <div>
-                  <p class="text-muted-foreground">Lawyer</p>
-                  <p class="font-medium text-foreground">{{ lawyer.name }}</p>
-                </div>
-                <div v-if="selectedType">
-                  <p class="text-muted-foreground">Consultation</p>
-                  <p class="font-medium text-foreground">{{ selectedType.name }}</p>
-                  <p class="text-muted-foreground">{{ selectedType.durationMinutes }} min · {{ choosePriceLabel(selectedType) }}</p>
-                </div>
-                <div v-if="slotDateLabel">
-                  <p class="text-muted-foreground">When</p>
-                  <p class="font-medium text-foreground">{{ slotDateLabel }}</p>
-                  <p class="text-muted-foreground">{{ slotTimeLabel }}</p>
-                </div>
-                <div v-if="meetingType && step === 3">
-                  <p class="text-muted-foreground">Meeting</p>
-                  <p class="font-medium capitalize text-foreground">{{ meetingType.replace('_', ' ') }}</p>
-                </div>
-                <p class="border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-                  Fees are agreed and paid directly between you and the lawyer — GetaLawyer takes no commission.
-                </p>
-              </CardContent>
-            </Card>
-          </aside>
+          <!-- 2 · day and time -->
+          <section v-else-if="step === 2" :class="panel" class="mt-[0.9rem]">
+            <CanopySlotPicker
+              :key="selectedType!.id"
+              v-model="selectedSlot"
+              :lawyer-id="lawyerId"
+              :consultation-type-id="selectedType!.id"
+            />
+            <div :class="actions">
+              <button type="button" :class="authBack" @click="step = 1">← Back</button>
+              <Button variant="canopy" size="pill" class="group/btn min-w-[11rem] justify-between pr-2 pl-[1.4rem]" :disabled="!selectedSlot" @click="toReview">
+                Continue<CanopyArrowChip />
+              </Button>
+            </div>
+          </section>
+
+          <!-- 3 · check and confirm -->
+          <section v-else :class="panel" class="mt-[0.9rem]">
+            <div v-if="meetingTypeChoices.length > 1">
+              <p id="meeting-label" class="text-[0.9rem] font-semibold">How do you want to meet?</p>
+              <div class="mt-[0.6rem] grid grid-cols-3 gap-[0.45rem] max-sm:grid-cols-1" role="radiogroup" aria-labelledby="meeting-label">
+                <button
+                  v-for="option in meetingTypeChoices"
+                  :key="option.value"
+                  type="button"
+                  role="radio"
+                  :aria-checked="meetingType === option.value"
+                  class="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-[1rem] border border-border bg-background px-3 text-[0.95rem] font-semibold transition-colors duration-200 hover:border-brand aria-checked:border-brand aria-checked:bg-mint aria-checked:text-deep"
+                  @click="meetingType = option.value"
+                >
+                  <CanopyGlyph :name="option.icon" :size="17" />{{ option.label }}
+                </button>
+              </div>
+            </div>
+
+            <div v-if="meetingType === 'phone'" :class="meetingTypeChoices.length > 1 ? 'mt-[1.3rem]' : ''">
+              <label for="booking-phone" class="text-[0.9rem] font-semibold">Phone number the lawyer should call</label>
+              <Input
+                id="booking-phone"
+                v-model="phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="0803 123 4567"
+                :class="authInput"
+                class="mt-[0.5rem] bg-background"
+              />
+            </div>
+
+            <div :class="meetingTypeChoices.length > 1 || meetingType === 'phone' ? 'mt-[1.3rem]' : ''">
+              <label for="booking-notes" class="text-[0.9rem] font-semibold">
+                Anything the lawyer should know? <span class="font-normal text-muted-foreground">(optional)</span>
+              </label>
+              <Textarea
+                id="booking-notes"
+                v-model="clientNotes"
+                rows="4"
+                placeholder="A line or two about your matter, for example: tenancy dispute over a deposit that was not returned, in Lagos."
+                class="mt-[0.5rem] min-h-[7.5rem] rounded-[1rem] border-border bg-background px-4 py-3 text-[1.02rem] shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint"
+              />
+            </div>
+
+            <p class="mt-[1rem] text-[0.88rem] text-muted-foreground">
+              This sends a request. {{ lawyer.name }} confirms it, and you will see the answer in your bookings.
+            </p>
+
+            <div :class="actions">
+              <button type="button" :class="authBack" :disabled="isBooking" @click="step = 2">← Back</button>
+              <Button variant="canopy" size="pill" class="group/btn min-w-[13rem] justify-between pr-2 pl-[1.4rem]" :disabled="!canConfirm || isBooking" :aria-busy="isBooking" @click="handleConfirm">
+                {{ isBooking ? 'Sending your request…' : 'Confirm booking' }}<CanopyArrowChip />
+              </Button>
+            </div>
+            <p v-if="confirmHint" role="status" class="mt-2 text-right text-[0.85rem] text-muted-foreground">{{ confirmHint }}</p>
+          </section>
         </div>
-      </template>
-    </div>
+
+        <!-- the booking so far -->
+        <aside aria-label="Your booking" class="rounded-[1.75rem] border border-border bg-card p-[1.3rem] shadow-pill tab:sticky tab:top-24">
+          <div class="flex items-center gap-[0.8rem]">
+            <span class="grid size-[3.2rem] flex-none place-items-center overflow-hidden rounded-[1rem] bg-mint">
+              <NuxtImg v-if="lawyer.image" :src="lawyer.image" width="128" height="128" sizes="64px" alt="" class="size-full object-cover object-[50%_15%]" />
+              <span v-else aria-hidden="true" class="font-display text-[1.1rem] font-[650] text-deep">{{ initials }}</span>
+            </span>
+            <span class="min-w-0">
+              <small class="block text-[0.74rem] font-bold tracking-[0.06em] text-brand uppercase">Your booking</small>
+              <b class="block truncate font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ lawyer.name }}</b>
+            </span>
+          </div>
+
+          <dl class="mt-[1rem] grid gap-[0.7rem] border-t border-border pt-[1rem] text-[0.95rem]" aria-live="polite">
+            <div class="grid gap-[0.1rem]">
+              <dt class="text-[0.82rem] text-muted-foreground">Consultation</dt>
+              <dd v-if="selectedType">
+                <b class="block font-semibold">{{ selectedType.name }}</b>
+                <span class="text-muted-foreground">{{ selectedType.durationMinutes }} min · {{ choosePriceLabel(selectedType) }}</span>
+              </dd>
+              <dd v-else class="text-muted-foreground">Not chosen yet</dd>
+            </div>
+            <div class="grid gap-[0.1rem]">
+              <dt class="text-[0.82rem] text-muted-foreground">When</dt>
+              <dd v-if="slotDateLabel">
+                <b class="block font-semibold">{{ slotDateLabel }}</b>
+                <span class="text-muted-foreground">{{ slotTimeLabel }}, Nigerian time</span>
+              </dd>
+              <dd v-else class="text-muted-foreground">Not chosen yet</dd>
+            </div>
+            <div v-if="meetingType" class="grid gap-[0.1rem]">
+              <dt class="text-[0.82rem] text-muted-foreground">Meeting</dt>
+              <dd class="font-semibold">{{ MEETING_LABEL[meetingType] }}</dd>
+            </div>
+          </dl>
+
+          <p class="mt-[1rem] border-t border-border pt-[1rem] text-[0.82rem] text-muted-foreground">
+            Fees are agreed and paid directly between you and the lawyer; getalawyer takes no commission.
+          </p>
+        </aside>
+      </div>
+    </template>
   </div>
 </template>

@@ -22,6 +22,7 @@ const THEMED_ROUTES = new Set<string>([
   '/',
   '/find-lawyers',
   '/lawyers/:id()',
+  '/lawyers/:id()/book',
   '/pricing',
   '/for-lawyers',
   '/practice-areas',

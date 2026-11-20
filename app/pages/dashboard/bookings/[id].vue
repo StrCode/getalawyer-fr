@@ -134,14 +134,14 @@
                 </dd>
               </div>
               <div
-                v-if="booking.meetingType === 'phone' && booking.phoneNumber"
+                v-if="booking.meetingType === 'phone' && (booking.meetingPhone || booking.phoneNumber)"
                 class="grid py-4 sm:grid-cols-3 sm:gap-4"
               >
                 <dt class="text-sm font-medium text-foreground">
                   Phone number
                 </dt>
                 <dd class="mt-1 text-sm text-muted-foreground sm:col-span-2 sm:mt-0">
-                  {{ booking.phoneNumber }}
+                  {{ booking.meetingPhone || booking.phoneNumber }}
                 </dd>
               </div>
               <div
