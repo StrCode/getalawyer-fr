@@ -1,7 +1,10 @@
 <script setup lang="ts">
 /**
- * The getalawyer mark and wordmark in the Canopy display face.
- * `condensed` fades the wordmark out and leaves the mark (scrolled header).
+ * The getalawyer logo: the designer's briefcase mark, with the name set in the
+ * Canopy display face. The mark (BrandMark) is in its own
+ * green on light, white in dark mode (the supplied White version).
+ *
+ * `condensed` fades the name out and leaves the mark (scrolled header).
  */
 withDefaults(defineProps<{ to?: string, large?: boolean, condensed?: boolean }>(), {
   to: '/',
@@ -14,13 +17,13 @@ withDefaults(defineProps<{ to?: string, large?: boolean, condensed?: boolean }>(
   <NuxtLink
     :to="to"
     aria-label="getalawyer home"
-    class="flex items-center whitespace-nowrap font-display font-bold tracking-[-0.03em] transition-[gap] duration-300 ease-canopy"
+    class="flex w-fit items-center whitespace-nowrap font-display font-bold tracking-[-0.03em] transition-[gap] duration-300 ease-canopy"
     :class="[large ? 'text-[1.6rem]' : 'text-[1.3rem]', condensed ? 'gap-0' : 'gap-[0.55rem]']"
   >
-    <svg :width="large ? 28 : 24" :height="large ? 28 : 24" viewBox="0 0 100 100" aria-hidden="true">
-      <polygon points="0,20 38,42 38,82 0,60" class="fill-brand" />
-      <polygon points="62,42 100,20 100,60 62,82" class="fill-deep" />
-    </svg>
+    <BrandMark
+      class="w-auto flex-none fill-[#239261] dark:fill-white"
+      :class="large ? 'h-[1.9rem]' : 'h-[1.625rem]'"
+    />
     <span
       aria-hidden="true"
       class="inline-block overflow-hidden whitespace-nowrap [transition:max-width_0.3s_var(--ease-canopy),opacity_0.2s]"

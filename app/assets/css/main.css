@@ -89,6 +89,8 @@
   --radius-tile: 2rem;
   --radius-card: 1.75rem;
   --shadow-rail: 0 22px 50px rgba(0, 0, 0, 0.28);
+  /* the same rail on a light panel: a border does the work, the shadow only lifts it */
+  --shadow-rail-soft: 0 1px 2px rgba(15, 34, 25, 0.04), 0 4px 14px rgba(15, 34, 25, 0.06);
   --shadow-widget: 0 18px 44px rgba(0, 0, 0, 0.3);
   --shadow-book: 0 18px 40px rgba(0, 0, 0, 0.28);
   --shadow-plan: 0 26px 60px rgba(0, 0, 0, 0.35);
@@ -235,8 +237,8 @@
 @theme {
   /*
    * Entrances are short and travel little: the hero's words are in place half
-   * a second after they exist. Only two things keep moving on the page, the
-   * typing dots (they say "a lawyer is replying") and the practice-area strip.
+   * a second after they exist. Nothing on the homepage keeps moving: the
+   * product views in "How it works" play once as that section arrives.
    */
   --animate-rise-in: canopy-up 0.5s var(--ease-canopy) both;
   --animate-photo-in: canopy-up 0.7s var(--ease-canopy) 0.1s both;
@@ -246,8 +248,12 @@
   --animate-step-in: canopy-step 0.3s var(--ease-canopy) both;
   /* the tick of a section that has just been saved; waits for the page to fade in */
   --animate-tick-in: canopy-tick 0.2s var(--ease-canopy) 0.15s both;
-  --animate-marquee: canopy-slide 46s linear infinite;
   --animate-typing: canopy-blink 1.3s infinite ease-in-out;
+  /* pieces of the "How it works" product views; each is given its own animation-delay */
+  --animate-pop-in: canopy-tick 0.25s var(--ease-canopy) both;
+  --animate-type-in: canopy-type 0.45s steps(15, end) both;
+  --animate-draw-in: canopy-draw 0.45s var(--ease-canopy) both;
+  --animate-press: canopy-press 0.3s var(--ease-canopy) both;
 
   @keyframes canopy-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -265,8 +271,20 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: none; }
   }
-  @keyframes canopy-slide {
-    to { transform: translateX(-50%); }
+  /* text appearing as if typed: revealed left to right in steps */
+  @keyframes canopy-type {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  /* a rule drawing itself from the left */
+  @keyframes canopy-draw {
+    from { transform: scaleX(0); }
+    to { transform: none; }
+  }
+  /* a button being pressed and let go */
+  @keyframes canopy-press {
+    0%, 100% { transform: none; }
+    40% { transform: scale(0.86); }
   }
   @keyframes canopy-blink {
     0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
@@ -280,28 +298,17 @@
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-/* Soft fade at both ends of a horizontally scrolling strip. */
-@utility mask-fade-x {
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-/* Hero photo: fades into the forest panel on the left and at the foot. */
+/* Hero photo: fades into its white (card) panel on the left and at the foot. */
 @utility hero-photo-fade {
   background:
-    linear-gradient(90deg, var(--forest) 0%, rgba(11, 51, 39, 0.72) 16%, rgba(11, 51, 39, 0) 52%),
-    linear-gradient(0deg, rgba(11, 51, 39, 0.94) 0%, rgba(11, 51, 39, 0.6) 20%, rgba(11, 51, 39, 0) 44%);
-}
-/* Photo tile: forest scrim behind the caption (top) and under the card (foot). */
-@utility tile-cap-fade {
-  background: linear-gradient(180deg, rgba(11, 51, 39, 0.94), rgba(11, 51, 39, 0.72) 50%, rgba(11, 51, 39, 0));
+    linear-gradient(90deg, var(--card) 0%, color-mix(in srgb, var(--card) 72%, transparent) 16%, transparent 52%),
+    linear-gradient(0deg, color-mix(in srgb, var(--card) 94%, transparent) 0%, color-mix(in srgb, var(--card) 60%, transparent) 20%, transparent 44%);
 }
 /* Sign-in panel photo: a light forest wash behind the chip, solid forest behind the text at the foot. */
 @utility auth-photo-fade {
   background:
     linear-gradient(180deg, rgba(11, 51, 39, 0.6) 0%, rgba(11, 51, 39, 0) 26%),
     linear-gradient(0deg, var(--forest) 0%, rgba(11, 51, 39, 0.94) 26%, rgba(11, 51, 39, 0) 64%);
-}
-@utility tile-foot-fade {
-  background: linear-gradient(0deg, rgba(11, 51, 39, 0.78), rgba(11, 51, 39, 0));
 }
 
 @layer base {

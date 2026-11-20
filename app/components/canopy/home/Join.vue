@@ -1,10 +1,11 @@
 <script setup lang="ts">
-/** For lawyers: the pitch on the forest panel, the membership card on a photo. */
-const perks = [
-  'Verified mark on your profile once your checks pass',
-  'Turn auto-renew off whenever you like',
-  'Switch plan at your next renewal',
-]
+import { Button } from '@/components/ui/button'
+
+/**
+ * For lawyers: one slim green band at the foot of the homepage. The homepage is
+ * for people looking for a lawyer, so this only asks the question and points to
+ * the way in; plans, prices and the full pitch are on the For lawyers page.
+ */
 </script>
 
 <template>
@@ -12,32 +13,20 @@ const perks = [
     id="join"
     data-rise
     data-surface="forest"
-    class="grid scroll-mt-24 grid-cols-2 overflow-hidden rounded-panel bg-forest text-white max-tab:grid-cols-1"
+    aria-labelledby="join-title"
+    class="flex scroll-mt-24 flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-panel bg-forest px-[clamp(1.5rem,4.5vw,4.5rem)] py-[clamp(1.75rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]"
   >
-    <div class="self-center p-[clamp(1.75rem,5vw,4.5rem)]">
-      <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">For lawyers</div>
-      <h2 class="mt-4 text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">
-        Grow your practice. <em class="text-lime not-italic">Keep every naira you earn.</em>
-      </h2>
-      <p class="mt-[1.2rem] max-w-[34rem] text-on-forest">Clients find you in the directory and message you directly. One membership, paid for the term you choose, and no commission on your fees.</p>
-      <ul class="mt-[1.6rem] grid gap-[0.65rem] font-medium">
-        <li v-for="perk in perks" :key="perk" class="flex items-start gap-[0.65rem]">
-          <CanopyGlyph name="tick" :stroke="3" class="mt-[0.3rem] flex-none text-lime" />{{ perk }}
-        </li>
-      </ul>
+    <div class="min-w-0 flex-[1_1_22rem]">
+      <h2 id="join-title" class="text-[clamp(1.8rem,3vw,2.6rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Are you a lawyer?</h2>
+      <p class="mt-[0.6rem] text-[1.1rem] text-on-forest">Join getalawyer so clients can find you.</p>
     </div>
-    <div class="relative grid min-h-80 place-items-center p-[clamp(1.1rem,3vw,2.5rem)] max-tab:min-h-64 max-tab:py-6">
-      <NuxtImg
-        src="/images/canopy/desk.jpg"
-        width="1000"
-        height="1100"
-        sizes="640px"
-        alt="A lawyer working at a desk with papers and a laptop"
-        loading="lazy"
-        class="absolute inset-0 size-full object-cover"
-      />
-      <span aria-hidden="true" class="absolute inset-0 bg-forest/38" />
-      <CanopyPlanCard />
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <Button as-child variant="lime" size="pill" class="max-sm:w-full">
+        <NuxtLink to="/register?role=lawyer">Join as a lawyer</NuxtLink>
+      </Button>
+      <NuxtLink to="/for-lawyers" class="font-semibold underline decoration-white/40 underline-offset-[5px] transition-colors duration-200 hover:decoration-lime">
+        See how it works for lawyers
+      </NuxtLink>
     </div>
   </section>
 </template>

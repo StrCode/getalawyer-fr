@@ -4,8 +4,7 @@ import { getSessionUserType, isOnboardingIncomplete } from '~/lib/session-user'
 import { APPLICATION_HOME } from '~/lib/setup-paths'
 
 /**
- * Site header: a lime strip for the second audience (lawyers), then a bar that
- * condenses to a floating pill once the page scrolls. A highlight slides under
+ * Site header: a bar that condenses to a floating pill once the page scrolls. A highlight slides under
  * the hovered or current link; small screens get a full-screen menu.
  *
  * The menu goes to the site's pages. "How it works" has no page of its own, so
@@ -21,14 +20,6 @@ const primary = computed(() => {
   return isOnboardingIncomplete(session.value?.user)
     ? { label: 'Your application', to: APPLICATION_HOME }
     : { label: 'Dashboard', to: '/dashboard' }
-})
-
-const { data: pricing } = useMembershipPlans()
-const fromPrice = computed(() => {
-  const plans = pricing.value?.plans ?? []
-  if (!plans.length) return null
-  const cheapest = [...plans].sort((a, b) => a.priceNaira - b.priceNaira)[0]!
-  return `${formatNairaAmount(cheapest.priceNaira)} ${cheapest.termMonths === 1 ? 'a month' : `for ${termPhrase(cheapest.termMonths)}`}`
 })
 
 // `key` names the link for the sliding highlight. A link with `section` goes to
@@ -128,16 +119,6 @@ watch(() => route.fullPath, () => {
 </script>
 
 <template>
-  <div class="bg-lime text-[0.85rem] font-semibold text-night" data-surface="lime">
-    <div class="mx-auto flex max-w-site flex-wrap items-center justify-between gap-x-6 gap-y-[0.2rem] py-[0.55rem] safe-x max-sm:justify-center">
-      <span class="max-sm:hidden">Message any lawyer free. You only agree a fee if you need more.</span>
-      <NuxtLink to="/for-lawyers" class="group/strip inline-flex items-center gap-[0.35rem] underline underline-offset-[3px]">
-        Are you a lawyer? Join<template v-if="fromPrice"> from {{ fromPrice }}</template>
-        <CanopyGlyph name="arrow" :stroke="2.4" class="transition-[translate] duration-200 ease-canopy group-hover/strip:translate-x-[3px]" />
-      </NuxtLink>
-    </div>
-  </div>
-
   <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-[0.7rem]">
     <div class="mx-auto max-w-site safe-x">
       <div

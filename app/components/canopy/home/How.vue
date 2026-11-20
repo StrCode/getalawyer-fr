@@ -1,6 +1,60 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-/** "How it works": three connected steps, each with a small product view and a cost tag. */
+/**
+ * "How it works": three connected steps, each with a small product view and a cost tag.
+ *
+ * The product views play once, in order, when the section scrolls into view: a
+ * search is typed and lawyers appear, a question is sent, a booking is confirmed.
+ * Each piece arrives at its own moment (`piece(at)`), about three seconds in all.
+ * Nothing loops. With reduced motion, without IntersectionObserver, or when the
+ * page opens already on this section, the views are simply shown complete.
+ */
+const list = ref<HTMLElement | null>(null)
+/** Pieces are hidden, waiting for the section to arrive. */
+const armed = ref(false)
+const played = ref(false)
+let io: IntersectionObserver | null = null
+
+onMounted(() => {
+  const el = list.value
+  if (!el || !('IntersectionObserver' in window)) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  // Already on screen (a link to #how): leave it still rather than blank it and replay.
+  if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return
+  armed.value = true
+  io = new IntersectionObserver(([entry]) => {
+    if (!entry?.isIntersecting) return
+    played.value = true
+    io?.disconnect()
+  }, { threshold: 0.35 })
+  io.observe(el)
+})
+onBeforeUnmount(() => io?.disconnect())
+
+// How a piece waits and how it arrives (full strings, so Tailwind sees them).
+const WAITING = {
+  step: 'opacity-0',
+  pop: 'opacity-0',
+  type: '[clip-path:inset(0_100%_0_0)]',
+  draw: 'scale-x-0',
+} as const
+const ARRIVING = {
+  step: 'animate-step-in',
+  pop: 'animate-pop-in',
+  type: 'animate-type-in',
+  draw: 'animate-draw-in',
+} as const
+
+/** Bindings for one piece of a product view: arrives `at` milliseconds into the sequence. */
+function piece(at: number, how: keyof typeof WAITING = 'step') {
+  if (!armed.value) return {}
+  if (!played.value) return { class: WAITING[how] }
+  return { class: ARRIVING[how], style: { animationDelay: `${at}ms` } }
+}
+/** The send button dips as the question is sent; it is never hidden. */
+function press(at: number) {
+  return played.value ? { class: 'animate-press', style: { animationDelay: `${at}ms` } } : {}
+}
 
 // Class lists shared by the three steps (full strings, so Tailwind sees them).
 const step = 'flex flex-col rounded-card border border-border bg-card p-[1.4rem]'
@@ -23,13 +77,13 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
       </div>
     </CanopySectionHead>
 
-    <ol class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-[1.1rem]">
+    <ol ref="list" class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-[1.1rem]">
       <li data-rise :class="step">
-        <div class="flex items-center gap-3"><span :class="number">1</span><i class="h-px flex-1 bg-border" /><span :class="[cost, costFree]">Free</span></div>
+        <div class="flex items-center gap-3"><span :class="number">1</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(0, 'draw')" /><span :class="[cost, costFree]">Free</span></div>
         <div aria-hidden="true" :class="demo">
-          <div class="flex items-center gap-2 rounded-full border border-border bg-card py-[0.6rem] pr-[0.6rem] pl-[0.85rem] font-semibold">
-            <CanopyGlyph name="search" :stroke="2.2" class="flex-none text-muted-foreground" />Tenancy dispute
-            <span class="ml-auto rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.78rem] text-deep">Lagos</span>
+          <div class="flex items-center gap-2 rounded-full border border-border bg-card py-[0.6rem] pr-[0.6rem] pl-[0.85rem] font-semibold" v-bind="piece(80)">
+            <CanopyGlyph name="search" :stroke="2.2" class="flex-none text-muted-foreground" /><span class="inline-block" v-bind="piece(250, 'type')">Tenancy dispute</span>
+            <span class="ml-auto rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.78rem] text-deep" v-bind="piece(720, 'pop')">Lagos</span>
           </div>
           <div class="flex items-center gap-[0.6rem] pl-[0.3rem] text-muted-foreground">
             <span class="flex">
@@ -38,9 +92,10 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
                 :key="initials"
                 class="grid size-8 place-items-center rounded-full border-2 border-background bg-mint text-[0.62rem] font-bold text-deep not-italic"
                 :class="{ '-ml-[0.55rem]': index > 0 }"
+                v-bind="piece(880 + index * 80, 'pop')"
               >{{ initials }}</i>
             </span>
-            <span>Verified lawyers who match</span>
+            <span v-bind="piece(1150)">Verified lawyers who match</span>
           </div>
         </div>
         <h3 :class="title">Find your lawyer</h3>
@@ -48,12 +103,13 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
       </li>
 
       <li data-rise :class="step">
-        <div class="flex items-center gap-3"><span :class="number">2</span><i class="h-px flex-1 bg-border" /><span :class="[cost, costFree]">Free</span></div>
+        <div class="flex items-center gap-3"><span :class="number">2</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(1350, 'draw')" /><span :class="[cost, costFree]">Free</span></div>
         <div aria-hidden="true" :class="demo">
-          <p class="mt-[0.4rem] max-w-[92%] self-end rounded-[1.1rem] rounded-br-[0.3rem] bg-primary px-[0.9rem] py-[0.65rem] text-[0.9rem] leading-[1.4] text-white">Can I end my tenancy early without losing my deposit?</p>
-          <div class="flex items-center justify-between gap-2 rounded-full border border-border bg-card py-[0.35rem] pr-[0.35rem] pl-[0.95rem] text-placeholder">
+          <!-- the box arrives, the button dips, then the sent question appears above it -->
+          <p class="mt-[0.4rem] max-w-[92%] origin-bottom-right self-end rounded-[1.1rem] rounded-br-[0.3rem] bg-primary px-[0.9rem] py-[0.65rem] text-[0.9rem] leading-[1.4] text-white" v-bind="piece(1820, 'pop')">Can I end my tenancy early without losing my deposit?</p>
+          <div class="flex items-center justify-between gap-2 rounded-full border border-border bg-card py-[0.35rem] pr-[0.35rem] pl-[0.95rem] text-placeholder" v-bind="piece(1430)">
             <span>Write a message…</span>
-            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="arrow" :size="14" :stroke="2.8" /></span>
+            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white" v-bind="press(1700)"><CanopyGlyph name="arrow" :size="14" :stroke="2.8" /></span>
           </div>
         </div>
         <h3 :class="title">Ask your question</h3>
@@ -61,13 +117,13 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
       </li>
 
       <li data-rise :class="step">
-        <div class="flex items-center gap-3"><span :class="number">3</span><i class="h-px flex-1 bg-border" /><span :class="[cost, 'border-lime bg-lime text-night']">Fee agreed first</span></div>
+        <div class="flex items-center gap-3"><span :class="number">3</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(2150, 'draw')" /><span :class="[cost, 'border-lime bg-lime text-night']">Fee agreed first</span></div>
         <div aria-hidden="true" :class="demo">
           <div class="flex items-center gap-[0.7rem]">
-            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="14" :stroke="3.2" /></span>
-            <div><b class="block">Thu 19 Nov, 10:30 AM</b><small class="text-[0.8rem] text-muted-foreground">Video call with your lawyer</small></div>
+            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white" v-bind="piece(2430, 'pop')"><CanopyGlyph name="tick" :size="14" :stroke="3.2" /></span>
+            <div v-bind="piece(2230)"><b class="block">Thu 19 Nov, 10:30 AM</b><small class="text-[0.8rem] text-muted-foreground">Video call with your lawyer</small></div>
           </div>
-          <div class="flex items-baseline justify-between gap-2 border-t border-dashed border-border pt-[0.65rem] text-muted-foreground">
+          <div class="flex items-baseline justify-between gap-2 border-t border-dashed border-border pt-[0.65rem] text-muted-foreground" v-bind="piece(2650)">
             <span>Consultation fee</span><b class="font-display text-[0.95rem] font-[650] tracking-[-0.02em] text-foreground">Shown before you book</b>
           </div>
         </div>
