@@ -2,25 +2,12 @@
 import { getSessionUserType } from '~/lib/session-user'
 
 /**
- * The overview. One address, two pages while the dashboard is being rebuilt:
- * a lawyer gets the new overview on the `workspace` layout; a client still
- * gets the older one on the `dashboard` layout until theirs is rebuilt.
- *
- * The layout is chosen here (not in the page meta) because it depends on who
- * is signed in. The auth middleware has the session on the server too, so the
- * right layout is rendered from the first byte.
+ * The overview: one address, a different page for a lawyer and for a client.
+ * Both are on the `workspace` layout, whose bars follow who is signed in.
  */
 definePageMeta({
-  layout: false,
-  middleware: [
-    'auth',
-    // The client's overview has not been rebuilt for dark mode: keep it light,
-    // as every page that has not been rebuilt is (see THEMED_ROUTES).
-    (to) => {
-      const { session } = useAuth()
-      if (getSessionUserType(session.value?.user) !== 'lawyer') to.meta.colorMode = 'light'
-    },
-  ],
+  layout: 'workspace',
+  middleware: ['auth'],
 })
 
 const { session } = useAuth()
@@ -31,11 +18,8 @@ useSeoMeta({ description: 'Your getalawyer overview.', robots: 'noindex, nofollo
 </script>
 
 <template>
-  <NuxtLayout v-if="role === 'lawyer'" name="workspace">
-    <WorkspaceLawyerOverview />
-  </NuxtLayout>
-  <NuxtLayout v-else name="dashboard">
-    <ClientDashboard v-if="role === 'client'" />
-    <DashboardOverviewSkeleton v-else class="pb-12" />
-  </NuxtLayout>
+  <WorkspaceLawyerOverview v-if="role === 'lawyer'" />
+  <WorkspaceClientOverview v-else-if="role === 'client'" />
+  <!-- neither (an admin account, or a session still arriving): nothing to show yet -->
+  <div v-else role="status" aria-label="Loading your overview" class="h-[22rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
 </template>

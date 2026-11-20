@@ -38,19 +38,23 @@ export interface Booking {
   engagementRecordedAt?: string
   completedAt?: string
 
-  // Populated fields (may not always be present)
+  // Who the booking is with. A lawyer's bookings carry `client`, a client's
+  // carry `lawyer`; the API shares names only (no email or phone).
   client?: {
     id: string
     name: string
-    email: string
-  }
+    email?: string
+  } | null
   lawyer?: {
+    /** The lawyer's profile id (the one in /lawyers/:id). */
     id: string
+    /** The lawyer's account id, as it appears in a conversation's participants. */
+    userId?: string
     name: string
-    email: string
+    email?: string
     specialty?: string
-    profilePicture?: string
-  }
+    profilePicture?: string | null
+  } | null
   consultationType?: ConsultationType
 }
 
