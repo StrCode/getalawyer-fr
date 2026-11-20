@@ -76,6 +76,21 @@ describe('monthRange', () => {
     expect(monthRange(firstOfMonth)).toEqual({ start: '2026-08-01', end: '2026-08-31' })
     expect(firstOfMonth.toString()).toBe('2026-08-01')
   })
+
+  it('starts at today for the current month, because open times cannot be asked for in the past', () => {
+    const today = new CalendarDate(2026, 11, 20)
+    expect(monthRange(new CalendarDate(2026, 11, 3), today)).toEqual({ start: '2026-11-20', end: '2026-11-30' })
+  })
+
+  it('keeps the whole month when it is in the future', () => {
+    const today = new CalendarDate(2026, 11, 20)
+    expect(monthRange(new CalendarDate(2026, 12, 9), today)).toEqual({ start: '2026-12-01', end: '2026-12-31' })
+  })
+
+  it('stays a valid range for a month already over', () => {
+    const today = new CalendarDate(2026, 11, 20)
+    expect(monthRange(new CalendarDate(2026, 10, 9), today)).toEqual({ start: '2026-10-31', end: '2026-10-31' })
+  })
 })
 
 describe('formatTimeLabel', () => {
