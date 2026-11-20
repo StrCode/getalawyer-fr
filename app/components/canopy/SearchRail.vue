@@ -12,8 +12,11 @@ const props = withDefaults(defineProps<{
   idPrefix?: string
   placeholder?: string
   action?: string
+  /** On a light panel: a border and a light shadow instead of the deep one made for dark ground. */
+  onLight?: boolean
 }>(), {
   idPrefix: 'search',
+  onLight: false,
   placeholder: 'Tenancy dispute, divorce, unpaid salary…',
   action: 'Search lawyers',
 })
@@ -27,7 +30,11 @@ const whereId = computed(() => `${props.idPrefix}-where`)
 </script>
 
 <template>
-  <form class="flex flex-wrap rounded-[1.4rem] bg-card text-foreground shadow-rail" @submit.prevent="$emit('submit')">
+  <form
+    class="flex flex-wrap rounded-[1.4rem] bg-card text-foreground"
+    :class="onLight ? 'border border-border shadow-rail-soft' : 'shadow-rail'"
+    @submit.prevent="$emit('submit')"
+  >
     <div class="min-w-0 flex-[2_1_16rem] px-[1.4rem] py-4">
       <label :for="needId" class="block text-[0.78rem] font-bold text-muted-foreground">What do you need help with?</label>
       <input

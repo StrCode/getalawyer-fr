@@ -89,6 +89,8 @@
   --radius-tile: 2rem;
   --radius-card: 1.75rem;
   --shadow-rail: 0 22px 50px rgba(0, 0, 0, 0.28);
+  /* the same rail on a light panel: a border does the work, the shadow only lifts it */
+  --shadow-rail-soft: 0 1px 2px rgba(15, 34, 25, 0.04), 0 4px 14px rgba(15, 34, 25, 0.06);
   --shadow-widget: 0 18px 44px rgba(0, 0, 0, 0.3);
   --shadow-book: 0 18px 40px rgba(0, 0, 0, 0.28);
   --shadow-plan: 0 26px 60px rgba(0, 0, 0, 0.35);

@@ -51,8 +51,12 @@ function search() {
     class="relative grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-x-[clamp(2rem,5vw,4.5rem)] gap-y-[clamp(2.25rem,4vw,3.5rem)] overflow-hidden rounded-panel px-[clamp(1.25rem,4.5vw,4.5rem)] py-[clamp(1.75rem,3.4vw,3rem)] tab:min-h-[clamp(34rem,74svh,42rem)] border border-border bg-card text-foreground max-tab:grid-cols-1 max-sm:rounded-[1.75rem]"
   >
     <div class="col-start-1 row-start-1 min-w-0 tab:relative tab:z-2">
-      <h1 class="animate-rise-in text-[clamp(2.7rem,5.3vw,4.7rem)] font-[620] leading-[1.02] tracking-[-0.04em] text-balance">
-        Find a lawyer <em class="text-brand not-italic">you can trust.</em>
+      <!-- three lines by design: each span is one line. On phones the size follows
+           the screen width so the longest line still fits on one. -->
+      <h1 class="animate-rise-in text-[clamp(2.5rem,5.3vw,4.7rem)] font-[620] leading-[1.02] tracking-[-0.04em] max-sm:text-[clamp(1.8rem,9.4vw,2.5rem)]">
+        <span class="block">Find a lawyer</span>
+        <em class="block text-brand not-italic">you can trust,</em>
+        <span class="block">wherever you are.</span>
       </h1>
       <p class="mt-[1.4rem] max-w-[34rem] animate-rise-in text-[1.15rem] text-muted-foreground [animation-delay:80ms]">
         Search verified Nigerian lawyers by practice area and state, compare them, and message one in minutes.
@@ -76,9 +80,10 @@ function search() {
       </div>
     </div>
 
-    <!-- the search is what the page is for: it is there from the first frame, no entrance -->
-    <div class="col-start-1 row-start-2 min-w-0 tab:relative tab:z-2 tab:col-span-2">
-      <CanopySearchRail v-model:need="need" v-model:where="where" id-prefix="hero" class="border border-border" @submit="search" />
+    <!-- the search is what the page is for: it is there from the first frame, no entrance.
+         Wide screens: it stops about two-thirds across, where the photo becomes solid. -->
+    <div class="col-start-1 row-start-2 min-w-0 tab:relative tab:z-2 tab:col-span-2 tab:max-w-[54rem]">
+      <CanopySearchRail v-model:need="need" v-model:where="where" id-prefix="hero" on-light @submit="search" />
       <div class="mt-[1.15rem] flex flex-wrap items-center gap-2 text-[0.9rem] text-muted-foreground">
         <span>Popular</span>
         <NuxtLink
