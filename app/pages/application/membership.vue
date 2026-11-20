@@ -21,7 +21,6 @@ import { queryKeys } from '~/lib/query-client'
 import { APPLICATION_HOME } from '~/lib/setup-paths'
 import { onboardingSubmittedAt, REFUND_POLICY_SUMMARY } from '~/lib/lawyerOnboardingStatus'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import SubscriptionPlanPicker from '@/components/subscription/SubscriptionPlanPicker.vue'
 
 definePageMeta({
@@ -274,16 +273,14 @@ async function retry() {
 
 <template>
   <div>
-    <div
+    <ApplicationSkeleton
       v-if="pageLoading || (hasPendingSubscription && confirmingPendingPayment && !hasActiveSubscription)"
-      class="grid gap-[0.6rem] pt-4"
-      aria-busy="true"
-      :aria-label="confirmingPendingPayment ? 'Confirming your payment' : 'Loading your application'"
+      shape="checkout"
+      :label="confirmingPendingPayment ? 'Confirming your payment' : 'Loading your application'"
     >
-      <Skeleton class="h-10 w-2/3 rounded-full" />
-      <Skeleton v-for="n in 5" :key="n" class="h-[3.6rem] rounded-[1.1rem]" />
-      <p class="text-[0.9rem] text-muted-foreground">{{ confirmingPendingPayment ? 'Confirming your payment…' : 'Loading…' }}</p>
-    </div>
+      <!-- confirming a payment can take a few seconds: say so in words too -->
+      <p v-if="confirmingPendingPayment" class="mt-[0.9rem] text-[0.95rem] text-muted-foreground">Confirming your payment…</p>
+    </ApplicationSkeleton>
 
     <div v-else-if="statusError" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
       <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>

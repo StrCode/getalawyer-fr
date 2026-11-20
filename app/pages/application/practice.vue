@@ -246,10 +246,7 @@ const listboxItemClass = cn(
 </script>
 
 <template>
-  <div v-if="isLoadingSpecs" class="grid gap-[0.9rem] pt-4" aria-busy="true" aria-label="Loading practice areas">
-    <Skeleton class="h-10 w-2/3 rounded-full" />
-    <Skeleton v-for="i in 4" :key="i" class="h-[3.25rem] rounded-[1rem]" />
-  </div>
+  <ApplicationSkeleton v-if="isLoadingSpecs" shape="form" label="Loading practice areas" />
 
   <div v-else>
     <ApplicationSectionHeader

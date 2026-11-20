@@ -163,13 +163,15 @@ watch(open, (isOpen) => {
                 @blur="field.handleBlur"
                 @update:model-value="(v) => field.handleChange(String(v ?? ''))"
               />
+              <!-- only when empty: with something typed, the list below shows what is missing -->
               <FieldError
-                v-if="isInvalid(field)"
+                v-if="isInvalid(field) && !field.state.value"
                 :errors="field.state.meta.errors"
               />
               <AuthPasswordRequirements
                 class="mt-2"
                 :password="field.state.value"
+                :invalid="isInvalid(field)"
               />
             </Field>
           </form.Field>
