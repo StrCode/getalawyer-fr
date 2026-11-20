@@ -527,7 +527,11 @@ const { mutate: completeBooking, isPending: isCompleting } = useCompleteBooking(
 const { mutate: markAsNoShow, isPending: isMarkingNoShow } = useMarkAsNoShow()
 const { mutate: cancelBooking, isPending: isCanceling } = useCancelLawyerBooking()
 
+const { membershipBlocks } = useMembershipAccess()
+
 const handleConfirm = () => {
+  // Accepting a request is taking a new booking, which needs a membership that is on.
+  if (membershipBlocks('accept new bookings')) return
   confirmBooking(bookingId.value, {
     onSuccess: () => {
       toast.success('Success', { description: 'Appointment confirmed' })

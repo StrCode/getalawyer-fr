@@ -1,0 +1,301 @@
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { getTier1IncompleteItems } from '~/lib/profile-check-catalog'
+import { APPLICATION_HOME } from '~/lib/setup-paths'
+import {
+  agendaTag,
+  casesTile,
+  channelLabel,
+  clockLabel,
+  emptyDayLine,
+  nextSevenDays,
+  overviewHeadline,
+  overviewTodos,
+  profileTile,
+  sortDiary,
+  type OverviewTodo,
+} from '~/lib/lawyer-overview'
+import { longDate, membershipMode, membershipTile } from '~/lib/membership-view'
+import { useAvailability } from '~/composables/useAvailability'
+import { useSubscriptionStatus } from '~/composables/useSubscription'
+
+/**
+ * A lawyer's overview: the one thing that needs them now, the next seven days,
+ * everything else to do in order of urgency, and where cases, profile and
+ * membership stand. What it says in each state is decided in
+ * `lib/lawyer-overview`; this component loads the data and lays it out.
+ *
+ * Requests are answered on the booking's own page, where the client's notes
+ * are, so the overview links there and decides nothing itself.
+ */
+const { session } = useAuth()
+const userId = computed(() => session.value?.user.id ?? null)
+const firstName = computed(() => session.value?.user.name?.trim().split(/\s+/)[0] ?? '')
+
+// A rejected application has no dashboard: back to the application.
+const applicationStatus = computed(() => (session.value?.user as { applicationStatus?: string } | undefined)?.applicationStatus)
+watch(applicationStatus, (status) => {
+  if (status === 'rejected') void navigateTo(APPLICATION_HOME)
+}, { immediate: true })
+const isApproved = computed(() => applicationStatus.value === 'approved')
+
+// ───────── data (the same queries the top bar's counts use) ─────────
+const { useLawyerBookings } = useBookings()
+const { data: bookings, isPending: bookingsPending, isError: bookingsFailed, refetch: refetchBookings } = useLawyerBookings()
+
+const { useConversations } = useMessaging()
+const { data: conversations } = useConversations()
+
+const { useCasesList } = useCases()
+const { data: casesData, isPending: casesPending } = useCasesList()
+
+const { data: membership, isPending: membershipPending } = useSubscriptionStatus()
+const { profileStrength, directoryEligibility } = useLawyerProfileEditor()
+
+const { useConsultationTypesList } = useConsultationTypes()
+const { data: consultationTypes, isFetched: typesFetched } = useConsultationTypesList(false)
+
+const { useAvailabilitySchedule, useAvailabilityExceptions } = useAvailability()
+const { data: schedule, isFetched: scheduleFetched } = useAvailabilitySchedule()
+const { data: exceptions } = useAvailabilityExceptions(ref({ futureOnly: true }))
+
+const { needsVerifyEmail } = useEmailVerificationPrompt()
+const { openDialog: openEmailDialog } = useEmailVerificationDialog()
+
+// The time is read in the browser only, so the server and the page never
+// disagree about the date or the greeting, and it moves on while the page is open.
+const now = ref<Date | null>(null)
+let clock: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  now.value = new Date()
+  clock = setInterval(() => { now.value = new Date() }, 60_000)
+})
+onBeforeUnmount(() => clearInterval(clock))
+
+const loading = computed(() => !now.value || bookingsPending.value)
+
+// ───────── what the page says ─────────
+const diary = computed(() => sortDiary(bookings.value ?? [], now.value ?? new Date()))
+
+const unread = computed(() => (conversations.value ?? []).filter(conversation => (conversation.unreadCount ?? 0) > 0))
+const unreadMessages = computed(() => unread.value.reduce((sum, conversation) => sum + (conversation.unreadCount ?? 0), 0))
+const unreadFrom = computed(() => unread.value.map((conversation) => {
+  const other = conversation.participants.find(person => person.userId !== userId.value) ?? conversation.participants[0]
+  return other?.name ?? ''
+}))
+
+const noHours = computed(() => scheduleFetched.value ? !(schedule.value ?? []).some(row => row.isAvailable) : undefined)
+const noConsultationTypes = computed(() => typesFetched.value ? (consultationTypes.value ?? []).length === 0 : undefined)
+const bookable = computed(() => {
+  if (noHours.value === undefined || noConsultationTypes.value === undefined) return null
+  return !noHours.value && !noConsultationTypes.value
+})
+
+const profileMissing = computed(() => getTier1IncompleteItems(profileStrength.value).map(item => item.label))
+const profileBlocksListing = computed(() => isApproved.value && directoryEligibility.value?.blockers.includes('profile') === true)
+
+const headline = computed(() => overviewHeadline(
+  { diary: diary.value, unreadMessages: unreadMessages.value, bookable: bookable.value },
+  now.value ?? new Date(),
+))
+
+const todos = computed(() => overviewTodos({
+  diary: diary.value,
+  unreadMessages: unreadMessages.value,
+  unreadFrom: unreadFrom.value,
+  emailUnconfirmed: needsVerifyEmail.value,
+  noHours: noHours.value,
+  noConsultationTypes: noConsultationTypes.value,
+  profileBlocksListing: profileBlocksListing.value,
+  profileMissing: profileMissing.value,
+}))
+
+// A to-do row is a link, except the few the page handles itself.
+const RowLink = resolveComponent('NuxtLink')
+function runTodo(todo: OverviewTodo) {
+  if (todo.id === 'confirm-email') openEmailDialog()
+}
+
+const eyebrow = computed(() => {
+  if (!now.value) return ''
+  const hour = now.value.getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const date = now.value.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+  return `${date} · ${greeting}${firstName.value ? `, ${firstName.value}` : ''}`
+})
+
+// ───────── the next seven days ─────────
+const days = computed(() => nextSevenDays({
+  bookings: bookings.value ?? [],
+  hours: scheduleFetched.value ? (schedule.value ?? []) : undefined,
+  exceptions: exceptions.value,
+  now: now.value ?? new Date(),
+}))
+const pickedKey = ref<string | null>(null)
+const pickedDay = computed(() => days.value.find(day => day.key === pickedKey.value) ?? days.value[0] ?? null)
+
+// ───────── the tiles ─────────
+const activeCases = computed(() => (casesData.value?.cases ?? [])
+  .filter(item => item.status === 'active' || item.status === 'reopened')
+  .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()))
+const cases = computed(() => casesTile(activeCases.value))
+
+const profile = computed(() => profileTile({
+  percent: profileStrength.value?.percent,
+  missing: profileMissing.value,
+  visible: directoryEligibility.value ? directoryEligibility.value.isDirectoryVisible : null,
+}))
+const profilePercent = computed(() => Math.max(0, Math.min(100, Math.round(profileStrength.value?.percent ?? 0))))
+
+const subscription = computed(() => membership.value?.subscription ?? null)
+const member = computed(() => membershipTile(
+  membershipMode(subscription.value, membership.value?.hasActiveSubscription === true),
+  {
+    planName: subscription.value?.plan?.name,
+    endLabel: longDate(subscription.value?.subscriptionEndDate),
+    autoRenew: subscription.value?.autoRenewEnabled,
+  },
+))
+
+// Class lists shared across the page (full strings, so Tailwind sees them).
+const sectionTitle = 'font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const tile = 'flex min-w-0 flex-col rounded-card p-[clamp(1.2rem,2.2vw,1.5rem)]'
+const tileTitle = 'font-display text-[1.25rem] font-[650] tracking-[-0.02em]'
+const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4rem] font-semibold underline underline-offset-[3px] transition-colors hover:text-brand'
+</script>
+
+<template>
+  <div class="grid gap-[clamp(1.75rem,3vw,2.75rem)]">
+    <!-- ───────── loading / could not load ───────── -->
+    <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
+      <div class="h-[30rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
+      <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
+      <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
+    </div>
+
+    <section v-else-if="bookingsFailed" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
+      <h1 :class="sectionTitle">We could not load your diary.</h1>
+      <p class="mt-2 text-muted-foreground">Nothing has changed on your account. Check your connection and try again.</p>
+      <Button variant="canopy" size="pill" class="mt-5" @click="() => refetchBookings()">Try again</Button>
+    </section>
+
+    <template v-else>
+      <!-- ───────── now, and the next seven days ───────── -->
+      <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] max-sm:rounded-[1.75rem]">
+        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
+        <h1 id="overview-title" class="mt-[0.9rem] max-w-[46rem] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+          {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
+        </h1>
+        <p class="mt-[0.9rem] max-w-[38rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
+
+        <div class="mt-[1.4rem] flex flex-wrap gap-[0.6rem]">
+          <Button v-if="headline.primary" as-child variant="canopy" size="pill">
+            <a v-if="headline.primary.to.startsWith('#')" :href="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></a>
+            <NuxtLink v-else :to="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></NuxtLink>
+          </Button>
+          <Button as-child variant="line" size="pill">
+            <NuxtLink to="/dashboard/appointments">All appointments</NuxtLink>
+          </Button>
+        </div>
+
+        <div class="mt-[clamp(1.6rem,3.5vw,2.4rem)] grid items-start gap-[clamp(1rem,2.4vw,1.75rem)] border-t border-border pt-[clamp(1.4rem,3vw,2rem)] tab:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]">
+          <div class="min-w-0">
+            <h2 id="week-title" class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
+            <p class="mt-[0.2rem] text-[0.95rem] text-muted-foreground">Choose a day to see what is in it.</p>
+            <WorkspaceWeekStrip
+              v-model="pickedKey"
+              :days="days"
+              aria-labelledby="week-title"
+              class="mt-[0.9rem]"
+            />
+          </div>
+
+          <!-- the chosen day -->
+          <div v-if="pickedDay" aria-live="polite" class="min-w-0 rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
+            <h3 class="font-display text-[1.2rem] font-[650] tracking-[-0.02em]">
+              {{ pickedDay.isToday ? 'Today' : pickedDay.label }}
+            </h3>
+            <ol v-if="pickedDay.bookings.length" class="mt-[0.7rem] grid gap-[0.45rem]">
+              <li v-for="booking in pickedDay.bookings" :key="booking.id">
+                <NuxtLink
+                  :to="`/dashboard/appointments/${booking.id}`"
+                  class="grid grid-cols-[4.7rem_minmax(0,1fr)] items-start gap-[0.7rem] rounded-[1rem] bg-card/70 px-[0.8rem] py-[0.65rem] text-foreground transition-colors hover:bg-card"
+                >
+                  <b class="pt-[0.05rem] text-[0.92rem] font-bold">{{ clockLabel(booking.scheduledStartTime) }}</b>
+                  <span class="min-w-0">
+                    <b class="block truncate font-semibold">{{ booking.client?.name ?? 'Client' }}</b>
+                    <span class="block text-[0.9rem] text-muted-foreground">{{ booking.consultationType?.name ?? 'Consultation' }} · {{ channelLabel(booking.meetingType) }}</span>
+                    <span v-if="agendaTag(booking)" class="mt-[0.3rem] inline-block rounded-full px-[0.6rem] py-[0.1rem] text-[0.78rem] font-bold" :class="booking.status === 'pending' ? 'bg-warning/15 text-warning-subtle-foreground' : 'bg-muted text-foreground'">{{ agendaTag(booking) }}</span>
+                  </span>
+                </NuxtLink>
+              </li>
+            </ol>
+            <p v-else class="mt-[0.5rem]">{{ emptyDayLine(pickedDay) }}</p>
+            <NuxtLink
+              v-if="pickedDay.state === 'closed' || pickedDay.state === 'unknown' || noHours"
+              to="/dashboard/availability"
+              class="mt-[0.6rem] inline-flex min-h-[2.75rem] items-center font-semibold underline underline-offset-[3px]"
+            >{{ noHours ? 'Set your working hours' : 'Change working hours' }}</NuxtLink>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────── to do, most urgent first ───────── -->
+      <section v-if="todos.length" id="to-do" aria-labelledby="todo-title" class="scroll-mt-24">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 id="todo-title" :class="sectionTitle">To do</h2>
+          <p class="text-[0.95rem] text-muted-foreground">{{ todos.length === 1 ? '1 thing' : `${todos.length} things, most urgent first` }}</p>
+        </div>
+        <ol class="mt-[1rem] grid gap-[0.55rem]">
+          <li v-for="(todo, index) in todos" :key="todo.id">
+            <component
+              :is="todo.to ? RowLink : 'button'"
+              :to="todo.to"
+              :type="todo.to ? undefined : 'button'"
+              class="group flex w-full cursor-pointer flex-wrap items-center gap-x-[0.9rem] gap-y-[0.4rem] rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-[0.9rem] text-left transition-[border-color,translate] duration-200 ease-canopy hover:border-brand/45 active:translate-y-px"
+              @click="todo.to ? undefined : runTodo(todo)"
+            >
+              <span aria-hidden="true" class="grid size-[2.6rem] flex-none place-items-center rounded-[0.9rem] bg-background font-display font-bold">{{ index + 1 }}</span>
+              <span class="min-w-0 flex-[1_1_16rem]">
+                <b class="block font-display text-[1.1rem] font-[650] tracking-[-0.02em]">{{ todo.title }}</b>
+                <span class="block text-[0.92rem] text-muted-foreground">{{ todo.note }}</span>
+              </span>
+              <span class="inline-flex items-center gap-[0.4rem] font-semibold whitespace-nowrap text-brand max-sm:pl-[3.5rem]">
+                {{ todo.action }}<CanopyGlyph name="arrow" :size="15" class="transition-[translate] duration-200 ease-canopy group-hover:translate-x-[3px]" />
+              </span>
+            </component>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ───────── where things stand ───────── -->
+      <div class="grid gap-[0.75rem] sm:grid-cols-2 tab:grid-cols-3">
+        <section aria-labelledby="cases-title" :class="[tile, 'bg-stone']">
+          <h2 id="cases-title" :class="tileTitle">Cases</h2>
+          <div v-if="casesPending" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-foreground/8" />
+          <p v-else class="mt-[0.5rem]"><b class="font-semibold">{{ cases.lead }}</b> {{ cases.detail }}</p>
+          <NuxtLink to="/dashboard/cases" :class="tileLink">Open cases</NuxtLink>
+        </section>
+
+        <section aria-labelledby="profile-title" :class="[tile, 'border border-border bg-card']">
+          <h2 id="profile-title" :class="tileTitle">Profile</h2>
+          <div v-if="!profileStrength" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-muted" />
+          <template v-else>
+            <p class="mt-[0.5rem]"><b class="font-semibold">{{ profile.lead }}</b> {{ profile.detail }}</p>
+            <div role="img" :aria-label="`${profilePercent} percent complete`" class="mt-[0.7rem] h-[0.5rem] overflow-hidden rounded-full bg-border">
+              <div class="h-full rounded-full bg-brand" :style="{ width: `${profilePercent}%` }" />
+            </div>
+          </template>
+          <NuxtLink to="/dashboard/profile" :class="tileLink">{{ profileStrength ? profile.action : 'Open your profile' }}</NuxtLink>
+        </section>
+
+        <section aria-labelledby="member-title" :class="[tile, 'bg-sand sm:max-tab:col-span-2']">
+          <h2 id="member-title" :class="tileTitle">Membership</h2>
+          <div v-if="membershipPending" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-foreground/8" />
+          <p v-else class="mt-[0.5rem]"><b class="font-semibold">{{ member.lead }}</b> {{ member.detail }}</p>
+          <NuxtLink to="/dashboard/subscription" :class="tileLink">{{ membershipPending ? 'Open membership' : member.action }}</NuxtLink>
+        </section>
+      </div>
+    </template>
+  </div>
+</template>
