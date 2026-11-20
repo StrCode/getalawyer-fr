@@ -3,9 +3,9 @@ definePageMeta({ layout: 'site' })
 
 useSeoMeta({
   title: 'Find a lawyer you can trust, wherever you are',
-  description: 'Search verified Nigerian lawyers by practice area and state. Compare fees and availability, then book your consultation online with clear pricing.',
+  description: 'Search verified Nigerian lawyers by practice area and state, compare them, and message one in minutes.',
   ogTitle: 'getalawyer — find a lawyer you can trust, wherever you are',
-  ogDescription: 'Find and book verified Nigerian lawyers online. NIN & SCN verified. Clear pricing. Same-day consultations.',
+  ogDescription: 'Search verified Nigerian lawyers by practice area and state. Every lawyer is checked before being listed.',
 })
 </script>
 
