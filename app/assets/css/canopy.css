@@ -93,6 +93,23 @@
 
   /* Keyboard focus: brand green on the page, lime on forest, ink on lime. */
   .canopy :focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; border-radius: 8px; }
+
+  /*
+   * Autofill. Browsers paint a filled-in field pale blue, and only the input
+   * itself: in a field with a button beside it (show password) the tint stops
+   * short and its square corners cut into the rounded border. Paint the input
+   * in the field's own colour instead and keep the text colour. The focus ring
+   * (a box-shadow too) is kept alongside.
+   */
+  .canopy input:-webkit-autofill,
+  .canopy input:-webkit-autofill:hover,
+  .canopy input:-webkit-autofill:focus,
+  .canopy textarea:-webkit-autofill,
+  .canopy select:-webkit-autofill {
+    -webkit-text-fill-color: var(--foreground);
+    caret-color: var(--foreground);
+    box-shadow: 0 0 0 1000px var(--card) inset, var(--tw-ring-shadow, 0 0 #0000) !important;
+  }
   .canopy [data-surface="forest"] :focus-visible { outline-color: var(--lime); }
   .canopy [data-surface="lime"] :focus-visible { outline-color: var(--night); }
 

@@ -4,7 +4,6 @@ import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { onboardingSubmittedAt, VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
 import { APPLICATION_MEMBERSHIP } from '~/lib/setup-paths'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 
 /**
  * A lawyer's application, at one address whatever state it is in: being filled
@@ -57,10 +56,7 @@ const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
 <template>
   <div>
     <!-- also held while moving on to payment or the dashboard -->
-    <div v-if="loading || state === 'payment' || state === 'approved'" class="grid gap-[0.6rem] pt-4" aria-busy="true" aria-label="Loading your application">
-      <Skeleton class="h-10 w-2/3 rounded-full" />
-      <Skeleton v-for="n in 5" :key="n" class="h-[3.6rem] rounded-[1.1rem]" />
-    </div>
+    <ApplicationSkeleton v-if="loading || state === 'payment' || state === 'approved'" shape="home" />
 
     <div v-else-if="state === 'unavailable'" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
       <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>

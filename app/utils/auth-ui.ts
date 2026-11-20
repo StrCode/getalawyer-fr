@@ -5,7 +5,7 @@
  */
 
 /** Text inputs: taller, rounder, on the card colour, with the Canopy focus ring. */
-export const authInput = 'h-[3.25rem] rounded-[1rem] border-border bg-card px-4 text-[1.02rem] shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint aria-invalid:border-destructive'
+export const authInput = 'h-[3.25rem] rounded-[1rem] border-border bg-card px-4 text-[1.02rem] text-foreground shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint aria-invalid:border-destructive'
 
 /** Inline text links and link-like buttons ("Use phone instead", "Forgot password?"). */
 export const authLink = 'cursor-pointer font-semibold text-brand underline underline-offset-[3px] disabled:cursor-not-allowed disabled:opacity-60'
@@ -22,4 +22,4 @@ export const authOtpSlot = 'h-[3.6rem] w-auto flex-1 rounded-[1rem] border borde
  * ring, the control inside is bare.
  */
 export const authInputGroup = 'h-[3.25rem] rounded-[1rem] border-border bg-card shadow-none has-[[data-slot=input-group-control]:focus-visible]:border-brand has-[[data-slot=input-group-control]:focus-visible]:ring-4 has-[[data-slot=input-group-control]:focus-visible]:ring-mint dark:bg-card'
-export const authInputGroupControl = 'h-full px-4 text-[1.02rem] placeholder:text-placeholder'
+export const authInputGroupControl = 'h-full px-4 text-[1.02rem] text-foreground placeholder:text-placeholder'

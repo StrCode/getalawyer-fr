@@ -22,9 +22,15 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     const { useDraft, useSaveDraft, useSaveDraftQuietly, useSaveNin, useSubmitOnboarding } = useLawyerOnboarding()
 
     /** Shares the TanStack cache with the application pages and their layout (one network fetch). */
-    const { data: draftDataResponse, isSuccess: draftLoaded } = useDraft({
+    const { data: draftDataResponse, isSuccess, isError } = useDraft({
         enabled: import.meta.client,
     })
+    // Exposed as computeds: Pinia treats a returned ref as state and tries to
+    // write the server's value into it on hydration, which the query's
+    // read-only flags refuse (with a warning on every page load).
+    const draftLoaded = computed(() => isSuccess.value)
+    /** The saved application could not be fetched; forms show anyway and saving reports the problem. */
+    const draftFailed = computed(() => isError.value)
 
     // Initialize mutations here (in the setup context) to avoid injection errors in async actions
     const saveDraftMutation = useSaveDraft()
@@ -506,6 +512,7 @@ export const useLawyerOnboardingStore = defineStore('lawyer-onboarding', () => {
     return {
         sectionDone,
         draftLoaded,
+        draftFailed,
         personalInfo,
         ninVerification,
         professionalInfo,

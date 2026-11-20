@@ -138,8 +138,9 @@ async function submit() {
     </div>
 
     <!-- the saved application is still loading: hold the list's place -->
-    <div v-if="!store.draftLoaded" class="mt-[1.4rem] grid gap-[0.6rem]" aria-busy="true" aria-label="Loading your application">
-      <Skeleton v-for="n in 4" :key="n" class="h-[4.6rem] rounded-[1.25rem]" />
+    <div v-if="!store.draftLoaded" role="status" aria-busy="true" class="mt-[1.4rem] grid gap-[0.6rem]">
+      <span class="sr-only">Loading your application</span>
+      <Skeleton v-for="n in 4" :key="n" aria-hidden="true" class="h-[4.6rem] rounded-[1.25rem]" />
     </div>
 
     <ul v-else class="mt-[1.4rem] grid gap-[0.6rem]">

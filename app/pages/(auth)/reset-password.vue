@@ -34,8 +34,9 @@
                 @blur="field.handleBlur"
                 @update:model-value="(v) => field.handleChange(v as any)"
               />
-              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-              <AuthPasswordRequirements :password="field.state.value" />
+              <!-- only when empty: with something typed, the list below shows what is missing -->
+              <FieldError v-if="isInvalid(field) && !field.state.value" :errors="field.state.meta.errors" />
+              <AuthPasswordRequirements :password="field.state.value" :invalid="isInvalid(field)" />
             </Field>
           </form.Field>
 

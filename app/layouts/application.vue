@@ -30,6 +30,11 @@ const { y: scrollY } = useWindowScroll()
 const scrolled = computed(() => scrollY.value > 8)
 const isHome = computed(() => !sectionKey.value)
 /**
+ * A section's form is held back until the saved application has arrived (or
+ * failed to: then the form shows, and saving will report the problem).
+ */
+const holdForDraft = computed(() => Boolean(sectionKey.value) && !store.draftLoaded && !store.draftFailed)
+/**
  * True while the application can still be edited: a section, or the home while
  * it is being filled in. After it is submitted (payment, in review, needs
  * changes) the home shows a status instead, there is nothing to save, so saving
@@ -165,7 +170,10 @@ async function saveAndSignOut() {
       <button v-if="!isHome" type="button" class="mb-[0.6rem] inline-flex min-h-11 cursor-pointer items-center text-[0.9rem] font-semibold text-muted-foreground hover:text-brand" :disabled="busy" @click="backToHome">
         ← Back to your application
       </button>
-      <slot />
+      <!-- A section's form waits for the saved application. Shown empty first, its
+           fields would fill in a moment later, under whatever had been typed. -->
+      <ApplicationSkeleton v-if="holdForDraft" shape="form" label="Loading this section" />
+      <slot v-else />
       <p v-if="store.validationError && !isHome" role="alert" class="mt-[1.2rem] rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
         {{ store.validationError }}
       </p>
@@ -177,7 +185,7 @@ async function saveAndSignOut() {
         <span class="inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground">
           <i class="size-2 rounded-full bg-primary" />Saved as you go
         </span>
-        <Button type="button" variant="canopy" size="pill" class="group/btn min-w-[12rem] justify-between pr-2 pl-[1.4rem]" :disabled="busy" :aria-busy="busy" @click="saveAndReturn">
+        <Button type="button" variant="canopy" size="pill" class="group/btn min-w-[12rem] justify-between pr-2 pl-[1.4rem]" :disabled="busy || holdForDraft" :aria-busy="busy" @click="saveAndReturn">
           {{ busy ? 'Saving…' : 'Save and return' }}<CanopyArrowChip />
         </Button>
       </div>

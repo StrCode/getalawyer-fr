@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
 
 const PATHS = {
   tick: 'M5 12.5l4.5 4.5L19 7.5',
+  card: 'M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM3 10.5h18M7 15h3',
   arrow: 'M5 12h14M13 6l6 6-6 6',
   menu: 'M4 8h16M4 16h16',
   close: 'M6 6l12 12M18 6L6 18',
