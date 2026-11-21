@@ -27,9 +27,11 @@ const fromPrice = computed(() => {
   return `${formatNairaAmount(cheapest.priceNaira)} ${cheapest.termMonths === 1 ? 'a month' : `for ${termPhrase(cheapest.termMonths)}`}`
 })
 
-useHead({ title: 'For lawyers' })
-useSeoMeta({
-  description: 'Join getalawyer as a verified lawyer: a profile in the directory, messages from clients and bookings, with no commission on your fees.',
+usePageSeo({
+  title: 'For lawyers: get found by new clients',
+  shareTitle: 'Get found by clients who need your kind of law',
+  eyebrow: 'For lawyers',
+  description: 'List your practice as a verified lawyer in Nigeria. Clients find you by practice area and state, message you and book consultations. You keep all your fees.',
 })
 
 const REGISTER = '/register?role=lawyer'

@@ -82,7 +82,6 @@ const item = computed(() => file.value?.case ?? null)
 const other = computed(() => item.value ? otherParty(item.value, role.value) : null)
 
 useHead({ title: () => item.value?.caseTitle ?? 'Case' })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 // The time is read in the browser only, so "today" is the reader's own day.
 const now = ref<Date | null>(null)

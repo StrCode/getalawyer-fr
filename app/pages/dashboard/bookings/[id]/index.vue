@@ -39,7 +39,6 @@ const { data: booking, isPending, error, refetch, isFetching } = useClientBookin
 const missing = computed(() => error.value instanceof ApiError && (error.value.status === 404 || error.value.status === 403))
 
 useHead({ title: () => booking.value?.lawyer?.name ? `Booking with ${booking.value.lawyer.name}` : 'Booking' })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 // The time is read in the browser only, and moves on while the page is open.
 const now = ref<Date | null>(null)

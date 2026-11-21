@@ -3,9 +3,9 @@ import LegalPageShell from '@/components/legal/LegalPageShell.vue'
 
 definePageMeta({ layout: 'site' })
 
-useHead({
+usePageSeo({
   title: 'NDPA compliance',
-  meta: [{ name: 'description', content: 'How GetaLawyer applies the Nigeria Data Protection Act 2023 in practice.' }],
+  description: 'How getalawyer applies the Nigeria Data Protection Act 2023: the principles in practice, data requests, breach response and transfers abroad.',
 })
 </script>
 

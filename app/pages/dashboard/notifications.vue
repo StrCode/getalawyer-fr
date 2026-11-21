@@ -21,7 +21,7 @@ definePageMeta({
 })
 
 useHead({ title: 'Notifications' })
-useSeoMeta({ description: 'Your notifications.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Your notifications.' })
 
 const { session } = useAuth()
 const role = computed(() => getSessionUserType(session.value?.user))

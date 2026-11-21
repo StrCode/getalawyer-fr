@@ -17,8 +17,11 @@
  * its name here.
  */
 @theme {
-  --font-sans: "Onest", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Inter only fills characters the two faces lack: the naira sign (₦) is in
+     neither Onest nor Mona Sans. Browsers fetch Inter's small latin-ext file
+     only on a page that shows one. */
+  --font-sans: "Onest", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Mona Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   /* between normal (400) and medium (500): a selected menu item, a touch heavier than its neighbours */
   --font-weight-book: 450;
 }

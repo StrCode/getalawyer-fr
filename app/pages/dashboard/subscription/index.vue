@@ -54,7 +54,7 @@ definePageMeta({
 })
 
 useHead({ title: 'Membership' })
-useSeoMeta({ description: 'Your getalawyer membership, renewal and payments.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Your getalawyer membership, renewal and payments.' })
 
 const { session } = useAuth()
 const isLawyer = computed(() => session.value?.user.userType === 'lawyer')

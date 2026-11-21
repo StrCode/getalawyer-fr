@@ -40,7 +40,7 @@ const pageDescription = computed(() =>
 )
 
 useHead({ title: 'Messages' })
-useSeoMeta({ description: () => pageDescription.value, robots: 'noindex, nofollow' })
+useSeoMeta({ description: () => pageDescription.value })
 
 const { initSocketListeners, useConversations, useConversation, useMarkAsRead } = useMessaging()
 const messagingStore = useMessagingStore()

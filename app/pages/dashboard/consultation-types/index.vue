@@ -33,7 +33,7 @@ definePageMeta({
 })
 
 useHead({ title: 'Consultation types' })
-useSeoMeta({ description: 'The consultations clients can book with you.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'The consultations clients can book with you.' })
 
 // The API refuses these for a lawyer whose membership is not on; stop before any form opens.
 const { membershipBlocks } = useMembershipAccess()

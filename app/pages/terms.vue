@@ -3,9 +3,9 @@ import LegalPageShell from '@/components/legal/LegalPageShell.vue'
 
 definePageMeta({ layout: 'site' })
 
-useHead({
+usePageSeo({
   title: 'Terms of service',
-  meta: [{ name: 'description', content: 'The terms that govern your use of the GetaLawyer platform.' }],
+  description: 'The terms for using getalawyer as a client or a lawyer: what we are and are not, verification and its limits, fees and payments, and your account.',
 })
 </script>
 

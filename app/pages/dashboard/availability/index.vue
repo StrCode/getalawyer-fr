@@ -30,7 +30,6 @@ function handleTabChange(value: string | number) {
 }
 
 useHead({ title: () => (activeTab.value === 'exceptions' ? 'Time off and extra hours' : 'Availability') })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 const { useAvailabilitySchedule } = useAvailability()
 const { data: schedules, isPending } = useAvailabilitySchedule()

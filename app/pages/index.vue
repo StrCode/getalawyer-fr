@@ -1,11 +1,10 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'site' })
 
-useSeoMeta({
-  title: 'Find a lawyer you can trust, wherever you are',
-  description: 'Search verified Nigerian lawyers by practice area and state, compare them, and message one in minutes.',
-  ogTitle: 'getalawyer — find a lawyer you can trust, wherever you are',
-  ogDescription: 'Search verified Nigerian lawyers by practice area and state. Every lawyer is checked before being listed.',
+usePageSeo({
+  title: 'Find a verified lawyer in Nigeria',
+  shareTitle: 'Find a lawyer you can trust, wherever you are',
+  description: 'Search verified lawyers across Nigeria by practice area and state. Message a lawyer free, then book a consultation. Every lawyer is checked before listing.',
 })
 </script>
 
