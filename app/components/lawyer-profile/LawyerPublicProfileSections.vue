@@ -38,7 +38,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </LawyerProfileSectionHeading>
       <p
         v-if="profile.about.headline?.trim()"
-        class="font-heading text-2xl leading-snug tracking-tight text-foreground md:text-3xl"
+        class="font-display text-2xl leading-snug tracking-tight text-foreground md:text-3xl"
       >
         {{ profile.about.headline }}
       </p>

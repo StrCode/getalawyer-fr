@@ -134,7 +134,7 @@ async function saveAndSignOut() {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-svh max-w-368 flex-col font-text">
+  <div class="mx-auto flex min-h-svh max-w-368 flex-col font-sans">
     <!--
       Pinned to the top, so the save status and sign-out stay in reach. A section
       on a phone is the exception: its "Save and return" bar is already pinned at

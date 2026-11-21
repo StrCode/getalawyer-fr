@@ -31,7 +31,7 @@ withDefaults(
     </span>
     <span
       v-if="showWordmark"
-      class="font-heading font-medium lowercase truncate tracking-tight text-lg leading-none"
+      class="font-display font-medium lowercase truncate tracking-tight text-lg leading-none"
     >
       getalawyer
     </span>

@@ -127,7 +127,7 @@ const kicker = 'text-sm font-medium tracking-widest text-brand uppercase'
         >
           <span class="flex min-h-7.25 items-center justify-between gap-2 font-display text-lg font-normal tracking-tight">
             {{ plan.name }}
-            <span v-if="plan.savingsPercent > 0" class="rounded-full bg-lime px-2.5 py-1 font-text text-xs font-medium tracking-normal whitespace-nowrap text-night">Save {{ plan.savingsPercent }}%</span>
+            <span v-if="plan.savingsPercent > 0" class="rounded-full bg-lime px-2.5 py-1 font-sans text-xs font-medium tracking-normal whitespace-nowrap text-night">Save {{ plan.savingsPercent }}%</span>
           </span>
           <span class="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
             <b class="font-display text-4xl md:text-5xl leading-none font-medium tracking-tighter">{{ formatNairaAmount(plan.priceNaira) }}</b>
@@ -219,7 +219,7 @@ const kicker = 'text-sm font-medium tracking-widest text-brand uppercase'
         <details v-for="(item, index) in questions" :key="item.q" :open="index === 0" class="reveal group/faq border-b border-border">
           <summary class="flex min-h-14.5 cursor-pointer list-none items-center justify-between gap-4 py-1.5 font-display text-lg font-normal tracking-tight [&::-webkit-details-marker]:hidden">
             {{ item.q }}
-            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-text font-medium text-deep transition-transform duration-200 ease-canopy group-open/faq:rotate-45">+</span>
+            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-sans font-medium text-deep transition-transform duration-200 ease-canopy group-open/faq:rotate-45">+</span>
           </summary>
           <p class="max-w-176 pr-12 pb-4.75 text-muted-foreground max-sm:pr-0">{{ item.a }}</p>
         </details>

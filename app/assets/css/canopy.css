@@ -52,8 +52,7 @@
 
     background: var(--background);
     color: var(--foreground);
-    /* literal stack (not var()) so @nuxt/fonts sees the families and injects their faces */
-    font-family: "Geist", "Geist Ext", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: 1.5;
     color-scheme: light;
@@ -99,7 +98,7 @@
 
   /* Headings: the display face, with weight and tracking left to utilities. */
   .canopy :where(h1, h2, h3, h4) {
-    font-family: "Inter Tight", "Inter Tight Ext", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-display);
     font-weight: inherit;
     letter-spacing: inherit;
   }

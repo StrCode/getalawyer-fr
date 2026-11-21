@@ -70,7 +70,7 @@ function back() {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-svh max-w-368 flex-col font-text">
+  <div class="mx-auto flex min-h-svh max-w-368 flex-col font-sans">
     <!--
       The header and the progress bar are pinned from tablet width up. On phones
       they scroll away: the Back / Continue bar is already pinned at the bottom,

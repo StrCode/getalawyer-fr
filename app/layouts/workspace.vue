@@ -28,7 +28,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex min-h-svh flex-col bg-background font-text text-foreground print:min-h-0 print:bg-white">
+  <div class="flex min-h-svh flex-col bg-background font-sans text-foreground print:min-h-0 print:bg-white">
     <a href="#workspace-main" class="sr-only print:hidden focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-card focus:px-4 focus:py-2 focus:font-medium focus:shadow-pill">Skip to the page</a>
     <WorkspaceTopBar class="print:hidden" />
     <!-- room at the foot for the phone tab bar -->

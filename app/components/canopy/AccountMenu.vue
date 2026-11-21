@@ -55,7 +55,6 @@ const links = computed<MenuLink[]>(() => props.links ?? [
 /** Something in the menu needs attention: the chip carries a dot too. */
 const attention = computed(() => links.value.some(link => link.alert))
 
-const item = 'min-h-11 cursor-pointer gap-3 rounded-md px-3 text-base font-medium text-foreground focus:bg-mint focus:text-deep [&_svg]:size-4.5 [&_svg]:text-muted-foreground focus:[&_svg]:text-deep'
 
 async function signOut() {
   if (isSigningOut.value) return
@@ -74,23 +73,23 @@ async function signOut() {
         <span class="relative flex-none">
           <Avatar class="size-9">
             <AvatarImage :src="avatarUrl" alt="" />
-            <AvatarFallback class="bg-primary font-display text-sm font-medium text-white">{{ initials }}</AvatarFallback>
+            <AvatarFallback class="bg-primary text-sm font-medium text-white">{{ initials }}</AvatarFallback>
           </Avatar>
           <span v-if="attention" class="absolute -top-0.5 -right-0.5 size-3 rounded-full border-2 border-card bg-warning"><span class="sr-only">Something in your account needs attention</span></span>
         </span>
-        <span class="max-w-30 truncate text-base font-medium max-sm:hidden">{{ firstName }}</span>
+        <span class="max-w-30 truncate max-sm:hidden" :class="menuTriggerText">{{ firstName }}</span>
         <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="text-muted-foreground transition-transform duration-200 ease-canopy group-data-[state=open]/acct:rotate-180 max-sm:hidden" />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" :side-offset="10" class="w-[min(19rem,calc(100vw-2rem))] rounded-card border-border bg-card p-2 font-text text-foreground shadow-widget">
+      <DropdownMenuContent align="end" :side-offset="10" class="w-[min(19rem,calc(100vw-2rem))]" :class="menuPanel">
         <!-- who is signed in -->
         <div class="flex items-center gap-3 px-2 pt-2 pb-3">
           <Avatar class="size-11 flex-none">
             <AvatarImage :src="avatarUrl" :alt="displayName" />
-            <AvatarFallback class="bg-primary font-display text-base font-medium text-white">{{ initials }}</AvatarFallback>
+            <AvatarFallback class="bg-primary text-sm font-medium text-white">{{ initials }}</AvatarFallback>
           </Avatar>
           <div class="min-w-0 leading-tight">
-            <b class="block truncate font-display text-base font-normal tracking-tight">{{ displayName }}</b>
+            <b class="block truncate text-sm font-medium">{{ displayName }}</b>
             <small v-if="displayEmail && displayEmail !== displayName" class="block truncate text-sm text-muted-foreground">{{ displayEmail }}</small>
           </div>
         </div>
@@ -109,7 +108,7 @@ async function signOut() {
         </template>
 
         <template v-else>
-          <DropdownMenuItem v-for="link in links" :key="link.to" as-child :class="item">
+          <DropdownMenuItem v-for="link in links" :key="link.to" as-child :class="menuItem">
             <NuxtLink :to="link.to">
               <CanopyGlyph :name="link.icon" />{{ link.label }}
               <span v-if="link.alert" class="ml-auto inline-flex items-center gap-1.5 text-sm font-medium text-warning-subtle-foreground"><i class="size-2 rounded-full bg-warning" />Needs attention</span>
@@ -118,7 +117,7 @@ async function signOut() {
         </template>
 
         <div class="mx-2 my-2 h-px bg-border" role="separator" />
-        <DropdownMenuItem :class="item" :disabled="isSigningOut" @select="signOut">
+        <DropdownMenuItem :class="menuItem" :disabled="isSigningOut" @select="signOut">
           <CanopyGlyph name="out" />{{ isSigningOut ? 'Signing out…' : 'Sign out' }}
         </DropdownMenuItem>
       </DropdownMenuContent>
