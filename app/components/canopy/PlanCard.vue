@@ -84,7 +84,7 @@ const inclusions = [
       </li>
     </ul>
 
-    <Button as-child variant="canopy" size="pill" class="group/btn h-13 w-full justify-between pr-2 pl-6">
+    <Button as-child variant="canopy" size="pill" class="group/btn w-full justify-between pr-2 pl-6">
       <NuxtLink :to="{ path: '/register', query: selected ? { plan: selected.key } : {} }">Register as a lawyer<CanopyArrowChip /></NuxtLink>
     </Button>
     <p v-if="selected && fee > 0" class="mt-3.25 text-center text-sm text-muted-foreground">

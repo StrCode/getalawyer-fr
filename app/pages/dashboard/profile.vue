@@ -1,8 +1,5 @@
 <template>
-  <div v-if="authPending" role="status" aria-label="Loading your profile" class="grid gap-4 lg:gap-5 xl:gap-6">
-    <div class="h-36 animate-pulse rounded-card bg-muted" />
-    <div class="h-64 animate-pulse rounded-card bg-muted" />
-  </div>
+  <LoadingProfile v-if="authPending" />
 
   <LawyerProfileEditorShell v-else-if="isLawyer" />
 

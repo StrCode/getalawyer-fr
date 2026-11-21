@@ -52,7 +52,7 @@ withDefaults(defineProps<{ shape?: 'home' | 'form' | 'checkout', label?: string 
         <div class="mt-3.5 grid gap-x-4 gap-y-4.5 sm:grid-cols-2">
           <div v-for="field in (group === 1 ? 2 : 4)" :key="field">
             <Skeleton class="h-4 w-24 rounded-full" />
-            <Skeleton class="mt-1.75 h-13 rounded-lg" />
+            <Skeleton class="mt-1.75 h-12 rounded-xl" />
           </div>
         </div>
       </div>

@@ -32,7 +32,7 @@ onMounted(() => {
     <a href="#workspace-main" class="sr-only print:hidden focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-card focus:px-4 focus:py-2 focus:font-medium focus:shadow-pill">Skip to the page</a>
     <WorkspaceTopBar class="print:hidden" />
     <!-- room at the foot for the phone tab bar -->
-    <main id="workspace-main" class="mx-auto w-full max-w-304 flex-1 pt-4.5 lg:pt-6.25 xl:pt-7.75 pb-28 safe-x tab:pb-16 print:max-w-none print:p-0">
+    <main id="workspace-main" class="mx-auto w-full max-w-304 flex-1 pt-6 tab:pt-7 pb-28 safe-x tab:pb-16 print:max-w-none print:p-0">
       <ClientOnly><WorkspaceReadOnlyNotice class="mb-4 lg:mb-5 xl:mb-6 print:hidden" /></ClientOnly>
       <slot />
     </main>

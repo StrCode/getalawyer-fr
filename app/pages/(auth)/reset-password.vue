@@ -11,7 +11,7 @@
           <span class="grid size-7.5 flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="13" :stroke="3.4" /></span>
           Your password has been reset. You can now sign in with the new one.
         </p>
-        <Button as-child variant="canopy" size="pill" class="group/btn h-13 w-full justify-between pr-2 pl-5.5">
+        <Button as-child variant="canopy" size="pill" class="group/btn w-full justify-between pr-2 pl-5.5">
           <NuxtLink to="/login">Go to sign in<CanopyArrowChip /></NuxtLink>
         </Button>
       </div>

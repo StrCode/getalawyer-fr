@@ -257,6 +257,11 @@
   --animate-type-in: canopy-type 0.45s steps(15, end) both;
   --animate-draw-in: canopy-draw 0.45s var(--ease-canopy) both;
   --animate-press: canopy-press 0.3s var(--ease-canopy) both;
+  /*
+   * Loading placeholders wait a moment before they show, so a quick answer
+   * (or one already in the cache) never flashes grey shapes. Opacity only.
+   */
+  --animate-skeleton-in: canopy-fade 0.2s ease-out 0.2s both;
 
   @keyframes canopy-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -288,6 +293,9 @@
   @keyframes canopy-press {
     0%, 100% { transform: none; }
     40% { transform: scale(0.86); }
+  }
+  @keyframes canopy-fade {
+    from { opacity: 0; }
   }
   @keyframes canopy-blink {
     0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }

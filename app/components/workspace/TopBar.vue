@@ -8,10 +8,16 @@ import {
 import NotificationBell from '@/components/notifications/NotificationBell.vue'
 import { isWorkspaceLinkActive, workspaceNavFor, type WorkspaceLink } from '~/lib/workspace-nav'
 import { getSessionUserType } from '~/lib/session-user'
+import { useWindowScroll } from '@vueuse/core'
 
 /**
- * The dashboard's top bar: the same floating bar as the public site, holding
- * the few places someone goes every day. A lawyer's set-up pages sit under
+ * The dashboard's top bar, the way working tools draw theirs (fal, Aboard,
+ * Workable): across the whole window, in the page's own colour, the links
+ * straight after the mark on the left and the account on the right. No line
+ * under it while the page is at the top; once the page scrolls, a hairline
+ * appears so content passing under the bar has an edge. It holds the few
+ * places someone goes every day; left-aligned, the lawyer's and the client's
+ * menus start in the same place however long each is. A lawyer's set-up pages sit under
  * "Practice"; the account's own pages (membership, settings) are in the account
  * menu. On phones the links move to the tab bar along the bottom.
  */
@@ -52,14 +58,21 @@ const accountLinks = computed(() =>
   })),
 )
 
+/** Whether the page has scrolled, so content is passing under the bar. */
+const { y } = useWindowScroll()
+const scrolled = computed(() => y.value > 0)
+
 const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-lg px-3 whitespace-nowrap ${menuText} aria-[current=page]:bg-mint aria-[current=page]:font-medium aria-[current=page]:text-deep`
 </script>
 
 <template>
-  <!-- a floating bar as wide as the page column; the mark alone stands for the brand -->
-  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-2.75">
-    <div class="mx-auto max-w-304 safe-x">
-      <div class="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card py-1.75 pr-1.75 pl-3.5 shadow-pill">
+  <!-- across the window; the mark alone stands for the brand, the links follow it on the left -->
+  <header
+    class="sticky top-[env(safe-area-inset-top,0px)] z-30 border-b bg-background transition-colors duration-200"
+    :class="scrolled ? 'border-border' : 'border-transparent'"
+  >
+    <div class="safe-x lg:px-6">
+      <div class="flex h-14 items-center gap-4 lg:gap-6">
         <CanopyBrand to="/dashboard" condensed />
 
         <nav aria-label="Dashboard" class="flex items-center gap-0.5 max-tab:hidden">
@@ -98,7 +111,7 @@ const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-lg p
           </ClientOnly>
         </nav>
 
-        <div class="flex items-center gap-1.5">
+        <div class="ml-auto flex items-center gap-1.5">
           <ClientOnly><CanopyThemeToggle class="max-sm:hidden" /></ClientOnly>
           <ClientOnly><NotificationBell /></ClientOnly>
           <CanopyAccountMenu :links="accountLinks" />

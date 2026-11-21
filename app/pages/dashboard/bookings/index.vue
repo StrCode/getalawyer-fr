@@ -167,9 +167,9 @@ const quiet = 'shadow-none hover:translate-y-0'
     </div>
 
     <!-- ───────── loading / could not load ───────── -->
-    <div v-if="loading && !isError" role="status" aria-label="Loading your bookings" class="grid gap-2">
-      <div v-for="n in 3" :key="n" class="h-21.5 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="loading && !isError" label="Loading your bookings">
+      <LoadingList heading />
+    </LoadingRegion>
 
     <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your bookings.</h2>

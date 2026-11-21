@@ -9,9 +9,15 @@ interface SkeletonProps {
 const props = defineProps<SkeletonProps>()
 </script>
 
+<!--
+  A grey shape standing in for content that is still loading. The tint is the
+  text colour at 8%, so it reads on the page, on cards and on tinted tiles, in
+  light and dark. It only pulses when the visitor allows motion.
+-->
 <template>
   <div
     data-slot="skeleton"
-    :class="cn('animate-pulse rounded-md bg-primary/10', props.class)"
+    aria-hidden="true"
+    :class="cn('rounded-md bg-foreground/8 motion-safe:animate-pulse', props.class)"
   />
 </template>

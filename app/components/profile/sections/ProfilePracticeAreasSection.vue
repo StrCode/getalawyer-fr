@@ -4,6 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Combobox,
   ComboboxAnchor,
@@ -125,10 +126,13 @@ const triggerLabel = computed(() => {
     title="Practice areas"
     :description="`The kinds of work you take on. Clients find you in search by these. Choose up to ${MAX_PRACTICE_AREAS}.`"
   >
-    <div v-if="isLoadingSpecs" role="status" aria-label="Loading practice areas" class="grid gap-2.75">
-      <div class="h-13 animate-pulse rounded-lg bg-muted" />
-      <div class="h-28 animate-pulse rounded-lg bg-muted" />
-    </div>
+    <LoadingRegion v-if="isLoadingSpecs" label="Loading practice areas">
+      <LoadingLine size="sm" class="w-48" />
+      <Skeleton class="mt-2 h-12 w-full rounded-xl" />
+      <div class="mt-3 grid gap-2">
+        <Skeleton v-for="n in 2" :key="n" class="h-15 w-full rounded-lg" />
+      </div>
+    </LoadingRegion>
 
     <form v-else novalidate @submit.prevent="form.handleSubmit">
       <FieldGroup class="gap-4.5">

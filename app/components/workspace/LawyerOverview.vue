@@ -167,11 +167,7 @@ const tileLink = 'mt-auto inline-flex min-h-11 w-fit items-center pt-1.5 font-me
 <template>
   <div class="grid gap-5 lg:gap-6.25 xl:gap-7.75">
     <!-- ───────── loading / could not load ───────── -->
-    <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
-      <div class="h-88 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
-      <div class="h-18.5 animate-pulse rounded-card bg-muted" />
-      <div class="h-18.5 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingOverview v-if="loading && !bookingsFailed" role="lawyer" />
 
     <section v-else-if="bookingsFailed" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 :class="sectionTitle">We could not load your diary.</h1>
@@ -279,14 +275,14 @@ const tileLink = 'mt-auto inline-flex min-h-11 w-fit items-center pt-1.5 font-me
       <div class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
         <section aria-labelledby="cases-title" :class="[tile, 'bg-stone']">
           <h2 id="cases-title" :class="tileTitle">Cases</h2>
-          <div v-if="casesPending" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-foreground/8" />
+          <div v-if="casesPending" aria-busy="true" class="mt-2"><LoadingLine class="w-full" /><LoadingLine class="w-3/5" /></div>
           <p v-else class="mt-2"><b class="font-medium">{{ cases.lead }}</b> {{ cases.detail }}</p>
           <NuxtLink to="/dashboard/cases" :class="tileLink">Open cases</NuxtLink>
         </section>
 
         <section aria-labelledby="profile-title" :class="[tile, 'border border-border bg-card']">
           <h2 id="profile-title" :class="tileTitle">Profile</h2>
-          <div v-if="!profileStrength" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-muted" />
+          <div v-if="!profileStrength" aria-busy="true" class="mt-2"><LoadingLine class="w-full" /><LoadingLine class="w-3/5" /></div>
           <template v-else>
             <p class="mt-2"><b class="font-medium">{{ profile.lead }}</b> {{ profile.detail }}</p>
             <div role="img" :aria-label="`${profilePercent} percent complete`" class="mt-2.75 h-2 overflow-hidden rounded-full bg-border">
@@ -298,7 +294,7 @@ const tileLink = 'mt-auto inline-flex min-h-11 w-fit items-center pt-1.5 font-me
 
         <section aria-labelledby="member-title" :class="[tile, 'bg-sand sm:max-tab:col-span-2']">
           <h2 id="member-title" :class="tileTitle">Membership</h2>
-          <div v-if="membershipPending" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-foreground/8" />
+          <div v-if="membershipPending" aria-busy="true" class="mt-2"><LoadingLine class="w-full" /><LoadingLine class="w-3/5" /></div>
           <p v-else class="mt-2"><b class="font-medium">{{ member.lead }}</b> {{ member.detail }}</p>
           <NuxtLink to="/dashboard/subscription" :class="tileLink">{{ membershipPending ? 'Open membership' : member.action }}</NuxtLink>
         </section>

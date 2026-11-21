@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useBookings } from '~/composables/useBookings'
 import { ApiError } from '~/lib/api/client'
 import { whatLine, whenLine } from '~/lib/appointment-view'
@@ -76,10 +77,22 @@ const panel = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6
     </NuxtLink>
 
     <!-- ───────── loading / not found / could not load / cannot be moved ───────── -->
-    <div v-if="isPending && !error" role="status" aria-label="Loading the booking" class="grid gap-4">
-      <div class="h-32 animate-pulse rounded-card bg-muted" />
-      <div class="h-96 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="isPending && !error" label="Loading the booking" class="grid grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
+      <div>
+        <LoadingLine size="xs" class="w-40" />
+        <LoadingLine size="3xl" tight class="mt-2.5 w-64 max-md:h-6" />
+        <LoadingLine class="mt-2.5 w-112" />
+      </div>
+      <div :class="panel">
+        <LoadingLine class="w-36" />
+        <div class="mt-3 grid grid-cols-4 gap-1.5 sm:grid-cols-7">
+          <Skeleton v-for="n in 7" :key="n" class="h-13.5 rounded-md" :class="n > 4 ? 'max-sm:hidden' : ''" />
+        </div>
+        <div class="mt-4 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          <Skeleton v-for="n in 8" :key="n" class="h-11 rounded-md" />
+        </div>
+      </div>
+    </LoadingRegion>
 
     <section v-else-if="missing" :class="[panel, 'text-center']">
       <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no booking here.</h1>

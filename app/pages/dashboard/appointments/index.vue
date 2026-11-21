@@ -72,9 +72,9 @@
     </div>
 
     <!-- ───────── loading / could not load ───────── -->
-    <div v-if="isLoading" role="status" aria-label="Loading your appointments" class="grid gap-2">
-      <div v-for="n in 4" :key="n" class="h-21.5 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="isLoading" label="Loading your appointments">
+      <LoadingList heading :rows="4" />
+    </LoadingRegion>
 
     <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your appointments.</h2>

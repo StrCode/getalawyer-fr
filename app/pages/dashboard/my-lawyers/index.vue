@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { deriveClientLawyers } from '~/lib/client-derived-lawyers'
 
 /**
@@ -53,9 +54,21 @@ const summary = computed(() => {
       </Button>
     </header>
 
-    <div v-if="loading" role="status" aria-label="Loading your lawyers" class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
-      <div v-for="n in 3" :key="n" class="h-36 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="loading" label="Loading your lawyers" class="grid grid-cols-1 gap-3 sm:grid-cols-2 tab:grid-cols-3">
+      <div v-for="n in 3" :key="n" class="flex flex-col rounded-card border border-border bg-card p-4.5 lg:p-5 xl:p-5.5">
+        <div class="flex items-center gap-3.25">
+          <Skeleton class="size-12 flex-none rounded-lg" />
+          <div class="min-w-0 grow">
+            <LoadingLine class="w-32" />
+            <LoadingLine size="sm" class="w-40" />
+          </div>
+        </div>
+        <div class="flex gap-1.5 pt-3.5">
+          <Skeleton class="h-11 flex-1 rounded-full" />
+          <Skeleton class="h-11 flex-1 rounded-full" />
+        </div>
+      </div>
+    </LoadingRegion>
 
     <section v-else-if="failed" class="rounded-card border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center">
       <h2 class="font-display text-xl leading-none font-normal tracking-tight">We could not load your lawyers.</h2>

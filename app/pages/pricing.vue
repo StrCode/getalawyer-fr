@@ -179,7 +179,7 @@ const kicker = 'text-sm font-medium tracking-widest text-brand uppercase'
           <p class="mt-1.5 text-sm text-muted-foreground">
             Then {{ formatNairaAmount(selected.priceNaira) }} every {{ termNoun(selected.termMonths) }}. We remind you 3 days before each renewal.
           </p>
-          <Button as-child variant="canopy" size="pill" class="group/btn mt-4.5 h-13 w-full justify-between pr-2 pl-5.5">
+          <Button as-child variant="canopy" size="pill" class="group/btn mt-4.5 w-full justify-between pr-2 pl-5.5">
             <NuxtLink :to="REGISTER" @click="rememberPreferredPlan(selected.key)">Register as a lawyer<CanopyArrowChip /></NuxtLink>
           </Button>
           <p class="mt-3.25 text-sm text-muted-foreground">

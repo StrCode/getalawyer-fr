@@ -283,7 +283,7 @@ const questions = computed(() => [
           <p class="mt-2.75 text-base text-muted-foreground">
             Pay for the term you choose and turn auto-renew off whenever you like.<template v-if="fee > 0"> Your first payment includes a one-off {{ formatNairaAmount(fee) }} verification fee.</template>
           </p>
-          <Button as-child variant="canopy" size="pill" class="group/btn mt-4.75 h-13 w-full justify-between pr-2 pl-6">
+          <Button as-child variant="canopy" size="pill" class="group/btn mt-4.75 w-full justify-between pr-2 pl-6">
             <NuxtLink to="/pricing">See pricing<CanopyArrowChip /></NuxtLink>
           </Button>
         </div>

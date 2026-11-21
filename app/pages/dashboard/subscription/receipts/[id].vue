@@ -77,7 +77,25 @@ const row = 'grid gap-x-6 gap-y-0.5 py-3.25 sm:grid-cols-[11rem_minmax(0,1fr)]'
     </div>
 
     <!-- ───────── loading / not found / could not load ───────── -->
-    <div v-if="loading" role="status" aria-label="Loading the receipt" class="h-136 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
+    <LoadingRegion v-if="loading" label="Loading the receipt" class="rounded-panel border border-border bg-card p-5.5 md:p-8.75 lg:p-11.5 xl:p-12 max-sm:rounded-2xl">
+      <div class="flex items-center justify-between gap-3">
+        <LoadingLine class="w-32" />
+        <LoadingLine size="xs" class="w-16" />
+      </div>
+      <LoadingLine size="5xl" tight class="mt-6.5 md:mt-7.75 lg:mt-10.25 xl:mt-10.5 w-56 max-md:h-9" />
+      <LoadingLine class="mt-2.75 w-72" />
+      <div class="mt-5.5 md:mt-5.75 lg:mt-7.75 xl:mt-8 divide-y divide-border border-y border-border">
+        <div v-for="n in 4" :key="n" class="flex justify-between gap-6 py-3.25">
+          <LoadingLine size="sm" class="w-28" />
+          <LoadingLine size="sm" :class="['w-48', 'w-36', 'w-56', 'w-40'][n - 1]" />
+        </div>
+      </div>
+      <div class="mt-5.5 md:mt-5.75 lg:mt-7.75 xl:mt-8 grid gap-3">
+        <LoadingLine size="xs" class="w-full" />
+        <LoadingLine class="w-full" />
+        <LoadingLine size="lg" class="w-full" />
+      </div>
+    </LoadingRegion>
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no receipt here.</h1>
