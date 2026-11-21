@@ -203,7 +203,7 @@ const menuItem = 'min-h-11 cursor-pointer rounded-md px-3 text-sm font-medium te
                   <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="transition-transform duration-200 ease-canopy group-data-[state=open]/more:rotate-180" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" :side-offset="8" class="w-52 rounded-card border-border bg-card p-2 font-text text-foreground shadow-widget">
+              <DropdownMenuContent align="end" :side-offset="8" class="w-52 rounded-card border-border bg-card p-2 font-sans text-foreground shadow-widget">
                 <DropdownMenuItem :class="menuItem" @click="setOffered(type, !type.isActive)">{{ type.isActive ? 'Pause' : 'Offer again' }}</DropdownMenuItem>
                 <DropdownMenuItem :class="[menuItem, 'text-destructive focus:bg-destructive/10 focus:text-destructive']" @click="askDelete(type)">Delete</DropdownMenuItem>
               </DropdownMenuContent>

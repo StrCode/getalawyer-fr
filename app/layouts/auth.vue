@@ -84,7 +84,7 @@ const panel = computed(() => PANELS[audience.value])
 </script>
 
 <template>
-  <div class="mx-auto grid min-h-svh max-w-368 grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] gap-4 md:gap-5.75 lg:gap-7.75 xl:gap-9.5 pt-[max(16px,env(safe-area-inset-top,0px))] pb-[max(16px,env(safe-area-inset-bottom,0px))] font-text safe-x max-tab:grid-cols-1">
+  <div class="mx-auto grid min-h-svh max-w-368 grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] gap-4 md:gap-5.75 lg:gap-7.75 xl:gap-9.5 pt-[max(16px,env(safe-area-inset-top,0px))] pb-[max(16px,env(safe-area-inset-bottom,0px))] font-sans safe-x max-tab:grid-cols-1">
     <div class="flex min-w-0 flex-col px-0 md:px-5.75 lg:px-7.75 xl:px-9.5 py-1.5">
       <div class="flex items-center justify-between gap-4">
         <!-- the mark alone: these screens are about the form, and the panel carries the brand -->

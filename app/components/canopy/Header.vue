@@ -131,7 +131,7 @@ watch(() => route.fullPath, () => {
         <nav
           ref="linksEl"
           aria-label="Main"
-          class="relative flex gap-0.5 text-base font-medium text-muted-foreground max-nav:hidden"
+          class="relative flex gap-0.5 max-nav:hidden"
           @mouseleave="moveTo(current)"
           @focusout="moveTo(current)"
         >
@@ -146,14 +146,14 @@ watch(() => route.fullPath, () => {
             :to="link.to"
             :data-key="link.key"
             :aria-current="current === link.key ? 'true' : undefined"
-            class="relative z-1 inline-flex min-h-10.5 items-center whitespace-nowrap rounded-full px-3.75 transition-colors duration-250 hover:text-foreground aria-[current=true]:text-foreground"
+            class="relative z-1 inline-flex min-h-10.5 items-center whitespace-nowrap rounded-full px-3.75 aria-[current=true]:text-foreground" :class="menuText"
             @mouseenter="moveTo(link.key)"
             @focus="moveTo(link.key)"
           >
             {{ link.label }}
           </NuxtLink>
         </nav>
-        <div class="flex items-center gap-1.5 text-base font-medium">
+        <div class="flex items-center gap-1.5 text-sm font-normal">
           <ClientOnly><CanopyThemeToggle class="max-nav:hidden" /></ClientOnly>
           <CanopyAccountMenu v-if="isSignedIn" />
           <NuxtLink

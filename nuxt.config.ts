@@ -69,26 +69,6 @@ const THEMED_ROUTES = new Set<string>([
   '/application/membership',
 ])
 
-/** A committed variable font in public/fonts, self-hosted through @nuxt/fonts. */
-function localVariableFont(name: string, file: string, weight: string, fallbacks?: string[]) {
-  return {
-    name,
-    src: [
-      {
-        // `url` is what the CSS points at; `originalURL` lets @nuxt/fonts read the
-        // file for fallback metrics (size-adjust etc.), which it can't do from a web path.
-        url: `/fonts/${file}`,
-        originalURL: new URL(`./public/fonts/${file}`, import.meta.url).href,
-        format: 'woff2' as const,
-      },
-    ],
-    weight,
-    style: 'normal' as const,
-    display: 'swap' as const,
-    ...(fallbacks ? { fallbacks } : {}),
-  }
-}
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -212,44 +192,16 @@ export default defineNuxtConfig({
     fallbackBreakpoint: 'lg',
   },
   fonts: {
-    // Satoshi (Indian Type Foundry, Fontshare) — the variable face committed in
-    // public/fonts; byte-identical to Fontshare's CDN file. @nuxt/fonts owns the
-    // @font-face and fallback metrics. Not fetched through the Fontshare provider:
-    // that only exposes the static cuts (no 600, five files) and makes the build
-    // depend on the CDN. No italics are used in the UI.
+    // The families are named once, in main.css (`--font-sans`, `--font-display`).
+    // Nuxt Fonts finds them there, downloads them from Google Fonts at build
+    // time and serves them from this site, with fallback metrics. Both are
+    // variable fonts; latin-ext carries the naira sign. Builds need to reach
+    // Google Fonts.
     families: [
-      {
-        name: 'Satoshi',
-        src: [
-          {
-            // `url` is what the CSS points at; `originalURL` lets @nuxt/fonts read the
-            // file for fallback metrics (size-adjust etc.), which it can't do from a web path.
-            url: '/fonts/Satoshi-Variable.woff2',
-            originalURL: new URL('./public/fonts/Satoshi-Variable.woff2', import.meta.url).href,
-            format: 'woff2',
-          },
-        ],
-        weight: '300 900',
-        style: 'normal',
-        display: 'swap',
-        fallbacks: ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans'],
-      },
-      // Canopy type: Inter Tight for headings and the wordmark, Geist
-      // for text. Both are OFL variable fonts committed in public/fonts, so the
-      // build makes no font requests. Each family has two files: Latin, and
-      // Latin Extended (which holds the naira sign). This @nuxt/fonts version
-      // emits one face per manual family with no unicode-range, so the extended
-      // file is its own family and sits next in the font stack; the browser only
-      // fetches it for a character the Latin file lacks.
-      localVariableFont('Inter Tight', 'InterTight-Variable-latin.woff2', '100 900', ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans']),
-      localVariableFont('Inter Tight Ext', 'InterTight-Variable-latin-ext.woff2', '100 900'),
-      localVariableFont('Geist', 'Geist-Variable-latin.woff2', '100 900', ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans']),
-      localVariableFont('Geist Ext', 'Geist-Variable-latin-ext.woff2', '100 900'),
+      { name: 'Inter', provider: 'google', weights: ['100 900'] },
+      { name: 'Mona Sans', provider: 'google', weights: ['200 900'] },
     ],
-    // All web fonts are committed files; skip the remote providers' metadata fetches
-    // so builds don't depend on fonts.google.com / bunny / fontsource being reachable.
     providers: {
-      google: false,
       googleicons: false,
       bunny: false,
       fontsource: false,
@@ -257,8 +209,8 @@ export default defineNuxtConfig({
       adobe: false,
     },
     defaults: {
-      weights: [400, 500],
       styles: ['normal'],
+      subsets: ['latin', 'latin-ext'],
     },
   },
   runtimeConfig: {

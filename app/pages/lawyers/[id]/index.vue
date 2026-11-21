@@ -307,7 +307,7 @@ const when = 'text-sm font-medium text-muted-foreground tabular-nums'
               <article v-for="item in licences" :key="item.id" :class="row">
                 <div class="min-w-0">
                   <h3 :class="itemTitle">
-                    {{ item.name }}<span v-if="item.isVerified" class="ml-2.5 rounded-full bg-mint px-2.25 py-0.5 align-middle font-text text-xs font-medium tracking-normal text-deep">Verified</span>
+                    {{ item.name }}<span v-if="item.isVerified" class="ml-2.5 rounded-full bg-mint px-2.25 py-0.5 align-middle font-sans text-xs font-medium tracking-normal text-deep">Verified</span>
                   </h3>
                   <p class="mt-0.75 text-base text-muted-foreground">
                     {{ [item.issuingOrganization, formatLicenseDates(item), item.credentialId ? `ID ${item.credentialId}` : ''].filter(Boolean).join(' · ') }}

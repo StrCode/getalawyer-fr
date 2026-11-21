@@ -169,7 +169,7 @@ const choice = 'cursor-pointer transition-colors duration-200'
               class="group/day min-h-13.5 rounded-md bg-background font-display text-lg font-normal aria-pressed:bg-foreground aria-pressed:text-background"
               @click="day = date"
             >
-              <small class="block font-text text-xs font-medium text-muted-foreground group-aria-pressed/day:text-inherit group-aria-pressed/day:opacity-75">{{ dayParts(date).weekday }}</small>{{ dayParts(date).number }}
+              <small class="block font-sans text-xs font-medium text-muted-foreground group-aria-pressed/day:text-inherit group-aria-pressed/day:opacity-75">{{ dayParts(date).weekday }}</small>{{ dayParts(date).number }}
             </button>
           </div>
           <div role="group" aria-label="Time" class="mt-2.5 grid grid-cols-2 gap-1.5">

@@ -304,7 +304,7 @@ const questions = computed(() => [
         <details v-for="(item, index) in questions" :key="item.q" :open="index === 0" class="reveal group/faq border-b border-border">
           <summary class="flex min-h-14.5 cursor-pointer list-none items-center justify-between gap-4 py-1.5 font-display text-lg font-normal tracking-tight [&::-webkit-details-marker]:hidden">
             {{ item.q }}
-            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-text font-medium text-deep transition-transform duration-200 ease-canopy group-open/faq:rotate-45">+</span>
+            <span aria-hidden="true" class="grid size-8 flex-none place-items-center rounded-full bg-mint font-sans font-medium text-deep transition-transform duration-200 ease-canopy group-open/faq:rotate-45">+</span>
           </summary>
           <p class="max-w-176 pr-12 pb-4.75 text-muted-foreground max-sm:pr-0">{{ item.a }}</p>
         </details>
