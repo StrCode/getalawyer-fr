@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button'
       size="sm"
       class="mt-4"
     >
-      <NuxtLink to="/dashboard/profile#about">
+      <NuxtLink to="/dashboard/profile?section=about">
         Complete your profile
       </NuxtLink>
     </Button>

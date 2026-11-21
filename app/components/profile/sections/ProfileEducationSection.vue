@@ -1,265 +1,214 @@
 <script setup lang="ts">
-import { Add01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  formatEducationSubtitle,
-  formatEducationYears,
-} from '~/lib/profile-list-format'
-import type {
-  CreateEducationInput,
-  LawyerProfileEducation,
-} from '~/types/lawyer-profile-editor'
+import { formatEducationSubtitle, formatEducationYears } from '~/lib/profile-list-format'
+import { educationPayload, educationSchema, educationValues } from '~/lib/profile-forms'
+import type { CreateEducationInput, LawyerProfileEducation } from '~/types/lawyer-profile-editor'
 
+/** Where a lawyer studied: law school, degrees and other study. */
 const props = defineProps<{
   items: LawyerProfileEducation[]
   disabled?: boolean
   saving?: boolean
   onCreate: (payload: CreateEducationInput) => Promise<void>
-  onUpdate: (payload: { id: string; data: Partial<CreateEducationInput> }) => Promise<void>
+  onUpdate: (payload: { id: string, data: Partial<CreateEducationInput> }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }>()
 
-const dialogOpen = ref(false)
-const deleteOpen = ref(false)
-const editingId = ref<string | null>(null)
-const deleteId = ref<string | null>(null)
-
-const school = ref('')
-const degree = ref('')
-const fieldOfStudy = ref('')
-const startYear = ref('')
-const endYear = ref('')
-const description = ref('')
-
-function resetForm() {
-  school.value = ''
-  degree.value = ''
-  fieldOfStudy.value = ''
-  startYear.value = ''
-  endYear.value = ''
-  description.value = ''
-}
-
-function openCreate() {
-  editingId.value = null
-  resetForm()
-  dialogOpen.value = true
-}
-
-function openEdit(item: LawyerProfileEducation) {
-  editingId.value = item.id
-  school.value = item.school
-  degree.value = item.degree ?? ''
-  fieldOfStudy.value = item.fieldOfStudy ?? ''
-  startYear.value = item.startYear != null ? String(item.startYear) : ''
-  endYear.value = item.endYear != null ? String(item.endYear) : ''
-  description.value = item.description ?? ''
-  dialogOpen.value = true
-}
-
-function openDelete(id: string) {
-  deleteId.value = id
-  deleteOpen.value = true
-}
-
-function parseYear(raw: string): number | null {
-  const trimmed = raw.trim()
-  if (!trimmed) return null
-  const n = Number.parseInt(trimmed, 10)
-  if (!Number.isFinite(n) || n < 1900 || n > 2100) return null
-  return n
-}
-
-const canSave = computed(() => school.value.trim().length > 0)
-
-const dialogTitle = computed(() =>
-  editingId.value ? 'Edit education' : 'Add education',
-)
-
-function buildPayload(): CreateEducationInput {
-  return {
-    school: school.value.trim(),
-    degree: degree.value.trim() || null,
-    fieldOfStudy: fieldOfStudy.value.trim() || null,
-    startYear: parseYear(startYear.value),
-    endYear: parseYear(endYear.value),
-    description: description.value.trim() || null,
-  }
-}
-
-async function onSave() {
-  if (!canSave.value) return
-  const payload = buildPayload()
-  try {
-    if (editingId.value) {
-      await props.onUpdate({ id: editingId.value, data: payload })
-    } else {
-      await props.onCreate(payload)
+const form = useForm({
+  defaultValues: educationValues(),
+  validators: {
+    onChange: educationSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    const payload = educationPayload(educationSchema.parse(value))
+    try {
+      if (editingId.value) await props.onUpdate({ id: editingId.value, data: payload })
+      else await props.onCreate(payload)
+      dialogOpen.value = false
     }
-    dialogOpen.value = false
-    editingId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+    catch {
+      // the page shows the message; the dialog stays open to try again
+    }
+  },
+})
 
-async function onDeleteConfirm() {
-  if (!deleteId.value) return
-  try {
-    await props.onDelete(deleteId.value)
-    deleteOpen.value = false
-    deleteId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+const { isInvalid } = useAuthFieldInvalid(form)
+
+const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, confirmDelete } = useProfileEntryList<LawyerProfileEducation>({
+  seed: item => form.reset(educationValues(item)),
+  remove: id => props.onDelete(id),
+})
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <CardTitle>
-            Education
-          </CardTitle>
-          <CardDescription>
-            Law school, degrees, and academic credentials.
-          </CardDescription>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          :disabled="disabled"
-          @click="openCreate"
-        >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          Add
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent class="space-y-2">
-      <p
-        v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
-      >
-        No schools added yet.
-      </p>
-      <ProfileListRow
-        v-for="item in items"
-        :key="item.id"
-        :primary="item.school"
-        :secondary="formatEducationSubtitle(item)"
-        :tertiary="formatEducationYears(item)"
-        :disabled="disabled"
-        @edit="openEdit(item)"
-        @delete="openDelete(item.id)"
-      />
-    </CardContent>
-  </Card>
+  <SettingsSectionCard
+    title="Education"
+    description="Law school, degrees and other study."
+    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+  >
+    <template #action>
+      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a school</Button>
+    </template>
+
+    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No schools added yet.</p>
+    <ProfileListRow
+      v-for="item in items"
+      :key="item.id"
+      :primary="item.school"
+      :secondary="formatEducationSubtitle(item)"
+      :tertiary="formatEducationYears(item)"
+      :disabled="disabled"
+      @edit="openEdit(item)"
+      @delete="openDelete(item.id)"
+    />
+  </SettingsSectionCard>
 
   <ProfileEntryDialog
     v-model:open="dialogOpen"
-    :title="dialogTitle"
-    description="Add a school or degree to your profile."
-    :save-label="editingId ? 'Update' : 'Add'"
+    :title="editingId ? 'Edit this school' : 'Add a school'"
+    description="A school, degree or course you completed."
+    form-id="education-form"
     :saving="saving"
-    :save-disabled="!canSave"
-    @save="onSave"
   >
-    <FieldGroup class="gap-4">
-      <Field>
-        <FieldLabel for="edu-school">
-          School
-        </FieldLabel>
-        <Input
-          id="edu-school"
-          v-model="school"
-          maxlength="160"
-          placeholder="e.g. University of Lagos"
-        />
-      </Field>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel for="edu-degree">
-            Degree
-          </FieldLabel>
-          <Input
-            id="edu-degree"
-            v-model="degree"
-            maxlength="120"
-            placeholder="e.g. LL.B"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="edu-field">
-            Field of study
-          </FieldLabel>
-          <Input
-            id="edu-field"
-            v-model="fieldOfStudy"
-            maxlength="120"
-            placeholder="Optional"
-          />
-        </Field>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel for="edu-start">
-            Start year
-          </FieldLabel>
-          <Input
-            id="edu-start"
-            v-model="startYear"
-            type="number"
-            min="1900"
-            max="2100"
-            placeholder="e.g. 2012"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="edu-end">
-            End year
-          </FieldLabel>
-          <Input
-            id="edu-end"
-            v-model="endYear"
-            type="number"
-            min="1900"
-            max="2100"
-            placeholder="e.g. 2016"
-          />
-        </Field>
-      </div>
-      <Field>
-        <FieldLabel for="edu-desc">
-          Notes
-        </FieldLabel>
-        <Textarea
-          id="edu-desc"
-          v-model="description"
-          rows="3"
-          maxlength="2000"
-          placeholder="Optional"
-        />
-      </Field>
-    </FieldGroup>
+    <form id="education-form" novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="school">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">School</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="160"
+              placeholder="For example: University of Lagos"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+          <form.Field v-slot="{ field }" name="degree">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Degree <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                maxlength="120"
+                placeholder="For example: LL.B"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+          <form.Field v-slot="{ field }" name="fieldOfStudy">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Field of study <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                maxlength="120"
+                placeholder="For example: Law"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
+        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+          <form.Field v-slot="{ field }" name="startYear">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Year started <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="2012"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+          <form.Field v-slot="{ field }" name="endYear">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Year finished <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="2016"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
+        <form.Field v-slot="{ field }" name="description">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Anything to add <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Textarea
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="canopyTextarea"
+              rows="3"
+              maxlength="2000"
+              placeholder="Honours, prizes or what you focused on."
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+      </FieldGroup>
+    </form>
   </ProfileEntryDialog>
 
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
-    title="Remove education?"
-    description="This entry will no longer appear on your profile."
+    title="Remove this school?"
+    description="It will no longer show on your public page."
     :deleting="saving"
-    @confirm="onDeleteConfirm"
+    @confirm="confirmDelete"
   />
 </template>

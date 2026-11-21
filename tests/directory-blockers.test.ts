@@ -14,7 +14,7 @@ describe('getDirectoryBlockerItems', () => {
       tier1Complete: false,
     })
     expect(items.map((i) => i.id)).toEqual(['approval', 'payment_issue'])
-    expect(items[0]).toMatchObject({ label: 'Application not approved yet', href: '/dashboard' })
+    expect(items[0]).toMatchObject({ label: 'Your application is not approved yet', href: '/dashboard' })
     expect(items[1]).toMatchObject({ href: '/dashboard/subscription' })
   })
 

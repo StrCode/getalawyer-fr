@@ -120,7 +120,7 @@ const face = 'grid size-[3rem] flex-none place-items-center overflow-hidden roun
 </script>
 
 <template>
-  <div class="grid gap-[clamp(1.75rem,3vw,2.75rem)]">
+  <div class="grid gap-[clamp(1.25rem,2.4vw,2rem)]">
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
       <div class="h-[22rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
@@ -138,27 +138,27 @@ const face = 'grid size-[3rem] flex-none place-items-center overflow-hidden roun
       <!-- ───────── now, and what is booked ───────── -->
       <section
         aria-labelledby="overview-title"
-        class="flex flex-wrap items-center gap-x-[clamp(1.5rem,4vw,3rem)] gap-y-6 rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] max-sm:rounded-[1.75rem]"
+        class="flex flex-wrap items-center gap-x-[clamp(1.25rem,3vw,2.25rem)] gap-y-5 rounded-panel border border-border bg-card p-[clamp(1.2rem,2.6vw,2rem)] max-sm:rounded-[1.75rem]"
       >
         <div class="min-w-0 flex-[999_1_24rem]">
           <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
-          <h1 id="overview-title" class="mt-[0.9rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+          <h1 id="overview-title" class="mt-[0.5rem] text-[clamp(1.5rem,2.4vw,1.9rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">
             {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
           </h1>
-          <p class="mt-[0.9rem] max-w-[36rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
-          <div class="mt-[1.4rem] flex flex-wrap gap-[0.6rem]">
-            <Button v-if="headline.primary" as-child variant="canopy" size="pill">
+          <p class="mt-[0.45rem] max-w-[36rem] text-muted-foreground">{{ headline.detail }}</p>
+          <div class="mt-[1rem] flex flex-wrap gap-[0.5rem]">
+            <Button v-if="headline.primary" as-child variant="canopy" size="pill-sm">
               <a v-if="headline.primary.to.startsWith('#')" :href="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></a>
               <NuxtLink v-else :to="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></NuxtLink>
             </Button>
-            <Button v-if="headline.secondary" as-child variant="line" size="pill">
+            <Button v-if="headline.secondary" as-child variant="line" size="pill-sm">
               <NuxtLink :to="headline.secondary.to">{{ headline.secondary.label }}</NuxtLink>
             </Button>
           </div>
         </div>
 
-        <div class="min-w-0 flex-[1_1_21rem] rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
-          <h2 class="font-display text-[1.2rem] font-[650] tracking-[-0.02em]">Your bookings</h2>
+        <div class="min-w-0 flex-[1_1_21rem] rounded-[1.25rem] bg-mint p-[1rem] text-deep">
+          <h2 class="font-display text-[1.1rem] font-[650] tracking-[-0.02em]">Your bookings</h2>
           <ul v-if="glance.length" class="mt-[0.7rem] grid gap-[0.45rem]">
             <li v-for="booking in glance" :key="booking.id">
               <NuxtLink :to="booking.to" class="block rounded-[1rem] bg-card/70 px-[0.85rem] py-[0.65rem] text-foreground transition-colors hover:bg-card">

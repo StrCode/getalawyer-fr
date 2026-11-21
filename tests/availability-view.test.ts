@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  blankDateForm,
   clockLabel,
+  dateFormPayload,
+  dateFormSchema,
+  rangeFormPayload,
+  rangeFormSchema,
+  weekFormValues,
+  weekFromForm,
+  weekSchema,
   dateKeysBetween,
   dayError,
   emptyWeek,
@@ -154,5 +162,41 @@ describe('dates that differ from the week', () => {
   it('lists nothing when the range runs backwards or is not a date', () => {
     expect(dateKeysBetween('2026-12-25', '2026-12-24')).toEqual([])
     expect(dateKeysBetween('', '2026-12-24')).toEqual([])
+  })
+})
+
+describe('the forms', () => {
+  it('turns the week into rows and back', () => {
+    const week = presetWeek('weekdays-sat')
+    const values = weekFormValues(week)
+    expect(values.days.map(row => row.day)).toEqual(['1', '2', '3', '4', '5', '6', '0'])
+    expect(weekFromForm(values)).toEqual(week)
+  })
+
+  it('points a bad day at the end time', () => {
+    const values = weekFormValues(presetWeek('weekdays'))
+    values.days[2]!.endTime = '08:00'
+    const result = weekSchema.safeParse(values)
+    expect(result.success).toBe(false)
+    expect(result.error?.issues[0]?.path).toEqual(['days', 2, 'endTime'])
+  })
+
+  it('wants a date, and the hours only when not all day', () => {
+    expect(dateFormSchema.safeParse(blankDateForm()).success).toBe(false)
+    expect(dateFormSchema.safeParse({ ...blankDateForm(), date: '2026-12-24' }).success).toBe(true)
+    const backwards = dateFormSchema.safeParse({ ...blankDateForm(), date: '2026-12-24', allDay: false, startTime: '14:00', endTime: '10:00' })
+    expect(backwards.error?.issues.map(issue => issue.path[0])).toEqual(['endTime'])
+  })
+
+  it('sends hours only for part of a day', () => {
+    expect(dateFormPayload({ ...blankDateForm(), date: '2026-12-24', reason: ' ' })).toEqual({ date: '2026-12-24', startTime: undefined, endTime: undefined, isAvailable: false, reason: undefined })
+    expect(dateFormPayload({ ...blankDateForm(), date: '2026-12-24', allDay: false, available: true })).toMatchObject({ startTime: '09:00:00', endTime: '17:00:00', isAvailable: true })
+  })
+
+  it('takes a run of days off, in order and not too long', () => {
+    expect(rangeFormSchema.safeParse({ startDate: '2026-12-24', endDate: '2026-12-26', reason: '' }).success).toBe(true)
+    expect(rangeFormSchema.safeParse({ startDate: '2026-12-26', endDate: '2026-12-24', reason: '' }).success).toBe(false)
+    expect(rangeFormSchema.safeParse({ startDate: '2026-01-01', endDate: '2026-12-31', reason: '' }).success).toBe(false)
+    expect(rangeFormPayload({ startDate: '2026-12-24', endDate: '2026-12-26', reason: 'Christmas' })).toEqual({ dates: ['2026-12-24', '2026-12-25', '2026-12-26'], isAvailable: false, reason: 'Christmas' })
   })
 })

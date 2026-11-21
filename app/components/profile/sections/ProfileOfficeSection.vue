@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Location01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { useForm } from '@tanstack/vue-form'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
+import { Button } from '@/components/ui/button'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -13,8 +12,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { NIGERIA_STATE_NAMES } from '@/constants/nigeria-states-lgas'
+import { officePayload, officeSchema, officeValues, sameValues } from '~/lib/profile-forms'
 import type { LawyerProfilePracticeInfo, UpdateLawyerOfficeInput } from '~/types/lawyer-profile-editor'
 
+/** The firm a lawyer practises under and where their office is. The city and state show in search. */
 const props = defineProps<{
   practiceInfo: LawyerProfilePracticeInfo | null
   disabled?: boolean
@@ -25,184 +26,152 @@ const emit = defineEmits<{
   save: [payload: UpdateLawyerOfficeInput]
 }>()
 
-const firmName = ref(props.practiceInfo?.firmName ?? '')
-const officeStreet = ref(props.practiceInfo?.officeStreet ?? '')
-const officeCity = ref(props.practiceInfo?.officeCity ?? '')
-const officeState = ref(props.practiceInfo?.officeState ?? '')
-const officePostalCode = ref(props.practiceInfo?.officePostalCode ?? '')
-
-watch(
-  () => props.practiceInfo,
-  (value) => {
-    firmName.value = value?.firmName ?? ''
-    officeStreet.value = value?.officeStreet ?? ''
-    officeCity.value = value?.officeCity ?? ''
-    officeState.value = value?.officeState ?? ''
-    officePostalCode.value = value?.officePostalCode ?? ''
+const form = useForm({
+  defaultValues: officeValues(props.practiceInfo),
+  validators: {
+    onChange: officeSchema,
   },
-  { deep: true },
-)
-
-const snapshot = computed(() =>
-  JSON.stringify({
-    firmName: props.practiceInfo?.firmName ?? '',
-    officeStreet: props.practiceInfo?.officeStreet ?? '',
-    officeCity: props.practiceInfo?.officeCity ?? '',
-    officeState: props.practiceInfo?.officeState ?? '',
-    officePostalCode: props.practiceInfo?.officePostalCode ?? '',
-  }),
-)
-
-const isDirty = computed(
-  () =>
-    JSON.stringify({
-      firmName: firmName.value,
-      officeStreet: officeStreet.value,
-      officeCity: officeCity.value,
-      officeState: officeState.value,
-      officePostalCode: officePostalCode.value,
-    }) !== snapshot.value,
-)
-
-const locationPreview = computed(() => {
-  const parts = [officeCity.value.trim(), officeState.value.trim()].filter(Boolean)
-  if (parts.length === 0) return null
-  return parts.join(', ')
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: ({ value }) => {
+    emit('save', officePayload(officeSchema.parse(value)))
+  },
 })
 
-function onSave() {
-  emit('save', {
-    firmName: firmName.value.trim() || undefined,
-    officeStreet: officeStreet.value.trim() || null,
-    officeCity: officeCity.value.trim() || null,
-    officeState: officeState.value.trim() || null,
-    officePostalCode: officePostalCode.value.trim() || null,
-  })
-}
+const { isInvalid } = useAuthFieldInvalid(form)
+
+const values = form.useStore(state => state.values)
+const dirty = computed(() => !sameValues(values.value, officeValues(props.practiceInfo)))
+
+// What is saved replaces what is in the form: after a save, and when the profile reloads.
+watch(() => props.practiceInfo, saved => form.reset(officeValues(saved)), { deep: true })
 </script>
 
 <template>
-  <Card>
-    <CardHeader>
-      <CardTitle>
-        Office & firm
-      </CardTitle>
-      <CardDescription>
-        Your firm name and office location appear on your profile and in search results.
-      </CardDescription>
-    </CardHeader>
-    <CardContent class="space-y-6">
-      <FieldGroup class="gap-5">
-        <Field>
-          <FieldLabel for="profile-firm-name">
-            Firm or practice name
-          </FieldLabel>
-          <Input
-            id="profile-firm-name"
-            v-model="firmName"
-            :disabled="disabled"
-            maxlength="160"
-            placeholder="e.g. Adeyemi & Partners"
-          />
-          <FieldDescription>
-            Leave blank if you practise under your own name.
-          </FieldDescription>
-        </Field>
-
-        <div class="space-y-4 rounded-xl border border-border bg-background p-4">
-          <div class="flex items-start gap-2">
-            <HugeiconsIcon :icon="Location01Icon" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-foreground">
-                Office address
-              </p>
-              <p
-                v-if="locationPreview"
-                class="mt-0.5 text-xs text-muted-foreground"
-              >
-                {{ locationPreview }}
-              </p>
-            </div>
-          </div>
-
-          <Field>
-            <FieldLabel for="profile-office-street">
-              Street address
+  <SettingsSectionCard
+    title="Office and firm"
+    description="Your firm name and where your office is. The city and state show on your profile and in search."
+  >
+    <form novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="firmName">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">
+              Firm or practice name
+              <span class="font-normal text-muted-foreground">(optional)</span>
             </FieldLabel>
             <Input
-              id="profile-office-street"
-              v-model="officeStreet"
-              :disabled="disabled"
-              maxlength="200"
-              placeholder="e.g. 15 Adeola Odeku Street"
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="160"
+              placeholder="For example: Adeyemi & Partners"
+              autocomplete="organization"
+              :aria-invalid="isInvalid(field)"
+              :disabled="disabled || saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
             />
+            <FieldDescription :class="canopyHint">Leave it empty if you practise under your own name.</FieldDescription>
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
+        </form.Field>
 
-          <div class="grid gap-4 sm:grid-cols-2">
-            <Field>
-              <FieldLabel for="profile-office-city">
-                City
-              </FieldLabel>
+        <form.Field v-slot="{ field }" name="officeStreet">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Street address</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="200"
+              placeholder="For example: 15 Adeola Odeku Street"
+              autocomplete="street-address"
+              :aria-invalid="isInvalid(field)"
+              :disabled="disabled || saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+
+        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+          <form.Field v-slot="{ field }" name="officeCity">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">City</FieldLabel>
               <Input
-                id="profile-office-city"
-                v-model="officeCity"
-                :disabled="disabled"
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
                 maxlength="120"
-                placeholder="e.g. Victoria Island"
+                placeholder="For example: Ikeja"
+                autocomplete="address-level2"
+                :aria-invalid="isInvalid(field)"
+                :disabled="disabled || saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
               />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
+          </form.Field>
 
-            <Field>
-              <FieldLabel for="profile-office-state">
-                State
-              </FieldLabel>
+          <form.Field v-slot="{ field }" name="officeState">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">State</FieldLabel>
               <Select
-                :model-value="officeState || undefined"
-                :disabled="disabled"
-                @update:model-value="(v) => { officeState = String(v ?? '') }"
+                :model-value="field.state.value || undefined"
+                :disabled="disabled || saving"
+                @update:model-value="(v) => {
+                  field.handleChange(String(v ?? ''))
+                  field.handleBlur()
+                }"
               >
-                <SelectTrigger id="profile-office-state">
-                  <SelectValue placeholder="Select state" />
+                <SelectTrigger :id="field.name" :class="canopySelect" :aria-invalid="isInvalid(field)">
+                  <SelectValue placeholder="Choose a state" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    v-for="state in NIGERIA_STATE_NAMES"
-                    :key="state"
-                    :value="state"
-                  >
-                    {{ state }}
-                  </SelectItem>
+                <SelectContent :class="canopyPanel">
+                  <SelectItem v-for="state in NIGERIA_STATE_NAMES" :key="state" :value="state">{{ state }}</SelectItem>
                 </SelectContent>
               </Select>
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
-          </div>
+          </form.Field>
+        </div>
 
-          <Field>
-            <FieldLabel for="profile-office-postal">
+        <form.Field v-slot="{ field }" name="officePostalCode">
+          <Field :class="[canopyField, 'sm:max-w-[16rem]']" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">
               Postal code
+              <span class="font-normal text-muted-foreground">(optional)</span>
             </FieldLabel>
             <Input
-              id="profile-office-postal"
-              v-model="officePostalCode"
-              :disabled="disabled"
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
               maxlength="32"
-              placeholder="Optional"
-              class="max-w-xs"
+              autocomplete="postal-code"
+              :aria-invalid="isInvalid(field)"
+              :disabled="disabled || saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
             />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
+        </form.Field>
+
+        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+          <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(officeValues(practiceInfo))">Discard</Button>
+          <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>
       </FieldGroup>
-
-      <div class="flex justify-end">
-        <ButtonBusy
-          size="sm"
-          :loading="saving"
-          :disabled="disabled || !isDirty"
-          @click="onSave"
-        >
-          Save office
-        </ButtonBusy>
-      </div>
-    </CardContent>
-  </Card>
+    </form>
+  </SettingsSectionCard>
 </template>

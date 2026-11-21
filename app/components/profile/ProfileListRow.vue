@@ -19,11 +19,11 @@ defineEmits<{
 
 <template>
   <div
-    class="flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3 transition-colors hover:bg-background/80"
+    class="flex items-start justify-between gap-3 rounded-[1.1rem] border border-border bg-background/60 px-[1rem] py-[0.8rem]"
   >
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-2">
-        <p class="text-sm font-semibold text-foreground">
+        <p class="font-display text-[1.05rem] font-[650] tracking-[-0.02em]">
           {{ primary }}
         </p>
         <Badge
@@ -36,13 +36,13 @@ defineEmits<{
       </div>
       <p
         v-if="secondary"
-        class="mt-0.5 text-sm text-muted-foreground"
+        class="mt-0.5 text-[0.95rem] text-muted-foreground"
       >
         {{ secondary }}
       </p>
       <p
         v-if="tertiary"
-        class="mt-1 line-clamp-2 text-xs text-muted-foreground"
+        class="mt-1 line-clamp-2 text-[0.88rem] text-muted-foreground"
       >
         {{ tertiary }}
       </p>

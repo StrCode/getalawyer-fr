@@ -1,27 +1,29 @@
 <script setup lang="ts">
+import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import {
   DAY_NAMES,
-  dayError,
   emptyWeek,
   openDayCount,
   presetWeek,
   sameWeek,
   schedulesToSave,
-  WEEK_ORDER,
+  weekFormValues,
+  weekFromForm,
   weekFromSchedules,
-  weekHasErrors,
-  type WeekHours,
+  weekSchema,
   type WeekPreset,
 } from '~/lib/availability-view'
+import type { DayOfWeek } from '~/types/availability'
 
 /**
- * The hours a lawyer can be booked each week. The whole week is one form with
- * one Save: a common week can be filled in to start from, and nothing reaches
- * clients until Save is pressed.
+ * The hours a lawyer can be booked each week. The whole week is one form, a
+ * row per day, with one Save: a common week can be filled in to start from,
+ * and nothing reaches clients until Save is pressed.
  */
 
 // The API refuses these for a lawyer whose membership is not on; stop before anything is sent.
@@ -33,53 +35,79 @@ const bulkSet = useBulkSetSchedule()
 const removeDay = useDeleteSchedule()
 
 const saved = computed(() => weekFromSchedules(schedules.value))
-const week = ref<WeekHours>(emptyWeek())
-// The form follows what is saved, whenever that changes (first load, and after a save).
-watch(saved, (value) => { week.value = structuredClone(value) }, { immediate: true })
-
-const dirty = computed(() => !sameWeek(week.value, saved.value))
-const invalid = computed(() => weekHasErrors(week.value))
 const saving = ref(false)
+const formId = useId()
+
+const form = useForm({
+  defaultValues: weekFormValues(emptyWeek()),
+  validators: {
+    onChange: weekSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    if (membershipBlocks('change your availability')) return
+    const week = weekFromForm(weekSchema.parse(value))
+    saving.value = true
+    try {
+      const open = schedulesToSave(week)
+      if (open.length > 0) {
+        // Saving the open days replaces the whole week, so days switched off go with it.
+        await bulkSet.mutateAsync({ schedules: open })
+      }
+      else {
+        // The API will not take an empty week, so each saved day is removed instead.
+        for (const row of schedules.value ?? []) await removeDay.mutateAsync(row.id)
+      }
+      toast.success(open.length > 0 ? 'Weekly hours saved.' : 'Weekly hours saved. No days are open.')
+    }
+    catch (error: unknown) {
+      toast.error(error instanceof Error && error.message ? error.message : 'We could not save your hours. Nothing has changed.')
+    }
+    finally {
+      saving.value = false
+    }
+  },
+})
+
+const { isInvalid } = useAuthFieldInvalid(form)
+
+/**
+ * A day's problem, shown on its own line under the day rather than inside the
+ * narrow time boxes: the first error on either time, once that time has been
+ * left or a save was tried.
+ */
+const fieldMeta = form.useStore(state => state.fieldMeta)
+const submissionAttempts = form.useStore(state => state.submissionAttempts)
+function dayProblems(index: number) {
+  for (const name of [`days[${index}].startTime`, `days[${index}].endTime`] as const) {
+    const meta = fieldMeta.value[name]
+    if (meta && !meta.isValid && (meta.isBlurred || submissionAttempts.value > 0)) return meta.errors
+  }
+  return []
+}
+
+const values = form.useStore(state => state.values)
+const week = computed(() => weekFromForm(values.value))
+const dirty = computed(() => !sameWeek(week.value, saved.value))
+
+// The form follows what is saved, whenever that changes (first load, and after a save).
+watch(saved, value => form.reset(weekFormValues(value)), { immediate: true })
 
 function fill(preset: WeekPreset) {
-  week.value = presetWeek(preset)
+  form.setFieldValue('days', weekFormValues(presetWeek(preset)).days)
 }
 function discard() {
-  week.value = structuredClone(saved.value)
-}
-
-async function save() {
-  if (saving.value || !dirty.value) return
-  if (membershipBlocks('change your availability')) return
-  if (invalid.value) {
-    toast.error('Fix the hours marked below before saving.')
-    return
-  }
-
-  saving.value = true
-  try {
-    const open = schedulesToSave(week.value)
-    if (open.length > 0) {
-      // Saving the open days replaces the whole week, so days switched off go with it.
-      await bulkSet.mutateAsync({ schedules: open })
-    }
-    else {
-      // The API will not take an empty week, so each saved day is removed instead.
-      for (const row of schedules.value ?? []) await removeDay.mutateAsync(row.id)
-    }
-    toast.success(open.length > 0 ? 'Weekly hours saved.' : 'Weekly hours saved. No days are open.')
-  }
-  catch (error: unknown) {
-    toast.error(error instanceof Error && error.message ? error.message : 'We could not save your hours. Nothing has changed.')
-  }
-  finally {
-    saving.value = false
-  }
+  form.reset(weekFormValues(saved.value))
 }
 
 const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'overflow-hidden rounded-card border border-border bg-card'
 const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
+const time = 'h-[2.75rem] w-[8.5rem] rounded-[0.9rem] max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
 </script>
 
 <template>
@@ -98,8 +126,8 @@ const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
         <p class="mt-[0.2rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">Switch on the days you work and set when clients can book you.</p>
       </div>
       <div class="flex flex-none flex-wrap items-center gap-[0.5rem]">
-        <Button v-if="dirty" variant="line" size="pill-sm" :disabled="saving" @click="discard">Discard</Button>
-        <Button variant="canopy" size="pill-sm" :disabled="!dirty || invalid || saving" :aria-busy="saving" @click="save">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
+        <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="discard">Discard</Button>
+        <Button type="submit" :form="formId" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
       </div>
     </header>
 
@@ -118,44 +146,63 @@ const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
       </div>
     </div>
 
-    <ul class="divide-y divide-border">
-      <li
-        v-for="day in WEEK_ORDER"
-        :key="day"
-        :class="[pad, 'py-[0.85rem]']"
-      >
-        <div class="flex flex-wrap items-center gap-x-[1rem] gap-y-[0.6rem]">
-          <label class="flex min-h-[2.75rem] cursor-pointer items-center gap-[0.75rem] max-sm:flex-1 sm:w-[11rem] sm:flex-none">
-            <Switch
-              :model-value="week[day].enabled"
-              :aria-label="`Open on ${DAY_NAMES[day]}`"
-              @update:model-value="week[day].enabled = $event"
-            />
-            <span class="text-[1.05rem] font-semibold" :class="week[day].enabled ? '' : 'text-muted-foreground'">{{ DAY_NAMES[day] }}</span>
-          </label>
+    <form :id="formId" novalidate @submit.prevent="form.handleSubmit">
+      <ul class="divide-y divide-border">
+        <li v-for="(row, index) in values.days" :key="row.day" :class="[pad, 'py-[0.85rem]']">
+          <div class="flex flex-wrap items-center gap-x-[1rem] gap-y-[0.6rem]">
+            <form.Field v-slot="{ field }" :name="`days[${index}].enabled`">
+              <Field orientation="horizontal" class="min-h-[2.75rem] w-auto items-center gap-[0.75rem] max-sm:flex-1 sm:w-[11rem] sm:flex-none">
+                <Switch
+                  :id="`${formId}-${row.day}`"
+                  :model-value="field.state.value"
+                  :disabled="saving"
+                  @update:model-value="(v) => field.handleChange(v === true)"
+                />
+                <FieldLabel :for="`${formId}-${row.day}`" class="cursor-pointer text-[1.05rem] font-semibold" :class="row.enabled ? '' : 'text-muted-foreground'">{{ DAY_NAMES[row.day as DayOfWeek] }}</FieldLabel>
+              </Field>
+            </form.Field>
 
-          <div v-if="week[day].enabled" class="flex min-w-0 flex-1 items-center gap-[0.6rem] max-sm:basis-full">
-            <Input
-              v-model="week[day].startTime"
-              type="time"
-              :aria-label="`${DAY_NAMES[day]} from`"
-              :aria-invalid="dayError(week[day]) ? true : undefined"
-              class="h-[2.75rem] w-[8.5rem] rounded-[0.9rem] bg-card max-sm:w-auto max-sm:min-w-0 max-sm:flex-1"
-            />
-            <span class="text-muted-foreground">to</span>
-            <Input
-              v-model="week[day].endTime"
-              type="time"
-              :aria-label="`${DAY_NAMES[day]} until`"
-              :aria-invalid="dayError(week[day]) ? true : undefined"
-              class="h-[2.75rem] w-[8.5rem] rounded-[0.9rem] bg-card max-sm:w-auto max-sm:min-w-0 max-sm:flex-1"
-            />
+            <div v-if="row.enabled" class="flex min-w-0 flex-1 items-center gap-[0.6rem] max-sm:basis-full">
+              <form.Field v-slot="{ field }" :name="`days[${index}].startTime`">
+                <Field class="w-auto max-sm:min-w-0 max-sm:flex-1" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" class="sr-only">{{ DAY_NAMES[row.day as DayOfWeek] }} from</FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    type="time"
+                    :class="[authInput, time]"
+                    :aria-invalid="isInvalid(field)"
+                    :disabled="saving"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                </Field>
+              </form.Field>
+              <span class="text-muted-foreground">to</span>
+              <form.Field v-slot="{ field }" :name="`days[${index}].endTime`">
+                <Field class="w-auto max-sm:min-w-0 max-sm:flex-1" :data-invalid="isInvalid(field)">
+                  <FieldLabel :for="field.name" class="sr-only">{{ DAY_NAMES[row.day as DayOfWeek] }} until</FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    type="time"
+                    :class="[authInput, time]"
+                    :aria-invalid="isInvalid(field)"
+                    :disabled="saving"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                </Field>
+              </form.Field>
+            </div>
+            <p v-else class="self-center text-muted-foreground max-sm:flex-none">Closed</p>
           </div>
-          <p v-else class="text-muted-foreground">Closed</p>
-        </div>
-        <p v-if="dayError(week[day])" role="alert" class="mt-[0.4rem] text-[0.92rem] font-semibold text-destructive tab:pl-[12rem]">{{ dayError(week[day]) }}</p>
-      </li>
-    </ul>
+          <FieldError v-if="row.enabled && dayProblems(index).length > 0" :errors="dayProblems(index)" class="mt-[0.4rem] text-[0.92rem] font-semibold sm:pl-[12rem]" />
+        </li>
+      </ul>
+    </form>
 
     <footer :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-border bg-background/60 py-[0.95rem] text-[0.95rem] text-muted-foreground']">
       <p>

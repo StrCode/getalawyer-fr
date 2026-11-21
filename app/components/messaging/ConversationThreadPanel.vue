@@ -19,14 +19,12 @@ import ConsultationFeeRequestCard from '@/components/messaging/ConsultationFeeRe
 import ConsultationFeeRequestComposer from '@/components/messaging/ConsultationFeeRequestComposer.vue'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import { Marker, MarkerContent } from '@/components/ui/marker'
 import {
   Message,
   MessageContent,
   MessageFooter,
-  MessageHeader,
 } from '@/components/ui/message'
 import {
   MessageScroller,
@@ -83,7 +81,7 @@ const showFeeComposer = computed(() => viewerRole.value === 'lawyer')
 const typingLabel = computed(() => {
   const users = currentTypingUsers.value
   if (!users.length) return ''
-  if (users.length === 1) return `${users[0].userName} is typing…`
+  if (users.length === 1) return `${users[0]!.userName} is typing…`
   return 'Several people are typing…'
 })
 
@@ -245,6 +243,9 @@ const timeline = computed<TimelineEntry[]>(() => {
 
   return entries
 })
+
+// One shape for every bubble: a little larger and rounder than the stock one.
+const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-[1.5]'
 </script>
 
 <template>
@@ -256,26 +257,18 @@ const timeline = computed<TimelineEntry[]>(() => {
 
     <div
       v-if="isPending"
-      class="flex-1 space-y-4 overflow-hidden p-4"
-      aria-busy="true"
+      role="status"
       aria-label="Loading messages"
+      class="grid flex-1 content-start gap-[0.8rem] overflow-hidden px-[clamp(0.9rem,2vw,1.4rem)] py-4"
     >
-      <div class="flex justify-start">
-        <Skeleton class="h-16 w-[72%] rounded-xl" />
-      </div>
-      <div class="flex justify-end">
-        <Skeleton class="h-12 w-[58%] rounded-xl" />
-      </div>
-      <div class="flex justify-start">
-        <Skeleton class="h-20 w-[64%] rounded-xl" />
-      </div>
+      <div class="h-[3.6rem] w-[62%] animate-pulse rounded-[1.15rem] bg-muted" />
+      <div class="h-[2.8rem] w-[48%] animate-pulse justify-self-end rounded-[1.15rem] bg-muted" />
+      <div class="h-[4.4rem] w-[56%] animate-pulse rounded-[1.15rem] bg-muted" />
     </div>
 
-    <div v-else-if="isError" class="flex-1 py-8 text-center text-sm text-destructive">
-      Could not load messages.
-      <Button variant="link" class="h-auto p-0" @click="refetch()">
-        Retry
-      </Button>
+    <div v-else-if="isError" class="grid flex-1 place-content-center justify-items-center gap-[0.7rem] px-6 text-center">
+      <p class="text-muted-foreground">We could not load this conversation.</p>
+      <Button variant="line" size="pill-sm" @click="refetch()">Try again</Button>
     </div>
 
     <MessageScrollerProvider
@@ -285,18 +278,18 @@ const timeline = computed<TimelineEntry[]>(() => {
     >
       <MessageScroller class="min-h-0 flex-1">
         <MessageScrollerViewport class="app-scrollbar">
-          <MessageScrollerContent class="gap-1 p-4">
+          <MessageScrollerContent class="gap-1 px-[clamp(0.9rem,2vw,1.4rem)] py-4">
             <div
               v-if="messages.length === 0 && optimisticMessages.length === 0"
-              class="py-12 text-center text-sm text-muted-foreground"
+              class="py-12 text-center text-muted-foreground"
             >
-              No messages yet. Say hello to start the conversation.
+              Nothing written yet. Write the first message below.
             </div>
 
             <template v-for="entry in timeline" :key="entry.key">
               <MessageScrollerItem v-if="entry.type === 'day'" class="py-3">
                 <Marker variant="separator">
-                  <MarkerContent class="text-2xs uppercase tracking-widest">
+                  <MarkerContent class="text-[0.78rem] font-semibold text-muted-foreground">
                     {{ entry.label }}
                   </MarkerContent>
                 </Marker>
@@ -322,18 +315,12 @@ const timeline = computed<TimelineEntry[]>(() => {
               >
                 <Message :align="isOwnMessage(entry.message) ? 'end' : 'start'">
                   <MessageContent class="gap-1">
-                    <MessageHeader
-                      v-if="entry.startsRun && !isOwnMessage(entry.message) && entry.message.sender?.name"
-                      class="text-xs font-medium text-muted-foreground"
-                    >
-                      {{ entry.message.sender.name }}
-                    </MessageHeader>
                     <Bubble
                       :align="isOwnMessage(entry.message) ? 'end' : 'start'"
-                      :variant="isOwnMessage(entry.message) ? 'default' : 'outline'"
-                      class="max-w-[85%]"
+                      :variant="isOwnMessage(entry.message) ? 'default' : 'muted'"
+                      class="max-w-[min(85%,36rem)]"
                     >
-                      <BubbleContent>
+                      <BubbleContent :class="bubble">
                         <template v-if="entry.message.fileUrl">
                           <a
                             v-if="isImageType(entry.message.fileType)"
@@ -382,7 +369,7 @@ const timeline = computed<TimelineEntry[]>(() => {
                     </Bubble>
                     <MessageFooter
                       v-if="entry.endsRun"
-                      class="gap-1.5 px-0 text-2xs"
+                      class="gap-1.5 px-[0.3rem] text-[0.76rem]"
                     >
                       <span>{{ formatMessageTime(entry.message.createdAt) }}</span>
                       <MessageReadTicks
@@ -406,10 +393,10 @@ const timeline = computed<TimelineEntry[]>(() => {
                   <Bubble
                     align="end"
                     variant="default"
-                    class="max-w-[85%]"
+                    class="max-w-[min(85%,36rem)]"
                     :class="optimistic.state === 'failed' ? 'opacity-90' : 'opacity-60'"
                   >
-                    <BubbleContent>
+                    <BubbleContent :class="bubble">
                       <Attachment
                         v-if="optimistic.file"
                         state="done"
@@ -428,7 +415,7 @@ const timeline = computed<TimelineEntry[]>(() => {
                       </p>
                     </BubbleContent>
                   </Bubble>
-                  <MessageFooter class="gap-1.5 px-0 text-2xs">
+                  <MessageFooter class="gap-1.5 px-[0.3rem] text-[0.76rem]">
                     <template v-if="optimistic.state === 'failed'">
                       <span role="alert" class="text-destructive">Not delivered</span>
                       <button
@@ -450,10 +437,10 @@ const timeline = computed<TimelineEntry[]>(() => {
       </MessageScroller>
     </MessageScrollerProvider>
 
-    <div class="border-t bg-background p-4">
+    <div class="border-t border-border bg-card px-[clamp(0.7rem,1.6vw,1.1rem)] py-[0.7rem]">
       <p
         v-if="isUserTyping && typingLabel"
-        class="mb-2 text-xs text-muted-foreground"
+        class="mb-2 px-[0.3rem] text-[0.85rem] text-muted-foreground"
       >
         {{ typingLabel }}
       </p>
@@ -481,7 +468,7 @@ const timeline = computed<TimelineEntry[]>(() => {
           </AttachmentAction>
         </AttachmentActions>
       </Attachment>
-      <p v-if="fileError" role="alert" class="mb-2 text-xs text-destructive">
+      <p v-if="fileError" role="alert" class="mb-2 px-[0.3rem] text-[0.88rem] font-semibold text-destructive">
         {{ fileError }}
       </p>
       <form class="flex items-end gap-2" @submit.prevent="handleSend">
@@ -496,33 +483,34 @@ const timeline = computed<TimelineEntry[]>(() => {
           type="button"
           variant="ghost"
           size="icon"
-          class="shrink-0"
+          class="size-[2.75rem] shrink-0 rounded-full text-muted-foreground hover:bg-background hover:text-foreground"
           aria-label="Attach a file"
           :disabled="upload.isPending.value"
           @click="fileInput?.click()"
         >
-          <HugeiconsIcon :icon="Attachment01Icon" class="size-4" />
+          <HugeiconsIcon :icon="Attachment01Icon" class="size-[1.2rem]" />
         </Button>
         <Textarea
           v-model="messageInput"
           rows="1"
-          placeholder="Type a message…"
-          class="min-h-[44px] resize-none"
+          placeholder="Write a message"
+          aria-label="Message"
+          class="max-h-[9rem] min-h-[2.75rem] resize-none rounded-[1.4rem] border-border bg-background px-[1rem] py-[0.6rem] text-[1rem] shadow-none"
           @input="handleTyping"
           @keydown.enter.exact.prevent="handleSend"
         />
         <Button
           type="submit"
           size="icon"
-          class="shrink-0"
+          class="size-[2.75rem] shrink-0 rounded-full"
           aria-label="Send message"
           :disabled="(!messageInput.trim() && !pendingFile) || upload.isPending.value"
         >
-          <HugeiconsIcon :icon="SentIcon" class="size-4" />
+          <HugeiconsIcon :icon="SentIcon" class="size-[1.15rem]" />
         </Button>
       </form>
-      <p v-if="!isConnected" class="mt-2 text-xs text-muted-foreground">
-        You're offline — messages will send when reconnected.
+      <p v-if="!isConnected" role="status" class="mt-2 px-[0.3rem] text-[0.85rem] text-muted-foreground">
+        You are offline. Your messages will send when you are back.
       </p>
     </div>
   </div>

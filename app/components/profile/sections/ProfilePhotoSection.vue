@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Camera01Icon, Loading03Icon } from '@hugeicons/core-free-icons'
+import { Loading03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import ButtonBusy from '@/components/ButtonBusy.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 const props = withDefaults(
   defineProps<{
     name: string
@@ -16,8 +16,8 @@ const props = withDefaults(
   }>(),
   {
     title: 'Profile photo',
-    description: 'Shown wherever you appear on GetALawyer.',
-    fileHint: 'JPEG, PNG, GIF, or WebP · max 5 MB',
+    description: 'Shown wherever you appear on getalawyer.',
+    fileHint: 'JPEG, PNG, GIF or WebP, up to 5 MB.',
   },
 )
 
@@ -45,69 +45,35 @@ function onFileSelected(event: Event) {
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <CardTitle>
-        {{ title }}
-      </CardTitle>
-      <CardDescription>
-        {{ description }}
-      </CardDescription>
-    </CardHeader>
-    <CardContent class="flex flex-col gap-6 sm:flex-row sm:items-center">
-      <div class="relative shrink-0 self-center sm:self-auto">
-        <Avatar class="size-24 ring-4 ring-background sm:size-28">
-          <AvatarImage
-            :src="imageUrl ?? ''"
-            :alt="name"
-          />
-          <AvatarFallback class="bg-primary text-2xl text-primary-foreground">
-            {{ initials }}
-          </AvatarFallback>
-        </Avatar>
-        <span
-          v-if="uploading"
-          class="absolute inset-0 flex items-center justify-center rounded-full bg-background/70"
-        >
-          <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-muted-foreground" />
-        </span>
-      </div>
+  <SettingsSectionCard :title="title" :description="description" content-class="flex flex-col gap-[1.25rem] p-[clamp(1.1rem,2.2vw,1.5rem)] sm:flex-row sm:items-center">
+    <div class="relative shrink-0 self-center sm:self-auto">
+      <Avatar class="size-24 rounded-[1.5rem] sm:size-28">
+        <AvatarImage :src="imageUrl ?? ''" :alt="name" />
+        <AvatarFallback class="rounded-[1.5rem] bg-mint font-display text-2xl font-bold text-deep">{{ initials }}</AvatarFallback>
+      </Avatar>
+      <span v-if="uploading" class="absolute inset-0 flex items-center justify-center rounded-[1.5rem] bg-background/70">
+        <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-muted-foreground" />
+      </span>
+    </div>
 
-      <div class="min-w-0 flex-1 text-center sm:text-left">
-        <p class="font-heading text-lg font-medium tracking-tight text-foreground">
-          {{ name }}
-        </p>
-        <p
-          v-if="email"
-          class="mt-0.5 truncate text-sm text-muted-foreground"
-        >
-          {{ email }}
-        </p>
-        <p class="mt-2 text-sm text-muted-foreground">
-          {{ fileHint }}
-        </p>
-      </div>
+    <div class="min-w-0 flex-1 text-center sm:text-left">
+      <p class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ name }}</p>
+      <p v-if="email" class="mt-0.5 truncate text-[0.95rem] text-muted-foreground">{{ email }}</p>
+      <p class="mt-2 text-[0.88rem] text-muted-foreground">{{ fileHint }}</p>
+    </div>
 
-      <div class="flex shrink-0 flex-col gap-2 sm:items-end">
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
-          class="sr-only"
-          @change="onFileSelected"
-        >
-        <ButtonBusy
-          type="button"
-          variant="outline"
-          size="sm"
-          :loading="uploading"
-          class="w-full sm:w-auto"
-          @click="fileInputRef?.click()"
-        >
-          <HugeiconsIcon :icon="Camera01Icon" class="size-4" />
-          Upload photo
-        </ButtonBusy>
-      </div>
-    </CardContent>
-  </Card>
+    <div class="flex shrink-0 flex-col gap-2 sm:items-end">
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        class="sr-only"
+        aria-label="Choose a photo"
+        @change="onFileSelected"
+      >
+      <Button type="button" variant="line" size="pill-sm" class="w-full sm:w-auto" :disabled="uploading" :aria-busy="uploading" @click="fileInputRef?.click()">
+        {{ uploading ? 'Uploading…' : imageUrl ? 'Change photo' : 'Add a photo' }}
+      </Button>
+    </div>
+  </SettingsSectionCard>
 </template>

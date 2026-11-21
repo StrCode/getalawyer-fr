@@ -220,7 +220,7 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
             <h2 class="text-[1.3rem] font-[650] tracking-[-0.02em]">Your profile is still empty</h2>
             <p class="mx-auto mt-2 max-w-md text-muted-foreground">Add a short summary and an about section. Clients decide in the first few seconds.</p>
             <Button as-child variant="line" size="pill-sm" class="mt-4">
-              <NuxtLink to="/dashboard/profile#about">Complete your profile</NuxtLink>
+              <NuxtLink to="/dashboard/profile?section=about">Complete your profile</NuxtLink>
             </Button>
           </section>
 

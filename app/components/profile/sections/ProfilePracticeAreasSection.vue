@@ -1,24 +1,38 @@
 <script setup lang="ts">
-import { Cancel01Icon, CheckmarkCircle01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { ArrowDown01Icon, Tick01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
+import { useForm } from '@tanstack/vue-form'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
+import { Button } from '@/components/ui/button'
+import {
+  Combobox,
+  ComboboxAnchor,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+} from '@/components/ui/combobox'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import { useSpecializations } from '~/composables/useSpecializations'
-import type {
-  LawyerProfilePracticeArea,
-  ReplacePracticeAreasInput,
-} from '~/types/lawyer-profile-editor'
+import {
+  MAX_PRACTICE_AREAS,
+  practiceAreasPayload,
+  practiceAreasSchema,
+  practiceAreasValues,
+  sameValues,
+  type PracticeAreasValues,
+} from '~/lib/profile-forms'
+import type { LawyerProfilePracticeArea, ReplacePracticeAreasInput } from '~/types/lawyer-profile-editor'
 
-const MAX_AREAS = 5
-
-type AreaSelection = {
-  specializationId: string
-  yearsOfExperience: number | null
-}
-
+/**
+ * The kinds of work a lawyer takes on: up to five, each with the years they
+ * have done it. Clients find a lawyer in search by these. The areas are one
+ * array field; the picker adds to and removes from it, and each chosen area
+ * has its own years field.
+ */
 const props = defineProps<{
   practiceAreas: LawyerProfilePracticeArea[]
   disabled?: boolean
@@ -29,252 +43,205 @@ const emit = defineEmits<{
   save: [payload: ReplacePracticeAreasInput]
 }>()
 
+type AreaOption = { id: string, name: string, description?: string | null }
+type Chosen = PracticeAreasValues['areas']
+/** What this section uses of the array field. */
+type AreasField = {
+  state: { value: Chosen }
+  pushValue: (value: Chosen[number]) => unknown
+  removeValue: (index: number) => unknown
+  handleBlur: () => void
+}
+
 const { data: specializations, isPending: isLoadingSpecs } = useSpecializations()
 
-const query = ref('')
-const selections = ref<AreaSelection[]>([])
-
-function syncFromProps(areas: LawyerProfilePracticeArea[]) {
-  selections.value = areas.map((area) => ({
-    specializationId: area.id,
-    yearsOfExperience: area.yearsOfExperience,
-  }))
-}
-
-watch(
-  () => props.practiceAreas,
-  (areas) => syncFromProps(areas),
-  { immediate: true, deep: true },
+const options = computed<AreaOption[]>(() =>
+  (specializations.value ?? []).map((item: AreaOption) => ({ id: item.id, name: item.name, description: item.description })),
 )
 
-const snapshot = computed(() =>
-  JSON.stringify(
-    props.practiceAreas.map((a) => ({
-      id: a.id,
-      years: a.yearsOfExperience,
-    })),
-  ),
-)
-
-const isDirty = computed(
-  () =>
-    JSON.stringify(
-      selections.value.map((s) => ({
-        id: s.specializationId,
-        years: s.yearsOfExperience,
-      })),
-    ) !== snapshot.value,
-)
-
-const filtered = computed(() => {
-  const list = specializations.value ?? []
-  const q = query.value.trim().toLowerCase()
-  if (!q) return list
-  return list.filter(
-    (s: { name: string; description?: string | null }) =>
-      s.name.toLowerCase().includes(q) || s.description?.toLowerCase().includes(q),
-  )
+const form = useForm({
+  defaultValues: practiceAreasValues(props.practiceAreas),
+  validators: {
+    onChange: practiceAreasSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: ({ value }) => {
+    emit('save', practiceAreasPayload(practiceAreasSchema.parse(value)))
+  },
 })
 
-const selectedCount = computed(() => selections.value.length)
+const { isInvalid } = useAuthFieldInvalid(form)
 
-function isSelected(id: string) {
-  return selections.value.some((s) => s.specializationId === id)
+const values = form.useStore(state => state.values)
+const dirty = computed(() => !sameValues(values.value, practiceAreasValues(props.practiceAreas)))
+const chosenCount = computed(() => values.value.areas.length)
+
+// What is saved replaces what is in the form: after a save, and when the profile reloads.
+watch(() => props.practiceAreas, saved => form.reset(practiceAreasValues(saved)), { deep: true })
+
+/** The picker's ticked options: the chosen areas, as the options it lists. */
+const pickedOptions = computed(() =>
+  options.value.filter(option => values.value.areas.some(area => area.specializationId === option.id)),
+)
+
+function nameOf(id: string): string {
+  return options.value.find(option => option.id === id)?.name
+    ?? props.practiceAreas.find(area => area.id === id)?.name
+    ?? 'Practice area'
 }
 
-function isDisabled(id: string) {
-  return !isSelected(id) && selectedCount.value >= MAX_AREAS
+function isFull(id: string): boolean {
+  return chosenCount.value >= MAX_PRACTICE_AREAS && !values.value.areas.some(area => area.specializationId === id)
 }
 
-function toggleArea(id: string) {
-  if (isSelected(id)) {
-    selections.value = selections.value.filter((s) => s.specializationId !== id)
-    return
+/** The picker hands back every ticked option; bring the array field in line with it. */
+function onPick(value: unknown, field: AreasField) {
+  const picked = (Array.isArray(value) ? value : value ? [value] : []) as AreaOption[]
+  const ids = new Set(picked.map(option => option.id))
+  // unticked areas go, from the end so the positions before them stay right
+  for (let index = field.state.value.length - 1; index >= 0; index--) {
+    if (!ids.has(field.state.value[index]!.specializationId)) field.removeValue(index)
   }
-  if (selectedCount.value >= MAX_AREAS) return
-  selections.value = [...selections.value, { specializationId: id, yearsOfExperience: null }]
-}
-
-function getAreaYears(id: string): number | '' {
-  const row = selections.value.find((s) => s.specializationId === id)
-  if (!row || row.yearsOfExperience === null) return ''
-  return row.yearsOfExperience
-}
-
-function setAreaYears(id: string, raw: string) {
-  const trimmed = raw.trim()
-  const years = trimmed === '' ? null : Math.max(0, Math.min(60, Number.parseInt(trimmed, 10) || 0))
-  selections.value = selections.value.map((s) =>
-    s.specializationId === id ? { ...s, yearsOfExperience: years } : s,
-  )
-}
-
-function nameById(id: string) {
-  return (
-    specializations.value?.find((s: { id: string; name: string }) => s.id === id)?.name
-    ?? props.practiceAreas.find((a) => a.id === id)?.name
-    ?? id
-  )
-}
-
-const validationError = ref<string | null>(null)
-
-function onSave() {
-  validationError.value = null
-  if (selections.value.length === 0) {
-    validationError.value = 'Select at least one practice area.'
-    return
+  for (const option of picked) {
+    if (field.state.value.length >= MAX_PRACTICE_AREAS) break
+    if (!field.state.value.some(area => area.specializationId === option.id)) field.pushValue({ specializationId: option.id, years: '' })
   }
-
-  emit('save', {
-    practiceAreas: selections.value.map((s) => ({
-      specializationId: s.specializationId,
-      yearsOfExperience: s.yearsOfExperience,
-    })),
-  })
+  field.handleBlur()
 }
+
+const triggerLabel = computed(() => {
+  if (chosenCount.value === 0) return 'Choose practice areas'
+  if (chosenCount.value === 1) return nameOf(values.value.areas[0]!.specializationId)
+  return `${chosenCount.value} areas chosen`
+})
 </script>
 
 <template>
-  <Card>
-    <CardHeader>
-      <CardTitle>
-        Areas of practice
-      </CardTitle>
-      <CardDescription>
-        Choose up to {{ MAX_AREAS }} specializations clients can find you under.
-      </CardDescription>
-    </CardHeader>
-    <CardContent class="space-y-4">
-      <div
-        v-if="isLoadingSpecs"
-        class="space-y-3"
-      >
-        <Skeleton class="h-10 w-full rounded-lg" />
-        <Skeleton class="h-48 w-full rounded-xl" />
-      </div>
+  <SettingsSectionCard
+    title="Practice areas"
+    :description="`The kinds of work you take on. Clients find you in search by these. Choose up to ${MAX_PRACTICE_AREAS}.`"
+  >
+    <div v-if="isLoadingSpecs" role="status" aria-label="Loading practice areas" class="grid gap-[0.7rem]">
+      <div class="h-[3.25rem] animate-pulse rounded-[1rem] bg-muted" />
+      <div class="h-[7rem] animate-pulse rounded-[1rem] bg-muted" />
+    </div>
 
-      <template v-else>
-        <Field>
-          <FieldLabel class="sr-only">
-            Search practice areas
-          </FieldLabel>
-          <div class="relative">
-            <HugeiconsIcon :icon="Search01Icon"
-              class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              v-model="query"
-              :disabled="disabled"
-              placeholder="Search legal areas…"
-              class="pl-9"
-            />
-          </div>
-          <FieldDescription>
-            Selected ({{ selectedCount }}/{{ MAX_AREAS }})
-          </FieldDescription>
-        </Field>
+    <form v-else novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="areas" mode="array">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :class="canopyLabel">
+              What you take on
+              <span class="font-normal text-muted-foreground">{{ field.state.value.length }} of {{ MAX_PRACTICE_AREAS }} chosen</span>
+            </FieldLabel>
 
-        <div
-          class="max-h-[320px] space-y-2 overflow-y-auto rounded-xl border border-border bg-background p-2"
-        >
-          <div
-            v-for="spec in filtered"
-            :key="spec.id"
-            class="rounded-lg border p-3 transition-colors"
-            :class="isSelected(spec.id)
-              ? 'border-primary/40 bg-primary/5'
-              : isDisabled(spec.id)
-                ? 'cursor-not-allowed border-transparent opacity-50'
-                : 'cursor-pointer border-border/30 bg-background hover:border-border/40'"
-            @click="!disabled && !isDisabled(spec.id) && toggleArea(spec.id)"
-          >
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-foreground">
-                  {{ spec.name }}
-                </p>
-                <p
-                  v-if="spec.description"
-                  class="line-clamp-2 text-xs text-muted-foreground"
-                >
-                  {{ spec.description }}
-                </p>
-              </div>
-              <HugeiconsIcon :icon="CheckmarkCircle01Icon"
-                v-if="isSelected(spec.id)"
-                class="size-5 shrink-0 text-primary"
-              />
-            </div>
-            <div
-              v-if="isSelected(spec.id)"
-              class="mt-3 flex items-center gap-2 border-t border-border/30 pt-3"
-              @click.stop
+            <Combobox
+              :model-value="pickedOptions"
+              multiple
+              by="id"
+              :disabled="disabled || saving"
+              @update:model-value="(v) => onPick(v, field)"
             >
-              <label
-                :for="`profile-years-${spec.id}`"
-                class="shrink-0 text-xs text-muted-foreground"
-              >
-                Years (optional)
-              </label>
-              <Input
-                :id="`profile-years-${spec.id}`"
-                type="number"
-                min="0"
-                max="60"
-                :disabled="disabled"
-                :model-value="getAreaYears(spec.id) === '' ? '' : String(getAreaYears(spec.id))"
-                placeholder="—"
-                class="h-9 max-w-[5.5rem] tabular-nums"
-                inputmode="numeric"
-                @update:model-value="(v) => setAreaYears(spec.id, String(v ?? ''))"
-              />
-            </div>
-          </div>
-          <p
-            v-if="filtered.length === 0"
-            class="py-8 text-center text-sm text-muted-foreground"
-          >
-            No areas match "{{ query }}"
-          </p>
+              <ComboboxAnchor as-child class="w-full">
+                <ComboboxTrigger as-child>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    :class="[canopyTrigger, field.state.value.length === 0 && 'text-placeholder hover:text-placeholder']"
+                    :aria-invalid="isInvalid(field) || undefined"
+                    :disabled="disabled || saving"
+                  >
+                    <span class="truncate">{{ triggerLabel }}</span>
+                    <HugeiconsIcon :icon="ArrowDown01Icon" class="size-4 shrink-0 opacity-50" />
+                  </Button>
+                </ComboboxTrigger>
+              </ComboboxAnchor>
+
+              <ComboboxList class="w-(--reka-combobox-trigger-width) p-0" :class="canopyPanel" align="start">
+                <ComboboxInput placeholder="Search practice areas" />
+                <ComboboxEmpty>No practice area found.</ComboboxEmpty>
+                <ComboboxGroup class="max-h-60 overflow-y-auto p-1">
+                  <ComboboxItem
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    :disabled="isFull(option.id)"
+                    class="items-start"
+                  >
+                    <div
+                      class="pointer-events-none mt-0.5 size-4 shrink-0 rounded-sm border border-input transition-all select-none *:[svg]:opacity-0 data-[selected=true]:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:*:[svg]:opacity-100"
+                      :data-selected="field.state.value.some(area => area.specializationId === option.id) || undefined"
+                    >
+                      <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 text-current" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate leading-snug">{{ option.name }}</p>
+                      <p v-if="option.description" class="truncate text-xs text-muted-foreground">{{ option.description }}</p>
+                    </div>
+                  </ComboboxItem>
+                </ComboboxGroup>
+              </ComboboxList>
+            </Combobox>
+
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+
+            <!-- each chosen area, with the years spent on it -->
+            <FieldSet v-if="field.state.value.length > 0" class="mt-[0.5rem] min-w-0 gap-[0.6rem]">
+              <FieldLegend variant="label" :class="canopyLabel">Years of experience in each</FieldLegend>
+              <ul class="grid grid-cols-[minmax(0,1fr)] gap-[0.5rem]">
+                <li
+                  v-for="(area, index) in field.state.value"
+                  :key="area.specializationId"
+                  class="flex flex-wrap items-start gap-x-[0.9rem] gap-y-[0.5rem] rounded-[1.1rem] border border-border bg-background/60 px-[1rem] py-[0.7rem]"
+                >
+                  <p class="min-w-0 flex-[1_1_12rem] self-center font-semibold">{{ nameOf(area.specializationId) }}</p>
+                  <form.Field v-slot="{ field: years }" :name="`areas[${index}].years`">
+                    <Field :class="[canopyField, 'w-[8.5rem] flex-none']" :data-invalid="isInvalid(years)">
+                      <FieldLabel :for="years.name" class="sr-only">Years of experience in {{ nameOf(area.specializationId) }}</FieldLabel>
+                      <Input
+                        :id="years.name"
+                        :name="years.name"
+                        :model-value="years.state.value"
+                        :class="[authInput, 'h-[2.75rem] tabular-nums']"
+                        inputmode="numeric"
+                        maxlength="2"
+                        placeholder="Years"
+                        :aria-invalid="isInvalid(years)"
+                        :disabled="disabled || saving"
+                        @blur="years.handleBlur"
+                        @update:model-value="(v) => years.handleChange(String(v ?? ''))"
+                      />
+                      <FieldError v-if="isInvalid(years)" :errors="years.state.meta.errors" />
+                    </Field>
+                  </form.Field>
+                  <Button
+                    type="button"
+                    variant="line"
+                    size="pill-sm"
+                    class="h-[2.75rem] flex-none px-[0.95rem] text-[0.95rem]"
+                    :disabled="disabled || saving"
+                    :aria-label="`Remove ${nameOf(area.specializationId)}`"
+                    @click="() => { field.removeValue(index); field.handleBlur() }"
+                  >
+                    Remove
+                  </Button>
+                </li>
+              </ul>
+              <FieldDescription :class="canopyHint">Years are optional. Leave one empty if you would rather not say.</FieldDescription>
+            </FieldSet>
+          </Field>
+        </form.Field>
+
+        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+          <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(practiceAreasValues(practiceAreas))">Discard</Button>
+          <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>
-
-        <div
-          v-if="selectedCount > 0"
-          class="flex flex-wrap gap-2"
-        >
-          <button
-            v-for="row in selections"
-            :key="row.specializationId"
-            type="button"
-            class="inline-flex items-center gap-1 rounded-xl border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/15 disabled:pointer-events-none disabled:opacity-50"
-            :disabled="disabled"
-            @click="toggleArea(row.specializationId)"
-          >
-            {{ nameById(row.specializationId) }}
-            <HugeiconsIcon :icon="Cancel01Icon" class="size-3" />
-          </button>
-        </div>
-
-        <p
-          v-if="validationError"
-          class="text-sm text-destructive"
-          role="alert"
-        >
-          {{ validationError }}
-        </p>
-      </template>
-
-      <div class="flex justify-end">
-        <ButtonBusy
-          size="sm"
-          :loading="saving"
-          :disabled="disabled || !isDirty || isLoadingSpecs"
-          @click="onSave"
-        >
-          Save practice areas
-        </ButtonBusy>
-      </div>
-    </CardContent>
-  </Card>
+      </FieldGroup>
+    </form>
+  </SettingsSectionCard>
 </template>
