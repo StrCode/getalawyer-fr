@@ -44,6 +44,9 @@ const THEMED_ROUTES = new Set<string>([
   '/dashboard/messages',
   '/dashboard/notifications',
   '/dashboard/settings',
+  '/dashboard/availability',
+  '/dashboard/consultation-types',
+  '/dashboard/profile',
   '/dashboard/subscription',
   '/dashboard/subscription/receipts/:id()',
   // sign-in group (the `auth` layout)

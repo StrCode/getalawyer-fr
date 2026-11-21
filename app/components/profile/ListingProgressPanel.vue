@@ -9,7 +9,7 @@ import {
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MICRO, PANEL, PANEL_HEADER } from '@/lib/dashboard-panel'
+import { MICRO, PANEL, PANEL_HEADER, PANEL_TITLE } from '@/lib/dashboard-panel'
 import {
   getListingProgressTone,
   LISTING_PROGRESS_BAR_CLASS,
@@ -56,7 +56,7 @@ const status = computed(() => {
   }
   return {
     label: 'Hidden from search',
-    class: 'border-foreground/15 bg-muted/50 text-muted-foreground',
+    class: 'border-border bg-muted/50 text-muted-foreground',
     icon: ViewOffIcon,
   }
 })
@@ -135,11 +135,11 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
   >
     <div :class="PANEL_HEADER">
       <div class="min-w-0">
-        <span :class="cn(MICRO, 'text-muted-foreground')">
+        <h2 :class="PANEL_TITLE">
           Listing progress
-        </span>
-        <p class="mt-1 text-xs text-muted-foreground">
-          Complete required items to appear in search.
+        </h2>
+        <p class="mt-[0.2rem] text-[0.95rem] text-muted-foreground">
+          Finish the required items to appear in search.
         </p>
       </div>
       <Badge
@@ -155,12 +155,12 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
       </Badge>
     </div>
 
-    <div class="grid gap-6 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+    <div class="grid gap-6 px-[clamp(1.1rem,2.2vw,1.5rem)] py-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div class="space-y-4">
         <div class="flex items-end justify-between gap-4">
           <div>
             <p
-              class="text-4xl font-semibold tracking-tight tabular-nums"
+              class="font-display text-[2.4rem] leading-none font-[650] tracking-[-0.03em] tabular-nums"
               :class="LISTING_PROGRESS_TEXT_CLASS[progressTone]"
             >
               {{ percent }}%
@@ -197,7 +197,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
           aria-label="Listing completion"
         >
           <div
-            class="h-full rounded-full transition-[width] duration-500 ease-luxe"
+            class="h-full rounded-full transition-[width] duration-500 ease-canopy"
             :class="LISTING_PROGRESS_BAR_CLASS[progressTone]"
             :style="{ width: `${percent}%` }"
           />
@@ -207,7 +207,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
           <li
             v-for="tier in tierSummary"
             :key="tier.tier"
-            class="rounded-full border border-foreground/15 px-2.5 py-1 text-[0.65rem] font-medium tracking-wide text-muted-foreground uppercase tabular-nums"
+            class="rounded-full border border-border px-2.5 py-1 text-[0.65rem] font-medium tracking-wide text-muted-foreground uppercase tabular-nums"
           >
             T{{ tier.tier }} {{ tier.done }}/{{ tier.total }}
           </li>
@@ -215,7 +215,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
 
         <ul
           v-if="gateRows.length > 0"
-          class="space-y-2 border-t border-foreground/10 pt-4"
+          class="space-y-2 border-t border-border pt-4"
         >
           <li
             v-for="gate in gateRows"
@@ -243,7 +243,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
         </ul>
       </div>
 
-      <div class="space-y-3 lg:border-l lg:border-foreground/10 lg:pl-6">
+      <div class="space-y-3 lg:border-l lg:border-border lg:pl-6">
         <p :class="cn(MICRO, 'text-muted-foreground')">
           Next up
         </p>
@@ -257,7 +257,7 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
 
         <ul
           v-else
-          class="divide-y divide-foreground/10 rounded-xl border border-foreground/15"
+          class="divide-y divide-foreground/10 rounded-xl border border-border"
         >
           <li
             v-for="item in checklistPreview"
@@ -265,14 +265,14 @@ const nextHref = computed(() => incompleteItems.value[0]?.href ?? '#photo')
           >
             <NuxtLink
               :to="item.href"
-              class="ease-luxe flex items-center justify-between gap-3 px-4 py-3 text-sm transition-colors duration-220 hover:bg-muted/40"
+              class="ease-canopy flex items-center justify-between gap-3 px-4 py-3 text-sm transition-colors duration-200 hover:bg-muted/40"
             >
               <span class="flex min-w-0 items-center gap-2.5">
                 <span
                   class="inline-flex size-5 shrink-0 items-center justify-center rounded-full border text-[0.6rem] font-semibold tabular-nums"
                   :class="item.tier === 1
                     ? 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-500'
-                    : 'border-foreground/15 text-muted-foreground'"
+                    : 'border-border text-muted-foreground'"
                 >
                   {{ item.tier }}
                 </span>

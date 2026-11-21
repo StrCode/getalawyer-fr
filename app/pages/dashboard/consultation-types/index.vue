@@ -1,45 +1,41 @@
 <script setup lang="ts">
-import { Add01Icon, AlertCircleIcon, Clock01Icon, Delete02Icon, Edit02Icon, File01Icon, MoreHorizontalIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
-import EmptyState from '@/components/dashboard/EmptyState.vue'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { MICRO, PANEL } from '@/lib/dashboard-panel'
-import { cn } from '@/lib/utils'
+import { offeredSummary, priceLabel, typeFacts } from '~/lib/consultation-type-view'
 import type { ConsultationType } from '~/types/booking'
 
-// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
-const { membershipBlocks } = useMembershipAccess()
-
+/**
+ * The consultations a lawyer offers: what each is called, how long it runs,
+ * what it costs and how the meeting is held. Clients choose one of these when
+ * they book. A type can be paused (hidden from new bookings) instead of
+ * deleted; one that already has bookings can only be paused.
+ */
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'workspace',
   middleware: ['auth'],
 })
 
-useHead({
-  title: 'Consultation types - GetALawyer',
-})
+useHead({ title: 'Consultation types' })
+useSeoMeta({ description: 'The consultations clients can book with you.', robots: 'noindex, nofollow' })
+
+// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
+const { membershipBlocks } = useMembershipAccess()
 
 const {
   useConsultationTypesList,
@@ -48,311 +44,168 @@ const {
   useDeactivateConsultationType,
 } = useConsultationTypes()
 
-const showInactive = ref(false)
-const isCreateModalOpen = ref(false)
-const isEditModalOpen = ref(false)
-const selectedType = ref<ConsultationType | null>(null)
-const pendingDelete = ref<ConsultationType | null>(null)
-const pendingDeactivate = ref<ConsultationType | null>(null)
+const showPaused = ref(false)
+const { data: consultationTypes, isPending, isError, isFetching, refetch } = useConsultationTypesList(showPaused)
+const types = computed(() => consultationTypes.value ?? [])
 
-const { data: consultationTypes, isPending, isError, refetch } = useConsultationTypesList(showInactive)
 const deleteMutation = useDeleteConsultationType()
 const activateMutation = useActivateConsultationType()
 const deactivateMutation = useDeactivateConsultationType()
 
-const activeCount = computed(
-  () => (consultationTypes.value ?? []).filter((type) => type.isActive).length,
-)
+const createOpen = ref(false)
+const editOpen = ref(false)
+const selected = ref<ConsultationType | null>(null)
+const pendingDelete = ref<ConsultationType | null>(null)
+const pendingPause = ref<ConsultationType | null>(null)
+const deleting = computed(() => deleteMutation.isPending.value)
 
-function handleCreate() {
-  if (membershipBlocks('change your consultation types')) return
-  isCreateModalOpen.value = true
+function messageOf(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback
 }
 
-function handleEdit(type: ConsultationType) {
+function add() {
   if (membershipBlocks('change your consultation types')) return
-  selectedType.value = type
-  isEditModalOpen.value = true
+  createOpen.value = true
 }
 
-async function handleToggleActive(type: ConsultationType) {
+function edit(type: ConsultationType) {
+  if (membershipBlocks('change your consultation types')) return
+  selected.value = type
+  editOpen.value = true
+}
+
+async function setOffered(type: ConsultationType, offered: boolean) {
   if (membershipBlocks('change your consultation types')) return
   try {
-    if (type.isActive) {
-      await deactivateMutation.mutateAsync(type.id)
-      toast.success('Consultation type deactivated')
+    if (offered) {
+      await activateMutation.mutateAsync(type.id)
+      toast.success(`Clients can book "${type.name}" again.`)
     }
     else {
-      await activateMutation.mutateAsync(type.id)
-      toast.success('Consultation type activated')
+      await deactivateMutation.mutateAsync(type.id)
+      toast.success(`"${type.name}" is paused. Clients cannot book it.`)
     }
   }
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to update status'
-    toast.error(message)
+    toast.error(messageOf(error, 'We could not change that. Nothing has changed.'))
   }
 }
 
-function handleDelete(type: ConsultationType) {
+function askDelete(type: ConsultationType) {
   if (membershipBlocks('change your consultation types')) return
   pendingDelete.value = type
 }
 
 async function confirmDelete() {
   const type = pendingDelete.value
-  pendingDelete.value = null
-  if (!type)
-    return
-
+  if (!type || deleting.value) return
   try {
     await deleteMutation.mutateAsync(type.id)
-    toast.success('Consultation type deleted')
+    pendingDelete.value = null
+    toast.success(`"${type.name}" deleted.`)
   }
   catch (error: unknown) {
+    pendingDelete.value = null
+    // A type with bookings cannot be deleted; offer to pause it instead.
     if (typeof error === 'object' && error !== null && 'statusCode' in error && (error as { statusCode: number }).statusCode === 409) {
-      pendingDeactivate.value = type
+      pendingPause.value = type
     }
     else {
-      const message = error instanceof Error ? error.message : 'Failed to delete consultation type'
-      toast.error(message)
+      toast.error(messageOf(error, 'We could not delete that. Nothing has changed.'))
     }
   }
 }
 
-async function confirmDeactivateInstead() {
-  const type = pendingDeactivate.value
-  pendingDeactivate.value = null
-  if (type)
-    await handleToggleActive(type)
+async function confirmPause() {
+  const type = pendingPause.value
+  pendingPause.value = null
+  if (type) await setOffered(type, false)
 }
 
-function formatPrice(price: string, currency: string) {
-  const amount = Number.parseFloat(price)
-  if (amount === 0)
-    return 'Free'
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency,
-  }).format(amount)
-}
-
-function getMeetingTypeLabel(type: string) {
-  const labels: Record<string, string> = {
-    video: 'Video',
-    phone: 'Phone',
-    in_person: 'In person',
-    any: 'Any',
-  }
-  return labels[type] || type
-}
+const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
+const panel = 'overflow-hidden rounded-card border border-border bg-card'
+const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
+const pill = 'rounded-full px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold whitespace-nowrap'
+const dialog = 'gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]'
+const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const menuItem = 'min-h-11 cursor-pointer rounded-[0.9rem] px-3 text-[0.95rem] font-medium text-foreground focus:bg-mint focus:text-deep'
 </script>
 
 <template>
-  <div class="space-y-6 md:space-y-8">
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
     <DashboardPageHeader
       eyebrow="Practice"
       title="Consultation types"
-      description="Services clients can book — duration, price, and meeting format."
+      description="What clients can book with you: how long each consultation runs, what it costs and how you meet."
     >
       <template #actions>
-        <Badge
-          v-if="!isPending"
-          variant="outline"
-          class="rounded-full border-foreground/15 px-3 py-1 text-xs font-semibold tabular-nums"
-          :class="activeCount > 0 ? 'border-primary/40 bg-primary/10 text-primary' : 'text-muted-foreground'"
-        >
-          {{ activeCount }} active
-        </Badge>
-        <Button
-          size="lg"
-          class="cursor-pointer"
-          @click="handleCreate"
-        >
-          <HugeiconsIcon
-            :icon="Add01Icon"
-            class="size-4"
-          />
-          New type
-        </Button>
+        <span
+          v-if="!isPending && !isError"
+          class="rounded-full px-[0.85rem] py-[0.3rem] text-[0.88rem] font-bold"
+          :class="types.some(type => type.isActive) ? 'bg-mint text-deep' : 'bg-muted text-foreground'"
+        >{{ offeredSummary(types) }}</span>
+        <Button variant="canopy" size="pill-sm" @click="add">Add a type</Button>
       </template>
     </DashboardPageHeader>
 
-    <div class="flex items-center justify-between gap-4">
-      <label class="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-        <Switch
-          :model-value="showInactive"
-          @update:model-value="showInactive = $event"
-        />
-        Show inactive
-      </label>
-      <p
-        v-if="!isPending && consultationTypes?.length"
-        class="text-xs text-muted-foreground tabular-nums"
-      >
-        {{ consultationTypes.length }} total
-      </p>
+    <div v-if="isPending" role="status" aria-label="Loading your consultation types" class="grid gap-2">
+      <div v-for="n in 3" :key="n" class="h-[5rem] animate-pulse rounded-[1.25rem] bg-muted" />
     </div>
 
-    <div
-      v-if="isPending"
-      class="space-y-3"
-    >
-      <Skeleton
-        v-for="i in 4"
-        :key="i"
-        class="h-16 w-full rounded-xl"
-      />
-    </div>
-
-    <section
-      v-else-if="isError"
-      :class="cn(PANEL, 'flex flex-col items-center gap-3 px-6 py-14 text-center')"
-    >
-      <HugeiconsIcon
-        :icon="AlertCircleIcon"
-        class="size-10 text-muted-foreground"
-      />
-      <p class="text-sm font-medium text-foreground">
-        Failed to load consultation types
-      </p>
-      <p class="text-sm text-muted-foreground">
-        Please try again.
-      </p>
-      <Button
-        variant="outline"
-        size="sm"
-        class="cursor-pointer"
-        @click="refetch()"
-      >
-        Retry
-      </Button>
+    <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+      <h2 :class="sectionTitle">We could not load your consultation types.</h2>
+      <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
+      <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="() => refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
     </section>
 
-    <EmptyState
-      v-else-if="!consultationTypes?.length"
-      :icon="File01Icon"
-      title="No consultation types yet"
-      description="Add at least one active type so clients can book you from search."
-    >
-      <template #actions>
-        <Button
-          class="cursor-pointer"
-          @click="handleCreate"
-        >
-          Create consultation type
-        </Button>
-      </template>
-    </EmptyState>
+    <section v-else :class="panel" aria-labelledby="types-title">
+      <header :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-border py-[0.9rem]']">
+        <h2 id="types-title" :class="sectionTitle">Your types<span v-if="types.length > 0" class="ml-[0.5rem] text-muted-foreground">{{ types.length }}</span></h2>
+        <label class="flex min-h-[2.75rem] cursor-pointer items-center gap-[0.7rem] text-[0.95rem] text-muted-foreground">
+          <Switch :model-value="showPaused" @update:model-value="showPaused = $event" />
+          Show paused types too
+        </label>
+      </header>
 
-    <section
-      v-else
-      :class="cn(PANEL)"
-    >
-      <div class="hidden border-b border-foreground/15 bg-muted/30 px-6 py-3 md:grid md:grid-cols-[minmax(0,1.4fr)_7rem_7rem_7rem_6rem_2.5rem] md:gap-4">
-        <span :class="cn(MICRO, 'text-muted-foreground')">Service</span>
-        <span :class="cn(MICRO, 'text-muted-foreground')">Duration</span>
-        <span :class="cn(MICRO, 'text-muted-foreground')">Price</span>
-        <span :class="cn(MICRO, 'text-muted-foreground')">Meeting</span>
-        <span :class="cn(MICRO, 'text-muted-foreground')">Status</span>
-        <span class="sr-only">Actions</span>
+      <div v-if="types.length === 0" :class="[pad, 'py-[clamp(1.8rem,4vw,3rem)] text-center']">
+        <h3 :class="sectionTitle">{{ showPaused ? 'No consultation types yet.' : 'Nothing is offered to clients.' }}</h3>
+        <p class="mx-auto mt-2 max-w-[32rem] text-muted-foreground">Clients can only book you once you offer at least one consultation type, for example a 30 minute first consultation.</p>
+        <Button variant="canopy" size="pill-sm" class="mt-[1rem]" @click="add">Add a type</Button>
       </div>
 
-      <ul class="divide-y divide-foreground/15">
+      <ul v-else class="divide-y divide-border">
         <li
-          v-for="type in consultationTypes"
+          v-for="type in types"
           :key="type.id"
-          class="ease-luxe grid gap-3 px-5 py-4 transition-colors duration-220 hover:bg-muted/40 sm:px-6 md:grid-cols-[minmax(0,1.4fr)_7rem_7rem_7rem_6rem_2.5rem] md:items-center md:gap-4"
+          :class="[pad, 'flex flex-wrap items-center gap-x-[1.2rem] gap-y-[0.6rem] py-[1rem]']"
         >
-          <div class="min-w-0">
-            <p class="truncate font-medium tracking-tight text-foreground">
-              {{ type.name }}
+          <div class="min-w-0 flex-[1_1_16rem]">
+            <p class="flex flex-wrap items-center gap-x-[0.6rem] gap-y-1">
+              <b class="font-display text-[1.12rem] font-[650] tracking-[-0.02em]">{{ type.name }}</b>
+              <span :class="[pill, type.isActive ? 'bg-mint text-deep' : 'bg-muted text-foreground']">{{ type.isActive ? 'Offered' : 'Paused' }}</span>
             </p>
-            <p
-              v-if="type.description"
-              class="mt-0.5 line-clamp-1 text-xs text-muted-foreground"
-            >
-              {{ type.description }}
+            <p class="mt-[0.2rem] flex flex-wrap items-center gap-x-[0.45rem] text-[0.92rem] text-muted-foreground">
+              <template v-for="(fact, index) in typeFacts(type)" :key="fact">
+                <span v-if="index > 0" aria-hidden="true">·</span><span>{{ fact }}</span>
+              </template>
             </p>
-            <p
-              v-if="type.bufferMinutes > 0"
-              class="mt-1 text-xs text-muted-foreground md:hidden"
-            >
-              {{ type.bufferMinutes }}min buffer
-            </p>
+            <p v-if="type.description" class="mt-[0.25rem] line-clamp-2 max-w-[44rem] text-[0.92rem] text-muted-foreground">{{ type.description }}</p>
           </div>
 
-          <p class="flex items-center gap-1.5 text-sm text-muted-foreground tabular-nums">
-            <HugeiconsIcon
-              :icon="Clock01Icon"
-              class="size-3.5 shrink-0 md:hidden"
-            />
-            {{ type.durationMinutes }} min
-          </p>
+          <b class="flex-none font-display text-[1.25rem] font-[650] tracking-[-0.02em] tabular-nums">{{ priceLabel(type.price, type.currency) }}</b>
 
-          <p class="text-sm font-semibold tabular-nums text-foreground">
-            {{ formatPrice(type.price, type.currency) }}
-          </p>
-
-          <p class="text-sm text-muted-foreground">
-            {{ getMeetingTypeLabel(type.meetingType) }}
-          </p>
-
-          <div>
-            <Badge
-              variant="outline"
-              class="rounded-full px-2 py-0.5 text-[0.6rem] font-medium tracking-widest uppercase"
-              :class="type.isActive
-                ? 'border-primary/40 bg-primary/10 text-primary'
-                : 'border-foreground/15 text-muted-foreground'"
-            >
-              {{ type.isActive ? 'Active' : 'Inactive' }}
-            </Badge>
-          </div>
-
-          <div class="flex justify-end">
+          <div class="flex flex-none items-center gap-[0.4rem]">
+            <Button variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :aria-label="`Edit ${type.name}`" @click="edit(type)">Edit</Button>
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  class="cursor-pointer"
-                  :aria-label="`Actions for ${type.name}`"
-                >
-                  <HugeiconsIcon
-                    :icon="MoreHorizontalIcon"
-                    class="size-4"
-                  />
+                <Button variant="line" size="pill-sm" class="group/more h-[2.5rem] gap-[0.3rem] px-[0.85rem] text-[0.95rem]" :aria-label="`More for ${type.name}`">
+                  More
+                  <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="transition-[rotate] duration-200 ease-canopy group-data-[state=open]/more:rotate-180" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  class="cursor-pointer"
-                  @click="handleEdit(type)"
-                >
-                  <HugeiconsIcon
-                    :icon="Edit02Icon"
-                    class="size-4"
-                  />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="cursor-pointer"
-                  @click="handleToggleActive(type)"
-                >
-                  {{ type.isActive ? 'Deactivate' : 'Activate' }}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  class="cursor-pointer"
-                  @click="handleDelete(type)"
-                >
-                  <HugeiconsIcon
-                    :icon="Delete02Icon"
-                    class="size-4"
-                  />
-                  Delete
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" :side-offset="8" class="w-[13rem] rounded-[1.25rem] border-border bg-card p-2 font-text text-foreground shadow-widget">
+                <DropdownMenuItem :class="menuItem" @click="setOffered(type, !type.isActive)">{{ type.isActive ? 'Pause' : 'Offer again' }}</DropdownMenuItem>
+                <DropdownMenuItem :class="[menuItem, 'text-destructive focus:bg-destructive/10 focus:text-destructive']" @click="askDelete(type)">Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -360,55 +213,39 @@ function getMeetingTypeLabel(type: string) {
       </ul>
     </section>
 
-    <ConsultationTypeModal
-      v-model="isCreateModalOpen"
-      @success="refetch"
-    />
+    <ConsultationTypeModal v-model="createOpen" />
+    <ConsultationTypeModal v-model="editOpen" :consultation-type="selected" />
 
-    <ConsultationTypeModal
-      v-model="isEditModalOpen"
-      :consultation-type="selectedType"
-      @success="refetch"
-    />
+    <!-- ───────── deleting ───────── -->
+    <Dialog :open="pendingDelete !== null" @update:open="(open: boolean) => { if (!open && !deleting) pendingDelete = null }">
+      <DialogContent :class="dialog">
+        <DialogHeader class="gap-[0.5rem] text-left">
+          <DialogTitle :class="dialogTitle">Delete this type?</DialogTitle>
+          <DialogDescription class="text-[1rem] text-muted-foreground">
+            Clients will no longer be able to book "{{ pendingDelete?.name }}". This cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+          <Button variant="line" size="pill" :disabled="deleting" @click="pendingDelete = null">Keep it</Button>
+          <Button variant="destructive" size="pill" class="rounded-full" :disabled="deleting" :aria-busy="deleting" @click="confirmDelete">{{ deleting ? 'Deleting…' : 'Delete the type' }}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
-    <AlertDialog
-      :open="pendingDelete !== null"
-      @update:open="(open) => { if (!open) pendingDelete = null }"
-    >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete "{{ pendingDelete?.name }}"?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Clients will no longer be able to book this consultation type. This cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction @click="confirmDelete">
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-
-    <AlertDialog
-      :open="pendingDeactivate !== null"
-      @update:open="(open) => { if (!open) pendingDeactivate = null }"
-    >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Deactivate instead?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This consultation type has existing bookings and cannot be deleted. Deactivating hides it from new bookings while keeping existing ones intact.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Keep active</AlertDialogCancel>
-          <AlertDialogAction @click="confirmDeactivateInstead">
-            Deactivate
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <!-- ───────── it has bookings: pause it instead ───────── -->
+    <Dialog :open="pendingPause !== null" @update:open="(open: boolean) => { if (!open) pendingPause = null }">
+      <DialogContent :class="dialog">
+        <DialogHeader class="gap-[0.5rem] text-left">
+          <DialogTitle :class="dialogTitle">Pause it instead?</DialogTitle>
+          <DialogDescription class="text-[1rem] text-muted-foreground">
+            "{{ pendingPause?.name }}" has bookings, so it cannot be deleted. Pausing hides it from new bookings and leaves the existing ones as they are.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+          <Button variant="line" size="pill" @click="pendingPause = null">Leave it offered</Button>
+          <Button variant="canopy" size="pill" @click="confirmPause">Pause the type</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

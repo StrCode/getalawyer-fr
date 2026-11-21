@@ -55,17 +55,17 @@ onUnmounted(() => {
     aria-label="Profile sections"
     class="space-y-1"
   >
-    <p class="mb-3 eyebrow text-muted-foreground">
+    <p class="mb-2 px-3 text-[0.8125rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">
       Sections
     </p>
     <button
       v-for="section in sections"
       :key="section.id"
       type="button"
-      class="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors"
+      class="flex min-h-[2.5rem] w-full cursor-pointer items-center gap-2 rounded-[0.9rem] px-3 text-left text-[0.95rem] transition-colors duration-200"
       :class="
         activeSection === section.id
-          ? 'bg-primary/10 font-medium text-primary'
+          ? 'bg-mint font-semibold text-deep'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground'
       "
       @click="scrollToSection(section.id)"

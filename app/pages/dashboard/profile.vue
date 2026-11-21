@@ -1,10 +1,7 @@
 <template>
-  <div
-    v-if="authPending"
-    class="space-y-4"
-  >
-    <Skeleton class="h-36 w-full rounded-xl" />
-    <Skeleton class="h-64 w-full rounded-xl" />
+  <div v-if="authPending" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
+    <div class="h-[9rem] animate-pulse rounded-card bg-muted" />
+    <div class="h-[16rem] animate-pulse rounded-card bg-muted" />
   </div>
 
   <LawyerProfileEditorShell v-else-if="isLawyer" />
@@ -15,11 +12,10 @@
 <script setup lang="ts">
 import ClientProfileEditorShell from '@/components/profile/ClientProfileEditorShell.vue'
 import LawyerProfileEditorShell from '@/components/profile/LawyerProfileEditorShell.vue'
-import { Skeleton } from '@/components/ui/skeleton'
 import { getSessionUserType } from '~/lib/session-user'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'workspace',
   middleware: 'auth',
 })
 
@@ -28,7 +24,7 @@ const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'law
 const isClient = computed(() => getSessionUserType(session.value?.user) === 'client')
 
 useHead(() => ({
-  title: 'Profile',
+  title: 'Your profile',
   meta: [
     {
       name: 'description',
