@@ -4,6 +4,7 @@ import { provide } from 'vue'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { APPLICATION_HOME, applicationSectionKeyFor } from '~/lib/setup-paths'
+import { getLawyerStepDisplay } from '~/lib/lawyer-onboarding-steps'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 
 /**
@@ -24,6 +25,10 @@ const { handleSignOut, isSigningOut } = useSignOut({ redirectTo: 'login' })
 
 /** The store key the section on screen saves under; null on the home and the membership page. */
 const sectionKey = computed(() => applicationSectionKeyFor(route.path))
+// The section's title from here too: while the saved draft loads (holdForDraft)
+// the page itself is not rendered, so on the server its own useHead never ran
+// and the tab showed a title made from the address ("About You").
+useHead({ title: () => (sectionKey.value ? getLawyerStepDisplay(sectionKey.value).label : undefined) })
 
 // The pinned header gets a hairline once the page has moved under it.
 const { y: scrollY } = useWindowScroll()

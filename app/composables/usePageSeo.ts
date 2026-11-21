@@ -16,8 +16,8 @@ interface PageSeo {
 /**
  * Search and sharing for a public page, set in one call so the title, the
  * description, the share card and the share image never drift apart:
- * `<title>` and the meta description for search results, Open Graph and X
- * cards for WhatsApp / LinkedIn / X, and a share image drawn from the page's
+ * `<title>` and the meta description for search results, Open Graph cards
+ * (read by WhatsApp, LinkedIn and X), and a share image drawn from the page's
  * own words (app/components/OgImage/Canopy.takumi.vue).
  *
  * Private pages (dashboard, application, sign-in) do not use this: they are
@@ -31,10 +31,9 @@ export function usePageSeo(seo: PageSeo) {
   useSeoMeta({
     title: () => toValue(seo.title),
     description,
+    // X reads these too: unhead marks twitter:title / twitter:description as deprecated
     ogTitle: shareTitle,
     ogDescription: description,
-    twitterTitle: shareTitle,
-    twitterDescription: description,
   })
 
   defineOgImage('Canopy', {
