@@ -30,7 +30,8 @@ export function usePhoneAuth() {
     phone: string;
     code: string;
     name: string;
-    userType: string;
+    /** "client" or "lawyer": read by the backend's sign-up hook (the type itself is read-only). */
+    accountType: 'client' | 'lawyer';
   }) {
     const phoneNumber = normalizePhone(params.phone);
     if (!phoneNumber) {
@@ -40,7 +41,7 @@ export function usePhoneAuth() {
       phoneNumber,
       code: params.code,
       name: params.name,
-      userType: params.userType,
+      accountType: params.accountType,
     });
   }
 
