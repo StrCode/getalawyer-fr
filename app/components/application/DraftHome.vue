@@ -126,7 +126,7 @@ async function submit() {
     <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
       <div>
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ doneCount }} of {{ sections.length }} done</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.04] font-[650] tracking-[-0.035em]">Your application</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em]">Your application</h1>
       </div>
     </div>
     <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">

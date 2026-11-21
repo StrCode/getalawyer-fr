@@ -346,7 +346,7 @@ function paymentAmount(action: string, amount: number | null): string {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const panel = 'rounded-card border border-border bg-card'
 </script>
 
@@ -396,7 +396,7 @@ const panel = 'rounded-card border border-border bg-card'
       >
         <div class="min-w-0 flex-[1_1_24rem]">
           <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Account · Membership</p>
-          <h1 id="membership-title" class="mt-[0.9rem] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+          <h1 id="membership-title" class="mt-[0.9rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
             {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
           </h1>
           <p class="mt-[0.9rem] max-w-[34rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
@@ -419,7 +419,7 @@ const panel = 'rounded-card border border-border bg-card'
           </div>
           <div class="flex items-baseline justify-between gap-4 pt-[0.8rem]">
             <dt class="font-semibold">{{ autoRenewOn || mode === 'payment_issue' ? 'Amount' : 'To renew' }}</dt>
-            <dd class="font-display text-[2rem] leading-none font-bold tracking-[-0.03em]">{{ renewalPrice != null ? formatNairaAmount(renewalPrice) : '—' }}</dd>
+            <dd class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.03em]">{{ renewalPrice != null ? formatNairaAmount(renewalPrice) : '—' }}</dd>
           </div>
           <dd v-if="subscription?.nextPlan" class="mt-[0.7rem] text-[0.9rem]">
             Changes to <b class="font-semibold">{{ subscription.nextPlan.name }}</b> on that day.
@@ -454,7 +454,7 @@ const panel = 'rounded-card border border-border bg-card'
                 <span v-if="plan.savingsPercent > 0" class="rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.76rem] font-bold whitespace-nowrap text-deep">Save {{ plan.savingsPercent }}%</span>
               </span>
               <span class="mt-[0.7rem] flex flex-wrap items-baseline gap-x-[0.45rem]">
-                <b class="font-display text-[2rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
+                <b class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
                 <span class="opacity-75">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</span>
               </span>
               <span class="mt-[0.5rem] block text-[0.9rem] opacity-75">
@@ -476,7 +476,7 @@ const panel = 'rounded-card border border-border bg-card'
               </div>
               <div class="flex items-baseline justify-between gap-4 pt-[0.8rem]">
                 <dt class="font-bold">Total</dt>
-                <dd class="font-display text-[1.9rem] leading-none font-bold tracking-[-0.03em]">{{ due != null ? formatNairaAmount(due) : '—' }}</dd>
+                <dd class="font-display text-[1.6rem] leading-none font-bold tracking-[-0.03em]">{{ due != null ? formatNairaAmount(due) : '—' }}</dd>
               </div>
             </dl>
             <p v-if="payPlan" class="mt-[0.8rem] text-[0.9rem] text-muted-foreground">
@@ -513,7 +513,7 @@ const panel = 'rounded-card border border-border bg-card'
               <span v-if="plan.key === currentKey" class="rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.76rem] font-bold whitespace-nowrap text-deep">Your plan now</span>
             </span>
             <span class="mt-[0.7rem] flex flex-wrap items-baseline gap-x-[0.45rem]">
-              <b class="font-display text-[2rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
+              <b class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
               <span class="opacity-75">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</span>
             </span>
             <span class="mt-[0.5rem] block text-[0.9rem] opacity-75">
@@ -540,7 +540,7 @@ const panel = 'rounded-card border border-border bg-card'
       <!-- ───────── auto-renew ───────── -->
       <section v-if="manageable" aria-labelledby="renew-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-[clamp(1.2rem,2.4vw,1.6rem)]']">
         <div class="min-w-0 flex-[1_1_20rem]">
-          <h2 id="renew-title" class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Auto-renew is {{ autoRenewOn ? 'on' : 'off' }}</h2>
+          <h2 id="renew-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Auto-renew is {{ autoRenewOn ? 'on' : 'off' }}</h2>
           <p class="mt-[0.3rem] max-w-[38rem] text-muted-foreground">
             <template v-if="autoRenewOn">We charge your card on the renewal date so your profile never drops out of the directory. Turn it off at any time.</template>
             <template v-else>You will not be charged again. Your membership ends<template v-if="endLabel"> on {{ endLabel }}</template> unless you renew.</template>
@@ -555,7 +555,7 @@ const panel = 'rounded-card border border-border bg-card'
       <!-- ───────── the card renewals are taken from ───────── -->
       <section v-if="canChangeCard" aria-labelledby="card-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-[clamp(1.2rem,2.4vw,1.6rem)]']">
         <div class="min-w-0 flex-[1_1_20rem]">
-          <h2 id="card-title" class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Card for renewals</h2>
+          <h2 id="card-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Card for renewals</h2>
           <p class="mt-[0.3rem] max-w-[38rem] text-muted-foreground">
             <template v-if="cardLine">
               Your <b class="font-semibold text-foreground">{{ cardLine }}</b>.<template v-if="!autoRenewOn"> It is not charged while auto-renew is off.</template>

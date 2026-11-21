@@ -91,7 +91,7 @@ const questions = computed(() => [
         <div class="rounded-panel border border-border bg-card p-[clamp(1.75rem,4.5vw,4rem)] max-sm:rounded-[1.75rem]">
           <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">For lawyers</div>
           <!-- three lines by design: each span is one line -->
-          <h1 class="mt-4 animate-rise-in text-[clamp(2.5rem,4.6vw,4rem)] leading-[1.02] font-[620] tracking-[-0.04em] max-sm:text-[clamp(1.8rem,9.4vw,2.5rem)]">
+          <h1 class="mt-4 animate-rise-in text-[clamp(2.2rem,4vw,3.4rem)] leading-[1.02] font-[620] tracking-[-0.04em] max-sm:text-[clamp(1.8rem,9.4vw,2.5rem)]">
             <span class="block">Grow your practice.</span>
             <em class="block text-brand not-italic">Keep every naira</em>
             <em class="block text-brand not-italic">you earn.</em>
@@ -109,7 +109,7 @@ const questions = computed(() => [
             class="group/btn flex items-center justify-between gap-4 rounded-card bg-forest px-[1.6rem] py-[1.35rem] text-white transition-[translate] duration-200 ease-canopy hover:-translate-y-0.5"
           >
             <span>
-              <b class="block font-display text-[1.45rem] leading-[1.15] font-[650] tracking-[-0.02em]">Register as a lawyer</b>
+              <b class="block font-display text-[1.3rem] leading-[1.15] font-[650] tracking-[-0.02em]">Register as a lawyer</b>
               <small class="mt-[0.2rem] block text-[0.9rem] text-on-forest">Create your profile and apply</small>
             </span>
             <CanopyArrowChip large />
@@ -120,7 +120,7 @@ const questions = computed(() => [
           >
             <span class="min-w-0">
               <small class="block text-[0.9rem] text-muted-foreground">{{ fromPrice ? 'Pricing starts at' : 'Membership' }}</small>
-              <b class="mt-[0.2rem] block font-display text-[1.45rem] leading-[1.15] font-[650] tracking-[-0.02em] whitespace-nowrap">{{ fromPrice ?? 'See pricing' }}</b>
+              <b class="mt-[0.2rem] block font-display text-[1.3rem] leading-[1.15] font-[650] tracking-[-0.02em] whitespace-nowrap">{{ fromPrice ?? 'See pricing' }}</b>
             </span>
             <span class="grid size-10 flex-none place-items-center rounded-full border border-border text-brand transition-[translate,border-color] duration-200 ease-canopy group-hover/price:translate-x-[3px] group-hover/price:border-primary">
               <CanopyGlyph name="arrow" :stroke="2.4" />
@@ -202,7 +202,7 @@ const questions = computed(() => [
         <div data-rise :class="[tile, 'col-span-12 sm:col-span-6 tab:col-span-5']">
           <div aria-hidden="true" :class="view">
             <div class="flex items-baseline justify-between gap-3" v-bind="piece(COMMISSION + 80)">
-              <b class="font-display text-[clamp(2.8rem,4.4vw,3.6rem)] leading-none font-[750] tracking-[-0.05em] text-brand">100%</b>
+              <b class="font-display text-[clamp(2.4rem,3.8vw,3.1rem)] leading-none font-[750] tracking-[-0.05em] text-brand">100%</b>
               <span class="text-right text-muted-foreground">of every fee you agree</span>
             </div>
             <div class="h-[0.8rem] overflow-hidden rounded-full bg-border">
@@ -267,7 +267,7 @@ const questions = computed(() => [
       <div data-rise class="grid items-center gap-x-10 gap-y-7 rounded-panel bg-mint p-[clamp(1.5rem,4vw,3.5rem)] tab:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] max-sm:rounded-[1.75rem]">
         <div>
           <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-deep uppercase">Membership</div>
-          <h2 class="mt-[0.8rem] text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">One membership. No commission.</h2>
+          <h2 class="mt-[0.8rem] text-[clamp(1.8rem,3.1vw,2.8rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">One membership. No commission.</h2>
           <ul class="mt-[1.4rem] grid gap-[0.6rem] font-medium">
             <li v-for="item in included" :key="item" class="flex items-start gap-[0.65rem]">
               <CanopyVerifiedTick decorative class="mt-[0.2rem]" />{{ item }}
@@ -277,9 +277,9 @@ const questions = computed(() => [
         <div class="rounded-card border border-border bg-card p-[clamp(1.3rem,2.4vw,1.9rem)]">
           <template v-if="fromPrice">
             <small class="text-[0.9rem] text-muted-foreground">Starting at</small>
-            <b class="mt-[0.2rem] block font-display text-[clamp(2.2rem,3.6vw,3rem)] leading-[1.05] font-bold tracking-[-0.04em]">{{ fromPrice }}</b>
+            <b class="mt-[0.2rem] block font-display text-[clamp(2rem,3.1vw,2.6rem)] leading-[1.05] font-bold tracking-[-0.04em]">{{ fromPrice }}</b>
           </template>
-          <b v-else class="block font-display text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">Choose the term that suits you</b>
+          <b v-else class="block font-display text-[1.45rem] leading-[1.1] font-[650] tracking-[-0.03em]">Choose the term that suits you</b>
           <p class="mt-[0.7rem] text-[0.95rem] text-muted-foreground">
             Pay for the term you choose and turn auto-renew off whenever you like.<template v-if="fee > 0"> Your first payment includes a one-off {{ formatNairaAmount(fee) }} verification fee.</template>
           </p>
@@ -294,7 +294,7 @@ const questions = computed(() => [
     <section class="grid gap-x-12 gap-y-7 py-[clamp(3.5rem,7vw,6.5rem)] tab:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
       <div>
         <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Questions</div>
-        <h2 class="mt-[0.85rem] text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">Asked before joining.</h2>
+        <h2 class="mt-[0.85rem] text-[clamp(1.8rem,3.1vw,2.8rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance">Asked before joining.</h2>
         <p class="mt-[1rem] max-w-[24rem] text-muted-foreground">Something else on your mind? Write to us and a person will answer.</p>
         <Button as-child variant="line" size="pill" class="mt-[1.1rem]">
           <NuxtLink to="/contact">Talk to us →</NuxtLink>
@@ -319,7 +319,7 @@ const questions = computed(() => [
       class="flex flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-panel bg-forest px-[clamp(1.5rem,4.5vw,4.5rem)] py-[clamp(1.75rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]"
     >
       <div class="min-w-0 flex-[1_1_22rem]">
-        <h2 id="join-title" class="text-[clamp(1.8rem,3vw,2.6rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Put your practice in front of clients.</h2>
+        <h2 id="join-title" class="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Put your practice in front of clients.</h2>
         <p class="mt-[0.6rem] text-[1.1rem] text-on-forest">Create your profile today. We check it, then clients can find you.</p>
       </div>
       <div class="flex flex-wrap items-center gap-[0.7rem]">

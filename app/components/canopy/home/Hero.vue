@@ -27,7 +27,7 @@ function search() {
     <div class="col-start-1 row-start-1 min-w-0 tab:relative tab:z-2">
       <!-- three lines by design: each span is one line. On phones the size follows
            the screen width so the longest line still fits on one. -->
-      <h1 class="animate-rise-in text-[clamp(2.5rem,5.3vw,4.7rem)] font-[620] leading-[1.02] tracking-[-0.04em] max-sm:text-[clamp(1.8rem,9.4vw,2.5rem)]">
+      <h1 class="animate-rise-in text-[clamp(2.3rem,4.6vw,4rem)] font-[620] leading-[1.02] tracking-[-0.04em] max-sm:text-[clamp(1.8rem,9.4vw,2.5rem)]">
         <span class="block">Find a lawyer</span>
         <em class="block text-brand not-italic">you can trust,</em>
         <span class="block">wherever you are.</span>

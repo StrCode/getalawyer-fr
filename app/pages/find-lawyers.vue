@@ -191,7 +191,7 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
         <span aria-hidden="true">/</span>
         <span aria-current="page">Find a lawyer</span>
       </nav>
-      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.4vw,3.6rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Find a lawyer</h1>
+      <h1 class="mt-[0.9rem] text-[clamp(2.1rem,3.8vw,3.1rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Find a lawyer</h1>
       <p class="mt-[0.8rem] max-w-[34rem] text-[1.1rem] text-on-forest">Every lawyer listed has passed identity and enrolment checks. Message any of them free.</p>
       <CanopySearchRail
         v-model:need="need"
@@ -225,7 +225,7 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
 
     <div class="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-[0.9rem] border-b border-border pb-4">
       <p aria-live="polite" class="flex flex-wrap items-baseline gap-x-[0.7rem] gap-y-[0.2rem] text-muted-foreground">
-        <b class="font-display text-[1.6rem] font-[650] tracking-[-0.03em] text-foreground">{{ isLoading ? 'Searching…' : countLabel }}</b>
+        <b class="font-display text-[1.45rem] font-[650] tracking-[-0.03em] text-foreground">{{ isLoading ? 'Searching…' : countLabel }}</b>
         <span>{{ context }}</span>
       </p>
       <div class="flex flex-wrap items-center gap-x-[1.1rem] gap-y-[0.6rem]">
@@ -267,14 +267,14 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
 
     <!-- could not load -->
     <div v-else-if="error" role="alert" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the directory.</h2>
+      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the directory.</h2>
       <p class="max-w-[30rem] text-muted-foreground">Check your connection and try again.</p>
       <Button variant="line" size="pill" @click="refetch()">Try again</Button>
     </div>
 
     <!-- nothing matches -->
     <div v-else-if="lawyers.length === 0" aria-live="polite" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
+      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
         {{ isFiltered ? 'No lawyers match that search yet.' : 'No lawyers are listed yet.' }}
       </h2>
       <p class="max-w-[30rem] text-muted-foreground">

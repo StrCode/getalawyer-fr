@@ -7,7 +7,7 @@
     <template v-else>
       <header>
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Account</p>
-        <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Settings</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Settings</h1>
         <p class="mt-[0.6rem] max-w-[42rem] text-[1.05rem] text-muted-foreground">{{ pageDescription }}</p>
       </header>
 

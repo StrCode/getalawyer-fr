@@ -62,7 +62,7 @@ function line(lawyer: { state?: string, yearsOfExperience?: number | string, spe
 <template>
   <section v-if="others.length" class="pt-[clamp(2.5rem,5vw,4rem)]">
     <div class="mb-[1.2rem] flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-      <h2 class="text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.05] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h2>
+      <h2 class="text-[clamp(1.5rem,2.3vw,1.95rem)] leading-[1.05] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h2>
       <Button as-child variant="line" size="pill-sm">
         <NuxtLink :to="seeAll">See all →</NuxtLink>
       </Button>

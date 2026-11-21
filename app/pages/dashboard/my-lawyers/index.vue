@@ -45,7 +45,7 @@ const summary = computed(() => {
     <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div class="min-w-0">
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your lawyers</p>
-        <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">My lawyers</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">My lawyers</h1>
         <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">{{ loading ? 'Loading your lawyers…' : summary }}</p>
       </div>
       <Button as-child variant="canopy" size="pill">
@@ -58,13 +58,13 @@ const summary = computed(() => {
     </div>
 
     <section v-else-if="failed" class="rounded-card border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center">
-      <h2 class="font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your lawyers.</h2>
+      <h2 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your lawyers.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" @click="reload">Try again</Button>
     </section>
 
     <section v-else-if="lawyers.length === 0" class="rounded-card border border-border bg-card px-[1.3rem] py-[clamp(1.8rem,4vw,3rem)] text-center">
-      <h2 class="font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]">No lawyers yet.</h2>
+      <h2 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">No lawyers yet.</h2>
       <p class="mx-auto mt-2 max-w-[32rem] text-muted-foreground">Once you book a consultation or message a lawyer, they show here so you can reach them again quickly.</p>
       <Button as-child variant="line" size="pill-sm" class="mt-[1rem]"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
     </section>

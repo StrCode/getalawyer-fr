@@ -93,7 +93,7 @@ function confirmCancel() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.6rem)]'
 </script>
 
@@ -113,13 +113,13 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
     </div>
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">There is no booking here.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no booking here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/bookings">Back to bookings</NuxtLink></Button>
     </section>
 
     <section v-else-if="!booking || !stage || !pill || !can || !held" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this booking.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this booking.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -141,7 +141,7 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
               <img v-if="booking.lawyer?.profilePicture" :src="booking.lawyer.profilePicture" alt="" class="size-full object-cover">
               <template v-else>{{ initials(booking.lawyer?.name) || 'L' }}</template>
             </span>
-            <h1 id="booking-title" class="min-w-0 text-[clamp(1.9rem,3.8vw,2.8rem)] leading-[1.04] font-[620] tracking-[-0.04em] text-balance">
+            <h1 id="booking-title" class="min-w-0 text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.04] font-[620] tracking-[-0.04em] text-balance">
               {{ booking.lawyer?.name ?? 'Your lawyer' }}
             </h1>
           </div>

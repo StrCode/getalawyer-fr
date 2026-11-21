@@ -114,7 +114,7 @@ const areas = computed(() => [...(specializations.value ?? [])]
   .slice(0, 6))
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const card = 'rounded-card border border-border bg-card p-[clamp(1.1rem,2vw,1.35rem)]'
 const face = 'grid size-[3rem] flex-none place-items-center overflow-hidden rounded-[1rem] bg-mint font-display font-bold text-deep'
 </script>
@@ -142,7 +142,7 @@ const face = 'grid size-[3rem] flex-none place-items-center overflow-hidden roun
       >
         <div class="min-w-0 flex-[999_1_24rem]">
           <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
-          <h1 id="overview-title" class="mt-[0.9rem] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+          <h1 id="overview-title" class="mt-[0.9rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
             {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
           </h1>
           <p class="mt-[0.9rem] max-w-[36rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>

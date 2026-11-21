@@ -58,7 +58,7 @@ const inclusions = [
       </div>
       <div aria-live="polite">
         <div class="mt-5 flex flex-wrap items-baseline gap-x-[0.6rem] gap-y-[0.2rem]">
-          <b class="font-display text-[clamp(2.6rem,4vw,3.3rem)] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(selected.priceNaira) }}</b>
+          <b class="font-display text-[clamp(2.3rem,3.5vw,2.85rem)] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(selected.priceNaira) }}</b>
           <span class="text-muted-foreground">{{ selected.termMonths === 1 ? 'a month' : `for ${termPhrase(selected.termMonths)}` }}</span>
         </div>
         <p class="mt-[0.4rem] text-[0.92rem] font-semibold text-brand">

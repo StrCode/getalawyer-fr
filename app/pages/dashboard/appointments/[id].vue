@@ -156,7 +156,7 @@ function saveNotes() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.6rem)]'
 const quiet = 'shadow-none hover:translate-y-0'
 </script>
@@ -177,13 +177,13 @@ const quiet = 'shadow-none hover:translate-y-0'
     </div>
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">There is no appointment here.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no appointment here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/appointments">Back to appointments</NuxtLink></Button>
     </section>
 
     <section v-else-if="!booking || !stage || !pill || !can || !held" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this appointment.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this appointment.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed in your diary. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -199,7 +199,7 @@ const quiet = 'shadow-none hover:translate-y-0'
             Appointment<template v-if="booking.bookingReference"> · {{ booking.bookingReference }}</template>
             <span class="rounded-full px-[0.7rem] py-[0.15rem] text-[0.78rem] tracking-normal normal-case" :class="pill.class">{{ pill.label }}</span>
           </p>
-          <h1 id="appointment-title" class="mt-[0.8rem] text-[clamp(2rem,4vw,3rem)] leading-[1.04] font-[620] tracking-[-0.04em] text-balance">
+          <h1 id="appointment-title" class="mt-[0.8rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.04] font-[620] tracking-[-0.04em] text-balance">
             {{ booking.client?.name ?? 'Client' }}
           </h1>
           <p class="mt-[0.5rem] text-[1.15rem] font-semibold">{{ whenLine(booking) }}</p>

@@ -219,7 +219,7 @@ const actions = 'mt-[1.3rem] flex items-center justify-between gap-3 border-t bo
 
     <!-- could not load -->
     <div v-else-if="error || !lawyer" role="alert" class="mt-6 grid max-w-[36rem] justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
-      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this lawyer.</h1>
+      <h1 class="text-[1.45rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this lawyer.</h1>
       <p class="text-muted-foreground">The profile may have been removed, or something went wrong on our side.</p>
       <Button as-child variant="canopy" size="pill-sm"><NuxtLink to="/find-lawyers">Browse lawyers</NuxtLink></Button>
     </div>
@@ -227,7 +227,7 @@ const actions = 'mt-[1.3rem] flex items-center justify-between gap-3 border-t bo
     <!-- nothing to book online -->
     <div v-else-if="consultationTypes.length === 0" class="mt-6 grid max-w-[36rem] justify-items-start gap-[0.7rem] rounded-card border border-border bg-card p-6">
       <span class="grid size-11 place-items-center rounded-[0.9rem] bg-mint text-deep"><CanopyGlyph name="calendar" :size="20" /></span>
-      <h1 class="text-[1.6rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ lawyer.name }} is not taking bookings online yet.</h1>
+      <h1 class="text-[1.45rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ lawyer.name }} is not taking bookings online yet.</h1>
       <p class="text-muted-foreground">You can still send a message. It is free, and you can agree a time in the chat.</p>
       <Button as-child variant="canopy" size="pill-sm"><NuxtLink :to="`/lawyers/${lawyerId}`">Back to profile</NuxtLink></Button>
     </div>
@@ -235,7 +235,7 @@ const actions = 'mt-[1.3rem] flex items-center justify-between gap-3 border-t bo
     <template v-else>
       <header class="mt-2 max-w-[44rem]">
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Book a consultation</p>
-        <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4vw,3.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">Book time with {{ lawyer.name }}</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.9rem,3.4vw,2.75rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">Book time with {{ lawyer.name }}</h1>
       </header>
 
       <div class="mt-[clamp(1.25rem,3vw,2rem)] grid grid-cols-[minmax(0,1fr)_22rem] items-start gap-[clamp(1.25rem,3vw,2.5rem)] max-tab:grid-cols-1">

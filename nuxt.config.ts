@@ -231,15 +231,15 @@ export default defineNuxtConfig({
         display: 'swap',
         fallbacks: ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans'],
       },
-      // Canopy (marketing + sign-in) type: Bricolage Grotesque for display, Onest
+      // Canopy type: Instrument Sans for headings and the wordmark, Onest
       // for text. Both are OFL variable fonts committed in public/fonts, so the
       // build makes no font requests. Each family has two files: Latin, and
       // Latin Extended (which holds the naira sign). This @nuxt/fonts version
       // emits one face per manual family with no unicode-range, so the extended
       // file is its own family and sits next in the font stack; the browser only
       // fetches it for a character the Latin file lacks.
-      localVariableFont('Bricolage Grotesque', 'BricolageGrotesque-Variable-latin.woff2', '200 800', ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans']),
-      localVariableFont('Bricolage Grotesque Ext', 'BricolageGrotesque-Variable-latin-ext.woff2', '200 800'),
+      localVariableFont('Instrument Sans', 'InstrumentSans-Variable-latin.woff2', '400 700', ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans']),
+      localVariableFont('Instrument Sans Ext', 'InstrumentSans-Variable-latin-ext.woff2', '400 700'),
       localVariableFont('Onest', 'Onest-Variable-latin.woff2', '100 900', ['Helvetica Neue', 'Arial', 'Segoe UI', 'Noto Sans']),
       localVariableFont('Onest Ext', 'Onest-Variable-latin-ext.woff2', '100 900'),
     ],

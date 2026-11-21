@@ -84,7 +84,7 @@ const tab = 'relative flex min-h-[3.5rem] min-w-0 flex-1 cursor-pointer flex-col
     <Sheet v-model:open="moreOpen">
       <SheetContent side="bottom" class="canopy rounded-t-[1.75rem] border-border bg-card px-3 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] font-text text-foreground">
         <SheetHeader class="px-2 pb-1 text-left">
-          <SheetTitle class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">More</SheetTitle>
+          <SheetTitle class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">More</SheetTitle>
           <SheetDescription class="sr-only">The rest of your dashboard's pages.</SheetDescription>
         </SheetHeader>
         <ul class="grid gap-[0.15rem]">

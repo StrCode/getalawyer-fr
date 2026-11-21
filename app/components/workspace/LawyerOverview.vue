@@ -158,7 +158,7 @@ const member = computed(() => membershipTile(
 ))
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const tile = 'flex min-w-0 flex-col rounded-card p-[clamp(1.2rem,2.2vw,1.5rem)]'
 const tileTitle = 'font-display text-[1.25rem] font-[650] tracking-[-0.02em]'
 const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4rem] font-semibold underline underline-offset-[3px] transition-colors hover:text-brand'
@@ -183,7 +183,7 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
       <!-- ───────── now, and the next seven days ───────── -->
       <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] max-sm:rounded-[1.75rem]">
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
-        <h1 id="overview-title" class="mt-[0.9rem] max-w-[46rem] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+        <h1 id="overview-title" class="mt-[0.9rem] max-w-[46rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
           {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
         </h1>
         <p class="mt-[0.9rem] max-w-[38rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
@@ -200,7 +200,7 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
 
         <div class="mt-[clamp(1.6rem,3.5vw,2.4rem)] grid items-start gap-[clamp(1rem,2.4vw,1.75rem)] border-t border-border pt-[clamp(1.4rem,3vw,2rem)] tab:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]">
           <div class="min-w-0">
-            <h2 id="week-title" class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
+            <h2 id="week-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
             <p class="mt-[0.2rem] text-[0.95rem] text-muted-foreground">Choose a day to see what is in it.</p>
             <WorkspaceWeekStrip
               v-model="pickedKey"
