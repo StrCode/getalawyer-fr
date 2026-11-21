@@ -83,6 +83,7 @@ export const useRealTimeMessaging = (conversationId: string) => {
         conversationId,
         senderId: currentUserId.value,
         content,
+        metadata: null,
         status: 'sent',
         fileUrl: file?.url || null,
         filePublicId: file?.publicId || null,
@@ -142,17 +143,16 @@ export const useRealTimeMessaging = (conversationId: string) => {
     messageQueue.value = []
 
     messages.forEach(message => {
+      // A queued message was built from what the person sent, so its file is
+      // whole when it has one; nulls become "not sent" for the server.
+      const { fileUrl, filePublicId, fileName, fileType, fileSize } = message
       $socket.emit('message:send', {
         conversationId: message.conversationId,
-        content: message.content,
-        file: message.fileName ? {
-          url: message.fileUrl,
-          publicId: message.filePublicId,
-          name: message.fileName,
-          type: message.fileType,
-          size: message.fileSize
-        } : undefined,
-        replyToId: message.replyToId
+        content: message.content ?? '',
+        file: fileUrl && filePublicId && fileName && fileType && fileSize != null
+          ? { url: fileUrl, publicId: filePublicId, name: fileName, type: fileType, size: fileSize }
+          : undefined,
+        replyToId: message.replyToId ?? undefined
       })
     })
   }
@@ -241,12 +241,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
     }
   }
 
-  const onConversationLeft = (data: { conversationId: string }) => {
-    if (data.conversationId === conversationId) {
-      isConnected.value = false
-    }
-  }
-
   const onMessageNew = (message: Message) => {
     if (message.conversationId === conversationId) {
       if (message.senderId !== currentUserId.value) {
@@ -287,7 +281,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
     $socket.on('disconnect', onDisconnect)
     $socket.on('connect_error', onConnectError)
     $socket.on('conversation:joined', onConversationJoined)
-    $socket.on('conversation:left', onConversationLeft)
     $socket.on('message:new', onMessageNew)
     $socket.on('typing:start', onTypingStart)
     $socket.on('typing:stop', onTypingStop)
@@ -299,7 +292,6 @@ export const useRealTimeMessaging = (conversationId: string) => {
     $socket.off('disconnect', onDisconnect)
     $socket.off('connect_error', onConnectError)
     $socket.off('conversation:joined', onConversationJoined)
-    $socket.off('conversation:left', onConversationLeft)
     $socket.off('message:new', onMessageNew)
     $socket.off('typing:start', onTypingStart)
     $socket.off('typing:stop', onTypingStop)

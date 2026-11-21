@@ -1,4 +1,5 @@
 // Mock Nuxt composables for testing
+import { vi } from 'vitest'
 export const useNuxtApp = () => ({
   $fetch: vi.fn()
 })

@@ -44,14 +44,18 @@ const CHECK_HREFS: Record<ProfileCheckId, string> = {
   articles: '/dashboard/profile?section=articles',
 }
 
+/**
+ * Every check the backend defines needs a label and a link here. A missing one
+ * fails loudly (the catalog tests load this file) instead of showing a blank row.
+ */
 export const PROFILE_CHECK_CATALOG: ProfileCheckCatalogEntry[] = fixture.checks.map(
-  (check) => ({
-    id: check.id as ProfileCheckId,
-    tier: check.tier as ProfileCheckTier,
-    weight: check.weight,
-    label: CHECK_LABELS[check.id as ProfileCheckId],
-    href: CHECK_HREFS[check.id as ProfileCheckId],
-  }),
+  (check) => {
+    const id = check.id as ProfileCheckId
+    const label = CHECK_LABELS[id]
+    const href = CHECK_HREFS[id]
+    if (!label || !href) throw new Error(`Profile check "${id}" has no label or link in profile-check-catalog.ts`)
+    return { id, tier: check.tier as ProfileCheckTier, weight: check.weight, label, href }
+  },
 )
 
 export const PROFILE_STRENGTH_TOTAL = fixture.totalWeight

@@ -65,13 +65,13 @@ export function getAvailableMeetingTypes(activeTypes: PublicConsultationType[]):
 export function getWorkingDays(lawyer: LawyerProfile | null): LawyerWorkingDay[] {
   if (!lawyer?.availability?.schedule?.length) return []
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  // A day number outside 0-6 has no name, so it is left out rather than shown blank.
   return lawyer.availability.schedule
     .filter((s: AvailabilitySchedule) => s.isAvailable)
-    .map((s: AvailabilitySchedule) => ({
-      day: days[parseInt(s.dayOfWeek)],
-      startTime: s.startTime.slice(0, 5),
-      endTime: s.endTime.slice(0, 5),
-    }))
+    .flatMap((s: AvailabilitySchedule) => {
+      const day = days[parseInt(s.dayOfWeek)]
+      return day ? [{ day, startTime: s.startTime.slice(0, 5), endTime: s.endTime.slice(0, 5) }] : []
+    })
 }
 
 const DAY_ORDER = [

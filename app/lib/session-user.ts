@@ -8,7 +8,7 @@ export type SessionUserWithOnboarding = {
 export function getSessionUserType(
   user: SessionUserWithOnboarding | null | undefined,
 ): string | undefined {
-  return user?.userType ?? user?.role
+  return user?.userType ?? user?.role ?? undefined
 }
 
 export function isLawyerOrClientUser(
