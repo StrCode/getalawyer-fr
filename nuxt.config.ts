@@ -198,7 +198,7 @@ export default defineNuxtConfig({
     // variable fonts; latin-ext carries the naira sign. Builds need to reach
     // Google Fonts.
     families: [
-      { name: 'Inter', provider: 'google', weights: ['100 900'] },
+      { name: 'Onest', provider: 'google', weights: ['100 900'] },
       { name: 'Mona Sans', provider: 'google', weights: ['200 900'] },
     ],
     providers: {

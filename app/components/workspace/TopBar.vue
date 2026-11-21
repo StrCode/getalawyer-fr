@@ -62,7 +62,7 @@ const accountLinks = computed(() =>
 const { y } = useWindowScroll()
 const scrolled = computed(() => y.value > 0)
 
-const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-lg px-3 whitespace-nowrap ${menuText} aria-[current=page]:bg-mint aria-[current=page]:font-medium aria-[current=page]:text-deep`
+const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-full px-3.5 whitespace-nowrap ${menuText} aria-[current=page]:bg-mint aria-[current=page]:font-book aria-[current=page]:text-deep`
 </script>
 
 <template>
@@ -71,9 +71,16 @@ const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-lg p
     class="sticky top-[env(safe-area-inset-top,0px)] z-30 border-b bg-background transition-colors duration-200"
     :class="scrolled ? 'border-border' : 'border-transparent'"
   >
-    <div class="safe-x lg:px-6">
-      <div class="flex h-14 items-center gap-4 lg:gap-6">
-        <CanopyBrand to="/dashboard" condensed />
+    <div class="safe-x lg:px-8">
+      <div class="flex h-15 items-center gap-4 lg:gap-8">
+        <!-- the mark alone, centred in a circle as tall as the account chip at the other end -->
+        <NuxtLink
+          to="/dashboard"
+          aria-label="getalawyer, your overview"
+          class="grid size-11 flex-none place-items-center rounded-full border border-border bg-card transition-colors duration-200 hover:border-brand/45"
+        >
+          <BrandMark class="h-5.5 w-auto fill-[#239261] dark:fill-white" />
+        </NuxtLink>
 
         <nav aria-label="Dashboard" class="flex items-center gap-0.5 max-tab:hidden">
           <NuxtLink
@@ -92,7 +99,7 @@ const linkClass = `relative inline-flex min-h-10 items-center gap-2 rounded-lg p
           <ClientOnly v-if="nav.practice.length">
             <DropdownMenu>
               <DropdownMenuTrigger
-                :class="[linkClass, 'group/practice cursor-pointer data-[state=open]:text-foreground', practiceActive ? 'bg-mint font-medium !text-deep' : '']"
+                :class="[linkClass, 'group/practice cursor-pointer data-[state=open]:text-foreground', practiceActive ? 'bg-mint font-book !text-deep' : '']"
               >
                 Practice
                 <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="transition-transform duration-200 ease-canopy group-data-[state=open]/practice:rotate-180" />

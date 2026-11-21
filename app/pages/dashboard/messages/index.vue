@@ -179,7 +179,7 @@ function previewText(conversation: ConversationInfo) {
     close to the foot of the window (the layout's own spacing is pulled in); on a phone
     the bar above and the tab bar below are taken off.
   -->
-  <div class="grid h-[calc(100svh-11.4rem)] min-h-104 grid-cols-1 tab:-mb-12 tab:h-[calc(100svh-6.3125rem)]">
+  <div class="grid h-[calc(100svh-11.65rem)] min-h-104 grid-cols-1 tab:-mb-12 tab:h-[calc(100svh-6.5625rem)]">
     <div class="flex min-h-0 overflow-hidden rounded-card border border-border bg-card">
       <!-- ───────── conversations ───────── -->
       <aside
