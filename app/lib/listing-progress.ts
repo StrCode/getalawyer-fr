@@ -29,14 +29,14 @@ export const LISTING_PROGRESS_OUTLINE_BADGE_CLASS: Record<ListingProgressTone, s
 
 export const LISTING_PROGRESS_BAR_CLASS: Record<ListingProgressTone, string> = {
   low: 'bg-destructive',
-  mid: 'bg-amber-500',
+  mid: 'bg-primary',
   high: 'bg-primary',
   complete: 'bg-primary',
 }
 
 export const LISTING_PROGRESS_TEXT_CLASS: Record<ListingProgressTone, string> = {
   low: 'text-destructive',
-  mid: 'text-amber-700 dark:text-amber-500',
+  mid: 'text-foreground',
   high: 'text-primary',
   complete: 'text-primary',
 }

@@ -35,7 +35,7 @@ const aboutPreview = computed(() => {
 </script>
 
 <template>
-  <Card class="overflow-hidden border-primary/15 bg-linear-to-br from-primary/5 via-card to-card">
+  <Card class="overflow-hidden">
     <CardHeader class="pb-3">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -49,8 +49,9 @@ const aboutPreview = computed(() => {
         <Button
           v-if="publicProfileUrl"
           as-child
-          variant="outline"
-          size="sm"
+          variant="line"
+          size="pill-sm"
+          class="h-[2.5rem] px-[0.95rem] text-[0.95rem]"
         >
           <NuxtLink
             :to="publicProfileUrl"
@@ -58,14 +59,14 @@ const aboutPreview = computed(() => {
             rel="noopener noreferrer"
             class="gap-2"
           >
-            Full preview
+            Open the page
             <HugeiconsIcon :icon="LinkSquare01Icon" class="size-4" />
           </NuxtLink>
         </Button>
       </div>
     </CardHeader>
     <CardContent>
-      <div class="rounded-xl border border-border bg-card p-5 shadow-xs">
+      <div class="rounded-[1.25rem] border border-border bg-background/60 p-5">
         <div class="flex items-start gap-4">
           <div
             class="relative size-16 shrink-0 overflow-hidden rounded-xl border border-border bg-muted"

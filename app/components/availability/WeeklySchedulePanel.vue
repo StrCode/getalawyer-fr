@@ -1,412 +1,169 @@
 <script setup lang="ts">
-import { AlertCircleIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
-import ButtonBusy from '@/components/ButtonBusy.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { MICRO, PANEL, PANEL_FOOTER, PANEL_HEADER } from '@/lib/dashboard-panel'
-import { cn } from '@/lib/utils'
-import type { DayOfWeek, LawyerAvailabilitySchedule } from '~/types/availability'
+import {
+  DAY_NAMES,
+  dayError,
+  emptyWeek,
+  openDayCount,
+  presetWeek,
+  sameWeek,
+  schedulesToSave,
+  WEEK_ORDER,
+  weekFromSchedules,
+  weekHasErrors,
+  type WeekHours,
+  type WeekPreset,
+} from '~/lib/availability-view'
 
-// The API refuses these for a lawyer whose membership is not on; stop before any form opens.
+/**
+ * The hours a lawyer can be booked each week. The whole week is one form with
+ * one Save: a common week can be filled in to start from, and nothing reaches
+ * clients until Save is pressed.
+ */
+
+// The API refuses these for a lawyer whose membership is not on; stop before anything is sent.
 const { membershipBlocks } = useMembershipAccess()
 
-const {
-  useAvailabilitySchedule,
-  useSetSchedule,
-  useBulkSetSchedule,
-  useDeleteSchedule,
-} = useAvailability()
+const { useAvailabilitySchedule, useBulkSetSchedule, useDeleteSchedule } = useAvailability()
+const { data: schedules, isPending, isError, isFetching, refetch } = useAvailabilitySchedule()
+const bulkSet = useBulkSetSchedule()
+const removeDay = useDeleteSchedule()
 
-const { data: schedules, isPending, isError, refetch } = useAvailabilitySchedule()
+const saved = computed(() => weekFromSchedules(schedules.value))
+const week = ref<WeekHours>(emptyWeek())
+// The form follows what is saved, whenever that changes (first load, and after a save).
+watch(saved, (value) => { week.value = structuredClone(value) }, { immediate: true })
 
-const setScheduleMutation = useSetSchedule()
-const bulkSetMutation = useBulkSetSchedule()
-const deleteMutation = useDeleteSchedule()
+const dirty = computed(() => !sameWeek(week.value, saved.value))
+const invalid = computed(() => weekHasErrors(week.value))
+const saving = ref(false)
 
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const dayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-const savingDay = ref<DayOfWeek | null>(null)
-
-const validationErrors = ref<Record<DayOfWeek, string | null>>({
-  0: null,
-  1: null,
-  2: null,
-  3: null,
-  4: null,
-  5: null,
-  6: null,
-})
-
-const weekSchedule = ref<Record<DayOfWeek, { enabled: boolean, startTime: string, endTime: string }>>({
-  0: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  1: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  2: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  3: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  4: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  5: { enabled: false, startTime: '09:00', endTime: '17:00' },
-  6: { enabled: false, startTime: '09:00', endTime: '17:00' },
-})
-
-const availableDaysCount = computed(
-  () => Object.values(weekSchedule.value).filter((day) => day.enabled).length,
-)
-
-function validateDay(dayOfWeek: DayOfWeek): boolean {
-  const config = weekSchedule.value[dayOfWeek]
-
-  if (!config.enabled) {
-    validationErrors.value[dayOfWeek] = null
-    return true
-  }
-
-  if (!config.startTime || !config.endTime) {
-    validationErrors.value[dayOfWeek] = 'Please set both start and end times'
-    return false
-  }
-
-  if (config.startTime >= config.endTime) {
-    validationErrors.value[dayOfWeek] = 'End time must be after start time'
-    return false
-  }
-
-  validationErrors.value[dayOfWeek] = null
-  return true
+function fill(preset: WeekPreset) {
+  week.value = presetWeek(preset)
+}
+function discard() {
+  week.value = structuredClone(saved.value)
 }
 
-watch(weekSchedule, (newSchedule) => {
-  Object.keys(newSchedule).forEach((day) => {
-    validateDay(day as DayOfWeek)
-  })
-}, { deep: true })
-
-watch(schedules, (newSchedules) => {
-  if (newSchedules && Array.isArray(newSchedules) && newSchedules.length > 0) {
-    const freshSchedule: Record<DayOfWeek, { enabled: boolean, startTime: string, endTime: string }> = {
-      0: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      1: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      2: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      3: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      4: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      5: { enabled: false, startTime: '09:00', endTime: '17:00' },
-      6: { enabled: false, startTime: '09:00', endTime: '17:00' },
-    }
-
-    newSchedules.forEach((schedule: LawyerAvailabilitySchedule) => {
-      freshSchedule[schedule.dayOfWeek] = {
-        enabled: schedule.isAvailable,
-        startTime: schedule.startTime.substring(0, 5),
-        endTime: schedule.endTime.substring(0, 5),
-      }
-    })
-
-    weekSchedule.value = freshSchedule
-  }
-}, { immediate: true })
-
-async function handleQuickSetup(preset: 'weekdays' | 'weekdays-sat') {
+async function save() {
+  if (saving.value || !dirty.value) return
   if (membershipBlocks('change your availability')) return
-  const schedulesToSet = []
-
-  if (preset === 'weekdays') {
-    for (let day = 1; day <= 5; day++) {
-      schedulesToSet.push({
-        dayOfWeek: String(day) as DayOfWeek,
-        startTime: '09:00:00',
-        endTime: '17:00:00',
-        isAvailable: true,
-      })
-      weekSchedule.value[String(day) as DayOfWeek] = {
-        enabled: true,
-        startTime: '09:00',
-        endTime: '17:00',
-      }
-    }
-  }
-  else if (preset === 'weekdays-sat') {
-    for (let day = 1; day <= 6; day++) {
-      const endTime = day === 6 ? '14:00:00' : '17:00:00'
-      schedulesToSet.push({
-        dayOfWeek: String(day) as DayOfWeek,
-        startTime: '09:00:00',
-        endTime,
-        isAvailable: true,
-      })
-      weekSchedule.value[String(day) as DayOfWeek] = {
-        enabled: true,
-        startTime: '09:00',
-        endTime: day === 6 ? '14:00' : '17:00',
-      }
-    }
-  }
-
-  try {
-    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet })
-    toast.success('Quick setup applied')
-  }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to apply quick setup'
-    toast.error(message)
-  }
-}
-
-async function handleSaveDay(dayOfWeek: DayOfWeek) {
-  if (membershipBlocks('change your availability')) return
-  if (!validateDay(dayOfWeek)) {
-    toast.error(validationErrors.value[dayOfWeek] || 'Invalid time range')
+  if (invalid.value) {
+    toast.error('Fix the hours marked below before saving.')
     return
   }
 
-  savingDay.value = dayOfWeek
-  const config = weekSchedule.value[dayOfWeek]
-
-  if (!config.enabled) {
-    const existing = schedules.value?.find((s: LawyerAvailabilitySchedule) => s.dayOfWeek === dayOfWeek)
-    if (existing) {
-      try {
-        await deleteMutation.mutateAsync(existing.id)
-        toast.success(`${dayNames[Number.parseInt(dayOfWeek)]} marked unavailable`)
-      }
-      catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Failed to remove schedule'
-        toast.error(message)
-      }
-    }
-    savingDay.value = null
-    return
-  }
-
+  saving.value = true
   try {
-    await setScheduleMutation.mutateAsync({
-      dayOfWeek,
-      startTime: `${config.startTime}:00`,
-      endTime: `${config.endTime}:00`,
-      isAvailable: true,
-    })
-    toast.success(`${dayNames[Number.parseInt(dayOfWeek)]} updated`)
+    const open = schedulesToSave(week.value)
+    if (open.length > 0) {
+      // Saving the open days replaces the whole week, so days switched off go with it.
+      await bulkSet.mutateAsync({ schedules: open })
+    }
+    else {
+      // The API will not take an empty week, so each saved day is removed instead.
+      for (const row of schedules.value ?? []) await removeDay.mutateAsync(row.id)
+    }
+    toast.success(open.length > 0 ? 'Weekly hours saved.' : 'Weekly hours saved. No days are open.')
   }
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to update schedule'
-    toast.error(message)
+    toast.error(error instanceof Error && error.message ? error.message : 'We could not save your hours. Nothing has changed.')
   }
   finally {
-    savingDay.value = null
+    saving.value = false
   }
 }
 
-async function handleSaveAll() {
-  if (membershipBlocks('change your availability')) return
-  const schedulesToSet = []
-  let hasErrors = false
-
-  for (const [day, config] of Object.entries(weekSchedule.value)) {
-    if (config.enabled) {
-      if (!validateDay(day as DayOfWeek)) {
-        hasErrors = true
-        continue
-      }
-
-      schedulesToSet.push({
-        dayOfWeek: day as DayOfWeek,
-        startTime: `${config.startTime}:00`,
-        endTime: `${config.endTime}:00`,
-        isAvailable: true,
-      })
-    }
-  }
-
-  if (hasErrors) {
-    toast.error('Fix the time range errors before saving')
-    return
-  }
-
-  if (schedulesToSet.length === 0) {
-    toast.warning('Enable at least one day')
-    return
-  }
-
-  try {
-    await bulkSetMutation.mutateAsync({ schedules: schedulesToSet })
-    toast.success('Weekly schedule saved')
-  }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to save schedule'
-    toast.error(message)
-  }
-}
+const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
+const panel = 'overflow-hidden rounded-card border border-border bg-card'
+const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
 </script>
 
 <template>
-  <div class="space-y-6 md:space-y-8">
-    <div
-      v-if="isPending"
-      class="space-y-4"
-    >
-      <Skeleton class="h-24 w-full rounded-xl" />
-      <Skeleton class="h-80 w-full rounded-xl" />
+  <div v-if="isPending" role="status" aria-label="Loading your weekly hours" class="h-[32rem] animate-pulse rounded-card bg-muted" />
+
+  <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <h2 :class="sectionTitle">We could not load your hours.</h2>
+    <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
+    <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="() => refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
+  </section>
+
+  <section v-else :class="panel" aria-labelledby="weekly-title">
+    <header :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-[1.1rem]']">
+      <div class="min-w-0">
+        <h2 id="weekly-title" :class="sectionTitle">Weekly hours</h2>
+        <p class="mt-[0.2rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">Switch on the days you work and set when clients can book you.</p>
+      </div>
+      <div class="flex flex-none flex-wrap items-center gap-[0.5rem]">
+        <Button v-if="dirty" variant="line" size="pill-sm" :disabled="saving" @click="discard">Discard</Button>
+        <Button variant="canopy" size="pill-sm" :disabled="!dirty || invalid || saving" :aria-busy="saving" @click="save">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
+      </div>
+    </header>
+
+    <div :class="[pad, 'flex flex-wrap items-center gap-x-[0.9rem] gap-y-[0.5rem] border-b border-border bg-background/60 py-[0.85rem]']">
+      <p class="text-[0.95rem] text-muted-foreground">Start from a common week:</p>
+      <div class="flex flex-wrap gap-[0.4rem]">
+        <button
+          v-for="preset in ([{ key: 'weekdays', label: 'Monday to Friday, 9 to 5' }, { key: 'weekdays-sat', label: 'Plus Saturday until 2' }] as const)"
+          :key="preset.key"
+          type="button"
+          class="inline-flex min-h-[2.5rem] cursor-pointer items-center rounded-full border border-border bg-card px-[0.95rem] text-[0.95rem] font-semibold transition-[border-color,color,scale] duration-200 ease-canopy hover:border-brand/45 hover:text-brand active:scale-[0.97]"
+          @click="fill(preset.key)"
+        >
+          {{ preset.label }}
+        </button>
+      </div>
     </div>
 
-    <section
-      v-else-if="isError"
-      :class="cn(PANEL, 'flex flex-col items-center gap-3 px-6 py-14 text-center')"
-    >
-      <HugeiconsIcon
-        :icon="AlertCircleIcon"
-        class="size-10 text-muted-foreground"
-      />
-      <p class="text-sm font-medium text-foreground">
-        Failed to load availability
-      </p>
-      <p class="text-sm text-muted-foreground">
-        Please try again.
-      </p>
-      <Button
-        variant="outline"
-        size="sm"
-        class="cursor-pointer"
-        @click="refetch()"
+    <ul class="divide-y divide-border">
+      <li
+        v-for="day in WEEK_ORDER"
+        :key="day"
+        :class="[pad, 'py-[0.85rem]']"
       >
-        Retry
-      </Button>
-    </section>
+        <div class="flex flex-wrap items-center gap-x-[1rem] gap-y-[0.6rem]">
+          <label class="flex min-h-[2.75rem] cursor-pointer items-center gap-[0.75rem] max-sm:flex-1 sm:w-[11rem] sm:flex-none">
+            <Switch
+              :model-value="week[day].enabled"
+              :aria-label="`Open on ${DAY_NAMES[day]}`"
+              @update:model-value="week[day].enabled = $event"
+            />
+            <span class="text-[1.05rem] font-semibold" :class="week[day].enabled ? '' : 'text-muted-foreground'">{{ DAY_NAMES[day] }}</span>
+          </label>
 
-    <template v-else>
-      <section :class="cn(PANEL)">
-        <div :class="PANEL_HEADER">
-          <div>
-            <span :class="cn(MICRO, 'text-muted-foreground')">
-              Quick setup
-            </span>
-            <p class="mt-0.5 text-xs text-muted-foreground">
-              Apply a common week, then fine-tune below.
-            </p>
+          <div v-if="week[day].enabled" class="flex min-w-0 flex-1 items-center gap-[0.6rem] max-sm:basis-full">
+            <Input
+              v-model="week[day].startTime"
+              type="time"
+              :aria-label="`${DAY_NAMES[day]} from`"
+              :aria-invalid="dayError(week[day]) ? true : undefined"
+              class="h-[2.75rem] w-[8.5rem] rounded-[0.9rem] bg-card max-sm:w-auto max-sm:min-w-0 max-sm:flex-1"
+            />
+            <span class="text-muted-foreground">to</span>
+            <Input
+              v-model="week[day].endTime"
+              type="time"
+              :aria-label="`${DAY_NAMES[day]} until`"
+              :aria-invalid="dayError(week[day]) ? true : undefined"
+              class="h-[2.75rem] w-[8.5rem] rounded-[0.9rem] bg-card max-sm:w-auto max-sm:min-w-0 max-sm:flex-1"
+            />
           </div>
+          <p v-else class="text-muted-foreground">Closed</p>
         </div>
-        <div class="flex flex-wrap gap-2 px-6 py-5">
-          <ButtonBusy
-            class="cursor-pointer"
-            :loading="bulkSetMutation.isPending.value"
-            @click="handleQuickSetup('weekdays')"
-          >
-            Mon–Fri · 9–5
-          </ButtonBusy>
-          <ButtonBusy
-            variant="outline"
-            class="cursor-pointer"
-            :loading="bulkSetMutation.isPending.value"
-            @click="handleQuickSetup('weekdays-sat')"
-          >
-            Mon–Sat · Sat to 2pm
-          </ButtonBusy>
-        </div>
-      </section>
+        <p v-if="dayError(week[day])" role="alert" class="mt-[0.4rem] text-[0.92rem] font-semibold text-destructive tab:pl-[12rem]">{{ dayError(week[day]) }}</p>
+      </li>
+    </ul>
 
-      <section :class="cn(PANEL)">
-        <div :class="PANEL_HEADER">
-          <div>
-            <span :class="cn(MICRO, 'text-muted-foreground')">
-              Weekly hours
-            </span>
-            <p class="mt-0.5 text-xs text-muted-foreground">
-              Toggle days on and set your open window.
-            </p>
-          </div>
-          <ButtonBusy
-            size="sm"
-            class="cursor-pointer"
-            :loading="bulkSetMutation.isPending.value"
-            @click="handleSaveAll"
-          >
-            Save all
-          </ButtonBusy>
-        </div>
-
-        <ul class="divide-y divide-foreground/15">
-          <li
-            v-for="(day, index) in ['0', '1', '2', '3', '4', '5', '6']"
-            :key="day"
-            class="px-5 py-4 sm:px-6"
-            :class="validationErrors[day as DayOfWeek] ? 'bg-destructive/5' : ''"
-          >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <div class="flex w-full items-center gap-3 sm:w-44">
-                <Switch
-                  :model-value="weekSchedule[day as DayOfWeek].enabled"
-                  @update:model-value="weekSchedule[day as DayOfWeek].enabled = $event"
-                />
-                <div class="min-w-0">
-                  <p class="font-medium text-foreground">
-                    <span class="sm:hidden">{{ dayShort[index] }}</span>
-                    <span class="hidden sm:inline">{{ dayNames[index] }}</span>
-                  </p>
-                  <p
-                    v-if="!weekSchedule[day as DayOfWeek].enabled"
-                    class="text-xs text-muted-foreground"
-                  >
-                    Closed
-                  </p>
-                </div>
-              </div>
-
-              <div
-                v-if="weekSchedule[day as DayOfWeek].enabled"
-                class="flex flex-1 flex-wrap items-center gap-3"
-              >
-                <Input
-                  v-model="weekSchedule[day as DayOfWeek].startTime"
-                  type="time"
-                  class="max-w-36"
-                  :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
-                />
-                <span class="text-xs text-muted-foreground">to</span>
-                <Input
-                  v-model="weekSchedule[day as DayOfWeek].endTime"
-                  type="time"
-                  class="max-w-36"
-                  :class="validationErrors[day as DayOfWeek] ? 'border-destructive' : ''"
-                />
-                <ButtonBusy
-                  size="sm"
-                  variant="outline"
-                  class="cursor-pointer"
-                  :loading="savingDay === day"
-                  :disabled="!!validationErrors[day as DayOfWeek]"
-                  @click="handleSaveDay(day as DayOfWeek)"
-                >
-                  Save
-                </ButtonBusy>
-              </div>
-            </div>
-
-            <p
-              v-if="validationErrors[day as DayOfWeek] && weekSchedule[day as DayOfWeek].enabled"
-              class="mt-2 flex items-center gap-1.5 text-sm text-destructive"
-            >
-              <HugeiconsIcon
-                :icon="AlertCircleIcon"
-                class="size-4"
-              />
-              {{ validationErrors[day as DayOfWeek] }}
-            </p>
-          </li>
-        </ul>
-
-        <div :class="PANEL_FOOTER">
-          <p class="text-xs text-muted-foreground">
-            Need a day off or special hours?
-            <NuxtLink
-              to="/dashboard/availability?tab=exceptions"
-              class="font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Manage exceptions
-            </NuxtLink>
-          </p>
-        </div>
-      </section>
-    </template>
-  </div>
+    <footer :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-border bg-background/60 py-[0.95rem] text-[0.95rem] text-muted-foreground']">
+      <p>
+        <template v-if="dirty">You have changes that are not saved yet.</template>
+        <template v-else-if="openDayCount(week) === 0">No days are open, so clients cannot book you.</template>
+        <template v-else>These hours repeat every week.</template>
+      </p>
+      <NuxtLink to="/dashboard/availability?tab=exceptions" class="font-semibold text-brand underline-offset-4 hover:underline">A day off, or different hours on one date</NuxtLink>
+    </footer>
+  </section>
 </template>

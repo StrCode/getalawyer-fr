@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircleIcon, Building01Icon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
+import { Building01Icon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import ClientProfileShell from '@/components/profile/ClientProfileShell.vue'
@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
+import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
+import { CANOPY_CARDS, PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
 import { Textarea } from '@/components/ui/textarea'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientProfile } from '~/composables/useClientProfile'
@@ -257,47 +258,25 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="space-y-6"
-  >
-    <div class="flex flex-wrap items-start justify-between gap-4">
-    <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-medium text-foreground">
-        Profile
-      </h1>
-      <p class="mt-1 font-sans text-base text-muted-foreground">
-        Your photo, contact details, and how you appear to lawyers.
-      </p>
-    </div>
-  </div>
+  <!-- The sections below are still the shared cards; CANOPY_CARDS gives them the panel look. -->
+  <div :class="['grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]', CANOPY_CARDS]">
+    <DashboardPageHeader
+      eyebrow="Account"
+      title="Your profile"
+      description="Your photo, your contact details and what a lawyer sees about you."
+    />
 
-    <div
-      v-if="isLoading"
-      class="space-y-4"
-    >
-      <Skeleton class="h-24 w-full rounded-xl" />
-      <Skeleton class="h-36 w-full rounded-xl" />
-      <Skeleton class="h-64 w-full rounded-xl" />
+    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
+      <div class="h-[8rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-[10rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-[16rem] animate-pulse rounded-card bg-muted" />
     </div>
 
-    <Card
-      v-else-if="isError"
-      class="border-dashed"
-    >
-      <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-        <HugeiconsIcon :icon="AlertCircleIcon" class="size-9 text-muted-foreground" />
-        <p class="text-sm text-muted-foreground">
-          We couldn't load your profile. Refresh and try again.
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          @click="() => refetch()"
-        >
-          Retry
-        </Button>
-      </CardContent>
-    </Card>
+    <section v-else-if="isError" :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+      <h2 :class="PANEL_TITLE">We could not load your profile.</h2>
+      <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
+      <Button variant="canopy" size="pill" class="mt-5" @click="() => refetch()">Try again</Button>
+    </section>
 
     <template v-else>
       <ClientProfileCompletenessAside

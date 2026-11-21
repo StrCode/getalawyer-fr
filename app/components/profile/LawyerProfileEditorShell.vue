@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { AlertCircleIcon, LinkSquare01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import LawyerProfileApprovalBanner from '@/components/profile/LawyerProfileApprovalBanner.vue'
 import ProfileAboutSection from '@/components/profile/sections/ProfileAboutSection.vue'
@@ -19,16 +17,10 @@ import ProfileMobileSectionSelect from '@/components/profile/ProfileMobileSectio
 import LawyerProfilePreviewCard from '@/components/profile/LawyerProfilePreviewCard.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { CANOPY_CARDS, PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
 import { getIncompleteListingSectionIds } from '~/lib/profile-check-catalog'
 import { ApiError } from '~/lib/api/client'
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
-import {
-  getListingProgressTone,
-  LISTING_PROGRESS_OUTLINE_BADGE_CLASS,
-} from '@/lib/listing-progress'
 import {
   canEditLawyerPublicProfile,
   getLawyerApprovalHeaderBadge,
@@ -167,18 +159,6 @@ const lawyerSections = computed(() =>
   })),
 )
 
-const listingPercent = computed(() => profileStrength.value?.percent ?? null)
-
-const listingProgressTone = computed(() =>
-  getListingProgressTone(listingPercent.value ?? 0),
-)
-
-const listingStatusLabel = computed(() => {
-  if (isDirectoryVisible.value) return 'Live in search'
-  if ((profileStrength.value?.percent ?? 0) < 100) return 'In progress'
-  return 'Hidden from search'
-})
-
 const approvalHeaderBadge = computed(() =>
   getLawyerApprovalHeaderBadge(
     onboardingStatus.value,
@@ -188,10 +168,12 @@ const approvalHeaderBadge = computed(() =>
   ),
 )
 
+// The profile is only fetched in the browser, so the server draws the same
+// loading state the browser starts from (not the "no profile" panel).
 const isLoading = computed(
   () =>
     authPending.value ||
-    (lawyerQueryEnabled.value &&
+    (isLawyer.value &&
       (profileQuery.isPending.value || onboardingStatusPending.value))
 )
 
@@ -413,58 +395,31 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="space-y-6 md:space-y-8"
-  >
+  <!-- The sections below are still the shared cards; CANOPY_CARDS gives them the panel look. -->
+  <div :class="['grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]', CANOPY_CARDS]">
     <DashboardPageHeader
       eyebrow="Practice"
-      description="How clients see you in search. Consultation types, availability, and billing live under Practice and Account."
+      title="Your profile"
+      description="What clients see in the directory and on your public page."
     >
-      <template #title>
-        Your profile
-      </template>
       <template #actions>
-        <Badge
-          v-if="listingPercent != null"
-          variant="outline"
-          class="rounded-full px-3 py-1 text-xs font-semibold tabular-nums"
-          :class="LISTING_PROGRESS_OUTLINE_BADGE_CLASS[listingProgressTone]"
-        >
-          {{ listingPercent }}% · {{ listingStatusLabel }}
-        </Badge>
-        <Badge
+        <span
           v-if="approvalHeaderBadge"
-          variant="outline"
-          class="rounded-full px-3 py-1 text-xs font-semibold"
+          class="rounded-full border px-[0.85rem] py-[0.25rem] text-[0.88rem] font-bold"
           :class="approvalHeaderBadge.className"
-        >
-          {{ approvalHeaderBadge.label }}
-        </Badge>
+        >{{ approvalHeaderBadge.label }}</span>
         <TooltipProvider v-if="publicProfileUrl">
           <Tooltip :disabled="isDirectoryVisible">
             <TooltipTrigger as-child>
-              <Button
-                as-child
-                size="lg"
-                variant="outline"
-                class="cursor-pointer"
-              >
-                <NuxtLink
-                  :to="publicProfileUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="gap-2"
-                >
-                  View in directory
-                  <HugeiconsIcon
-                    :icon="LinkSquare01Icon"
-                    class="size-4"
-                  />
+              <Button as-child variant="line" size="pill-sm">
+                <NuxtLink :to="publicProfileUrl" target="_blank" rel="noopener noreferrer">
+                  See your public page
+                  <CanopyGlyph name="external" :size="16" />
                 </NuxtLink>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              Preview is available, but you are not visible in search yet.
+              You can preview the page, but clients cannot find you in search yet.
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -482,46 +437,20 @@ onBeforeUnmount(() => {
       :notice="approvalNotice"
     />
 
-    <div
-      v-if="isLoading"
-      class="space-y-4"
-    >
-      <Skeleton class="h-40 w-full rounded-xl" />
-      <Skeleton class="h-56 w-full rounded-xl" />
-      <Skeleton class="h-72 w-full rounded-xl" />
+    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
+      <div class="h-[14rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-[12rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-[18rem] animate-pulse rounded-card bg-muted" />
     </div>
 
-    <Card
-      v-else-if="isError"
-      class="border-dashed"
-    >
-      <CardContent class="flex flex-col items-center gap-3 py-14 text-center">
-        <HugeiconsIcon
-          :icon="AlertCircleIcon"
-          class="size-9 text-muted-foreground"
-        />
-        <p class="text-sm font-medium text-foreground">
-          Couldn't load profile
-        </p>
-        <p class="text-sm text-muted-foreground">
-          {{ loadErrorMessage }}
-        </p>
-        <p
-          v-if="loadErrorMessage.toLowerCase().includes('not found')"
-          class="text-xs text-muted-foreground"
-        >
-          Your account may not have a lawyer record yet. Complete onboarding or contact support.
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          class="cursor-pointer"
-          @click="() => profileQuery.refetch()"
-        >
-          Retry
-        </Button>
-      </CardContent>
-    </Card>
+    <section v-else-if="isError" :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+      <h2 :class="PANEL_TITLE">We could not load your profile.</h2>
+      <p class="mt-2 text-muted-foreground">{{ loadErrorMessage }}</p>
+      <p v-if="loadErrorMessage.toLowerCase().includes('not found')" class="mx-auto mt-1 max-w-[34rem] text-[0.92rem] text-muted-foreground">
+        Your account may not have a lawyer record yet. Finish your application, or contact support.
+      </p>
+      <Button variant="canopy" size="pill" class="mt-5" @click="() => profileQuery.refetch()">Try again</Button>
+    </section>
 
     <template v-else-if="profile">
       <ListingProgressPanel
@@ -540,20 +469,23 @@ onBeforeUnmount(() => {
         :public-profile-url="publicProfileUrl"
       />
 
-      <ProfileMobileSectionSelect
-        v-model="mobileSection"
-        :sections="lawyerSections"
-        class="lg:hidden"
-      />
+      <!-- the jump menu is for narrow screens; wide ones have the list beside the sections -->
+      <div class="lg:hidden">
+        <ProfileMobileSectionSelect
+          v-model="mobileSection"
+          :sections="lawyerSections"
+        />
+      </div>
 
-      <div class="lg:grid lg:grid-cols-[12rem_minmax(0,1fr)] lg:gap-8">
+      <div class="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-[clamp(1rem,2vw,1.5rem)]">
         <aside class="relative hidden lg:block">
-          <div class="sticky top-6 rounded-xl border border-foreground/15 bg-card p-3 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
+          <!-- clears the dashboard bar, which stays at the top of the window -->
+          <div class="sticky top-[5.25rem] rounded-card border border-border bg-card p-3">
             <ProfileSectionNav :sections="lawyerSections" />
           </div>
         </aside>
 
-        <div class="space-y-6">
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)] [&>div]:scroll-mt-[5.25rem]">
           <div id="photo">
             <ProfilePhotoSection
               :name="displayName"
@@ -650,13 +582,8 @@ onBeforeUnmount(() => {
       </div>
     </template>
 
-    <Card
-      v-else
-      class="border-dashed"
-    >
-      <CardContent class="py-10 text-center text-sm text-muted-foreground">
-        No profile data available. Try refreshing the page.
-      </CardContent>
-    </Card>
+    <section v-else :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center text-muted-foreground']">
+      There is no profile to show yet. Refresh the page to try again.
+    </section>
   </div>
 </template>
