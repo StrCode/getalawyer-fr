@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/vue-query'
 import { useAuth } from '~/composables/useAuth'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { onboardingCurrentState } from '~/lib/lawyerOnboardingStatus'
-import { getSessionUserType } from '~/lib/session-user'
+import { getSessionUserType, isLawyerOrClientUser } from '~/lib/session-user'
 import { APPLICATION_HOME } from '~/lib/setup-paths'
 
 /**
@@ -17,6 +17,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { session } = useAuth()
   const user = session.value?.user
   if (!user) return
+
+  // Staff accounts (admin, reviewer) have no workspace here: every page but the
+  // overview would ask for a lawyer's or a client's data and fail. The
+  // overview tells them so.
+  if (!isLawyerOrClientUser(user)) {
+    return to.path === '/dashboard' ? undefined : navigateTo('/dashboard', { replace: true })
+  }
 
   if (getSessionUserType(user) !== 'lawyer') return
 

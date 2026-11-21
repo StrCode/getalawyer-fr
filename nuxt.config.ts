@@ -67,6 +67,8 @@ const THEMED_ROUTES = new Set<string>([
   '/application/bar-credentials',
   '/application/practice',
   '/application/membership',
+  // back from Paystack (the `focus` layout)
+  '/verify-payment',
 ])
 
 // https://nuxt.com/docs/api/configuration/nuxt-config

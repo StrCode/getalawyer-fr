@@ -251,7 +251,7 @@ onMounted(async () => {
 })
 
 // ───────── paying (a first payment, or a renewal after a lapse) ─────────
-const { mutateAsync: initialize, isPending: startingPayment } = useInitializeSubscription()
+const { mutateAsync: initialize, isPending: startingPayment } = useInitializeSubscription('dashboard')
 const { mutateAsync: syncPending, isPending: checkingPayment } = useSyncPendingSubscription()
 const leaving = ref(false)
 const paying = computed(() => startingPayment.value || leaving.value)
