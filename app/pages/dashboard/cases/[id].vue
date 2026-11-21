@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,9 +10,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Field, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  blankTask,
+  CASE_PRIORITIES,
+  caseEditPayload,
+  caseEditSchema,
+  caseEditValues,
+  caseMessageSchema,
+  caseMoveSchema,
+  caseTaskPayload,
+  caseTaskSchema,
+  PRIORITY_LABEL,
+} from '~/lib/case-forms'
 import { ApiError } from '~/lib/api/client'
 import {
   agoLabel,
@@ -28,7 +49,6 @@ import {
   sortTasks,
   statusMoves,
   taskSummary,
-  type CasePriority,
   type CaseTaskRow,
   type StatusMove,
 } from '~/lib/case-view'
@@ -91,7 +111,6 @@ const PARTS = computed(() => [
 // ───────── messages ─────────
 // Loaded only while the thread is on screen: loading them marks the other person's as read.
 const { data: messages, isPending: threadPending, isError: threadFailed } = useCaseThread(caseId, { enabled: computed(() => part.value === 'messages' && Boolean(item.value)) })
-const draft = ref('')
 const thread = ref<HTMLElement | null>(null)
 
 function toEnd() {
@@ -99,42 +118,60 @@ function toEnd() {
 }
 watch(() => messages.value?.length, toEnd)
 
-function sendMessage() {
-  const text = draft.value.trim()
-  if (!text || send.isPending.value) return
-  send.mutate(text, {
-    onSuccess: () => { draft.value = '' },
-    onError: fail('Message not sent'),
-  })
-}
+const messageForm = useForm({
+  defaultValues: { text: '' },
+  validators: {
+    onSubmit: caseMessageSchema,
+  },
+  onSubmit: async ({ value }) => {
+    if (send.isPending.value) return
+    try {
+      await send.mutateAsync(caseMessageSchema.parse(value).text)
+      messageForm.reset({ text: '' })
+    }
+    catch (problem) {
+      fail('Message not sent')(problem as Error)
+    }
+  },
+})
+const draft = messageForm.useStore(state => state.values.text)
 
 // ───────── tasks ─────────
 const taskOpen = ref(false)
-const task = reactive({ title: '', note: '', forWhom: '', due: '' })
+const taskFormId = useId()
+const taskForm = useForm({
+  defaultValues: blankTask(''),
+  validators: {
+    onChange: caseTaskSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    try {
+      await addTask.mutateAsync(caseTaskPayload(caseTaskSchema.parse(value)))
+      toast.success('Task added')
+      taskOpen.value = false
+    }
+    catch (problem) {
+      fail('Task not added')(problem as Error)
+    }
+  },
+})
+const { isInvalid: taskInvalid } = useAuthFieldInvalid(taskForm)
 
 function startTask() {
-  task.title = ''
-  task.note = ''
-  task.due = ''
   // A task is usually something the client has to do.
-  task.forWhom = item.value?.client?.userId ?? me.value ?? ''
+  taskForm.reset(blankTask(item.value?.client?.userId ?? me.value ?? ''))
   taskOpen.value = true
 }
 
-function createTask() {
-  const title = task.title.trim()
-  if (title.length < 3 || !task.forWhom) return
-  addTask.mutate(
-    { taskTitle: title, taskDescription: task.note.trim() || undefined, assignedTo: task.forWhom, dueDate: task.due || undefined },
-    {
-      onSuccess: () => {
-        toast.success('Task added')
-        taskOpen.value = false
-      },
-      onError: fail('Task not added'),
-    },
-  )
-}
+const taskPeople = computed(() => [
+  { id: item.value?.client?.userId ?? '', name: item.value?.client?.name ?? 'The client' },
+  { id: me.value ?? '', name: 'Me' },
+])
 
 const busyTask = ref<string | null>(null)
 function toggleTask(row: CaseTaskRow) {
@@ -159,62 +196,66 @@ function removeTask(row: CaseTaskRow) {
 
 // ───────── editing the case ─────────
 const editOpen = ref(false)
-const edit = reactive({ title: '', description: '', priority: 'medium' as CasePriority, due: '' })
+const editFormId = useId()
+const editForm = useForm({
+  defaultValues: caseEditValues(null),
+  validators: {
+    onChange: caseEditSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    try {
+      // Priority and the due date are the lawyer's to set; the client's route does not take them.
+      await save.mutateAsync(caseEditPayload(caseEditSchema.parse(value), isLawyer.value))
+      toast.success('Case updated')
+      editOpen.value = false
+    }
+    catch (problem) {
+      fail('Case not updated')(problem as Error)
+    }
+  },
+})
+const { isInvalid: editInvalid } = useAuthFieldInvalid(editForm)
 
 function startEdit() {
   if (!item.value) return
-  edit.title = item.value.caseTitle
-  edit.description = item.value.description ?? ''
-  edit.priority = item.value.priority
-  edit.due = item.value.dueDate?.slice(0, 10) ?? ''
+  editForm.reset(caseEditValues(item.value))
   editOpen.value = true
-}
-
-function saveEdit() {
-  const title = edit.title.trim()
-  if (title.length < 3) return
-  save.mutate(
-    {
-      caseTitle: title,
-      description: edit.description.trim(),
-      // Priority and the due date are the lawyer's to set; the client's route does not take them.
-      ...(isLawyer.value ? { priority: edit.priority, dueDate: edit.due || null } : {}),
-    },
-    {
-      onSuccess: () => {
-        toast.success('Case updated')
-        editOpen.value = false
-      },
-      onError: fail('Case not updated'),
-    },
-  )
 }
 
 // ───────── closing, reopening, archiving (the lawyer's) ─────────
 const moves = computed(() => item.value && isLawyer.value ? statusMoves(item.value.status) : [])
 const move = ref<StatusMove | null>(null)
 const moveOpen = ref(false)
-const reason = ref('')
+const moveFormId = useId()
+const moveForm = useForm({
+  defaultValues: { reason: '' },
+  validators: {
+    onChange: caseMoveSchema,
+  },
+  onSubmit: async ({ value }) => {
+    if (!move.value) return
+    const chosen = move.value
+    try {
+      await setStatus.mutateAsync({ status: chosen.to, reason: caseMoveSchema.parse(value).reason || undefined })
+      toast.success(chosen.done)
+      moveOpen.value = false
+    }
+    catch (problem) {
+      fail('Case not changed')(problem as Error)
+    }
+  },
+})
+const { isInvalid: moveInvalid } = useAuthFieldInvalid(moveForm)
 
 function startMove(chosen: StatusMove) {
   move.value = chosen
-  reason.value = ''
+  moveForm.reset({ reason: '' })
   moveOpen.value = true
-}
-
-function confirmMove() {
-  if (!move.value) return
-  const chosen = move.value
-  setStatus.mutate(
-    { status: chosen.to, reason: reason.value.trim() || undefined },
-    {
-      onSuccess: () => {
-        toast.success(chosen.done)
-        moveOpen.value = false
-      },
-      onError: fail('Case not changed'),
-    },
-  )
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
@@ -222,8 +263,10 @@ const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'rounded-card border border-border bg-card'
 const pill = 'rounded-full px-[0.7rem] py-[0.15rem] text-[0.78rem] font-bold tracking-normal whitespace-nowrap normal-case'
 const quiet = 'shadow-none hover:translate-y-0'
-const field = 'rounded-[1rem] bg-card'
-const dialog = 'gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[32rem]'
+const dialog = 'gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[32rem]'
+const dialogHead = 'gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left'
+const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]'
+const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]'
 const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 </script>
 
@@ -333,17 +376,24 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
             </li>
           </ol>
         </div>
-        <form class="flex flex-wrap items-end gap-[0.6rem] border-t border-border p-[clamp(0.9rem,2vw,1.2rem)]" @submit.prevent="sendMessage">
-          <Label for="case-message" class="sr-only">Write a message</Label>
-          <Textarea
-            id="case-message"
-            v-model="draft"
-            :rows="2"
-            :maxlength="CASE_MESSAGE_MAX"
-            :placeholder="`Write to ${other?.name?.split(' ')[0] ?? (isLawyer ? 'your client' : 'your lawyer')} about this case`"
-            :class="[field, 'min-w-0 flex-[1_1_16rem]']"
-            @keydown.enter.exact.prevent="sendMessage"
-          />
+        <form novalidate class="flex flex-wrap items-end gap-[0.6rem] border-t border-border p-[clamp(0.9rem,2vw,1.2rem)]" @submit.prevent="messageForm.handleSubmit">
+          <messageForm.Field v-slot="{ field }" name="text">
+            <Field class="min-w-0 flex-[1_1_16rem]">
+              <FieldLabel :for="field.name" class="sr-only">Write a message</FieldLabel>
+              <Textarea
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                rows="2"
+                :maxlength="CASE_MESSAGE_MAX"
+                :placeholder="`Write to ${other?.name?.split(' ')[0] ?? (isLawyer ? 'your client' : 'your lawyer')} about this case`"
+                :class="[canopyTextarea, 'min-h-[3.25rem]']"
+                :disabled="send.isPending.value"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                @keydown.enter.exact.prevent="messageForm.handleSubmit()"
+              />
+            </Field>
+          </messageForm.Field>
           <Button type="submit" variant="canopy" size="pill" :class="quiet" :disabled="!draft.trim() || send.isPending.value" :aria-busy="send.isPending.value">
             {{ send.isPending.value ? 'Sending…' : 'Send' }}
           </Button>
@@ -412,58 +462,133 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
     <!-- ───────── edit the case ───────── -->
     <Dialog v-model:open="editOpen">
       <DialogContent :class="dialog">
-        <DialogHeader class="gap-[0.5rem] text-left">
+        <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">{{ isLawyer ? 'Edit the case' : 'Edit the title or description' }}</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">{{ other?.name ?? 'The other person' }} sees the same title and description.</DialogDescription>
         </DialogHeader>
-        <form class="grid gap-[0.9rem]" @submit.prevent="saveEdit">
-          <div class="grid gap-[0.35rem]">
-            <Label for="edit-title" class="font-semibold">Title</Label>
-            <Input id="edit-title" v-model="edit.title" maxlength="255" :class="[field, 'h-[2.9rem]']" />
-          </div>
-          <div class="grid gap-[0.35rem]">
-            <Label for="edit-description" class="font-semibold">Description</Label>
-            <Textarea id="edit-description" v-model="edit.description" :rows="4" maxlength="5000" :class="field" />
-          </div>
-          <div v-if="isLawyer" class="grid gap-[0.9rem] sm:grid-cols-2">
-            <div class="grid gap-[0.35rem]">
-              <Label for="edit-priority" class="font-semibold">Priority</Label>
-              <select id="edit-priority" v-model="edit.priority" class="h-[2.9rem] rounded-[1rem] border border-border bg-card px-[0.8rem]">
-                <option value="low">Low</option>
-                <option value="medium">Normal</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </div>
-            <div class="grid gap-[0.35rem]">
-              <Label for="edit-due" class="font-semibold">Due date <span class="font-normal text-muted-foreground">(optional)</span></Label>
-              <Input id="edit-due" v-model="edit.due" type="date" :class="[field, 'h-[2.9rem]']" />
-            </div>
-          </div>
-          <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
-            <Button type="button" variant="line" size="pill" :disabled="save.isPending.value" @click="editOpen = false">Cancel</Button>
-            <Button type="submit" variant="canopy" size="pill" :class="quiet" :disabled="edit.title.trim().length < 3 || save.isPending.value" :aria-busy="save.isPending.value">
-              {{ save.isPending.value ? 'Saving…' : 'Save' }}
-            </Button>
-          </DialogFooter>
-        </form>
+        <div :class="dialogBody">
+          <form :id="editFormId" novalidate @submit.prevent="editForm.handleSubmit">
+            <FieldGroup class="gap-[1.1rem]">
+              <editForm.Field v-slot="{ field }" name="title">
+                <Field :class="canopyField" :data-invalid="editInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">Title</FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="authInput"
+                    maxlength="255"
+                    :aria-invalid="editInvalid(field)"
+                    :disabled="save.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="editInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </editForm.Field>
+              <editForm.Field v-slot="{ field }" name="description">
+                <Field :class="canopyField" :data-invalid="editInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">Description</FieldLabel>
+                  <Textarea
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="canopyTextarea"
+                    rows="4"
+                    maxlength="5000"
+                    :aria-invalid="editInvalid(field)"
+                    :disabled="save.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="editInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </editForm.Field>
+              <div v-if="isLawyer" class="grid gap-[1.1rem] sm:grid-cols-2">
+                <editForm.Field v-slot="{ field }" name="priority">
+                  <Field :class="canopyField" :data-invalid="editInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">Priority</FieldLabel>
+                    <Select
+                      :model-value="field.state.value"
+                      :disabled="save.isPending.value"
+                      @update:model-value="(v) => {
+                        field.handleChange(v as (typeof CASE_PRIORITIES)[number])
+                        field.handleBlur()
+                      }"
+                    >
+                      <SelectTrigger :id="field.name" :class="canopySelect" :aria-invalid="editInvalid(field)">
+                        <SelectValue placeholder="Choose" />
+                      </SelectTrigger>
+                      <SelectContent :class="canopyPanel">
+                        <SelectItem v-for="level in CASE_PRIORITIES" :key="level" :value="level">{{ PRIORITY_LABEL[level] }}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldError v-if="editInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </editForm.Field>
+                <editForm.Field v-slot="{ field }" name="due">
+                  <Field :class="canopyField" :data-invalid="editInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">Due date <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      type="date"
+                      :class="authInput"
+                      :aria-invalid="editInvalid(field)"
+                      :disabled="save.isPending.value"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                    />
+                    <FieldError v-if="editInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </editForm.Field>
+              </div>
+            </FieldGroup>
+          </form>
+        </div>
+        <DialogFooter :class="dialogFoot">
+          <Button type="button" variant="line" size="pill" :disabled="save.isPending.value" @click="editOpen = false">Cancel</Button>
+          <Button type="submit" :form="editFormId" variant="canopy" size="pill" :class="quiet" :disabled="save.isPending.value" :aria-busy="save.isPending.value">
+            {{ save.isPending.value ? 'Saving…' : 'Save' }}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
 
     <!-- ───────── close, reopen or archive ───────── -->
     <Dialog v-model:open="moveOpen">
       <DialogContent :class="dialog">
-        <DialogHeader class="gap-[0.5rem] text-left">
+        <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">{{ move?.label }}</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">{{ move?.explain }}</DialogDescription>
         </DialogHeader>
-        <div class="grid gap-[0.35rem]">
-          <Label for="move-reason" class="font-semibold">Note for the log <span class="font-normal text-muted-foreground">(optional)</span></Label>
-          <Textarea id="move-reason" v-model="reason" :rows="3" maxlength="500" placeholder="For example: judgment delivered, matter concluded." :class="field" />
+        <div :class="dialogBody">
+          <form :id="moveFormId" novalidate @submit.prevent="moveForm.handleSubmit">
+            <moveForm.Field v-slot="{ field }" name="reason">
+              <Field :class="canopyField" :data-invalid="moveInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">Note for the log <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+                <Textarea
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  :class="canopyTextarea"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="For example: judgment delivered, matter concluded."
+                  :aria-invalid="moveInvalid(field)"
+                  :disabled="setStatus.isPending.value"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                />
+                <FieldError v-if="moveInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </moveForm.Field>
+          </form>
         </div>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
-          <Button variant="line" size="pill" :disabled="setStatus.isPending.value" @click="moveOpen = false">Cancel</Button>
-          <Button variant="canopy" size="pill" :class="quiet" :disabled="setStatus.isPending.value" :aria-busy="setStatus.isPending.value" @click="confirmMove">
+        <DialogFooter :class="dialogFoot">
+          <Button type="button" variant="line" size="pill" :disabled="setStatus.isPending.value" @click="moveOpen = false">Cancel</Button>
+          <Button type="submit" :form="moveFormId" variant="canopy" size="pill" :class="quiet" :disabled="setStatus.isPending.value" :aria-busy="setStatus.isPending.value">
             {{ setStatus.isPending.value ? 'Saving…' : move?.label }}
           </Button>
         </DialogFooter>
@@ -473,43 +598,106 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
     <!-- ───────── add a task (the lawyer's) ───────── -->
     <Dialog v-model:open="taskOpen">
       <DialogContent :class="dialog">
-        <DialogHeader class="gap-[0.5rem] text-left">
+        <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Add a task</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">Something one of you has to do next. Both of you see it.</DialogDescription>
         </DialogHeader>
-        <form class="grid gap-[0.9rem]" @submit.prevent="createTask">
-          <div class="grid gap-[0.35rem]">
-            <Label for="task-title" class="font-semibold">What needs doing</Label>
-            <Input id="task-title" v-model="task.title" maxlength="255" placeholder="For example: send the signed tenancy agreement" :class="[field, 'h-[2.9rem]']" />
-          </div>
-          <fieldset class="grid gap-[0.35rem]">
-            <legend class="mb-[0.35rem] font-semibold">Who is it for</legend>
-            <div class="flex flex-wrap gap-[0.45rem]">
-              <label
-                v-for="person in [{ id: item?.client?.userId, name: item?.client?.name ?? 'The client' }, { id: me, name: 'Me' }]"
-                :key="person.name"
-                class="inline-flex min-h-[2.75rem] cursor-pointer items-center gap-[0.5rem] rounded-full border px-[1rem] font-semibold transition-colors has-[:checked]:border-forest has-[:checked]:bg-forest has-[:checked]:text-white has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand dark:has-[:checked]:border-brand"
-                :class="person.id ? 'border-border bg-card' : 'pointer-events-none opacity-50'"
-              >
-                <input v-model="task.forWhom" type="radio" name="task-for" :value="person.id ?? ''" :disabled="!person.id" class="sr-only">{{ person.name }}
-              </label>
-            </div>
-          </fieldset>
-          <div class="grid gap-[0.35rem]">
-            <Label for="task-due" class="font-semibold">Due date <span class="font-normal text-muted-foreground">(optional)</span></Label>
-            <Input id="task-due" v-model="task.due" type="date" :class="[field, 'h-[2.9rem] sm:max-w-[14rem]']" />
-          </div>
-          <div class="grid gap-[0.35rem]">
-            <Label for="task-note" class="font-semibold">Details <span class="font-normal text-muted-foreground">(optional)</span></Label>
-            <Textarea id="task-note" v-model="task.note" :rows="3" maxlength="1000" :class="field" />
-          </div>
-          <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
-            <Button type="button" variant="line" size="pill" :disabled="addTask.isPending.value" @click="taskOpen = false">Cancel</Button>
-            <Button type="submit" variant="canopy" size="pill" :class="quiet" :disabled="task.title.trim().length < 3 || !task.forWhom || addTask.isPending.value" :aria-busy="addTask.isPending.value">
-              {{ addTask.isPending.value ? 'Adding…' : 'Add the task' }}
-            </Button>
-          </DialogFooter>
-        </form>
+        <div :class="dialogBody">
+          <form :id="taskFormId" novalidate @submit.prevent="taskForm.handleSubmit">
+            <FieldGroup class="gap-[1.1rem]">
+              <taskForm.Field v-slot="{ field }" name="title">
+                <Field :class="canopyField" :data-invalid="taskInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">What needs doing</FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="authInput"
+                    maxlength="255"
+                    placeholder="For example: send the signed tenancy agreement"
+                    :aria-invalid="taskInvalid(field)"
+                    :disabled="addTask.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="taskInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </taskForm.Field>
+
+              <taskForm.Field v-slot="{ field }" name="forWhom">
+                <FieldSet :class="canopyField" :data-invalid="taskInvalid(field)">
+                  <FieldLegend variant="label" :class="canopyLabel">Who is it for</FieldLegend>
+                  <RadioGroup
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :disabled="addTask.isPending.value"
+                    class="grid grid-cols-2 gap-[0.5rem]"
+                    @update:model-value="(v) => {
+                      field.handleChange(String(v ?? ''))
+                      field.handleBlur()
+                    }"
+                  >
+                    <FieldLabel
+                      v-for="person in taskPeople"
+                      :key="person.name"
+                      :for="`${taskFormId}-${person.name}`"
+                      :class="[canopyChoice, 'items-center', person.id ? '' : 'pointer-events-none opacity-50']"
+                    >
+                      <Field orientation="horizontal" class="items-center">
+                        <RadioGroupItem :id="`${taskFormId}-${person.name}`" :value="person.id" :disabled="!person.id" :aria-invalid="taskInvalid(field)" />
+                        <span class="truncate text-[0.95rem] font-semibold">{{ person.name }}</span>
+                      </Field>
+                    </FieldLabel>
+                  </RadioGroup>
+                  <FieldError v-if="taskInvalid(field)" :errors="field.state.meta.errors" />
+                </FieldSet>
+              </taskForm.Field>
+
+              <taskForm.Field v-slot="{ field }" name="due">
+                <Field :class="[canopyField, 'sm:max-w-[16rem]']" :data-invalid="taskInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">Due date <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    type="date"
+                    :class="authInput"
+                    :aria-invalid="taskInvalid(field)"
+                    :disabled="addTask.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="taskInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </taskForm.Field>
+
+              <taskForm.Field v-slot="{ field }" name="note">
+                <Field :class="canopyField" :data-invalid="taskInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">Details <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+                  <Textarea
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="canopyTextarea"
+                    rows="3"
+                    maxlength="1000"
+                    :aria-invalid="taskInvalid(field)"
+                    :disabled="addTask.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="taskInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </taskForm.Field>
+            </FieldGroup>
+          </form>
+        </div>
+        <DialogFooter :class="dialogFoot">
+          <Button type="button" variant="line" size="pill" :disabled="addTask.isPending.value" @click="taskOpen = false">Cancel</Button>
+          <Button type="submit" :form="taskFormId" variant="canopy" size="pill" :class="quiet" :disabled="addTask.isPending.value" :aria-busy="addTask.isPending.value">
+            {{ addTask.isPending.value ? 'Adding…' : 'Add the task' }}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   </div>

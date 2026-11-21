@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Loading03Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { z } from 'zod'
@@ -14,8 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Label } from '@/components/ui/label'
+import { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { authClient } from '~/lib/auth-client'
 import { authPasswordSchema } from '~/lib/auth-password'
 
@@ -23,17 +20,18 @@ const open = defineModel<boolean>({ required: true })
 
 const schema = z
   .object({
-    currentPassword: z.string().min(1, 'Current password is required.'),
+    currentPassword: z.string().min(1, 'Enter your current password.'),
     newPassword: authPasswordSchema,
-    confirmPassword: z.string().min(1, 'Please confirm your new password.'),
+    confirmPassword: z.string().min(1, 'Type the new password again.'),
     revokeOtherSessions: z.boolean(),
   })
   .refine(data => data.newPassword === data.confirmPassword, {
-    message: 'Passwords do not match.',
+    message: 'The two new passwords are not the same.',
     path: ['confirmPassword'],
   })
-  .refine(data => data.currentPassword !== data.newPassword, {
-    message: 'New password must be different from your current password.',
+  // only once a new password is typed: two empty boxes are not "the same password"
+  .refine(data => !data.newPassword || data.currentPassword !== data.newPassword, {
+    message: 'Choose a password different from your current one.',
     path: ['newPassword'],
   })
 
@@ -67,22 +65,18 @@ const form = useForm({
       if (error)
         throw new Error(error.message || 'Could not change password.')
 
-      toast.success('Password updated', {
-        description: value.revokeOtherSessions
-          ? 'Your other sessions have been signed out.'
-          : 'Use your new password next time you sign in.',
-      })
+      toast.success(value.revokeOtherSessions ? 'Password changed. Your other devices are signed out.' : 'Password changed.')
       open.value = false
       form.reset()
     }
     catch (err: unknown) {
       const msg = err instanceof Error ? err.message : ''
       if (/invalid|incorrect|wrong|current/i.test(msg))
-        apiError.value = 'Current password is incorrect.'
+        apiError.value = 'Your current password is not right.'
       else if (/credential|password.*not.*found|no.*password/i.test(msg))
-        apiError.value = 'This account does not have a password set. Use account recovery after signing out.'
+        apiError.value = 'This account has no password yet. Sign out and use "Forgot password" to set one.'
       else
-        apiError.value = msg || 'Could not change password. Please try again.'
+        apiError.value = msg || 'We could not change your password. Nothing has changed.'
     }
     finally {
       isSubmitting.value = false
@@ -91,6 +85,7 @@ const form = useForm({
 })
 
 const { isInvalid } = useAuthFieldInvalid(form)
+const formId = useId()
 
 watch(open, (isOpen) => {
   if (!isOpen) {
@@ -103,164 +98,95 @@ watch(open, (isOpen) => {
 
 <template>
   <Dialog v-model:open="open">
-    <DialogContent class="sm:max-w-md">
-      <DialogHeader>
-        <DialogTitle>
-          Change password
-        </DialogTitle>
-        <DialogDescription>
-          Enter your current password, then choose a new one.
-        </DialogDescription>
+    <DialogContent class="max-h-[min(92svh,46rem)] gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[30rem]">
+      <DialogHeader class="gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left">
+        <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">Change your password</DialogTitle>
+        <DialogDescription class="text-[1rem] text-muted-foreground">Enter your current password, then choose a new one.</DialogDescription>
       </DialogHeader>
 
-      <form
-        class="space-y-4"
-        @submit.prevent="form.handleSubmit"
-      >
-        <FieldGroup class="space-y-4">
-          <form.Field
-            v-slot="{ field }"
-            name="currentPassword"
-          >
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                Current password
+      <div class="max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]">
+        <form :id="formId" novalidate @submit.prevent="form.handleSubmit">
+          <FieldGroup class="gap-[1.1rem]">
+            <form.Field v-slot="{ field }" name="currentPassword">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">Current password</FieldLabel>
+                <AuthPasswordInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  autocomplete="current-password"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+
+            <form.Field v-slot="{ field }" name="newPassword">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">New password</FieldLabel>
+                <AuthPasswordInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  autocomplete="new-password"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                />
+                <!-- only when empty: with something typed, the list below shows what is missing -->
+                <FieldError v-if="isInvalid(field) && !field.state.value" :errors="field.state.meta.errors" />
+                <AuthPasswordRequirements class="mt-2" :password="field.state.value" :invalid="isInvalid(field)" />
+              </Field>
+            </form.Field>
+
+            <form.Field v-slot="{ field }" name="confirmPassword">
+              <Field :class="canopyField" :data-invalid="isInvalid(field)">
+                <FieldLabel :for="field.name" :class="canopyLabel">New password again</FieldLabel>
+                <AuthPasswordInput
+                  :id="field.name"
+                  :name="field.name"
+                  :model-value="field.state.value"
+                  autocomplete="new-password"
+                  :aria-invalid="isInvalid(field)"
+                  :disabled="isSubmitting"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </form.Field>
+
+            <form.Field v-slot="{ field }" name="revokeOtherSessions">
+              <FieldLabel :for="field.name" :class="canopyChoice">
+                <Field orientation="horizontal" class="items-start">
+                  <Checkbox
+                    :id="field.name"
+                    :class="canopyCheckbox"
+                    :model-value="field.state.value"
+                    :disabled="isSubmitting"
+                    @update:model-value="(v) => field.handleChange(v === true)"
+                  />
+                  <FieldContent class="gap-[0.1rem]">
+                    <span class="text-[0.95rem] leading-snug font-semibold text-foreground">Sign out my other devices</span>
+                    <FieldDescription class="text-[0.85rem]">A good idea if you think someone else knows your password.</FieldDescription>
+                  </FieldContent>
+                </Field>
               </FieldLabel>
-              <AuthPasswordInput
-                :id="field.name"
-                :name="field.name"
-                :model-value="field.state.value"
-                autocomplete="current-password"
-                placeholder="••••••••"
-                :aria-invalid="isInvalid(field)"
-                :disabled="isSubmitting"
-                @blur="field.handleBlur"
-                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
-              />
-              <FieldError
-                v-if="isInvalid(field)"
-                :errors="field.state.meta.errors"
-              />
-            </Field>
-          </form.Field>
+            </form.Field>
 
-          <form.Field
-            v-slot="{ field }"
-            name="newPassword"
-          >
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                New password
-              </FieldLabel>
-              <AuthPasswordInput
-                :id="field.name"
-                :name="field.name"
-                :model-value="field.state.value"
-                autocomplete="new-password"
-                placeholder="••••••••"
-                :aria-invalid="isInvalid(field)"
-                :disabled="isSubmitting"
-                @blur="field.handleBlur"
-                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
-              />
-              <!-- only when empty: with something typed, the list below shows what is missing -->
-              <FieldError
-                v-if="isInvalid(field) && !field.state.value"
-                :errors="field.state.meta.errors"
-              />
-              <AuthPasswordRequirements
-                class="mt-2"
-                :password="field.state.value"
-                :invalid="isInvalid(field)"
-              />
-            </Field>
-          </form.Field>
+            <AuthFormError :message="apiError" />
+          </FieldGroup>
+        </form>
+      </div>
 
-          <form.Field
-            v-slot="{ field }"
-            name="confirmPassword"
-          >
-            <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name">
-                Confirm new password
-              </FieldLabel>
-              <AuthPasswordInput
-                :id="field.name"
-                :name="field.name"
-                :model-value="field.state.value"
-                autocomplete="new-password"
-                placeholder="••••••••"
-                :aria-invalid="isInvalid(field)"
-                :disabled="isSubmitting"
-                @blur="field.handleBlur"
-                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
-              />
-              <FieldError
-                v-if="isInvalid(field)"
-                :errors="field.state.meta.errors"
-              />
-            </Field>
-          </form.Field>
-
-          <form.Field
-            v-slot="{ field }"
-            name="revokeOtherSessions"
-          >
-            <div class="flex items-start gap-3 rounded-lg border border-foreground/15 px-3 py-3">
-              <Checkbox
-                :id="field.name"
-                :model-value="field.state.value"
-                class="mt-0.5"
-                :disabled="isSubmitting"
-                @update:model-value="(v) => field.handleChange(v === true)"
-              />
-              <div class="min-w-0 space-y-0.5">
-                <Label
-                  :for="field.name"
-                  class="cursor-pointer text-sm font-medium text-foreground"
-                >
-                  Sign out other devices
-                </Label>
-                <p class="text-xs leading-relaxed text-muted-foreground">
-                  Recommended after a password change.
-                </p>
-              </div>
-            </div>
-          </form.Field>
-
-          <p
-            v-if="apiError"
-            class="text-sm text-destructive"
-            role="alert"
-          >
-            {{ apiError }}
-          </p>
-        </FieldGroup>
-
-        <DialogFooter class="gap-2 sm:gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            class="cursor-pointer"
-            :disabled="isSubmitting"
-            @click="open = false"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            class="cursor-pointer gap-2"
-            :disabled="isSubmitting"
-          >
-            <HugeiconsIcon
-              v-if="isSubmitting"
-              :icon="Loading03Icon"
-              class="size-4 shrink-0 animate-spin"
-            />
-            {{ isSubmitting ? 'Updating…' : 'Update password' }}
-          </Button>
-        </DialogFooter>
-      </form>
+      <DialogFooter class="gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]">
+        <Button type="button" variant="line" size="pill" :disabled="isSubmitting" @click="open = false">Cancel</Button>
+        <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="isSubmitting" :aria-busy="isSubmitting">{{ isSubmitting ? 'Changing…' : 'Change password' }}</Button>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
