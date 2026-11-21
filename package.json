@@ -34,7 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "libphonenumber-js": "^1.13.11",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.4",
     "nuxt-viewport": "2.6.1",
     "pinia": "^4.0.3",
     "reka-ui": "^2.10.3",

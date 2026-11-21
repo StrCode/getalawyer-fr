@@ -130,10 +130,10 @@ export interface Conversation {
   participants: string[]
   lastMessageAt?: Date
   unreadCount: number
-  messages?: Message[]
+  messages?: CaseMessage[]
 }
 
-export interface Message {
+export interface CaseMessage {
   id: string
   conversationId: string
   senderId: string

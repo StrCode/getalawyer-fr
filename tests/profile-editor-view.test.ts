@@ -7,7 +7,8 @@ import {
   sectionRows,
   sectionSummary,
 } from '../app/lib/profile-editor-view'
-import type { LawyerProfileEditorData, LawyerProfileStrengthSummary } from '../app/types/lawyer-profile-editor'
+import type { LawyerProfileStrengthSummary } from '../app/types/lawyer-directory-eligibility'
+import type { LawyerProfileEditorData } from '../app/types/lawyer-profile-editor'
 
 function profile(over: Partial<LawyerProfileEditorData> = {}): LawyerProfileEditorData {
   return {

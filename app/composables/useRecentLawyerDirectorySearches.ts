@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
-import type { ConsultationType } from '~/types/lawyer'
-import type { FilterState } from '~/types/filter'
+import type { ConsultationFormat, FilterState } from '~/types/filter'
 import { watchDebounced } from '@vueuse/core'
 
 const STORAGE_KEY = 'getalawyer-fr:recent-lawyer-directory-searches'
@@ -11,7 +10,7 @@ export interface RecentLawyerDirectoryEntry {
   id: string
   keywords: string
   location: string
-  consultationTypes: ConsultationType[]
+  consultationTypes: ConsultationFormat[]
   practiceAreas: string[]
   savedAt: number
 }
@@ -95,7 +94,7 @@ function readStored(client: boolean): RecentLawyerDirectoryEntry[] {
       .filter((row): row is RecentLawyerDirectoryEntry => !!row && typeof row === 'object' && typeof (row as RecentLawyerDirectoryEntry).keywords === 'string')
       .map(row => ({
         ...row,
-        consultationTypes: Array.isArray(row.consultationTypes) ? row.consultationTypes as ConsultationType[] : [],
+        consultationTypes: Array.isArray(row.consultationTypes) ? row.consultationTypes as ConsultationFormat[] : [],
         practiceAreas: Array.isArray(row.practiceAreas) ? row.practiceAreas : [],
       }))
   }

@@ -5,8 +5,6 @@ import type {
   LawyerProfileStrengthSummary,
 } from '~/types/lawyer-directory-eligibility'
 
-export type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~/types/lawyer-directory-eligibility'
-
 export interface LawyerProfileAbout {
   headline: string | null
   about: string | null

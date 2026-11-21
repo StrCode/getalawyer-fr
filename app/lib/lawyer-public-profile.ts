@@ -1,6 +1,6 @@
 import type {
   AvailabilitySchedule,
-  ConsultationType,
+  PublicConsultationType,
   LawyerProfile,
 } from '~/types/lawyer'
 
@@ -32,11 +32,11 @@ export function getLoadErrorMessage(error: unknown): string {
   return err.data?.error || err.message || 'This profile could not be loaded.'
 }
 
-export function getActiveConsultationTypes(lawyer: LawyerProfile | null): ConsultationType[] {
+export function getActiveConsultationTypes(lawyer: LawyerProfile | null): PublicConsultationType[] {
   return lawyer?.consultationTypes.filter(ct => ct.isActive) ?? []
 }
 
-export function getPriceRange(activeTypes: ConsultationType[]): LawyerPriceRange {
+export function getPriceRange(activeTypes: PublicConsultationType[]): LawyerPriceRange {
   const prices = activeTypes
     .filter(ct => parseFloat(ct.price) > 0)
     .map(ct => parseFloat(ct.price))
@@ -48,7 +48,7 @@ export function getPriceRange(activeTypes: ConsultationType[]): LawyerPriceRange
   }
 }
 
-export function getAvailableMeetingTypes(activeTypes: ConsultationType[]): string[] {
+export function getAvailableMeetingTypes(activeTypes: PublicConsultationType[]): string[] {
   const types = new Set<string>()
   activeTypes.forEach((ct) => {
     if (ct.meetingType === 'any') {
@@ -133,7 +133,7 @@ export interface PrimaryConsultation {
 
 /** Cheapest active consultation (paid preferred); used for sidebar "From ₦X · Y min". */
 export function getPrimaryConsultation(
-  types: ConsultationType[],
+  types: PublicConsultationType[],
 ): PrimaryConsultation | null {
   if (!types.length) return null
 
