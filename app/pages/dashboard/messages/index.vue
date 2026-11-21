@@ -165,7 +165,7 @@ function previewText(conversation: ConversationInfo) {
   <!-- As tall as the screen allows: the bars above and (on a phone) below are taken off. -->
   <div class="grid h-[calc(100svh-13.5rem)] min-h-[26rem] grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-[clamp(0.8rem,1.6vw,1.2rem)] tab:h-[calc(100svh-10.75rem)]">
     <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1" :class="{ 'max-tab:hidden': showThreadOnMobile }">
-      <h1 class="text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.05] font-[620] tracking-[-0.04em]">Messages</h1>
+      <h1 class="text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.05] font-[620] tracking-[-0.04em]">Messages</h1>
       <p class="text-[0.98rem] text-muted-foreground">
         <template v-if="totalUnread > 0"><b class="font-semibold text-foreground">{{ totalUnread }} unread.</b> </template>Contact details stay private: everything is written here.
       </p>
@@ -237,7 +237,7 @@ function previewText(conversation: ConversationInfo) {
       >
         <div v-if="!selectedConversationId" class="grid flex-1 place-items-center px-6 text-center">
           <div>
-            <b class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Choose a conversation</b>
+            <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Choose a conversation</b>
             <p class="mt-[0.3rem] text-muted-foreground">Pick one from the list to read it and reply.</p>
           </div>
         </div>

@@ -149,7 +149,7 @@ const panel = computed(() => PANELS[audience.value])
             </div>
 
             <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-lime uppercase">{{ panel.kicker }}</div>
-            <h2 class="mt-3 max-w-[28rem] text-[clamp(1.9rem,3vw,2.8rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+            <h2 class="mt-3 max-w-[28rem] text-[clamp(1.75rem,2.6vw,2.4rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
               {{ panel.title }} <em class="text-lime not-italic">{{ panel.accent }}</em>
             </h2>
             <p class="mt-[0.9rem] max-w-[30rem] text-on-forest">{{ panel.body }}</p>

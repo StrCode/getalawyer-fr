@@ -141,7 +141,7 @@ function ask() {
 }
 
 const block = 'scroll-mt-24 pt-[clamp(1.75rem,3vw,2.5rem)]'
-const blockTitle = 'mb-[0.9rem] text-[1.6rem] font-[650] tracking-[-0.03em]'
+const blockTitle = 'mb-[0.9rem] text-[1.45rem] font-[650] tracking-[-0.03em]'
 const itemTitle = 'text-[1.12rem] font-[650] tracking-[-0.02em]'
 const row = 'flex items-center justify-between gap-4 rounded-[1.25rem] border border-border bg-card px-[1.2rem] py-4 max-sm:flex-col max-sm:items-start'
 const timelineItem = 'grid grid-cols-[10rem_minmax(0,1fr)] gap-4 border-t border-border py-4 first:border-t-0 first:pt-0 max-sm:grid-cols-1 max-sm:gap-[0.2rem]'
@@ -170,7 +170,7 @@ const when = 'text-[0.85rem] font-semibold text-muted-foreground tabular-nums'
 
     <!-- could not load -->
     <div v-else-if="error || !lawyer" role="alert" class="mt-6 grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2.5rem,6vw,4.5rem)] text-center">
-      <h1 class="text-[clamp(1.6rem,2.8vw,2.3rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
+      <h1 class="text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
         {{ errorStatusCode === 403 ? 'This profile is not available.' : 'We could not find that profile.' }}
       </h1>
       <p class="max-w-[30rem] text-muted-foreground">{{ loadErrorMessage }}</p>

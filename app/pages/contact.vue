@@ -45,7 +45,7 @@ const card = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.
   <div class="pb-[clamp(3.5rem,7vw,6.5rem)]">
     <header class="max-w-[54rem] pt-[clamp(1.5rem,4vw,3.25rem)] pb-[clamp(1.5rem,3vw,2.5rem)]">
       <div class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Contact</div>
-      <h1 class="mt-[0.9rem] text-[clamp(2.5rem,5.4vw,4.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.6vw,3.9rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
         Get in touch. <em class="text-brand not-italic">We read every message.</em>
       </h1>
       <p class="mt-[1.2rem] max-w-[40rem] text-[1.15rem] text-muted-foreground">
@@ -96,7 +96,7 @@ const card = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.
       </div>
 
       <section aria-labelledby="contact-form-title" class="rounded-card bg-stone p-[clamp(1.4rem,3vw,2.25rem)]">
-        <h2 id="contact-form-title" class="text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Write to us</h2>
+        <h2 id="contact-form-title" class="text-[clamp(1.4rem,2.1vw,1.8rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Write to us</h2>
         <p class="mt-2 max-w-[34rem] text-muted-foreground">
           Fill this in and we will open the message in your email app, addressed to our team. You press send there.
         </p>

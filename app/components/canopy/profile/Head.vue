@@ -52,7 +52,7 @@ const CHECK_COLUMNS = ['', 'sm:grid-cols-1', 'sm:grid-cols-2', 'sm:grid-cols-3']
       <div class="min-w-0">
         <p class="text-[0.78rem] font-bold tracking-[0.08em] text-brand uppercase">{{ area }}</p>
         <!-- the no-break space keeps the mark beside the last word when a long name wraps -->
-        <h1 class="mt-[0.35rem] text-[clamp(2.1rem,4vw,3.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+        <h1 class="mt-[0.35rem] text-[clamp(1.9rem,3.4vw,2.75rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
           {{ lawyer.name }}<template v-if="approved">&nbsp;<span class="inline-block align-middle"><CanopyVerifiedTick big /></span></template>
         </h1>
         <p v-if="summary" class="mt-[0.6rem] max-w-[34rem] text-[1.12rem]">{{ summary }}</p>

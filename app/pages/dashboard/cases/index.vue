@@ -87,7 +87,7 @@ const EMPTY: Record<CaseTab, string> = {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const panel = 'rounded-card border border-border bg-card'
 const pill = 'rounded-full px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold whitespace-nowrap'
 </script>
@@ -97,7 +97,7 @@ const pill = 'rounded-full px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold wh
   <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
     <header>
       <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ isLawyer ? 'Your clients\' work' : 'Work your lawyers are doing' }}</p>
-      <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Cases</h1>
+      <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Cases</h1>
       <p class="mt-[0.6rem] max-w-[40rem] text-[1.05rem] text-muted-foreground">{{ loading ? 'Loading your cases…' : isError ? 'The work that follows a consultation.' : summary }}</p>
     </header>
 

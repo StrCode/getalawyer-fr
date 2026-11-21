@@ -76,7 +76,7 @@ const emptyCopy = computed(() =>
 )
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const panel = 'rounded-card border border-border bg-card'
 
 onMounted(() => {
@@ -88,7 +88,7 @@ onMounted(() => {
   <div class="mx-auto grid w-full max-w-[52rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
     <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div class="min-w-0">
-        <h1 class="text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Notifications</h1>
+        <h1 class="text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Notifications</h1>
         <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
           <template v-if="unreadCount > 0"><b class="font-semibold text-foreground">{{ unreadCount }} unread.</b> </template>Newest first. Open one to go to what it is about.
         </p>

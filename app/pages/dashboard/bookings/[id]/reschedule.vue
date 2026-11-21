@@ -82,19 +82,19 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
     </div>
 
     <section v-else-if="missing" :class="[panel, 'text-center']">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">There is no booking here.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no booking here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/bookings">Back to bookings</NuxtLink></Button>
     </section>
 
     <section v-else-if="!booking" :class="[panel, 'text-center']">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this booking.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this booking.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
 
     <section v-else-if="!canMove" :class="[panel, 'text-center']">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">This booking can no longer be moved.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">This booking can no longer be moved.</h1>
       <p class="mt-2 text-muted-foreground">Only a booking that has not started, and has not been cancelled, can change its time.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink :to="back">Back to the booking</NuxtLink></Button>
     </section>
@@ -102,7 +102,7 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
     <template v-else>
       <header>
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Booking<template v-if="booking.bookingReference"> · {{ booking.bookingReference }}</template></p>
-        <h1 class="mt-[0.6rem] text-[clamp(2rem,4vw,3rem)] leading-[1.04] font-[620] tracking-[-0.04em]">Change the time</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.04] font-[620] tracking-[-0.04em]">Change the time</h1>
         <p class="mt-[0.6rem] max-w-[40rem] text-[1.05rem] text-muted-foreground">
           {{ whatLine(booking) }} with {{ booking.lawyer?.name ?? 'your lawyer' }}. It is now on
           <b class="font-semibold text-foreground">{{ whenLine(booking) }}</b>.

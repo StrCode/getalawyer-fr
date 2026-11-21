@@ -42,7 +42,7 @@ const others = [
 
 // Styles for the page's own markup (h2, h3, p, ul, a), which arrives through the slot.
 const prose = [
-  '[&_h2]:mt-[2.6rem] [&_h2]:scroll-mt-24 [&_h2]:text-[1.6rem] [&_h2]:leading-[1.1] [&_h2]:font-[650] [&_h2]:tracking-[-0.03em] [&_h2:first-child]:mt-0',
+  '[&_h2]:mt-[2.6rem] [&_h2]:scroll-mt-24 [&_h2]:text-[1.45rem] [&_h2]:leading-[1.1] [&_h2]:font-[650] [&_h2]:tracking-[-0.03em] [&_h2:first-child]:mt-0',
   '[&_h3]:mt-[1.6rem] [&_h3]:text-[1.12rem] [&_h3]:font-[650] [&_h3]:tracking-[-0.02em]',
   '[&_p]:mt-[0.8rem] [&_p]:text-muted-foreground',
   '[&_ul]:mt-[0.8rem] [&_ul]:grid [&_ul]:list-disc [&_ul]:gap-[0.45rem] [&_ul]:pl-5 [&_li]:text-muted-foreground [&_li]:marker:text-brand',
@@ -60,7 +60,7 @@ const prose = [
         <span aria-current="page" class="text-foreground">{{ title }}</span>
       </nav>
       <div class="mt-[1.4rem] text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Legal</div>
-      <h1 class="mt-[0.9rem] text-[clamp(2.5rem,5.4vw,4.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">{{ title }}</h1>
+      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.6vw,3.9rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">{{ title }}</h1>
       <p class="mt-[1.1rem] inline-flex rounded-full bg-mint px-[0.85rem] py-[0.35rem] text-[0.85rem] font-bold text-deep">Effective {{ effectiveDate }}</p>
       <p v-if="intro" class="mt-[1.1rem] max-w-[40rem] text-[1.15rem] text-muted-foreground">{{ intro }}</p>
     </header>

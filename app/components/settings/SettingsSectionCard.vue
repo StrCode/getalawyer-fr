@@ -14,7 +14,7 @@ defineProps<{
       class="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border px-[clamp(1.1rem,2.2vw,1.5rem)] py-[1.1rem]"
     >
       <div class="min-w-0">
-        <h2 class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">{{ title }}</h2>
+        <h2 class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ title }}</h2>
         <p v-if="description" class="mt-[0.2rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">{{ description }}</p>
       </div>
       <div v-if="$slots.action" class="flex-none"><slot name="action" /></div>

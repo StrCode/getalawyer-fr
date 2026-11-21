@@ -20,7 +20,7 @@ defineProps<{
     <div v-if="$slots.back" class="mb-[1.6rem] flex justify-center">
       <slot name="back" />
     </div>
-    <h1 class="text-[clamp(2.1rem,3.6vw,2.9rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+    <h1 class="text-[clamp(1.9rem,3.1vw,2.5rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
       {{ title }}
     </h1>
     <p v-if="description || $slots.description" class="mt-[0.7rem] text-muted-foreground">

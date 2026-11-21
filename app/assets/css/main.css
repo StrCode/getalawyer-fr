@@ -78,7 +78,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   /* ---- Canopy (marketing + sign-in) ---- */
   /* Literal stacks, so @nuxt/fonts sees the families and injects their faces. */
-  --font-display: "Bricolage Grotesque", "Bricolage Grotesque Ext", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Instrument Sans", "Instrument Sans Ext", "Helvetica Neue", Arial, sans-serif;
   --font-text: "Onest", "Onest Ext", "Helvetica Neue", Arial, sans-serif;
   --ease-canopy: cubic-bezier(0.22, 0.8, 0.26, 1);
   /* tab: hero and panels go side by side; nav: the header shows its links */

@@ -52,7 +52,7 @@ function directory(id: string) {
         <span aria-hidden="true">/</span>
         <span aria-current="page">Practice areas</span>
       </nav>
-      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.4vw,3.6rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Practice areas</h1>
+      <h1 class="mt-[0.9rem] text-[clamp(2.1rem,3.8vw,3.1rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Practice areas</h1>
       <p class="mt-[0.8rem] max-w-[36rem] text-[1.1rem] text-on-forest">Pick the area closest to your problem to see verified lawyers who handle it. Not sure which one fits? Describe it in a word or two.</p>
       <label for="area-search" class="mt-[1.6rem] flex max-w-[34rem] items-center gap-3 rounded-full bg-card py-[0.45rem] pr-[0.45rem] pl-5 text-foreground shadow-rail">
         <CanopyGlyph name="search" :size="20" :stroke="2.2" class="flex-none text-muted-foreground" />
@@ -75,7 +75,7 @@ function directory(id: string) {
 
     <!-- could not load -->
     <div v-else-if="isError" role="alert" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the practice areas.</h2>
+      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the practice areas.</h2>
       <p class="max-w-[30rem] text-muted-foreground">Check your connection and try again, or browse every lawyer in the directory.</p>
       <div class="flex flex-wrap justify-center gap-2">
         <Button variant="line" size="pill" @click="refetch()">Try again</Button>
@@ -85,13 +85,13 @@ function directory(id: string) {
 
     <template v-else>
       <p aria-live="polite" class="mt-7 flex flex-wrap items-baseline gap-x-[0.7rem] border-b border-border pb-4 text-muted-foreground">
-        <b class="font-display text-[1.6rem] font-[650] tracking-[-0.03em] text-foreground">{{ matches.length }} {{ matches.length === 1 ? 'area' : 'areas' }}</b>
+        <b class="font-display text-[1.45rem] font-[650] tracking-[-0.03em] text-foreground">{{ matches.length }} {{ matches.length === 1 ? 'area' : 'areas' }}</b>
         <span v-if="query.trim()">matching “{{ query.trim() }}”</span>
       </p>
 
       <!-- nothing matches -->
       <div v-if="matches.length === 0" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-        <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">No practice area matches that.</h2>
+        <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">No practice area matches that.</h2>
         <p class="max-w-[30rem] text-muted-foreground">Try a different word, or search the directory by describing your problem.</p>
         <div class="flex flex-wrap justify-center gap-2">
           <Button variant="line" size="pill" @click="query = ''">Show all areas</Button>

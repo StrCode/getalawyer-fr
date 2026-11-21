@@ -57,9 +57,10 @@ const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95
 </script>
 
 <template>
-  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-[0.7rem]">
-    <div class="mx-auto max-w-[76rem] safe-x">
-      <div class="flex items-center justify-between gap-3 rounded-full border border-border bg-glass py-[0.4rem] pr-[0.45rem] pl-[1.1rem] shadow-pill backdrop-blur-[16px] backdrop-saturate-[1.4]">
+  <!-- a bar across the whole window; what is in it lines up with the page's column -->
+  <header class="sticky top-0 z-30 border-b border-border bg-glass pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px] backdrop-saturate-[1.4]">
+    <div class="mx-auto max-w-[76rem] safe-x tab:max-w-[81rem]">
+      <div class="flex h-[3.75rem] items-center justify-between gap-3">
         <CanopyBrand to="/dashboard" />
 
         <nav aria-label="Dashboard" class="flex items-center gap-[0.15rem] max-tab:hidden">

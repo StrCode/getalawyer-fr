@@ -81,7 +81,7 @@ const questions = computed(() => [
 // Checkout comes after registration and the application; the chosen plan is
 // remembered on this device so checkout can start on it (see utils/preferred-plan).
 const REGISTER = '/register?role=lawyer'
-const sectionTitle = 'text-[clamp(2rem,3.7vw,3.35rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance'
+const sectionTitle = 'text-[clamp(1.8rem,3.1vw,2.8rem)] leading-[1.02] font-[650] tracking-[-0.035em] text-balance'
 const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase'
 </script>
 
@@ -89,7 +89,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
   <div>
     <section class="max-w-[54rem] pt-[clamp(1.5rem,4vw,3.25rem)] pb-[clamp(1.5rem,3vw,2.5rem)]">
       <div :class="kicker">Pricing for lawyers</div>
-      <h1 class="mt-[0.9rem] text-[clamp(2.5rem,5.4vw,4.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+      <h1 class="mt-[0.9rem] text-[clamp(2.3rem,4.6vw,3.9rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
         One membership. <em class="text-brand not-italic">{{ several ? 'Pay for the term that suits you.' : 'No commission on your fees.' }}</em>
       </h1>
       <p class="mt-[1.2rem] max-w-[40rem] text-[1.15rem] text-muted-foreground">
@@ -100,7 +100,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
 
     <!-- prices could not be loaded: say so, never show a made-up figure -->
     <div v-if="!selected" role="alert" class="grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.5rem,2.6vw,2.1rem)] leading-[1.02] font-[650] tracking-[-0.035em]">Prices are not loading right now.</h2>
+      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">Prices are not loading right now.</h2>
       <p class="max-w-[32rem] text-muted-foreground">We could not fetch the current membership prices. Nothing is wrong with your account. Try again in a moment.</p>
       <Button variant="line" size="pill" :disabled="retrying" @click="refresh()">{{ retrying ? 'Trying…' : 'Try again' }}</Button>
     </div>
@@ -130,7 +130,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
             <span v-if="plan.savingsPercent > 0" class="rounded-full bg-lime px-[0.65rem] py-1 font-text text-[0.78rem] font-bold tracking-normal whitespace-nowrap text-night">Save {{ plan.savingsPercent }}%</span>
           </span>
           <span class="mt-[0.6rem] flex flex-wrap items-baseline gap-x-[0.6rem] gap-y-[0.15rem]">
-            <b class="font-display text-[clamp(2.4rem,4vw,3.3rem)] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
+            <b class="font-display text-[clamp(2.1rem,3.5vw,2.85rem)] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
             <small class="text-[1rem] text-muted-foreground group-data-on/plan:text-on-forest">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</small>
           </span>
           <span class="text-[0.95rem] font-semibold text-brand group-data-on/plan:text-lime">
@@ -148,7 +148,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
 
       <section id="pay" class="mt-[1.1rem] grid grid-cols-[minmax(0,1fr)_24rem] items-start gap-[1.1rem] max-tab:grid-cols-1">
         <div class="rounded-card bg-stone p-[clamp(1.4rem,3vw,2.25rem)]">
-          <h2 class="text-[clamp(1.5rem,2.4vw,2rem)] leading-[1.05] font-[650] tracking-[-0.035em]">{{ several ? 'Every plan includes' : 'Membership includes' }}</h2>
+          <h2 class="text-[clamp(1.4rem,2.1vw,1.8rem)] leading-[1.05] font-[650] tracking-[-0.035em]">{{ several ? 'Every plan includes' : 'Membership includes' }}</h2>
           <ul class="mt-[1.2rem] grid grid-cols-2 gap-x-8 gap-y-[1.1rem] max-sm:grid-cols-1">
             <li v-for="item in inclusions" :key="item.title" class="flex items-start gap-[0.8rem]">
               <span class="grid size-[1.7rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="13" :stroke="3.4" /></span>
@@ -173,7 +173,7 @@ const kicker = 'text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercas
             </div>
             <div class="flex items-baseline justify-between gap-4 pt-[0.85rem] pb-[0.6rem] font-bold">
               <dt>Due today</dt>
-              <dd class="font-display text-[1.6rem] font-bold tracking-[-0.03em]">{{ formatNairaAmount(selected.firstPaymentTotalNaira) }}</dd>
+              <dd class="font-display text-[1.45rem] font-bold tracking-[-0.03em]">{{ formatNairaAmount(selected.firstPaymentTotalNaira) }}</dd>
             </div>
           </dl>
           <p class="mt-[0.4rem] text-[0.9rem] text-muted-foreground">

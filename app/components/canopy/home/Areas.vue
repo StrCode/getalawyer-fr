@@ -32,7 +32,7 @@ const areas = computed(() =>
 <template>
   <section v-if="areas.length" id="areas" aria-labelledby="areas-title" class="scroll-mt-24 pt-[clamp(3rem,6vw,5rem)]">
     <div class="mb-[clamp(1.5rem,2.6vw,2.25rem)] max-w-[40rem]">
-      <h2 id="areas-title" class="text-[clamp(1.8rem,3vw,2.6rem)] font-[650] leading-[1.05] tracking-[-0.035em] text-balance">
+      <h2 id="areas-title" class="text-[clamp(1.65rem,2.6vw,2.25rem)] font-[650] leading-[1.05] tracking-[-0.035em] text-balance">
         Or choose the kind of help you need.
       </h2>
       <p class="mt-[0.7rem] text-muted-foreground">Pick one to see lawyers who do that work.</p>

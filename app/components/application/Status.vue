@@ -48,7 +48,7 @@ const MEMBERSHIP = {
     <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
       <div class="min-w-0">
         <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ kicker }}</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h1>
+        <h1 class="mt-[0.6rem] text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h1>
       </div>
       <span v-if="pill" class="inline-flex items-center gap-[0.4rem] rounded-full px-[0.7rem] py-1 text-[0.74rem] font-bold tracking-[0.06em] whitespace-nowrap uppercase" :class="PILL[pill.tone]">
         <i class="size-[0.45rem] rounded-full bg-current" />{{ pill.label }}

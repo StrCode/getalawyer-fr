@@ -218,7 +218,7 @@ function confirmMove() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'rounded-card border border-border bg-card'
 const pill = 'rounded-full px-[0.7rem] py-[0.15rem] text-[0.78rem] font-bold tracking-normal whitespace-nowrap normal-case'
 const quiet = 'shadow-none hover:translate-y-0'
@@ -243,13 +243,13 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
     </div>
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">There is no case here.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no case here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/cases">Back to cases</NuxtLink></Button>
     </section>
 
     <section v-else-if="!item" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this case.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this case.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -266,7 +266,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
             <span :class="[pill, CASE_PILL[item.status].class]">{{ CASE_PILL[item.status].label }}</span>
             <span v-if="priorityPill(item.priority)" :class="[pill, 'bg-warning/15 text-warning-subtle-foreground']">{{ priorityPill(item.priority) }}</span>
           </p>
-          <h1 id="case-title" class="mt-[0.8rem] text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">{{ item.caseTitle }}</h1>
+          <h1 id="case-title" class="mt-[0.8rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">{{ item.caseTitle }}</h1>
 
           <p class="mt-[0.9rem] flex flex-wrap items-center gap-x-[0.6rem] gap-y-1">
             <span aria-hidden="true" class="grid size-[2.2rem] flex-none place-items-center overflow-hidden rounded-[0.7rem] bg-mint font-display text-[0.85rem] font-bold text-deep">

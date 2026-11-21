@@ -80,13 +80,13 @@ const row = 'grid gap-x-6 gap-y-[0.15rem] py-[0.8rem] sm:grid-cols-[11rem_minmax
     <div v-if="loading" role="status" aria-label="Loading the receipt" class="h-[34rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">There is no receipt here.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no receipt here.</h1>
       <p class="mt-2 text-muted-foreground">Only a completed payment has a receipt. Your payments are listed on the Membership page.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/subscription">Back to Membership</NuxtLink></Button>
     </section>
 
     <section v-else-if="!receipt" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[clamp(1.5rem,2.2vw,1.9rem)] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this receipt.</h1>
+      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this receipt.</h1>
       <p class="mt-2 text-muted-foreground">Your payment is not affected. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -99,7 +99,7 @@ const row = 'grid gap-x-6 gap-y-[0.15rem] py-[0.8rem] sm:grid-cols-[11rem_minmax
       class="rounded-panel border border-border bg-card p-[clamp(1.4rem,4.5vw,3rem)] max-sm:rounded-[1.75rem] print:rounded-none print:border-0 print:p-0"
     >
       <header class="flex flex-wrap items-center justify-between gap-3">
-        <span class="flex items-center gap-[0.55rem] font-display text-[1.3rem] font-bold tracking-[-0.03em]">
+        <span class="flex items-center gap-[0.55rem] font-display text-[1.15rem] font-bold tracking-[-0.03em]">
           <BrandMark class="h-[1.625rem] w-auto flex-none fill-[#239261] dark:fill-white print:fill-[#239261]!" />getalawyer
         </span>
         <span class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Receipt</span>
@@ -107,7 +107,7 @@ const row = 'grid gap-x-6 gap-y-[0.15rem] py-[0.8rem] sm:grid-cols-[11rem_minmax
 
       <div class="mt-[clamp(1.6rem,4vw,2.6rem)] flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div class="min-w-0">
-          <h1 id="receipt-title" class="font-display text-[clamp(2.6rem,7vw,4rem)] leading-none font-[650] tracking-[-0.04em]">
+          <h1 id="receipt-title" class="font-display text-[clamp(2.2rem,5vw,3rem)] leading-none font-[650] tracking-[-0.04em]">
             <span class="sr-only">Receipt for </span>{{ formatNairaAmount(receipt.totalNaira) }}
           </h1>
           <p class="mt-[0.7rem] text-[1.05rem] text-muted-foreground">

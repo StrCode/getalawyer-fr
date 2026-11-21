@@ -4,7 +4,7 @@
     <!-- ───────── title and what is in the diary ───────── -->
     <header>
       <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your diary</p>
-      <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Appointments</h1>
+      <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Appointments</h1>
       <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
         <template v-if="isLoading">Loading your appointments…</template>
         <template v-else-if="isError">Requests to answer, consultations to come and everything already held.</template>
@@ -615,6 +615,6 @@ function confirmCancel() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[clamp(1.4rem,2vw,1.7rem)] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
 const panel = 'rounded-card border border-border bg-card'
 </script>

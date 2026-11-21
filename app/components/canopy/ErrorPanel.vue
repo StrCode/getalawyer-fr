@@ -40,7 +40,7 @@ const places = [
         </div>
 
         <template v-if="missing">
-          <h1 class="mt-5 text-[clamp(2.4rem,5vw,4.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+          <h1 class="mt-5 text-[clamp(2.2rem,4.3vw,3.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
             We can’t find <em class="text-lime not-italic">that page.</em>
           </h1>
           <p class="mt-[1.1rem] max-w-[32rem] text-[1.1rem] text-on-forest">
@@ -53,7 +53,7 @@ const places = [
         </template>
 
         <template v-else>
-          <h1 class="mt-5 text-[clamp(2.4rem,5vw,4.2rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+          <h1 class="mt-5 text-[clamp(2.2rem,4.3vw,3.6rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
             This page <em class="text-lime not-italic">did not load.</em>
           </h1>
           <p class="mt-[1.1rem] max-w-[32rem] text-[1.1rem] text-on-forest">
