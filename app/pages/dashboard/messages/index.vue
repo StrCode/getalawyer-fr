@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { AlertCircleIcon, ArrowLeft01Icon, Message01Icon, Message02Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { useMessaging } from '~/composables/useMessaging'
 import type { ConversationInfo, ConversationParticipant } from '~/types/messaging'
 import ConversationThreadPanel from '@/components/messaging/ConversationThreadPanel.vue'
-import ConversationListItem from '@/components/messaging/ConversationListItem.vue'
 import { useMessagingStore } from '~/stores/messagingStore'
-import { Badge } from '@/components/ui/badge'
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { initials } from '~/lib/client-overview'
 import { getSessionUserType } from '~/lib/session-user'
 
+/**
+ * Messages: every conversation on the left, the chosen one on the right. On a
+ * phone it is one or the other: the list, then the thread with a way back.
+ * The chosen conversation lives in the address (`?conversation=`), so links
+ * from a booking, a case or a lawyer's card open the right thread.
+ *
+ * The page is as tall as the screen allows, and the thread scrolls inside it,
+ * so the box for writing is always in reach.
+ */
 definePageMeta({
-  layout: 'dashboard',
-  middleware: 'auth',
-  dashboardScroll: 'contained',
-  dashboardWidth: 'full',
+  layout: 'workspace',
+  middleware: ['auth'],
 })
 
 const route = useRoute()
@@ -31,14 +32,12 @@ const isClient = computed(() => userType.value === 'client')
 
 const pageDescription = computed(() =>
   isClient.value
-    ? 'Message lawyers about bookings and consultations.'
-    : 'Message clients about consultations and bookings.',
+    ? 'Your conversations with lawyers.'
+    : 'Your conversations with clients.',
 )
 
-useHead({
-  title: 'Messages - GetALawyer',
-  meta: [{ name: 'description', content: () => pageDescription.value }],
-})
+useHead({ title: 'Messages' })
+useSeoMeta({ description: () => pageDescription.value, robots: 'noindex, nofollow' })
 
 const { initSocketListeners, useConversations, useConversation, useMarkAsRead } = useMessaging()
 const messagingStore = useMessagingStore()
@@ -80,7 +79,8 @@ watch(
 
 watch(selectedConversationId, (conversationId) => {
   messagingStore.setActiveConversation(conversationId)
-  if (conversationId) {
+  // In the browser only: reading happens on a screen, not while the server renders the page.
+  if (conversationId && import.meta.client) {
     markConversationAsRead(conversationId)
   }
 }, { immediate: true })
@@ -94,8 +94,8 @@ onUnmounted(() => {
 const viewport = useViewport()
 watch(conversations, (list) => {
   if (!list?.length || selectedConversationId.value) return
-  if (!viewport.isGreaterOrEquals('lg')) return
-  selectConversation(list[0].id)
+  if (!viewport.isGreaterOrEquals('lg')) return // `lg` here is the two-pane width (see the template's `tab:`)
+  selectConversation(list[0]!.id)
 }, { immediate: true })
 
 onMounted(() => {
@@ -162,146 +162,107 @@ function previewText(conversation: ConversationInfo) {
 </script>
 
 <template>
-  <div class="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-6">
-    <DashboardPageHeader
-      title="Messages"
-      :description="pageDescription"
-    >
-      <template #actions>
-        <Badge
-          v-if="totalUnread > 0"
-          variant="secondary"
-          class="font-normal tabular-nums"
-        >
-          {{ totalUnread }} unread
-        </Badge>
-      </template>
-    </DashboardPageHeader>
+  <!-- As tall as the screen allows: the bars above and (on a phone) below are taken off. -->
+  <div class="grid h-[calc(100svh-13.5rem)] min-h-[26rem] grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-[clamp(0.8rem,1.6vw,1.2rem)] tab:h-[calc(100svh-10.75rem)]">
+    <header class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1" :class="{ 'max-tab:hidden': showThreadOnMobile }">
+      <h1 class="text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.05] font-[620] tracking-[-0.04em]">Messages</h1>
+      <p class="text-[0.98rem] text-muted-foreground">
+        <template v-if="totalUnread > 0"><b class="font-semibold text-foreground">{{ totalUnread }} unread.</b> </template>Contact details stay private: everything is written here.
+      </p>
+    </header>
 
-    <Card class="flex min-h-0 flex-1 overflow-hidden py-0">
-      <div class="flex min-h-0 flex-1 flex-col lg:flex-row lg:min-h-[min(40rem,calc(100svh-14rem))]">
-        <aside
-          class="flex min-h-0 flex-col border-border lg:w-80 lg:shrink-0 lg:border-r"
-          :class="showThreadOnMobile ? 'hidden lg:flex' : 'flex flex-1 lg:flex-none'"
-        >
-          <div class="border-b border-border px-4 py-3">
-            <p class="text-sm font-medium text-foreground">
-              Conversations
-            </p>
-            <p class="text-xs text-muted-foreground">
-              In-app messaging — contact details stay private
-            </p>
+    <div class="flex min-h-0 overflow-hidden rounded-card border border-border bg-card" :class="{ 'max-tab:row-span-2': showThreadOnMobile }">
+      <!-- ───────── conversations ───────── -->
+      <aside
+        aria-label="Conversations"
+        class="min-h-0 flex-col border-border tab:flex tab:w-[21rem] tab:flex-none tab:border-r"
+        :class="showThreadOnMobile ? 'hidden' : 'flex flex-1'"
+      >
+        <div class="min-h-0 flex-1 overflow-y-auto p-[0.5rem]">
+          <div v-if="isLoadingConversations" role="status" aria-label="Loading conversations" class="grid gap-[0.4rem] p-[0.3rem]">
+            <div v-for="n in 5" :key="n" class="h-[4rem] animate-pulse rounded-[1rem] bg-muted" />
           </div>
 
-          <div class="min-h-0 flex-1 overflow-y-auto p-2">
-            <div
-              v-if="isLoadingConversations"
-              class="space-y-2 p-2"
-            >
-              <Skeleton
-                v-for="i in 5"
-                :key="i"
-                class="h-16 w-full rounded-lg"
-              />
-            </div>
-
-            <div
-              v-else-if="conversationsError"
-              class="flex flex-col items-center gap-3 px-4 py-10 text-center"
-            >
-              <HugeiconsIcon :icon="AlertCircleIcon" class="size-8 text-muted-foreground" />
-              <p class="text-sm text-muted-foreground">
-                Could not load conversations.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                @click="refetchConversations()"
-              >
-                Retry
-              </Button>
-            </div>
-
-            <div
-              v-else-if="!conversations?.length"
-              class="flex flex-col items-center px-4 py-14 text-center"
-            >
-              <HugeiconsIcon :icon="Message02Icon" class="mb-3 size-12 text-muted-foreground/40" />
-              <p class="text-sm font-medium text-foreground">
-                No conversations yet
-              </p>
-              <p class="mt-1 text-sm text-muted-foreground">
-                {{ isClient ? 'Start from a lawyer profile or booking.' : 'Conversations appear when clients message you.' }}
-              </p>
-            </div>
-
-            <div
-              v-else
-              class="space-y-0.5"
-            >
-              <ConversationListItem
-                v-for="conversation in conversations"
-                :key="conversation.id"
-                :participant-name="otherParticipant(conversation)?.name || 'Conversation'"
-                :participant-image="otherParticipant(conversation)?.image"
-                :preview="previewText(conversation)"
-                :time-label="formatTime(conversation.lastMessage?.createdAt ?? conversation.lastMessageAt)"
-                :selected="selectedConversationId === conversation.id"
-                :unread-count="conversation.unreadCount"
-                @select="selectConversation(conversation.id)"
-              />
-            </div>
-          </div>
-        </aside>
-
-        <section
-          class="flex min-h-0 min-w-0 flex-1 flex-col bg-background"
-          :class="showThreadOnMobile ? 'flex' : 'hidden lg:flex'"
-        >
-          <div
-            v-if="!selectedConversationId"
-            class="flex flex-1 flex-col items-center justify-center px-6 text-center text-muted-foreground"
-          >
-            <HugeiconsIcon :icon="Message01Icon" class="mb-4 size-14 text-muted-foreground/30" />
-            <p class="text-base font-medium text-foreground">
-              Select a conversation
-            </p>
-            <p class="mt-1 text-sm">
-              Choose a thread from the list to start messaging
-            </p>
+          <div v-else-if="conversationsError" class="grid justify-items-center gap-[0.7rem] px-4 py-10 text-center">
+            <p class="text-muted-foreground">We could not load your conversations.</p>
+            <Button variant="line" size="pill-sm" @click="refetchConversations()">Try again</Button>
           </div>
 
-          <template v-else>
-            <header class="flex items-center gap-3 border-b border-border px-4 py-3">
-              <Button
+          <div v-else-if="!conversations?.length" class="grid justify-items-center gap-[0.5rem] px-4 py-[clamp(2rem,6vw,3.5rem)] text-center">
+            <b class="font-display text-[1.2rem] font-[650] tracking-[-0.02em]">No conversations yet.</b>
+            <p class="max-w-[18rem] text-muted-foreground">
+              {{ isClient ? 'Ask a lawyer a question from their profile, or book a consultation. Asking is free.' : 'A conversation starts when a client writes to you or you accept their booking.' }}
+            </p>
+            <Button v-if="isClient" as-child variant="line" size="pill-sm" class="mt-[0.3rem]"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
+          </div>
+
+          <ul v-else class="grid gap-[0.15rem]">
+            <li v-for="conversation in conversations" :key="conversation.id">
+              <button
                 type="button"
-                variant="ghost"
-                size="icon-sm"
-                class="shrink-0 lg:hidden"
-                aria-label="Back to conversations"
-                @click="clearConversationSelection"
+                :aria-current="selectedConversationId === conversation.id ? 'true' : undefined"
+                class="flex w-full cursor-pointer items-center gap-[0.75rem] rounded-[1rem] px-[0.7rem] py-[0.65rem] text-left transition-colors duration-200"
+                :class="selectedConversationId === conversation.id ? 'bg-mint text-deep' : 'hover:bg-background'"
+                @click="selectConversation(conversation.id)"
               >
-                <HugeiconsIcon :icon="ArrowLeft01Icon" class="size-4" />
-              </Button>
+                <span aria-hidden="true" class="grid size-[2.75rem] flex-none place-items-center overflow-hidden rounded-[0.9rem] bg-mint font-display text-[0.9rem] font-bold text-deep" :class="{ 'bg-card': selectedConversationId === conversation.id }">
+                  <img v-if="otherParticipant(conversation)?.image" :src="otherParticipant(conversation)!.image!" alt="" class="size-full object-cover">
+                  <template v-else>{{ initials(otherParticipant(conversation)?.name) || '·' }}</template>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="flex items-baseline justify-between gap-2">
+                    <b class="truncate" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-bold' : 'font-semibold'">{{ otherParticipant(conversation)?.name || 'Conversation' }}</b>
+                    <span class="flex-none text-[0.78rem] opacity-70">{{ formatTime(conversation.lastMessage?.createdAt ?? conversation.lastMessageAt) }}</span>
+                  </span>
+                  <span class="mt-[0.05rem] flex items-center gap-2">
+                    <span class="min-w-0 flex-1 truncate text-[0.9rem]" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-semibold text-foreground' : 'opacity-75'">{{ previewText(conversation) }}</span>
+                    <span
+                      v-if="conversation.unreadCount > 0 && selectedConversationId !== conversation.id"
+                      class="grid min-w-[1.35rem] flex-none place-items-center rounded-full bg-brand px-[0.35rem] text-[0.72rem] leading-[1.35rem] font-bold text-white dark:text-night"
+                      :aria-label="`${conversation.unreadCount} unread`"
+                    >{{ conversation.unreadCount > 9 ? '9+' : conversation.unreadCount }}</span>
+                  </span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
-              <div class="min-w-0 flex-1">
-               <h2 class="truncate text-sm font-semibold text-foreground">
-                  {{ headerParticipantName ?? 'Loading…' }}
-                </h2>
-                <p class="text-xs text-muted-foreground">
-                  In-app messaging — contact details stay private
-                </p>
-              </div>
-            </header>
+      <!-- ───────── the chosen conversation ───────── -->
+      <section
+        :aria-label="headerParticipantName ? `Conversation with ${headerParticipantName}` : 'Conversation'"
+        class="min-h-0 min-w-0 flex-1 flex-col tab:flex"
+        :class="showThreadOnMobile ? 'flex' : 'hidden'"
+      >
+        <div v-if="!selectedConversationId" class="grid flex-1 place-items-center px-6 text-center">
+          <div>
+            <b class="font-display text-[1.3rem] font-[650] tracking-[-0.02em]">Choose a conversation</b>
+            <p class="mt-[0.3rem] text-muted-foreground">Pick one from the list to read it and reply.</p>
+          </div>
+        </div>
 
-            <ConversationThreadPanel
-              :key="selectedConversationId"
-              :conversation-id="selectedConversationId"
-              class="min-h-0 flex-1"
-            />
-          </template>
-        </section>
-      </div>
-    </Card>
+        <template v-else>
+          <header class="flex items-center gap-[0.7rem] border-b border-border px-[0.9rem] py-[0.7rem]">
+            <button
+              type="button"
+              class="-ml-[0.3rem] grid size-[2.75rem] flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-background tab:hidden"
+              @click="clearConversationSelection"
+            >
+              <CanopyGlyph name="arrow" :size="18" class="rotate-180" label="Back to conversations" />
+            </button>
+            <span aria-hidden="true" class="grid size-[2.5rem] flex-none place-items-center overflow-hidden rounded-[0.8rem] bg-mint font-display text-[0.85rem] font-bold text-deep">
+              <img v-if="headerParticipant?.image" :src="headerParticipant.image" alt="" class="size-full object-cover">
+              <template v-else>{{ initials(headerParticipantName) || '·' }}</template>
+            </span>
+            <div class="min-w-0 flex-1">
+              <h2 class="truncate font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ headerParticipantName ?? 'Loading…' }}</h2>
+              <p class="text-[0.82rem] text-muted-foreground">{{ isClient ? 'Lawyer' : 'Client' }} · contact details stay private</p>
+            </div>
+          </header>
+          <ConversationThreadPanel :key="selectedConversationId" :conversation-id="selectedConversationId" class="min-h-0 flex-1" />
+        </template>
+      </section>
+    </div>
   </div>
 </template>

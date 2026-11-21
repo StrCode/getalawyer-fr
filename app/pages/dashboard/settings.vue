@@ -1,42 +1,26 @@
 <template>
-  <div class="space-y-6 md:space-y-8">
-    <Card
-      v-if="!isClient && !isLawyer"
-      class="border-dashed"
-    >
-      <CardContent class="py-12 text-center text-sm text-muted-foreground">
-        Settings are not available for this account type.
-      </CardContent>
-    </Card>
+  <div class="mx-auto grid w-full max-w-[58rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+    <section v-if="!isClient && !isLawyer" class="rounded-card border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center text-muted-foreground">
+      Settings are not available for this kind of account.
+    </section>
 
     <template v-else>
-      <DashboardPageHeader
-        eyebrow="Account"
-        title="Settings"
-        :description="pageDescription"
-      />
+      <header>
+        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Account</p>
+        <h1 class="mt-[0.6rem] text-[clamp(2.1rem,4.4vw,3.2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Settings</h1>
+        <p class="mt-[0.6rem] max-w-[42rem] text-[1.05rem] text-muted-foreground">{{ pageDescription }}</p>
+      </header>
 
-      <SettingsShell
-        :active-section="activeSection"
-        :role="role"
-        @update:active-section="setSection"
-      >
-        <SettingsLegalInterestsSection
-          v-if="isClient && activeSection === 'legal-interests'"
-        />
-        <SettingsAccountSecuritySection
-          v-else-if="activeSection === 'account-security'"
-        />
-        <SettingsHelpSection
-          v-else-if="activeSection === 'help'"
-        />
+      <SettingsShell :active-section="activeSection" :role="role" @update:active-section="setSection">
+        <SettingsLegalInterestsSection v-if="isClient && activeSection === 'legal-interests'" />
+        <SettingsAccountSecuritySection v-else-if="activeSection === 'account-security'" />
+        <SettingsHelpSection v-else-if="activeSection === 'help'" />
       </SettingsShell>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import SettingsShell from '@/components/settings/SettingsShell.vue'
 import SettingsAccountSecuritySection from '@/components/settings/sections/SettingsAccountSecuritySection.vue'
 import SettingsHelpSection from '@/components/settings/sections/SettingsHelpSection.vue'
@@ -45,19 +29,20 @@ import {
   getDefaultSettingsSection,
   isSettingsSectionId,
 } from '@/components/settings/settings-nav'
-import { Card, CardContent } from '@/components/ui/card'
 import type { SettingsSectionId } from '~/types/account-settings'
 
-useHead({
-  title: 'Settings - GetALawyer',
-  meta: [
-    { name: 'description', content: 'Account security and support' },
-  ],
-})
+/**
+ * Account settings: sign-in details and help for everyone, plus legal
+ * interests for a client. The chosen section lives in the address
+ * (`?section=`). A lawyer's profile, practice tools and membership have their
+ * own pages.
+ */
+useHead({ title: 'Settings' })
+useSeoMeta({ description: 'Your sign-in details and support.', robots: 'noindex, nofollow' })
 
 definePageMeta({
-  layout: 'dashboard',
-  middleware: 'auth',
+  layout: 'workspace',
+  middleware: ['auth'],
 })
 
 const route = useRoute()
@@ -74,8 +59,8 @@ const role = computed(() => {
 
 const pageDescription = computed(() =>
   isLawyer.value
-    ? 'Email, phone, password, and support. Profile, bookings tools, and billing have their own pages.'
-    : 'Legal interests, security, and help.',
+    ? 'Your email, phone and password, and how to reach us. Your profile, practice tools and membership have their own pages.'
+    : 'What you need help with, your sign-in details, and how to reach us.',
 )
 
 const activeSection = computed<SettingsSectionId>(() => {

@@ -41,6 +41,9 @@ const THEMED_ROUTES = new Set<string>([
   '/dashboard/my-lawyers',
   '/dashboard/cases',
   '/dashboard/cases/:id()',
+  '/dashboard/messages',
+  '/dashboard/notifications',
+  '/dashboard/settings',
   '/dashboard/subscription',
   '/dashboard/subscription/receipts/:id()',
   // sign-in group (the `auth` layout)
