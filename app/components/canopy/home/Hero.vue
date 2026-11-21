@@ -22,7 +22,7 @@ function search() {
 
 <template>
   <section
-    class="relative grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-x-8 md:gap-x-9.5 lg:gap-x-12.75 xl:gap-x-16 gap-y-9 lg:gap-y-10.25 xl:gap-y-12.75 overflow-hidden rounded-panel px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-7 lg:py-8.75 xl:py-11 tab:min-h-[clamp(34rem,74svh,42rem)] border border-border bg-card text-foreground max-tab:grid-cols-1 max-sm:rounded-2xl"
+    class="relative grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-x-8 md:gap-x-9.5 lg:gap-x-12.75 xl:gap-x-16 gap-y-8 lg:gap-y-9 xl:gap-y-10 tab:content-center overflow-hidden rounded-panel px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-7 lg:py-8.75 xl:py-11 tab:min-h-[clamp(34rem,74svh,42rem)] border border-border bg-card text-foreground max-tab:grid-cols-1 max-sm:rounded-2xl"
   >
     <div class="col-start-1 row-start-1 min-w-0 tab:relative tab:z-2">
       <!-- three lines by design: each span is one line. On phones the size follows
