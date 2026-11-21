@@ -1,254 +1,97 @@
 <script setup lang="ts">
-import { Building01Icon, Mail01Icon, UserIcon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
 import { toast } from 'vue-sonner'
 import ClientProfileShell from '@/components/profile/ClientProfileShell.vue'
 import ClientProfileCompletenessAside from '@/components/profile/ClientProfileCompletenessAside.vue'
+import ClientAboutForm from '@/components/profile/client/ClientAboutForm.vue'
+import ClientContactForm from '@/components/profile/client/ClientContactForm.vue'
+import ClientLocationForm from '@/components/profile/client/ClientLocationForm.vue'
+import ClientPersonalForm from '@/components/profile/client/ClientPersonalForm.vue'
 import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSection.vue'
-import ProfileSectionActions from '@/components/profile/ProfileSectionActions.vue'
-import ProfileSettingsRow from '@/components/dashboard/ProfileSettingsRow.vue'
 import { CLIENT_PROFILE_SECTIONS } from '@/components/profile/client-profile-nav'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FieldGroup } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
-import { CANOPY_CARDS, PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
-import { Textarea } from '@/components/ui/textarea'
-import { useClientOnboarding } from '~/composables/useClientOnboarding'
+import { Button } from '@/components/ui/button'
+import { PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
 import { useClientProfile } from '~/composables/useClientProfile'
-import type { ClientProfile } from '~/lib/api'
 import { ApiError } from '~/lib/api/client'
-import { isValidNgPhone } from '~/lib/phone'
+import { NIGERIA_STATE_NAMES } from '~/constants/nigeria-states-lgas'
 
-const DEFAULT_COUNTRY = 'NG'
+/**
+ * A client's profile: photo, details, where they are, what they need help
+ * with, and a phone number. Each part is its own small form with its own
+ * Save, built on TanStack Form like every other form in the dashboard.
+ */
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 
-type ProfileSectionId = 'personal' | 'location' | 'about' | 'contact'
+type FormId = 'personal' | 'location' | 'about' | 'contact'
 
 const { useProfile, useUpdateProfile, useUploadAvatar } = useClientProfile()
-const { useCountries } = useClientOnboarding()
 
-const {
-  data: profile,
-  isLoading,
-  isError,
-  refetch,
-} = useProfile()
-
-const { data: countriesData } = useCountries()
+const { data: profile, isLoading, isError, refetch } = useProfile()
 const { mutateAsync: updateProfile, isPending: isSaving } = useUpdateProfile()
 const { mutateAsync: uploadAvatar, isPending: isUploadingAvatar } = useUploadAvatar()
 
 const avatarPreview = ref<string | null>(null)
-const profileInitialized = ref(false)
-const savingSection = ref<ProfileSectionId | null>(null)
+const savingForm = ref<FormId | null>(null)
 
-const form = reactive({
-  name: '',
-  company: '',
-  country: DEFAULT_COUNTRY,
-  state: '',
-  city: '',
-  bio: '',
-  phoneNumber: '',
-})
+// The same list, and the same stored names, as sign-up, the directory and lawyers' profiles.
+const states = [...NIGERIA_STATE_NAMES]
+  .sort((a, b) => a.localeCompare(b))
+  .map(name => ({ label: name === 'FCT' ? 'Abuja (FCT)' : name, value: name }))
 
-const savedSnapshots = reactive({
-  personal: '',
-  location: '',
-  about: '',
-  contact: '',
-})
-
-function snapshotPersonal() {
-  return JSON.stringify({ name: form.name, company: form.company })
-}
-
-function snapshotLocation() {
-  return JSON.stringify({ country: form.country, state: form.state, city: form.city })
-}
-
-function snapshotAbout() {
-  return JSON.stringify({ bio: form.bio })
-}
-
-function snapshotContact() {
-  return JSON.stringify({ phoneNumber: form.phoneNumber })
-}
-
-function syncSnapshotsFromForm() {
-  savedSnapshots.personal = snapshotPersonal()
-  savedSnapshots.location = snapshotLocation()
-  savedSnapshots.about = snapshotAbout()
-  savedSnapshots.contact = snapshotContact()
-}
-
-function profileToForm(p: ClientProfile) {
-  form.name = p.name ?? ''
-  form.company = p.company ?? ''
-  form.country = p.country || DEFAULT_COUNTRY
-  form.state = p.state ?? ''
-  form.city = p.city ?? ''
-  form.bio = p.bio ?? ''
-  form.phoneNumber = p.phoneNumber ?? ''
-  syncSnapshotsFromForm()
-}
-
-watch(
-  profile,
-  (p) => {
-    if (p && !profileInitialized.value) {
-      profileToForm(p)
-      profileInitialized.value = true
-    }
-  },
-  { immediate: true },
-)
-
-const availableStates = computed(() => {
-  const countries = countriesData.value?.data ?? []
-  const country = countries.find(c => c.code2 === form.country)
-  return (country?.states ?? []).map(s => ({
-    label: s.name,
-    value: s.code,
-  }))
-})
-
-const displayName = computed(() => form.name.trim() || profile.value?.name || 'Your profile')
-
+const displayName = computed(() => profile.value?.name?.trim() || 'Your profile')
 const avatarSrc = computed(() => avatarPreview.value ?? profile.value?.image ?? '')
-
-const phoneValid = computed(() => {
-  const phone = form.phoneNumber.trim()
-  if (!phone) return true // optional
-  return isValidNgPhone(phone)
-})
-
-const isPersonalDirty = computed(() => snapshotPersonal() !== savedSnapshots.personal)
-const isLocationDirty = computed(() => snapshotLocation() !== savedSnapshots.location)
-const isAboutDirty = computed(() => snapshotAbout() !== savedSnapshots.about)
-const isContactDirty = computed(() => snapshotContact() !== savedSnapshots.contact)
-
-const canSavePersonal = computed(
-  () => isPersonalDirty.value && form.name.trim().length > 0 && !isSaving.value,
-)
-const canSaveLocation = computed(
-  () => isLocationDirty.value && !!form.state && !isSaving.value,
-)
-const canSaveAbout = computed(() => isAboutDirty.value && !isSaving.value)
-const canSaveContact = computed(
-  () => isContactDirty.value && phoneValid.value && !isSaving.value,
-)
-
-function isSectionSaving(section: ProfileSectionId) {
-  return isSaving.value && savingSection.value === section
-}
 
 const completionItems = computed(() => [
   { label: 'Profile photo', done: Boolean(profile.value?.image) },
-  { label: 'Full name', done: Boolean(form.name.trim()) },
-  { label: 'State or region', done: Boolean(form.state) },
-  { label: 'Short bio', done: Boolean(form.bio.trim()), optional: true },
-  { label: 'Phone number', done: Boolean(form.phoneNumber.trim()), optional: true },
+  { label: 'Full name', done: Boolean(profile.value?.name?.trim()) },
+  { label: 'State', done: Boolean(profile.value?.state) },
+  { label: 'A short note', done: Boolean(profile.value?.bio?.trim()), optional: true },
+  { label: 'Phone number', done: Boolean(profile.value?.phoneNumber?.trim()), optional: true },
 ])
 
 const completionPercent = computed(() => {
   const required = completionItems.value.filter(item => !item.optional)
-  const done = required.filter(item => item.done).length
-  return Math.round((done / required.length) * 100)
+  return Math.round((required.filter(item => item.done).length / required.length) * 100)
 })
 
-function discardSection(section: ProfileSectionId) {
-  const saved = JSON.parse(savedSnapshots[section]) as Record<string, string>
-
-  if (section === 'personal') {
-    form.name = saved.name ?? ''
-    form.company = saved.company ?? ''
-  } else if (section === 'location') {
-    form.country = saved.country || DEFAULT_COUNTRY
-    form.state = saved.state ?? ''
-    form.city = saved.city ?? ''
-  } else if (section === 'about') {
-    form.bio = saved.bio ?? ''
-  } else if (section === 'contact') {
-    form.phoneNumber = saved.phoneNumber ?? ''
-  }
+function savingOf(id: FormId) {
+  return isSaving.value && savingForm.value === id
 }
 
-async function saveSection(section: ProfileSectionId) {
-  let payload: Parameters<typeof updateProfile>[0] = {}
-
-  if (section === 'personal') {
-    if (!canSavePersonal.value) return
-    payload = {
-      name: form.name.trim(),
-      company: form.company.trim() || undefined,
-    }
-  } else if (section === 'location') {
-    if (!canSaveLocation.value) return
-    payload = {
-      country: form.country,
-      state: form.state,
-      city: form.city.trim() || undefined,
-    }
-  } else if (section === 'about') {
-    if (!canSaveAbout.value) return
-    payload = { bio: form.bio.trim() || undefined }
-  } else if (section === 'contact') {
-    if (!canSaveContact.value) return
-    payload = { phoneNumber: form.phoneNumber.trim() || undefined }
-  }
-
-  savingSection.value = section
-
+async function save(id: FormId, payload: Parameters<typeof updateProfile>[0]) {
+  savingForm.value = id
   try {
     await updateProfile(payload)
-    savedSnapshots[section] = {
-      personal: snapshotPersonal,
-      location: snapshotLocation,
-      about: snapshotAbout,
-      contact: snapshotContact,
-    }[section]()
-    toast.success('Section saved')
-  } catch (error) {
-    const message = error instanceof ApiError ? error.message : 'Could not save profile'
-    toast.error('Save failed', { description: message })
-  } finally {
-    savingSection.value = null
+    toast.success('Saved.')
+  }
+  catch (error) {
+    toast.error(error instanceof ApiError ? error.message : 'We could not save that. Nothing has changed.')
+  }
+  finally {
+    savingForm.value = null
   }
 }
 
 async function onAvatarUpload(file: File) {
   if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-    toast.error('Invalid file type', { description: 'Use JPEG, PNG, GIF, or WebP.' })
+    toast.error('Use a JPEG, PNG, GIF or WebP picture.')
     return
   }
-
   if (file.size > MAX_AVATAR_BYTES) {
-    toast.error('File too large', { description: 'Maximum size is 5 MB.' })
+    toast.error('The picture is larger than 5 MB.')
     return
   }
 
   avatarPreview.value = URL.createObjectURL(file)
-
   try {
     await uploadAvatar(file)
-    toast.success('Photo updated')
+    toast.success('Photo updated.')
     await refetch()
-  } catch (error) {
+  }
+  catch (error) {
     avatarPreview.value = null
-    const message = error instanceof ApiError ? error.message : 'Upload failed'
-    toast.error('Could not upload photo', { description: message })
+    toast.error(error instanceof ApiError ? error.message : 'We could not upload the photo.')
   }
 }
 
@@ -258,12 +101,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- The sections below are still the shared cards; CANOPY_CARDS gives them the panel look. -->
-  <div :class="['grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]', CANOPY_CARDS]">
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
     <DashboardPageHeader
       eyebrow="Account"
       title="Your profile"
-      description="Your photo, your contact details and what a lawyer sees about you."
+      description="Your photo, your details and what a lawyer sees about you."
     />
 
     <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
@@ -279,257 +121,43 @@ onBeforeUnmount(() => {
     </section>
 
     <template v-else>
-      <ClientProfileCompletenessAside
-        class="xl:hidden"
-        :percent="completionPercent"
-        :items="completionItems"
-      />
+      <ClientProfileCompletenessAside class="xl:hidden" :percent="completionPercent" :items="completionItems" />
 
       <ClientProfileShell :sections="CLIENT_PROFILE_SECTIONS">
         <template #sidebar>
-          <ClientProfileCompletenessAside
-            :percent="completionPercent"
-            :items="completionItems"
-          />
+          <ClientProfileCompletenessAside :percent="completionPercent" :items="completionItems" />
         </template>
 
-        <div class="space-y-6">
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)] [&>div]:scroll-mt-[5.25rem]">
           <div id="photo">
             <ProfilePhotoSection
               :name="displayName"
               :email="profile?.email"
               :image-url="avatarSrc"
               :uploading="isUploadingAvatar"
-              title="Profile photo"
-              description="Uploads automatically. Shown to lawyers on bookings and in messages."
+              title="Photo"
+              description="Saved as soon as you choose it. A lawyer sees it on your bookings and messages."
               @upload="onAvatarUpload"
             />
           </div>
-
-          <Card id="personal">
-            <CardHeader class="pb-3">
-              <CardTitle>
-                Personal information
-              </CardTitle>
-              <CardDescription>
-                Details shared with lawyers when you book a consultation.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FieldGroup class="gap-8">
-                <ProfileSettingsRow
-                  title="Full name"
-                  description="Your legal name as it appears on bookings."
-                >
-                  <div class="relative">
-                    <HugeiconsIcon :icon="UserIcon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="profile-name"
-                      v-model="form.name"
-                      autocomplete="name"
-                      required
-                      class="pl-9"
-                    />
-                  </div>
-                </ProfileSettingsRow>
-
-                <ProfileSettingsRow
-                  title="Email"
-                  description="Managed in Account settings — contact support to change your sign-in email."
-                >
-                  <div class="relative">
-                    <HugeiconsIcon :icon="Mail01Icon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="profile-email"
-                      :model-value="profile?.email ?? ''"
-                      type="email"
-                      disabled
-                      class="bg-background pl-9"
-                    />
-                  </div>
-                </ProfileSettingsRow>
-
-                <ProfileSettingsRow
-                  title="Company"
-                  description="Optional — shown if you book on behalf of an organization."
-                >
-                  <div class="relative">
-                    <HugeiconsIcon :icon="Building01Icon" class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      id="profile-company"
-                      v-model="form.company"
-                      autocomplete="organization"
-                      placeholder="Acme Ltd"
-                      class="pl-9"
-                    />
-                  </div>
-                </ProfileSettingsRow>
-              </FieldGroup>
-            </CardContent>
-            <ProfileSectionActions
-              :dirty="isPersonalDirty"
-              :can-save="canSavePersonal"
-              :saving="isSectionSaving('personal')"
-              @discard="discardSection('personal')"
-              @save="saveSection('personal')"
-            />
-          </Card>
-
-          <Card id="location">
-            <CardHeader class="pb-3">
-              <CardTitle>
-                Location
-              </CardTitle>
-              <CardDescription>
-                We use your region to surface lawyers who practice where you are.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FieldGroup class="gap-8">
-                <ProfileSettingsRow
-                  title="Country"
-                  description="GetALawyer is available in Nigeria for now."
-                >
-                  <div class="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3">
-                    <span
-                      class="flex size-10 shrink-0 items-center justify-center rounded-md bg-background text-lg shadow-xs ring-1 ring-border"
-                      aria-hidden="true"
-                    >
-                      🇳🇬
-                    </span>
-                    <p class="text-sm font-medium text-foreground">
-                      Nigeria
-                    </p>
-                    <Badge variant="secondary" class="ms-auto shrink-0 font-normal">
-                      Fixed
-                    </Badge>
-                  </div>
-                </ProfileSettingsRow>
-
-                <ProfileSettingsRow
-                  title="State or region"
-                  description="Required for lawyer matching in your area."
-                >
-                  <div class="grid gap-3 sm:grid-cols-2">
-                    <Select v-model="form.state">
-                      <SelectTrigger class="w-full">
-                        <SelectValue placeholder="Select state or region" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          v-for="s in availableStates"
-                          :key="s.value"
-                          :value="s.value"
-                        >
-                          {{ s.label }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      id="profile-city"
-                      v-model="form.city"
-                      placeholder="City"
-                      autocomplete="address-level2"
-                    />
-                  </div>
-                </ProfileSettingsRow>
-              </FieldGroup>
-            </CardContent>
-            <ProfileSectionActions
-              :dirty="isLocationDirty"
-              :can-save="canSaveLocation"
-              :saving="isSectionSaving('location')"
-              @discard="discardSection('location')"
-              @save="saveSection('location')"
-            />
-          </Card>
-
-          <Card id="about">
-            <CardHeader class="pb-3">
-              <CardTitle>
-                About you
-              </CardTitle>
-              <CardDescription>
-                Optional context for lawyers before your first consultation.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FieldGroup>
-                <ProfileSettingsRow
-                  title="Short bio / legal needs"
-                  description="A brief note on what you need help with."
-                >
-                  <Textarea
-                    id="profile-bio"
-                    v-model="form.bio"
-                    rows="4"
-                    maxlength="2000"
-                    placeholder="e.g. I need advice on a tenancy agreement in Lagos…"
-                    class="resize-y"
-                  />
-                </ProfileSettingsRow>
-              </FieldGroup>
-            </CardContent>
-            <ProfileSectionActions
-              :dirty="isAboutDirty"
-              :can-save="canSaveAbout"
-              :saving="isSectionSaving('about')"
-              @discard="discardSection('about')"
-              @save="saveSection('about')"
-            />
-          </Card>
-
-          <Card id="contact">
-            <CardHeader class="pb-3">
-              <CardTitle>
-                Contact
-              </CardTitle>
-              <CardDescription>
-                Optional — lawyers may use this to reach you about bookings.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FieldGroup>
-<ProfileSettingsRow
-                  title="Phone number"
-                  description="Optional — a Nigerian number lawyers can reach you on."
-                >
-                  <div class="space-y-2">
-                    <AuthPhoneInput
-                      label=""
-                      :model-value="form.phoneNumber"
-                      :invalid="!phoneValid"
-                      @update:model-value="(v) => form.phoneNumber = v"
-                    />
-                    <p
-                      v-if="!phoneValid"
-                      class="text-sm text-destructive"
-                    >
-                      Enter a valid Nigerian phone number or leave blank.
-                    </p>
-                  </div>
-                </ProfileSettingsRow>
-              </FieldGroup>
-            </CardContent>
-            <ProfileSectionActions
-              :dirty="isContactDirty"
-              :can-save="canSaveContact"
-              :saving="isSectionSaving('contact')"
-              @discard="discardSection('contact')"
-              @save="saveSection('contact')"
-            />
-          </Card>
+          <div id="personal">
+            <ClientPersonalForm :profile="profile" :saving="savingOf('personal')" @save="(p) => save('personal', p)" />
+          </div>
+          <div id="location">
+            <ClientLocationForm :profile="profile" :states="states" :saving="savingOf('location')" @save="(p) => save('location', p)" />
+          </div>
+          <div id="about">
+            <ClientAboutForm :profile="profile" :saving="savingOf('about')" @save="(p) => save('about', p)" />
+          </div>
+          <div id="contact">
+            <ClientContactForm :profile="profile" :saving="savingOf('contact')" @save="(p) => save('contact', p)" />
+          </div>
         </div>
       </ClientProfileShell>
 
-      <p class="text-center text-sm text-muted-foreground xl:text-left">
-        Legal interests and security are in
-        <NuxtLink
-          to="/dashboard/settings"
-          class="font-medium text-primary underline-offset-4 hover:underline"
-        >
-          Account settings
-        </NuxtLink>.
+      <p class="text-[0.95rem] text-muted-foreground">
+        Your legal interests and sign-in details are in
+        <NuxtLink to="/dashboard/settings" class="font-semibold text-brand underline-offset-4 hover:underline">Settings</NuxtLink>.
       </p>
     </template>
   </div>

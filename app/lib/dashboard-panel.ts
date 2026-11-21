@@ -19,14 +19,3 @@ export const PANEL_LINK =
 
 export const PANEL_LINK_ARROW =
   'ml-1 inline-block transition-transform duration-200 ease-canopy group-hover:translate-x-0.5'
-
-/**
- * Put on the wrapper of a page whose sections are still the shared ui/ cards:
- * gives every card inside it the Canopy panel edge and heading, in one place,
- * until those sections are rebuilt.
- */
-export const CANOPY_CARDS = [
-  '[&_[data-slot=card]]:rounded-card [&_[data-slot=card]]:border-border [&_[data-slot=card]]:shadow-none',
-  '[&_[data-slot=card-title]]:font-display [&_[data-slot=card-title]]:text-[1.15rem] [&_[data-slot=card-title]]:leading-[1.2] [&_[data-slot=card-title]]:font-[650] [&_[data-slot=card-title]]:tracking-[-0.02em]',
-  '[&_[data-slot=card-description]]:text-[0.95rem]',
-].join(' ')

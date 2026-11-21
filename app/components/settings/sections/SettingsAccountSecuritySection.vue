@@ -1,137 +1,93 @@
 <template>
-  <div class="space-y-6">
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)]">
     <SettingsSectionCard
       v-if="needsLinkEmail"
       title="Email address"
-      description="Link a real email to receive notifications and recover your account."
+      description="Add an email to get notices about your bookings and to recover your account."
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-muted-foreground">
-          Your account uses phone sign-in. Add an email to unlock recovery and notifications.
-        </p>
-        <Button
-          type="button"
-          size="sm"
-          class="cursor-pointer"
-          @click="openDialog"
-        >
-          Link email
-        </Button>
+        <p class="text-muted-foreground">You sign in with your phone. An email lets you get notices and recover your account.</p>
+        <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">Add an email</Button>
       </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
       v-else-if="needsVerifyEmail"
-      title="Email verification"
-      description="Confirm your email to receive booking and security notifications."
+      title="Email address"
+      description="Confirm your email to get notices about your bookings and your account."
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="min-w-0">
-          <p class="truncate text-sm font-medium text-foreground">
-            {{ session?.user?.email }}
-          </p>
-          <p class="mt-1 text-sm text-muted-foreground">
-            Waiting for confirmation
-          </p>
+          <p class="truncate font-semibold">{{ session?.user?.email }}</p>
+          <p class="mt-[0.1rem] text-[0.92rem] text-muted-foreground">Not confirmed yet</p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          class="cursor-pointer"
-          @click="openDialog"
-        >
-          Verify email
-        </Button>
+        <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">Confirm your email</Button>
       </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
       v-else
       title="Email address"
-      description="Used for sign-in and account notifications."
+      description="You sign in with it, and notices about your account go to it."
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-foreground">
-          {{ session?.user?.email }}
-        </p>
-        <Badge variant="secondary" class="font-normal">
-          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mr-1 size-3.5" />
-          Verified
-        </Badge>
+        <p class="min-w-0 truncate font-semibold">{{ session?.user?.email }}</p>
+        <span class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Confirmed</span>
       </div>
     </SettingsSectionCard>
 
     <SettingsSectionCard
-      title="Phone verification"
-      description="Verify your mobile number for sign-in and SMS notifications."
+      title="Phone number"
+      description="Confirm your mobile number to sign in with it and get text messages about your bookings."
     >
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
-        <div class="min-w-0 flex-1">
-          <AuthPhoneInput
-            v-model="phone"
-            :disabled="phoneVerified"
-          />
-        </div>
-        <Button
-          v-if="!phoneVerified"
-          type="button"
-          variant="outline"
-          size="sm"
-          class="shrink-0"
-          :disabled="isSendingOtp"
-          @click="handleSendOtp"
-        >
-          {{ isSendingOtp ? 'Sending…' : 'Send code' }}
-        </Button>
-        <Badge
-          v-else
-          variant="secondary"
-          class="shrink-0"
-        >
-          <HugeiconsIcon :icon="CheckmarkCircle01Icon" class="mr-1 size-3.5" />
-          Verified
-        </Badge>
+      <div v-if="phoneVerified" class="flex flex-wrap items-center justify-between gap-3">
+        <p class="min-w-0 font-semibold tabular-nums">{{ phoneForm.state.values.phone }}</p>
+        <span class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Confirmed</span>
       </div>
 
-      <div
-        v-if="otpSent && !phoneVerified"
-        class="mt-4 space-y-4"
-      >
-        <AuthOtpStep
-          v-model="otpCode"
-          :error="otpError"
-          :blocked="otpBlocked"
-          :is-submitting="isVerifying"
-          :is-resending="isSendingOtp"
-          @resend="handleSendOtp"
-          @request-new-code="handleSendOtp"
-        />
-        <AuthDevOtpHint />
-        <p
-          v-if="linkError"
-          class="text-sm text-destructive"
-        >
-          {{ linkError }}
-        </p>
-      </div>
+      <template v-else>
+        <form novalidate class="flex flex-col gap-[0.75rem] sm:flex-row sm:items-start" @submit.prevent="phoneForm.handleSubmit">
+          <phoneForm.Field v-slot="{ field }" name="phone">
+            <Field :class="[canopyField, 'min-w-0 flex-1']" :data-invalid="isInvalid(field)">
+              <AuthPhoneInput
+                label="Mobile number"
+                :model-value="field.state.value"
+                :invalid="isInvalid(field)"
+                :disabled="isSendingOtp"
+                @blur="field.handleBlur"
+                @update:model-value="(v: string) => field.handleChange(v ?? '')"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </phoneForm.Field>
+          <Button type="submit" variant="line" size="pill" class="flex-none sm:mt-[1.85rem]" :disabled="isSendingOtp" :aria-busy="isSendingOtp">
+            {{ isSendingOtp ? 'Sending…' : otpSent ? 'Send a new code' : 'Send a code' }}
+          </Button>
+        </form>
+
+        <div v-if="otpSent" class="mt-[1rem] grid gap-[0.8rem]">
+          <AuthOtpStep
+            v-model="otpCode"
+            :error="otpError"
+            :blocked="otpBlocked"
+            :is-submitting="isVerifying"
+            :is-resending="isSendingOtp"
+            @resend="sendCode"
+            @request-new-code="sendCode"
+          />
+          <AuthDevOtpHint />
+        </div>
+        <p v-if="linkError" role="alert" class="mt-[0.7rem] text-[0.92rem] font-semibold text-destructive">{{ linkError }}</p>
+      </template>
     </SettingsSectionCard>
 
     <SettingsSectionCard
       title="Password"
-      description="Update your password while signed in."
+      description="You need your current password to choose a new one."
     >
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <p class="text-sm text-muted-foreground">
-          You’ll need your current password to set a new one.
-        </p>
-        <Button
-          type="button"
-          size="sm"
-          class="cursor-pointer"
-          @click="changePasswordOpen = true"
-        >
-          Change password
-        </Button>
+        <p class="text-muted-foreground">Choose a new password at any time.</p>
+        <Button type="button" variant="line" size="pill-sm" @click="changePasswordOpen = true">Change password</Button>
       </div>
     </SettingsSectionCard>
 
@@ -140,13 +96,19 @@
 </template>
 
 <script setup lang="ts">
-import { CheckmarkCircle01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import SettingsChangePasswordDialog from '@/components/settings/SettingsChangePasswordDialog.vue'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Field, FieldError } from '@/components/ui/field'
+import { phoneToVerifySchema } from '~/lib/client-profile-forms'
 
+/**
+ * Sign-in details: the email (add it, confirm it, or see it confirmed), the
+ * phone number (confirmed with a code sent by text), and the password. The
+ * phone number is a TanStack form; sending it asks for a code, and typing the
+ * six digits confirms it.
+ */
 const { session, refetchSession } = useAuth()
 const { sendPhoneOtp, verifyPhoneOtp, isTooManyAttemptsError } = usePhoneAuth()
 const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
@@ -154,7 +116,6 @@ const { openDialog } = useEmailVerificationDialog()
 
 const changePasswordOpen = ref(false)
 
-const phone = ref('')
 const otpSent = ref(false)
 const otpCode = ref('')
 const otpError = ref('')
@@ -168,19 +129,35 @@ const phoneVerified = computed(() => {
   return Boolean(user?.phoneNumberVerified)
 })
 
-async function handleSendOtp() {
+const phoneForm = useForm({
+  defaultValues: { phone: '' },
+  validators: {
+    onChange: phoneToVerifySchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: () => sendCode(),
+})
+
+const { isInvalid } = useAuthFieldInvalid(phoneForm)
+
+async function sendCode() {
   linkError.value = ''
   otpError.value = ''
   otpBlocked.value = false
   isSendingOtp.value = true
   try {
-    const { error } = await sendPhoneOtp(phone.value)
+    const { error } = await sendPhoneOtp(phoneForm.state.values.phone)
     if (error) {
-      linkError.value = error.message || 'Failed to send code'
+      linkError.value = error.message || 'We could not send a code. Try again.'
       return
     }
     otpSent.value = true
-  } finally {
+  }
+  finally {
     isSendingOtp.value = false
   }
 }
@@ -192,34 +169,28 @@ async function verifyOtp() {
   linkError.value = ''
   try {
     const { error } = await verifyPhoneOtp({
-      phone: phone.value,
+      phone: phoneForm.state.values.phone,
       code: otpCode.value,
       updatePhoneNumber: true,
     })
     if (error) {
-      if (isTooManyAttemptsError(error)) {
-        otpBlocked.value = true
-      } else {
-        otpError.value = error.message || 'Invalid code'
-      }
+      if (isTooManyAttemptsError(error)) otpBlocked.value = true
+      else otpError.value = error.message || 'That code is not right.'
       return
     }
     await refetchSession()
-  } finally {
+  }
+  finally {
     isVerifying.value = false
   }
 }
 
-watch(otpCode, (v) => {
-  if (v.length === 6 && otpSent.value && !phoneVerified.value) {
-    verifyOtp()
-  }
+watch(otpCode, (code) => {
+  if (code.length === 6 && otpSent.value && !phoneVerified.value) void verifyOtp()
 })
 
 onMounted(() => {
   const user = session.value?.user as { phoneNumber?: string } | undefined
-  if (user?.phoneNumber) {
-    phone.value = user.phoneNumber
-  }
+  if (user?.phoneNumber) phoneForm.reset({ phone: user.phoneNumber })
 })
 </script>

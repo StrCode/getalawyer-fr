@@ -36,11 +36,13 @@
     </aside>
 
     <div class="min-w-0 flex-1 space-y-6">
-      <ProfileMobileSectionSelect
-        v-model="mobileSection"
-        :sections="sections"
-        class="xl:hidden"
-      />
+      <!-- the select draws no box of its own, so it is hidden from a wrapper; wide screens have the list beside -->
+      <div class="xl:hidden">
+        <ProfileMobileSectionSelect
+          v-model="mobileSection"
+          :sections="sections"
+        />
+      </div>
 
       <slot />
     </div>
