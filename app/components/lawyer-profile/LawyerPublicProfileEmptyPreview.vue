@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
     <HugeiconsIcon :icon="PencilEdit01Icon" class="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" />
    <h2
       id="profile-empty-heading"
-      class="text-base font-semibold text-foreground"
+      class="text-base font-medium text-foreground"
     >
       Your profile is still empty
     </h2>

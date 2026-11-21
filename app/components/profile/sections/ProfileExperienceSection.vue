@@ -61,13 +61,13 @@ const isCurrent = form.useStore(state => state.values.isCurrent)
   <SettingsSectionCard
     title="Experience"
     description="The roles clients see on your public page."
-    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+    content-class="grid gap-2.5 p-4.5 lg:p-5.75 xl:p-6"
   >
     <template #action>
-      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a role</Button>
+      <Button type="button" variant="line" size="pill-sm" class="h-10 px-3.75 text-sm" :disabled="disabled" @click="openCreate">Add a role</Button>
     </template>
 
-    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No roles added yet.</p>
+    <p v-if="items.length === 0" class="py-4.75 text-center text-muted-foreground">No roles added yet.</p>
     <ProfileListRow
       v-for="item in items"
       :key="item.id"
@@ -88,7 +88,7 @@ const isCurrent = form.useStore(state => state.values.isCurrent)
     :saving="saving"
   >
     <form id="experience-form" novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="title">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">Job title</FieldLabel>
@@ -144,7 +144,7 @@ const isCurrent = form.useStore(state => state.values.isCurrent)
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
         </form.Field>
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="startDate">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">Started <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
@@ -197,7 +197,7 @@ const isCurrent = form.useStore(state => state.values.isCurrent)
                   field.handleBlur()
                 }"
               />
-              <span class="text-[0.95rem] leading-snug font-semibold text-foreground">I work here now</span>
+              <span class="text-sm leading-snug font-medium text-foreground">I work here now</span>
             </Label>
           </Field>
         </form.Field>

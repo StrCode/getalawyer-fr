@@ -279,11 +279,11 @@ async function retry() {
       :label="confirmingPendingPayment ? 'Confirming your payment' : 'Loading your application'"
     >
       <!-- confirming a payment can take a few seconds: say so in words too -->
-      <p v-if="confirmingPendingPayment" class="mt-[0.9rem] text-[0.95rem] text-muted-foreground">Confirming your payment…</p>
+      <p v-if="confirmingPendingPayment" class="mt-3.5 text-base text-muted-foreground">Confirming your payment…</p>
     </ApplicationSkeleton>
 
-    <div v-else-if="statusError" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
-      <h1 class="text-[1.45rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>
+    <div v-else-if="statusError" role="alert" class="mt-6 grid justify-items-start gap-2.75 rounded-card border border-dashed border-border p-6">
+      <h1 class="text-2xl leading-none font-normal tracking-tight">We could not load your application.</h1>
       <p class="text-muted-foreground">Check your connection and try again.</p>
       <Button variant="line" size="pill-sm" @click="retry">Try again</Button>
     </div>
@@ -299,20 +299,20 @@ async function retry() {
         Pay while we review your application. Your profile goes live after approval. Submitted {{ submittedLabel }}.
       </template>
 
-      <p v-if="hasCheckoutFailure" role="alert" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
-        <b class="block font-semibold">Payment did not complete</b>
+      <p v-if="hasCheckoutFailure" role="alert" class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3.5 text-warning-subtle-foreground">
+        <b class="block font-medium">Payment did not complete</b>
         {{ paymentFailureMessage }}
       </p>
 
-      <div v-if="pricingError || (!pricing && !pricingPending)" role="alert" class="grid justify-items-start gap-[0.6rem] rounded-[1.1rem] border border-dashed border-border p-4">
-        <b class="font-semibold">Prices are not loading right now.</b>
+      <div v-if="pricingError || (!pricing && !pricingPending)" role="alert" class="grid justify-items-start gap-2.5 rounded-lg border border-dashed border-border p-4">
+        <b class="font-medium">Prices are not loading right now.</b>
         <p class="text-muted-foreground">We need the current price before checkout. Nothing has been charged.</p>
         <Button variant="line" size="pill-sm" @click="refetchPricing()">Try again</Button>
       </div>
 
-      <section v-else aria-labelledby="membership-title" class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
-        <h2 id="membership-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ plans.length > 1 ? 'Choose your plan' : 'Lawyer membership' }}</h2>
-        <p v-if="plans.length > 1" class="mt-1 text-[0.9rem] text-muted-foreground">
+      <section v-else aria-labelledby="membership-title" class="rounded-card border border-border bg-card p-4.5 lg:p-6">
+        <h2 id="membership-title" class="text-xl font-normal tracking-tight">{{ plans.length > 1 ? 'Choose your plan' : 'Lawyer membership' }}</h2>
+        <p v-if="plans.length > 1" class="mt-1 text-sm text-muted-foreground">
           Every plan includes the same profile, messages and bookings. You can change plan at any renewal.
         </p>
 
@@ -326,24 +326,24 @@ async function retry() {
         />
 
         <dl v-if="selectedPlan" aria-live="polite" class="mt-4 grid">
-          <div class="flex justify-between gap-4 border-b border-dashed border-border py-[0.6rem] text-muted-foreground">
+          <div class="flex justify-between gap-4 border-b border-dashed border-border py-2.5 text-muted-foreground">
             <dt>{{ selectedPlan.name }} membership</dt>
-            <dd class="font-semibold text-foreground tabular-nums">{{ formatNairaAmount(selectedPlan.priceNaira) }}</dd>
+            <dd class="font-medium text-foreground tabular-nums">{{ formatNairaAmount(selectedPlan.priceNaira) }}</dd>
           </div>
-          <div v-if="verificationFeeNaira > 0" class="flex justify-between gap-4 border-b border-dashed border-border py-[0.6rem] text-muted-foreground">
+          <div v-if="verificationFeeNaira > 0" class="flex justify-between gap-4 border-b border-dashed border-border py-2.5 text-muted-foreground">
             <dt>One-off verification fee</dt>
-            <dd class="font-semibold text-foreground tabular-nums">{{ formatNairaAmount(verificationFeeNaira) }}</dd>
+            <dd class="font-medium text-foreground tabular-nums">{{ formatNairaAmount(verificationFeeNaira) }}</dd>
           </div>
-          <div class="flex items-baseline justify-between gap-4 pt-[0.85rem] font-bold">
+          <div class="flex items-baseline justify-between gap-4 pt-3.5 font-medium">
             <dt>Due today</dt>
-            <dd class="font-display text-[1.9rem] leading-none font-bold tracking-[-0.03em]">{{ firstPaymentTotalNaira != null ? formatNairaAmount(firstPaymentTotalNaira) : '' }}</dd>
+            <dd class="font-display text-3xl leading-none font-medium tracking-tight">{{ firstPaymentTotalNaira != null ? formatNairaAmount(firstPaymentTotalNaira) : '' }}</dd>
           </div>
         </dl>
-        <p v-if="renewalLine" class="mt-2 text-[0.9rem] text-muted-foreground">Then {{ renewalLine }}. You can turn auto-renew off at any time.</p>
+        <p v-if="renewalLine" class="mt-2 text-sm text-muted-foreground">Then {{ renewalLine }}. You can turn auto-renew off at any time.</p>
 
-        <p v-if="hasActiveSubscription" role="status" class="mt-4 flex items-start gap-3 rounded-[1.1rem] bg-mint px-4 py-3 text-deep">
-          <span class="grid size-[1.6rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
-          <span><b class="font-semibold">Payment received.</b> Membership active<template v-if="subscriptionEndLabel"> until {{ subscriptionEndLabel }}</template>. Taking you to your application status…</span>
+        <p v-if="hasActiveSubscription" role="status" class="mt-4 flex items-start gap-3 rounded-lg bg-mint px-4 py-3 text-deep">
+          <span class="grid size-6.5 flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
+          <span><b class="font-medium">Payment received.</b> Membership active<template v-if="subscriptionEndLabel"> until {{ subscriptionEndLabel }}</template>. Taking you to your application status…</span>
         </p>
 
         <template v-else>
@@ -354,21 +354,21 @@ async function retry() {
             v-if="hasPendingSubscription && !paymentBusy"
             type="button"
             :class="authLink"
-            class="mt-3 block min-h-11 w-full text-center text-[0.92rem]"
+            class="mt-3 block min-h-11 w-full text-center text-base"
             @click="confirmPendingPayment"
           >
             I already paid: confirm my payment
           </button>
         </template>
 
-        <p class="mt-3 text-[0.82rem] text-muted-foreground">
+        <p class="mt-3 text-sm text-muted-foreground">
           Secure checkout via Paystack. Renewals are membership only<template v-if="renewalLine"> ({{ renewalLine }})</template>. {{ verificationRefundNote }}
         </p>
       </section>
 
-      <ul class="grid gap-2 text-[0.95rem]">
-        <li v-for="item in benefits" :key="item" class="flex items-start gap-[0.6rem]">
-          <CanopyGlyph name="tick" :stroke="3" class="mt-[0.3rem] flex-none text-brand" />{{ item }}
+      <ul class="grid gap-2 text-base">
+        <li v-for="item in benefits" :key="item" class="flex items-start gap-2.5">
+          <CanopyGlyph name="tick" :stroke="3" class="mt-1.25 flex-none text-brand" />{{ item }}
         </li>
       </ul>
     </ApplicationStatus>

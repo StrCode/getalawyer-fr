@@ -99,8 +99,8 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
     <div :class="canopyForm">
       <FieldSet :class="canopyGroup">
         <legend class="sr-only">Bar credentials</legend>
-        <div class="grid gap-[0.9rem]">
-            <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
+        <div class="grid gap-3.5">
+            <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
               <form.Field v-slot="{ field }" name="barNumber">
                 <Field :class="canopyField" :data-invalid="isInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">
@@ -108,7 +108,7 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                   </FieldLabel>
                   <InputGroup :class="authInputGroup">
                     <InputGroupAddon>
-                      <span class="pl-1 font-display text-[0.95rem] font-[650] text-deep">SCN</span>
+                      <span class="pl-1 font-display text-base font-normal text-deep">SCN</span>
                     </InputGroupAddon>
                     <InputGroupInput
                       :id="field.name"
@@ -118,14 +118,14 @@ function onScnInput(field: { handleChange: (v: string) => void }, v: unknown) {
                       autocomplete="off"
                       inputmode="numeric"
                       :maxlength="SCN_MAX_DIGITS"
-                      :class="authInputGroupControl" class="tracking-[0.04em] placeholder:tracking-normal"
+                      :class="authInputGroupControl" class="tracking-wider placeholder:tracking-normal"
                       :aria-invalid="isInvalid(field)"
                       @blur="field.handleBlur"
                       @update:model-value="(v: unknown) => onScnInput(field, v)"
                     />
                     <InputGroupAddon align="inline-end">
                       <span
-                        class="pr-1 text-[0.8rem] font-semibold"
+                        class="pr-1 text-sm font-medium"
                         :class="isValidScnDigits(barNumberStr) ? 'text-brand' : 'text-muted-foreground'"
                       >
                         {{ barNumberStr.length }}/{{ SCN_MAX_DIGITS }}

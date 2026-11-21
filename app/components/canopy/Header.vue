@@ -119,19 +119,19 @@ watch(() => route.fullPath, () => {
 </script>
 
 <template>
-  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-[0.7rem]">
+  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-2.75">
     <div class="mx-auto max-w-site safe-x">
       <div
-        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-[0.45rem] pr-[0.45rem] [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
+        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-1.75 pr-1.75 [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
         :class="stuck
-          ? 'max-w-[58rem] border-border bg-glass pl-[1.1rem] shadow-pill backdrop-blur-[16px] backdrop-saturate-[1.4]'
+          ? 'max-w-232 border-border bg-card pl-4.5 shadow-pill'
           : 'max-w-site border-transparent pl-1'"
       >
         <CanopyBrand :condensed="stuck" />
         <nav
           ref="linksEl"
           aria-label="Main"
-          class="relative flex gap-[0.15rem] text-[0.95rem] font-medium text-muted-foreground max-nav:hidden"
+          class="relative flex gap-0.5 text-base font-medium text-muted-foreground max-nav:hidden"
           @mouseleave="moveTo(current)"
           @focusout="moveTo(current)"
         >
@@ -146,20 +146,20 @@ watch(() => route.fullPath, () => {
             :to="link.to"
             :data-key="link.key"
             :aria-current="current === link.key ? 'true' : undefined"
-            class="relative z-1 inline-flex min-h-[2.6rem] items-center whitespace-nowrap rounded-full px-[0.95rem] transition-colors duration-[250ms] hover:text-foreground aria-[current=true]:text-foreground"
+            class="relative z-1 inline-flex min-h-10.5 items-center whitespace-nowrap rounded-full px-3.75 transition-colors duration-250 hover:text-foreground aria-[current=true]:text-foreground"
             @mouseenter="moveTo(link.key)"
             @focus="moveTo(link.key)"
           >
             {{ link.label }}
           </NuxtLink>
         </nav>
-        <div class="flex items-center gap-[0.4rem] text-[0.95rem] font-semibold">
+        <div class="flex items-center gap-1.5 text-base font-medium">
           <ClientOnly><CanopyThemeToggle class="max-nav:hidden" /></ClientOnly>
           <CanopyAccountMenu v-if="isSignedIn" />
           <NuxtLink
             v-else
             to="/login"
-            class="inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-[1.1rem] transition-colors duration-[250ms] hover:bg-mint max-nav:hidden"
+            class="inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-4.5 transition-colors duration-250 hover:bg-mint max-nav:hidden"
           >
             Sign in
           </NuxtLink>
@@ -197,12 +197,12 @@ watch(() => route.fullPath, () => {
       v-for="link in menuLinks"
       :key="link.to"
       :to="link.to"
-      class="border-b border-border py-[0.7rem] font-display text-[2rem] font-[650] tracking-[-0.03em]"
+      class="border-b border-border py-2.75 font-display text-3xl font-normal tracking-tight"
       @click="setMenu(false)"
     >
       {{ link.label }}
     </NuxtLink>
-    <div class="mt-auto grid gap-[0.6rem] pt-6">
+    <div class="mt-auto grid gap-2.5 pt-6">
       <ClientOnly><CanopyThemeSwitch block /></ClientOnly>
       <Button v-if="isLawyer" as-child variant="canopy" size="pill" class="h-13 w-full">
         <NuxtLink :to="primary.to">{{ primary.label }}</NuxtLink>

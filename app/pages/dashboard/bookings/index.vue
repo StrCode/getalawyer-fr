@@ -124,19 +124,19 @@ function confirmCancel() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-xl leading-none font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card'
 const quiet = 'shadow-none hover:translate-y-0'
 </script>
 
 <template>
   <!-- one column that may shrink, so nothing in it can widen the page on a phone -->
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div class="min-w-0">
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your consultations</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Bookings</h1>
-        <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
+        <p class="text-xs font-medium tracking-widest text-brand uppercase">Your consultations</p>
+        <h1 class="mt-2.5 text-2xl md:text-3xl leading-none font-normal tracking-tighter">Bookings</h1>
+        <p class="mt-2.5 text-base text-muted-foreground">
           <template v-if="loading">Loading your bookings…</template>
           <template v-else-if="isError">Consultations you have asked for, the ones to come and the ones already held.</template>
           <template v-else>{{ summary }}</template>
@@ -147,20 +147,20 @@ const quiet = 'shadow-none hover:translate-y-0'
       </Button>
     </header>
 
-    <div role="group" aria-label="Show" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-[0.35rem] overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+    <div role="group" aria-label="Show" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-1.5 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
       <button
         v-for="item in CLIENT_BOOKINGS_TABS"
         :key="item.key"
         type="button"
         :aria-pressed="tab === item.key"
-        class="inline-flex min-h-[2.75rem] flex-none cursor-pointer items-center gap-[0.45rem] rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+        class="inline-flex min-h-11 flex-none cursor-pointer items-center gap-1.75 rounded-full border px-4 font-medium whitespace-nowrap transition-colors duration-200 ease-canopy"
         :class="tab === item.key ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
         @click="showTab(item.key)"
       >
         {{ item.label }}
         <span
           v-if="!loading && counts[item.key] > 0"
-          class="rounded-full px-[0.45rem] text-[0.78rem] font-bold"
+          class="rounded-full px-1.75 text-xs font-medium"
           :class="tab === item.key ? 'bg-white/20' : 'bg-muted text-foreground'"
         >{{ counts[item.key] }}</span>
       </button>
@@ -168,10 +168,10 @@ const quiet = 'shadow-none hover:translate-y-0'
 
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading && !isError" role="status" aria-label="Loading your bookings" class="grid gap-2">
-      <div v-for="n in 3" :key="n" class="h-[5.4rem] animate-pulse rounded-[1.25rem] bg-muted" />
+      <div v-for="n in 3" :key="n" class="h-21.5 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your bookings.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="() => refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
@@ -179,17 +179,17 @@ const quiet = 'shadow-none hover:translate-y-0'
 
     <section v-else aria-labelledby="list-title">
       <h2 id="list-title" :class="sectionTitle">
-        {{ activeLabel }}<span v-if="shown.length > 0" class="ml-[0.5rem] text-muted-foreground">{{ shown.length }}</span>
+        {{ activeLabel }}<span v-if="shown.length > 0" class="ml-2 text-muted-foreground">{{ shown.length }}</span>
       </h2>
 
-      <div v-if="shown.length === 0" :class="[panel, 'mt-[0.9rem] px-[1.3rem] py-[clamp(1.6rem,4vw,2.6rem)] text-center']">
-        <p class="mx-auto max-w-[32rem] text-muted-foreground">{{ CLIENT_EMPTY[tab] }}</p>
-        <Button v-if="tab !== 'past'" as-child variant="line" size="pill-sm" class="mt-[0.9rem]">
+      <div v-if="shown.length === 0" :class="[panel, 'mt-3.5 px-5.25 py-6.5 md:py-7.75 lg:py-10.25 xl:py-10.5 text-center']">
+        <p class="mx-auto max-w-128 text-muted-foreground">{{ CLIENT_EMPTY[tab] }}</p>
+        <Button v-if="tab !== 'past'" as-child variant="line" size="pill-sm" class="mt-3.5">
           <NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink>
         </Button>
       </div>
 
-      <ul v-else :class="[panel, 'mt-[0.9rem] divide-y divide-border overflow-hidden']">
+      <ul v-else :class="[panel, 'mt-3.5 divide-y divide-border overflow-hidden']">
         <WorkspaceBookingRow
           v-for="booking in shown"
           :key="booking.id"
@@ -205,10 +205,10 @@ const quiet = 'shadow-none hover:translate-y-0'
           pending-label="Waiting"
         >
           <template v-if="booking.engagementOutcome === 'client_hired'" #body>
-            <span class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Case opened</span>
+            <span class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Case opened</span>
             <NuxtLink
               :to="booking.caseId ? `/dashboard/cases/${booking.caseId}` : '/dashboard/cases'"
-              class="ml-[0.6rem] inline-flex min-h-[2.75rem] items-center font-semibold text-brand underline underline-offset-[3px]"
+              class="ml-2.5 inline-flex min-h-11 items-center font-medium text-brand underline underline-offset-3"
             >Open the case</NuxtLink>
           </template>
 
@@ -229,18 +229,18 @@ const quiet = 'shadow-none hover:translate-y-0'
 
     <!-- ───────── cancelling: a reason helps the lawyer, but is not required ───────── -->
     <Dialog v-model:open="cancelOpen">
-      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-        <DialogHeader class="gap-[0.5rem] text-left">
-          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">Cancel this booking</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">
+      <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+        <DialogHeader class="gap-2 text-left">
+          <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">Cancel this booking</DialogTitle>
+          <DialogDescription class="text-sm text-muted-foreground">
             {{ toCancel?.lawyer?.name ?? 'Your lawyer' }} is told the booking is cancelled, with your reason if you give one.
           </DialogDescription>
         </DialogHeader>
-        <div class="grid gap-[0.4rem]">
-          <Label for="cancel-reason" class="font-semibold">Reason <span class="font-normal text-muted-foreground">(optional)</span></Label>
-          <Textarea id="cancel-reason" v-model="cancelReason" :rows="3" placeholder="For example: I can no longer make that day." class="rounded-[1rem] bg-card" />
+        <div class="grid gap-1.5">
+          <Label for="cancel-reason" class="font-medium">Reason <span class="font-normal text-muted-foreground">(optional)</span></Label>
+          <Textarea id="cancel-reason" v-model="cancelReason" :rows="3" placeholder="For example: I can no longer make that day." class="rounded-lg bg-card" />
         </div>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+        <DialogFooter class="mt-1.25 gap-2.5">
           <Button variant="line" size="pill" :disabled="cancelling" @click="cancelOpen = false">Keep the booking</Button>
           <Button variant="destructive" size="pill" class="rounded-full" :disabled="cancelling" :aria-busy="cancelling" @click="confirmCancel">
             {{ cancelling ? 'Cancelling…' : 'Cancel the booking' }}

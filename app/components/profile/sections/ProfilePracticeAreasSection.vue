@@ -125,13 +125,13 @@ const triggerLabel = computed(() => {
     title="Practice areas"
     :description="`The kinds of work you take on. Clients find you in search by these. Choose up to ${MAX_PRACTICE_AREAS}.`"
   >
-    <div v-if="isLoadingSpecs" role="status" aria-label="Loading practice areas" class="grid gap-[0.7rem]">
-      <div class="h-[3.25rem] animate-pulse rounded-[1rem] bg-muted" />
-      <div class="h-[7rem] animate-pulse rounded-[1rem] bg-muted" />
+    <div v-if="isLoadingSpecs" role="status" aria-label="Loading practice areas" class="grid gap-2.75">
+      <div class="h-13 animate-pulse rounded-lg bg-muted" />
+      <div class="h-28 animate-pulse rounded-lg bg-muted" />
     </div>
 
     <form v-else novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="areas" mode="array">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :class="canopyLabel">
@@ -174,7 +174,7 @@ const triggerLabel = computed(() => {
                     class="items-start"
                   >
                     <div
-                      class="pointer-events-none mt-0.5 size-4 shrink-0 rounded-sm border border-input transition-all select-none *:[svg]:opacity-0 data-[selected=true]:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:*:[svg]:opacity-100"
+                      class="pointer-events-none mt-0.5 size-4 shrink-0 rounded-sm border border-input transition-colors select-none *:[svg]:opacity-0 data-[selected=true]:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:*:[svg]:opacity-100"
                       :data-selected="field.state.value.some(area => area.specializationId === option.id) || undefined"
                     >
                       <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 text-current" />
@@ -191,23 +191,23 @@ const triggerLabel = computed(() => {
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
 
             <!-- each chosen area, with the years spent on it -->
-            <FieldSet v-if="field.state.value.length > 0" class="mt-[0.5rem] min-w-0 gap-[0.6rem]">
+            <FieldSet v-if="field.state.value.length > 0" class="mt-2 min-w-0 gap-2.5">
               <FieldLegend variant="label" :class="canopyLabel">Years of experience in each</FieldLegend>
-              <ul class="grid grid-cols-[minmax(0,1fr)] gap-[0.5rem]">
+              <ul class="grid grid-cols-1 gap-2">
                 <li
                   v-for="(area, index) in field.state.value"
                   :key="area.specializationId"
-                  class="flex flex-wrap items-start gap-x-[0.9rem] gap-y-[0.5rem] rounded-[1.1rem] border border-border bg-background/60 px-[1rem] py-[0.7rem]"
+                  class="flex flex-wrap items-start gap-x-3.5 gap-y-2 rounded-lg border border-border bg-background/60 px-4 py-2.75"
                 >
-                  <p class="min-w-0 flex-[1_1_12rem] self-center font-semibold">{{ nameOf(area.specializationId) }}</p>
+                  <p class="min-w-0 grow basis-48 self-center font-medium">{{ nameOf(area.specializationId) }}</p>
                   <form.Field v-slot="{ field: years }" :name="`areas[${index}].years`">
-                    <Field :class="[canopyField, 'w-[8.5rem] flex-none']" :data-invalid="isInvalid(years)">
+                    <Field :class="[canopyField, 'w-34 flex-none']" :data-invalid="isInvalid(years)">
                       <FieldLabel :for="years.name" class="sr-only">Years of experience in {{ nameOf(area.specializationId) }}</FieldLabel>
                       <Input
                         :id="years.name"
                         :name="years.name"
                         :model-value="years.state.value"
-                        :class="[authInput, 'h-[2.75rem] tabular-nums']"
+                        :class="[authInput, 'h-11 tabular-nums']"
                         inputmode="numeric"
                         maxlength="2"
                         placeholder="Years"
@@ -223,7 +223,7 @@ const triggerLabel = computed(() => {
                     type="button"
                     variant="line"
                     size="pill-sm"
-                    class="h-[2.75rem] flex-none px-[0.95rem] text-[0.95rem]"
+                    class="h-11 flex-none px-3.75 text-sm"
                     :disabled="disabled || saving"
                     :aria-label="`Remove ${nameOf(area.specializationId)}`"
                     @click="() => { field.removeValue(index); field.handleBlur() }"
@@ -237,7 +237,7 @@ const triggerLabel = computed(() => {
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(practiceAreasValues(practiceAreas))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

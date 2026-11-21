@@ -1,7 +1,7 @@
 <template>
-  <div class="flex w-full flex-col gap-[clamp(1rem,2vw,1.5rem)] xl:flex-row">
+  <div class="flex w-full flex-col gap-4 lg:gap-5 xl:gap-6 xl:flex-row">
     <aside class="hidden xl:block xl:w-56 xl:shrink-0">
-      <div class="sticky top-[5.25rem] space-y-4">
+      <div class="sticky top-21 space-y-4">
         <nav
           class="rounded-card border border-border bg-card p-3"
           aria-label="Profile sections"
@@ -13,9 +13,9 @@
             >
               <button
                 type="button"
-                class="flex min-h-[2.5rem] w-full cursor-pointer items-center gap-2.5 rounded-[0.9rem] px-3 text-left text-[0.95rem] transition-colors duration-200"
+                class="flex min-h-10 w-full cursor-pointer items-center gap-2.5 rounded-md px-3 text-left text-sm transition-colors duration-200"
                 :class="activeSection === section.id
-                  ? 'bg-mint font-semibold text-deep'
+                  ? 'bg-mint font-medium text-deep'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
                 @click="scrollToSection(section.id)"
               >

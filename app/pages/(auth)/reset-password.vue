@@ -7,11 +7,11 @@
   >
     <Transition name="fade">
       <div v-if="submitted" key="success" role="status">
-        <p class="mb-[1.7rem] flex items-start gap-3 text-muted-foreground">
-          <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="13" :stroke="3.4" /></span>
+        <p class="mb-6.75 flex items-start gap-3 text-muted-foreground">
+          <span class="grid size-7.5 flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="13" :stroke="3.4" /></span>
           Your password has been reset. You can now sign in with the new one.
         </p>
-        <Button as-child variant="canopy" size="pill" class="group/btn h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]">
+        <Button as-child variant="canopy" size="pill" class="group/btn h-13 w-full justify-between pr-2 pl-5.5">
           <NuxtLink to="/login">Go to sign in<CanopyArrowChip /></NuxtLink>
         </Button>
       </div>
@@ -19,10 +19,10 @@
 
     <Transition name="fade">
       <form v-if="!submitted" key="form" novalidate @submit.prevent="form.handleSubmit">
-        <FieldGroup class="gap-[1.1rem]">
+        <FieldGroup class="gap-4.5">
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">New password</FieldLabel>
+              <FieldLabel :for="field.name" class="text-sm font-medium">New password</FieldLabel>
               <AuthPasswordInput
                 :id="field.name"
                 :name="field.name"
@@ -42,7 +42,7 @@
 
           <form.Field v-slot="{ field }" name="confirmPassword">
             <Field :data-invalid="isInvalid(field)">
-              <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">Confirm password</FieldLabel>
+              <FieldLabel :for="field.name" class="text-sm font-medium">Confirm password</FieldLabel>
               <AuthPasswordInput
                 :id="field.name"
                 :name="field.name"
@@ -60,7 +60,7 @@
 
           <AuthFormError :message="apiError" />
 
-          <AuthSubmit :loading="isSubmitting" class="mt-[0.3rem]">
+          <AuthSubmit :loading="isSubmitting" class="mt-1.25">
             {{ isSubmitting ? 'Resetting…' : 'Reset password' }}
           </AuthSubmit>
         </FieldGroup>

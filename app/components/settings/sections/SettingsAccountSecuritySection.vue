@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)]">
+  <div class="grid grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
     <SettingsSectionCard
       v-if="needsLinkEmail"
       title="Email address"
@@ -18,8 +18,8 @@
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="min-w-0">
-          <p class="truncate font-semibold">{{ session?.user?.email }}</p>
-          <p class="mt-[0.1rem] text-[0.92rem] text-muted-foreground">Not confirmed yet</p>
+          <p class="truncate font-medium">{{ session?.user?.email }}</p>
+          <p class="mt-0.5 text-sm text-muted-foreground">Not confirmed yet</p>
         </div>
         <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">Confirm your email</Button>
       </div>
@@ -31,8 +31,8 @@
       description="You sign in with it, and notices about your account go to it."
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="min-w-0 truncate font-semibold">{{ session?.user?.email }}</p>
-        <span class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Confirmed</span>
+        <p class="min-w-0 truncate font-medium">{{ session?.user?.email }}</p>
+        <span class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Confirmed</span>
       </div>
     </SettingsSectionCard>
 
@@ -41,12 +41,12 @@
       description="Confirm your mobile number to sign in with it and get text messages about your bookings."
     >
       <div v-if="phoneVerified" class="flex flex-wrap items-center justify-between gap-3">
-        <p class="min-w-0 font-semibold tabular-nums">{{ phoneForm.state.values.phone }}</p>
-        <span class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Confirmed</span>
+        <p class="min-w-0 font-medium tabular-nums">{{ phoneForm.state.values.phone }}</p>
+        <span class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Confirmed</span>
       </div>
 
       <template v-else>
-        <form novalidate class="flex flex-col gap-[0.75rem] sm:flex-row sm:items-start" @submit.prevent="phoneForm.handleSubmit">
+        <form novalidate class="flex flex-col gap-3 sm:flex-row sm:items-start" @submit.prevent="phoneForm.handleSubmit">
           <phoneForm.Field v-slot="{ field }" name="phone">
             <Field :class="[canopyField, 'min-w-0 flex-1']" :data-invalid="isInvalid(field)">
               <AuthPhoneInput
@@ -60,12 +60,12 @@
               <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
             </Field>
           </phoneForm.Field>
-          <Button type="submit" variant="line" size="pill" class="flex-none sm:mt-[1.85rem]" :disabled="isSendingOtp" :aria-busy="isSendingOtp">
+          <Button type="submit" variant="line" size="pill" class="flex-none sm:mt-7.5" :disabled="isSendingOtp" :aria-busy="isSendingOtp">
             {{ isSendingOtp ? 'Sending…' : otpSent ? 'Send a new code' : 'Send a code' }}
           </Button>
         </form>
 
-        <div v-if="otpSent" class="mt-[1rem] grid gap-[0.8rem]">
+        <div v-if="otpSent" class="mt-4 grid gap-3.25">
           <AuthOtpStep
             v-model="otpCode"
             :error="otpError"
@@ -77,7 +77,7 @@
           />
           <AuthDevOtpHint />
         </div>
-        <p v-if="linkError" role="alert" class="mt-[0.7rem] text-[0.92rem] font-semibold text-destructive">{{ linkError }}</p>
+        <p v-if="linkError" role="alert" class="mt-2.75 text-sm font-medium text-destructive">{{ linkError }}</p>
       </template>
     </SettingsSectionCard>
 

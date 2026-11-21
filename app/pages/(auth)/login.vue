@@ -8,7 +8,7 @@
     </template>
 
     <!-- A phone number that was never verified: confirm it with a code, then sign in. -->
-    <div v-if="showPhoneOtpStep" class="grid gap-[1.1rem]">
+    <div v-if="showPhoneOtpStep" class="grid gap-4.5">
       <AuthOtpStep
         v-model="phoneOtp"
         :error="otpError"
@@ -33,12 +33,12 @@
         @click="handleSocialLogin('google')"
       />
 
-      <div class="my-[1.3rem] flex items-center gap-[0.9rem] text-[0.85rem] text-muted-foreground">
+      <div class="my-5.25 flex items-center gap-3.5 text-sm text-muted-foreground">
         <span class="h-px flex-1 bg-border" />or<span class="h-px flex-1 bg-border" />
       </div>
 
       <form novalidate @submit.prevent="form.handleSubmit">
-        <FieldGroup class="gap-[1.1rem]">
+        <FieldGroup class="gap-4.5">
           <!-- One method at a time with a quiet switch link, not tabs. The
                inactive method is never validated (see loginSchema.superRefine).
                Both fields share one grid cell, so they crossfade in place
@@ -53,8 +53,8 @@
               <div v-if="authMethod === 'email'" key="email" class="col-start-1 row-start-1">
                 <form.Field v-slot="{ field }" name="email">
                   <Field :data-invalid="isInvalid(field)">
-                    <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                      <FieldLabel :for="field.name" class="w-auto font-semibold">Email address</FieldLabel>
+                    <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                      <FieldLabel :for="field.name" class="w-auto font-medium">Email address</FieldLabel>
                       <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'phone'">
                         Use phone instead
                       </button>
@@ -81,8 +81,8 @@
               <div v-else key="phone" class="col-start-1 row-start-1">
                 <form.Field v-slot="{ field }" name="phone">
                   <Field :data-invalid="isInvalid(field)">
-                    <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                      <span class="font-semibold">Phone number</span>
+                    <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                      <span class="font-medium">Phone number</span>
                       <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'email'">
                         Use email instead
                       </button>
@@ -104,8 +104,8 @@
 
           <form.Field v-slot="{ field }" name="password">
             <Field :data-invalid="isInvalid(field)">
-              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                <FieldLabel :for="field.name" class="w-auto font-semibold">Password</FieldLabel>
+              <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                <FieldLabel :for="field.name" class="w-auto font-medium">Password</FieldLabel>
                 <NuxtLink :to="forgotPasswordLink" :class="authLink">Forgot password?</NuxtLink>
               </div>
               <AuthPasswordInput
@@ -125,7 +125,7 @@
 
           <AuthFormError :message="apiError" />
 
-          <AuthSubmit :loading="isSubmitting" class="mt-[0.3rem]">
+          <AuthSubmit :loading="isSubmitting" class="mt-1.25">
             {{ isSubmitting ? 'Signing in…' : 'Sign in' }}
           </AuthSubmit>
         </FieldGroup>

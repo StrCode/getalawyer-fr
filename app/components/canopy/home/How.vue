@@ -11,41 +11,41 @@ import { Button } from '@/components/ui/button'
 const { target: list, piece, press } = usePlayOnce()
 
 // Class lists shared by the three steps (full strings, so Tailwind sees them).
-const step = 'flex flex-col rounded-card border border-border bg-card p-[1.4rem]'
-const number = 'grid size-10 flex-none place-items-center rounded-full bg-mint font-display text-[1.15rem] font-bold text-deep'
-const cost = 'rounded-[0.5rem] border px-[0.65rem] py-[0.3rem] text-[0.74rem] font-bold tracking-[0.06em] whitespace-nowrap uppercase'
+const step = 'flex flex-col rounded-card border border-border bg-card p-5.5'
+const number = 'grid size-10 flex-none place-items-center rounded-full bg-mint font-display text-lg font-medium text-deep'
+const cost = 'rounded-md border px-2.5 py-1.25 text-xs font-medium tracking-wider whitespace-nowrap uppercase'
 const costFree = 'border-border bg-background text-deep'
-const demo = 'mt-[1.1rem] flex min-h-[9.5rem] flex-col justify-center gap-[0.65rem] rounded-[1.2rem] bg-background p-4 text-[0.9rem]'
-const title = 'mt-[1.1rem] text-[1.35rem] font-[650] tracking-[-0.02em]'
-const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
+const demo = 'mt-4.5 flex min-h-38 flex-col justify-center gap-2.5 rounded-card bg-background p-4 text-sm'
+const title = 'mt-4.5 text-xl font-normal tracking-tight'
+const body = 'mt-1.5 text-base text-muted-foreground'
 </script>
 
 <template>
-  <section id="how" class="scroll-mt-24 pb-[clamp(3.5rem,7vw,6.5rem)]">
+  <section id="how" class="scroll-mt-24 pb-14 lg:pb-18 xl:pb-22.5">
     <CanopySectionHead kicker="How it works" title="Three steps. You only pay at the last one.">
-      <div class="grid min-w-0 flex-[0_1_24rem] justify-items-start gap-[0.9rem]">
-        <p class="max-w-[34rem] text-muted-foreground">Searching and asking are free. A fee comes in only when you book a consultation, and you see it before you confirm.</p>
+      <div class="grid min-w-0 grow-0 basis-96 justify-items-start gap-3.5">
+        <p class="max-w-136 text-muted-foreground">Searching and asking are free. A fee comes in only when you book a consultation, and you see it before you confirm.</p>
         <Button as-child variant="line" size="pill">
           <NuxtLink to="/find-lawyers">Start a search →</NuxtLink>
         </Button>
       </div>
     </CanopySectionHead>
 
-    <ol ref="list" class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-[1.1rem]">
+    <ol ref="list" class="grid grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-4.5">
       <li data-rise :class="step">
         <div class="flex items-center gap-3"><span :class="number">1</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(0, 'draw')" /><span :class="[cost, costFree]">Free</span></div>
         <div aria-hidden="true" :class="demo">
-          <div class="flex items-center gap-2 rounded-full border border-border bg-card py-[0.6rem] pr-[0.6rem] pl-[0.85rem] font-semibold" v-bind="piece(80)">
+          <div class="flex items-center gap-2 rounded-full border border-border bg-card py-2.5 pr-2.5 pl-3.5 font-medium" v-bind="piece(80)">
             <CanopyGlyph name="search" :stroke="2.2" class="flex-none text-muted-foreground" /><span class="inline-block" v-bind="piece(250, 'type')">Tenancy dispute</span>
-            <span class="ml-auto rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.78rem] text-deep" v-bind="piece(720, 'pop')">Lagos</span>
+            <span class="ml-auto rounded-full bg-mint px-2.5 py-0.5 text-xs text-deep" v-bind="piece(720, 'pop')">Lagos</span>
           </div>
-          <div class="flex items-center gap-[0.6rem] pl-[0.3rem] text-muted-foreground">
+          <div class="flex items-center gap-2.5 pl-1.25 text-muted-foreground">
             <span class="flex">
               <i
                 v-for="(initials, index) in ['AO', 'CN', 'FB']"
                 :key="initials"
-                class="grid size-8 place-items-center rounded-full border-2 border-background bg-mint text-[0.62rem] font-bold text-deep not-italic"
-                :class="{ '-ml-[0.55rem]': index > 0 }"
+                class="grid size-8 place-items-center rounded-full border-2 border-background bg-mint text-xs font-medium text-deep not-italic"
+                :class="{ '-ml-2.25': index > 0 }"
                 v-bind="piece(880 + index * 80, 'pop')"
               >{{ initials }}</i>
             </span>
@@ -60,10 +60,10 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
         <div class="flex items-center gap-3"><span :class="number">2</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(1350, 'draw')" /><span :class="[cost, costFree]">Free</span></div>
         <div aria-hidden="true" :class="demo">
           <!-- the box arrives, the button dips, then the sent question appears above it -->
-          <p class="mt-[0.4rem] max-w-[92%] origin-bottom-right self-end rounded-[1.1rem] rounded-br-[0.3rem] bg-primary px-[0.9rem] py-[0.65rem] text-[0.9rem] leading-[1.4] text-white" v-bind="piece(1820, 'pop')">Can I end my tenancy early without losing my deposit?</p>
-          <div class="flex items-center justify-between gap-2 rounded-full border border-border bg-card py-[0.35rem] pr-[0.35rem] pl-[0.95rem] text-placeholder" v-bind="piece(1430)">
+          <p class="mt-1.5 max-w-11/12 origin-bottom-right self-end rounded-lg rounded-br-sm bg-primary px-3.5 py-2.5 text-sm leading-snug text-white" v-bind="piece(1820, 'pop')">Can I end my tenancy early without losing my deposit?</p>
+          <div class="flex items-center justify-between gap-2 rounded-full border border-border bg-card py-1.5 pr-1.5 pl-3.75 text-placeholder" v-bind="piece(1430)">
             <span>Write a message…</span>
-            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white" v-bind="press(1700)"><CanopyGlyph name="arrow" :size="14" :stroke="2.8" /></span>
+            <span class="grid size-7.5 flex-none place-items-center rounded-full bg-primary text-white" v-bind="press(1700)"><CanopyGlyph name="arrow" :size="14" :stroke="2.8" /></span>
           </div>
         </div>
         <h3 :class="title">Ask your question</h3>
@@ -73,12 +73,12 @@ const body = 'mt-[0.4rem] text-[1rem] text-muted-foreground'
       <li data-rise :class="step">
         <div class="flex items-center gap-3"><span :class="number">3</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(2150, 'draw')" /><span :class="[cost, 'border-lime bg-lime text-night']">Fee agreed first</span></div>
         <div aria-hidden="true" :class="demo">
-          <div class="flex items-center gap-[0.7rem]">
-            <span class="grid size-[1.9rem] flex-none place-items-center rounded-full bg-primary text-white" v-bind="piece(2430, 'pop')"><CanopyGlyph name="tick" :size="14" :stroke="3.2" /></span>
-            <div v-bind="piece(2230)"><b class="block">Thu 19 Nov, 10:30 AM</b><small class="text-[0.8rem] text-muted-foreground">Video call with your lawyer</small></div>
+          <div class="flex items-center gap-2.75">
+            <span class="grid size-7.5 flex-none place-items-center rounded-full bg-primary text-white" v-bind="piece(2430, 'pop')"><CanopyGlyph name="tick" :size="14" :stroke="3.2" /></span>
+            <div v-bind="piece(2230)"><b class="block">Thu 19 Nov, 10:30 AM</b><small class="text-sm text-muted-foreground">Video call with your lawyer</small></div>
           </div>
-          <div class="flex items-baseline justify-between gap-2 border-t border-dashed border-border pt-[0.65rem] text-muted-foreground" v-bind="piece(2650)">
-            <span>Consultation fee</span><b class="font-display text-[0.95rem] font-[650] tracking-[-0.02em] text-foreground">Shown before you book</b>
+          <div class="flex items-baseline justify-between gap-2 border-t border-dashed border-border pt-2.5 text-muted-foreground" v-bind="piece(2650)">
+            <span>Consultation fee</span><b class="font-display text-base font-normal tracking-tight text-foreground">Shown before you book</b>
           </div>
         </div>
         <h3 :class="title">Book a consultation</h3>

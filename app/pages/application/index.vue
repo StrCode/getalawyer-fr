@@ -58,8 +58,8 @@ const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
     <!-- also held while moving on to payment or the dashboard -->
     <ApplicationSkeleton v-if="loading || state === 'payment' || state === 'approved'" shape="home" />
 
-    <div v-else-if="state === 'unavailable'" role="alert" class="mt-6 grid justify-items-start gap-[0.7rem] rounded-card border border-dashed border-border p-6">
-      <h1 class="text-[1.45rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your application.</h1>
+    <div v-else-if="state === 'unavailable'" role="alert" class="mt-6 grid justify-items-start gap-2.75 rounded-card border border-dashed border-border p-6">
+      <h1 class="text-2xl leading-none font-normal tracking-tight">We could not load your application.</h1>
       <p class="text-muted-foreground">Check your connection and try again.</p>
       <Button variant="line" size="pill-sm" @click="refetchStatus()">Try again</Button>
     </div>

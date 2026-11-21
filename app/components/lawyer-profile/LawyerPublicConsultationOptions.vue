@@ -38,7 +38,7 @@ function formatPrice(price: string): string {
       >
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0 flex-1">
-           <h3 class="font-semibold text-foreground">
+           <h3 class="font-medium text-foreground">
               {{ consult.name }}
             </h3>
             <p
@@ -49,7 +49,7 @@ function formatPrice(price: string): string {
             </p>
           </div>
           <div class="shrink-0 text-right">
-            <p class="text-xl font-semibold tabular-nums text-foreground">
+            <p class="text-xl font-medium tabular-nums text-foreground">
               {{ formatPrice(consult.price) }}
             </p>
             <p class="font-mono text-xs tabular-nums text-muted-foreground">

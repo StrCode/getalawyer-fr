@@ -41,35 +41,35 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div class="min-w-0">
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your lawyers</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">My lawyers</h1>
-        <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">{{ loading ? 'Loading your lawyers…' : summary }}</p>
+        <p class="text-xs font-medium tracking-widest text-brand uppercase">Your lawyers</p>
+        <h1 class="mt-2.5 text-2xl md:text-3xl leading-none font-normal tracking-tighter">My lawyers</h1>
+        <p class="mt-2.5 text-base text-muted-foreground">{{ loading ? 'Loading your lawyers…' : summary }}</p>
       </div>
       <Button as-child variant="canopy" size="pill">
         <NuxtLink to="/find-lawyers">Find a lawyer<CanopyArrowChip /></NuxtLink>
       </Button>
     </header>
 
-    <div v-if="loading" role="status" aria-label="Loading your lawyers" class="grid gap-[0.75rem] sm:grid-cols-2 tab:grid-cols-3">
-      <div v-for="n in 3" :key="n" class="h-[9rem] animate-pulse rounded-card bg-muted" />
+    <div v-if="loading" role="status" aria-label="Loading your lawyers" class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
+      <div v-for="n in 3" :key="n" class="h-36 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="failed" class="rounded-card border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center">
-      <h2 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load your lawyers.</h2>
+    <section v-else-if="failed" class="rounded-card border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center">
+      <h2 class="font-display text-xl leading-none font-normal tracking-tight">We could not load your lawyers.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" @click="reload">Try again</Button>
     </section>
 
-    <section v-else-if="lawyers.length === 0" class="rounded-card border border-border bg-card px-[1.3rem] py-[clamp(1.8rem,4vw,3rem)] text-center">
-      <h2 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">No lawyers yet.</h2>
-      <p class="mx-auto mt-2 max-w-[32rem] text-muted-foreground">Once you book a consultation or message a lawyer, they show here so you can reach them again quickly.</p>
-      <Button as-child variant="line" size="pill-sm" class="mt-[1rem]"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
+    <section v-else-if="lawyers.length === 0" class="rounded-card border border-border bg-card px-5.25 py-7.25 md:py-7.75 lg:py-10.25 xl:py-12 text-center">
+      <h2 class="font-display text-xl leading-none font-normal tracking-tight">No lawyers yet.</h2>
+      <p class="mx-auto mt-2 max-w-128 text-muted-foreground">Once you book a consultation or message a lawyer, they show here so you can reach them again quickly.</p>
+      <Button as-child variant="line" size="pill-sm" class="mt-4"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
     </section>
 
-    <div v-else class="grid gap-[0.75rem] sm:grid-cols-2 tab:grid-cols-3">
+    <div v-else class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
       <WorkspaceLawyerContactCard v-for="lawyer in lawyers" :key="lawyer.userId ?? lawyer.lawyerProfileId ?? lawyer.name" :lawyer="lawyer" />
     </div>
   </div>

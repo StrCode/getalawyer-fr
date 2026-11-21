@@ -73,25 +73,25 @@ function setTicked(field: IdsField, id: string, ticked: boolean) {
     :description="`Choose up to ${MAX_INTERESTS} areas you want help with. We use them to suggest lawyers who fit.`"
   >
     <template v-if="!isLoading && hasClientProfile" #action>
-      <div class="flex items-center gap-[0.5rem]">
+      <div class="flex items-center gap-2">
         <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="isSaving" @click="form.reset(interestsValues(profile))">Discard</Button>
         <Button type="submit" :form="formId" variant="canopy" size="pill-sm" :disabled="!dirty || isSaving" :aria-busy="isSaving">{{ isSaving ? 'Saving…' : 'Save' }}</Button>
       </div>
     </template>
 
-    <div v-if="isLoading || isLoadingOptions" role="status" aria-label="Loading practice areas" class="grid gap-[0.6rem]">
-      <div class="h-[3.25rem] animate-pulse rounded-[1rem] bg-muted" />
-      <div class="h-[12rem] animate-pulse rounded-[1rem] bg-muted" />
+    <div v-if="isLoading || isLoadingOptions" role="status" aria-label="Loading practice areas" class="grid gap-2.5">
+      <div class="h-13 animate-pulse rounded-lg bg-muted" />
+      <div class="h-48 animate-pulse rounded-lg bg-muted" />
     </div>
 
-    <p v-else-if="!hasClientProfile" class="py-[1.5rem] text-center text-muted-foreground">Finish setting up your account to choose your legal interests.</p>
+    <p v-else-if="!hasClientProfile" class="py-6 text-center text-muted-foreground">Finish setting up your account to choose your legal interests.</p>
 
     <form v-else :id="formId" novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1rem]">
+      <FieldGroup class="gap-4">
         <label class="relative block">
           <span class="sr-only">Search practice areas</span>
-          <CanopyGlyph name="search" :size="16" class="pointer-events-none absolute top-1/2 left-[1rem] -translate-y-1/2 text-muted-foreground" />
-          <Input v-model="query" type="search" autocomplete="off" placeholder="Search practice areas" :class="[authInput, 'pl-[2.6rem]']" />
+          <CanopyGlyph name="search" :size="16" class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground" />
+          <Input v-model="query" type="search" autocomplete="off" placeholder="Search practice areas" :class="[authInput, 'pl-10.5']" />
         </label>
 
         <form.Field v-slot="{ field }" name="ids" mode="array">
@@ -101,8 +101,8 @@ function setTicked(field: IdsField, id: string, ticked: boolean) {
               <span class="font-normal text-muted-foreground">{{ field.state.value.length }} of {{ MAX_INTERESTS }} chosen</span>
             </FieldLegend>
 
-            <p v-if="shown.length === 0" class="py-[1rem] text-muted-foreground">No practice area matches "{{ query.trim() }}".</p>
-            <div v-else class="grid gap-[0.5rem] sm:grid-cols-2">
+            <p v-if="shown.length === 0" class="py-4 text-muted-foreground">No practice area matches "{{ query.trim() }}".</p>
+            <div v-else class="grid gap-2 sm:grid-cols-2">
               <FieldLabel
                 v-for="area in shown"
                 :key="area.id"
@@ -117,9 +117,9 @@ function setTicked(field: IdsField, id: string, ticked: boolean) {
                     :disabled="isSaving || (!field.state.value.includes(area.id) && field.state.value.length >= MAX_INTERESTS)"
                     @update:model-value="(ticked) => setTicked(field, area.id, ticked === true)"
                   />
-                  <span class="grid min-w-0 gap-[0.1rem]">
-                    <span class="text-[0.95rem] leading-snug font-semibold text-foreground">{{ area.name }}</span>
-                    <span v-if="area.description" class="line-clamp-2 text-[0.85rem] leading-normal font-normal text-muted-foreground">{{ area.description }}</span>
+                  <span class="grid min-w-0 gap-0.5">
+                    <span class="text-sm leading-snug font-medium text-foreground">{{ area.name }}</span>
+                    <span v-if="area.description" class="line-clamp-2 text-sm leading-normal font-normal text-muted-foreground">{{ area.description }}</span>
                   </span>
                 </Field>
               </FieldLabel>

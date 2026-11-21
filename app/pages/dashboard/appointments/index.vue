@@ -1,11 +1,11 @@
 <template>
   <!-- one column that may shrink: the row of status pills scrolls sideways instead of widening the page -->
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <!-- ───────── title and what is in the diary ───────── -->
     <header>
-      <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Your diary</p>
-      <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Appointments</h1>
-      <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
+      <p class="text-xs font-medium tracking-widest text-brand uppercase">Your diary</p>
+      <h1 class="mt-2.5 text-2xl md:text-3xl leading-none font-normal tracking-tighter">Appointments</h1>
+      <p class="mt-2.5 text-base text-muted-foreground">
         <template v-if="isLoading">Loading your appointments…</template>
         <template v-else-if="isError">Requests to answer, consultations to come and everything already held.</template>
         <template v-else>{{ summaryLabel }}</template>
@@ -13,29 +13,29 @@
     </header>
 
     <!-- ───────── filters: which ones, when, and a search ───────── -->
-    <div class="flex min-w-0 flex-wrap items-center gap-[0.6rem]">
-      <div role="group" aria-label="Show" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-[0.35rem] overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+    <div class="flex min-w-0 flex-wrap items-center gap-2.5">
+      <div role="group" aria-label="Show" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-1.5 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
         <button
           v-for="t in tabs"
           :key="t.key"
           type="button"
           :aria-pressed="tab === t.key"
-          class="inline-flex min-h-[2.75rem] flex-none cursor-pointer items-center gap-[0.45rem] rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+          class="inline-flex min-h-11 flex-none cursor-pointer items-center gap-1.75 rounded-full border px-4 font-medium whitespace-nowrap transition-colors duration-200 ease-canopy"
           :class="tab === t.key ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
           @click="onTabChange(t.key)"
         >
           {{ t.label }}
           <span
             v-if="tabCounts[t.key] > 0"
-            class="rounded-full px-[0.45rem] text-[0.78rem] font-bold"
+            class="rounded-full px-1.75 text-xs font-medium"
             :class="tab === t.key ? 'bg-white/20' : 'bg-muted text-foreground'"
           >{{ tabCounts[t.key] }}</span>
         </button>
       </div>
 
-      <div class="flex min-w-0 flex-[1_1_22rem] flex-wrap items-center gap-[0.6rem] tab:justify-end">
+      <div class="flex min-w-0 grow basis-88 flex-wrap items-center gap-2.5 tab:justify-end">
         <Select :model-value="rangePreset" @update:model-value="onRangePresetChange">
-          <SelectTrigger class="h-[2.75rem]! w-full rounded-full border-border bg-card px-[1rem] font-semibold sm:w-[11rem]" aria-label="Date range">
+          <SelectTrigger class="h-11! w-full rounded-full border-border bg-card px-4 font-medium sm:w-44" aria-label="Date range">
             <CanopyGlyph name="calendar" :size="16" class="text-muted-foreground" />
             <SelectValue placeholder="Date range" />
           </SelectTrigger>
@@ -48,7 +48,7 @@
           <PopoverTrigger as-child>
             <Button variant="line" size="pill-sm" class="w-full justify-start sm:w-auto" :aria-expanded="isRangePickerOpen">{{ customRangeLabel }}</Button>
           </PopoverTrigger>
-          <PopoverContent align="start" class="w-auto rounded-[1.25rem] p-0">
+          <PopoverContent align="start" class="w-auto rounded-card p-0">
             <RangeCalendar :model-value="calendarRange" :number-of-months="1" initial-focus @update:model-value="onCalendarRangeChange" />
             <div class="flex items-center justify-end gap-2 border-t border-border p-2">
               <Button variant="line" size="pill-sm" @click="clearCustomRange">Clear</Button>
@@ -57,15 +57,15 @@
           </PopoverContent>
         </Popover>
 
-        <label class="relative block w-full min-w-0 sm:w-[16rem]">
+        <label class="relative block w-full min-w-0 sm:w-64">
           <span class="sr-only">Search appointments</span>
-          <CanopyGlyph name="search" :size="17" class="pointer-events-none absolute top-1/2 left-[1rem] -translate-y-1/2 text-muted-foreground" />
+          <CanopyGlyph name="search" :size="17" class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             v-model="searchInput"
             type="search"
             autocomplete="off"
             placeholder="Client name or reference"
-            class="h-[2.75rem] rounded-full border-border bg-card pr-[1rem] pl-[2.6rem]"
+            class="h-11 rounded-full border-border bg-card pr-4 pl-10.5"
           />
         </label>
       </div>
@@ -73,10 +73,10 @@
 
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="isLoading" role="status" aria-label="Loading your appointments" class="grid gap-2">
-      <div v-for="n in 4" :key="n" class="h-[5.4rem] animate-pulse rounded-[1.25rem] bg-muted" />
+      <div v-for="n in 4" :key="n" class="h-21.5 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your appointments.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has changed in your diary. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
@@ -86,20 +86,20 @@
       <section aria-labelledby="list-title">
         <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 id="list-title" :class="sectionTitle">
-            {{ activeTab.label }}<span v-if="filtered.length > 0" class="ml-[0.5rem] text-muted-foreground">{{ filtered.length }}</span>
+            {{ activeTab.label }}<span v-if="filtered.length > 0" class="ml-2 text-muted-foreground">{{ filtered.length }}</span>
           </h2>
-          <p class="text-[0.95rem] text-muted-foreground">{{ rangeLabel }}</p>
+          <p class="text-sm text-muted-foreground">{{ rangeLabel }}</p>
         </div>
 
-        <div v-if="filtered.length === 0" :class="[panel, 'mt-[0.9rem] px-[1.3rem] py-[clamp(1.6rem,4vw,2.6rem)] text-center']">
+        <div v-if="filtered.length === 0" :class="[panel, 'mt-3.5 px-5.25 py-6.5 md:py-7.75 lg:py-10.25 xl:py-10.5 text-center']">
           <p class="text-muted-foreground">{{ emptyLabel }}</p>
-          <Button v-if="hasActiveFilters" variant="line" size="pill-sm" class="mt-[0.9rem]" @click="clearFilters">Clear filters</Button>
-          <Button v-else as-child variant="line" size="pill-sm" class="mt-[0.9rem]">
+          <Button v-if="hasActiveFilters" variant="line" size="pill-sm" class="mt-3.5" @click="clearFilters">Clear filters</Button>
+          <Button v-else as-child variant="line" size="pill-sm" class="mt-3.5">
             <NuxtLink to="/dashboard/availability">Check your working hours</NuxtLink>
           </Button>
         </div>
 
-        <ul v-else :class="[panel, 'mt-[0.9rem] divide-y divide-border overflow-hidden']">
+        <ul v-else :class="[panel, 'mt-3.5 divide-y divide-border overflow-hidden']">
           <WorkspaceBookingRow
             v-for="booking in pageItems"
             :key="booking.id"
@@ -123,13 +123,13 @@
               v-if="booking.engagementOutcome || booking.clientNotes || (isToday(booking) && booking.meetingType === 'video' && booking.meetingUrl && isLive(booking))"
               #body
             >
-              <div class="grid gap-[0.5rem]">
-                <p v-if="booking.clientNotes" class="line-clamp-2 max-w-[44rem] text-[0.92rem]">
-                  <b class="font-semibold">From the client:</b> {{ booking.clientNotes }}
+              <div class="grid gap-2">
+                <p v-if="booking.clientNotes" class="line-clamp-2 max-w-176 text-sm">
+                  <b class="font-medium">From the client:</b> {{ booking.clientNotes }}
                 </p>
-                <div class="flex flex-wrap items-center gap-[0.5rem]">
-                  <span v-if="booking.engagementOutcome === 'client_hired'" class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold text-deep">Case opened</span>
-                  <span v-else-if="booking.engagementOutcome === 'consultation_only'" class="rounded-full bg-muted px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold">Consultation only</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span v-if="booking.engagementOutcome === 'client_hired'" class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Case opened</span>
+                  <span v-else-if="booking.engagementOutcome === 'consultation_only'" class="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">Consultation only</span>
                   <Button v-if="isToday(booking) && isLive(booking) && booking.meetingType === 'video' && booking.meetingUrl" as-child variant="canopy" size="pill-sm" class="shadow-none hover:translate-y-0">
                     <a :href="booking.meetingUrl" target="_blank" rel="noopener"><CanopyGlyph name="video" :size="16" />Join the meeting</a>
                   </Button>
@@ -151,9 +151,9 @@
           </WorkspaceBookingRow>
         </ul>
 
-        <nav v-if="totalPages > 1" aria-label="Appointments pages" class="mt-[0.8rem] flex flex-wrap items-center justify-between gap-3">
-          <span class="text-[0.9rem] text-muted-foreground">Showing {{ pageStart }} to {{ pageEnd }} of {{ filtered.length }}</span>
-          <span class="flex gap-[0.5rem]">
+        <nav v-if="totalPages > 1" aria-label="Appointments pages" class="mt-3.25 flex flex-wrap items-center justify-between gap-3">
+          <span class="text-sm text-muted-foreground">Showing {{ pageStart }} to {{ pageEnd }} of {{ filtered.length }}</span>
+          <span class="flex gap-2">
             <Button variant="line" size="pill-sm" :disabled="paged.page <= 1" @click="setPage(paged.page - 1)">Previous</Button>
             <Button variant="line" size="pill-sm" :disabled="paged.page >= totalPages" @click="setPage(paged.page + 1)">Next</Button>
           </span>
@@ -163,26 +163,26 @@
 
     <!-- ───────── declining a request, or cancelling a confirmed one: always with a reason ───────── -->
     <Dialog v-model:open="isCancelModalOpen">
-      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-        <DialogHeader class="gap-[0.5rem] text-left">
-          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ cancelMode === 'decline' ? 'Decline this request' : 'Cancel this appointment' }}</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">
+      <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+        <DialogHeader class="gap-2 text-left">
+          <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">{{ cancelMode === 'decline' ? 'Decline this request' : 'Cancel this appointment' }}</DialogTitle>
+          <DialogDescription class="text-sm text-muted-foreground">
             {{ cancelMode === 'decline'
               ? 'The client is told you cannot take this booking, with the reason you give.'
               : 'The client is told the appointment is cancelled, with the reason you give.' }}
           </DialogDescription>
         </DialogHeader>
-        <div class="grid gap-[0.4rem]">
-          <Label for="cancel-reason" class="font-semibold">Reason</Label>
+        <div class="grid gap-1.5">
+          <Label for="cancel-reason" class="font-medium">Reason</Label>
           <Textarea
             id="cancel-reason"
             v-model="cancelReason"
             :placeholder="cancelMode === 'decline' ? 'For example: I am in court that day.' : 'For example: a hearing has been moved to that time.'"
             :rows="3"
-            class="rounded-[1rem] bg-card"
+            class="rounded-lg bg-card"
           />
         </div>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+        <DialogFooter class="mt-1.25 gap-2.5">
           <Button variant="line" size="pill" :disabled="isCanceling" @click="isCancelModalOpen = false">{{ cancelMode === 'decline' ? 'Keep the request' : 'Keep the appointment' }}</Button>
           <Button variant="destructive" size="pill" class="rounded-full" :disabled="!cancelReason.trim() || isCanceling" :aria-busy="isCanceling" @click="confirmCancel">
             {{ isCanceling ? 'Sending…' : cancelMode === 'decline' ? 'Decline the request' : 'Cancel the appointment' }}
@@ -615,6 +615,6 @@ function confirmCancel() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-xl leading-none font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card'
 </script>

@@ -31,15 +31,15 @@ const emit = defineEmits<{
 
 <template>
   <Dialog :open="open" @update:open="emit('update:open', $event)">
-    <DialogContent class="max-h-[min(92svh,46rem)] gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[34rem]">
-      <DialogHeader class="gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left">
-        <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ title }}</DialogTitle>
-        <DialogDescription v-if="description" class="text-[1rem] text-muted-foreground">{{ description }}</DialogDescription>
+    <DialogContent class="max-h-[min(92svh,46rem)] gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 sm:max-w-136">
+      <DialogHeader class="gap-1.5 border-b border-border px-4.75 md:px-7 py-4.5 text-left">
+        <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">{{ title }}</DialogTitle>
+        <DialogDescription v-if="description" class="text-sm text-muted-foreground">{{ description }}</DialogDescription>
       </DialogHeader>
-      <div class="max-h-[min(60svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]">
+      <div class="max-h-[min(60svh,34rem)] overflow-y-auto px-4.75 md:px-7 py-4.75">
         <slot />
       </div>
-      <DialogFooter class="gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]">
+      <DialogFooter class="gap-2.5 border-t border-border px-4.75 md:px-7 py-4">
         <Button type="button" variant="line" size="pill" :disabled="saving" @click="emit('update:open', false)">Cancel</Button>
         <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="saving" :aria-busy="saving">{{ saving ? 'Saving…' : saveLabel ?? 'Save' }}</Button>
       </DialogFooter>

@@ -8,13 +8,13 @@
         title="Create your account"
         description="First, tell us what brings you here."
       >
-        <RadioGroup v-model="selectedRole" aria-label="Account type" class="grid gap-[0.6rem]">
+        <RadioGroup v-model="selectedRole" aria-label="Account type" class="grid gap-2.5">
           <Label :for="clientRoleId" :class="roleCardClass('client')">
             <RadioGroupItem :id="clientRoleId" value="client" class="sr-only" />
             <span :class="roleIcon"><CanopyGlyph name="search" :size="22" /></span>
             <span class="min-w-0">
-              <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">I need a lawyer</b>
-              <small class="mt-[0.15rem] block text-[0.88rem] leading-normal font-normal opacity-75">Find and book a verified Nigerian lawyer for legal assistance.</small>
+              <b class="block font-display text-lg font-normal tracking-tight">I need a lawyer</b>
+              <small class="mt-0.5 block text-sm leading-normal font-normal opacity-75">Find and book a verified Nigerian lawyer for legal assistance.</small>
             </span>
             <i aria-hidden="true" :class="roleDot(selectedRole === 'client')" />
           </Label>
@@ -22,14 +22,14 @@
             <RadioGroupItem :id="lawyerRoleId" value="lawyer" class="sr-only" />
             <span :class="roleIcon"><CanopyGlyph name="scales" :size="22" /></span>
             <span class="min-w-0">
-              <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">I am a lawyer</b>
-              <small class="mt-[0.15rem] block text-[0.88rem] leading-normal font-normal opacity-75">List your services and grow your client base on our network.</small>
+              <b class="block font-display text-lg font-normal tracking-tight">I am a lawyer</b>
+              <small class="mt-0.5 block text-sm leading-normal font-normal opacity-75">List your services and grow your client base on our network.</small>
             </span>
             <i aria-hidden="true" :class="roleDot(selectedRole === 'lawyer')" />
           </Label>
         </RadioGroup>
 
-        <p aria-live="polite" class="mt-[0.9rem] mb-[1.1rem] text-[0.88rem] text-muted-foreground">{{ roleHint }}</p>
+        <p aria-live="polite" class="mt-3.5 mb-4.5 text-sm text-muted-foreground">{{ roleHint }}</p>
 
         <AuthSubmit type="button" :disabled="!selectedRole" @click="step = 'form'">
           Continue
@@ -59,17 +59,17 @@
             :disabled="isSubmitting"
             @click="handleSocialSignup('google')"
           />
-          <div class="my-[1.3rem] flex items-center gap-[0.9rem] text-[0.85rem] text-muted-foreground">
+          <div class="my-5.25 flex items-center gap-3.5 text-sm text-muted-foreground">
             <span class="h-px flex-1 bg-border" />or<span class="h-px flex-1 bg-border" />
           </div>
         </template>
 
         <form novalidate @submit.prevent="form.handleSubmit">
-          <FieldGroup class="gap-[1.1rem]">
-            <div class="grid grid-cols-2 gap-[0.7rem] max-sm:grid-cols-1 max-sm:gap-[1.1rem]">
+          <FieldGroup class="gap-4.5">
+            <div class="grid grid-cols-2 gap-2.75 max-sm:grid-cols-1 max-sm:gap-4.5">
               <form.Field v-slot="{ field }" name="firstName">
                 <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">First name</FieldLabel>
+                  <FieldLabel :for="field.name" class="text-sm font-medium">First name</FieldLabel>
                   <Input
                     :id="field.name"
                     :name="field.name"
@@ -88,7 +88,7 @@
 
               <form.Field v-slot="{ field }" name="lastName">
                 <Field :data-invalid="isInvalid(field)">
-                  <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">Last name</FieldLabel>
+                  <FieldLabel :for="field.name" class="text-sm font-medium">Last name</FieldLabel>
                   <Input
                     :id="field.name"
                     :name="field.name"
@@ -112,8 +112,8 @@
             <div v-show="authMethod === 'email'">
               <form.Field v-slot="{ field }" name="email">
                 <Field :data-invalid="isInvalid(field)">
-                  <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                    <FieldLabel :for="field.name" class="w-auto font-semibold">Email address</FieldLabel>
+                  <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                    <FieldLabel :for="field.name" class="w-auto font-medium">Email address</FieldLabel>
                     <button v-if="canUsePhone" type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'phone'">
                       Use phone instead
                     </button>
@@ -140,8 +140,8 @@
             <div v-show="authMethod === 'phone'">
               <form.Field v-slot="{ field }" name="phone">
                 <Field :data-invalid="isInvalid(field)">
-                  <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                    <span class="font-semibold">Phone number</span>
+                  <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                    <span class="font-medium">Phone number</span>
                     <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'email'">
                       Use email instead
                     </button>
@@ -161,7 +161,7 @@
 
             <form.Field v-slot="{ field }" name="password">
               <Field :data-invalid="isInvalid(field)">
-                <FieldLabel :for="field.name" class="text-[0.9rem] font-semibold">Password</FieldLabel>
+                <FieldLabel :for="field.name" class="text-sm font-medium">Password</FieldLabel>
                 <AuthPasswordInput
                   :id="field.name"
                   :name="field.name"
@@ -181,7 +181,7 @@
 
             <AuthFormError :message="apiError" />
 
-            <AuthSubmit :loading="isSubmitting" class="mt-[0.3rem]">
+            <AuthSubmit :loading="isSubmitting" class="mt-1.25">
               {{
                 isSubmitting
                   ? (authMethod === 'phone' ? 'Sending code…' : 'Creating account…')
@@ -196,13 +196,13 @@
         </form>
 
         <template #after>
-          <p class="text-[0.88rem]">
+          <p class="text-sm">
             By continuing, you agree to our
-            <NuxtLink to="/terms" class="font-semibold text-foreground underline underline-offset-[3px] hover:text-brand">Terms of Service</NuxtLink>
+            <NuxtLink to="/terms" class="font-medium text-foreground underline underline-offset-3 hover:text-brand">Terms of Service</NuxtLink>
             and
-            <NuxtLink to="/privacy" class="font-semibold text-foreground underline underline-offset-[3px] hover:text-brand">Privacy Policy</NuxtLink>.
+            <NuxtLink to="/privacy" class="font-medium text-foreground underline underline-offset-3 hover:text-brand">Privacy Policy</NuxtLink>.
           </p>
-          <p class="mt-[0.9rem]">
+          <p class="mt-3.5">
             Already have an account? <NuxtLink to="/login" :class="authLink">Sign in</NuxtLink>
           </p>
         </template>
@@ -217,7 +217,7 @@
           Enter the code sent to <b class="text-foreground">{{ pendingPhone }}</b>.
         </template>
 
-        <div class="grid gap-[1.1rem]">
+        <div class="grid gap-4.5">
           <AuthOtpStep
             v-model="phoneOtp"
             :error="otpError"
@@ -323,17 +323,17 @@ const {
 
 function roleCardClass(value: 'client' | 'lawyer') {
   return cn(
-    'grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.25rem] border p-4 text-left leading-normal transition-colors duration-200 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-mint',
+    'grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-card border p-4 text-left leading-normal transition-colors duration-200 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-mint',
     selectedRole.value === value
       ? 'border-brand bg-mint text-deep'
       : 'border-border bg-card hover:border-brand',
   )
 }
-const roleIcon = 'grid size-[2.9rem] place-items-center rounded-[0.9rem] bg-background text-deep'
+const roleIcon = 'grid size-11.5 place-items-center rounded-md bg-background text-deep'
 function roleDot(on: boolean) {
   return on
-    ? 'size-[1.35rem] rounded-full border-[0.42rem] border-primary bg-white'
-    : 'size-[1.35rem] rounded-full border-2 border-border'
+    ? 'size-5.5 rounded-full border-[0.42rem] border-primary bg-white'
+    : 'size-5.5 rounded-full border-2 border-border'
 }
 const roleHint = computed(() => {
   if (selectedRole.value === 'client') return 'You can sign up with Google, email or your phone number.'

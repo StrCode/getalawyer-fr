@@ -41,7 +41,7 @@ const availableDaysCount = computed(
 </script>
 
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <DashboardPageHeader
       eyebrow="Practice"
       title="Availability"
@@ -50,19 +50,19 @@ const availableDaysCount = computed(
       <template #actions>
         <span
           v-if="!isPending"
-          class="rounded-full px-[0.85rem] py-[0.3rem] text-[0.88rem] font-bold"
+          class="rounded-full px-3.5 py-1.25 text-sm font-medium"
           :class="availableDaysCount > 0 ? 'bg-mint text-deep' : 'bg-muted text-foreground'"
         >{{ availableDaysCount === 0 ? 'No days open' : `${availableDaysCount} ${availableDaysCount === 1 ? 'day' : 'days'} open each week` }}</span>
       </template>
     </DashboardPageHeader>
 
-    <div role="group" aria-label="Part of availability" class="flex gap-[0.35rem]">
+    <div role="group" aria-label="Part of availability" class="flex gap-1.5">
       <button
         v-for="option in [{ key: 'weekly', label: 'Weekly hours' }, { key: 'exceptions', label: 'Time off and extra hours' }]"
         :key="option.key"
         type="button"
         :aria-pressed="activeTab === option.key"
-        class="inline-flex min-h-[2.75rem] cursor-pointer items-center rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+        class="inline-flex min-h-11 cursor-pointer items-center rounded-full border px-4 font-medium whitespace-nowrap transition-colors duration-200 ease-canopy"
         :class="activeTab === option.key ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
         @click="handleTabChange(option.key)"
       >

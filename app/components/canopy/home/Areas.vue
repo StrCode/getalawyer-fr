@@ -30,25 +30,25 @@ const areas = computed(() =>
 </script>
 
 <template>
-  <section v-if="areas.length" id="areas" aria-labelledby="areas-title" class="scroll-mt-24 pt-[clamp(3rem,6vw,5rem)]">
-    <div class="mb-[clamp(1.5rem,2.6vw,2.25rem)] max-w-[40rem]">
-      <h2 id="areas-title" class="text-[clamp(1.65rem,2.6vw,2.25rem)] font-[650] leading-[1.05] tracking-[-0.035em] text-balance">
+  <section v-if="areas.length" id="areas" aria-labelledby="areas-title" class="scroll-mt-24 pt-12 lg:pt-15.25 xl:pt-19.25">
+    <div class="mb-6 lg:mb-6.75 xl:mb-8.25 max-w-160">
+      <h2 id="areas-title" class="text-2xl md:text-3xl lg:text-4xl font-normal leading-none tracking-tight text-balance">
         Or choose the kind of help you need.
       </h2>
-      <p class="mt-[0.7rem] text-muted-foreground">Pick one to see lawyers who do that work.</p>
+      <p class="mt-2.75 text-muted-foreground">Pick one to see lawyers who do that work.</p>
     </div>
 
     <ul class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
       <li v-for="(area, index) in areas" :key="area.id" :class="{ 'max-sm:hidden': index >= PHONE_COUNT }">
         <NuxtLink
           :to="{ path: '/find-lawyers', query: { areas: area.id } }"
-          class="group/tile flex h-full items-start gap-4 rounded-[1.25rem] border border-border bg-card px-[1.25rem] py-[1.1rem] transition-[border-color,background-color] duration-200 hover:border-primary hover:bg-mint"
+          class="group/tile flex h-full items-start gap-4 rounded-card border border-border bg-card px-5 py-4.5 transition-colors duration-200 hover:border-primary hover:bg-mint"
         >
           <span class="min-w-0 flex-1">
-            <b class="block font-display text-[1.2rem] font-[650] leading-[1.2] tracking-[-0.02em]">{{ area.name }}</b>
-            <span v-if="area.description" class="mt-[0.3rem] block text-[0.95rem] leading-[1.45] text-muted-foreground">{{ area.description }}</span>
+            <b class="block font-display text-lg font-normal leading-tight tracking-tight">{{ area.name }}</b>
+            <span v-if="area.description" class="mt-1.25 block text-base leading-normal text-muted-foreground">{{ area.description }}</span>
           </span>
-          <CanopyGlyph name="arrow" :stroke="2.2" class="mt-[0.3rem] flex-none text-brand transition-[translate] duration-200 ease-canopy group-hover/tile:translate-x-[3px]" />
+          <CanopyGlyph name="arrow" :stroke="2.2" class="mt-1.25 flex-none text-brand transition-transform duration-200 ease-canopy group-hover/tile:translate-x-0.75" />
         </NuxtLink>
       </li>
     </ul>

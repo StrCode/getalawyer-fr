@@ -238,7 +238,7 @@ watch(additionalStateQuery, (q) => {
 })
 
 const listboxItemClass = cn(
-  'relative flex cursor-default select-none items-center gap-2 rounded-[0.6rem] px-2.5 py-2 text-[0.95rem] outline-hidden',
+  'relative flex cursor-default select-none items-center gap-2 rounded-lg px-2.5 py-2 text-base outline-hidden',
   'data-highlighted:bg-accent data-highlighted:text-accent-foreground',
   'data-disabled:pointer-events-none data-disabled:opacity-50',
 )
@@ -260,7 +260,7 @@ const listboxItemClass = cn(
     <div :class="canopyForm">
         <FieldSet :class="canopyGroup">
           <legend :class="canopyLegend">Your practice</legend>
-          <div class="grid gap-[0.9rem]">
+          <div class="grid gap-3.5">
             <form.Field v-slot="{ field }" name="soloPractitioner">
               <Field :class="canopyField">
                 <Label :for="soloPractitionerFieldId" :class="canopyChoice">
@@ -274,8 +274,8 @@ const listboxItemClass = cn(
                     }"
                   />
                   <span class="grid gap-1">
-                    <span class="text-[0.95rem] leading-snug font-semibold text-foreground">I am a solo practitioner</span>
-                    <span class="text-[0.85rem] leading-normal font-normal text-muted-foreground">
+                    <span class="text-base leading-snug font-medium text-foreground">I am a solo practitioner</span>
+                    <span class="text-sm leading-normal font-normal text-muted-foreground">
                       You practise under your own name, with no firm on your profile.
                     </span>
                   </span>
@@ -352,7 +352,7 @@ const listboxItemClass = cn(
                       class="items-start"
                     >
                       <div
-                        class="pointer-events-none mt-0.5 size-4 shrink-0 rounded-sm border border-input transition-all select-none *:[svg]:opacity-0 data-[selected=true]:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:*:[svg]:opacity-100"
+                        class="pointer-events-none mt-0.5 size-4 shrink-0 rounded-sm border border-input transition-colors select-none *:[svg]:opacity-0 data-[selected=true]:border-primary data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:*:[svg]:opacity-100"
                         :data-selected="selectedAreas.some((row) => row.practiceAreaId === opt.id) || undefined"
                       >
                         <HugeiconsIcon :icon="Tick01Icon" class="size-3.5 text-current" />
@@ -391,7 +391,7 @@ const listboxItemClass = cn(
 
         <FieldSet :class="canopyGroup">
           <legend :class="canopyLegend">Where you practise</legend>
-          <div class="grid gap-[0.9rem]">
+          <div class="grid gap-3.5">
             <form.Field v-slot="{ field }" name="primaryState">
               <Field
                 :class="canopyField"
@@ -448,7 +448,7 @@ const listboxItemClass = cn(
                         :model-value="additionalStates"
                         :disabled="!formValues.primaryState"
                         :aria-invalid="isInvalid(field)"
-                        class="h-auto min-h-[3.25rem] w-full gap-1.5 rounded-[1rem] border-border bg-card px-2 py-1.5 shadow-none focus-within:border-brand focus-within:ring-4 focus-within:ring-mint"
+                        class="h-auto min-h-13 w-full gap-1.5 rounded-lg border-border bg-card px-2 py-1.5 shadow-none focus-within:border-brand focus-within:ring-4 focus-within:ring-mint"
                         @update:model-value="(v) => syncAdditionalStates(v, field)"
                       >
                         <TagsInputItem
@@ -457,7 +457,7 @@ const listboxItemClass = cn(
                           :value="item"
                           class="h-8 rounded-full bg-mint pl-1 text-deep"
                         >
-                          <TagsInputItemText class="text-[0.85rem] font-semibold" />
+                          <TagsInputItemText class="text-sm font-medium" />
                           <TagsInputItemDelete />
                         </TagsInputItem>
 
@@ -465,7 +465,7 @@ const listboxItemClass = cn(
                           <TagsInputInput
                             :placeholder="formValues.primaryState ? 'Add other states…' : 'Select primary state first'"
                             :disabled="!formValues.primaryState"
-                            class="min-h-8 px-2 text-[1.02rem] placeholder:text-placeholder"
+                            class="min-h-8 px-2 text-base placeholder:text-placeholder"
                             @keydown.enter.prevent
                             @keydown.down="additionalStatesPopoverOpen = true"
                           />

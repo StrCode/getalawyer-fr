@@ -17,11 +17,11 @@ withDefaults(
     aria-hidden="true"
   >
     <Skeleton class="mx-auto mb-4 size-20 rounded-full" />
-    <Skeleton class="mx-auto h-6 w-[60%] rounded-md" />
-    <Skeleton class="mx-auto mt-2 h-4 w-[45%] rounded-md" />
+    <Skeleton class="mx-auto h-6 w-3/5 rounded-md" />
+    <Skeleton class="mx-auto mt-2 h-4 w-5/12 rounded-md" />
     <Skeleton class="mx-auto mt-4 h-4 w-32 rounded-md" />
     <div class="mt-5 space-y-3 border-t border-border pt-4">
-      <Skeleton class="mx-auto h-10 w-full max-w-[16rem] rounded-xl" />
+      <Skeleton class="mx-auto h-10 w-full max-w-64 rounded-xl" />
       <div class="flex flex-wrap justify-center gap-1.5">
         <Skeleton class="h-6 w-16 rounded-full" />
         <Skeleton class="h-6 w-20 rounded-full" />
@@ -39,8 +39,8 @@ withDefaults(
     <div class="flex min-w-0 flex-1 flex-col gap-2.5">
       <div class="flex items-start justify-between gap-3">
         <div class="flex-1 space-y-2">
-          <Skeleton class="h-5 w-[55%] max-w-xs rounded-md" />
-          <Skeleton class="h-4 w-[35%] max-w-[10rem] rounded-md" />
+          <Skeleton class="h-5 w-7/12 max-w-xs rounded-md" />
+          <Skeleton class="h-4 w-1/3 max-w-40 rounded-md" />
         </div>
         <Skeleton class="hidden h-8 w-24 rounded-full sm:block" />
       </div>

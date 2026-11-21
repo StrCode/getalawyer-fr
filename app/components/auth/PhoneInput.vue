@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-2">
-    <Label v-if="label" :for="inputId" class="text-[0.9rem] font-semibold">{{ label }}</Label>
+    <Label v-if="label" :for="inputId" class="text-sm font-medium">{{ label }}</Label>
     <!-- Nigeria, locked: this is a Nigeria-only directory, so the country code
          is a fixed prefix inside the field rather than a selectable dropdown. -->
     <InputGroup :class="authInputGroup">
-      <InputGroupAddon class="pl-4 text-[1.02rem] font-semibold">
+      <InputGroupAddon class="pl-4 text-base font-medium">
         <!-- The flag is drawn 3:2 and stretched to its 3:2 box, so it fills it edge
              to edge. It sits in a wrapper because the addon forces bare svg
              children to a 16px square. -->
-        <span aria-hidden="true" class="block h-[1.1rem] w-[1.65rem] shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/15 dark:ring-white/25">
+        <span aria-hidden="true" class="block h-4.5 w-6.5 shrink-0 overflow-hidden rounded-xs ring-1 ring-black/15 dark:ring-white/25">
           <svg viewBox="0 0 3 2" preserveAspectRatio="none" class="block size-full">
             <rect width="3" height="2" fill="#008751" />
             <rect x="1" width="1" height="2" fill="#fff" />

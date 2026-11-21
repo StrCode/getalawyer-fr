@@ -21,14 +21,14 @@ onUnmounted(() => {
 <template>
   <div class="flex h-screen flex-col overflow-hidden bg-background font-sans selection:bg-primary/15 selection:text-primary">
     <header
-      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-4 transition-all duration-200 sm:px-8 sm:py-5 md:px-12"
+      class="z-30 flex shrink-0 items-center justify-between gap-4 border-b border-border/40 bg-background px-4 py-4 transition-[padding] duration-200 sm:px-8 sm:py-5 md:px-12"
       :class="isScrolled ? 'shadow-sm' : ''"
     >
       <BrandLogo class="min-w-0 shrink" />
 
       <Button
         variant="outline"
-        class="h-10 shrink-0 border-border bg-background px-4 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 sm:h-11 sm:px-5"
+        class="h-10 shrink-0 border-border bg-background px-4 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted/60 sm:h-11 sm:px-5"
         as-child
       >
         <NuxtLink to="/">

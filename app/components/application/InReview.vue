@@ -61,19 +61,19 @@ const timeline = computed(() => [
       We are checking your credentials. You will get an email when there is a decision, usually within {{ REVIEW_TIME }}.
     </template>
 
-    <section aria-labelledby="timeline-title" class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
-      <h2 id="timeline-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">What happens next</h2>
+    <section aria-labelledby="timeline-title" class="rounded-card border border-border bg-card p-4.5 lg:p-6">
+      <h2 id="timeline-title" class="text-xl font-normal tracking-tight">What happens next</h2>
       <ol class="mt-4 grid">
         <li
           v-for="(item, index) in timeline"
           :key="item.title"
-          class="relative grid grid-cols-[1.9rem_minmax(0,1fr)] gap-[0.8rem] pb-[1.1rem] last:pb-0"
+          class="relative grid grid-cols-[1.9rem_minmax(0,1fr)] gap-3.25 pb-4.5 last:pb-0"
           :class="firstView ? 'animate-step-in' : ''"
           :style="firstView ? { animationDelay: `${index * 50}ms` } : undefined"
         >
-          <i v-if="index < timeline.length - 1" aria-hidden="true" class="absolute top-[1.9rem] bottom-0 left-[0.92rem] w-[2px] bg-border" />
+          <i v-if="index < timeline.length - 1" aria-hidden="true" class="absolute top-7.5 bottom-0 left-3.75 w-0.5 bg-border" />
           <span
-            class="grid size-[1.9rem] place-items-center rounded-full border-2 text-[0.8rem] font-bold"
+            class="grid size-7.5 place-items-center rounded-full border-2 text-sm font-medium"
             :class="item.state === 'done' ? 'border-primary bg-primary text-white' : item.state === 'now' ? 'border-primary text-brand ring-4 ring-mint' : 'border-border text-muted-foreground'"
           >
             <CanopyGlyph v-if="item.state === 'done'" name="tick" :size="12" :stroke="3.4" />
@@ -81,13 +81,13 @@ const timeline = computed(() => [
           </span>
           <div>
             <b class="block">{{ item.title }}</b>
-            <small class="text-[0.88rem] text-muted-foreground">{{ item.note }}</small>
+            <small class="text-sm text-muted-foreground">{{ item.note }}</small>
           </div>
         </li>
       </ol>
     </section>
 
-    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[0.9rem] text-muted-foreground">
+    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm text-muted-foreground">
       <p>
         This page checks for a decision by itself. Questions?
         <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>

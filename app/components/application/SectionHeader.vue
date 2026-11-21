@@ -16,8 +16,8 @@ defineProps<{
 
 <template>
   <header class="w-full text-left">
-    <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ label }}</p>
-    <h1 class="mt-[0.6rem] text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h1>
-    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">{{ description }}</p>
+    <p class="text-sm font-medium tracking-widest text-brand uppercase">{{ label }}</p>
+    <h1 class="mt-2.5 text-3xl md:text-4xl leading-none font-normal tracking-tight text-balance">{{ title }}</h1>
+    <p class="mt-2.5 max-w-152 text-muted-foreground">{{ description }}</p>
   </header>
 </template>

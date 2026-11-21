@@ -24,12 +24,12 @@ const copy = computed(() => COPY[state.value])
 </script>
 
 <template>
-  <DropdownMenuItem as-child class="block cursor-pointer rounded-[1.1rem] bg-mint p-[0.9rem] text-deep focus:bg-mint focus:text-deep focus:ring-2 focus:ring-brand">
+  <DropdownMenuItem as-child class="block cursor-pointer rounded-lg bg-mint p-3.5 text-deep focus:bg-mint focus:text-deep focus:ring-2 focus:ring-brand">
     <NuxtLink :to="copy.to">
-      <small class="block text-[0.72rem] font-bold tracking-[0.06em] uppercase">Lawyer application</small>
-      <b class="mt-[0.2rem] block font-display text-[1.05rem] font-[650] tracking-[-0.02em]">{{ copy.status }}</b>
-      <span class="mt-[0.15rem] block text-[0.88rem]">{{ copy.note }}</span>
-      <span class="mt-[0.6rem] inline-flex items-center gap-[0.35rem] text-[0.9rem] font-semibold">{{ copy.action }}<CanopyGlyph name="arrow" :size="14" :stroke="2.4" class="!text-deep" /></span>
+      <small class="block text-xs font-medium tracking-wider uppercase">Lawyer application</small>
+      <b class="mt-0.75 block font-display text-base font-normal tracking-tight">{{ copy.status }}</b>
+      <span class="mt-0.5 block text-sm">{{ copy.note }}</span>
+      <span class="mt-2.5 inline-flex items-center gap-1.5 text-sm font-medium">{{ copy.action }}<CanopyGlyph name="arrow" :size="14" :stroke="2.4" class="!text-deep" /></span>
     </NuxtLink>
   </DropdownMenuItem>
 </template>

@@ -17,12 +17,12 @@ withDefaults(defineProps<{ to?: string, large?: boolean, condensed?: boolean }>(
   <NuxtLink
     :to="to"
     aria-label="getalawyer home"
-    class="flex w-fit items-center whitespace-nowrap font-display font-bold tracking-[-0.03em] transition-[gap] duration-300 ease-canopy"
-    :class="[large ? 'text-[1.6rem]' : 'text-[1.3rem]', condensed ? 'gap-0' : 'gap-[0.55rem]']"
+    class="flex w-fit items-center whitespace-nowrap font-display font-semibold tracking-tight transition-[gap] duration-300 ease-canopy"
+    :class="[large ? 'text-2xl' : 'text-xl', condensed ? 'gap-0' : 'gap-2.25']"
   >
     <BrandMark
       class="w-auto flex-none fill-[#239261] dark:fill-white"
-      :class="large ? 'h-[1.9rem]' : 'h-[1.625rem]'"
+      :class="large ? 'h-7.5' : 'h-6.5'"
     />
     <span
       aria-hidden="true"

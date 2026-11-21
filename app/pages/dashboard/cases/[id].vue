@@ -259,40 +259,40 @@ function startMove(chosen: StatusMove) {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-base font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card'
-const pill = 'rounded-full px-[0.7rem] py-[0.15rem] text-[0.78rem] font-bold tracking-normal whitespace-nowrap normal-case'
+const pill = 'rounded-full px-2.75 py-0.5 text-xs font-medium tracking-normal whitespace-nowrap normal-case'
 const quiet = 'shadow-none hover:translate-y-0'
-const dialog = 'gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[32rem]'
-const dialogHead = 'gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left'
-const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]'
-const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]'
-const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const dialog = 'gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 sm:max-w-128'
+const dialogHead = 'gap-1.5 border-b border-border px-4.75 md:px-7 py-4.5 text-left'
+const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-4.75 md:px-7 py-4.75'
+const dialogFoot = 'gap-2.5 border-t border-border px-4.75 md:px-7 py-4'
+const dialogTitle = 'font-display text-xl leading-none font-normal tracking-tight'
 </script>
 
 <template>
-  <div class="mx-auto grid w-full max-w-[62rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)]">
+  <div class="mx-auto grid w-full max-w-248 grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
     <NuxtLink
       to="/dashboard/cases"
-      class="inline-flex min-h-[2.75rem] w-fit items-center gap-[0.5rem] rounded-full pr-[0.6rem] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      class="inline-flex min-h-11 w-fit items-center gap-2 rounded-full pr-2.5 font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
       <CanopyGlyph name="arrow" :size="17" class="rotate-180" />Cases
     </NuxtLink>
 
     <!-- ───────── loading / not found / could not load ───────── -->
     <div v-if="loading && !error" role="status" aria-label="Loading the case" class="grid gap-4">
-      <div class="h-[18rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
-      <div class="h-[16rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-72 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
+      <div class="h-64 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no case here.</h1>
+    <section v-else-if="missing" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
+      <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no case here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/cases">Back to cases</NuxtLink></Button>
     </section>
 
-    <section v-else-if="!item" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this case.</h1>
+    <section v-else-if="!item" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
+      <h1 class="font-display text-xl leading-none font-normal tracking-tight">We could not load this case.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -301,84 +301,84 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       <!-- ───────── what the case is, who it is between, the fee ───────── -->
       <section
         aria-labelledby="case-title"
-        class="flex flex-wrap items-start gap-x-[clamp(1.5rem,4vw,3rem)] gap-y-6 rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,2.75rem)] max-sm:rounded-[1.75rem]"
+        class="flex flex-wrap items-start gap-x-6 md:gap-x-7.75 lg:gap-x-10.25 xl:gap-x-12 gap-y-6 rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-11 max-sm:rounded-2xl"
       >
-        <div class="min-w-0 flex-[999_1_22rem]">
-          <p class="flex flex-wrap items-center gap-x-[0.7rem] gap-y-1 text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">
+        <div class="min-w-0 grow-999 basis-88">
+          <p class="flex flex-wrap items-center gap-x-2.75 gap-y-1 text-xs font-medium tracking-widest text-brand uppercase">
             Case · {{ item.caseNumber }}
             <span :class="[pill, CASE_PILL[item.status].class]">{{ CASE_PILL[item.status].label }}</span>
             <span v-if="priorityPill(item.priority)" :class="[pill, 'bg-warning/15 text-warning-subtle-foreground']">{{ priorityPill(item.priority) }}</span>
           </p>
-          <h1 id="case-title" class="mt-[0.8rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">{{ item.caseTitle }}</h1>
+          <h1 id="case-title" class="mt-3.25 text-2xl md:text-3xl leading-none font-normal tracking-tight text-balance">{{ item.caseTitle }}</h1>
 
-          <p class="mt-[0.9rem] flex flex-wrap items-center gap-x-[0.6rem] gap-y-1">
-            <span aria-hidden="true" class="grid size-[2.2rem] flex-none place-items-center overflow-hidden rounded-[0.7rem] bg-mint font-display text-[0.85rem] font-bold text-deep">
+          <p class="mt-3.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+            <span aria-hidden="true" class="grid size-8.75 flex-none place-items-center overflow-hidden rounded-md bg-mint font-display text-sm font-medium text-deep">
               <img v-if="other?.image" :src="other.image" alt="" class="size-full object-cover">
               <template v-else>{{ initials(other?.name) || '·' }}</template>
             </span>
-            <span><span class="text-muted-foreground">{{ isLawyer ? 'For' : 'With' }}</span> <b class="font-semibold">{{ other?.name ?? (isLawyer ? 'a client' : 'your lawyer') }}</b></span>
+            <span><span class="text-muted-foreground">{{ isLawyer ? 'For' : 'With' }}</span> <b class="font-medium">{{ other?.name ?? (isLawyer ? 'a client' : 'your lawyer') }}</b></span>
           </p>
-          <p class="mt-[0.5rem] text-[0.95rem] text-muted-foreground">
+          <p class="mt-2 text-sm text-muted-foreground">
             Opened {{ dayLabel(item.startDate ?? item.createdAt) ?? agoLabel(item.createdAt, now!) }}<template v-if="due">
-              · <span :class="due.overdue ? 'font-semibold text-destructive' : ''">{{ due.text }}</span>
+              · <span :class="due.overdue ? 'font-medium text-destructive' : ''">{{ due.text }}</span>
             </template>
           </p>
-          <p v-if="item.description" class="mt-[0.9rem] max-w-[40rem] whitespace-pre-line">{{ item.description }}</p>
+          <p v-if="item.description" class="mt-3.5 max-w-160 whitespace-pre-line">{{ item.description }}</p>
 
-          <div class="mt-[1.3rem] flex flex-wrap gap-[0.55rem]">
+          <div class="mt-5.25 flex flex-wrap gap-2.25">
             <Button variant="line" size="pill" @click="startEdit">{{ isLawyer ? 'Edit the case' : 'Edit the title or description' }}</Button>
             <Button v-for="option in moves" :key="option.to" variant="line" size="pill" @click="startMove(option)">{{ option.label }}</Button>
           </div>
         </div>
 
-        <div v-if="fee || item.paymentNotes" class="min-w-0 flex-[1_1_17rem] rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
-          <h2 class="flex items-center gap-[0.5rem] font-display text-[1.2rem] font-[650] tracking-[-0.02em]"><CanopyGlyph name="card" :size="19" />Agreed fee</h2>
-          <p v-if="fee" class="mt-[0.5rem] font-display text-[1.5rem] leading-[1.15] font-[650] tracking-[-0.02em]">{{ fee }}</p>
-          <p v-if="item.paymentNotes" class="mt-[0.5rem] whitespace-pre-line">{{ item.paymentNotes }}</p>
-          <p class="mt-[0.7rem] text-[0.85rem] opacity-80">As recorded when the case opened. Payment for the work is between you and {{ isLawyer ? 'your client' : 'your lawyer' }}.</p>
+        <div v-if="fee || item.paymentNotes" class="min-w-0 grow basis-68 rounded-card bg-mint p-5 text-deep">
+          <h2 class="flex items-center gap-2 font-display text-lg font-normal tracking-tight"><CanopyGlyph name="card" :size="19" />Agreed fee</h2>
+          <p v-if="fee" class="mt-2 font-display text-xl leading-tight font-normal tracking-tight">{{ fee }}</p>
+          <p v-if="item.paymentNotes" class="mt-2 whitespace-pre-line">{{ item.paymentNotes }}</p>
+          <p class="mt-2.75 text-sm opacity-80">As recorded when the case opened. Payment for the work is between you and {{ isLawyer ? 'your client' : 'your lawyer' }}.</p>
         </div>
       </section>
 
       <!-- ───────── messages, tasks, activity ───────── -->
-      <div role="group" aria-label="Part of the case" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-[0.35rem] overflow-x-auto px-1 py-1 [scrollbar-width:none]">
+      <div role="group" aria-label="Part of the case" class="-mx-1 flex max-w-[calc(100%+0.5rem)] min-w-0 gap-1.5 overflow-x-auto px-1 py-1 [scrollbar-width:none]">
         <button
           v-for="entry in PARTS"
           :key="entry.key"
           type="button"
           :aria-pressed="part === entry.key"
-          class="inline-flex min-h-[2.75rem] flex-none cursor-pointer items-center gap-[0.45rem] rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+          class="inline-flex min-h-11 flex-none cursor-pointer items-center gap-1.75 rounded-full border px-4 font-medium whitespace-nowrap transition-colors duration-200 ease-canopy"
           :class="part === entry.key ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
           @click="part = entry.key"
         >
           {{ entry.label }}
-          <span v-if="entry.count > 0" class="rounded-full px-[0.45rem] text-[0.78rem] font-bold" :class="part === entry.key ? 'bg-white/20' : 'bg-muted text-foreground'">{{ entry.count }}</span>
+          <span v-if="entry.count > 0" class="rounded-full px-1.75 text-xs font-medium" :class="part === entry.key ? 'bg-white/20' : 'bg-muted text-foreground'">{{ entry.count }}</span>
         </button>
       </div>
 
       <!-- messages -->
       <section v-if="part === 'messages'" aria-labelledby="messages-title" :class="[panel, 'flex flex-col overflow-hidden']">
-        <h2 id="messages-title" :class="[sectionTitle, 'px-[clamp(1.1rem,2.2vw,1.5rem)] pt-[1.2rem]']">Messages about this case</h2>
-        <div ref="thread" class="max-h-[28rem] min-h-[10rem] overflow-y-auto px-[clamp(1.1rem,2.2vw,1.5rem)] py-[1rem]" aria-live="polite">
+        <h2 id="messages-title" :class="[sectionTitle, 'px-4.5 lg:px-5.75 xl:px-6 pt-4.75']">Messages about this case</h2>
+        <div ref="thread" class="max-h-112 min-h-40 overflow-y-auto px-4.5 lg:px-5.75 xl:px-6 py-4" aria-live="polite">
           <div v-if="threadPending" role="status" aria-label="Loading messages" class="grid gap-2">
-            <div class="h-[3rem] w-[60%] animate-pulse rounded-[1rem] bg-muted" />
-            <div class="ml-auto h-[3rem] w-[50%] animate-pulse rounded-[1rem] bg-muted" />
+            <div class="h-12 w-3/5 animate-pulse rounded-lg bg-muted" />
+            <div class="ml-auto h-12 w-1/2 animate-pulse rounded-lg bg-muted" />
           </div>
           <p v-else-if="threadFailed" class="text-muted-foreground">We could not load the messages. They will be tried again shortly.</p>
           <p v-else-if="!messages?.length" class="text-muted-foreground">No messages on this case yet. Write the first one below.</p>
-          <ol v-else class="grid gap-[0.6rem]">
+          <ol v-else class="grid gap-2.5">
             <li v-for="message in messages" :key="message.id" class="flex" :class="message.senderId === me ? 'justify-end' : 'justify-start'">
               <div class="max-w-[min(34rem,85%)]">
-                <p class="whitespace-pre-line rounded-[1.1rem] px-[0.9rem] py-[0.6rem]" :class="message.senderId === me ? 'rounded-br-[0.35rem] bg-forest text-white' : 'rounded-bl-[0.35rem] bg-muted'">{{ message.messageContent }}</p>
-                <p class="mt-[0.2rem] text-[0.78rem] text-muted-foreground" :class="message.senderId === me ? 'text-right' : ''">
+                <p class="whitespace-pre-line rounded-lg px-3.5 py-2.5" :class="message.senderId === me ? 'rounded-br-sm bg-forest text-white' : 'rounded-bl-sm bg-muted'">{{ message.messageContent }}</p>
+                <p class="mt-0.75 text-xs text-muted-foreground" :class="message.senderId === me ? 'text-right' : ''">
                   {{ nameOf(message.senderId, item, me) }} · {{ messageTime(message.createdAt, now!) }}
                 </p>
               </div>
             </li>
           </ol>
         </div>
-        <form novalidate class="flex flex-wrap items-end gap-[0.6rem] border-t border-border p-[clamp(0.9rem,2vw,1.2rem)]" @submit.prevent="messageForm.handleSubmit">
+        <form novalidate class="flex flex-wrap items-end gap-2.5 border-t border-border p-3.5 md:p-3.75 lg:p-4.75" @submit.prevent="messageForm.handleSubmit">
           <messageForm.Field v-slot="{ field }" name="text">
-            <Field class="min-w-0 flex-[1_1_16rem]">
+            <Field class="min-w-0 grow basis-64">
               <FieldLabel :for="field.name" class="sr-only">Write a message</FieldLabel>
               <Textarea
                 :id="field.name"
@@ -387,7 +387,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
                 rows="2"
                 :maxlength="CASE_MESSAGE_MAX"
                 :placeholder="`Write to ${other?.name?.split(' ')[0] ?? (isLawyer ? 'your client' : 'your lawyer')} about this case`"
-                :class="[canopyTextarea, 'min-h-[3.25rem]']"
+                :class="[canopyTextarea, 'min-h-13']"
                 :disabled="send.isPending.value"
                 @update:model-value="(v) => field.handleChange(String(v ?? ''))"
                 @keydown.enter.exact.prevent="messageForm.handleSubmit()"
@@ -401,39 +401,39 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       </section>
 
       <!-- tasks -->
-      <section v-else-if="part === 'tasks'" aria-labelledby="tasks-title" :class="[panel, 'p-[clamp(1.1rem,2.2vw,1.5rem)]']">
+      <section v-else-if="part === 'tasks'" aria-labelledby="tasks-title" :class="[panel, 'p-4.5 lg:p-5.75 xl:p-6']">
         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div>
             <h2 id="tasks-title" :class="sectionTitle">Tasks</h2>
-            <p class="text-[0.92rem] text-muted-foreground">{{ taskSummary(tasks) }}</p>
+            <p class="text-sm text-muted-foreground">{{ taskSummary(tasks) }}</p>
           </div>
           <Button v-if="isLawyer" variant="canopy" size="pill-sm" :class="quiet" @click="startTask">Add a task</Button>
         </div>
 
-        <p v-if="tasks.length === 0" class="mt-[0.9rem] text-muted-foreground">
+        <p v-if="tasks.length === 0" class="mt-3.5 text-muted-foreground">
           {{ isLawyer ? 'Use tasks for what each of you has to do next: a document to send, a form to sign, a filing to make.' : 'Your lawyer will add what each of you has to do next. You can tick yours off here.' }}
         </p>
 
-        <ul v-else class="mt-[0.9rem] divide-y divide-border">
-          <li v-for="row in tasks" :key="row.id" class="flex flex-wrap items-start gap-x-[0.8rem] gap-y-[0.4rem] py-[0.8rem]">
+        <ul v-else class="mt-3.5 divide-y divide-border">
+          <li v-for="row in tasks" :key="row.id" class="flex flex-wrap items-start gap-x-3.25 gap-y-1.5 py-3.25">
             <button
               type="button"
               role="checkbox"
               :aria-checked="row.status === 'completed'"
               :aria-label="row.status === 'completed' ? `Put back: ${row.taskTitle}` : `Mark done: ${row.taskTitle}`"
               :disabled="busyTask === row.id || (row.status === 'completed' && !isLawyer)"
-              class="mt-[0.1rem] grid size-[1.75rem] flex-none cursor-pointer place-items-center rounded-[0.6rem] border-2 transition-colors duration-200 disabled:cursor-default"
+              class="mt-0.5 grid size-7 flex-none cursor-pointer place-items-center rounded-lg border-2 transition-colors duration-200 disabled:cursor-default"
               :class="row.status === 'completed' ? 'border-brand bg-brand text-white dark:text-night' : 'border-border bg-card hover:border-brand'"
               @click="toggleTask(row)"
             >
               <CanopyGlyph v-if="row.status === 'completed'" name="tick" :size="15" :stroke="3" />
             </button>
-            <div class="min-w-0 flex-[1_1_14rem]">
-              <b class="block font-semibold" :class="row.status === 'completed' ? 'text-muted-foreground line-through' : ''">{{ row.taskTitle }}</b>
-              <p v-if="row.taskDescription" class="mt-[0.1rem] whitespace-pre-line text-[0.92rem] text-muted-foreground">{{ row.taskDescription }}</p>
-              <p class="mt-[0.15rem] text-[0.88rem] text-muted-foreground">
+            <div class="min-w-0 grow basis-56">
+              <b class="block font-medium" :class="row.status === 'completed' ? 'text-muted-foreground line-through' : ''">{{ row.taskTitle }}</b>
+              <p v-if="row.taskDescription" class="mt-0.5 whitespace-pre-line text-sm text-muted-foreground">{{ row.taskDescription }}</p>
+              <p class="mt-0.5 text-sm text-muted-foreground">
                 For {{ nameOf(row.assignedTo, item, me).replace(/^You$/, 'you') }}<template v-if="row.status === 'completed'"> · Done {{ agoLabel(row.completedAt, now!) }}</template><template v-else-if="dueLine(row.dueDate, now!)">
-                  · <span :class="dueLine(row.dueDate, now!)?.overdue ? 'font-semibold text-destructive' : ''">{{ dueLine(row.dueDate, now!)?.text }}</span>
+                  · <span :class="dueLine(row.dueDate, now!)?.overdue ? 'font-medium text-destructive' : ''">{{ dueLine(row.dueDate, now!)?.text }}</span>
                 </template>
               </p>
             </div>
@@ -443,16 +443,16 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       </section>
 
       <!-- activity -->
-      <section v-else aria-labelledby="log-title" :class="[panel, 'p-[clamp(1.1rem,2.2vw,1.5rem)]']">
+      <section v-else aria-labelledby="log-title" :class="[panel, 'p-4.5 lg:p-5.75 xl:p-6']">
         <h2 id="log-title" :class="sectionTitle">Activity</h2>
-        <p class="text-[0.92rem] text-muted-foreground">What has happened on this case, most recent first.</p>
-        <p v-if="!file?.activities.length" class="mt-[0.9rem] text-muted-foreground">Nothing recorded yet.</p>
-        <ol v-else class="mt-[0.9rem] grid gap-[0.7rem]">
-          <li v-for="entry in file.activities" :key="entry.id" class="grid grid-cols-[0.6rem_minmax(0,1fr)] gap-x-[0.8rem]">
-            <span aria-hidden="true" class="mt-[0.55rem] size-[0.6rem] rounded-full bg-brand" />
+        <p class="text-sm text-muted-foreground">What has happened on this case, most recent first.</p>
+        <p v-if="!file?.activities.length" class="mt-3.5 text-muted-foreground">Nothing recorded yet.</p>
+        <ol v-else class="mt-3.5 grid gap-2.75">
+          <li v-for="entry in file.activities" :key="entry.id" class="grid grid-cols-[0.6rem_minmax(0,1fr)] gap-x-3.25">
+            <span aria-hidden="true" class="mt-2.25 size-2.5 rounded-full bg-brand" />
             <div class="min-w-0">
               <p>{{ entry.description }}</p>
-              <p class="text-[0.85rem] text-muted-foreground">{{ nameOf(entry.performedBy, item, me) }} · {{ agoLabel(entry.createdAt, now!) }}</p>
+              <p class="text-sm text-muted-foreground">{{ nameOf(entry.performedBy, item, me) }} · {{ agoLabel(entry.createdAt, now!) }}</p>
             </div>
           </li>
         </ol>
@@ -464,11 +464,11 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       <DialogContent :class="dialog">
         <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">{{ isLawyer ? 'Edit the case' : 'Edit the title or description' }}</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">{{ other?.name ?? 'The other person' }} sees the same title and description.</DialogDescription>
+          <DialogDescription class="text-sm text-muted-foreground">{{ other?.name ?? 'The other person' }} sees the same title and description.</DialogDescription>
         </DialogHeader>
         <div :class="dialogBody">
           <form :id="editFormId" novalidate @submit.prevent="editForm.handleSubmit">
-            <FieldGroup class="gap-[1.1rem]">
+            <FieldGroup class="gap-4.5">
               <editForm.Field v-slot="{ field }" name="title">
                 <Field :class="canopyField" :data-invalid="editInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">Title</FieldLabel>
@@ -504,7 +504,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
                   <FieldError v-if="editInvalid(field)" :errors="field.state.meta.errors" />
                 </Field>
               </editForm.Field>
-              <div v-if="isLawyer" class="grid gap-[1.1rem] sm:grid-cols-2">
+              <div v-if="isLawyer" class="grid gap-4.5 sm:grid-cols-2">
                 <editForm.Field v-slot="{ field }" name="priority">
                   <Field :class="canopyField" :data-invalid="editInvalid(field)">
                     <FieldLabel :for="field.name" :class="canopyLabel">Priority</FieldLabel>
@@ -561,7 +561,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       <DialogContent :class="dialog">
         <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">{{ move?.label }}</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">{{ move?.explain }}</DialogDescription>
+          <DialogDescription class="text-sm text-muted-foreground">{{ move?.explain }}</DialogDescription>
         </DialogHeader>
         <div :class="dialogBody">
           <form :id="moveFormId" novalidate @submit.prevent="moveForm.handleSubmit">
@@ -600,11 +600,11 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
       <DialogContent :class="dialog">
         <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Add a task</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">Something one of you has to do next. Both of you see it.</DialogDescription>
+          <DialogDescription class="text-sm text-muted-foreground">Something one of you has to do next. Both of you see it.</DialogDescription>
         </DialogHeader>
         <div :class="dialogBody">
           <form :id="taskFormId" novalidate @submit.prevent="taskForm.handleSubmit">
-            <FieldGroup class="gap-[1.1rem]">
+            <FieldGroup class="gap-4.5">
               <taskForm.Field v-slot="{ field }" name="title">
                 <Field :class="canopyField" :data-invalid="taskInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">What needs doing</FieldLabel>
@@ -631,7 +631,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
                     :name="field.name"
                     :model-value="field.state.value"
                     :disabled="addTask.isPending.value"
-                    class="grid grid-cols-2 gap-[0.5rem]"
+                    class="grid grid-cols-2 gap-2"
                     @update:model-value="(v) => {
                       field.handleChange(String(v ?? ''))
                       field.handleBlur()
@@ -645,7 +645,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
                     >
                       <Field orientation="horizontal" class="items-center">
                         <RadioGroupItem :id="`${taskFormId}-${person.name}`" :value="person.id" :disabled="!person.id" :aria-invalid="taskInvalid(field)" />
-                        <span class="truncate text-[0.95rem] font-semibold">{{ person.name }}</span>
+                        <span class="truncate text-sm font-medium">{{ person.name }}</span>
                       </Field>
                     </FieldLabel>
                   </RadioGroup>
@@ -654,7 +654,7 @@ const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] trackin
               </taskForm.Field>
 
               <taskForm.Field v-slot="{ field }" name="due">
-                <Field :class="[canopyField, 'sm:max-w-[16rem]']" :data-invalid="taskInvalid(field)">
+                <Field :class="[canopyField, 'sm:max-w-64']" :data-invalid="taskInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">Due date <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
                   <Input
                     :id="field.name"

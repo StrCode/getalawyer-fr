@@ -98,7 +98,7 @@ async function handleOpenProfile() {
   <!-- Default grid: Glide-style directory card -->
   <article
     v-if="layout === 'default' && density === 'grid'"
-    class="lawyer-search-card group flex cursor-pointer flex-col rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-xs transition-[box-shadow,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10"
+    class="lawyer-search-card group flex cursor-pointer flex-col rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-xs transition-[box-shadow,border-color,transform] duration-200 hover:border-primary/25 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/10"
     :aria-label="`${lawyer.name}, ${lawyer.state}`"
     @click="handleOpenProfile()"
   >
@@ -115,7 +115,7 @@ async function handleOpenProfile() {
         />
         <div
           v-else
-          class="flex size-full items-center justify-center bg-primary/10 text-lg font-semibold text-primary"
+          class="flex size-full items-center justify-center bg-primary/10 text-lg font-medium text-primary"
         >
           {{ getInitials(lawyer.name) }}
         </div>
@@ -137,7 +137,7 @@ async function handleOpenProfile() {
       class="mt-4 flex items-center justify-center gap-1.5 font-mono text-sm tabular-nums"
     >
       <HugeiconsIcon :icon="StarIcon" class="size-4 text-primary" aria-hidden="true" />
-      <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
+      <span v-if="ratingPreview != null" class="font-medium text-foreground">{{ ratingPreview.toFixed(1) }}</span>
       <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
       <span class="text-muted-foreground/50" aria-hidden="true">·</span>
       <span class="text-muted-foreground">{{ lawyer.yearsOfExperience }} yrs exp.</span>
@@ -174,7 +174,7 @@ async function handleOpenProfile() {
         />
         <div
           v-else
-          class="flex size-full items-center justify-center bg-primary/10 text-base font-semibold text-primary sm:text-lg"
+          class="flex size-full items-center justify-center bg-primary/10 text-base font-medium text-primary sm:text-lg"
         >
           {{ getInitials(lawyer.name) }}
         </div>
@@ -184,7 +184,7 @@ async function handleOpenProfile() {
     <div class="flex min-w-0 flex-1 flex-col gap-2">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="min-w-0">
-         <h3 class="text-balance text-lg font-semibold leading-snug text-foreground sm:text-xl">
+         <h3 class="text-balance text-lg font-medium leading-snug text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <p
@@ -200,7 +200,7 @@ async function handleOpenProfile() {
           class="hidden shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1.5 font-mono text-sm tabular-nums sm:inline-flex"
         >
           <HugeiconsIcon :icon="StarIcon" class="size-3.5 text-primary" aria-hidden="true" />
-          <span v-if="ratingPreview != null" class="font-semibold text-foreground">{{ ratingPreview.toFixed(1) }}</span>
+          <span v-if="ratingPreview != null" class="font-medium text-foreground">{{ ratingPreview.toFixed(1) }}</span>
           <span v-if="reviewsLabel" class="text-muted-foreground">{{ reviewsLabel }}</span>
         </div>
       </div>
@@ -248,19 +248,19 @@ async function handleOpenProfile() {
     @click="handleOpenProfile()"
   >
     <div
-      class="flex shrink-0 flex-col justify-center gap-4 border-border bg-muted/60 p-6 md:w-[34%] md:border-e md:border-b-0 border-b px-8 py-10"
+      class="flex shrink-0 flex-col justify-center gap-4 border-border bg-muted/60 p-6 md:w-1/3 md:border-e md:border-b-0 border-b px-8 py-10"
     >
-      <div class="relative mx-auto w-full max-w-[240px] overflow-hidden rounded-2xl border border-border md:mx-0 md:max-w-none">
+      <div class="relative mx-auto w-full max-w-60 overflow-hidden rounded-2xl border border-border md:mx-0 md:max-w-none">
         <img
           v-if="lawyer.image"
           :src="lawyer.image"
           :alt="lawyer.name"
-          class="aspect-[3/4] w-full object-cover"
+          class="aspect-3/4 w-full object-cover"
           loading="lazy"
         />
         <div
           v-else
-          class="flex aspect-[3/4] w-full items-center justify-center bg-primary/10 text-3xl font-semibold text-primary md:text-4xl"
+          class="flex aspect-3/4 w-full items-center justify-center bg-primary/10 text-3xl font-medium text-primary md:text-4xl"
         >
           {{ getInitials(lawyer.name) }}
         </div>
@@ -268,7 +268,7 @@ async function handleOpenProfile() {
     </div>
     <div class="flex min-w-0 min-h-0 flex-1 flex-col gap-3 p-4 sm:p-5 md:justify-between">
       <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
-       <h3 class="text-pretty text-xl font-semibold text-foreground md:text-2xl">
+       <h3 class="text-pretty text-xl font-medium text-foreground md:text-2xl">
           {{ lawyer.name }}
         </h3>
         <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -321,7 +321,7 @@ async function handleOpenProfile() {
           />
           <div
             v-else
-            class="flex size-full items-center justify-center bg-primary/10 text-sm font-semibold text-primary"
+            class="flex size-full items-center justify-center bg-primary/10 text-sm font-medium text-primary"
           >
             {{ getInitials(lawyer.name) }}
           </div>
@@ -329,7 +329,7 @@ async function handleOpenProfile() {
       </div>
       <div class="min-w-0 flex-1 overflow-hidden">
         <div class="flex items-center gap-2">
-         <h3 class="truncate text-sm font-semibold text-foreground">
+         <h3 class="truncate text-sm font-medium text-foreground">
             {{ lawyer.name }}
           </h3>
           <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -374,7 +374,7 @@ async function handleOpenProfile() {
       <div class="relative shrink-0">
         <div
           class="relative overflow-hidden rounded-2xl border border-border bg-muted"
-          :class="density === 'grid' ? 'size-16 sm:size-[4.5rem]' : 'size-[3.625rem] sm:size-[4.5rem]'"
+          :class="density === 'grid' ? 'size-16 sm:size-18' : 'size-14.5 sm:size-18'"
         >
           <img
             v-if="lawyer.image"
@@ -385,7 +385,7 @@ async function handleOpenProfile() {
           />
           <div
             v-else
-            class="flex size-full items-center justify-center bg-primary/10 text-base font-semibold text-primary sm:text-xl"
+            class="flex size-full items-center justify-center bg-primary/10 text-base font-medium text-primary sm:text-xl"
           >
             {{ getInitials(lawyer.name) }}
           </div>
@@ -393,7 +393,7 @@ async function handleOpenProfile() {
       </div>
       <div class="flex min-w-0 flex-1 flex-col gap-1.5 text-left">
         <div class="flex flex-wrap items-baseline gap-2">
-         <h3 class="text-lg font-semibold leading-snug text-balance text-foreground sm:text-xl">
+         <h3 class="text-lg font-medium leading-snug text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -425,7 +425,7 @@ async function handleOpenProfile() {
     <div
       class="absolute -top-10 left-5 z-10 sm:left-6"
     >
-      <div class="relative size-[4.5rem] overflow-hidden rounded-full border-4 border-card bg-muted shadow-sm sm:size-20">
+      <div class="relative size-18 overflow-hidden rounded-full border-4 border-card bg-muted shadow-sm sm:size-20">
         <img
           v-if="lawyer.image"
           :src="lawyer.image"
@@ -435,7 +435,7 @@ async function handleOpenProfile() {
         />
         <div
           v-else
-          class="flex size-full items-center justify-center bg-primary/10 text-xl font-semibold text-primary"
+          class="flex size-full items-center justify-center bg-primary/10 text-xl font-medium text-primary"
         >
           {{ getInitials(lawyer.name) }}
         </div>
@@ -443,7 +443,7 @@ async function handleOpenProfile() {
     </div>
     <div class="flex flex-col gap-3 pt-12 ps-5 pe-5 sm:pt-14 sm:ps-6 sm:pe-6">
       <div class="flex flex-wrap items-center gap-2 sm:ps-1">
-       <h3 class="text-pretty text-lg font-semibold text-foreground sm:text-xl">
+       <h3 class="text-pretty text-lg font-medium text-foreground sm:text-xl">
           {{ lawyer.name }}
         </h3>
         <HugeiconsIcon :icon="CheckmarkBadge01Icon" class="size-4 shrink-0 text-primary" aria-label="NIN verified" />
@@ -474,7 +474,7 @@ async function handleOpenProfile() {
       <div class="relative shrink-0">
         <div
           class="relative overflow-hidden rounded-2xl border border-border bg-muted"
-          :class="density === 'grid' ? 'size-16 sm:size-[4.5rem]' : 'size-[3.625rem] sm:size-[4.5rem]'"
+          :class="density === 'grid' ? 'size-16 sm:size-18' : 'size-14.5 sm:size-18'"
         >
           <img
             v-if="lawyer.image"
@@ -485,7 +485,7 @@ async function handleOpenProfile() {
           />
           <div
             v-else
-            class="flex size-full items-center justify-center bg-primary/10 text-base font-semibold tracking-tight text-primary sm:text-xl"
+            class="flex size-full items-center justify-center bg-primary/10 text-base font-medium tracking-tight text-primary sm:text-xl"
           >
             {{ getInitials(lawyer.name) }}
           </div>
@@ -493,7 +493,7 @@ async function handleOpenProfile() {
       </div>
       <div class="flex min-w-0 flex-1 flex-col items-end gap-1.5 text-end sm:gap-2">
         <div class="flex flex-row-reverse flex-wrap items-baseline justify-end gap-x-2 gap-y-1">
-         <h3 class="text-lg font-semibold leading-snug text-balance text-foreground sm:text-xl">
+         <h3 class="text-lg font-medium leading-snug text-balance text-foreground sm:text-xl">
             {{ lawyer.name }}
           </h3>
           <span class="inline-flex shrink-0 flex-row-reverse items-center gap-1">

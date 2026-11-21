@@ -177,29 +177,29 @@ function clearFilters() {
   resetFilters()
 }
 
-const chip = 'min-h-11 cursor-pointer rounded-full border px-[1.1rem] text-[0.95rem] font-semibold whitespace-nowrap transition-colors duration-200'
+const chip = 'min-h-11 cursor-pointer rounded-full border px-4.5 text-base font-medium whitespace-nowrap transition-colors duration-200'
 const chipOff = 'border-border bg-card text-foreground hover:border-brand'
 const chipOn = 'border-foreground bg-foreground text-card'
-const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem] font-semibold text-foreground shadow-none'
+const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-base font-medium text-foreground shadow-none'
 </script>
 
 <template>
   <div>
-    <section data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4.5vw,4.5rem)] py-[clamp(1.5rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]">
-      <nav aria-label="Breadcrumb" class="flex gap-2 text-[0.85rem] font-semibold text-on-forest">
-        <NuxtLink to="/" class="underline underline-offset-[3px]">Home</NuxtLink>
+    <section data-surface="forest" class="rounded-panel bg-forest px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-6 md:py-6.25 lg:py-8.25 xl:py-10.25 text-white max-sm:rounded-2xl">
+      <nav aria-label="Breadcrumb" class="flex gap-2 text-sm font-medium text-on-forest">
+        <NuxtLink to="/" class="underline underline-offset-3">Home</NuxtLink>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Find a lawyer</span>
       </nav>
-      <h1 class="mt-[0.9rem] text-[clamp(2.1rem,3.8vw,3.1rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Find a lawyer</h1>
-      <p class="mt-[0.8rem] max-w-[34rem] text-[1.1rem] text-on-forest">Every lawyer listed has passed identity and enrolment checks. Message any of them free.</p>
+      <h1 class="mt-3.5 text-4xl md:text-5xl leading-none font-normal tracking-tighter">Find a lawyer</h1>
+      <p class="mt-3.25 max-w-136 text-lg text-on-forest">Every lawyer listed has passed identity and enrolment checks. Message any of them free.</p>
       <CanopySearchRail
         v-model:need="need"
         v-model:where="where"
         id-prefix="directory"
         placeholder="Tenancy dispute, divorce, unpaid salary, or a name…"
         action="Search"
-        class="mt-[1.6rem]"
+        class="mt-6.5"
         @submit="submitSearch"
       />
     </section>
@@ -208,7 +208,7 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
       v-if="areas.length"
       role="group"
       aria-label="Practice area"
-      class="mt-[1.4rem] flex flex-wrap gap-2 [scrollbar-width:thin] max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-[0.4rem]"
+      class="mt-5.5 flex flex-wrap gap-2 [scrollbar-width:thin] max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1.5"
     >
       <button type="button" :class="[chip, chosenAreas.length ? chipOff : chipOn]" :aria-pressed="chosenAreas.length === 0" @click="toggleArea(null)">All areas</button>
       <button
@@ -223,19 +223,19 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
       </button>
     </div>
 
-    <div class="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-[0.9rem] border-b border-border pb-4">
-      <p aria-live="polite" class="flex flex-wrap items-baseline gap-x-[0.7rem] gap-y-[0.2rem] text-muted-foreground">
-        <b class="font-display text-[1.45rem] font-[650] tracking-[-0.03em] text-foreground">{{ isLoading ? 'Searching…' : countLabel }}</b>
+    <div class="mt-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-3.5 border-b border-border pb-4">
+      <p aria-live="polite" class="flex flex-wrap items-baseline gap-x-2.75 gap-y-0.75 text-muted-foreground">
+        <b class="font-display text-2xl font-normal tracking-tight text-foreground">{{ isLoading ? 'Searching…' : countLabel }}</b>
         <span>{{ context }}</span>
       </p>
-      <div class="flex flex-wrap items-center gap-x-[1.1rem] gap-y-[0.6rem]">
-        <label for="directory-experience" class="inline-flex items-center gap-[0.6rem] text-[0.85rem] font-semibold whitespace-nowrap text-muted-foreground">
+      <div class="flex flex-wrap items-center gap-x-4.5 gap-y-2.5">
+        <label for="directory-experience" class="inline-flex items-center gap-2.5 text-sm font-medium whitespace-nowrap text-muted-foreground">
           Experience
           <NativeSelect id="directory-experience" v-model="experience" :class="control">
             <NativeSelectOption v-for="option in EXPERIENCE" :key="option.value" :value="option.value">{{ option.label }}</NativeSelectOption>
           </NativeSelect>
         </label>
-        <label for="directory-sort" class="inline-flex items-center gap-[0.6rem] text-[0.85rem] font-semibold whitespace-nowrap text-muted-foreground">
+        <label for="directory-sort" class="inline-flex items-center gap-2.5 text-sm font-medium whitespace-nowrap text-muted-foreground">
           Sort by
           <NativeSelect id="directory-sort" v-model="sort" :class="control">
             <NativeSelectOption v-for="option in SORTS" :key="option.value" :value="option.value">{{ option.label }}</NativeSelectOption>
@@ -244,7 +244,7 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
         <button
           v-if="isFiltered"
           type="button"
-          class="min-h-11 cursor-pointer px-[0.4rem] text-[0.92rem] font-semibold text-brand underline underline-offset-[3px]"
+          class="min-h-11 cursor-pointer px-1.5 text-base font-medium text-brand underline underline-offset-3"
           @click="clearFilters"
         >
           Clear filters
@@ -253,9 +253,9 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
     </div>
 
     <!-- loading -->
-    <div v-if="isLoading" class="mt-[1.4rem] grid grid-cols-2 gap-[1.1rem] max-tab:grid-cols-1" aria-busy="true" aria-label="Loading lawyers">
-      <div v-for="n in 6" :key="n" class="flex gap-[1.1rem] rounded-card border border-border bg-card p-[1.1rem]">
-        <Skeleton class="size-[6.5rem] flex-none rounded-[1.2rem] max-sm:size-[4.5rem]" />
+    <div v-if="isLoading" class="mt-5.5 grid grid-cols-2 gap-4.5 max-tab:grid-cols-1" aria-busy="true" aria-label="Loading lawyers">
+      <div v-for="n in 6" :key="n" class="flex gap-4.5 rounded-card border border-border bg-card p-4.5">
+        <Skeleton class="size-26 flex-none rounded-card max-sm:size-18" />
         <div class="flex-1 space-y-3 py-1">
           <Skeleton class="h-3 w-24 rounded-full" />
           <Skeleton class="h-6 w-2/3 rounded-full" />
@@ -266,28 +266,28 @@ const control = 'h-11 rounded-full border-border bg-card pr-9 pl-4 text-[0.92rem
     </div>
 
     <!-- could not load -->
-    <div v-else-if="error" role="alert" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the directory.</h2>
-      <p class="max-w-[30rem] text-muted-foreground">Check your connection and try again.</p>
+    <div v-else-if="error" role="alert" class="mt-5.5 grid justify-items-center gap-3.25 rounded-card border border-dashed border-border px-6 py-8 md:py-9.5 lg:py-12.75 xl:py-14 text-center">
+      <h2 class="text-xl md:text-2xl lg:text-3xl leading-none font-normal tracking-tight">We could not load the directory.</h2>
+      <p class="max-w-120 text-muted-foreground">Check your connection and try again.</p>
       <Button variant="line" size="pill" @click="refetch()">Try again</Button>
     </div>
 
     <!-- nothing matches -->
-    <div v-else-if="lawyers.length === 0" aria-live="polite" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">
+    <div v-else-if="lawyers.length === 0" aria-live="polite" class="mt-5.5 grid justify-items-center gap-3.25 rounded-card border border-dashed border-border px-6 py-8 md:py-9.5 lg:py-12.75 xl:py-14 text-center">
+      <h2 class="text-xl md:text-2xl lg:text-3xl leading-none font-normal tracking-tight">
         {{ isFiltered ? 'No lawyers match that search yet.' : 'No lawyers are listed yet.' }}
       </h2>
-      <p class="max-w-[30rem] text-muted-foreground">
+      <p class="max-w-120 text-muted-foreground">
         {{ isFiltered ? 'Try a different practice area or state, or clear the filters to see everyone.' : 'Lawyers appear here once their verification is complete. Check back soon.' }}
       </p>
       <Button v-if="isFiltered" variant="line" size="pill" @click="clearFilters">Clear filters</Button>
     </div>
 
     <template v-else>
-      <div class="mt-[1.4rem] grid grid-cols-2 gap-[1.1rem] max-tab:grid-cols-1">
+      <div class="mt-5.5 grid grid-cols-2 gap-4.5 max-tab:grid-cols-1">
         <CanopyDirectoryCard v-for="lawyer in lawyers" :key="lawyer.id" :lawyer="lawyer" />
       </div>
-      <div v-if="hasNextPage" class="mt-[1.6rem] grid justify-items-center">
+      <div v-if="hasNextPage" class="mt-6.5 grid justify-items-center">
         <ButtonBusy variant="line" size="pill" :loading="isFetchingNextPage" @click="fetchNextPage()">Load more lawyers</ButtonBusy>
       </div>
     </template>

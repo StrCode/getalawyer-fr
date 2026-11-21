@@ -46,13 +46,13 @@ function billing(plan: SubscriptionPlanOption) {
       <span class="min-w-0 flex-1">
         <span class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-foreground">
           {{ plan.name }}
-          <span v-if="plan.savingsPercent > 0" class="rounded-full bg-primary/10 px-2 py-0.5 text-[0.7rem] font-semibold text-primary">Save {{ plan.savingsPercent }}%</span>
-          <span v-if="currentKey === plan.key" class="rounded-full border border-border px-2 py-0.5 text-[0.7rem] font-medium text-muted-foreground">Current plan</span>
+          <span v-if="plan.savingsPercent > 0" class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">Save {{ plan.savingsPercent }}%</span>
+          <span v-if="currentKey === plan.key" class="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground">Current plan</span>
         </span>
         <span class="mt-0.5 block text-xs text-muted-foreground">{{ billing(plan) }}</span>
         <span v-if="plan.description" class="mt-0.5 block text-xs text-muted-foreground">{{ plan.description }}</span>
       </span>
-      <span class="shrink-0 text-base font-semibold tabular-nums text-foreground">{{ formatNairaAmount(plan.priceNaira) }}</span>
+      <span class="shrink-0 text-base font-medium tabular-nums text-foreground">{{ formatNairaAmount(plan.priceNaira) }}</span>
     </label>
   </RadioGroup>
 </template>

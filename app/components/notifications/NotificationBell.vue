@@ -70,10 +70,10 @@ onMounted(() => {
         class="relative h-8 w-8 rounded-full"
         :aria-label="ariaLabel"
       >
-        <HugeiconsIcon :icon="Notification03Icon" class="size-[18px]" />
+        <HugeiconsIcon :icon="Notification03Icon" class="size-4.5" />
         <span
           v-if="unreadCount > 0"
-          class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-foreground tabular-nums ring-2 ring-background"
+          class="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-xs font-medium leading-none text-primary-foreground tabular-nums ring-2 ring-background"
           aria-hidden="true"
         >
           {{ badgeLabel }}

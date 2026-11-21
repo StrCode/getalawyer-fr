@@ -158,22 +158,22 @@ const member = computed(() => membershipTile(
 ))
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
-const tile = 'flex min-w-0 flex-col rounded-card p-[clamp(1.2rem,2.2vw,1.5rem)]'
-const tileTitle = 'font-display text-[1.25rem] font-[650] tracking-[-0.02em]'
-const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4rem] font-semibold underline underline-offset-[3px] transition-colors hover:text-brand'
+const sectionTitle = 'font-display text-xl leading-none font-normal tracking-tight'
+const tile = 'flex min-w-0 flex-col rounded-card p-4.75 lg:p-5.75 xl:p-6'
+const tileTitle = 'font-display text-lg font-normal tracking-tight'
+const tileLink = 'mt-auto inline-flex min-h-11 w-fit items-center pt-1.5 font-medium underline underline-offset-3 transition-colors hover:text-brand'
 </script>
 
 <template>
-  <div class="grid gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid gap-5 lg:gap-6.25 xl:gap-7.75">
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
-      <div class="h-[22rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
-      <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
-      <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
+      <div class="h-88 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
+      <div class="h-18.5 animate-pulse rounded-card bg-muted" />
+      <div class="h-18.5 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="bookingsFailed" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
+    <section v-else-if="bookingsFailed" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 :class="sectionTitle">We could not load your diary.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed on your account. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" @click="() => refetchBookings()">Try again</Button>
@@ -182,17 +182,17 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
     <template v-else>
       <!-- ───────── now, and the next seven days ───────── -->
       <!-- compact on purpose: the greeting, the week and the first things to do fit on the first screen -->
-      <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-[clamp(1.2rem,2.6vw,2rem)] max-sm:rounded-[1.75rem]">
-        <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-[1rem]">
-          <div class="min-w-0 flex-[1_1_26rem]">
-            <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
-            <h1 id="overview-title" class="mt-[0.5rem] max-w-[40rem] text-[clamp(1.5rem,2.4vw,1.9rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">
+      <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-4.75 md:p-5 lg:p-6.75 xl:p-8 max-sm:rounded-2xl">
+        <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+          <div class="min-w-0 grow basis-104">
+            <p class="text-xs font-medium tracking-widest text-brand uppercase">{{ eyebrow }}</p>
+            <h1 id="overview-title" class="mt-2 max-w-160 text-2xl md:text-3xl leading-none font-normal tracking-tight text-balance">
               {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
             </h1>
-            <p class="mt-[0.45rem] max-w-[38rem] text-muted-foreground">{{ headline.detail }}</p>
+            <p class="mt-1.75 max-w-152 text-muted-foreground">{{ headline.detail }}</p>
           </div>
 
-          <div class="flex flex-none flex-wrap gap-[0.5rem]">
+          <div class="flex flex-none flex-wrap gap-2">
             <Button v-if="headline.primary" as-child variant="canopy" size="pill-sm">
               <a v-if="headline.primary.to.startsWith('#')" :href="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></a>
               <NuxtLink v-else :to="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></NuxtLink>
@@ -203,45 +203,45 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
           </div>
         </div>
 
-        <div class="mt-[clamp(1rem,2.2vw,1.5rem)] grid items-start gap-[clamp(1rem,2vw,1.5rem)] border-t border-border pt-[clamp(1rem,2.2vw,1.4rem)] tab:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
+        <div class="mt-4 md:mt-4.25 lg:mt-5.75 xl:mt-6 grid items-start gap-4 lg:gap-5 xl:gap-6 border-t border-border pt-4 md:pt-4.25 lg:pt-5.5 tab:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
           <div class="min-w-0">
             <div class="flex flex-wrap items-baseline justify-between gap-x-4">
-              <h2 id="week-title" class="font-display text-[1.1rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
-              <p class="text-[0.9rem] text-muted-foreground">Choose a day to see what is in it.</p>
+              <h2 id="week-title" class="font-display text-base font-normal tracking-tight">Next 7 days</h2>
+              <p class="text-sm text-muted-foreground">Choose a day to see what is in it.</p>
             </div>
             <WorkspaceWeekStrip
               v-model="pickedKey"
               :days="days"
               aria-labelledby="week-title"
-              class="mt-[0.7rem]"
+              class="mt-2.75"
             />
           </div>
 
           <!-- the chosen day -->
-          <div v-if="pickedDay" aria-live="polite" class="min-w-0 rounded-[1.25rem] bg-mint p-[1rem] text-deep">
-            <h3 class="font-display text-[1.1rem] font-[650] tracking-[-0.02em]">
+          <div v-if="pickedDay" aria-live="polite" class="min-w-0 rounded-card bg-mint p-4 text-deep">
+            <h3 class="font-display text-base font-normal tracking-tight">
               {{ pickedDay.isToday ? 'Today' : pickedDay.label }}
             </h3>
-            <ol v-if="pickedDay.bookings.length" class="mt-[0.7rem] grid gap-[0.45rem]">
+            <ol v-if="pickedDay.bookings.length" class="mt-2.75 grid gap-1.75">
               <li v-for="booking in pickedDay.bookings" :key="booking.id">
                 <NuxtLink
                   :to="`/dashboard/appointments/${booking.id}`"
-                  class="grid grid-cols-[4.7rem_minmax(0,1fr)] items-start gap-[0.7rem] rounded-[1rem] bg-card/70 px-[0.8rem] py-[0.65rem] text-foreground transition-colors hover:bg-card"
+                  class="grid grid-cols-[4.7rem_minmax(0,1fr)] items-start gap-2.75 rounded-lg bg-card/70 px-3.25 py-2.5 text-foreground transition-colors hover:bg-card"
                 >
-                  <b class="pt-[0.05rem] text-[0.92rem] font-bold">{{ clockLabel(booking.scheduledStartTime) }}</b>
+                  <b class="pt-0.25 text-sm font-medium">{{ clockLabel(booking.scheduledStartTime) }}</b>
                   <span class="min-w-0">
-                    <b class="block truncate font-semibold">{{ booking.client?.name ?? 'Client' }}</b>
-                    <span class="block text-[0.9rem] text-muted-foreground">{{ booking.consultationType?.name ?? 'Consultation' }} · {{ channelLabel(booking.meetingType) }}</span>
-                    <span v-if="agendaTag(booking)" class="mt-[0.3rem] inline-block rounded-full px-[0.6rem] py-[0.1rem] text-[0.78rem] font-bold" :class="booking.status === 'pending' ? 'bg-warning/15 text-warning-subtle-foreground' : 'bg-muted text-foreground'">{{ agendaTag(booking) }}</span>
+                    <b class="block truncate font-medium">{{ booking.client?.name ?? 'Client' }}</b>
+                    <span class="block text-sm text-muted-foreground">{{ booking.consultationType?.name ?? 'Consultation' }} · {{ channelLabel(booking.meetingType) }}</span>
+                    <span v-if="agendaTag(booking)" class="mt-1.25 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium" :class="booking.status === 'pending' ? 'bg-warning/15 text-warning-subtle-foreground' : 'bg-muted text-foreground'">{{ agendaTag(booking) }}</span>
                   </span>
                 </NuxtLink>
               </li>
             </ol>
-            <p v-else class="mt-[0.5rem]">{{ emptyDayLine(pickedDay) }}</p>
+            <p v-else class="mt-2">{{ emptyDayLine(pickedDay) }}</p>
             <NuxtLink
               v-if="pickedDay.state === 'closed' || pickedDay.state === 'unknown' || noHours"
               to="/dashboard/availability"
-              class="mt-[0.6rem] inline-flex min-h-[2.75rem] items-center font-semibold underline underline-offset-[3px]"
+              class="mt-2.5 inline-flex min-h-11 items-center font-medium underline underline-offset-3"
             >{{ noHours ? 'Set your working hours' : 'Change working hours' }}</NuxtLink>
           </div>
         </div>
@@ -251,24 +251,24 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
       <section v-if="todos.length" id="to-do" aria-labelledby="todo-title" class="scroll-mt-24">
         <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 id="todo-title" :class="sectionTitle">To do</h2>
-          <p class="text-[0.95rem] text-muted-foreground">{{ todos.length === 1 ? '1 thing' : `${todos.length} things, most urgent first` }}</p>
+          <p class="text-sm text-muted-foreground">{{ todos.length === 1 ? '1 thing' : `${todos.length} things, most urgent first` }}</p>
         </div>
-        <ol class="mt-[0.7rem] grid gap-[0.45rem]">
+        <ol class="mt-2.75 grid gap-1.75">
           <li v-for="(todo, index) in todos" :key="todo.id">
             <component
               :is="todo.to ? RowLink : 'button'"
               :to="todo.to"
               :type="todo.to ? undefined : 'button'"
-              class="group flex w-full cursor-pointer flex-wrap items-center gap-x-[0.9rem] gap-y-[0.4rem] rounded-[1.25rem] border border-border bg-card px-[1rem] py-[0.75rem] text-left transition-[border-color,translate] duration-200 ease-canopy hover:border-brand/45 active:translate-y-px"
+              class="group flex w-full cursor-pointer flex-wrap items-center gap-x-3.5 gap-y-1.5 rounded-card border border-border bg-card px-4 py-3 text-left transition-colors duration-200 ease-canopy hover:border-brand/45 active:translate-y-px"
               @click="todo.to ? undefined : runTodo(todo)"
             >
-              <span aria-hidden="true" class="grid size-[2.3rem] flex-none place-items-center rounded-[0.8rem] bg-background font-display font-bold">{{ index + 1 }}</span>
-              <span class="min-w-0 flex-[1_1_16rem]">
-                <b class="block font-display text-[1.02rem] font-[650] tracking-[-0.02em]">{{ todo.title }}</b>
-                <span class="block text-[0.92rem] text-muted-foreground">{{ todo.note }}</span>
+              <span aria-hidden="true" class="grid size-9.25 flex-none place-items-center rounded-md bg-background font-display font-medium">{{ index + 1 }}</span>
+              <span class="min-w-0 grow basis-64">
+                <b class="block font-display text-sm font-normal tracking-tight">{{ todo.title }}</b>
+                <span class="block text-sm text-muted-foreground">{{ todo.note }}</span>
               </span>
-              <span class="inline-flex items-center gap-[0.4rem] font-semibold whitespace-nowrap text-brand max-sm:pl-[3.5rem]">
-                {{ todo.action }}<CanopyGlyph name="arrow" :size="15" class="transition-[translate] duration-200 ease-canopy group-hover:translate-x-[3px]" />
+              <span class="inline-flex items-center gap-1.5 font-medium whitespace-nowrap text-brand max-sm:pl-14">
+                {{ todo.action }}<CanopyGlyph name="arrow" :size="15" class="transition-transform duration-200 ease-canopy group-hover:translate-x-0.75" />
               </span>
             </component>
           </li>
@@ -276,20 +276,20 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
       </section>
 
       <!-- ───────── where things stand ───────── -->
-      <div class="grid gap-[0.75rem] sm:grid-cols-2 tab:grid-cols-3">
+      <div class="grid gap-3 sm:grid-cols-2 tab:grid-cols-3">
         <section aria-labelledby="cases-title" :class="[tile, 'bg-stone']">
           <h2 id="cases-title" :class="tileTitle">Cases</h2>
-          <div v-if="casesPending" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-foreground/8" />
-          <p v-else class="mt-[0.5rem]"><b class="font-semibold">{{ cases.lead }}</b> {{ cases.detail }}</p>
+          <div v-if="casesPending" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-foreground/8" />
+          <p v-else class="mt-2"><b class="font-medium">{{ cases.lead }}</b> {{ cases.detail }}</p>
           <NuxtLink to="/dashboard/cases" :class="tileLink">Open cases</NuxtLink>
         </section>
 
         <section aria-labelledby="profile-title" :class="[tile, 'border border-border bg-card']">
           <h2 id="profile-title" :class="tileTitle">Profile</h2>
-          <div v-if="!profileStrength" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-muted" />
+          <div v-if="!profileStrength" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-muted" />
           <template v-else>
-            <p class="mt-[0.5rem]"><b class="font-semibold">{{ profile.lead }}</b> {{ profile.detail }}</p>
-            <div role="img" :aria-label="`${profilePercent} percent complete`" class="mt-[0.7rem] h-[0.5rem] overflow-hidden rounded-full bg-border">
+            <p class="mt-2"><b class="font-medium">{{ profile.lead }}</b> {{ profile.detail }}</p>
+            <div role="img" :aria-label="`${profilePercent} percent complete`" class="mt-2.75 h-2 overflow-hidden rounded-full bg-border">
               <div class="h-full rounded-full bg-brand" :style="{ width: `${profilePercent}%` }" />
             </div>
           </template>
@@ -298,8 +298,8 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
 
         <section aria-labelledby="member-title" :class="[tile, 'bg-sand sm:max-tab:col-span-2']">
           <h2 id="member-title" :class="tileTitle">Membership</h2>
-          <div v-if="membershipPending" aria-busy="true" class="mt-[0.6rem] h-[2.9rem] animate-pulse rounded-[0.6rem] bg-foreground/8" />
-          <p v-else class="mt-[0.5rem]"><b class="font-semibold">{{ member.lead }}</b> {{ member.detail }}</p>
+          <div v-if="membershipPending" aria-busy="true" class="mt-2.5 h-11.5 animate-pulse rounded-lg bg-foreground/8" />
+          <p v-else class="mt-2"><b class="font-medium">{{ member.lead }}</b> {{ member.detail }}</p>
           <NuxtLink to="/dashboard/subscription" :class="tileLink">{{ membershipPending ? 'Open membership' : member.action }}</NuxtLink>
         </section>
       </div>

@@ -101,20 +101,20 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <DashboardPageHeader
       eyebrow="Account"
       title="Your profile"
       description="Your photo, your details and what a lawyer sees about you."
     />
 
-    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
-      <div class="h-[8rem] animate-pulse rounded-card bg-muted" />
-      <div class="h-[10rem] animate-pulse rounded-card bg-muted" />
-      <div class="h-[16rem] animate-pulse rounded-card bg-muted" />
+    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-4 lg:gap-5 xl:gap-6">
+      <div class="h-32 animate-pulse rounded-card bg-muted" />
+      <div class="h-40 animate-pulse rounded-card bg-muted" />
+      <div class="h-64 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="isError" :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="isError" :class="[PANEL, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="PANEL_TITLE">We could not load your profile.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" @click="() => refetch()">Try again</Button>
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
           <ClientProfileCompletenessAside :percent="completionPercent" :items="completionItems" />
         </template>
 
-        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)] [&>div]:scroll-mt-[5.25rem]">
+        <div class="grid grid-cols-1 gap-4 lg:gap-5 xl:gap-6 [&>div]:scroll-mt-21">
           <div id="photo">
             <ProfilePhotoSection
               :name="displayName"
@@ -155,9 +155,9 @@ onBeforeUnmount(() => {
         </div>
       </ClientProfileShell>
 
-      <p class="text-[0.95rem] text-muted-foreground">
+      <p class="text-sm text-muted-foreground">
         Your legal interests and sign-in details are in
-        <NuxtLink to="/dashboard/settings" class="font-semibold text-brand underline-offset-4 hover:underline">Settings</NuxtLink>.
+        <NuxtLink to="/dashboard/settings" class="font-medium text-brand underline-offset-4 hover:underline">Settings</NuxtLink>.
       </p>
     </template>
   </div>

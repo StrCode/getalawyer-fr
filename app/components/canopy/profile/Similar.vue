@@ -60,27 +60,27 @@ function line(lawyer: { state?: string, yearsOfExperience?: number | string, spe
 </script>
 
 <template>
-  <section v-if="others.length" class="pt-[clamp(2.5rem,5vw,4rem)]">
-    <div class="mb-[1.2rem] flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-      <h2 class="text-[clamp(1.5rem,2.3vw,1.95rem)] leading-[1.05] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h2>
+  <section v-if="others.length" class="pt-10 lg:pt-12.75 xl:pt-16">
+    <div class="mb-4.75 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+      <h2 class="text-2xl md:text-3xl leading-none font-normal tracking-tight text-balance">{{ title }}</h2>
       <Button as-child variant="line" size="pill-sm">
         <NuxtLink :to="seeAll">See all →</NuxtLink>
       </Button>
     </div>
-    <div class="grid grid-cols-3 gap-[0.9rem] max-tab:grid-cols-1">
+    <div class="grid grid-cols-3 gap-3.5 max-tab:grid-cols-1">
       <NuxtLink
         v-for="lawyer in others"
         :key="lawyer.id"
         :to="`/lawyers/${lawyer.id}`"
-        class="flex items-center gap-[0.9rem] rounded-[1.4rem] border border-border bg-card p-[0.9rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand"
+        class="flex items-center gap-3.5 rounded-card border border-border bg-card p-3.5 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:border-brand"
       >
-        <span class="grid size-[3.4rem] flex-none place-items-center overflow-hidden rounded-[1rem] bg-mint">
+        <span class="grid size-13.5 flex-none place-items-center overflow-hidden rounded-lg bg-mint">
           <NuxtImg v-if="lawyer.image" :src="lawyer.image" width="108" height="108" alt="" loading="lazy" class="size-full object-cover object-[50%_20%]" />
-          <span v-else aria-hidden="true" class="font-display text-[1.15rem] font-[650] text-deep">{{ initials(lawyer.name) }}</span>
+          <span v-else aria-hidden="true" class="font-display text-lg font-normal text-deep">{{ initials(lawyer.name) }}</span>
         </span>
         <span class="min-w-0">
           <b class="block truncate">{{ lawyer.name }}</b>
-          <small class="block truncate text-[0.85rem] text-muted-foreground">{{ line(lawyer) }}</small>
+          <small class="block truncate text-sm text-muted-foreground">{{ line(lawyer) }}</small>
         </span>
       </NuxtLink>
     </div>

@@ -186,7 +186,7 @@ function handleOpenChange(value: boolean) {
     @update:open="handleOpenChange"
   >
     <DialogContent
-      class="gap-0 overflow-hidden border-foreground/15 p-0 sm:max-w-[440px]"
+      class="gap-0 overflow-hidden border-foreground/15 p-0 sm:max-w-110"
       :show-close-button="true"
     >
       <div class="px-6 pb-6 pt-8 text-center">

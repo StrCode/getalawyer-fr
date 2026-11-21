@@ -42,7 +42,7 @@ watch(() => props.profile, saved => form.reset(contactValues(saved)), { deep: tr
 <template>
   <SettingsSectionCard title="Phone" description="Optional. A lawyer may call you about a booking.">
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="phoneNumber">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <!-- the phone field draws its own label, tied to its own input -->
@@ -59,7 +59,7 @@ watch(() => props.profile, saved => form.reset(contactValues(saved)), { deep: tr
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(contactValues(profile))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

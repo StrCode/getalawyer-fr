@@ -60,7 +60,7 @@ const emit = defineEmits<{
             v-else
             class="flex size-full items-center justify-center bg-primary/10"
           >
-            <span class="text-4xl font-semibold text-primary md:text-5xl">
+            <span class="text-4xl font-medium text-primary md:text-5xl">
               {{ lawyer.name.charAt(0) }}
             </span>
           </div>
@@ -100,7 +100,7 @@ const emit = defineEmits<{
 <!-- Verification is already stated by the "NIN verified" badge above;
                a second bare tick here doubled the same signal. -->
           <div class="mb-2 flex flex-wrap items-center gap-3">
-           <h1 class="text-4xl font-medium tracking-[-0.02em] text-foreground md:text-5xl">
+           <h1 class="text-4xl font-medium tracking-tight text-foreground md:text-5xl">
               {{ lawyer.name }}
             </h1>
           </div>
@@ -144,7 +144,7 @@ const emit = defineEmits<{
           <Button
             v-if="hasBookableConsultation"
             size="lg"
-            class="h-12 w-full gap-2 px-8 font-semibold"
+            class="h-12 w-full gap-2 px-8 font-medium"
             as-child
           >
             <NuxtLink :to="`/lawyers/${lawyer.id}/book`">
@@ -155,7 +155,7 @@ const emit = defineEmits<{
           <Button
             size="lg"
             :variant="hasBookableConsultation ? 'outline' : 'default'"
-            class="h-12 w-full gap-2 px-8 font-semibold"
+            class="h-12 w-full gap-2 px-8 font-medium"
             @click="emit('ask')"
           >
             <HugeiconsIcon :icon="Message02Icon" class="size-5 shrink-0" />
@@ -165,7 +165,7 @@ const emit = defineEmits<{
             v-if="isAuthenticated && lawyer.email"
             variant="outline"
             size="lg"
-            class="h-12 w-full gap-2 px-8 font-semibold"
+            class="h-12 w-full gap-2 px-8 font-medium"
             as-child
           >
             <a :href="`mailto:${lawyer.email}`">

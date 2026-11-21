@@ -119,8 +119,8 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
     <div :class="canopyForm">
       <FieldSet :class="canopyGroup">
         <legend :class="canopyLegend">Name</legend>
-        <div class="grid gap-[0.9rem]">
-          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-3">
+        <div class="grid gap-3.5">
+          <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
             <form.Field v-slot="{ field }" name="firstName">
               <Field :class="canopyField" :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name" :class="canopyLabel">First name</FieldLabel>
@@ -198,7 +198,7 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
               <button
                 v-if="suggestedLegalName"
                 type="button"
-                :class="authLink" class="w-fit text-[0.9rem]"
+                :class="authLink" class="w-fit text-sm"
                 @click="field.handleChange(suggestedLegalName)"
               >
                 Use “{{ suggestedLegalName }}”
@@ -214,8 +214,8 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
       <FieldSet :class="canopyGroup">
         <legend :class="canopyLegend">Personal details</legend>
-        <div class="grid gap-[0.9rem]">
-          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
+        <div class="grid gap-3.5">
+          <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="dateOfBirth">
               <Field :class="canopyField" :data-invalid="isInvalid(field)">
                 <FieldLabel :for="`${field.name}-trigger`" :class="canopyLabel">
@@ -307,11 +307,11 @@ const maxDate = today(getLocalTimeZone()).subtract({ years: 18 })
 
       <FieldSet :class="canopyGroup">
         <legend :class="canopyLegend">Location</legend>
-        <p :class="canopyHint" class="-mt-[0.6rem]">
+        <p :class="canopyHint" class="-mt-2.5">
           Where you currently live in Nigeria.
         </p>
-        <div class="grid gap-[0.9rem]">
-          <div class="grid grid-cols-1 gap-[0.9rem] sm:grid-cols-2">
+        <div class="grid gap-3.5">
+          <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
             <form.Field v-slot="{ field }" name="state">
               <Field :class="canopyField" :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name" :class="canopyLabel">State</FieldLabel>

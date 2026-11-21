@@ -21,5 +21,5 @@ useSeoMeta({ description: 'Your getalawyer overview.', robots: 'noindex, nofollo
   <WorkspaceLawyerOverview v-if="role === 'lawyer'" />
   <WorkspaceClientOverview v-else-if="role === 'client'" />
   <!-- neither (an admin account, or a session still arriving): nothing to show yet -->
-  <div v-else role="status" aria-label="Loading your overview" class="h-[22rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
+  <div v-else role="status" aria-label="Loading your overview" class="h-88 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
 </template>

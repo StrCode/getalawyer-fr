@@ -115,14 +115,14 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <section
       v-if="isAdminVerified"
       aria-labelledby="nin-verified-title"
-      class="mt-[1.6rem] grid grid-cols-[2.6rem_minmax(0,1fr)] gap-[0.9rem] rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]"
+      class="mt-6.5 grid grid-cols-[2.6rem_minmax(0,1fr)] gap-3.5 rounded-card border border-border bg-card p-4.5 lg:p-6"
     >
-      <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] bg-primary text-white">
+      <span class="grid size-10.5 place-items-center rounded-md bg-primary text-white">
         <CanopyGlyph name="tick" :size="16" :stroke="3.2" />
       </span>
       <div>
-        <p class="text-[0.78rem] font-bold tracking-[0.06em] text-brand uppercase">Verified by getalawyer</p>
-        <h2 id="nin-verified-title" class="mt-1 text-[1.3rem] font-[650] tracking-[-0.02em]">Identity verified</h2>
+        <p class="text-xs font-medium tracking-wider text-brand uppercase">Verified by getalawyer</p>
+        <h2 id="nin-verified-title" class="mt-1 text-xl font-normal tracking-tight">Identity verified</h2>
         <p class="mt-1 text-muted-foreground">
           Your NIN is verified. It cannot be changed while this application is in review.
         </p>
@@ -133,14 +133,14 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
     <section
       v-else-if="showPendingConfirmation"
       aria-labelledby="nin-saved-title"
-      class="mt-[1.6rem] grid grid-cols-[2.6rem_minmax(0,1fr)] gap-[0.9rem] rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]"
+      class="mt-6.5 grid grid-cols-[2.6rem_minmax(0,1fr)] gap-3.5 rounded-card border border-border bg-card p-4.5 lg:p-6"
     >
-      <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] bg-primary text-white">
+      <span class="grid size-10.5 place-items-center rounded-md bg-primary text-white">
         <CanopyGlyph name="tick" :size="16" :stroke="3.2" />
       </span>
-      <div class="grid justify-items-start gap-[0.7rem]">
+      <div class="grid justify-items-start gap-2.75">
         <div>
-          <h2 id="nin-saved-title" class="text-[1.3rem] font-[650] tracking-[-0.02em]">NIN received</h2>
+          <h2 id="nin-saved-title" class="text-xl font-normal tracking-tight">NIN received</h2>
           <p class="mt-1 text-muted-foreground">
             We have your NIN and keep it encrypted. If you entered it wrongly, you can change it until our team finishes verification.
           </p>
@@ -149,7 +149,7 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
           Change NIN
         </Button>
         <p :class="canopyHint">
-          Press <b class="font-semibold text-foreground">Save and return</b> to keep this NIN.
+          Press <b class="font-medium text-foreground">Save and return</b> to keep this NIN.
         </p>
       </div>
     </section>
@@ -173,14 +173,14 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                 inputmode="numeric"
                 maxlength="11"
                 :class="authInputGroupControl"
-                class="tracking-[0.04em] placeholder:tracking-normal"
+                class="tracking-wider placeholder:tracking-normal"
                 :aria-invalid="isInvalid(field)"
                 @blur="field.handleBlur"
                 @update:model-value="(v: unknown) => onNinInput(field, v)"
               />
               <InputGroupAddon align="inline-end">
                 <span
-                  class="pr-1 text-[0.8rem] font-semibold"
+                  class="pr-1 text-sm font-medium"
                   :class="ninLength === 11 ? 'text-brand' : 'text-muted-foreground'"
                 >
                   {{ ninLength }}/11
@@ -210,10 +210,10 @@ function onNinInput(field: { handleChange: (v: string) => void }, raw: unknown) 
                 }"
               />
               <span class="grid min-w-0 flex-1 gap-1">
-                <span class="text-[0.95rem] leading-snug font-semibold text-foreground">
+                <span class="text-base leading-snug font-medium text-foreground">
                   I agree to getalawyer verifying my identity with NIMC.
                 </span>
-                <span class="text-[0.85rem] leading-normal font-normal text-muted-foreground">
+                <span class="text-sm leading-normal font-normal text-muted-foreground">
                   Required. Used only to verify your identity.
                 </span>
               </span>

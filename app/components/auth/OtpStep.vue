@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <div v-if="blocked" class="rounded-[1.25rem] border border-destructive/30 bg-destructive/5 p-4 text-center">
+    <div v-if="blocked" class="rounded-card border border-destructive/30 bg-destructive/5 p-4 text-center">
       <p class="text-sm font-medium text-destructive">Too many attempts</p>
       <p class="mt-1 text-sm text-muted-foreground">
         Please request a new verification code to continue.
@@ -43,7 +43,7 @@
         {{ error }}
       </p>
 
-      <p class="text-[0.9rem] text-muted-foreground">
+      <p class="text-sm text-muted-foreground">
         The code expires in a few minutes.
         <button
           type="button"

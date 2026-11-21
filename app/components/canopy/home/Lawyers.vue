@@ -35,26 +35,26 @@ defineExpose({ ready })
 <template>
   <!-- The heading and the two checks always show; the cards join them once there
        are four real lawyers with photos. -->
-  <section id="lawyers" class="scroll-mt-24 py-[clamp(3.5rem,7vw,6.5rem)]">
+  <section id="lawyers" class="scroll-mt-24 py-14 lg:py-18 xl:py-22.5">
     <CanopySectionHead title="Real lawyers. Checked before you meet them.">
-      <div class="grid min-w-0 flex-[0_1_29rem] justify-items-start gap-[0.9rem]">
+      <div class="grid min-w-0 grow-0 basis-116 justify-items-start gap-3.5">
         <p class="text-muted-foreground">Nobody is listed until we check two things.</p>
-        <ul class="grid gap-[0.6rem]">
-          <li class="flex items-start gap-[0.7rem]">
-            <CanopyVerifiedTick decorative class="mt-[0.2rem]" />
-            <span><b class="font-semibold">Who they are.</b> We check their National Identification Number (NIN).</span>
+        <ul class="grid gap-2.5">
+          <li class="flex items-start gap-2.75">
+            <CanopyVerifiedTick decorative class="mt-0.75" />
+            <span><b class="font-medium">Who they are.</b> We check their National Identification Number (NIN).</span>
           </li>
-          <li class="flex items-start gap-[0.7rem]">
-            <CanopyVerifiedTick decorative class="mt-[0.2rem]" />
-            <span><b class="font-semibold">That they are a real lawyer.</b> We check their Supreme Court number (SCN).</span>
+          <li class="flex items-start gap-2.75">
+            <CanopyVerifiedTick decorative class="mt-0.75" />
+            <span><b class="font-medium">That they are a real lawyer.</b> We check their Supreme Court number (SCN).</span>
           </li>
         </ul>
-        <Button as-child variant="line" size="pill" class="mt-[0.3rem]">
+        <Button as-child variant="line" size="pill" class="mt-1.25">
           <NuxtLink to="/find-lawyers">Browse all lawyers →</NuxtLink>
         </Button>
       </div>
     </CanopySectionHead>
-    <div v-if="ready" class="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-[1.1rem] [scrollbar-width:thin] max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-[0.9rem] max-sm:overflow-x-auto max-sm:pb-[0.6rem]">
+    <div v-if="ready" class="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4.5 [scrollbar-width:thin] max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-3.5 max-sm:overflow-x-auto max-sm:pb-2.5">
       <CanopyLawyerCard v-for="lawyer in featured" :key="lawyer.id" :lawyer="lawyer" />
     </div>
   </section>

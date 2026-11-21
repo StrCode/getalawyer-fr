@@ -76,7 +76,7 @@ async function cancel() {
     class="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-sm"
   >
     <div class="mb-2 flex items-center justify-between gap-2">
-      <p class="text-sm font-semibold text-foreground">
+      <p class="text-sm font-medium text-foreground">
         Consultation fee request
       </p>
       <Badge
@@ -87,7 +87,7 @@ async function cancel() {
         {{ metadata.status }}
       </Badge>
     </div>
-    <p class="text-2xl font-semibold tabular-nums text-foreground">
+    <p class="text-2xl font-medium tabular-nums text-foreground">
       {{ formatAmount(metadata.amount, metadata.currency) }}
     </p>
     <p v-if="metadata.description" class="mt-2 text-sm text-muted-foreground">

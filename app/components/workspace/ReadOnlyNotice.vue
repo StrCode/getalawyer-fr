@@ -16,15 +16,15 @@ const show = computed(() => readOnly.value && route.path !== '/dashboard/subscri
   <aside
     v-if="show"
     role="status"
-    class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-[1.25rem] border border-warning-border bg-warning-subtle px-[1.1rem] py-[0.9rem] text-warning-subtle-foreground"
+    class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-card border border-warning-border bg-warning-subtle px-4.5 py-3.5 text-warning-subtle-foreground"
   >
-    <p class="min-w-0 flex-[1_1_22rem] text-[0.98rem]">
-      <b class="font-semibold">{{ neverPaid ? 'You do not have a membership yet.' : 'Your membership is not active.' }}</b>
+    <p class="min-w-0 grow basis-88 text-sm">
+      <b class="font-medium">{{ neverPaid ? 'You do not have a membership yet.' : 'Your membership is not active.' }}</b>
       You can read and reply to your clients, but you cannot take new bookings or change your profile until {{ neverPaid ? 'you join' : 'you renew' }}.
     </p>
     <NuxtLink
       to="/dashboard/subscription"
-      class="inline-flex min-h-11 flex-none items-center rounded-full bg-foreground px-[1.2rem] text-[0.95rem] font-semibold text-background transition-opacity duration-200 hover:opacity-90"
+      class="inline-flex min-h-11 flex-none items-center rounded-full bg-foreground px-4.75 text-sm font-medium text-background transition-opacity duration-200 hover:opacity-90"
     >
       {{ neverPaid ? 'Choose a plan' : 'Renew membership' }}
     </NuxtLink>

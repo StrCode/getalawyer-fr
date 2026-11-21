@@ -59,13 +59,13 @@ const linkExample = 'https://example.org/check'
   <SettingsSectionCard
     title="Licences and certificates"
     description="Bar admissions, practising licences and professional certificates."
-    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+    content-class="grid gap-2.5 p-4.5 lg:p-5.75 xl:p-6"
   >
     <template #action>
-      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add one</Button>
+      <Button type="button" variant="line" size="pill-sm" class="h-10 px-3.75 text-sm" :disabled="disabled" @click="openCreate">Add one</Button>
     </template>
 
-    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">None listed yet.</p>
+    <p v-if="items.length === 0" class="py-4.75 text-center text-muted-foreground">None listed yet.</p>
     <ProfileListRow
       v-for="item in items"
       :key="item.id"
@@ -87,7 +87,7 @@ const linkExample = 'https://example.org/check'
     :saving="saving"
   >
     <form id="license-form" novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="name">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">Name</FieldLabel>
@@ -124,7 +124,7 @@ const linkExample = 'https://example.org/check'
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
         </form.Field>
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="issueDate">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">Issued <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>

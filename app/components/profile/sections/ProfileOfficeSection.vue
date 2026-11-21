@@ -56,7 +56,7 @@ watch(() => props.practiceInfo, saved => form.reset(officeValues(saved)), { deep
     description="Your firm name and where your office is. The city and state show on your profile and in search."
   >
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="firmName">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">
@@ -101,7 +101,7 @@ watch(() => props.practiceInfo, saved => form.reset(officeValues(saved)), { deep
           </Field>
         </form.Field>
 
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="officeCity">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">City</FieldLabel>
@@ -146,7 +146,7 @@ watch(() => props.practiceInfo, saved => form.reset(officeValues(saved)), { deep
         </div>
 
         <form.Field v-slot="{ field }" name="officePostalCode">
-          <Field :class="[canopyField, 'sm:max-w-[16rem]']" :data-invalid="isInvalid(field)">
+          <Field :class="[canopyField, 'sm:max-w-64']" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">
               Postal code
               <span class="font-normal text-muted-foreground">(optional)</span>
@@ -167,7 +167,7 @@ watch(() => props.practiceInfo, saved => form.reset(officeValues(saved)), { deep
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(officeValues(practiceInfo))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

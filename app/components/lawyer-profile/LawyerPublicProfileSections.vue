@@ -38,7 +38,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
       </LawyerProfileSectionHeading>
       <p
         v-if="profile.about.headline?.trim()"
-        class="font-heading text-2xl leading-snug tracking-[-0.02em] text-foreground md:text-3xl"
+        class="font-heading text-2xl leading-snug tracking-tight text-foreground md:text-3xl"
       >
         {{ profile.about.headline }}
       </p>
@@ -73,7 +73,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
         >
           <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
-             <h3 class="text-base font-semibold text-foreground">
+             <h3 class="text-base font-medium text-foreground">
                 {{ item.title }}
               </h3>
               <p class="mt-0.5 text-sm font-medium text-muted-foreground">
@@ -113,7 +113,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
             <HugeiconsIcon :icon="GraduationScrollIcon" class="size-5" />
           </div>
           <div class="min-w-0">
-           <h3 class="text-base font-semibold leading-tight text-foreground">
+           <h3 class="text-base font-medium leading-tight text-foreground">
               {{ item.school }}
             </h3>
             <p
@@ -155,7 +155,7 @@ const hasAbout = (profile: LawyerPublicProfileSections) =>
           <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-               <h3 class="text-base font-semibold text-foreground">
+               <h3 class="text-base font-medium text-foreground">
                   {{ item.name }}
                 </h3>
                 <Badge

@@ -50,7 +50,7 @@ watch(() => props.about, saved => form.reset(aboutValues(saved)), { deep: true }
     description="The headline sits under your name in search. The about text is on your public page."
   >
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="headline">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">Headline</FieldLabel>
@@ -91,7 +91,7 @@ watch(() => props.about, saved => form.reset(aboutValues(saved)), { deep: true }
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(aboutValues(about))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

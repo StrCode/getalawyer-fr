@@ -16,12 +16,12 @@ withDefaults(defineProps<{
     :type="type"
     variant="canopy"
     size="pill"
-    class="group/btn h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]"
+    class="group/btn h-13 w-full justify-between pr-2 pl-5.5"
     :disabled="disabled || loading"
     :aria-busy="loading"
   >
     <span><slot /></span>
-    <span v-if="loading" class="grid size-[1.95rem] flex-none place-items-center">
+    <span v-if="loading" class="grid size-7.75 flex-none place-items-center">
       <HugeiconsIcon :icon="Loading03Icon" class="size-5 animate-spin" aria-hidden="true" />
     </span>
     <CanopyArrowChip v-else />

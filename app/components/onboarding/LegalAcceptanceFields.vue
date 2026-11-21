@@ -29,7 +29,7 @@ const refundId = useId()
 </script>
 
 <template>
-  <div class="grid gap-[0.6rem]">
+  <div class="grid gap-2.5">
     <label :for="termsId" :class="canopyChoice">
       <Checkbox
         :id="termsId"
@@ -38,12 +38,12 @@ const refundId = useId()
         aria-required="true"
         @update:model-value="(v) => emit('update:termsAccepted', !!v)"
       />
-      <span class="grid min-w-0 gap-[0.2rem]">
-        <span class="text-[0.95rem] leading-snug font-semibold">
+      <span class="grid min-w-0 gap-0.75">
+        <span class="text-base leading-snug font-medium">
           I accept the
           <NuxtLink to="/terms" target="_blank" :class="authLink" @click.stop>Terms and Conditions</NuxtLink>
         </span>
-        <span class="text-[0.85rem] text-muted-foreground">
+        <span class="text-sm text-muted-foreground">
           {{ variant === 'lawyer' ? 'Needed to submit your application.' : 'Needed to finish setting up.' }}
         </span>
       </span>
@@ -57,12 +57,12 @@ const refundId = useId()
         aria-required="true"
         @update:model-value="(v) => emit('update:refundPolicyAccepted', !!v)"
       />
-      <span class="grid min-w-0 gap-[0.2rem]">
-        <span class="text-[0.95rem] leading-snug font-semibold">I understand the verification refund policy</span>
-        <span class="text-[0.85rem] text-muted-foreground">{{ REFUND_POLICY_SUMMARY }}</span>
+      <span class="grid min-w-0 gap-0.75">
+        <span class="text-base leading-snug font-medium">I understand the verification refund policy</span>
+        <span class="text-sm text-muted-foreground">{{ REFUND_POLICY_SUMMARY }}</span>
       </span>
     </label>
 
-    <p v-if="error" role="alert" class="text-[0.9rem] font-semibold text-destructive">{{ error }}</p>
+    <p v-if="error" role="alert" class="text-sm font-medium text-destructive">{{ error }}</p>
   </div>
 </template>
