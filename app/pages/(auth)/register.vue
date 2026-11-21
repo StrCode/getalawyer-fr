@@ -413,13 +413,17 @@ const form = useForm({
       const fullName = `${value.firstName} ${value.lastName}`.trim()
 
       if (authMethod.value === 'email') {
-        const { error: signUpError } = await authClient.signUp.email({
+        // `accountType` is read by the backend's sign-up hook: the account's type
+        // itself is read-only. Better Auth's typed body does not list it, so the
+        // request is built first (an object literal passed inline would be refused).
+        const signUpBody = {
           name: fullName,
           email: value.email,
           password: value.password,
-          userType: selectedRole.value || 'client',
+          accountType: selectedRole.value || 'client',
           callbackURL: selectedRole.value === 'lawyer' ? APPLICATION_HOME : WELCOME_HOME,
-        })
+        }
+        const { error: signUpError } = await authClient.signUp.email(signUpBody)
 
         if (signUpError) {
           apiError.value = signUpError.message || 'Failed to create account. Please try again.'
@@ -487,7 +491,7 @@ async function completePhoneRegistration() {
         phone: pendingPhone.value,
         code: phoneOtp.value,
         name: pendingName.value,
-        userType: selectedRole.value || 'client',
+        accountType: selectedRole.value || 'client',
       })
 
       if (verifyError) {

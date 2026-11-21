@@ -94,8 +94,8 @@ watch(() => props.profile, saved => form.reset(personalValues(saved)), { deep: t
         </form.Field>
 
         <div class="flex flex-wrap items-center justify-end gap-2">
-          <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(personalValues(profile))">Discard</Button>
-          <Button type="submit" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
+          <Button v-if="dirty" type="button" variant="line" size="pill" :disabled="saving" @click="form.reset(personalValues(profile))">Discard</Button>
+          <Button type="submit" variant="canopy" size="pill" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>
       </FieldGroup>
     </form>

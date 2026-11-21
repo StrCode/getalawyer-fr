@@ -118,7 +118,7 @@ const time = 'h-11 w-34 rounded-md max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
         <LoadingLine class="w-28" />
         <LoadingLine size="sm" class="mt-0.75 w-96" />
       </div>
-      <Skeleton class="h-11 w-28 flex-none rounded-full" />
+      <Skeleton class="h-12 w-32 flex-none rounded-full" />
     </div>
     <div :class="[pad, 'flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-border bg-background/60 py-3.5']">
       <LoadingLine size="sm" class="w-36" />
@@ -157,8 +157,8 @@ const time = 'h-11 w-34 rounded-md max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
         <p class="mt-0.75 max-w-160 text-sm text-muted-foreground">Switch on the days you work and set when clients can book you.</p>
       </div>
       <div class="flex flex-none flex-wrap items-center gap-2">
-        <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="discard">Discard</Button>
-        <Button type="submit" :form="formId" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
+        <Button v-if="dirty" type="button" variant="line" size="pill" :disabled="saving" @click="discard">Discard</Button>
+        <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
       </div>
     </header>
 

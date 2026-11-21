@@ -75,8 +75,8 @@ function setTicked(field: IdsField, id: string, ticked: boolean) {
   >
     <template v-if="!isLoading && hasClientProfile" #action>
       <div class="flex items-center gap-2">
-        <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="isSaving" @click="form.reset(interestsValues(profile))">Discard</Button>
-        <Button type="submit" :form="formId" variant="canopy" size="pill-sm" :disabled="!dirty || isSaving" :aria-busy="isSaving">{{ isSaving ? 'Saving…' : 'Save' }}</Button>
+        <Button v-if="dirty" type="button" variant="line" size="pill" :disabled="isSaving" @click="form.reset(interestsValues(profile))">Discard</Button>
+        <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="!dirty || isSaving" :aria-busy="isSaving">{{ isSaving ? 'Saving…' : 'Save' }}</Button>
       </div>
     </template>
 

@@ -40,7 +40,9 @@ export const authClient = createAuthClient({
     inferAdditionalFields({
       user: {
         userType: {
-          type: "string"
+          type: "string",
+          // Server declares `input: false`: set at sign-up from `accountType`, never by the client.
+          input: false,
         },
         role: {
           type: "string",

@@ -108,6 +108,31 @@ export default defineNuxtConfig({
       /** Zod 4 ESM + Vite SSR: avoid broken named export interop (`z` undefined). */
       noExternal: ['zod'],
     },
+    // Dev only: bundle these up front. Otherwise Vite discovers them on the first
+    // visit to a page that uses them and reloads that page while you look at it.
+    // The list is what the dev server itself reported; add to it when it names more.
+    optimizeDeps: {
+      include: [
+        '@hugeicons/core-free-icons',
+        '@hugeicons/vue',
+        '@internationalized/date',
+        '@tanstack/vue-form',
+        // Nuxt devtools' client (development only)
+        '@vue/devtools-core',
+        'better-auth/client/plugins',
+        'better-auth/vue',
+        'class-variance-authority',
+        'clsx',
+        'libphonenumber-js',
+        'reka-ui',
+        'reka-ui/date',
+        'socket.io-client',
+        'tailwind-merge',
+        'vue-input-otp',
+        'vue-sonner',
+        'zod',
+      ],
+    },
     plugins: [
       tailwindcss(),
     ],
