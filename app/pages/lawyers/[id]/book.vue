@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useBookings } from '~/composables/useBookings'
 import { useLawyerPublicProfilePage } from '~/composables/useLawyerPublicProfilePage'
-import type { ConsultationType } from '~/types/lawyer'
+import type { PublicConsultationType } from '~/types/lawyer'
 
 /**
  * Booking a consultation, in the Canopy design: which consultation, then a day
@@ -43,7 +43,7 @@ const initials = computed(() =>
 
 // --- Flow state ---
 const step = ref(1)
-const selectedType = ref<ConsultationType | null>(null)
+const selectedType = ref<PublicConsultationType | null>(null)
 const selectedSlot = ref<{ date: string, time: string } | null>(null)
 const meetingType = ref<'video' | 'phone' | 'in_person' | null>(null)
 const clientNotes = ref('')
@@ -91,12 +91,12 @@ if (presetType) {
   }
 }
 
-function choosePriceLabel(type: ConsultationType): string {
+function choosePriceLabel(type: PublicConsultationType): string {
   const price = Number(type.price)
   return price > 0 ? `₦${price.toLocaleString()}` : 'Free'
 }
 
-function selectType(type: ConsultationType) {
+function selectType(type: PublicConsultationType) {
   if (selectedType.value?.id !== type.id) {
     // Slots depend on the type's duration — a change invalidates the pick.
     selectedSlot.value = null

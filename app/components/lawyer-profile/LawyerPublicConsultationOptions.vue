@@ -3,9 +3,9 @@ import { Building01Icon, Calendar01Icon, CallIcon, Video01Icon } from '@hugeicon
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Badge } from '@/components/ui/badge'
 import LawyerProfileSectionHeading from '@/components/lawyer-profile/LawyerProfileSectionHeading.vue'
-import type { ConsultationType } from '~/types/lawyer'
+import type { PublicConsultationType } from '~/types/lawyer'
 defineProps<{
-  consultationTypes: ConsultationType[]
+  consultationTypes: PublicConsultationType[]
 }>()
 
 const MEETING_BADGES = [
@@ -14,7 +14,7 @@ const MEETING_BADGES = [
   { value: 'in_person', label: 'In person', icon: Building01Icon },
 ] as const
 
-function badgesFor(meetingType: ConsultationType['meetingType']) {
+function badgesFor(meetingType: PublicConsultationType['meetingType']) {
   return MEETING_BADGES.filter(b => meetingType === 'any' || b.value === meetingType)
 }
 

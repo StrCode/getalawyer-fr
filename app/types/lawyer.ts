@@ -45,7 +45,7 @@ export interface LawyerDocument {
   originalName: string | null
 }
 
-export interface ConsultationType {
+export interface PublicConsultationType {
   id: string
   name: string
   description: string | null
@@ -67,7 +67,7 @@ export interface AvailabilitySchedule {
   isAvailable: boolean
 }
 
-export interface AvailabilityException {
+export interface PublicAvailabilityException {
   id: string
   date: string // YYYY-MM-DD
   startTime: string | null
@@ -78,7 +78,7 @@ export interface AvailabilityException {
 
 export interface LawyerAvailability {
   schedule: AvailabilitySchedule[]
-  exceptions: AvailabilityException[]
+  exceptions: PublicAvailabilityException[]
 }
 
 export interface LawyerProfile {
@@ -99,7 +99,7 @@ export interface LawyerProfile {
   /** Published articles from GET /api/lawyers/:id → data.articles */
   articles?: LawyerProfileArticle[]
   documents: LawyerDocument[]
-  consultationTypes: ConsultationType[]
+  consultationTypes: PublicConsultationType[]
   availability: LawyerAvailability
   createdAt: string
   updatedAt: string

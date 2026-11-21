@@ -10,9 +10,9 @@ import {
   getWorkingDays,
   shouldTruncateAbout,
 } from '../app/lib/lawyer-public-profile'
-import type { ConsultationType, LawyerProfile } from '../app/types/lawyer'
+import type { PublicConsultationType, LawyerProfile } from '../app/types/lawyer'
 
-function consultation(overrides: Partial<ConsultationType> = {}): ConsultationType {
+function consultation(overrides: Partial<PublicConsultationType> = {}): PublicConsultationType {
   return {
     id: 'ct-1',
     name: 'Initial consultation',

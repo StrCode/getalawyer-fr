@@ -1,10 +1,7 @@
 import { getDirectoryBlockerItems } from '~/lib/directory-blockers'
 import { getIncompleteListingItems, getIncompleteListingSectionIds } from '~/lib/profile-check-catalog'
-import type {
-  LawyerDirectoryEligibility,
-  LawyerProfileEditorData,
-  LawyerProfileStrengthSummary,
-} from '~/types/lawyer-profile-editor'
+import type { LawyerDirectoryEligibility, LawyerProfileStrengthSummary } from '~/types/lawyer-directory-eligibility'
+import type { LawyerProfileEditorData } from '~/types/lawyer-profile-editor'
 
 /**
  * The reasoning behind the lawyer's profile page, kept apart from the page so

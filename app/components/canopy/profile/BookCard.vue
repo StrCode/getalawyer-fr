@@ -3,7 +3,7 @@ import { today } from '@internationalized/date'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { buildSlotsByDate, formatTimeLabel } from '~/lib/booking-calendar'
-import type { ConsultationType, LawyerPracticeInfo } from '~/types/lawyer'
+import type { PublicConsultationType, LawyerPracticeInfo } from '~/types/lawyer'
 
 /**
  * Booking card on a lawyer's profile. The visitor picks a consultation type,
@@ -14,7 +14,7 @@ import type { ConsultationType, LawyerPracticeInfo } from '~/types/lawyer'
 const props = defineProps<{
   lawyerId: string
   /** Active consultation types only. */
-  types: ConsultationType[]
+  types: PublicConsultationType[]
   practiceInfo: LawyerPracticeInfo | null
   isAuthenticated: boolean
   isOwnProfile: boolean
@@ -28,7 +28,7 @@ const DAYS_AHEAD = 13
 const DAYS_SHOWN = 4
 const TIMES_SHOWN = 6
 
-const MEETING: Record<ConsultationType['meetingType'], string> = {
+const MEETING: Record<PublicConsultationType['meetingType'], string> = {
   video: 'Video',
   phone: 'Phone',
   in_person: 'In person',
@@ -41,7 +41,7 @@ watch(() => props.types, (types) => {
 })
 const chosenType = computed(() => props.types.find(type => type.id === typeId.value) ?? null)
 
-function priceLabel(type: ConsultationType) {
+function priceLabel(type: PublicConsultationType) {
   const price = Number(type.price)
   return price > 0 ? formatNairaAmount(price) : 'Free'
 }

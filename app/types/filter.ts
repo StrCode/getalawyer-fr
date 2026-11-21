@@ -3,12 +3,13 @@
  * Feature: public-pages-phase-1
  */
 
-import type { ConsultationType } from './lawyer'
+/** How a client wants to meet, as the directory filter spells it. */
+export type ConsultationFormat = 'video' | 'phone' | 'in-person'
 
 export interface FilterState {
   practiceAreas: string[]
   location: string
-  consultationTypes: ConsultationType[]
+  consultationTypes: ConsultationFormat[]
   minRating: number | null
   minExperience: number | null
   priceRange: {
@@ -24,7 +25,7 @@ export interface FilterState {
 export interface SearchQuery {
   practiceArea?: string
   location?: string
-  consultationType?: ConsultationType
+  consultationType?: ConsultationFormat
   page?: number
   limit?: number
 }
