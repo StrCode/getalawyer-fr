@@ -242,8 +242,8 @@ const triggerLabel = computed(() => {
         </form.Field>
 
         <div class="flex flex-wrap items-center justify-end gap-2">
-          <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(practiceAreasValues(practiceAreas))">Discard</Button>
-          <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
+          <Button v-if="dirty" type="button" variant="line" size="pill" :disabled="saving" @click="form.reset(practiceAreasValues(practiceAreas))">Discard</Button>
+          <Button type="submit" variant="canopy" size="pill" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>
       </FieldGroup>
     </form>
