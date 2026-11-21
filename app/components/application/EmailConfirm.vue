@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { codeErrorMessage } from '~/lib/code-errors'
 import { Button } from '@/components/ui/button'
 import { authClient } from '~/lib/auth-client'
 
@@ -65,7 +66,7 @@ async function check() {
   try {
     const { error: verifyError } = await authClient.emailOtp.verifyEmail({ email: email.value, otp: code.value })
     if (verifyError) {
-      error.value = verifyError.message || 'That code is not right. Check it and try again.'
+      error.value = codeErrorMessage(verifyError, 'That code is not right. Check it and try again.')
       code.value = ''
       return
     }

@@ -139,6 +139,7 @@
 </template>
 
 <script setup lang="ts">
+import { codeErrorMessage } from '~/lib/code-errors'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Input } from '@/components/ui/input'
@@ -306,7 +307,7 @@ async function completePhoneOtpVerify() {
       if (isTooManyAttemptsError(error)) {
         otpBlocked.value = true
       } else {
-        otpError.value = error.message || 'Invalid verification code.'
+        otpError.value = codeErrorMessage(error, 'That code is not right. Check it and try again.')
       }
       return
     }

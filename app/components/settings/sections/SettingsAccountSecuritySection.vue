@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import { codeErrorMessage } from '~/lib/code-errors'
 import { useForm } from '@tanstack/vue-form'
 import SettingsChangePasswordDialog from '@/components/settings/SettingsChangePasswordDialog.vue'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
@@ -175,7 +176,7 @@ async function verifyOtp() {
     })
     if (error) {
       if (isTooManyAttemptsError(error)) otpBlocked.value = true
-      else otpError.value = error.message || 'That code is not right.'
+      else otpError.value = codeErrorMessage(error, 'That code is not right. Check it and try again.')
       return
     }
     await refetchSession()
