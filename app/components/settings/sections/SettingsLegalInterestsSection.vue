@@ -3,6 +3,7 @@ import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -79,10 +80,18 @@ function setTicked(field: IdsField, id: string, ticked: boolean) {
       </div>
     </template>
 
-    <div v-if="isLoading || isLoadingOptions" role="status" aria-label="Loading practice areas" class="grid gap-2.5">
-      <div class="h-13 animate-pulse rounded-lg bg-muted" />
-      <div class="h-48 animate-pulse rounded-lg bg-muted" />
-    </div>
+    <LoadingRegion v-if="isLoading || isLoadingOptions" label="Loading practice areas" class="grid grid-cols-1 gap-4">
+      <Skeleton class="h-12 w-full rounded-xl" />
+      <div>
+        <LoadingLine size="sm" class="w-36" />
+        <div class="mt-2 grid gap-2 sm:grid-cols-2">
+          <div v-for="n in 6" :key="n" class="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+            <Skeleton class="size-4 flex-none rounded-sm" />
+            <LoadingLine class="-mt-1 w-32" />
+          </div>
+        </div>
+      </div>
+    </LoadingRegion>
 
     <p v-else-if="!hasClientProfile" class="py-6 text-center text-muted-foreground">Finish setting up your account to choose your legal interests.</p>
 

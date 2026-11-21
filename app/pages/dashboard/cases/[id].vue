@@ -2,6 +2,7 @@
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
   DialogContent,
@@ -280,10 +281,7 @@ const dialogTitle = 'font-display text-xl leading-none font-normal tracking-tigh
     </NuxtLink>
 
     <!-- ───────── loading / not found / could not load ───────── -->
-    <div v-if="loading && !error" role="status" aria-label="Loading the case" class="grid gap-4">
-      <div class="h-72 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
-      <div class="h-64 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingDetail v-if="loading && !error" label="Loading the case" :side="false" />
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no case here.</h1>
@@ -359,10 +357,11 @@ const dialogTitle = 'font-display text-xl leading-none font-normal tracking-tigh
       <section v-if="part === 'messages'" aria-labelledby="messages-title" :class="[panel, 'flex flex-col overflow-hidden']">
         <h2 id="messages-title" :class="[sectionTitle, 'px-4.5 lg:px-5.75 xl:px-6 pt-4.75']">Messages about this case</h2>
         <div ref="thread" class="max-h-112 min-h-40 overflow-y-auto px-4.5 lg:px-5.75 xl:px-6 py-4" aria-live="polite">
-          <div v-if="threadPending" role="status" aria-label="Loading messages" class="grid gap-2">
-            <div class="h-12 w-3/5 animate-pulse rounded-lg bg-muted" />
-            <div class="ml-auto h-12 w-1/2 animate-pulse rounded-lg bg-muted" />
-          </div>
+          <LoadingRegion v-if="threadPending" label="Loading messages" class="grid grid-cols-1 gap-2.5">
+            <Skeleton class="h-11 w-3/5 rounded-lg rounded-bl-sm" />
+            <Skeleton class="ml-auto h-11 w-1/2 rounded-lg rounded-br-sm" />
+            <Skeleton class="h-11 w-2/5 rounded-lg rounded-bl-sm" />
+          </LoadingRegion>
           <p v-else-if="threadFailed" class="text-muted-foreground">We could not load the messages. They will be tried again shortly.</p>
           <p v-else-if="!messages?.length" class="text-muted-foreground">No messages on this case yet. Write the first one below.</p>
           <ol v-else class="grid gap-2.5">
@@ -387,7 +386,7 @@ const dialogTitle = 'font-display text-xl leading-none font-normal tracking-tigh
                 rows="2"
                 :maxlength="CASE_MESSAGE_MAX"
                 :placeholder="`Write to ${other?.name?.split(' ')[0] ?? (isLawyer ? 'your client' : 'your lawyer')} about this case`"
-                :class="[canopyTextarea, 'min-h-13']"
+                :class="[canopyTextarea, 'min-h-12']"
                 :disabled="send.isPending.value"
                 @update:model-value="(v) => field.handleChange(String(v ?? ''))"
                 @keydown.enter.exact.prevent="messageForm.handleSubmit()"

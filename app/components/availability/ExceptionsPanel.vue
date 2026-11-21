@@ -2,6 +2,7 @@
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
   DialogContent,
@@ -198,9 +199,13 @@ const dialogFoot = 'gap-2.5 border-t border-border px-4.75 md:px-7 py-4'
       </label>
     </div>
 
-    <div v-if="isPending" role="status" aria-label="Loading your dates" :class="[pad, 'grid gap-2 py-4']">
-      <div v-for="n in 3" :key="n" class="h-16 animate-pulse rounded-lg bg-muted" />
-    </div>
+    <LoadingRegion v-if="isPending" label="Loading your dates">
+      <LoadingList bare lead="none" :pad="`${pad} py-3.75`">
+        <template #end>
+          <Skeleton class="h-10 w-22 rounded-full" />
+        </template>
+      </LoadingList>
+    </LoadingRegion>
 
     <div v-else-if="isError" :class="[pad, 'py-6.5 md:py-7.75 lg:py-10.25 xl:py-10.5 text-center']">
       <h3 :class="sectionTitle">We could not load your dates.</h3>

@@ -109,7 +109,7 @@ const card = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6.
           <!-- the select's own wrapper is sized to its content; stretch it to the field -->
           <div class="grid gap-2 *:data-[slot=native-select-wrapper]:w-full">
             <label for="contact-topic" :class="label">What is it about?</label>
-            <NativeSelect id="contact-topic" v-model="form.topic" required class="h-13 rounded-lg border-border bg-card px-4 text-base shadow-none dark:bg-card">
+            <NativeSelect id="contact-topic" v-model="form.topic" required class="h-12 rounded-xl border-border bg-card px-4 text-base shadow-none dark:bg-card">
               <NativeSelectOption value="" disabled>Choose a topic</NativeSelectOption>
               <NativeSelectOption v-for="topic in TOPICS" :key="topic.value" :value="topic.value">{{ topic.label }}</NativeSelectOption>
             </NativeSelect>
@@ -125,7 +125,7 @@ const card = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6.
               class="min-h-38 resize-y rounded-lg border-border bg-card px-4 py-3 text-base shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint"
             />
           </div>
-          <Button type="submit" variant="canopy" size="pill" class="group/btn mt-1.25 h-13 w-full justify-between pr-2 pl-5.5">
+          <Button type="submit" variant="canopy" size="pill" class="group/btn mt-1.25 w-full justify-between pr-2 pl-5.5">
             Continue in your email app<CanopyArrowChip />
           </Button>
           <p class="text-sm text-muted-foreground">

@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { offeredSummary, priceLabel, typeFacts } from '~/lib/consultation-type-view'
 import type { ConsultationType } from '~/types/booking'
@@ -148,9 +149,24 @@ const menuItem = 'min-h-11 cursor-pointer rounded-md px-3 text-sm font-medium te
       </template>
     </DashboardPageHeader>
 
-    <div v-if="isPending" role="status" aria-label="Loading your consultation types" class="grid gap-2">
-      <div v-for="n in 3" :key="n" class="h-20 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="isPending" label="Loading your consultation types">
+      <div :class="panel">
+        <div :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-border py-3.5']">
+          <LoadingLine class="w-28" />
+          <div class="flex min-h-11 items-center gap-2.75">
+            <Skeleton class="h-5 w-9 rounded-full" />
+            <LoadingLine size="sm" class="w-40" />
+          </div>
+        </div>
+        <LoadingList bare lead="none" :pad="`${pad} py-4`">
+          <template #end>
+            <LoadingLine size="lg" class="mr-3.25 w-20" />
+            <Skeleton class="h-10 w-15 rounded-full" />
+            <Skeleton class="h-10 w-22 rounded-full" />
+          </template>
+        </LoadingList>
+      </div>
+    </LoadingRegion>
 
     <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your consultation types.</h2>

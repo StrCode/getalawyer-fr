@@ -2,6 +2,7 @@
 import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
@@ -111,7 +112,37 @@ const time = 'h-11 w-34 rounded-md max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
 </script>
 
 <template>
-  <div v-if="isPending" role="status" aria-label="Loading your weekly hours" class="h-128 animate-pulse rounded-card bg-muted" />
+  <LoadingRegion v-if="isPending" label="Loading your weekly hours" :class="panel">
+    <div :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-4.5']">
+      <div class="min-w-0">
+        <LoadingLine class="w-28" />
+        <LoadingLine size="sm" class="mt-0.75 w-96" />
+      </div>
+      <Skeleton class="h-11 w-28 flex-none rounded-full" />
+    </div>
+    <div :class="[pad, 'flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-border bg-background/60 py-3.5']">
+      <LoadingLine size="sm" class="w-36" />
+      <Skeleton class="h-10 w-52 rounded-full" />
+      <Skeleton class="h-10 w-44 rounded-full" />
+    </div>
+    <div class="divide-y divide-border">
+      <div v-for="n in 7" :key="n" :class="[pad, 'flex flex-wrap items-center gap-x-4 gap-y-2.5 py-3.5']">
+        <div class="flex min-h-11 items-center gap-3 sm:w-44">
+          <Skeleton class="h-5 w-9 flex-none rounded-full" />
+          <LoadingLine class="w-24" />
+        </div>
+        <div v-if="n < 6" class="flex items-center gap-2.5 max-sm:basis-full">
+          <Skeleton :class="time" />
+          <LoadingLine class="w-4" />
+          <Skeleton :class="time" />
+        </div>
+      </div>
+    </div>
+    <div :class="[pad, 'flex items-center justify-between gap-6 border-t border-border bg-background/60 py-3.75']">
+      <LoadingLine size="sm" class="w-48" />
+      <LoadingLine size="sm" class="w-60 max-sm:hidden" />
+    </div>
+  </LoadingRegion>
 
   <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
     <h2 :class="sectionTitle">We could not load your hours.</h2>

@@ -122,11 +122,7 @@ const face = 'grid size-12 flex-none place-items-center overflow-hidden rounded-
 <template>
   <div class="grid gap-5 lg:gap-6.25 xl:gap-7.75">
     <!-- ───────── loading / could not load ───────── -->
-    <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
-      <div class="h-88 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
-      <div class="h-18.5 animate-pulse rounded-card bg-muted" />
-      <div class="h-36 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingOverview v-if="loading && !bookingsFailed" role="client" />
 
     <section v-else-if="bookingsFailed" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 :class="sectionTitle">We could not load your bookings.</h1>

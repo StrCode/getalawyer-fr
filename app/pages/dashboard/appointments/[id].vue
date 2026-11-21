@@ -171,10 +171,7 @@ const quiet = 'shadow-none hover:translate-y-0'
     </NuxtLink>
 
     <!-- ───────── loading / not found / could not load ───────── -->
-    <div v-if="loading && !error" role="status" aria-label="Loading the appointment" class="grid gap-4">
-      <div class="h-76 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
-      <div class="h-36 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingDetail v-if="loading && !error" label="Loading the appointment" />
 
     <section v-else-if="missing" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
       <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no appointment here.</h1>

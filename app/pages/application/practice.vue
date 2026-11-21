@@ -448,7 +448,7 @@ const listboxItemClass = cn(
                         :model-value="additionalStates"
                         :disabled="!formValues.primaryState"
                         :aria-invalid="isInvalid(field)"
-                        class="h-auto min-h-13 w-full gap-1.5 rounded-lg border-border bg-card px-2 py-1.5 shadow-none focus-within:border-brand focus-within:ring-4 focus-within:ring-mint"
+                        class="h-auto min-h-12 w-full gap-1.5 rounded-xl border-border bg-card px-2 py-1.5 shadow-none focus-within:border-brand focus-within:ring-4 focus-within:ring-mint"
                         @update:model-value="(v) => syncAdditionalStates(v, field)"
                       >
                         <TagsInputItem

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { ApiError } from '~/lib/api/client'
@@ -377,10 +378,33 @@ const panel = 'rounded-card border border-border bg-card'
     </aside>
 
     <!-- ───────── loading / could not load ───────── -->
-    <div v-if="loading" aria-busy="true" aria-label="Loading your membership" class="grid gap-4">
-      <div class="h-68 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
-      <div class="h-40 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="loading" label="Loading your membership" class="grid grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
+      <div class="flex flex-wrap items-end justify-between gap-x-6 md:gap-x-7.75 lg:gap-x-10.25 xl:gap-x-12 gap-y-6 rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 max-sm:rounded-2xl">
+        <div class="min-w-0 grow basis-96">
+          <LoadingLine size="xs" class="w-44" />
+          <LoadingLine size="4xl" tight class="mt-3.5 w-80 max-md:h-7.5" />
+          <LoadingLine class="mt-3.5 w-104" />
+          <LoadingLine class="w-72" />
+        </div>
+        <div class="grid min-w-0 grow-0 basis-80 rounded-card bg-mint p-5">
+          <div class="flex justify-between gap-4 border-b border-dashed border-deep/20 pb-2.75">
+            <LoadingLine size="sm" class="w-16" />
+            <LoadingLine class="w-28" />
+          </div>
+          <div class="flex justify-between gap-4 pt-3.25">
+            <LoadingLine size="sm" class="w-20" />
+            <LoadingLine class="w-32" />
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-4 rounded-card border border-border bg-card px-5.25 py-4.75">
+        <div class="min-w-0">
+          <LoadingLine class="w-36" />
+          <LoadingLine size="sm" class="w-56" />
+        </div>
+        <Skeleton class="h-11 w-32 rounded-full" />
+      </div>
+    </LoadingRegion>
 
     <section v-else-if="loadFailed" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h1 :class="sectionTitle">We could not load your membership.</h1>
@@ -482,7 +506,7 @@ const panel = 'rounded-card border border-border bg-card'
             <p v-if="payPlan" class="mt-3.25 text-sm text-muted-foreground">
               Then {{ formatNairaAmount(payPlan.priceNaira) }} every {{ termNoun(payPlan.termMonths) }}. You can turn auto-renew off at any time.
             </p>
-            <Button variant="canopy" size="pill" class="group/btn mt-4.5 h-13 w-full justify-between pr-2 pl-6" :disabled="paying || !payPlan" :aria-busy="paying" @click="pay">
+            <Button variant="canopy" size="pill" class="group/btn mt-4.5 w-full justify-between pr-2 pl-6" :disabled="paying || !payPlan" :aria-busy="paying" @click="pay">
               {{ paying ? 'Opening the payment page…' : due != null ? `Pay ${formatNairaAmount(due)}` : 'Pay' }}<CanopyArrowChip />
             </Button>
             <p class="mt-2.75 text-center text-xs text-muted-foreground">You pay on Paystack's secure page and come straight back here.</p>
@@ -570,9 +594,14 @@ const panel = 'rounded-card border border-border bg-card'
       <section aria-labelledby="payments-title">
         <h2 id="payments-title" :class="sectionTitle">Payments</h2>
 
-        <div v-if="historyPending" aria-busy="true" class="mt-4 grid gap-2">
-          <div v-for="n in 3" :key="n" class="h-16.75 animate-pulse rounded-lg bg-muted" />
-        </div>
+        <LoadingRegion v-if="historyPending" label="Loading your payments" class="mt-4">
+          <LoadingList bare lead="none" :rows="3" pad="px-5.25 py-3.75" class="rounded-card border border-border bg-card">
+            <template #end>
+              <Skeleton class="h-6 w-20 rounded-full" />
+              <LoadingLine class="ml-1.75 w-22" />
+            </template>
+          </LoadingList>
+        </LoadingRegion>
 
         <div v-else-if="historyFailed" :class="[panel, 'mt-4 flex flex-wrap items-center justify-between gap-3 px-5.25 py-4']">
           <p>We could not load your payments.</p>

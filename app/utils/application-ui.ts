@@ -24,13 +24,13 @@ export const canopyLabel = 'text-sm font-medium'
 export const canopyHint = 'text-sm text-muted-foreground'
 
 /** A select's closed box, matching the text inputs. */
-export const canopySelect = `${authInput} w-full data-[size=default]:h-13 data-[placeholder]:text-placeholder`
+export const canopySelect = `${authInput} w-full data-[size=default]:h-12 data-[placeholder]:text-placeholder`
 
 /** A button that opens a picker (date, practice areas), styled as a field. */
 export const canopyTrigger = `${authInput} w-full cursor-pointer justify-between px-4 font-normal has-[>svg]:px-4 hover:bg-card hover:text-foreground dark:bg-card dark:hover:bg-card`
 
 /** A box for longer text, in the same look as the inputs. */
-export const canopyTextarea = 'min-h-28 rounded-lg border-border bg-card px-4 py-3 text-base leading-normal text-foreground shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint aria-invalid:border-destructive'
+export const canopyTextarea = 'min-h-28 rounded-xl border-border bg-card px-4 py-3 text-base leading-normal text-foreground shadow-none placeholder:text-placeholder focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-mint aria-invalid:border-destructive'
 
 /** The panel a select, date picker or search list opens. */
 export const canopyPanel = 'rounded-lg border-border'

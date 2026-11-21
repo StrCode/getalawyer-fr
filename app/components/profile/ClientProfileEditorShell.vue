@@ -108,11 +108,7 @@ onBeforeUnmount(() => {
       description="Your photo, your details and what a lawyer sees about you."
     />
 
-    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-4 lg:gap-5 xl:gap-6">
-      <div class="h-32 animate-pulse rounded-card bg-muted" />
-      <div class="h-40 animate-pulse rounded-card bg-muted" />
-      <div class="h-64 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingProfile v-if="isLoading" role="client" />
 
     <section v-else-if="isError" :class="[PANEL, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="PANEL_TITLE">We could not load your profile.</h2>

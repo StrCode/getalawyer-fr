@@ -4,6 +4,7 @@ import type { ConversationInfo, ConversationParticipant } from '~/types/messagin
 import ConversationThreadPanel from '@/components/messaging/ConversationThreadPanel.vue'
 import { useMessagingStore } from '~/stores/messagingStore'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { initials } from '~/lib/client-overview'
 import { getSessionUserType } from '~/lib/session-user'
@@ -178,7 +179,7 @@ function previewText(conversation: ConversationInfo) {
     close to the foot of the window (the layout's own spacing is pulled in); on a phone
     the bar above and the tab bar below are taken off.
   -->
-  <div class="grid h-[calc(100svh-12.6rem)] min-h-104 grid-cols-1 tab:-mt-[calc(clamp(1.1rem,2.4vw,2rem)-1.25rem)] tab:-mb-12 tab:h-[calc(100svh-7.3rem)]">
+  <div class="grid h-[calc(100svh-11.4rem)] min-h-104 grid-cols-1 tab:-mb-12 tab:h-[calc(100svh-6.3125rem)]">
     <div class="flex min-h-0 overflow-hidden rounded-card border border-border bg-card">
       <!-- ───────── conversations ───────── -->
       <aside
@@ -205,9 +206,18 @@ function previewText(conversation: ConversationInfo) {
         </header>
 
         <div class="min-h-0 flex-1 overflow-y-auto p-2">
-          <div v-if="isLoadingConversations" role="status" aria-label="Loading conversations" class="grid gap-1.5 p-1.25">
-            <div v-for="n in 5" :key="n" class="h-16 animate-pulse rounded-lg bg-muted" />
-          </div>
+          <LoadingRegion v-if="isLoadingConversations" label="Loading conversations" class="grid grid-cols-1 gap-0.5">
+            <div v-for="n in 5" :key="n" class="flex items-center gap-3 px-2.75 py-2.5">
+              <Skeleton class="size-11 flex-none rounded-md" />
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <LoadingLine :class="['w-28', 'w-36', 'w-24', 'w-32', 'w-28'][n - 1]" />
+                  <LoadingLine size="xs" class="w-10 flex-none" />
+                </div>
+                <LoadingLine size="sm" class="mt-0.25" :class="['w-40', 'w-32', 'w-44', 'w-36', 'w-28'][n - 1]" />
+              </div>
+            </div>
+          </LoadingRegion>
 
           <div v-else-if="conversationsError" class="grid justify-items-center gap-2.75 px-4 py-10 text-center">
             <p class="text-muted-foreground">We could not load your conversations.</p>

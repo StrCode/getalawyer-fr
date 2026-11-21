@@ -204,10 +204,10 @@ watch(() => route.fullPath, () => {
     </NuxtLink>
     <div class="mt-auto grid gap-2.5 pt-6">
       <ClientOnly><CanopyThemeSwitch block /></ClientOnly>
-      <Button v-if="isLawyer" as-child variant="canopy" size="pill" class="h-13 w-full">
+      <Button v-if="isLawyer" as-child variant="canopy" size="pill" class="w-full">
         <NuxtLink :to="primary.to">{{ primary.label }}</NuxtLink>
       </Button>
-      <Button v-if="!isSignedIn" as-child variant="line" size="pill" class="h-13 w-full">
+      <Button v-if="!isSignedIn" as-child variant="line" size="pill" class="w-full">
         <NuxtLink to="/login">Sign in</NuxtLink>
       </Button>
     </div>

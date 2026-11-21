@@ -196,14 +196,14 @@ async function submit() {
         type="button"
         variant="canopy"
         size="pill"
-        class="group/btn h-13 w-full justify-between pr-2 pl-5.5"
+        class="group/btn w-full justify-between pr-2 pl-5.5"
         :disabled="submitting"
         :aria-busy="submitting"
         @click="submit"
       >
         {{ submitting ? 'Submitting…' : 'Submit and continue to payment' }}<CanopyArrowChip />
       </Button>
-      <Button v-else-if="nextSection" as-child variant="canopy" size="pill" class="group/btn h-13 w-full justify-between pr-2 pl-5.5">
+      <Button v-else-if="nextSection" as-child variant="canopy" size="pill" class="group/btn w-full justify-between pr-2 pl-5.5">
         <NuxtLink :to="nextSection.to">{{ nextSection.action }}: {{ nextSection.title }}<CanopyArrowChip /></NuxtLink>
       </Button>
 

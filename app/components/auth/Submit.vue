@@ -16,7 +16,7 @@ withDefaults(defineProps<{
     :type="type"
     variant="canopy"
     size="pill"
-    class="group/btn h-13 w-full justify-between pr-2 pl-5.5"
+    class="group/btn w-full justify-between pr-2 pl-5.5"
     :disabled="disabled || loading"
     :aria-busy="loading"
   >

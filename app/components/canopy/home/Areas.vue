@@ -52,7 +52,7 @@ const areas = computed(() =>
         </NuxtLink>
       </li>
     </ul>
-    <Button v-if="areas.length > PHONE_COUNT" as-child variant="line" size="pill" class="mt-3 h-13 w-full sm:hidden">
+    <Button v-if="areas.length > PHONE_COUNT" as-child variant="line" size="pill" class="mt-3 w-full sm:hidden">
       <NuxtLink to="/practice-areas">See all {{ areas.length }} areas →</NuxtLink>
     </Button>
   </section>

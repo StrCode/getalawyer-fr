@@ -117,9 +117,9 @@ onMounted(() => {
       </button>
     </div>
 
-    <div v-if="isPending" role="status" aria-label="Loading notifications" class="grid gap-2">
-      <div v-for="n in 5" :key="n" class="h-16.75 animate-pulse rounded-card bg-muted" />
-    </div>
+    <LoadingRegion v-if="isPending" label="Loading notifications">
+      <LoadingList :rows="5" lead="icon" title-size="sm" pad="px-4 py-3.5 sm:px-6" />
+    </LoadingRegion>
 
     <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your notifications.</h2>
