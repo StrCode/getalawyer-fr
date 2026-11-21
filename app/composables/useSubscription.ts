@@ -68,6 +68,8 @@ interface VerifySubscriptionPayload {
 const FINAL_VERIFY_STATUSES = new Set(['active', 'failed', 'abandoned', 'cancelled'])
 
 export const SUBSCRIPTION_PAYMENT_REF_KEY = 'gal_subscription_payment_ref'
+/** Where the payment started (`application` or `dashboard`), so /verify-payment returns the payer there. */
+export const SUBSCRIPTION_PAYMENT_FROM_KEY = 'gal_subscription_payment_from'
 
 export interface SubscriptionPricingPayload {
   subscriptionPriceNaira: number
@@ -188,7 +190,7 @@ export function useSubscriptionStatus(options?: {
   })
 }
 
-export function useInitializeSubscription() {
+export function useInitializeSubscription(from: 'application' | 'dashboard' = 'application') {
   const queryClient = useQueryClient()
   return useMutation({
     // `planKey` is the plan to buy. Without one the backend charges its default
@@ -203,6 +205,7 @@ export function useInitializeSubscription() {
     onSuccess: (data) => {
       if (import.meta.client && data?.reference) {
         sessionStorage.setItem(SUBSCRIPTION_PAYMENT_REF_KEY, data.reference)
+        sessionStorage.setItem(SUBSCRIPTION_PAYMENT_FROM_KEY, from)
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
       queryClient.invalidateQueries({ queryKey: ['subscription', 'payment-history'] })

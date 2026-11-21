@@ -1,5 +1,5 @@
 import type { QueryClient } from '@tanstack/vue-query'
-import { SUBSCRIPTION_PAYMENT_REF_KEY } from '~/composables/useSubscription'
+import { SUBSCRIPTION_PAYMENT_FROM_KEY, SUBSCRIPTION_PAYMENT_REF_KEY } from '~/composables/useSubscription'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
 import { useLawyerOnboardingStore } from '~/stores/lawyerOnboardingStore'
 import { useMessagingStore } from '~/stores/messagingStore'
@@ -48,6 +48,7 @@ export function clearAuthClientState(queryClient?: QueryClient | null) {
       localStorage.removeItem(key)
     }
     sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_REF_KEY)
+    sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_FROM_KEY)
   } catch (error) {
     console.error('[clearAuthClientState] storage clear failed:', error)
   }
