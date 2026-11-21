@@ -104,41 +104,41 @@ function discard() {
   form.reset(weekFormValues(saved.value))
 }
 
-const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-base font-normal tracking-tight'
 const panel = 'overflow-hidden rounded-card border border-border bg-card'
-const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
-const time = 'h-[2.75rem] w-[8.5rem] rounded-[0.9rem] max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
+const pad = 'px-4.5 lg:px-5.75 xl:px-6'
+const time = 'h-11 w-34 rounded-md max-sm:w-auto max-sm:min-w-0 max-sm:flex-1'
 </script>
 
 <template>
-  <div v-if="isPending" role="status" aria-label="Loading your weekly hours" class="h-[32rem] animate-pulse rounded-card bg-muted" />
+  <div v-if="isPending" role="status" aria-label="Loading your weekly hours" class="h-128 animate-pulse rounded-card bg-muted" />
 
-  <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+  <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
     <h2 :class="sectionTitle">We could not load your hours.</h2>
     <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
     <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="() => refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
   </section>
 
   <section v-else :class="panel" aria-labelledby="weekly-title">
-    <header :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-[1.1rem]']">
+    <header :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-4.5']">
       <div class="min-w-0">
         <h2 id="weekly-title" :class="sectionTitle">Weekly hours</h2>
-        <p class="mt-[0.2rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">Switch on the days you work and set when clients can book you.</p>
+        <p class="mt-0.75 max-w-160 text-sm text-muted-foreground">Switch on the days you work and set when clients can book you.</p>
       </div>
-      <div class="flex flex-none flex-wrap items-center gap-[0.5rem]">
+      <div class="flex flex-none flex-wrap items-center gap-2">
         <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="discard">Discard</Button>
         <Button type="submit" :form="formId" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save hours' }}</Button>
       </div>
     </header>
 
-    <div :class="[pad, 'flex flex-wrap items-center gap-x-[0.9rem] gap-y-[0.5rem] border-b border-border bg-background/60 py-[0.85rem]']">
-      <p class="text-[0.95rem] text-muted-foreground">Start from a common week:</p>
-      <div class="flex flex-wrap gap-[0.4rem]">
+    <div :class="[pad, 'flex flex-wrap items-center gap-x-3.5 gap-y-2 border-b border-border bg-background/60 py-3.5']">
+      <p class="text-sm text-muted-foreground">Start from a common week:</p>
+      <div class="flex flex-wrap gap-1.5">
         <button
           v-for="preset in ([{ key: 'weekdays', label: 'Monday to Friday, 9 to 5' }, { key: 'weekdays-sat', label: 'Plus Saturday until 2' }] as const)"
           :key="preset.key"
           type="button"
-          class="inline-flex min-h-[2.5rem] cursor-pointer items-center rounded-full border border-border bg-card px-[0.95rem] text-[0.95rem] font-semibold transition-[border-color,color,scale] duration-200 ease-canopy hover:border-brand/45 hover:text-brand active:scale-[0.97]"
+          class="inline-flex min-h-10 cursor-pointer items-center rounded-full border border-border bg-card px-3.75 text-sm font-medium transition-[border-color,color,scale] duration-200 ease-canopy hover:border-brand/45 hover:text-brand active:scale-97"
           @click="fill(preset.key)"
         >
           {{ preset.label }}
@@ -148,21 +148,21 @@ const time = 'h-[2.75rem] w-[8.5rem] rounded-[0.9rem] max-sm:w-auto max-sm:min-w
 
     <form :id="formId" novalidate @submit.prevent="form.handleSubmit">
       <ul class="divide-y divide-border">
-        <li v-for="(row, index) in values.days" :key="row.day" :class="[pad, 'py-[0.85rem]']">
-          <div class="flex flex-wrap items-center gap-x-[1rem] gap-y-[0.6rem]">
+        <li v-for="(row, index) in values.days" :key="row.day" :class="[pad, 'py-3.5']">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2.5">
             <form.Field v-slot="{ field }" :name="`days[${index}].enabled`">
-              <Field orientation="horizontal" class="min-h-[2.75rem] w-auto items-center gap-[0.75rem] max-sm:flex-1 sm:w-[11rem] sm:flex-none">
+              <Field orientation="horizontal" class="min-h-11 w-auto items-center gap-3 max-sm:flex-1 sm:w-44 sm:flex-none">
                 <Switch
                   :id="`${formId}-${row.day}`"
                   :model-value="field.state.value"
                   :disabled="saving"
                   @update:model-value="(v) => field.handleChange(v === true)"
                 />
-                <FieldLabel :for="`${formId}-${row.day}`" class="cursor-pointer text-[1.05rem] font-semibold" :class="row.enabled ? '' : 'text-muted-foreground'">{{ DAY_NAMES[row.day as DayOfWeek] }}</FieldLabel>
+                <FieldLabel :for="`${formId}-${row.day}`" class="cursor-pointer text-base font-medium" :class="row.enabled ? '' : 'text-muted-foreground'">{{ DAY_NAMES[row.day as DayOfWeek] }}</FieldLabel>
               </Field>
             </form.Field>
 
-            <div v-if="row.enabled" class="flex min-w-0 flex-1 items-center gap-[0.6rem] max-sm:basis-full">
+            <div v-if="row.enabled" class="flex min-w-0 flex-1 items-center gap-2.5 max-sm:basis-full">
               <form.Field v-slot="{ field }" :name="`days[${index}].startTime`">
                 <Field class="w-auto max-sm:min-w-0 max-sm:flex-1" :data-invalid="isInvalid(field)">
                   <FieldLabel :for="field.name" class="sr-only">{{ DAY_NAMES[row.day as DayOfWeek] }} from</FieldLabel>
@@ -199,18 +199,18 @@ const time = 'h-[2.75rem] w-[8.5rem] rounded-[0.9rem] max-sm:w-auto max-sm:min-w
             </div>
             <p v-else class="self-center text-muted-foreground max-sm:flex-none">Closed</p>
           </div>
-          <FieldError v-if="row.enabled && dayProblems(index).length > 0" :errors="dayProblems(index)" class="mt-[0.4rem] text-[0.92rem] font-semibold sm:pl-[12rem]" />
+          <FieldError v-if="row.enabled && dayProblems(index).length > 0" :errors="dayProblems(index)" class="mt-1.5 text-sm font-medium sm:pl-48" />
         </li>
       </ul>
     </form>
 
-    <footer :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-border bg-background/60 py-[0.95rem] text-[0.95rem] text-muted-foreground']">
+    <footer :class="[pad, 'flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-border bg-background/60 py-3.75 text-sm text-muted-foreground']">
       <p>
         <template v-if="dirty">You have changes that are not saved yet.</template>
         <template v-else-if="openDayCount(week) === 0">No days are open, so clients cannot book you.</template>
         <template v-else>These hours repeat every week.</template>
       </p>
-      <NuxtLink to="/dashboard/availability?tab=exceptions" class="font-semibold text-brand underline-offset-4 hover:underline">A day off, or different hours on one date</NuxtLink>
+      <NuxtLink to="/dashboard/availability?tab=exceptions" class="font-medium text-brand underline-offset-4 hover:underline">A day off, or different hours on one date</NuxtLink>
     </footer>
   </section>
 </template>

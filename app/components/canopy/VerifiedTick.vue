@@ -5,7 +5,7 @@ withDefaults(defineProps<{ big?: boolean, decorative?: boolean }>(), { big: fals
 <template>
   <span
     class="grid flex-none place-items-center rounded-full bg-primary text-white"
-    :class="big ? 'size-[1.6rem]' : 'size-[1.2rem]'"
+    :class="big ? 'size-6.5' : 'size-4.75'"
     :role="decorative ? undefined : 'img'"
     :aria-label="decorative ? undefined : 'Verified lawyer'"
     :aria-hidden="decorative ? 'true' : undefined"

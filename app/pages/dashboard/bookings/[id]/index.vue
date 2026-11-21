@@ -93,33 +93,33 @@ function confirmCancel() {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
-const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1.6rem)]'
+const sectionTitle = 'font-display text-base font-normal tracking-tight'
+const panel = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6.5'
 </script>
 
 <template>
-  <div class="mx-auto grid w-full max-w-[60rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)]">
+  <div class="mx-auto grid w-full max-w-240 grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
     <NuxtLink
       to="/dashboard/bookings"
-      class="inline-flex min-h-[2.75rem] w-fit items-center gap-[0.5rem] rounded-full pr-[0.6rem] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      class="inline-flex min-h-11 w-fit items-center gap-2 rounded-full pr-2.5 font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
       <CanopyGlyph name="arrow" :size="17" class="rotate-180" />Bookings
     </NuxtLink>
 
     <!-- ───────── loading / not found / could not load ───────── -->
     <div v-if="loading && !error" role="status" aria-label="Loading the booking" class="grid gap-4">
-      <div class="h-[19rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
-      <div class="h-[9rem] animate-pulse rounded-card bg-muted" />
+      <div class="h-76 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
+      <div class="h-36 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="missing" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">There is no booking here.</h1>
+    <section v-else-if="missing" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
+      <h1 class="font-display text-xl leading-none font-normal tracking-tight">There is no booking here.</h1>
       <p class="mt-2 text-muted-foreground">It may have been removed, or the link is not one of yours.</p>
       <Button as-child variant="canopy" size="pill" class="mt-5"><NuxtLink to="/dashboard/bookings">Back to bookings</NuxtLink></Button>
     </section>
 
-    <section v-else-if="!booking || !stage || !pill || !can || !held" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center max-sm:rounded-[1.75rem]">
-      <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">We could not load this booking.</h1>
+    <section v-else-if="!booking || !stage || !pill || !can || !held" class="rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center max-sm:rounded-2xl">
+      <h1 class="font-display text-xl leading-none font-normal tracking-tight">We could not load this booking.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" @click="() => refetch()">Try again</Button>
     </section>
@@ -128,29 +128,29 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
       <!-- ───────── who with, when, and what can still be done ───────── -->
       <section
         aria-labelledby="booking-title"
-        class="flex flex-wrap items-start gap-x-[clamp(1.5rem,4vw,3rem)] gap-y-6 rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,2.75rem)] max-sm:rounded-[1.75rem]"
+        class="flex flex-wrap items-start gap-x-6 md:gap-x-7.75 lg:gap-x-10.25 xl:gap-x-12 gap-y-6 rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-11 max-sm:rounded-2xl"
       >
-        <div class="min-w-0 flex-[999_1_22rem]">
-          <p class="flex flex-wrap items-center gap-x-[0.7rem] gap-y-1 text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">
+        <div class="min-w-0 grow-999 basis-88">
+          <p class="flex flex-wrap items-center gap-x-2.75 gap-y-1 text-xs font-medium tracking-widest text-brand uppercase">
             Booking<template v-if="booking.bookingReference"> · {{ booking.bookingReference }}</template>
-            <span class="rounded-full px-[0.7rem] py-[0.15rem] text-[0.78rem] tracking-normal normal-case" :class="pill.class">{{ pill.label }}</span>
+            <span class="rounded-full px-2.75 py-0.5 text-xs tracking-normal normal-case" :class="pill.class">{{ pill.label }}</span>
           </p>
 
-          <div class="mt-[0.9rem] flex items-center gap-[0.9rem]">
-            <span class="grid size-[3.4rem] flex-none place-items-center overflow-hidden rounded-[1.1rem] bg-mint font-display text-[1.1rem] font-bold text-deep">
+          <div class="mt-3.5 flex items-center gap-3.5">
+            <span class="grid size-13.5 flex-none place-items-center overflow-hidden rounded-lg bg-mint font-display text-base font-medium text-deep">
               <img v-if="booking.lawyer?.profilePicture" :src="booking.lawyer.profilePicture" alt="" class="size-full object-cover">
               <template v-else>{{ initials(booking.lawyer?.name) || 'L' }}</template>
             </span>
-            <h1 id="booking-title" class="min-w-0 text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.04] font-[620] tracking-[-0.04em] text-balance">
+            <h1 id="booking-title" class="min-w-0 text-2xl md:text-3xl leading-none font-normal tracking-tighter text-balance">
               {{ booking.lawyer?.name ?? 'Your lawyer' }}
             </h1>
           </div>
 
-          <p class="mt-[0.8rem] text-[1.15rem] font-semibold">{{ whenLine(booking) }}</p>
-          <p class="mt-[0.15rem] text-muted-foreground">{{ whatLine(booking) }}</p>
-          <p class="mt-[0.9rem] max-w-[36rem] text-[1.05rem]" role="status">{{ clientStageLine(booking, now!) }}</p>
+          <p class="mt-3.25 text-base font-medium">{{ whenLine(booking) }}</p>
+          <p class="mt-0.5 text-muted-foreground">{{ whatLine(booking) }}</p>
+          <p class="mt-3.5 max-w-144 text-base" role="status">{{ clientStageLine(booking, now!) }}</p>
 
-          <div class="mt-[1.3rem] flex flex-wrap gap-[0.55rem]">
+          <div class="mt-5.25 flex flex-wrap gap-2.25">
             <Button v-if="canJoin" as-child variant="canopy" size="pill">
               <a :href="held.detail!" target="_blank" rel="noopener noreferrer"><CanopyGlyph name="video" :size="17" />Join the meeting</a>
             </Button>
@@ -174,50 +174,50 @@ const panel = 'rounded-card border border-border bg-card p-[clamp(1.2rem,2.4vw,1
         </div>
 
         <!-- how it is held, and the one thing needed for it -->
-        <div class="min-w-0 flex-[1_1_18rem] rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
-          <h2 class="flex items-center gap-[0.5rem] font-display text-[1.2rem] font-[650] tracking-[-0.02em]">
+        <div class="min-w-0 grow basis-72 rounded-card bg-mint p-5 text-deep">
+          <h2 class="flex items-center gap-2 font-display text-lg font-normal tracking-tight">
             <CanopyGlyph :name="HELD_ICON[held.kind]" :size="19" />{{ held.label }}
           </h2>
           <template v-if="held.detail">
-            <p class="mt-[0.6rem] text-[0.85rem] font-semibold opacity-80">{{ HELD_LABEL[held.kind] }}</p>
-            <p class="mt-[0.1rem] font-semibold" :class="held.kind === 'link' ? 'break-all' : held.kind === 'phone' ? 'font-display text-[1.4rem] font-[650] tracking-[-0.02em]' : ''">{{ held.detail }}</p>
+            <p class="mt-2.5 text-sm font-medium opacity-80">{{ HELD_LABEL[held.kind] }}</p>
+            <p class="mt-0.5 font-medium" :class="held.kind === 'link' ? 'break-all' : held.kind === 'phone' ? 'font-display text-xl font-normal tracking-tight' : ''">{{ held.detail }}</p>
           </template>
-          <p v-else class="mt-[0.5rem]">{{ held.missing }}</p>
-          <p v-if="booking.timezone" class="mt-[0.8rem] text-[0.85rem] opacity-80">Times are in {{ booking.timezone.replace('_', ' ') }}.</p>
+          <p v-else class="mt-2">{{ held.missing }}</p>
+          <p v-if="booking.timezone" class="mt-3.25 text-sm opacity-80">Times are in {{ booking.timezone.replace('_', ' ') }}.</p>
         </div>
       </section>
 
       <!-- ───────── cancelled: when, by whom, why ───────── -->
       <section v-if="booking.cancelledAt || (stage === 'cancelled' && booking.cancellationReason)" aria-labelledby="cancelled-title" :class="panel">
         <h2 id="cancelled-title" :class="sectionTitle">What happened</h2>
-        <p class="mt-[0.5rem]">
+        <p class="mt-2">
           <template v-if="cancelledBy">{{ cancelledBy }}<template v-if="longDate(booking.cancelledAt)"> on {{ longDate(booking.cancelledAt) }}</template>.</template>
           <template v-else-if="longDate(booking.cancelledAt)">This booking closed on {{ longDate(booking.cancelledAt) }}.</template>
         </p>
-        <p v-if="booking.cancellationReason" class="mt-[0.3rem] max-w-[46rem]"><b class="font-semibold">Reason given:</b> {{ booking.cancellationReason }}</p>
+        <p v-if="booking.cancellationReason" class="mt-1.25 max-w-184"><b class="font-medium">Reason given:</b> {{ booking.cancellationReason }}</p>
       </section>
 
       <!-- ───────── what the client wrote when booking ───────── -->
       <section v-if="booking.clientNotes" aria-labelledby="notes-title" :class="panel">
         <h2 id="notes-title" :class="sectionTitle">What you told the lawyer</h2>
-        <p class="mt-[0.5rem] max-w-[46rem] whitespace-pre-line">{{ booking.clientNotes }}</p>
+        <p class="mt-2 max-w-184 whitespace-pre-line">{{ booking.clientNotes }}</p>
       </section>
     </template>
 
     <!-- ───────── cancelling: a reason helps the lawyer, but is not required ───────── -->
     <Dialog v-model:open="cancelOpen">
-      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-        <DialogHeader class="gap-[0.5rem] text-left">
-          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">Cancel this booking</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">
+      <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+        <DialogHeader class="gap-2 text-left">
+          <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">Cancel this booking</DialogTitle>
+          <DialogDescription class="text-sm text-muted-foreground">
             {{ booking?.lawyer?.name ?? 'Your lawyer' }} is told the booking is cancelled, with your reason if you give one.
           </DialogDescription>
         </DialogHeader>
-        <div class="grid gap-[0.4rem]">
-          <Label for="cancel-reason" class="font-semibold">Reason <span class="font-normal text-muted-foreground">(optional)</span></Label>
-          <Textarea id="cancel-reason" v-model="cancelReason" :rows="3" placeholder="For example: I can no longer make that day." class="rounded-[1rem] bg-card" />
+        <div class="grid gap-1.5">
+          <Label for="cancel-reason" class="font-medium">Reason <span class="font-normal text-muted-foreground">(optional)</span></Label>
+          <Textarea id="cancel-reason" v-model="cancelReason" :rows="3" placeholder="For example: I can no longer make that day." class="rounded-lg bg-card" />
         </div>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+        <DialogFooter class="mt-1.25 gap-2.5">
           <Button variant="line" size="pill" :disabled="cancelling" @click="cancelOpen = false">Keep the booking</Button>
           <Button variant="destructive" size="pill" class="rounded-full" :disabled="cancelling" :aria-busy="cancelling" @click="confirmCancel">
             {{ cancelling ? 'Cancelling…' : 'Cancel the booking' }}

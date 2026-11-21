@@ -85,23 +85,23 @@ watch(code, (value) => { if (value.length === 6) void check() })
 </script>
 
 <template>
-  <div v-if="verified" class="flex items-center gap-3 rounded-[1.1rem] border border-border bg-card px-4 py-[0.85rem]">
-    <span class="grid size-[1.6rem] flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
-    <span class="min-w-0"><b class="font-semibold">Email confirmed.</b> <span class="break-all text-muted-foreground">{{ email }}</span></span>
+  <div v-if="verified" class="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
+    <span class="grid size-6.5 flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
+    <span class="min-w-0"><b class="font-medium">Email confirmed.</b> <span class="break-all text-muted-foreground">{{ email }}</span></span>
   </div>
 
-  <section v-else aria-labelledby="email-confirm-title" class="rounded-[1.1rem] border border-border bg-card p-4">
-    <h3 id="email-confirm-title" class="text-[0.95rem] leading-snug font-semibold">Confirm your email address</h3>
-    <p class="mt-[0.2rem] text-[0.85rem] text-muted-foreground">
-      We send the decision on your application to <b class="break-all font-semibold text-foreground">{{ email }}</b>. Confirm that it reaches you.
+  <section v-else aria-labelledby="email-confirm-title" class="rounded-lg border border-border bg-card p-4">
+    <h3 id="email-confirm-title" class="text-base leading-snug font-medium">Confirm your email address</h3>
+    <p class="mt-0.75 text-sm text-muted-foreground">
+      We send the decision on your application to <b class="break-all font-medium text-foreground">{{ email }}</b>. Confirm that it reaches you.
     </p>
 
     <Button v-if="!sent" type="button" variant="line" size="pill-sm" class="mt-3" :disabled="sending" :aria-busy="sending" @click="send">
       {{ sending ? 'Sending…' : 'Send me a code' }}
     </Button>
 
-    <div v-else class="mt-3 max-w-[22rem]">
-      <p class="mb-2 text-[0.9rem]">Enter the 6-digit code we sent.</p>
+    <div v-else class="mt-3 max-w-88">
+      <p class="mb-2 text-sm">Enter the 6-digit code we sent.</p>
       <AuthOtpStep
         v-model="code"
         :error="error"
@@ -112,6 +112,6 @@ watch(code, (value) => { if (value.length === 6) void check() })
       />
     </div>
 
-    <p v-if="error && !sent" role="alert" class="mt-2 text-[0.9rem] font-semibold text-destructive">{{ error }}</p>
+    <p v-if="error && !sent" role="alert" class="mt-2 text-sm font-medium text-destructive">{{ error }}</p>
   </section>
 </template>

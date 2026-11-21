@@ -18,85 +18,88 @@
     --forest-2: #124435;
     --on-forest: #C7D8CE;
     --lime: #CDF36B;
-    --night: #0F2219;       /* text on lime */
+    --night: #171717;       /* text on lime */
 
     /* roles: flip in dark */
     --mint: #DFF2E5;
     --sand: #F1EEE6;
-    --stone: #E8EDE9;
+    --stone: #F2F2F2;
     --brand: #007A55;       /* green as text or small marks on the page ground */
-    --deep: #0B3327;        /* dark green text on tinted surfaces */
+    --deep: #171717;        /* text on tinted surfaces: the same neutral black as all text */
     --glass: rgba(255, 255, 255, 0.86);
-    --placeholder: #6B7A72;
+    --placeholder: #8F8F8F;
 
-    /* shadcn-vue tokens */
-    --background: #F6F8F4;
-    --foreground: #0F2219;
+    /* shadcn-vue tokens. Text is Vercel's neutral black and grey (#171717 / #4D4D4D;
+       #EDEDED / #A1A1A1 in dark): green is kept for links, marks and accents. */
+    --background: #FAFAFA;
+    --foreground: #171717;
     --card: #FFFFFF;
-    --card-foreground: #0F2219;
+    --card-foreground: #171717;
     --popover: #FFFFFF;
-    --popover-foreground: #0F2219;
+    --popover-foreground: #171717;
     --primary: #007A55;
     --primary-foreground: #FFFFFF;
-    --secondary: #E8EDE9;
-    --secondary-foreground: #0F2219;
-    --muted: #E8EDE9;
-    --muted-foreground: #40504A;
+    --secondary: #F2F2F2;
+    --secondary-foreground: #171717;
+    --muted: #F2F2F2;
+    --muted-foreground: #4D4D4D;
     --accent: #DFF2E5;
-    --accent-foreground: #0F2219;
-    --border: #DDE6DF;
-    --input: #DDE6DF;
+    --accent-foreground: #171717;
+    --border: #EAEAEA;
+    --input: #EAEAEA;
     --ring: #007A55;
-    --radius: 1rem;
+    --radius: 0.625rem;
 
     background: var(--background);
     color: var(--foreground);
     /* literal stack (not var()) so @nuxt/fonts sees the families and injects their faces */
-    font-family: "Onest", "Onest Ext", "Helvetica Neue", Arial, sans-serif;
-    font-size: 1rem;
-    line-height: 1.55;
+    font-family: "Geist", "Geist Ext", "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--text-base);
+    line-height: 1.5;
     color-scheme: light;
   }
   .dark .canopy {
     --mint: #15332A;
     --sand: #1B211D;
-    --stone: #16221D;
+    --stone: #1A1A1A;
     --brand: #6FD6A8;
-    --deep: #BFE5D2;
-    --glass: rgba(18, 29, 24, 0.84);
-    --placeholder: #8C9C94;
+    --deep: #EDEDED;
+    --glass: rgba(17, 17, 17, 0.9);
+    --placeholder: #878787;
 
-    --background: #09120E;
-    --foreground: #ECF2EE;
-    --card: #121D18;
-    --card-foreground: #ECF2EE;
-    --popover: #121D18;
-    --popover-foreground: #ECF2EE;
-    --secondary: #16221D;
-    --secondary-foreground: #ECF2EE;
-    --muted: #16221D;
-    --muted-foreground: #A9B8B0;
+    --background: #0A0A0A;
+    --foreground: #EDEDED;
+    --card: #111111;
+    --card-foreground: #EDEDED;
+    --popover: #111111;
+    --popover-foreground: #EDEDED;
+    --secondary: #1A1A1A;
+    --secondary-foreground: #EDEDED;
+    --muted: #1A1A1A;
+    --muted-foreground: #A1A1A1;
     --accent: #15332A;
-    --accent-foreground: #ECF2EE;
-    --border: #25352E;
-    --input: #25352E;
+    --accent-foreground: #EDEDED;
+    --border: #2E2E2E;
+    --input: #2E2E2E;
     --ring: #6FD6A8;
     color-scheme: dark;
   }
 
   /*
-   * The dashboard is a working tool, so on screens with room for it everything
-   * in it is set one size smaller than the website: the `workspace` layout marks
-   * <html>, and every rem-based size (type, spacing, controls) follows. Phones
-   * keep the full size, so touch targets stay 44px.
+   * The dashboard is a working tool, so on screens with room for it its body
+   * text is Tailwind's text-sm (14px) rather than the website's text-base.
+   * Every text size in the app is one of Tailwind's own, so all are whole pixels.
    */
   @media (min-width: 62rem) {
-    html[data-density="compact"] { font-size: 93.75%; }
+    html[data-density="compact"] body.canopy { font-size: var(--text-sm); line-height: var(--text-sm--line-height); }
   }
+
+  /* Bold runs in text read as medium: weight comes from size, not from heavy small text. */
+  .canopy :where(b, strong) { font-weight: 500; }
 
   /* Headings: the display face, with weight and tracking left to utilities. */
   .canopy :where(h1, h2, h3, h4) {
-    font-family: "Instrument Sans", "Instrument Sans Ext", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Inter Tight", "Inter Tight Ext", "Helvetica Neue", Arial, sans-serif;
     font-weight: inherit;
     letter-spacing: inherit;
   }
@@ -147,14 +150,24 @@
       --mint: #DFF2E5;
       --brand: #007A55;
       --deep: #0B3327;
-      --foreground: #0F2219;
+      --foreground: #171717;
       --card: #FFFFFF;
-      --card-foreground: #0F2219;
+      --card-foreground: #171717;
       --muted: #E8EDE9;
-      --muted-foreground: #40504A;
+      --muted-foreground: #4D4D4D;
       --border: #DDE6DF;
       color: var(--foreground);
     }
   }
 
+}
+
+/*
+ * Buttons in the dashboard are text-sm at every width; the website keeps
+ * text-base. Outside the layers on purpose: a rule inside @layer base loses to
+ * every utility class, and buttons carry their size as a utility.
+ */
+html[data-density="compact"] .canopy [data-slot="button"] {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
 }

@@ -27,8 +27,8 @@ async function reopenApplication() {
     membership="later"
     sections-state="reopen"
   >
-    <section aria-labelledby="feedback-title" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.95rem] text-warning-subtle-foreground">
-      <h2 id="feedback-title" class="font-semibold">Feedback from the review team</h2>
+    <section aria-labelledby="feedback-title" class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3.75 text-warning-subtle-foreground">
+      <h2 id="feedback-title" class="font-medium">Feedback from the review team</h2>
       <p v-if="reason" class="mt-1 whitespace-pre-line">{{ reason }}</p>
       <p v-else class="mt-1">No detailed feedback was provided. Write to support if you need to know what to change.</p>
     </section>
@@ -36,7 +36,7 @@ async function reopenApplication() {
     <AuthSubmit type="button" :loading="isPending" @click="reopenApplication">
       Reopen and fix my application
     </AuthSubmit>
-    <p class="text-[0.9rem] text-muted-foreground">
+    <p class="text-sm text-muted-foreground">
       Your details are kept, so you only edit what needs fixing. You will be asked for your NIN again. Having trouble?
       <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>
     </p>

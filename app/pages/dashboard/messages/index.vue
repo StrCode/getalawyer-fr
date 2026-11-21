@@ -178,78 +178,78 @@ function previewText(conversation: ConversationInfo) {
     close to the foot of the window (the layout's own spacing is pulled in); on a phone
     the bar above and the tab bar below are taken off.
   -->
-  <div class="grid h-[calc(100svh-12.6rem)] min-h-[26rem] grid-cols-[minmax(0,1fr)] tab:-mt-[calc(clamp(1.1rem,2.4vw,2rem)-1.25rem)] tab:-mb-[2.75rem] tab:h-[calc(100svh-6.25rem-1px)]">
+  <div class="grid h-[calc(100svh-12.6rem)] min-h-104 grid-cols-1 tab:-mt-[calc(clamp(1.1rem,2.4vw,2rem)-1.25rem)] tab:-mb-12 tab:h-[calc(100svh-7.1rem)]">
     <div class="flex min-h-0 overflow-hidden rounded-card border border-border bg-card">
       <!-- ───────── conversations ───────── -->
       <aside
         aria-label="Conversations"
-        class="min-h-0 flex-col border-border tab:flex tab:w-[22rem] tab:flex-none tab:border-r"
+        class="min-h-0 flex-col border-border tab:flex tab:w-88 tab:flex-none tab:border-r"
         :class="showThreadOnMobile ? 'hidden' : 'flex flex-1'"
       >
-        <header class="grid gap-[0.7rem] border-b border-border px-[1rem] pt-[1rem] pb-[0.8rem]">
+        <header class="grid gap-2.75 border-b border-border px-4 pt-4 pb-3.25">
           <div class="flex items-baseline justify-between gap-3">
-            <h1 class="font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]">Messages</h1>
-            <span v-if="totalUnread > 0" class="rounded-full bg-mint px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold whitespace-nowrap text-deep">{{ totalUnread }} unread</span>
+            <h1 class="font-display text-xl leading-none font-normal tracking-tight">Messages</h1>
+            <span v-if="totalUnread > 0" class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-deep">{{ totalUnread }} unread</span>
           </div>
           <label v-if="conversations?.length" class="relative block">
             <span class="sr-only">Search conversations by name</span>
-            <CanopyGlyph name="search" :size="16" class="pointer-events-none absolute top-1/2 left-[0.9rem] -translate-y-1/2 text-muted-foreground" />
+            <CanopyGlyph name="search" :size="16" class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               v-model="search"
               type="search"
               autocomplete="off"
               :placeholder="isClient ? 'Search by lawyer' : 'Search by client'"
-              class="h-[2.6rem] rounded-full border-border bg-background pr-[1rem] pl-[2.4rem] shadow-none"
+              class="h-10.5 rounded-full border-border bg-background pr-4 pl-9.5 shadow-none"
             />
           </label>
         </header>
 
-        <div class="min-h-0 flex-1 overflow-y-auto p-[0.5rem]">
-          <div v-if="isLoadingConversations" role="status" aria-label="Loading conversations" class="grid gap-[0.4rem] p-[0.3rem]">
-            <div v-for="n in 5" :key="n" class="h-[4rem] animate-pulse rounded-[1rem] bg-muted" />
+        <div class="min-h-0 flex-1 overflow-y-auto p-2">
+          <div v-if="isLoadingConversations" role="status" aria-label="Loading conversations" class="grid gap-1.5 p-1.25">
+            <div v-for="n in 5" :key="n" class="h-16 animate-pulse rounded-lg bg-muted" />
           </div>
 
-          <div v-else-if="conversationsError" class="grid justify-items-center gap-[0.7rem] px-4 py-10 text-center">
+          <div v-else-if="conversationsError" class="grid justify-items-center gap-2.75 px-4 py-10 text-center">
             <p class="text-muted-foreground">We could not load your conversations.</p>
             <Button variant="line" size="pill-sm" @click="refetchConversations()">Try again</Button>
           </div>
 
-          <div v-else-if="!conversations?.length" class="grid justify-items-center gap-[0.5rem] px-4 py-[clamp(2rem,6vw,3.5rem)] text-center">
-            <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">No conversations yet.</b>
-            <p class="max-w-[18rem] text-muted-foreground">
+          <div v-else-if="!conversations?.length" class="grid justify-items-center gap-2 px-4 py-8 md:py-11.5 lg:py-14 text-center">
+            <b class="font-display text-base font-normal tracking-tight">No conversations yet.</b>
+            <p class="max-w-72 text-muted-foreground">
               {{ isClient ? 'Ask a lawyer a question from their profile, or book a consultation. Asking is free.' : 'A conversation starts when a client writes to you or you accept their booking.' }}
             </p>
-            <Button v-if="isClient" as-child variant="line" size="pill-sm" class="mt-[0.3rem]"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
+            <Button v-if="isClient" as-child variant="line" size="pill-sm" class="mt-1.25"><NuxtLink to="/find-lawyers">Find a lawyer</NuxtLink></Button>
           </div>
 
-          <div v-else-if="shownConversations.length === 0" class="grid justify-items-center gap-[0.6rem] px-4 py-10 text-center">
+          <div v-else-if="shownConversations.length === 0" class="grid justify-items-center gap-2.5 px-4 py-10 text-center">
             <p class="text-muted-foreground">No conversation with "{{ search.trim() }}".</p>
             <Button variant="line" size="pill-sm" @click="search = ''">Clear the search</Button>
           </div>
 
-          <ul v-else class="grid grid-cols-[minmax(0,1fr)] gap-[0.15rem]">
+          <ul v-else class="grid grid-cols-1 gap-0.5">
             <li v-for="conversation in shownConversations" :key="conversation.id">
               <button
                 type="button"
                 :aria-current="selectedConversationId === conversation.id ? 'true' : undefined"
-                class="flex w-full min-w-0 cursor-pointer items-center gap-[0.75rem] rounded-[1rem] px-[0.7rem] py-[0.65rem] text-left transition-colors duration-200"
+                class="flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-lg px-2.75 py-2.5 text-left transition-colors duration-200"
                 :class="selectedConversationId === conversation.id ? 'bg-mint text-deep' : 'hover:bg-background'"
                 @click="selectConversation(conversation.id)"
               >
-                <span aria-hidden="true" class="grid size-[2.75rem] flex-none place-items-center overflow-hidden rounded-[0.9rem] bg-mint font-display text-[0.9rem] font-bold text-deep" :class="{ 'bg-card': selectedConversationId === conversation.id }">
+                <span aria-hidden="true" class="grid size-11 flex-none place-items-center overflow-hidden rounded-md bg-mint font-display text-sm font-medium text-deep" :class="{ 'bg-card': selectedConversationId === conversation.id }">
                   <img v-if="otherParticipant(conversation)?.image" :src="otherParticipant(conversation)!.image!" alt="" class="size-full object-cover">
                   <template v-else>{{ initials(otherParticipant(conversation)?.name) || '·' }}</template>
                 </span>
                 <span class="min-w-0 flex-1">
                   <span class="flex items-baseline justify-between gap-2">
-                    <b class="truncate" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-bold' : 'font-semibold'">{{ otherParticipant(conversation)?.name || 'Conversation' }}</b>
-                    <span class="flex-none text-[0.78rem] opacity-70">{{ formatTime(conversation.lastMessage?.createdAt ?? conversation.lastMessageAt) }}</span>
+                    <b class="truncate" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-medium' : 'font-medium'">{{ otherParticipant(conversation)?.name || 'Conversation' }}</b>
+                    <span class="flex-none text-xs opacity-70">{{ formatTime(conversation.lastMessage?.createdAt ?? conversation.lastMessageAt) }}</span>
                   </span>
-                  <span class="mt-[0.05rem] flex items-center gap-2">
-                    <span class="min-w-0 flex-1 truncate text-[0.9rem]" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-semibold text-foreground' : 'opacity-75'">{{ previewText(conversation) }}</span>
+                  <span class="mt-0.25 flex items-center gap-2">
+                    <span class="min-w-0 flex-1 truncate text-sm" :class="conversation.unreadCount > 0 && selectedConversationId !== conversation.id ? 'font-medium text-foreground' : 'opacity-75'">{{ previewText(conversation) }}</span>
                     <span
                       v-if="conversation.unreadCount > 0 && selectedConversationId !== conversation.id"
-                      class="grid min-w-[1.35rem] flex-none place-items-center rounded-full bg-brand px-[0.35rem] text-[0.72rem] leading-[1.35rem] font-bold text-white dark:text-night"
+                      class="grid min-w-5.5 flex-none place-items-center rounded-full bg-brand px-1.5 text-xs leading-5.5 font-medium text-white dark:text-night"
                       :aria-label="`${conversation.unreadCount} unread`"
                     >{{ conversation.unreadCount > 9 ? '9+' : conversation.unreadCount }}</span>
                   </span>
@@ -259,7 +259,7 @@ function previewText(conversation: ConversationInfo) {
           </ul>
         </div>
 
-        <p class="border-t border-border px-[1rem] py-[0.65rem] text-[0.85rem] text-muted-foreground">Contact details stay private. Everything is written here.</p>
+        <p class="border-t border-border px-4 py-2.5 text-sm text-muted-foreground">Contact details stay private. Everything is written here.</p>
       </aside>
 
       <!-- ───────── the chosen conversation ───────── -->
@@ -270,27 +270,27 @@ function previewText(conversation: ConversationInfo) {
       >
         <div v-if="!selectedConversationId" class="grid flex-1 place-items-center bg-background/50 px-6 text-center">
           <div>
-            <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ conversations?.length ? 'Choose a conversation' : 'Your messages will show here' }}</b>
-            <p class="mt-[0.3rem] max-w-[24rem] text-muted-foreground">{{ conversations?.length ? 'Pick one from the list to read it and reply.' : isClient ? 'Once you write to a lawyer, the conversation opens in this space.' : 'Once a client writes to you, the conversation opens in this space.' }}</p>
+            <b class="font-display text-base font-normal tracking-tight">{{ conversations?.length ? 'Choose a conversation' : 'Your messages will show here' }}</b>
+            <p class="mt-1.25 max-w-96 text-muted-foreground">{{ conversations?.length ? 'Pick one from the list to read it and reply.' : isClient ? 'Once you write to a lawyer, the conversation opens in this space.' : 'Once a client writes to you, the conversation opens in this space.' }}</p>
           </div>
         </div>
 
         <template v-else>
-          <header class="flex items-center gap-[0.7rem] border-b border-border px-[0.9rem] py-[0.7rem]">
+          <header class="flex items-center gap-2.75 border-b border-border px-3.5 py-2.75">
             <button
               type="button"
-              class="-ml-[0.3rem] grid size-[2.75rem] flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-background tab:hidden"
+              class="-ml-1.25 grid size-11 flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-background tab:hidden"
               @click="clearConversationSelection"
             >
               <CanopyGlyph name="arrow" :size="18" class="rotate-180" label="Back to conversations" />
             </button>
-            <span aria-hidden="true" class="grid size-[2.5rem] flex-none place-items-center overflow-hidden rounded-[0.8rem] bg-mint font-display text-[0.85rem] font-bold text-deep">
+            <span aria-hidden="true" class="grid size-10 flex-none place-items-center overflow-hidden rounded-md bg-mint font-display text-sm font-medium text-deep">
               <img v-if="headerParticipant?.image" :src="headerParticipant.image" alt="" class="size-full object-cover">
               <template v-else>{{ initials(headerParticipantName) || '·' }}</template>
             </span>
             <div class="min-w-0 flex-1">
-              <h2 class="truncate font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ headerParticipantName ?? 'Loading…' }}</h2>
-              <p class="text-[0.85rem] text-muted-foreground">{{ isClient ? 'Lawyer' : 'Client' }}</p>
+              <h2 class="truncate font-display text-base font-normal tracking-tight">{{ headerParticipantName ?? 'Loading…' }}</h2>
+              <p class="text-sm text-muted-foreground">{{ isClient ? 'Lawyer' : 'Client' }}</p>
             </div>
           </header>
           <ConversationThreadPanel :key="selectedConversationId" :conversation-id="selectedConversationId" class="min-h-0 flex-1" />

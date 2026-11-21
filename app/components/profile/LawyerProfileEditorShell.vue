@@ -430,7 +430,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="grid grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <DashboardPageHeader
       eyebrow="Practice"
       title="Your profile"
@@ -439,7 +439,7 @@ onBeforeUnmount(() => {
       <template #actions>
         <span
           v-if="approvalHeaderBadge"
-          class="rounded-full border px-[0.85rem] py-[0.25rem] text-[0.88rem] font-bold"
+          class="rounded-full border px-3.5 py-1 text-sm font-medium"
           :class="approvalHeaderBadge.className"
         >{{ approvalHeaderBadge.label }}</span>
         <TooltipProvider v-if="publicProfileUrl">
@@ -465,16 +465,16 @@ onBeforeUnmount(() => {
       :notice="approvalNotice"
     />
 
-    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-[clamp(1rem,2vw,1.5rem)]">
-      <div class="h-[14rem] animate-pulse rounded-card bg-muted" />
-      <div class="h-[12rem] animate-pulse rounded-card bg-muted" />
-      <div class="h-[18rem] animate-pulse rounded-card bg-muted" />
+    <div v-if="isLoading" role="status" aria-label="Loading your profile" class="grid gap-4 lg:gap-5 xl:gap-6">
+      <div class="h-56 animate-pulse rounded-card bg-muted" />
+      <div class="h-48 animate-pulse rounded-card bg-muted" />
+      <div class="h-72 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="isError" :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="isError" :class="[PANEL, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="PANEL_TITLE">We could not load your profile.</h2>
       <p class="mt-2 text-muted-foreground">{{ loadErrorMessage }}</p>
-      <p v-if="loadErrorMessage.toLowerCase().includes('not found')" class="mx-auto mt-1 max-w-[34rem] text-[0.92rem] text-muted-foreground">
+      <p v-if="loadErrorMessage.toLowerCase().includes('not found')" class="mx-auto mt-1 max-w-136 text-sm text-muted-foreground">
         Your account may not have a lawyer record yet. Finish your application, or contact support.
       </p>
       <Button variant="canopy" size="pill" class="mt-5" @click="() => profileQuery.refetch()">Try again</Button>
@@ -486,68 +486,68 @@ onBeforeUnmount(() => {
         aria-label="Your public card"
         :class="[PANEL, 'grid tab:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]', chosen ? 'max-tab:hidden' : '']"
       >
-        <div class="flex min-w-0 items-start gap-[1rem] p-[clamp(1.1rem,2.2vw,1.5rem)]">
-          <span aria-hidden="true" class="grid size-[4.5rem] flex-none place-items-center overflow-hidden rounded-[1.25rem] bg-mint font-display text-[1.4rem] font-bold text-deep">
+        <div class="flex min-w-0 items-start gap-4 p-4.5 lg:p-5.75 xl:p-6">
+          <span aria-hidden="true" class="grid size-18 flex-none place-items-center overflow-hidden rounded-card bg-mint font-display text-xl font-medium text-deep">
             <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-full object-cover">
             <template v-else>{{ initials(displayName) || '·' }}</template>
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">How clients see you</p>
-            <p class="mt-[0.2rem] font-display text-[1.3rem] leading-[1.15] font-[650] tracking-[-0.02em]">{{ displayName }}</p>
-            <p class="mt-[0.15rem]" :class="profile.about.headline?.trim() ? 'text-brand' : 'text-muted-foreground'">{{ profile.about.headline?.trim() || 'No headline yet' }}</p>
-            <p v-if="profile.practiceInfo?.firmName || previewOfficeLocation" class="mt-[0.15rem] text-[0.92rem] text-muted-foreground">
+            <p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">How clients see you</p>
+            <p class="mt-0.75 font-display text-xl leading-tight font-normal tracking-tight">{{ displayName }}</p>
+            <p class="mt-0.5" :class="profile.about.headline?.trim() ? 'text-brand' : 'text-muted-foreground'">{{ profile.about.headline?.trim() || 'No headline yet' }}</p>
+            <p v-if="profile.practiceInfo?.firmName || previewOfficeLocation" class="mt-0.5 text-sm text-muted-foreground">
               {{ [profile.practiceInfo?.firmName, previewOfficeLocation].filter(Boolean).join(' · ') }}
             </p>
-            <ul v-if="shownAreas.length > 0" class="mt-[0.6rem] flex flex-wrap gap-[0.35rem]">
-              <li v-for="area in shownAreas" :key="area.id" class="rounded-full bg-muted px-[0.65rem] py-[0.12rem] text-[0.8rem] font-semibold">{{ area.name }}</li>
-              <li v-if="moreAreas > 0" class="rounded-full border border-border px-[0.65rem] py-[0.12rem] text-[0.8rem] font-semibold text-muted-foreground">{{ moreAreas }} more</li>
+            <ul v-if="shownAreas.length > 0" class="mt-2.5 flex flex-wrap gap-1.5">
+              <li v-for="area in shownAreas" :key="area.id" class="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium">{{ area.name }}</li>
+              <li v-if="moreAreas > 0" class="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">{{ moreAreas }} more</li>
             </ul>
           </div>
         </div>
 
-        <div class="min-w-0 border-t border-border bg-background/60 p-[clamp(1.1rem,2.2vw,1.5rem)] tab:border-t-0 tab:border-l">
+        <div class="min-w-0 border-t border-border bg-background/60 p-4.5 lg:p-5.75 xl:p-6 tab:border-t-0 tab:border-l">
           <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-            <span class="rounded-full px-[0.75rem] py-[0.2rem] text-[0.85rem] font-bold" :class="standing.visible ? 'bg-mint text-deep' : 'bg-warning/15 text-warning-subtle-foreground'">{{ standing.label }}</span>
-            <span class="font-display text-[1.15rem] font-[650] tracking-[-0.02em] tabular-nums">{{ percent }}% complete</span>
+            <span class="rounded-full px-3 py-0.75 text-sm font-medium" :class="standing.visible ? 'bg-mint text-deep' : 'bg-warning/15 text-warning-subtle-foreground'">{{ standing.label }}</span>
+            <span class="font-display text-base font-normal tracking-tight tabular-nums">{{ percent }}% complete</span>
           </div>
-          <div class="mt-[0.7rem] h-[0.45rem] overflow-hidden rounded-full bg-muted" role="progressbar" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100" aria-label="How complete your profile is">
+          <div class="mt-2.75 h-1.75 overflow-hidden rounded-full bg-muted" role="progressbar" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100" aria-label="How complete your profile is">
             <div class="h-full rounded-full bg-primary transition-[width] duration-500 ease-canopy" :style="{ width: `${percent}%` }" />
           </div>
-          <p class="mt-[0.7rem] text-[0.95rem] text-muted-foreground">{{ standing.line }}</p>
-          <ul v-if="standing.blockers.length > 0" class="mt-[0.5rem] grid gap-[0.25rem]">
-            <li v-for="blocker in standing.blockers" :key="blocker.label" class="text-[0.95rem]">
-              <NuxtLink :to="blocker.to" class="font-semibold text-brand underline-offset-4 hover:underline">{{ blocker.label }} →</NuxtLink>
+          <p class="mt-2.75 text-sm text-muted-foreground">{{ standing.line }}</p>
+          <ul v-if="standing.blockers.length > 0" class="mt-2 grid gap-1">
+            <li v-for="blocker in standing.blockers" :key="blocker.label" class="text-sm">
+              <NuxtLink :to="blocker.to" class="font-medium text-brand underline-offset-4 hover:underline">{{ blocker.label }} →</NuxtLink>
             </li>
           </ul>
         </div>
       </section>
 
-      <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-[clamp(1rem,2vw,1.5rem)] tab:grid-cols-[19rem_minmax(0,1fr)]">
+      <div class="grid grid-cols-1 items-start gap-4 lg:gap-5 xl:gap-6 tab:grid-cols-[19rem_minmax(0,1fr)]">
         <!-- ───────── the sections, grouped by how much they matter to search ───────── -->
         <nav
           aria-label="Profile sections"
-          :class="[PANEL, 'min-w-0 p-[0.5rem] tab:sticky tab:top-[5.25rem]', chosen ? 'max-tab:hidden' : '']"
+          :class="[PANEL, 'min-w-0 p-2 tab:sticky tab:top-21', chosen ? 'max-tab:hidden' : '']"
         >
-          <div v-for="item in groups" :key="item.group" class="min-w-0 pb-[0.4rem]">
-            <p class="px-[0.75rem] pt-[0.7rem] pb-[0.35rem] text-[0.8125rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">{{ item.title }}</p>
-            <ul class="grid grid-cols-[minmax(0,1fr)] gap-[0.1rem]">
+          <div v-for="item in groups" :key="item.group" class="min-w-0 pb-1.5">
+            <p class="px-3 pt-2.75 pb-1.5 text-xs font-medium tracking-widest text-muted-foreground uppercase">{{ item.title }}</p>
+            <ul class="grid grid-cols-1 gap-0.5">
               <li v-for="row in item.rows" :key="row.id">
                 <NuxtLink
                   :to="sectionLink(row.id)"
                   :aria-current="active === row.id ? 'true' : undefined"
-                  class="group flex min-h-[3.25rem] items-center gap-[0.7rem] rounded-[0.9rem] px-[0.75rem] py-[0.4rem] transition-colors duration-200 hover:bg-background"
+                  class="group flex min-h-13 items-center gap-2.75 rounded-md px-3 py-1.5 transition-colors duration-200 hover:bg-background"
                   :class="active === row.id ? (chosen ? 'bg-mint text-deep' : 'tab:bg-mint tab:text-deep') : ''"
                 >
                   <span
-                    class="grid size-[1.35rem] flex-none place-items-center rounded-full border"
+                    class="grid size-5.5 flex-none place-items-center rounded-full border"
                     :class="row.done ? 'border-primary bg-primary text-white' : 'border-muted-foreground/40'"
                   >
                     <CanopyGlyph v-if="row.done" name="tick" :size="12" :stroke="3" />
                     <span class="sr-only">{{ row.done ? 'Done' : 'To do' }}</span>
                   </span>
                   <span class="min-w-0 flex-1">
-                    <span class="block font-semibold">{{ row.label }}</span>
-                    <span class="block truncate text-[0.88rem] text-muted-foreground" :class="active === row.id ? (chosen ? 'text-deep/75' : 'tab:text-deep/75') : ''">{{ row.summary }}</span>
+                    <span class="block font-medium">{{ row.label }}</span>
+                    <span class="block truncate text-sm text-muted-foreground" :class="active === row.id ? (chosen ? 'text-deep/75' : 'tab:text-deep/75') : ''">{{ row.summary }}</span>
                   </span>
                   <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="flex-none -rotate-90 text-muted-foreground tab:hidden" />
                 </NuxtLink>
@@ -555,19 +555,19 @@ onBeforeUnmount(() => {
               <!-- search also needs these two, which are set on their own pages -->
               <template v-if="item.group === 1">
                 <li v-for="row in elsewhere" :key="row.id">
-                  <NuxtLink :to="row.to" class="group flex min-h-[3.25rem] items-center gap-[0.7rem] rounded-[0.9rem] px-[0.75rem] py-[0.4rem] transition-colors duration-200 hover:bg-background">
+                  <NuxtLink :to="row.to" class="group flex min-h-13 items-center gap-2.75 rounded-md px-3 py-1.5 transition-colors duration-200 hover:bg-background">
                     <span
-                      class="grid size-[1.35rem] flex-none place-items-center rounded-full border"
+                      class="grid size-5.5 flex-none place-items-center rounded-full border"
                       :class="row.done ? 'border-primary bg-primary text-white' : 'border-muted-foreground/40'"
                     >
                       <CanopyGlyph v-if="row.done" name="tick" :size="12" :stroke="3" />
                       <span class="sr-only">{{ row.done ? 'Done' : 'To do' }}</span>
                     </span>
                     <span class="min-w-0 flex-1">
-                      <span class="block font-semibold">{{ row.label }}</span>
-                      <span class="block truncate text-[0.88rem] text-muted-foreground">{{ row.summary }}</span>
+                      <span class="block font-medium">{{ row.label }}</span>
+                      <span class="block truncate text-sm text-muted-foreground">{{ row.summary }}</span>
                     </span>
-                    <CanopyGlyph name="arrow" :size="14" class="flex-none text-muted-foreground transition-[translate] duration-200 ease-canopy group-hover:translate-x-[2px]" />
+                    <CanopyGlyph name="arrow" :size="14" class="flex-none text-muted-foreground transition-transform duration-200 ease-canopy group-hover:translate-x-0.5" />
                   </NuxtLink>
                 </li>
               </template>
@@ -576,8 +576,8 @@ onBeforeUnmount(() => {
         </nav>
 
         <!-- ───────── the section that is open ───────── -->
-        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(0.8rem,1.6vw,1.1rem)]" :class="chosen ? '' : 'max-tab:hidden'">
-          <NuxtLink to="/dashboard/profile" class="inline-flex min-h-[2.75rem] w-fit items-center gap-[0.4rem] font-semibold text-brand tab:hidden">
+        <div class="grid grid-cols-1 gap-3.25 lg:gap-4 xl:gap-4.5" :class="chosen ? '' : 'max-tab:hidden'">
+          <NuxtLink to="/dashboard/profile" class="inline-flex min-h-11 w-fit items-center gap-1.5 font-medium text-brand tab:hidden">
             <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="rotate-90" />All sections
           </NuxtLink>
 
@@ -658,12 +658,12 @@ onBeforeUnmount(() => {
             :on-delete="deleteArticleItem"
           />
 
-          <div class="flex flex-wrap items-center justify-between gap-[0.5rem]">
-            <Button v-if="previous" as-child variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <Button v-if="previous" as-child variant="line" size="pill-sm" class="h-10 px-3.75 text-sm">
               <NuxtLink :to="sectionLink(previous.id)">← {{ previous.label }}</NuxtLink>
             </Button>
             <span v-else />
-            <Button v-if="next" as-child variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]">
+            <Button v-if="next" as-child variant="line" size="pill-sm" class="h-10 px-3.75 text-sm">
               <NuxtLink :to="sectionLink(next.id)">{{ next.label }} →</NuxtLink>
             </Button>
           </div>
@@ -671,7 +671,7 @@ onBeforeUnmount(() => {
       </div>
     </template>
 
-    <section v-else :class="[PANEL, 'p-[clamp(1.5rem,4vw,3rem)] text-center text-muted-foreground']">
+    <section v-else :class="[PANEL, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center text-muted-foreground']">
       There is no profile to show yet. Refresh the page to try again.
     </section>
   </div>

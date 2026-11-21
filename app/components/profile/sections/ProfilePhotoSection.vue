@@ -45,21 +45,21 @@ function onFileSelected(event: Event) {
 </script>
 
 <template>
-  <SettingsSectionCard :title="title" :description="description" content-class="flex flex-col gap-[1.25rem] p-[clamp(1.1rem,2.2vw,1.5rem)] sm:flex-row sm:items-center">
+  <SettingsSectionCard :title="title" :description="description" content-class="flex flex-col gap-5 p-4.5 lg:p-5.75 xl:p-6 sm:flex-row sm:items-center">
     <div class="relative shrink-0 self-center sm:self-auto">
-      <Avatar class="size-24 rounded-[1.5rem] sm:size-28">
+      <Avatar class="size-24 rounded-card sm:size-28">
         <AvatarImage :src="imageUrl ?? ''" :alt="name" />
-        <AvatarFallback class="rounded-[1.5rem] bg-mint font-display text-2xl font-bold text-deep">{{ initials }}</AvatarFallback>
+        <AvatarFallback class="rounded-card bg-mint font-display text-2xl font-medium text-deep">{{ initials }}</AvatarFallback>
       </Avatar>
-      <span v-if="uploading" class="absolute inset-0 flex items-center justify-center rounded-[1.5rem] bg-background/70">
+      <span v-if="uploading" class="absolute inset-0 flex items-center justify-center rounded-card bg-background/70">
         <HugeiconsIcon :icon="Loading03Icon" class="size-8 animate-spin text-muted-foreground" />
       </span>
     </div>
 
     <div class="min-w-0 flex-1 text-center sm:text-left">
-      <p class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ name }}</p>
-      <p v-if="email" class="mt-0.5 truncate text-[0.95rem] text-muted-foreground">{{ email }}</p>
-      <p class="mt-2 text-[0.88rem] text-muted-foreground">{{ fileHint }}</p>
+      <p class="font-display text-base font-normal tracking-tight">{{ name }}</p>
+      <p v-if="email" class="mt-0.5 truncate text-sm text-muted-foreground">{{ email }}</p>
+      <p class="mt-2 text-sm text-muted-foreground">{{ fileHint }}</p>
     </div>
 
     <div class="flex shrink-0 flex-col gap-2 sm:items-end">

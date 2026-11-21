@@ -36,31 +36,31 @@ async function startNewApplication() {
     :membership="membership"
     sections-state="reopen"
   >
-    <section v-if="reason" aria-labelledby="failure-title" class="rounded-[1.1rem] border border-destructive/30 bg-destructive/10 px-4 py-[0.95rem]">
-      <h2 id="failure-title" class="font-semibold text-destructive">What the review team found</h2>
+    <section v-if="reason" aria-labelledby="failure-title" class="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3.75">
+      <h2 id="failure-title" class="font-medium text-destructive">What the review team found</h2>
       <p class="mt-1 whitespace-pre-line">{{ reason }}</p>
     </section>
-    <p v-if="membership !== 'later'" class="rounded-[1.1rem] border border-warning/30 bg-warning/10 px-4 py-[0.85rem] text-warning-subtle-foreground">
-      <b class="block font-semibold">About your payment</b>
+    <p v-if="membership !== 'later'" class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3.5 text-warning-subtle-foreground">
+      <b class="block font-medium">About your payment</b>
       {{ VERIFICATION_FAILED_COPY.refundNote }}
     </p>
-    <section class="rounded-card border border-border bg-card p-[clamp(1.1rem,2.4vw,1.5rem)]">
-      <h2 class="text-[1.3rem] font-[650] tracking-[-0.02em]">{{ VERIFICATION_FAILED_COPY.resubmitTitle }}</h2>
+    <section class="rounded-card border border-border bg-card p-4.5 lg:p-6">
+      <h2 class="text-xl font-normal tracking-tight">{{ VERIFICATION_FAILED_COPY.resubmitTitle }}</h2>
       <p class="mt-1 text-muted-foreground">{{ VERIFICATION_FAILED_COPY.resubmitDescription }}</p>
-      <ol class="mt-4 grid gap-[0.6rem]">
+      <ol class="mt-4 grid gap-2.5">
         <li v-for="(step, index) in VERIFICATION_FAILED_COPY.resubmitSteps" :key="step" class="flex items-start gap-3">
-          <span class="grid size-7 flex-none place-items-center rounded-full bg-mint font-display text-[0.9rem] font-bold text-deep">{{ index + 1 }}</span>
+          <span class="grid size-7 flex-none place-items-center rounded-full bg-mint font-display text-sm font-medium text-deep">{{ index + 1 }}</span>
           <span>{{ step }}</span>
         </li>
       </ol>
       <AuthSubmit type="button" :loading="isPending" :disabled="refundInFlight" class="mt-5" @click="startNewApplication">
         {{ VERIFICATION_FAILED_COPY.ctaLabel }}
       </AuthSubmit>
-      <p v-if="refundInFlight" role="status" class="mt-3 text-[0.9rem] text-muted-foreground">
+      <p v-if="refundInFlight" role="status" class="mt-3 text-sm text-muted-foreground">
         Your refund is still being processed. You can start a new application as soon as it has gone through; this page checks by itself.
       </p>
     </section>
-    <p class="text-[0.9rem] text-muted-foreground">
+    <p class="text-sm text-muted-foreground">
       {{ VERIFICATION_FAILED_COPY.supportLabel }}
       <a :href="`mailto:${SUPPORT_EMAIL}`" :class="authLink">{{ SUPPORT_EMAIL }}</a>
     </p>

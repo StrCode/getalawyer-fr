@@ -99,7 +99,7 @@ function onClearSpecializations() {
 <template>
   <div>
     <div class="mb-5 flex items-center justify-between gap-3">
-     <h2 class="text-sm font-semibold text-foreground">
+     <h2 class="text-sm font-medium text-foreground">
         Refine search
       </h2>
       <button

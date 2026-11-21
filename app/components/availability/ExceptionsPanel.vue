@@ -167,69 +167,69 @@ async function confirmRemove() {
   }
 }
 
-const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
+const sectionTitle = 'font-display text-base font-normal tracking-tight'
 const panel = 'overflow-hidden rounded-card border border-border bg-card'
-const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
-const pill = 'rounded-full px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold whitespace-nowrap'
-const dialog = 'gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[32rem]'
-const dialogHead = 'gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left'
-const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]'
-const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]'
-const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]'
+const pad = 'px-4.5 lg:px-5.75 xl:px-6'
+const pill = 'rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap'
+const dialog = 'gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 sm:max-w-128'
+const dialogHead = 'gap-1.5 border-b border-border px-4.75 md:px-7 py-4.5 text-left'
+const dialogTitle = 'font-display text-xl leading-none font-normal tracking-tight'
+const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-4.75 md:px-7 py-4.75'
+const dialogFoot = 'gap-2.5 border-t border-border px-4.75 md:px-7 py-4'
 </script>
 
 <template>
   <section :class="panel" aria-labelledby="exceptions-title">
-    <header :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-[1.1rem]']">
+    <header :class="[pad, 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border py-4.5']">
       <div class="min-w-0">
         <h2 id="exceptions-title" :class="sectionTitle">Time off and extra hours</h2>
-        <p class="mt-[0.2rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">Dates when your weekly hours do not apply: a day off, a few hours away, or extra hours you are opening.</p>
+        <p class="mt-0.75 max-w-160 text-sm text-muted-foreground">Dates when your weekly hours do not apply: a day off, a few hours away, or extra hours you are opening.</p>
       </div>
-      <div class="flex flex-none flex-wrap items-center gap-[0.5rem]">
+      <div class="flex flex-none flex-wrap items-center gap-2">
         <Button variant="line" size="pill-sm" @click="openRange">Take days off</Button>
         <Button variant="canopy" size="pill-sm" @click="openDate">Add a date</Button>
       </div>
     </header>
 
-    <div :class="[pad, 'flex min-h-[3.25rem] items-center border-b border-border bg-background/60 py-[0.5rem]']">
-      <label class="flex min-h-[2.75rem] cursor-pointer items-center gap-[0.7rem] text-[0.95rem] text-muted-foreground">
+    <div :class="[pad, 'flex min-h-13 items-center border-b border-border bg-background/60 py-2']">
+      <label class="flex min-h-11 cursor-pointer items-center gap-2.75 text-sm text-muted-foreground">
         <Switch :model-value="showPast" @update:model-value="showPast = $event" />
         Show past dates too
       </label>
     </div>
 
-    <div v-if="isPending" role="status" aria-label="Loading your dates" :class="[pad, 'grid gap-2 py-[1rem]']">
-      <div v-for="n in 3" :key="n" class="h-[4rem] animate-pulse rounded-[1rem] bg-muted" />
+    <div v-if="isPending" role="status" aria-label="Loading your dates" :class="[pad, 'grid gap-2 py-4']">
+      <div v-for="n in 3" :key="n" class="h-16 animate-pulse rounded-lg bg-muted" />
     </div>
 
-    <div v-else-if="isError" :class="[pad, 'py-[clamp(1.6rem,4vw,2.6rem)] text-center']">
+    <div v-else-if="isError" :class="[pad, 'py-6.5 md:py-7.75 lg:py-10.25 xl:py-10.5 text-center']">
       <h3 :class="sectionTitle">We could not load your dates.</h3>
       <p class="mt-2 text-muted-foreground">Nothing has changed. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="() => refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
     </div>
 
-    <div v-else-if="rows.length === 0" :class="[pad, 'py-[clamp(1.8rem,4vw,3rem)] text-center']">
+    <div v-else-if="rows.length === 0" :class="[pad, 'py-7.25 md:py-7.75 lg:py-10.25 xl:py-12 text-center']">
       <h3 :class="sectionTitle">{{ showPast ? 'No dates on record.' : 'Nothing coming up.' }}</h3>
-      <p class="mx-auto mt-2 max-w-[32rem] text-muted-foreground">Clients can book you on your weekly hours every week. Add a date when one is different, for example a court day or a public holiday.</p>
+      <p class="mx-auto mt-2 max-w-128 text-muted-foreground">Clients can book you on your weekly hours every week. Add a date when one is different, for example a court day or a public holiday.</p>
     </div>
 
     <ul v-else class="divide-y divide-border">
       <li
         v-for="row in rows"
         :key="row.id"
-        :class="[pad, 'flex flex-wrap items-center gap-x-[1rem] gap-y-[0.5rem] py-[0.95rem]']"
+        :class="[pad, 'flex flex-wrap items-center gap-x-4 gap-y-2 py-3.75']"
       >
-        <div class="min-w-0 flex-[1_1_14rem]">
-          <p class="flex flex-wrap items-center gap-x-[0.6rem] gap-y-1">
-            <b class="font-display text-[1.12rem] font-[650] tracking-[-0.02em]">{{ exceptionDateLabel(row.date) }}</b>
+        <div class="min-w-0 grow basis-56">
+          <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+            <b class="font-display text-base font-normal tracking-tight">{{ exceptionDateLabel(row.date) }}</b>
             <span :class="[pill, EXCEPTION_PILL[exceptionKind(row)].class]">{{ EXCEPTION_PILL[exceptionKind(row)].label }}</span>
           </p>
-          <p class="mt-[0.2rem] flex flex-wrap items-center gap-x-[0.45rem] text-[0.92rem] text-muted-foreground">
+          <p class="mt-0.75 flex flex-wrap items-center gap-x-1.75 text-sm text-muted-foreground">
             <span>{{ exceptionHours(row) }}</span>
             <template v-if="row.reason"><span aria-hidden="true">·</span><span class="min-w-0 break-words">{{ row.reason }}</span></template>
           </p>
         </div>
-        <Button variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :aria-label="`Remove ${exceptionDateLabel(row.date)}`" @click="askRemove(row)">Remove</Button>
+        <Button variant="line" size="pill-sm" class="h-10 px-3.75 text-sm" :aria-label="`Remove ${exceptionDateLabel(row.date)}`" @click="askRemove(row)">Remove</Button>
       </li>
     </ul>
 
@@ -238,12 +238,12 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
       <DialogContent :class="dialog">
         <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Add a date</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">On this date, this replaces your weekly hours.</DialogDescription>
+          <DialogDescription class="text-sm text-muted-foreground">On this date, this replaces your weekly hours.</DialogDescription>
         </DialogHeader>
 
         <div :class="dialogBody">
           <form :id="dateFormId" novalidate @submit.prevent="dateForm.handleSubmit">
-            <FieldGroup class="gap-[1.1rem]">
+            <FieldGroup class="gap-4.5">
               <dateForm.Field v-slot="{ field }" name="date">
                 <Field :class="canopyField" :data-invalid="dateInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">Date</FieldLabel>
@@ -270,7 +270,7 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
                     :name="field.name"
                     :model-value="field.state.value ? 'open' : 'off'"
                     :disabled="createOne.isPending.value"
-                    class="grid grid-cols-2 gap-[0.5rem]"
+                    class="grid grid-cols-2 gap-2"
                     @update:model-value="(v) => {
                       field.handleChange(v === 'open')
                       field.handleBlur()
@@ -279,7 +279,7 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
                     <FieldLabel v-for="option in [{ value: 'off', label: 'Not available' }, { value: 'open', label: 'Available' }]" :key="option.value" :for="`${dateFormId}-${option.value}`" :class="[canopyChoice, 'items-center']">
                       <Field orientation="horizontal" class="items-center">
                         <RadioGroupItem :id="`${dateFormId}-${option.value}`" :value="option.value" />
-                        <span class="text-[0.95rem] font-semibold">{{ option.label }}</span>
+                        <span class="text-sm font-medium">{{ option.label }}</span>
                       </Field>
                     </FieldLabel>
                   </RadioGroup>
@@ -287,7 +287,7 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
               </dateForm.Field>
 
               <dateForm.Field v-slot="{ field }" name="allDay">
-                <Field orientation="horizontal" class="items-center gap-[0.8rem]">
+                <Field orientation="horizontal" class="items-center gap-3.25">
                   <Switch
                     :id="field.name"
                     :name="field.name"
@@ -296,12 +296,12 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
                     @update:model-value="(v) => field.handleChange(v === true)"
                   />
                   <FieldContent class="gap-0">
-                    <FieldLabel :for="field.name" class="font-semibold">All day</FieldLabel>
+                    <FieldLabel :for="field.name" class="font-medium">All day</FieldLabel>
                   </FieldContent>
                 </Field>
               </dateForm.Field>
 
-              <div v-if="!allDay" class="grid grid-cols-2 gap-[0.75rem]">
+              <div v-if="!allDay" class="grid grid-cols-2 gap-3">
                 <dateForm.Field v-slot="{ field }" name="startTime">
                   <Field :class="canopyField" :data-invalid="dateInvalid(field)">
                     <FieldLabel :for="field.name" :class="canopyLabel">From</FieldLabel>
@@ -375,13 +375,13 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
       <DialogContent :class="dialog">
         <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Take days off</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">Clients cannot book you on any of these days. Appointments already booked stay as they are.</DialogDescription>
+          <DialogDescription class="text-sm text-muted-foreground">Clients cannot book you on any of these days. Appointments already booked stay as they are.</DialogDescription>
         </DialogHeader>
 
         <div :class="dialogBody">
           <form :id="rangeFormId" novalidate @submit.prevent="rangeForm.handleSubmit">
-            <FieldGroup class="gap-[1.1rem]">
-              <div class="grid grid-cols-1 gap-[0.75rem] sm:grid-cols-2">
+            <FieldGroup class="gap-4.5">
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <rangeForm.Field v-slot="{ field }" name="startDate">
                   <Field :class="canopyField" :data-invalid="rangeInvalid(field)">
                     <FieldLabel :for="field.name" :class="canopyLabel">First day</FieldLabel>
@@ -458,14 +458,14 @@ const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.7
 
     <!-- ───────── removing one ───────── -->
     <Dialog :open="pendingRemove !== null" @update:open="(open: boolean) => { if (!open && !removing) pendingRemove = null }">
-      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-        <DialogHeader class="gap-[0.5rem] text-left">
+      <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+        <DialogHeader class="gap-2 text-left">
           <DialogTitle :class="dialogTitle">Remove this date?</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">
+          <DialogDescription class="text-sm text-muted-foreground">
             {{ pendingRemove ? exceptionDateLabel(pendingRemove.date) : 'This date' }} goes back to your weekly hours.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+        <DialogFooter class="mt-1.25 gap-2.5">
           <Button variant="line" size="pill" :disabled="removing" @click="pendingRemove = null">Keep it</Button>
           <Button variant="canopy" size="pill" :disabled="removing" :aria-busy="removing" @click="confirmRemove">{{ removing ? 'Removing…' : 'Remove the date' }}</Button>
         </DialogFooter>

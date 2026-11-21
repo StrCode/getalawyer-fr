@@ -43,7 +43,7 @@ watch(() => props.profile, saved => form.reset(bioValues(saved)), { deep: true }
 <template>
   <SettingsSectionCard title="What you need help with" description="Optional. A lawyer can read this before your first consultation.">
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="bio">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">A short note</FieldLabel>
@@ -65,7 +65,7 @@ watch(() => props.profile, saved => form.reset(bioValues(saved)), { deep: true }
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(bioValues(profile))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

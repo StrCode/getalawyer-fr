@@ -8,7 +8,7 @@ defineProps<{ loading?: boolean, disabled?: boolean }>()
 </script>
 
 <template>
-  <Button type="button" variant="line" size="pill" class="h-[3.25rem] w-full gap-3" :disabled="disabled || loading">
+  <Button type="button" variant="line" size="pill" class="h-13 w-full gap-3" :disabled="disabled || loading">
     <HugeiconsIcon v-if="loading" :icon="Loading03Icon" class="size-5 animate-spin" aria-hidden="true" />
     <svg v-else viewBox="0 0 24 24" class="size-5" aria-hidden="true">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

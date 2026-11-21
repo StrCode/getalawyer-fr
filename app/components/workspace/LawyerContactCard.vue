@@ -15,9 +15,9 @@ defineProps<{ lawyer: ClientLawyerContact }>()
 </script>
 
 <template>
-  <article class="flex flex-col rounded-card border border-border bg-card p-[clamp(1.1rem,2vw,1.35rem)]">
-    <div class="flex items-center gap-[0.8rem]">
-      <span class="grid size-[3rem] flex-none place-items-center overflow-hidden rounded-[1rem] bg-mint font-display font-bold text-deep">
+  <article class="flex flex-col rounded-card border border-border bg-card p-4.5 lg:p-5 xl:p-5.5">
+    <div class="flex items-center gap-3.25">
+      <span class="grid size-12 flex-none place-items-center overflow-hidden rounded-lg bg-mint font-display font-medium text-deep">
         <img v-if="lawyer.image" :src="lawyer.image" alt="" class="size-full object-cover">
         <template v-else>{{ initials(lawyer.name) }}</template>
       </span>
@@ -25,13 +25,13 @@ defineProps<{ lawyer: ClientLawyerContact }>()
         <NuxtLink
           v-if="lawyer.lawyerProfileId"
           :to="`/lawyers/${lawyer.lawyerProfileId}`"
-          class="block truncate font-display text-[1.1rem] font-[650] tracking-[-0.02em] transition-colors hover:text-brand"
+          class="block truncate font-display text-base font-normal tracking-tight transition-colors hover:text-brand"
         >{{ lawyer.name }}</NuxtLink>
-        <b v-else class="block truncate font-display text-[1.1rem] font-[650] tracking-[-0.02em]">{{ lawyer.name }}</b>
-        <span class="block text-[0.9rem] text-muted-foreground">{{ lawyerTie(lawyer) }}</span>
+        <b v-else class="block truncate font-display text-base font-normal tracking-tight">{{ lawyer.name }}</b>
+        <span class="block text-sm text-muted-foreground">{{ lawyerTie(lawyer) }}</span>
       </span>
     </div>
-    <div class="mt-auto flex gap-[0.4rem] pt-[0.9rem]">
+    <div class="mt-auto flex gap-1.5 pt-3.5">
       <Button v-if="lawyer.conversationId" as-child variant="line" size="pill-sm" class="flex-1">
         <NuxtLink :to="`/dashboard/messages?conversation=${lawyer.conversationId}`">Message</NuxtLink>
       </Button>

@@ -6,7 +6,7 @@
       v-for="check in authPasswordChecks"
       :key="check.key"
       class="flex items-center gap-2"
-      :class="check.test(password) ? 'text-brand' : invalid ? 'font-semibold text-destructive' : 'text-muted-foreground'"
+      :class="check.test(password) ? 'text-brand' : invalid ? 'font-medium text-destructive' : 'text-muted-foreground'"
     >
       <HugeiconsIcon v-if="check.test(password)" :icon="Tick01Icon" class="size-3.5 shrink-0" />
       <HugeiconsIcon v-else-if="invalid" :icon="Cancel01Icon" class="size-3.5 shrink-0" />
@@ -15,7 +15,7 @@
       <span class="sr-only">{{ check.test(password) ? '(met)' : '(not met yet)' }}</span>
     </li>
   </ul>
-  <p v-else class="text-[0.85rem] text-muted-foreground">
+  <p v-else class="text-sm text-muted-foreground">
     Use at least 8 characters with one uppercase letter and one number.
   </p>
 </template>

@@ -5,11 +5,11 @@
     </template>
     <template #description>
       We sent a 6-digit code to <b class="text-foreground">{{ identifier }}</b>.
-      <NuxtLink :to="forgotPasswordLink" :class="authLink" class="text-[0.9rem]">Wrong {{ isPhoneMethod ? 'number' : 'email' }}?</NuxtLink>
+      <NuxtLink :to="forgotPasswordLink" :class="authLink" class="text-sm">Wrong {{ isPhoneMethod ? 'number' : 'email' }}?</NuxtLink>
     </template>
 
     <form novalidate @submit.prevent="handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <AuthOtpStep
           v-model="otp"
           :error="fieldError"
@@ -24,7 +24,7 @@
         <AuthDevOtpHint />
         <AuthFormError :message="apiError" />
 
-        <AuthSubmit :loading="isSubmitting" :disabled="otp.length < 6" class="mt-[0.3rem]">
+        <AuthSubmit :loading="isSubmitting" :disabled="otp.length < 6" class="mt-1.25">
           {{ isSubmitting ? 'Verifying…' : 'Verify code' }}
         </AuthSubmit>
       </FieldGroup>

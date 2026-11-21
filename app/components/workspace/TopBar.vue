@@ -52,18 +52,18 @@ const accountLinks = computed(() =>
   })),
 )
 
-const linkClass = 'relative inline-flex min-h-11 items-center gap-2 rounded-full px-[0.95rem] text-[0.95rem] font-medium whitespace-nowrap text-muted-foreground transition-colors duration-200 hover:text-foreground aria-[current=page]:bg-mint aria-[current=page]:font-semibold aria-[current=page]:text-deep'
-const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95rem] font-medium text-foreground focus:bg-mint focus:text-deep [&_svg]:size-[1.15rem] [&_svg]:text-muted-foreground focus:[&_svg]:text-deep'
+const linkClass = 'relative inline-flex min-h-11 items-center gap-2 rounded-full px-3.75 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-200 hover:text-foreground aria-[current=page]:bg-mint aria-[current=page]:font-medium aria-[current=page]:text-deep'
+const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-md px-3 text-sm font-medium text-foreground focus:bg-mint focus:text-deep [&_svg]:size-4.5 [&_svg]:text-muted-foreground focus:[&_svg]:text-deep'
 </script>
 
 <template>
-  <!-- a bar across the whole window; what is in it lines up with the page's column -->
-  <header class="sticky top-0 z-30 border-b border-border bg-glass pt-[env(safe-area-inset-top,0px)] backdrop-blur-[16px] backdrop-saturate-[1.4]">
-    <div class="mx-auto max-w-[76rem] safe-x tab:max-w-[81rem]">
-      <div class="flex h-[3.75rem] items-center justify-between gap-3">
+  <!-- a floating bar the width of the window, with a gap at each side and above -->
+  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 px-[max(0.75rem,env(safe-area-inset-left,0px))] py-2.5 tab:px-4">
+    <div class="rounded-full border border-border bg-card shadow-pill">
+      <div class="flex h-14 items-center justify-between gap-3 pr-1.75 pl-4.5">
         <CanopyBrand to="/dashboard" />
 
-        <nav aria-label="Dashboard" class="flex items-center gap-[0.15rem] max-tab:hidden">
+        <nav aria-label="Dashboard" class="flex items-center gap-0.5 max-tab:hidden">
           <NuxtLink
             v-for="link in nav.bar"
             :key="link.to"
@@ -72,7 +72,7 @@ const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95
             :aria-current="active(link) ? 'page' : undefined"
           >
             {{ link.label }}
-            <span v-if="countFor(link)" class="grid min-w-[1.35rem] place-items-center rounded-full bg-primary px-[0.35rem] text-[0.74rem] leading-[1.35rem] font-bold text-white">
+            <span v-if="countFor(link)" class="grid min-w-5.5 place-items-center rounded-full bg-primary px-1.5 text-xs leading-5.5 font-medium text-white">
               {{ countFor(link) }}<span class="sr-only"> waiting</span>
             </span>
           </NuxtLink>
@@ -80,12 +80,12 @@ const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95
           <ClientOnly v-if="nav.practice.length">
             <DropdownMenu>
               <DropdownMenuTrigger
-                :class="[linkClass, 'group/practice cursor-pointer data-[state=open]:text-foreground', practiceActive ? 'bg-mint font-semibold !text-deep' : '']"
+                :class="[linkClass, 'group/practice cursor-pointer data-[state=open]:text-foreground', practiceActive ? 'bg-mint font-medium !text-deep' : '']"
               >
                 Practice
-                <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="transition-[rotate] duration-200 ease-canopy group-data-[state=open]/practice:rotate-180" />
+                <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="transition-transform duration-200 ease-canopy group-data-[state=open]/practice:rotate-180" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" :side-offset="10" class="w-[15rem] rounded-[1.5rem] border-border bg-card p-2 font-text text-foreground shadow-widget">
+              <DropdownMenuContent align="start" :side-offset="10" class="w-60 rounded-card border-border bg-card p-2 font-text text-foreground shadow-widget">
                 <DropdownMenuItem v-for="link in nav.practice" :key="link.to" as-child :class="menuItem">
                   <NuxtLink :to="link.to" :aria-current="active(link) ? 'page' : undefined">
                     <CanopyGlyph :name="link.icon" />{{ link.label }}
@@ -99,7 +99,7 @@ const menuItem = 'min-h-11 cursor-pointer gap-3 rounded-[0.9rem] px-3 text-[0.95
           </ClientOnly>
         </nav>
 
-        <div class="flex items-center gap-[0.35rem]">
+        <div class="flex items-center gap-1.5">
           <ClientOnly><CanopyThemeToggle class="max-sm:hidden" /></ClientOnly>
           <ClientOnly><NotificationBell /></ClientOnly>
           <CanopyAccountMenu :links="accountLinks" />

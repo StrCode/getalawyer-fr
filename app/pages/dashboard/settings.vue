@@ -1,14 +1,14 @@
 <template>
-  <div class="mx-auto grid w-full max-w-[58rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
-    <section v-if="!isClient && !isLawyer" class="rounded-card border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] text-center text-muted-foreground">
+  <div class="mx-auto grid w-full max-w-232 grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
+    <section v-if="!isClient && !isLawyer" class="rounded-card border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center text-muted-foreground">
       Settings are not available for this kind of account.
     </section>
 
     <template v-else>
       <header>
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Account</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Settings</h1>
-        <p class="mt-[0.6rem] max-w-[42rem] text-[1.05rem] text-muted-foreground">{{ pageDescription }}</p>
+        <p class="text-xs font-medium tracking-widest text-brand uppercase">Account</p>
+        <h1 class="mt-2.5 text-2xl md:text-3xl leading-none font-normal tracking-tighter">Settings</h1>
+        <p class="mt-2.5 max-w-168 text-base text-muted-foreground">{{ pageDescription }}</p>
       </header>
 
       <SettingsShell :active-section="activeSection" :role="role" @update:active-section="setSection">

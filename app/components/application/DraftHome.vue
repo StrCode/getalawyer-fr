@@ -125,57 +125,57 @@ async function submit() {
   <div>
     <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
       <div>
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ doneCount }} of {{ sections.length }} done</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em]">Your application</h1>
+        <p class="text-sm font-medium tracking-widest text-brand uppercase">{{ doneCount }} of {{ sections.length }} done</p>
+        <h1 class="mt-2.5 text-3xl md:text-4xl leading-none font-normal tracking-tight">Your application</h1>
       </div>
     </div>
-    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">
+    <p class="mt-2.5 max-w-152 text-muted-foreground">
       Do these in any order. Everything saves as you go, so you can leave and come back.
     </p>
 
-    <div class="mt-[1.2rem] h-2 overflow-hidden rounded-full bg-border" role="progressbar" :aria-valuenow="doneCount" aria-valuemin="0" :aria-valuemax="sections.length" :aria-valuetext="`${doneCount} of ${sections.length} sections done`">
+    <div class="mt-4.75 h-2 overflow-hidden rounded-full bg-border" role="progressbar" :aria-valuenow="doneCount" aria-valuemin="0" :aria-valuemax="sections.length" :aria-valuetext="`${doneCount} of ${sections.length} sections done`">
       <i class="block h-full rounded-full bg-primary transition-[width] duration-500 ease-canopy" :style="{ width: `${(doneCount / sections.length) * 100}%` }" />
     </div>
 
     <!-- the saved application is still loading: hold the list's place -->
-    <div v-if="!store.draftLoaded" role="status" aria-busy="true" class="mt-[1.4rem] grid gap-[0.6rem]">
+    <div v-if="!store.draftLoaded" role="status" aria-busy="true" class="mt-5.5 grid gap-2.5">
       <span class="sr-only">Loading your application</span>
-      <Skeleton v-for="n in 4" :key="n" aria-hidden="true" class="h-[4.6rem] rounded-[1.25rem]" />
+      <Skeleton v-for="n in 4" :key="n" aria-hidden="true" class="h-18.5 rounded-card" />
     </div>
 
-    <ul v-else class="mt-[1.4rem] grid gap-[0.6rem]">
+    <ul v-else class="mt-5.5 grid gap-2.5">
       <li v-for="(section, index) in sections" :key="section.key">
         <NuxtLink
           :to="section.to"
-          class="grid grid-cols-[2.6rem_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-[0.95rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-0.5 hover:border-brand max-sm:grid-cols-[2.6rem_minmax(0,1fr)]"
+          class="grid grid-cols-[2.6rem_minmax(0,1fr)_auto] items-center gap-3.5 rounded-card border border-border bg-card px-4.5 py-3.75 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:border-brand max-sm:grid-cols-[2.6rem_minmax(0,1fr)]"
         >
-          <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] font-display font-bold" :class="[section.done ? 'bg-primary text-white' : 'bg-background text-deep', section.done && justSaved === section.step ? 'animate-tick-in' : '']">
+          <span class="grid size-10.5 place-items-center rounded-md font-display font-medium" :class="[section.done ? 'bg-primary text-white' : 'bg-background text-deep', section.done && justSaved === section.step ? 'animate-tick-in' : '']">
             <CanopyGlyph v-if="section.done" name="tick" :size="16" :stroke="3.2" />
             <template v-else>{{ index + 1 }}</template>
           </span>
           <span class="min-w-0">
-            <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em]">{{ section.title }}</b>
-            <small class="block truncate text-[0.88rem] text-muted-foreground">{{ section.done && section.summary ? section.summary : section.hint }}</small>
+            <b class="block font-display text-lg font-normal tracking-tight">{{ section.title }}</b>
+            <small class="block truncate text-sm text-muted-foreground">{{ section.done && section.summary ? section.summary : section.hint }}</small>
           </span>
-          <span class="text-[0.85rem] font-semibold whitespace-nowrap max-sm:col-start-2" :class="section.done ? 'text-muted-foreground' : 'text-brand'">
+          <span class="text-sm font-medium whitespace-nowrap max-sm:col-start-2" :class="section.done ? 'text-muted-foreground' : 'text-brand'">
             {{ section.done ? `Done · ${section.action}` : section.action }}
           </span>
         </NuxtLink>
       </li>
       <!-- what comes after submitting, so payment is not a surprise -->
-      <li class="grid grid-cols-[2.6rem_minmax(0,1fr)] items-center gap-[0.9rem] rounded-[1.25rem] border border-dashed border-border px-[1.1rem] py-[0.95rem] text-muted-foreground">
-        <span class="grid size-[2.6rem] place-items-center rounded-[0.9rem] bg-background font-display font-bold">{{ sections.length + 1 }}</span>
+      <li class="grid grid-cols-[2.6rem_minmax(0,1fr)] items-center gap-3.5 rounded-card border border-dashed border-border px-4.5 py-3.75 text-muted-foreground">
+        <span class="grid size-10.5 place-items-center rounded-md bg-background font-display font-medium">{{ sections.length + 1 }}</span>
         <span class="min-w-0">
-          <b class="block font-display text-[1.12rem] font-[650] tracking-[-0.02em] text-foreground">Membership</b>
-          <small class="block text-[0.88rem]">After you submit: choose a plan and pay. Refunded if verification does not pass.</small>
+          <b class="block font-display text-lg font-normal tracking-tight text-foreground">Membership</b>
+          <small class="block text-sm">After you submit: choose a plan and pay. Refunded if verification does not pass.</small>
         </span>
       </li>
     </ul>
 
-    <div class="mt-[1.4rem] grid gap-[0.8rem]">
+    <div class="mt-5.5 grid gap-3.25">
       <!-- agreed to at the point of submitting, not before there is anything to submit -->
-      <section v-if="allDone" aria-labelledby="before-submit-title" class="mt-[0.4rem] grid gap-[0.7rem]">
-        <h2 id="before-submit-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Before you submit</h2>
+      <section v-if="allDone" aria-labelledby="before-submit-title" class="mt-1.5 grid gap-2.75">
+        <h2 id="before-submit-title" class="font-display text-lg font-normal tracking-tight">Before you submit</h2>
         <ApplicationEmailConfirm />
         <LegalAcceptanceFields
           variant="lawyer"
@@ -187,7 +187,7 @@ async function submit() {
         />
       </section>
 
-      <p v-if="store.validationError" role="alert" class="rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
+      <p v-if="store.validationError" role="alert" class="rounded-lg border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
         {{ store.validationError }}
       </p>
 
@@ -196,18 +196,18 @@ async function submit() {
         type="button"
         variant="canopy"
         size="pill"
-        class="group/btn h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]"
+        class="group/btn h-13 w-full justify-between pr-2 pl-5.5"
         :disabled="submitting"
         :aria-busy="submitting"
         @click="submit"
       >
         {{ submitting ? 'Submitting…' : 'Submit and continue to payment' }}<CanopyArrowChip />
       </Button>
-      <Button v-else-if="nextSection" as-child variant="canopy" size="pill" class="group/btn h-[3.25rem] w-full justify-between pr-2 pl-[1.4rem]">
+      <Button v-else-if="nextSection" as-child variant="canopy" size="pill" class="group/btn h-13 w-full justify-between pr-2 pl-5.5">
         <NuxtLink :to="nextSection.to">{{ nextSection.action }}: {{ nextSection.title }}<CanopyArrowChip /></NuxtLink>
       </Button>
 
-      <p class="text-[0.85rem] text-muted-foreground">
+      <p class="text-sm text-muted-foreground">
         <template v-if="allDone">After you submit, we usually review applications within {{ REVIEW_TIME }}. You will not be able to edit these details once submitted.</template>
         <template v-else>You can submit once all {{ sections.length }} sections are done.</template>
       </p>

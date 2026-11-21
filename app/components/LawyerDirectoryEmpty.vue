@@ -41,11 +41,11 @@ const tips = [
       </div>
 
       <p
-        class="font-mono text-muted-foreground text-2xs uppercase tracking-[0.2em]"
+        class="font-mono text-muted-foreground text-2xs uppercase tracking-widest"
       >
         No matches
       </p>
-     <h3 id="lawyer-directory-empty-title" class="mt-2 text-balance text-xl font-semibold text-foreground sm:text-2xl">
+     <h3 id="lawyer-directory-empty-title" class="mt-2 text-balance text-xl font-medium text-foreground sm:text-2xl">
         We couldn’t find lawyers for this search
       </h3>
       <p class="mx-auto mt-3 max-w-sm text-pretty text-muted-foreground text-sm leading-relaxed sm:text-base">
@@ -72,7 +72,7 @@ const tips = [
       </ul>
 
       <div class="relative z-10 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button size="lg" class="min-w-[10.5rem] gap-2 font-semibold shadow-sm" @click="emit('reset')">
+        <Button size="lg" class="min-w-42 gap-2 font-medium shadow-sm" @click="emit('reset')">
           <HugeiconsIcon :icon="ArrowReloadHorizontalIcon" class="size-4" aria-hidden="true" />
           Reset filters
         </Button>

@@ -19,13 +19,13 @@
     </AuthSubmit>
 
     <form v-else novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <!-- Email or phone, switched with a quiet link in the label row as on
              sign in. Both fields stay mounted (v-show) so each mounts once. -->
-        <div v-show="authMethod === 'email'" class="grid gap-[1.1rem]">
+        <div v-show="authMethod === 'email'" class="grid gap-4.5">
           <div
             v-if="tempEmailWarning"
-            class="rounded-[1rem] border border-warning/30 bg-warning/5 p-4 text-sm text-warning-subtle-foreground"
+            class="rounded-lg border border-warning/30 bg-warning/5 p-4 text-sm text-warning-subtle-foreground"
           >
             This account signs in with a phone number.
             <button type="button" :class="authLink" @click="authMethod = 'phone'">Use phone instead</button>
@@ -34,8 +34,8 @@
 
           <form.Field v-slot="{ field }" name="email">
             <Field :data-invalid="isInvalid(field)">
-              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                <FieldLabel :for="field.name" class="w-auto font-semibold">Email address</FieldLabel>
+              <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                <FieldLabel :for="field.name" class="w-auto font-medium">Email address</FieldLabel>
                 <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'phone'">
                   Use phone instead
                 </button>
@@ -62,8 +62,8 @@
         <div v-show="authMethod === 'phone'">
           <form.Field v-slot="{ field }" name="phone">
             <Field :data-invalid="isInvalid(field)">
-              <div class="flex w-full items-baseline justify-between gap-4 text-[0.9rem]">
-                <span class="font-semibold">Phone number</span>
+              <div class="flex w-full items-baseline justify-between gap-4 text-sm">
+                <span class="font-medium">Phone number</span>
                 <button type="button" :class="authLink" :disabled="isSubmitting" @click="authMethod = 'email'">
                   Use email instead
                 </button>
@@ -83,7 +83,7 @@
 
         <AuthFormError :message="apiError" />
 
-        <AuthSubmit :loading="isSubmitting" :disabled="tempEmailWarning" class="mt-[0.3rem]">
+        <AuthSubmit :loading="isSubmitting" :disabled="tempEmailWarning" class="mt-1.25">
           {{ isSubmitting ? 'Sending…' : 'Send reset code' }}
         </AuthSubmit>
       </FieldGroup>

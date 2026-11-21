@@ -245,7 +245,7 @@ const timeline = computed<TimelineEntry[]>(() => {
 })
 
 // One shape for every bubble: a little larger and rounder than the stock one.
-const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-[1.5]'
+const bubble = 'rounded-lg px-3.75 py-2.25 text-sm leading-normal'
 </script>
 
 <template>
@@ -259,14 +259,14 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
       v-if="isPending"
       role="status"
       aria-label="Loading messages"
-      class="grid flex-1 content-start gap-[0.8rem] overflow-hidden px-[clamp(0.9rem,2vw,1.4rem)] py-4"
+      class="grid flex-1 content-start gap-3.25 overflow-hidden px-3.5 md:px-3.75 lg:px-5 xl:px-5.5 py-4"
     >
-      <div class="h-[3.6rem] w-[62%] animate-pulse rounded-[1.15rem] bg-muted" />
-      <div class="h-[2.8rem] w-[48%] animate-pulse justify-self-end rounded-[1.15rem] bg-muted" />
-      <div class="h-[4.4rem] w-[56%] animate-pulse rounded-[1.15rem] bg-muted" />
+      <div class="h-14.5 w-3/5 animate-pulse rounded-lg bg-muted" />
+      <div class="h-11.25 w-1/2 animate-pulse justify-self-end rounded-lg bg-muted" />
+      <div class="h-17.5 w-7/12 animate-pulse rounded-lg bg-muted" />
     </div>
 
-    <div v-else-if="isError" class="grid flex-1 place-content-center justify-items-center gap-[0.7rem] px-6 text-center">
+    <div v-else-if="isError" class="grid flex-1 place-content-center justify-items-center gap-2.75 px-6 text-center">
       <p class="text-muted-foreground">We could not load this conversation.</p>
       <Button variant="line" size="pill-sm" @click="refetch()">Try again</Button>
     </div>
@@ -278,7 +278,7 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
     >
       <MessageScroller class="min-h-0 flex-1">
         <MessageScrollerViewport class="app-scrollbar">
-          <MessageScrollerContent class="gap-1 px-[clamp(0.9rem,2vw,1.4rem)] py-4">
+          <MessageScrollerContent class="gap-1 px-3.5 md:px-3.75 lg:px-5 xl:px-5.5 py-4">
             <div
               v-if="messages.length === 0 && optimisticMessages.length === 0"
               class="py-12 text-center text-muted-foreground"
@@ -289,7 +289,7 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
             <template v-for="entry in timeline" :key="entry.key">
               <MessageScrollerItem v-if="entry.type === 'day'" class="py-3">
                 <Marker variant="separator">
-                  <MarkerContent class="text-[0.78rem] font-semibold text-muted-foreground">
+                  <MarkerContent class="text-xs font-medium text-muted-foreground">
                     {{ entry.label }}
                   </MarkerContent>
                 </Marker>
@@ -369,7 +369,7 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
                     </Bubble>
                     <MessageFooter
                       v-if="entry.endsRun"
-                      class="gap-1.5 px-[0.3rem] text-[0.76rem]"
+                      class="gap-1.5 px-1.25 text-xs"
                     >
                       <span>{{ formatMessageTime(entry.message.createdAt) }}</span>
                       <MessageReadTicks
@@ -415,12 +415,12 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
                       </p>
                     </BubbleContent>
                   </Bubble>
-                  <MessageFooter class="gap-1.5 px-[0.3rem] text-[0.76rem]">
+                  <MessageFooter class="gap-1.5 px-1.25 text-xs">
                     <template v-if="optimistic.state === 'failed'">
                       <span role="alert" class="text-destructive">Not delivered</span>
                       <button
                         type="button"
-                        class="font-semibold underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                        class="font-medium underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                         @click="retryMessage(optimistic.clientId)"
                       >
                         Retry
@@ -437,10 +437,10 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
       </MessageScroller>
     </MessageScrollerProvider>
 
-    <div class="border-t border-border bg-card px-[clamp(0.7rem,1.6vw,1.1rem)] py-[0.7rem]">
+    <div class="border-t border-border bg-card px-2.75 md:px-3 lg:px-4 xl:px-4.5 py-2.75">
       <p
         v-if="isUserTyping && typingLabel"
-        class="mb-2 px-[0.3rem] text-[0.85rem] text-muted-foreground"
+        class="mb-2 px-1.25 text-sm text-muted-foreground"
       >
         {{ typingLabel }}
       </p>
@@ -468,7 +468,7 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
           </AttachmentAction>
         </AttachmentActions>
       </Attachment>
-      <p v-if="fileError" role="alert" class="mb-2 px-[0.3rem] text-[0.88rem] font-semibold text-destructive">
+      <p v-if="fileError" role="alert" class="mb-2 px-1.25 text-sm font-medium text-destructive">
         {{ fileError }}
       </p>
       <form class="flex items-end gap-2" @submit.prevent="handleSend">
@@ -483,33 +483,33 @@ const bubble = 'rounded-[1.15rem] px-[0.95rem] py-[0.55rem] text-[1rem] leading-
           type="button"
           variant="ghost"
           size="icon"
-          class="size-[2.75rem] shrink-0 rounded-full text-muted-foreground hover:bg-background hover:text-foreground"
+          class="size-11 shrink-0 rounded-full text-muted-foreground hover:bg-background hover:text-foreground"
           aria-label="Attach a file"
           :disabled="upload.isPending.value"
           @click="fileInput?.click()"
         >
-          <HugeiconsIcon :icon="Attachment01Icon" class="size-[1.2rem]" />
+          <HugeiconsIcon :icon="Attachment01Icon" class="size-4.75" />
         </Button>
         <Textarea
           v-model="messageInput"
           rows="1"
           placeholder="Write a message"
           aria-label="Message"
-          class="max-h-[9rem] min-h-[2.75rem] resize-none rounded-[1.4rem] border-border bg-background px-[1rem] py-[0.6rem] text-[1rem] shadow-none"
+          class="max-h-36 min-h-11 resize-none rounded-card border-border bg-background px-4 py-2.5 text-sm shadow-none"
           @input="handleTyping"
           @keydown.enter.exact.prevent="handleSend"
         />
         <Button
           type="submit"
           size="icon"
-          class="size-[2.75rem] shrink-0 rounded-full"
+          class="size-11 shrink-0 rounded-full"
           aria-label="Send message"
           :disabled="(!messageInput.trim() && !pendingFile) || upload.isPending.value"
         >
-          <HugeiconsIcon :icon="SentIcon" class="size-[1.15rem]" />
+          <HugeiconsIcon :icon="SentIcon" class="size-4.5" />
         </Button>
       </form>
-      <p v-if="!isConnected" role="status" class="mt-2 px-[0.3rem] text-[0.85rem] text-muted-foreground">
+      <p v-if="!isConnected" role="status" class="mt-2 px-1.25 text-sm text-muted-foreground">
         You are offline. Your messages will send when you are back.
       </p>
     </div>

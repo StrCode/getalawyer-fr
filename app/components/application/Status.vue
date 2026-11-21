@@ -47,46 +47,46 @@ const MEMBERSHIP = {
   <div>
     <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
       <div class="min-w-0">
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ kicker }}</p>
-        <h1 class="mt-[0.6rem] text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">{{ title }}</h1>
+        <p class="text-sm font-medium tracking-widest text-brand uppercase">{{ kicker }}</p>
+        <h1 class="mt-2.5 text-3xl md:text-4xl leading-none font-normal tracking-tight text-balance">{{ title }}</h1>
       </div>
-      <span v-if="pill" class="inline-flex items-center gap-[0.4rem] rounded-full px-[0.7rem] py-1 text-[0.74rem] font-bold tracking-[0.06em] whitespace-nowrap uppercase" :class="PILL[pill.tone]">
-        <i class="size-[0.45rem] rounded-full bg-current" />{{ pill.label }}
+      <span v-if="pill" class="inline-flex items-center gap-1.5 rounded-full px-2.75 py-1 text-xs font-medium tracking-wider whitespace-nowrap uppercase" :class="PILL[pill.tone]">
+        <i class="size-1.75 rounded-full bg-current" />{{ pill.label }}
       </span>
     </div>
-    <p v-if="description || $slots.description" class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">
+    <p v-if="description || $slots.description" class="mt-2.5 max-w-152 text-muted-foreground">
       <slot name="description">{{ description }}</slot>
     </p>
 
-    <ul class="mt-[1.4rem] grid gap-[0.5rem]">
+    <ul class="mt-5.5 grid gap-2">
       <li
         v-for="section in SECTIONS"
         :key="section.title"
-        class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.1rem] border border-border bg-card px-4 py-[0.7rem]"
+        class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-3.5 rounded-lg border border-border bg-card px-4 py-2.75"
       >
-        <span class="grid size-[2.2rem] place-items-center rounded-[0.8rem]" :class="sectionsState === 'submitted' ? 'bg-primary text-white' : 'bg-background text-deep'">
+        <span class="grid size-8.75 place-items-center rounded-md" :class="sectionsState === 'submitted' ? 'bg-primary text-white' : 'bg-background text-deep'">
           <CanopyGlyph name="tick" :size="14" :stroke="3.2" />
         </span>
-        <b class="font-display text-[1.05rem] font-[650] tracking-[-0.02em]">{{ section.title }}</b>
-        <span class="text-[0.85rem] font-semibold whitespace-nowrap text-muted-foreground">{{ sectionsState === 'submitted' ? 'Submitted' : section.reopen }}</span>
+        <b class="font-display text-base font-normal tracking-tight">{{ section.title }}</b>
+        <span class="text-sm font-medium whitespace-nowrap text-muted-foreground">{{ sectionsState === 'submitted' ? 'Submitted' : section.reopen }}</span>
       </li>
       <li
-        class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-[0.9rem] rounded-[1.1rem] border px-4 py-[0.7rem] max-sm:grid-cols-[2.2rem_minmax(0,1fr)]"
+        class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-3.5 rounded-lg border px-4 py-2.75 max-sm:grid-cols-[2.2rem_minmax(0,1fr)]"
         :class="membership === 'due' ? 'border-brand bg-mint text-deep' : membership === 'later' ? 'border-dashed border-border' : 'border-border bg-card'"
       >
-        <span class="grid size-[2.2rem] place-items-center rounded-[0.8rem] font-display font-bold" :class="membership === 'paid' ? 'bg-primary text-white' : 'bg-background text-deep'">
+        <span class="grid size-8.75 place-items-center rounded-md font-display font-medium" :class="membership === 'paid' ? 'bg-primary text-white' : 'bg-background text-deep'">
           <CanopyGlyph v-if="membership === 'paid'" name="tick" :size="14" :stroke="3.2" />
           <template v-else>5</template>
         </span>
         <span class="min-w-0">
-          <b class="block font-display text-[1.05rem] font-[650] tracking-[-0.02em]">Membership</b>
-          <small class="block text-[0.86rem] opacity-80">{{ MEMBERSHIP[membership].text }}</small>
+          <b class="block font-display text-base font-normal tracking-tight">Membership</b>
+          <small class="block text-sm opacity-80">{{ MEMBERSHIP[membership].text }}</small>
         </span>
-        <span class="text-[0.85rem] font-semibold whitespace-nowrap max-sm:col-start-2" :class="membership === 'due' ? '' : 'text-muted-foreground'">{{ MEMBERSHIP[membership].status }}</span>
+        <span class="text-sm font-medium whitespace-nowrap max-sm:col-start-2" :class="membership === 'due' ? '' : 'text-muted-foreground'">{{ MEMBERSHIP[membership].status }}</span>
       </li>
     </ul>
 
-    <div class="mt-[1.6rem] grid gap-[1.1rem]">
+    <div class="mt-6.5 grid gap-4.5">
       <slot />
     </div>
   </div>

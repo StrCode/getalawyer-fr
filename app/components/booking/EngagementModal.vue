@@ -23,7 +23,7 @@
                 v-for="option in outcomeOptions"
                 :key="option.value"
                 :for="`${field.name}-${option.value}`"
-                class="flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-all"
+                class="flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-colors"
                 :class="
                   field.state.value === option.value
                     ? 'border-primary bg-primary/5'
@@ -41,7 +41,7 @@
                   <HugeiconsIcon :icon="option.icon" class="size-5" aria-hidden="true" />
                 </span>
                 <span class="flex-1">
-                  <span class="block font-semibold text-foreground">{{ option.label }}</span>
+                  <span class="block font-medium text-foreground">{{ option.label }}</span>
                   <span class="mt-0.5 block text-sm text-muted-foreground">
                     {{ option.description }}
                   </span>

@@ -59,12 +59,12 @@ async function save() {
 </script>
 
 <template>
-  <form v-if="missing" class="mb-[1.4rem] rounded-[1.25rem] border border-warning/30 bg-warning/10 p-4" novalidate @submit.prevent="save">
-    <h2 class="font-display text-[1.15rem] font-[650] tracking-[-0.02em] text-warning-subtle-foreground">Set your password</h2>
-    <p class="mt-1 text-[0.92rem] text-warning-subtle-foreground">
+  <form v-if="missing" class="mb-5.5 rounded-card border border-warning/30 bg-warning/10 p-4" novalidate @submit.prevent="save">
+    <h2 class="font-display text-lg font-normal tracking-tight text-warning-subtle-foreground">Set your password</h2>
+    <p class="mt-1 text-base text-warning-subtle-foreground">
       Your phone number is confirmed, but your password was not saved. Set one now, or you will not be able to sign in again.
     </p>
-    <label for="finish-password" class="mt-3 block text-[0.9rem] font-semibold">Password</label>
+    <label for="finish-password" class="mt-3 block text-sm font-medium">Password</label>
     <AuthPasswordInput
       id="finish-password"
       v-model="password"
@@ -73,10 +73,10 @@ async function save() {
       placeholder="At least 8 characters"
       :aria-invalid="Boolean(error)"
       :disabled="saving"
-      class="mt-[0.4rem]"
+      class="mt-1.5"
     />
-    <p class="mt-[0.4rem] text-[0.85rem] text-muted-foreground">At least 8 characters, with one uppercase letter and one number.</p>
-    <p v-if="error" role="alert" class="mt-2 text-[0.9rem] font-semibold text-destructive">{{ error }}</p>
+    <p class="mt-1.5 text-sm text-muted-foreground">At least 8 characters, with one uppercase letter and one number.</p>
+    <p v-if="error" role="alert" class="mt-2 text-sm font-medium text-destructive">{{ error }}</p>
     <AuthSubmit :loading="saving" class="mt-3">Save password</AuthSubmit>
   </form>
 </template>

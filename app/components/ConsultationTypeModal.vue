@@ -131,15 +131,15 @@ const linkExample = 'https://meet.google.com/…'
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="max-h-[min(92svh,50rem)] gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[36rem]">
-      <DialogHeader class="gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left">
-        <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ isEdit ? 'Edit this consultation type' : 'Add a consultation type' }}</DialogTitle>
-        <DialogDescription class="text-[1rem] text-muted-foreground">Clients see the name, the length, the price and how you meet when they book.</DialogDescription>
+    <DialogContent class="max-h-[min(92svh,50rem)] gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 sm:max-w-144">
+      <DialogHeader class="gap-1.5 border-b border-border px-4.75 md:px-7 py-4.5 text-left">
+        <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">{{ isEdit ? 'Edit this consultation type' : 'Add a consultation type' }}</DialogTitle>
+        <DialogDescription class="text-sm text-muted-foreground">Clients see the name, the length, the price and how you meet when they book.</DialogDescription>
       </DialogHeader>
 
-      <div class="max-h-[min(66svh,38rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]">
+      <div class="max-h-[min(66svh,38rem)] overflow-y-auto px-4.75 md:px-7 py-4.75">
         <form :id="formId" novalidate @submit.prevent="form.handleSubmit">
-          <FieldGroup class="gap-[1.1rem]">
+          <FieldGroup class="gap-4.5">
             <form.Field v-slot="{ field }" name="name">
               <Field :class="canopyField" :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name" :class="canopyLabel">Name</FieldLabel>
@@ -182,7 +182,7 @@ const linkExample = 'https://meet.google.com/…'
               </Field>
             </form.Field>
 
-            <div class="grid gap-[1.1rem] sm:grid-cols-2">
+            <div class="grid gap-4.5 sm:grid-cols-2">
               <form.Field v-slot="{ field }" name="durationMinutes">
                 <Field :class="canopyField" :data-invalid="isInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">Length</FieldLabel>
@@ -228,7 +228,7 @@ const linkExample = 'https://meet.google.com/…'
               </form.Field>
             </div>
 
-            <div class="grid gap-[1.1rem] sm:grid-cols-2">
+            <div class="grid gap-4.5 sm:grid-cols-2">
               <form.Field v-slot="{ field }" name="price">
                 <Field :class="canopyField" :data-invalid="isInvalid(field)">
                   <FieldLabel :for="field.name" :class="canopyLabel">Price</FieldLabel>
@@ -279,7 +279,7 @@ const linkExample = 'https://meet.google.com/…'
                   :name="field.name"
                   :model-value="field.state.value"
                   :disabled="submitting"
-                  class="grid grid-cols-1 gap-[0.5rem] sm:grid-cols-2"
+                  class="grid grid-cols-1 gap-2 sm:grid-cols-2"
                   @update:model-value="(v) => {
                     field.handleChange(v as MeetingType)
                     field.handleBlur()
@@ -289,8 +289,8 @@ const linkExample = 'https://meet.google.com/…'
                     <Field orientation="horizontal" class="items-center">
                       <RadioGroupItem :id="`${formId}-${type}`" :value="type" :aria-invalid="isInvalid(field)" />
                       <FieldContent class="gap-0">
-                        <FieldTitle class="text-[0.95rem] font-semibold">{{ MEETING_OPTIONS[type].title }}</FieldTitle>
-                        <FieldDescription class="text-[0.85rem]">{{ MEETING_OPTIONS[type].description }}</FieldDescription>
+                        <FieldTitle class="text-sm font-medium">{{ MEETING_OPTIONS[type].title }}</FieldTitle>
+                        <FieldDescription class="text-sm">{{ MEETING_OPTIONS[type].description }}</FieldDescription>
                       </FieldContent>
                     </Field>
                   </FieldLabel>
@@ -309,7 +309,7 @@ const linkExample = 'https://meet.google.com/…'
                   :id="field.name"
                   :name="field.name"
                   :model-value="field.state.value"
-                  :class="[canopyTextarea, 'min-h-[4.5rem]']"
+                  :class="[canopyTextarea, 'min-h-18']"
                   rows="2"
                   maxlength="500"
                   placeholder="Your office address"
@@ -346,7 +346,7 @@ const linkExample = 'https://meet.google.com/…'
             </form.Field>
 
             <form.Field v-slot="{ field }" name="isActive">
-              <Field orientation="horizontal" class="items-center gap-[0.8rem]">
+              <Field orientation="horizontal" class="items-center gap-3.25">
                 <Switch
                   :id="field.name"
                   :name="field.name"
@@ -355,8 +355,8 @@ const linkExample = 'https://meet.google.com/…'
                   @update:model-value="(v) => field.handleChange(v === true)"
                 />
                 <FieldContent class="gap-0">
-                  <FieldLabel :for="field.name" class="font-semibold">{{ isActive ? 'Offered to clients' : 'Paused' }}</FieldLabel>
-                  <FieldDescription class="text-[0.88rem]">{{ isActive ? 'Clients can book it.' : 'Clients cannot book it until you offer it again.' }}</FieldDescription>
+                  <FieldLabel :for="field.name" class="font-medium">{{ isActive ? 'Offered to clients' : 'Paused' }}</FieldLabel>
+                  <FieldDescription class="text-sm">{{ isActive ? 'Clients can book it.' : 'Clients cannot book it until you offer it again.' }}</FieldDescription>
                 </FieldContent>
               </Field>
             </form.Field>
@@ -364,7 +364,7 @@ const linkExample = 'https://meet.google.com/…'
         </form>
       </div>
 
-      <DialogFooter class="gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]">
+      <DialogFooter class="gap-2.5 border-t border-border px-4.75 md:px-7 py-4">
         <Button type="button" variant="line" size="pill" :disabled="submitting" @click="isOpen = false">Cancel</Button>
         <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="submitting" :aria-busy="submitting">{{ submitting ? 'Saving…' : isEdit ? 'Save changes' : 'Add the type' }}</Button>
       </DialogFooter>

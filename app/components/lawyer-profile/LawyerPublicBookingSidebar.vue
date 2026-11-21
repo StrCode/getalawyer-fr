@@ -34,7 +34,7 @@ const MEETING_TYPE_ROWS = [
 <!-- Price leads: it's the #1 comparison signal, not a footnote. -->
     <div class="border-b border-border p-6 md:p-7">
       <template v-if="primaryConsultation">
-        <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
+        <p class="mb-1 text-2xl font-medium text-primary tabular-nums">
           <template v-if="priceRange.min > 0 && priceRange.max > priceRange.min">
             From ₦{{ priceRange.min.toLocaleString() }}
           </template>
@@ -53,7 +53,7 @@ const MEETING_TYPE_ROWS = [
         </p>
       </template>
       <template v-else>
-        <p class="mb-1 text-2xl font-semibold text-primary tabular-nums">
+        <p class="mb-1 text-2xl font-medium text-primary tabular-nums">
           Free to message
         </p>
         <p class="mt-1 text-sm text-muted-foreground">
@@ -128,7 +128,7 @@ const MEETING_TYPE_ROWS = [
         <Button
           v-if="primaryConsultation"
           size="lg"
-          class="h-12 w-full font-semibold"
+          class="h-12 w-full font-medium"
           as-child
         >
           <NuxtLink :to="`/lawyers/${lawyerId}/book`">
@@ -139,7 +139,7 @@ const MEETING_TYPE_ROWS = [
         <Button
           size="lg"
           :variant="primaryConsultation ? 'outline' : 'default'"
-          class="h-12 w-full font-semibold"
+          class="h-12 w-full font-medium"
           @click="emit('ask')"
         >
           <HugeiconsIcon :icon="Message02Icon" class="mr-2 size-5" />

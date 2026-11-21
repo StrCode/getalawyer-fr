@@ -45,16 +45,16 @@ function directory(id: string) {
 </script>
 
 <template>
-  <div class="pb-[clamp(3.5rem,7vw,6.5rem)]">
-    <section data-surface="forest" class="rounded-panel bg-forest px-[clamp(1.25rem,4.5vw,4.5rem)] py-[clamp(1.5rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]">
-      <nav aria-label="Breadcrumb" class="flex gap-2 text-[0.85rem] font-semibold text-on-forest">
-        <NuxtLink to="/" class="underline underline-offset-[3px]">Home</NuxtLink>
+  <div class="pb-14 lg:pb-18 xl:pb-22.5">
+    <section data-surface="forest" class="rounded-panel bg-forest px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-6 md:py-6.25 lg:py-8.25 xl:py-10.25 text-white max-sm:rounded-2xl">
+      <nav aria-label="Breadcrumb" class="flex gap-2 text-sm font-medium text-on-forest">
+        <NuxtLink to="/" class="underline underline-offset-3">Home</NuxtLink>
         <span aria-hidden="true">/</span>
         <span aria-current="page">Practice areas</span>
       </nav>
-      <h1 class="mt-[0.9rem] text-[clamp(2.1rem,3.8vw,3.1rem)] leading-[1.02] font-[620] tracking-[-0.04em]">Practice areas</h1>
-      <p class="mt-[0.8rem] max-w-[36rem] text-[1.1rem] text-on-forest">Pick the area closest to your problem to see verified lawyers who handle it. Not sure which one fits? Describe it in a word or two.</p>
-      <label for="area-search" class="mt-[1.6rem] flex max-w-[34rem] items-center gap-3 rounded-full bg-card py-[0.45rem] pr-[0.45rem] pl-5 text-foreground shadow-rail">
+      <h1 class="mt-3.5 text-4xl md:text-5xl leading-none font-normal tracking-tighter">Practice areas</h1>
+      <p class="mt-3.25 max-w-144 text-lg text-on-forest">Pick the area closest to your problem to see verified lawyers who handle it. Not sure which one fits? Describe it in a word or two.</p>
+      <label for="area-search" class="mt-6.5 flex max-w-136 items-center gap-3 rounded-full bg-card py-1.75 pr-1.75 pl-5 text-foreground shadow-rail">
         <CanopyGlyph name="search" :size="20" :stroke="2.2" class="flex-none text-muted-foreground" />
         <span class="sr-only">Search practice areas</span>
         <input
@@ -62,21 +62,21 @@ function directory(id: string) {
           v-model="query"
           type="search"
           placeholder="Tenancy, divorce, unpaid salary…"
-          class="min-h-11 min-w-0 flex-1 bg-transparent text-[1.02rem] outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
+          class="min-h-11 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
         >
-        <button v-if="query" type="button" class="min-h-11 cursor-pointer rounded-full px-4 text-[0.9rem] font-semibold text-muted-foreground hover:text-foreground" @click="query = ''">Clear</button>
+        <button v-if="query" type="button" class="min-h-11 cursor-pointer rounded-full px-4 text-sm font-medium text-muted-foreground hover:text-foreground" @click="query = ''">Clear</button>
       </label>
     </section>
 
     <!-- loading -->
-    <div v-if="isPending" class="mt-[1.4rem] grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-[1.1rem]" aria-busy="true" aria-label="Loading practice areas">
+    <div v-if="isPending" class="mt-5.5 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-4.5" aria-busy="true" aria-label="Loading practice areas">
       <Skeleton v-for="n in 8" :key="n" class="h-40 rounded-card" />
     </div>
 
     <!-- could not load -->
-    <div v-else-if="isError" role="alert" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-      <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">We could not load the practice areas.</h2>
-      <p class="max-w-[30rem] text-muted-foreground">Check your connection and try again, or browse every lawyer in the directory.</p>
+    <div v-else-if="isError" role="alert" class="mt-5.5 grid justify-items-center gap-3.25 rounded-card border border-dashed border-border px-6 py-8 md:py-9.5 lg:py-12.75 xl:py-14 text-center">
+      <h2 class="text-xl md:text-2xl lg:text-3xl leading-none font-normal tracking-tight">We could not load the practice areas.</h2>
+      <p class="max-w-120 text-muted-foreground">Check your connection and try again, or browse every lawyer in the directory.</p>
       <div class="flex flex-wrap justify-center gap-2">
         <Button variant="line" size="pill" @click="refetch()">Try again</Button>
         <Button as-child variant="ink-pill" size="pill"><NuxtLink to="/find-lawyers">Browse lawyers</NuxtLink></Button>
@@ -84,15 +84,15 @@ function directory(id: string) {
     </div>
 
     <template v-else>
-      <p aria-live="polite" class="mt-7 flex flex-wrap items-baseline gap-x-[0.7rem] border-b border-border pb-4 text-muted-foreground">
-        <b class="font-display text-[1.45rem] font-[650] tracking-[-0.03em] text-foreground">{{ matches.length }} {{ matches.length === 1 ? 'area' : 'areas' }}</b>
+      <p aria-live="polite" class="mt-7 flex flex-wrap items-baseline gap-x-2.75 border-b border-border pb-4 text-muted-foreground">
+        <b class="font-display text-2xl font-normal tracking-tight text-foreground">{{ matches.length }} {{ matches.length === 1 ? 'area' : 'areas' }}</b>
         <span v-if="query.trim()">matching “{{ query.trim() }}”</span>
       </p>
 
       <!-- nothing matches -->
-      <div v-if="matches.length === 0" class="mt-[1.4rem] grid justify-items-center gap-[0.8rem] rounded-card border border-dashed border-border px-6 py-[clamp(2rem,5vw,3.5rem)] text-center">
-        <h2 class="text-[clamp(1.4rem,2.3vw,1.85rem)] leading-[1.02] font-[650] tracking-[-0.035em]">No practice area matches that.</h2>
-        <p class="max-w-[30rem] text-muted-foreground">Try a different word, or search the directory by describing your problem.</p>
+      <div v-if="matches.length === 0" class="mt-5.5 grid justify-items-center gap-3.25 rounded-card border border-dashed border-border px-6 py-8 md:py-9.5 lg:py-12.75 xl:py-14 text-center">
+        <h2 class="text-xl md:text-2xl lg:text-3xl leading-none font-normal tracking-tight">No practice area matches that.</h2>
+        <p class="max-w-120 text-muted-foreground">Try a different word, or search the directory by describing your problem.</p>
         <div class="flex flex-wrap justify-center gap-2">
           <Button variant="line" size="pill" @click="query = ''">Show all areas</Button>
           <Button as-child variant="ink-pill" size="pill">
@@ -101,19 +101,19 @@ function directory(id: string) {
         </div>
       </div>
 
-      <ul v-else class="mt-[1.4rem] grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-[1.1rem]">
+      <ul v-else class="mt-5.5 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-4.5">
         <li v-for="area in matches" :key="area.id" class="flex">
           <NuxtLink
             :to="directory(area.id)"
-            class="group/area flex w-full flex-col rounded-card border border-border bg-card p-[1.3rem] transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:-translate-y-[3px] hover:border-brand hover:shadow-lift"
+            class="group/area flex w-full flex-col rounded-card border border-border bg-card p-5.25 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:border-brand hover:shadow-lift"
           >
-            <span class="flex items-center gap-2 text-[0.78rem] font-bold tracking-[0.08em] text-brand uppercase">
+            <span class="flex items-center gap-2 text-xs font-medium tracking-widest text-brand uppercase">
               <i class="size-2 rounded-full bg-brand" />{{ area.isFeatured ? 'Popular' : 'Practice area' }}
             </span>
-            <b class="mt-[0.6rem] block font-display text-[1.35rem] leading-[1.15] font-[650] tracking-[-0.02em]">{{ area.name }}</b>
-            <span v-if="area.description" class="mt-[0.4rem] block text-[0.95rem] text-muted-foreground">{{ area.description }}</span>
-            <span class="mt-auto flex items-center justify-between gap-3 pt-[1.1rem] text-[0.92rem] font-semibold">
-              See lawyers<CanopyArrowChip class="group-hover/area:translate-x-[3px]" />
+            <b class="mt-2.5 block font-display text-xl leading-tight font-normal tracking-tight">{{ area.name }}</b>
+            <span v-if="area.description" class="mt-1.5 block text-base text-muted-foreground">{{ area.description }}</span>
+            <span class="mt-auto flex items-center justify-between gap-3 pt-4.5 text-base font-medium">
+              See lawyers<CanopyArrowChip class="group-hover/area:translate-x-0.75" />
             </span>
           </NuxtLink>
         </li>

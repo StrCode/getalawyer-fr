@@ -55,19 +55,19 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
   <SettingsSectionCard
     title="Skills"
     description="What you are good at, in a few words each."
-    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+    content-class="grid gap-2.5 p-4.5 lg:p-5.75 xl:p-6"
   >
     <template #action>
-      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a skill</Button>
+      <Button type="button" variant="line" size="pill-sm" class="h-10 px-3.75 text-sm" :disabled="disabled" @click="openCreate">Add a skill</Button>
     </template>
 
-    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No skills added yet.</p>
-    <ul v-else class="flex flex-wrap gap-[0.4rem]">
-      <li v-for="item in items" :key="item.id" class="inline-flex items-center gap-[0.15rem] rounded-full bg-muted py-[0.15rem] pr-[0.2rem] pl-[0.85rem] text-[0.95rem] font-semibold">
+    <p v-if="items.length === 0" class="py-4.75 text-center text-muted-foreground">No skills added yet.</p>
+    <ul v-else class="flex flex-wrap gap-1.5">
+      <li v-for="item in items" :key="item.id" class="inline-flex items-center gap-0.5 rounded-full bg-muted py-0.5 pr-0.75 pl-3.5 text-sm font-medium">
         <button type="button" class="cursor-pointer disabled:cursor-default" :disabled="disabled" :aria-label="`Edit ${item.name}`" @click="openEdit(item)">{{ item.name }}</button>
         <button
           type="button"
-          class="grid size-[2rem] cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-card hover:text-foreground disabled:cursor-default"
+          class="grid size-8 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-card hover:text-foreground disabled:cursor-default"
           :disabled="disabled"
           :aria-label="`Remove ${item.name}`"
           @click="openDelete(item.id)"
@@ -86,7 +86,7 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
     :saving="saving"
   >
     <form id="skill-form" novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="name">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">Skill</FieldLabel>

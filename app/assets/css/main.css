@@ -78,24 +78,24 @@
   --color-sidebar-ring: var(--sidebar-ring);
   /* ---- Canopy (marketing + sign-in) ---- */
   /* Literal stacks, so @nuxt/fonts sees the families and injects their faces. */
-  --font-display: "Instrument Sans", "Instrument Sans Ext", "Helvetica Neue", Arial, sans-serif;
-  --font-text: "Onest", "Onest Ext", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter Tight", "Inter Tight Ext", "Helvetica Neue", Arial, sans-serif;
+  --font-text: "Geist", "Geist Ext", "Helvetica Neue", Arial, sans-serif;
   --ease-canopy: cubic-bezier(0.22, 0.8, 0.26, 1);
   /* tab: hero and panels go side by side; nav: the header shows its links */
   --breakpoint-tab: 62rem;
   --breakpoint-nav: 70rem;
   --container-site: 82rem;
-  --radius-panel: 2.5rem;
-  --radius-tile: 2rem;
-  --radius-card: 1.75rem;
-  --shadow-rail: 0 22px 50px rgba(0, 0, 0, 0.28);
+  --radius-panel: 1rem;
+  --radius-tile: 0.75rem;
+  --radius-card: 0.75rem;
+  --shadow-rail: 0 8px 24px rgba(0, 0, 0, 0.14);
   /* the same rail on a light panel: a border does the work, the shadow only lifts it */
   --shadow-rail-soft: 0 1px 2px rgba(15, 34, 25, 0.04), 0 4px 14px rgba(15, 34, 25, 0.06);
-  --shadow-widget: 0 18px 44px rgba(0, 0, 0, 0.3);
-  --shadow-book: 0 18px 40px rgba(0, 0, 0, 0.28);
-  --shadow-plan: 0 26px 60px rgba(0, 0, 0, 0.35);
-  --shadow-lift: 0 26px 50px rgba(15, 34, 25, 0.12);
-  --shadow-pill: 0 14px 36px rgba(15, 34, 25, 0.1);
+  --shadow-widget: 0 8px 24px rgba(0, 0, 0, 0.14);
+  --shadow-book: 0 8px 24px rgba(0, 0, 0, 0.14);
+  --shadow-plan: 0 12px 32px rgba(0, 0, 0, 0.16);
+  --shadow-lift: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
   --color-glass: var(--glass);
   --color-placeholder: var(--placeholder);
   /* brand tokens (defined on body.canopy in canopy.css) */
@@ -240,8 +240,8 @@
    * a second after they exist. Nothing on the homepage keeps moving: the
    * product views in "How it works" play once as that section arrives.
    */
-  --animate-rise-in: canopy-up 0.5s var(--ease-canopy) both;
-  --animate-photo-in: canopy-up 0.7s var(--ease-canopy) 0.1s both;
+  --animate-rise-in: canopy-up 0.3s var(--ease-canopy) both;
+  --animate-photo-in: canopy-up 0.4s var(--ease-canopy) 0.05s both;
   /* product cards on the hero photo: arrive once, then stay put */
   --animate-widget: canopy-pop 0.6s var(--ease-canopy) both;
   /* a step of a list arriving (the review timeline); stagger with animation-delay */

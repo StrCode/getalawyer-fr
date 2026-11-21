@@ -177,7 +177,7 @@ function retryVerify() {
         </div>
 
         <div class="space-y-2">
-         <h1 class="text-2xl font-semibold text-foreground">
+         <h1 class="text-2xl font-medium text-foreground">
             <template v-if="verifyPending">
               Confirming payment
             </template>

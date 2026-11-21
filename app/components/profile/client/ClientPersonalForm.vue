@@ -44,7 +44,7 @@ watch(() => props.profile, saved => form.reset(personalValues(saved)), { deep: t
 <template>
   <SettingsSectionCard title="Your details" description="Shared with a lawyer when you book a consultation.">
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="name">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">Full name</FieldLabel>
@@ -93,7 +93,7 @@ watch(() => props.profile, saved => form.reset(personalValues(saved)), { deep: t
           </Field>
         </form.Field>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(personalValues(profile))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

@@ -134,7 +134,7 @@ async function saveAndSignOut() {
 </script>
 
 <template>
-  <div class="mx-auto flex min-h-svh max-w-[92rem] flex-col font-text">
+  <div class="mx-auto flex min-h-svh max-w-368 flex-col font-text">
     <!--
       Pinned to the top, so the save status and sign-out stay in reach. A section
       on a phone is the exception: its "Save and return" bar is already pinned at
@@ -147,16 +147,16 @@ async function saveAndSignOut() {
       class="top-0 z-20 border-b bg-background/92 pt-[max(0.6rem,env(safe-area-inset-top,0px))] backdrop-blur-[12px] transition-colors duration-300 safe-x"
       :class="[sectionKey ? 'sm:sticky' : 'sticky', scrolled ? (sectionKey ? 'border-transparent sm:border-border' : 'border-border') : 'border-transparent']"
     >
-      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-[0.4rem]">
+      <div class="flex items-center justify-between gap-4 px-[clamp(0rem,calc((100vw-40rem)*0.12),3.5rem)] py-1.5">
         <CanopyBrand condensed large />
         <div class="flex items-center gap-1">
-          <span v-if="saveStatus" aria-live="polite" class="mr-2 inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground max-sm:hidden">
+          <span v-if="saveStatus" aria-live="polite" class="mr-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground max-sm:hidden">
             <i class="size-2 rounded-full" :class="store.autosave.status === 'error' ? 'bg-destructive' : 'bg-primary'" />{{ saveStatus }}
           </span>
           <CanopyThemeToggle />
           <button
             type="button"
-            class="-mr-2 inline-flex min-h-11 cursor-pointer items-center px-2 text-[0.9rem] font-semibold text-muted-foreground hover:text-brand disabled:opacity-60"
+            class="-mr-2 inline-flex min-h-11 cursor-pointer items-center px-2 text-sm font-medium text-muted-foreground hover:text-brand disabled:opacity-60"
             :disabled="busy || isSigningOut"
             @click="saveAndSignOut"
           >
@@ -166,26 +166,26 @@ async function saveAndSignOut() {
       </div>
     </div>
 
-    <main class="mx-auto w-[min(100%,44rem)] flex-1 pt-[clamp(1.25rem,3vw,2.5rem)] pb-10 safe-x">
-      <button v-if="!isHome" type="button" class="mb-[0.6rem] inline-flex min-h-11 cursor-pointer items-center text-[0.9rem] font-semibold text-muted-foreground hover:text-brand" :disabled="busy" @click="backToHome">
+    <main class="mx-auto w-[min(100%,44rem)] flex-1 pt-5 md:pt-5.75 lg:pt-7.75 xl:pt-9.5 pb-10 safe-x">
+      <button v-if="!isHome" type="button" class="mb-2.5 inline-flex min-h-11 cursor-pointer items-center text-sm font-medium text-muted-foreground hover:text-brand" :disabled="busy" @click="backToHome">
         ← Back to your application
       </button>
       <!-- A section's form waits for the saved application. Shown empty first, its
            fields would fill in a moment later, under whatever had been typed. -->
       <ApplicationSkeleton v-if="holdForDraft" shape="form" label="Loading this section" />
       <slot v-else />
-      <p v-if="store.validationError && !isHome" role="alert" class="mt-[1.2rem] rounded-[1rem] border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
+      <p v-if="store.validationError && !isHome" role="alert" class="mt-4.75 rounded-lg border border-destructive/30 bg-destructive/10 px-3.5 py-3 text-sm text-destructive">
         {{ store.validationError }}
       </p>
     </main>
 
     <!-- a section's one action, always within reach -->
-    <div v-if="!isHome" class="sticky bottom-0 z-10 border-t border-border bg-background pt-[0.8rem] pb-[calc(0.8rem+env(safe-area-inset-bottom,0px))] safe-x">
+    <div v-if="!isHome" class="sticky bottom-0 z-10 border-t border-border bg-background pt-3.25 pb-[calc(0.8rem+env(safe-area-inset-bottom,0px))] safe-x">
       <div class="mx-auto flex w-[min(100%,44rem)] items-center justify-between gap-3">
-        <span class="inline-flex items-center gap-[0.4rem] text-[0.82rem] text-muted-foreground">
+        <span class="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
           <i class="size-2 rounded-full bg-primary" />Saved as you go
         </span>
-        <Button type="button" variant="canopy" size="pill" class="group/btn min-w-[12rem] justify-between pr-2 pl-[1.4rem]" :disabled="busy || holdForDraft" :aria-busy="busy" @click="saveAndReturn">
+        <Button type="button" variant="canopy" size="pill" class="group/btn min-w-48 justify-between pr-2 pl-5.5" :disabled="busy || holdForDraft" :aria-busy="busy" @click="saveAndReturn">
           {{ busy ? 'Saving…' : 'Save and return' }}<CanopyArrowChip />
         </Button>
       </div>

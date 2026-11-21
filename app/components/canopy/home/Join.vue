@@ -14,17 +14,17 @@ import { Button } from '@/components/ui/button'
     data-rise
     data-surface="forest"
     aria-labelledby="join-title"
-    class="flex scroll-mt-24 flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-panel bg-forest px-[clamp(1.5rem,4.5vw,4.5rem)] py-[clamp(1.75rem,3.2vw,2.75rem)] text-white max-sm:rounded-[1.75rem]"
+    class="flex scroll-mt-24 flex-wrap items-center justify-between gap-x-10 gap-y-6 rounded-panel bg-forest px-6 md:px-8.75 lg:px-11.5 xl:px-14.5 py-7 lg:py-8.25 xl:py-10.25 text-white max-sm:rounded-2xl"
   >
-    <div class="min-w-0 flex-[1_1_22rem]">
-      <h2 id="join-title" class="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.05] font-[650] tracking-[-0.035em]">Are you a lawyer?</h2>
-      <p class="mt-[0.6rem] text-[1.1rem] text-on-forest">Join getalawyer so clients can find you.</p>
+    <div class="min-w-0 grow basis-88">
+      <h2 id="join-title" class="text-2xl md:text-3xl lg:text-4xl leading-none font-normal tracking-tight">Are you a lawyer?</h2>
+      <p class="mt-2.5 text-lg text-on-forest">Join getalawyer so clients can find you.</p>
     </div>
     <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
       <Button as-child variant="lime" size="pill" class="max-sm:w-full">
         <NuxtLink to="/register?role=lawyer">Join as a lawyer</NuxtLink>
       </Button>
-      <NuxtLink to="/for-lawyers" class="font-semibold underline decoration-white/40 underline-offset-[5px] transition-colors duration-200 hover:decoration-lime">
+      <NuxtLink to="/for-lawyers" class="font-medium underline decoration-white/40 underline-offset-5 transition-colors duration-200 hover:decoration-lime">
         See how it works for lawyers
       </NuxtLink>
     </div>

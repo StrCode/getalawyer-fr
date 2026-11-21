@@ -32,14 +32,14 @@ function close() {
     :open="open"
     @update:open="emit('update:open', $event)"
   >
-    <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-      <DialogHeader class="gap-[0.5rem] text-left">
-        <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ title ?? 'Remove this?' }}</DialogTitle>
-        <DialogDescription class="text-[1rem] text-muted-foreground">
+    <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+      <DialogHeader class="gap-2 text-left">
+        <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">{{ title ?? 'Remove this?' }}</DialogTitle>
+        <DialogDescription class="text-sm text-muted-foreground">
           {{ description ?? 'This will be removed from your profile.' }}
         </DialogDescription>
       </DialogHeader>
-      <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+      <DialogFooter class="mt-1.25 gap-2.5">
         <Button
           type="button"
           variant="line"

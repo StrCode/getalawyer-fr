@@ -51,8 +51,8 @@ watch(() => props.profile, saved => form.reset(locationValues(saved)), { deep: t
 <template>
   <SettingsSectionCard title="Where you are" description="We use your state to show you lawyers who practise there. Getalawyer works in Nigeria.">
     <form novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+      <FieldGroup class="gap-4.5">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="state">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">State</FieldLabel>
@@ -99,7 +99,7 @@ watch(() => props.profile, saved => form.reset(locationValues(saved)), { deep: t
         </div>
         <FieldDescription :class="canopyHint">Country: Nigeria.</FieldDescription>
 
-        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(locationValues(profile))">Discard</Button>
           <Button type="submit" variant="canopy" size="pill-sm" :disabled="!dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
         </div>

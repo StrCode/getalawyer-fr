@@ -57,7 +57,7 @@ watch(isOpen, (open) => {
       class="flex w-full flex-col gap-0 p-0 sm:max-w-md"
     >
       <div class="border-b border-border px-6 py-5">
-       <h2 class="text-lg font-semibold text-foreground">
+       <h2 class="text-lg font-medium text-foreground">
           Ask {{ lawyerInfo.name }} a question
         </h2>
         <p class="mt-1 text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ watch(isOpen, (open) => {
             rows="6"
             maxlength="5000"
             placeholder="Describe your legal question or situation…"
-            class="min-h-[160px] resize-none"
+            class="min-h-40 resize-none"
           />
           <p class="text-xs text-muted-foreground">
             You can attach files after the conversation opens.
@@ -84,7 +84,7 @@ watch(isOpen, (open) => {
         <Button
           type="submit"
           size="lg"
-          class="mt-auto h-12 w-full font-semibold"
+          class="mt-auto h-12 w-full font-medium"
           :disabled="!question.trim() || isAsking"
         >
           <HugeiconsIcon :icon="Loading03Icon" v-if="isAsking" class="mr-2 size-4 animate-spin" />

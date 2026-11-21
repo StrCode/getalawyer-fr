@@ -76,7 +76,7 @@ const emptyCopy = computed(() =>
 )
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-xl leading-none font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card'
 
 onMounted(() => {
@@ -85,12 +85,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mx-auto grid w-full max-w-[52rem] grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
+  <div class="mx-auto grid w-full max-w-208 grid-cols-1 gap-5 lg:gap-6.25 xl:gap-7.75">
     <header class="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div class="min-w-0">
-        <h1 class="text-[clamp(1.6rem,2.6vw,2rem)] leading-[1.03] font-[620] tracking-[-0.04em]">Notifications</h1>
-        <p class="mt-[0.6rem] text-[1.05rem] text-muted-foreground">
-          <template v-if="unreadCount > 0"><b class="font-semibold text-foreground">{{ unreadCount }} unread.</b> </template>Newest first. Open one to go to what it is about.
+        <h1 class="text-2xl md:text-3xl leading-none font-normal tracking-tighter">Notifications</h1>
+        <p class="mt-2.5 text-base text-muted-foreground">
+          <template v-if="unreadCount > 0"><b class="font-medium text-foreground">{{ unreadCount }} unread.</b> </template>Newest first. Open one to go to what it is about.
         </p>
       </div>
       <Button variant="line" size="pill-sm" :disabled="unreadCount === 0 || markingAll" :aria-busy="markingAll" @click="markAllRead()">
@@ -98,39 +98,39 @@ onMounted(() => {
       </Button>
     </header>
 
-    <div role="group" aria-label="Show" class="flex gap-[0.35rem]">
+    <div role="group" aria-label="Show" class="flex gap-1.5">
       <button
         v-for="option in filters"
         :key="option.value"
         type="button"
         :aria-pressed="filter === option.value"
-        class="inline-flex min-h-[2.75rem] cursor-pointer items-center gap-[0.45rem] rounded-full border px-[1rem] font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-canopy"
+        class="inline-flex min-h-11 cursor-pointer items-center gap-1.75 rounded-full border px-4 font-medium whitespace-nowrap transition-colors duration-200 ease-canopy"
         :class="filter === option.value ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground'"
         @click="filter = option.value"
       >
         {{ option.label }}
         <span
           v-if="option.value === 'unread' && unreadCount > 0"
-          class="rounded-full px-[0.45rem] text-[0.78rem] font-bold"
+          class="rounded-full px-1.75 text-xs font-medium"
           :class="filter === option.value ? 'bg-white/20' : 'bg-muted text-foreground'"
         >{{ unreadCount }}</span>
       </button>
     </div>
 
     <div v-if="isPending" role="status" aria-label="Loading notifications" class="grid gap-2">
-      <div v-for="n in 5" :key="n" class="h-[4.2rem] animate-pulse rounded-[1.25rem] bg-muted" />
+      <div v-for="n in 5" :key="n" class="h-16.75 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="isError" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="isError" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h2 :class="sectionTitle">We could not load your notifications.</h2>
       <p class="mt-2 text-muted-foreground">Nothing has been lost. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" :disabled="isFetching" :aria-busy="isFetching" @click="refetch()">{{ isFetching ? 'Trying…' : 'Try again' }}</Button>
     </section>
 
-    <section v-else-if="filtered.length === 0" :class="[panel, 'px-[1.3rem] py-[clamp(1.8rem,4vw,3rem)] text-center']">
+    <section v-else-if="filtered.length === 0" :class="[panel, 'px-5.25 py-7.25 md:py-7.75 lg:py-10.25 xl:py-12 text-center']">
       <h2 :class="sectionTitle">{{ emptyCopy.title }}</h2>
-      <p class="mx-auto mt-2 max-w-[30rem] text-muted-foreground">{{ emptyCopy.description }}</p>
-      <Button v-if="filter === 'unread'" variant="line" size="pill-sm" class="mt-[1rem]" @click="filter = 'all'">Show all</Button>
+      <p class="mx-auto mt-2 max-w-120 text-muted-foreground">{{ emptyCopy.description }}</p>
+      <Button v-if="filter === 'unread'" variant="line" size="pill-sm" class="mt-4" @click="filter = 'all'">Show all</Button>
     </section>
 
     <template v-else>

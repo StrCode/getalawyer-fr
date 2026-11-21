@@ -98,15 +98,15 @@ watch(open, (isOpen) => {
 
 <template>
   <Dialog v-model:open="open">
-    <DialogContent class="max-h-[min(92svh,46rem)] gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[30rem]">
-      <DialogHeader class="gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left">
-        <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">Change your password</DialogTitle>
-        <DialogDescription class="text-[1rem] text-muted-foreground">Enter your current password, then choose a new one.</DialogDescription>
+    <DialogContent class="max-h-[min(92svh,46rem)] gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 sm:max-w-120">
+      <DialogHeader class="gap-1.5 border-b border-border px-4.75 md:px-7 py-4.5 text-left">
+        <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">Change your password</DialogTitle>
+        <DialogDescription class="text-sm text-muted-foreground">Enter your current password, then choose a new one.</DialogDescription>
       </DialogHeader>
 
-      <div class="max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]">
+      <div class="max-h-[min(62svh,34rem)] overflow-y-auto px-4.75 md:px-7 py-4.75">
         <form :id="formId" novalidate @submit.prevent="form.handleSubmit">
-          <FieldGroup class="gap-[1.1rem]">
+          <FieldGroup class="gap-4.5">
             <form.Field v-slot="{ field }" name="currentPassword">
               <Field :class="canopyField" :data-invalid="isInvalid(field)">
                 <FieldLabel :for="field.name" :class="canopyLabel">Current password</FieldLabel>
@@ -170,9 +170,9 @@ watch(open, (isOpen) => {
                     :disabled="isSubmitting"
                     @update:model-value="(v) => field.handleChange(v === true)"
                   />
-                  <FieldContent class="gap-[0.1rem]">
-                    <span class="text-[0.95rem] leading-snug font-semibold text-foreground">Sign out my other devices</span>
-                    <FieldDescription class="text-[0.85rem]">A good idea if you think someone else knows your password.</FieldDescription>
+                  <FieldContent class="gap-0.5">
+                    <span class="text-sm leading-snug font-medium text-foreground">Sign out my other devices</span>
+                    <FieldDescription class="text-sm">A good idea if you think someone else knows your password.</FieldDescription>
                   </FieldContent>
                 </Field>
               </FieldLabel>
@@ -183,7 +183,7 @@ watch(open, (isOpen) => {
         </form>
       </div>
 
-      <DialogFooter class="gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]">
+      <DialogFooter class="gap-2.5 border-t border-border px-4.75 md:px-7 py-4">
         <Button type="button" variant="line" size="pill" :disabled="isSubmitting" @click="open = false">Cancel</Button>
         <Button type="submit" :form="formId" variant="canopy" size="pill" :disabled="isSubmitting" :aria-busy="isSubmitting">{{ isSubmitting ? 'Changing…' : 'Change password' }}</Button>
       </DialogFooter>

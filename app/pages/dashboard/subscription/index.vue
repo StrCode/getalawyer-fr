@@ -346,30 +346,30 @@ function paymentAmount(action: string, amount: number | null): string {
 }
 
 // Class lists shared across the page (full strings, so Tailwind sees them).
-const sectionTitle = 'font-display text-[1.3rem] leading-[1.1] font-[650] tracking-[-0.03em]'
+const sectionTitle = 'font-display text-xl leading-none font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card'
 </script>
 
 <template>
-  <div class="grid gap-[clamp(1.75rem,3vw,2.75rem)]">
+  <div class="grid gap-7 lg:gap-7.75 xl:gap-9.5">
     <!-- ───────── how the last card change went ───────── -->
     <aside
       v-if="cardNotice"
       role="status"
-      class="-mb-[clamp(0.75rem,1.5vw,1.5rem)] flex items-start gap-[0.9rem] rounded-card border px-[1.2rem] py-[1rem]"
+      class="-mb-3 lg:-mb-3.75 xl:-mb-4.75 flex items-start gap-3.5 rounded-card border px-4.75 py-4"
       :class="NOTICE_TONE[cardNotice.tone].class"
     >
-      <span class="mt-[0.15rem] grid size-[2rem] flex-none place-items-center rounded-full" :class="cardNotice.tone === 'bad' ? 'bg-destructive/10 text-destructive' : cardNotice.tone === 'good' ? 'bg-card text-brand' : 'bg-muted'">
+      <span class="mt-0.5 grid size-8 flex-none place-items-center rounded-full" :class="cardNotice.tone === 'bad' ? 'bg-destructive/10 text-destructive' : cardNotice.tone === 'good' ? 'bg-card text-brand' : 'bg-muted'">
         <CanopyGlyph :name="NOTICE_TONE[cardNotice.tone].icon" :size="17" :class="{ 'motion-safe:animate-pulse': cardNotice.tone === 'wait' }" />
       </span>
       <div class="min-w-0 flex-1">
-        <b class="block font-semibold">{{ cardNotice.title }}</b>
-        <p class="mt-[0.15rem] text-[0.95rem]" :class="cardNotice.tone === 'good' ? '' : 'text-muted-foreground'">{{ cardNotice.detail }}</p>
+        <b class="block font-medium">{{ cardNotice.title }}</b>
+        <p class="mt-0.5 text-sm" :class="cardNotice.tone === 'good' ? '' : 'text-muted-foreground'">{{ cardNotice.detail }}</p>
       </div>
       <button
         v-if="cardNotice.tone !== 'wait'"
         type="button"
-        class="-m-[0.35rem] grid size-[2.75rem] flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-foreground/5"
+        class="-m-1.5 grid size-11 flex-none cursor-pointer place-items-center rounded-full transition-colors hover:bg-foreground/5"
         @click="cardNotice = null"
       >
         <CanopyGlyph name="close" :size="16" label="Dismiss" />
@@ -378,11 +378,11 @@ const panel = 'rounded-card border border-border bg-card'
 
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading" aria-busy="true" aria-label="Loading your membership" class="grid gap-4">
-      <div class="h-[17rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
+      <div class="h-68 animate-pulse rounded-panel bg-muted max-sm:rounded-2xl" />
       <div class="h-40 animate-pulse rounded-card bg-muted" />
     </div>
 
-    <section v-else-if="loadFailed" :class="[panel, 'p-[clamp(1.5rem,4vw,3rem)] text-center']">
+    <section v-else-if="loadFailed" :class="[panel, 'p-6 md:p-7.75 lg:p-10.25 xl:p-12 text-center']">
       <h1 :class="sectionTitle">We could not load your membership.</h1>
       <p class="mt-2 text-muted-foreground">Nothing has changed on your account. Check your connection and try again.</p>
       <Button variant="canopy" size="pill" class="mt-5" @click="reload">Try again</Button>
@@ -392,19 +392,19 @@ const panel = 'rounded-card border border-border bg-card'
       <!-- ───────── where the membership stands ───────── -->
       <section
         aria-labelledby="membership-title"
-        class="flex flex-wrap items-end justify-between gap-x-[clamp(1.5rem,4vw,3rem)] gap-y-6 rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] max-sm:rounded-[1.75rem]"
+        class="flex flex-wrap items-end justify-between gap-x-6 md:gap-x-7.75 lg:gap-x-10.25 xl:gap-x-12 gap-y-6 rounded-panel border border-border bg-card p-6 md:p-7.75 lg:p-10.25 xl:p-12 max-sm:rounded-2xl"
       >
-        <div class="min-w-0 flex-[1_1_24rem]">
-          <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">Account · Membership</p>
-          <h1 id="membership-title" class="mt-[0.9rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
+        <div class="min-w-0 grow basis-96">
+          <p class="text-xs font-medium tracking-widest text-brand uppercase">Account · Membership</p>
+          <h1 id="membership-title" class="mt-3.5 text-3xl md:text-4xl leading-none font-normal tracking-tighter text-balance">
             {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
           </h1>
-          <p class="mt-[0.9rem] max-w-[34rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
-          <p v-if="daysLeft" class="mt-[0.9rem] inline-flex items-center gap-2 rounded-full bg-mint px-[0.8rem] py-[0.3rem] text-[0.88rem] font-semibold text-deep">
+          <p class="mt-3.5 max-w-136 text-base text-muted-foreground">{{ headline.detail }}</p>
+          <p v-if="daysLeft" class="mt-3.5 inline-flex items-center gap-2 rounded-full bg-mint px-3.25 py-1.25 text-sm font-medium text-deep">
             <CanopyGlyph name="clock" :size="15" />{{ daysLeft }}
           </p>
           <!-- for someone who paid and came back before it was confirmed; not after a declined payment -->
-          <div v-if="mode === 'unfinished' && !failureReason" class="mt-[1.2rem]">
+          <div v-if="mode === 'unfinished' && !failureReason" class="mt-4.75">
             <Button variant="line" size="pill-sm" :disabled="checkingPayment" :aria-busy="checkingPayment" @click="checkPayment">
               {{ checkingPayment ? 'Checking…' : 'I have paid: check again' }}
             </Button>
@@ -412,20 +412,20 @@ const panel = 'rounded-card border border-border bg-card'
         </div>
 
         <!-- the next charge, while there is one to expect -->
-        <dl v-if="manageable" class="grid min-w-0 flex-[0_1_20rem] gap-0 rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
-          <div class="flex items-baseline justify-between gap-4 border-b border-dashed border-deep/20 pb-[0.7rem]">
+        <dl v-if="manageable" class="grid min-w-0 grow-0 basis-80 gap-0 rounded-card bg-mint p-5 text-deep">
+          <div class="flex items-baseline justify-between gap-4 border-b border-dashed border-deep/20 pb-2.75">
             <dt>{{ mode === 'payment_issue' ? 'Was due' : autoRenewOn ? 'Next payment' : 'Membership ends' }}</dt>
-            <dd class="font-semibold">{{ (autoRenewOn || mode === 'payment_issue' ? nextBillingLabel : endLabel) ?? '—' }}</dd>
+            <dd class="font-medium">{{ (autoRenewOn || mode === 'payment_issue' ? nextBillingLabel : endLabel) ?? '—' }}</dd>
           </div>
-          <div class="flex items-baseline justify-between gap-4 pt-[0.8rem]">
-            <dt class="font-semibold">{{ autoRenewOn || mode === 'payment_issue' ? 'Amount' : 'To renew' }}</dt>
-            <dd class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.03em]">{{ renewalPrice != null ? formatNairaAmount(renewalPrice) : '—' }}</dd>
+          <div class="flex items-baseline justify-between gap-4 pt-3.25">
+            <dt class="font-medium">{{ autoRenewOn || mode === 'payment_issue' ? 'Amount' : 'To renew' }}</dt>
+            <dd class="font-display text-2xl leading-none font-medium tracking-tight">{{ renewalPrice != null ? formatNairaAmount(renewalPrice) : '—' }}</dd>
           </div>
-          <dd v-if="subscription?.nextPlan" class="mt-[0.7rem] text-[0.9rem]">
-            Changes to <b class="font-semibold">{{ subscription.nextPlan.name }}</b> on that day.
+          <dd v-if="subscription?.nextPlan" class="mt-2.75 text-sm">
+            Changes to <b class="font-medium">{{ subscription.nextPlan.name }}</b> on that day.
           </dd>
-          <dd v-if="priceChanged" class="mt-[0.7rem] text-[0.9rem]">The price has changed since your last payment.</dd>
-          <dd class="mt-[0.7rem] text-[0.9rem]">
+          <dd v-if="priceChanged" class="mt-2.75 text-sm">The price has changed since your last payment.</dd>
+          <dd class="mt-2.75 text-sm">
             <template v-if="!autoRenewOn && mode === 'active'">You will not be charged automatically.</template>
             <template v-else-if="cardLine">{{ mode === 'payment_issue' ? 'We tried your' : 'Charged to your' }} {{ cardLine }}.</template>
             <template v-else>No card is saved yet.</template>
@@ -436,56 +436,56 @@ const panel = 'rounded-card border border-border bg-card'
       <!-- ───────── pay: a first payment, or a renewal after a lapse ───────── -->
       <section v-if="payable" id="membership-checkout" aria-labelledby="pay-title" class="scroll-mt-24">
         <h2 id="pay-title" :class="sectionTitle">{{ isRenewal ? 'Renew your membership' : 'Choose your plan' }}</h2>
-        <p class="mt-[0.5rem] max-w-[40rem] text-muted-foreground">
+        <p class="mt-2 max-w-160 text-muted-foreground">
           Every plan includes the same profile, messages and bookings. The only difference is how long one payment covers.
         </p>
 
-        <div class="mt-[1.2rem] grid items-start gap-[1.1rem] tab:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-          <fieldset :disabled="paying" class="grid gap-[0.7rem] sm:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))]">
+        <div class="mt-4.75 grid items-start gap-4.5 tab:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <fieldset :disabled="paying" class="grid gap-2.75 sm:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))]">
             <legend class="sr-only">Membership plan</legend>
             <label
               v-for="plan in plans"
               :key="plan.key"
-              class="group/plan relative block cursor-pointer rounded-card border border-border bg-card p-[1.2rem] transition-[border-color,background-color] duration-200 hover:border-primary has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-brand/40"
+              class="group/plan relative block cursor-pointer rounded-card border border-border bg-card p-4.75 transition-colors duration-200 hover:border-primary has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-brand/40"
             >
               <input v-model="payKey" type="radio" name="pay-plan" :value="plan.key" class="sr-only">
               <span class="flex items-center justify-between gap-2">
-                <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ plan.name }}</b>
-                <span v-if="plan.savingsPercent > 0" class="rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.76rem] font-bold whitespace-nowrap text-deep">Save {{ plan.savingsPercent }}%</span>
+                <b class="font-display text-base font-normal tracking-tight">{{ plan.name }}</b>
+                <span v-if="plan.savingsPercent > 0" class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-deep">Save {{ plan.savingsPercent }}%</span>
               </span>
-              <span class="mt-[0.7rem] flex flex-wrap items-baseline gap-x-[0.45rem]">
-                <b class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
+              <span class="mt-2.75 flex flex-wrap items-baseline gap-x-1.75">
+                <b class="font-display text-2xl leading-none font-medium tracking-tighter">{{ formatNairaAmount(plan.priceNaira) }}</b>
                 <span class="opacity-75">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</span>
               </span>
-              <span class="mt-[0.5rem] block text-[0.9rem] opacity-75">
+              <span class="mt-2 block text-sm opacity-75">
                 {{ plan.termMonths === 1 ? 'Pay month to month' : `Works out at ${formatNairaAmount(plan.perMonthNaira)} a month` }}
               </span>
             </label>
           </fieldset>
 
-          <div aria-live="polite" :class="[panel, 'p-[1.3rem]']">
-            <h3 class="font-display text-[1.2rem] font-[650] tracking-[-0.02em]">Due today</h3>
-            <dl v-if="payPlan" class="mt-[0.8rem] grid">
-              <div class="flex justify-between gap-4 border-b border-dashed border-border py-[0.55rem] text-muted-foreground">
+          <div aria-live="polite" :class="[panel, 'p-5.25']">
+            <h3 class="font-display text-lg font-normal tracking-tight">Due today</h3>
+            <dl v-if="payPlan" class="mt-3.25 grid">
+              <div class="flex justify-between gap-4 border-b border-dashed border-border py-2.25 text-muted-foreground">
                 <dt>{{ payPlan.name }} membership</dt>
-                <dd class="font-semibold text-foreground">{{ formatNairaAmount(payPlan.priceNaira) }}</dd>
+                <dd class="font-medium text-foreground">{{ formatNairaAmount(payPlan.priceNaira) }}</dd>
               </div>
-              <div v-if="showFee" class="flex justify-between gap-4 border-b border-dashed border-border py-[0.55rem] text-muted-foreground">
+              <div v-if="showFee" class="flex justify-between gap-4 border-b border-dashed border-border py-2.25 text-muted-foreground">
                 <dt>One-off verification fee</dt>
-                <dd class="font-semibold text-foreground">{{ formatNairaAmount(fee) }}</dd>
+                <dd class="font-medium text-foreground">{{ formatNairaAmount(fee) }}</dd>
               </div>
-              <div class="flex items-baseline justify-between gap-4 pt-[0.8rem]">
-                <dt class="font-bold">Total</dt>
-                <dd class="font-display text-[1.6rem] leading-none font-bold tracking-[-0.03em]">{{ due != null ? formatNairaAmount(due) : '—' }}</dd>
+              <div class="flex items-baseline justify-between gap-4 pt-3.25">
+                <dt class="font-medium">Total</dt>
+                <dd class="font-display text-2xl leading-none font-medium tracking-tight">{{ due != null ? formatNairaAmount(due) : '—' }}</dd>
               </div>
             </dl>
-            <p v-if="payPlan" class="mt-[0.8rem] text-[0.9rem] text-muted-foreground">
+            <p v-if="payPlan" class="mt-3.25 text-sm text-muted-foreground">
               Then {{ formatNairaAmount(payPlan.priceNaira) }} every {{ termNoun(payPlan.termMonths) }}. You can turn auto-renew off at any time.
             </p>
-            <Button variant="canopy" size="pill" class="group/btn mt-[1.1rem] h-13 w-full justify-between pr-2 pl-6" :disabled="paying || !payPlan" :aria-busy="paying" @click="pay">
+            <Button variant="canopy" size="pill" class="group/btn mt-4.5 h-13 w-full justify-between pr-2 pl-6" :disabled="paying || !payPlan" :aria-busy="paying" @click="pay">
               {{ paying ? 'Opening the payment page…' : due != null ? `Pay ${formatNairaAmount(due)}` : 'Pay' }}<CanopyArrowChip />
             </Button>
-            <p class="mt-[0.7rem] text-center text-[0.82rem] text-muted-foreground">You pay on Paystack's secure page and come straight back here.</p>
+            <p class="mt-2.75 text-center text-xs text-muted-foreground">You pay on Paystack's secure page and come straight back here.</p>
           </div>
         </div>
       </section>
@@ -493,42 +493,42 @@ const panel = 'rounded-card border border-border bg-card'
       <!-- ───────── the plan from the next renewal ───────── -->
       <section v-if="canChangePlan" aria-labelledby="plan-title">
         <h2 id="plan-title" :class="sectionTitle">Plan from your next renewal</h2>
-        <p class="mt-[0.5rem] max-w-[40rem] text-muted-foreground">
+        <p class="mt-2 max-w-160 text-muted-foreground">
           Every plan includes the same profile, messages and bookings. A change takes effect<template v-if="nextBillingLabel"> on {{ nextBillingLabel }}</template><template v-else> at your next renewal</template>; nothing is charged now.
         </p>
-        <p v-if="currentIsRetired" class="mt-[0.6rem] max-w-[40rem] text-[0.95rem] text-muted-foreground">
+        <p v-if="currentIsRetired" class="mt-2.5 max-w-160 text-sm text-muted-foreground">
           Your current plan, {{ subscription?.plan?.name }}, is no longer sold. You stay on it until you choose another.
         </p>
 
-        <fieldset :disabled="changingPlan" class="mt-[1.2rem] grid gap-[0.7rem] sm:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
+        <fieldset :disabled="changingPlan" class="mt-4.75 grid gap-2.75 sm:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
           <legend class="sr-only">Plan from your next renewal</legend>
           <label
             v-for="plan in plans"
             :key="plan.key"
-            class="relative block cursor-pointer rounded-card border border-border bg-card p-[1.3rem] transition-[border-color,background-color] duration-200 hover:border-primary has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-brand/40"
+            class="relative block cursor-pointer rounded-card border border-border bg-card p-5.25 transition-colors duration-200 hover:border-primary has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-brand/40"
           >
             <input v-model="pickedKey" type="radio" name="next-plan" :value="plan.key" class="sr-only">
             <span class="flex items-center justify-between gap-2">
-              <b class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ plan.name }}</b>
-              <span v-if="plan.key === currentKey" class="rounded-full bg-mint px-[0.6rem] py-[0.15rem] text-[0.76rem] font-bold whitespace-nowrap text-deep">Your plan now</span>
+              <b class="font-display text-base font-normal tracking-tight">{{ plan.name }}</b>
+              <span v-if="plan.key === currentKey" class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium whitespace-nowrap text-deep">Your plan now</span>
             </span>
-            <span class="mt-[0.7rem] flex flex-wrap items-baseline gap-x-[0.45rem]">
-              <b class="font-display text-[1.7rem] leading-none font-bold tracking-[-0.04em]">{{ formatNairaAmount(plan.priceNaira) }}</b>
+            <span class="mt-2.75 flex flex-wrap items-baseline gap-x-1.75">
+              <b class="font-display text-2xl leading-none font-medium tracking-tighter">{{ formatNairaAmount(plan.priceNaira) }}</b>
               <span class="opacity-75">{{ plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}` }}</span>
             </span>
-            <span class="mt-[0.5rem] block text-[0.9rem] opacity-75">
+            <span class="mt-2 block text-sm opacity-75">
               {{ plan.termMonths === 1 ? 'Pay month to month' : `Works out at ${formatNairaAmount(plan.perMonthNaira)} a month` }}
             </span>
           </label>
         </fieldset>
 
         <!-- a choice waiting to be confirmed -->
-        <div v-if="planChangeWaiting && picked" role="status" :class="[panel, 'mt-[0.9rem] flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-[1.3rem] py-[1rem]']">
-          <p class="min-w-0 flex-[1_1_18rem]">
-            <template v-if="picked.key === currentKey">Stay on <b class="font-semibold">{{ picked.name }}</b> and cancel the change.</template>
-            <template v-else>Move to <b class="font-semibold">{{ picked.name }}</b><template v-if="nextBillingLabel"> on {{ nextBillingLabel }}</template>. Nothing is charged until then.</template>
+        <div v-if="planChangeWaiting && picked" role="status" :class="[panel, 'mt-3.5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5.25 py-4']">
+          <p class="min-w-0 grow basis-72">
+            <template v-if="picked.key === currentKey">Stay on <b class="font-medium">{{ picked.name }}</b> and cancel the change.</template>
+            <template v-else>Move to <b class="font-medium">{{ picked.name }}</b><template v-if="nextBillingLabel"> on {{ nextBillingLabel }}</template>. Nothing is charged until then.</template>
           </p>
-          <div class="flex flex-wrap gap-[0.6rem]">
+          <div class="flex flex-wrap gap-2.5">
             <Button variant="canopy" size="pill-sm" :disabled="changingPlan" :aria-busy="changingPlan" @click="confirmPlanChange">
               {{ changingPlan ? 'Saving…' : picked.key === currentKey ? 'Keep current plan' : 'Change plan' }}
             </Button>
@@ -538,27 +538,27 @@ const panel = 'rounded-card border border-border bg-card'
       </section>
 
       <!-- ───────── auto-renew ───────── -->
-      <section v-if="manageable" aria-labelledby="renew-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-[clamp(1.2rem,2.4vw,1.6rem)]']">
-        <div class="min-w-0 flex-[1_1_20rem]">
-          <h2 id="renew-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Auto-renew is {{ autoRenewOn ? 'on' : 'off' }}</h2>
-          <p class="mt-[0.3rem] max-w-[38rem] text-muted-foreground">
+      <section v-if="manageable" aria-labelledby="renew-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-4.75 lg:p-6.25 xl:p-6.5']">
+        <div class="min-w-0 grow basis-80">
+          <h2 id="renew-title" class="font-display text-base font-normal tracking-tight">Auto-renew is {{ autoRenewOn ? 'on' : 'off' }}</h2>
+          <p class="mt-1.25 max-w-152 text-muted-foreground">
             <template v-if="autoRenewOn">We charge your card on the renewal date so your profile never drops out of the directory. Turn it off at any time.</template>
             <template v-else>You will not be charged again. Your membership ends<template v-if="endLabel"> on {{ endLabel }}</template> unless you renew.</template>
           </p>
         </div>
-        <label class="inline-flex cursor-pointer items-center gap-3 font-semibold">
+        <label class="inline-flex cursor-pointer items-center gap-3 font-medium">
           <span class="sr-only">Auto-renew</span>
           <Switch :model-value="autoRenewOn" :disabled="savingAutoRenew" aria-labelledby="renew-title" @update:model-value="setAutoRenew(Boolean($event))" />
         </label>
       </section>
 
       <!-- ───────── the card renewals are taken from ───────── -->
-      <section v-if="canChangeCard" aria-labelledby="card-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-[clamp(1.2rem,2.4vw,1.6rem)]']">
-        <div class="min-w-0 flex-[1_1_20rem]">
-          <h2 id="card-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Card for renewals</h2>
-          <p class="mt-[0.3rem] max-w-[38rem] text-muted-foreground">
+      <section v-if="canChangeCard" aria-labelledby="card-title" :class="[panel, 'flex flex-wrap items-center justify-between gap-x-8 gap-y-4 p-4.75 lg:p-6.25 xl:p-6.5']">
+        <div class="min-w-0 grow basis-80">
+          <h2 id="card-title" class="font-display text-base font-normal tracking-tight">Card for renewals</h2>
+          <p class="mt-1.25 max-w-152 text-muted-foreground">
             <template v-if="cardLine">
-              Your <b class="font-semibold text-foreground">{{ cardLine }}</b>.<template v-if="!autoRenewOn"> It is not charged while auto-renew is off.</template>
+              Your <b class="font-medium text-foreground">{{ cardLine }}</b>.<template v-if="!autoRenewOn"> It is not charged while auto-renew is off.</template>
             </template>
             <template v-else>No card is saved yet.</template>
           </p>
@@ -570,40 +570,40 @@ const panel = 'rounded-card border border-border bg-card'
       <section aria-labelledby="payments-title">
         <h2 id="payments-title" :class="sectionTitle">Payments</h2>
 
-        <div v-if="historyPending" aria-busy="true" class="mt-[1rem] grid gap-2">
-          <div v-for="n in 3" :key="n" class="h-[4.2rem] animate-pulse rounded-[1.1rem] bg-muted" />
+        <div v-if="historyPending" aria-busy="true" class="mt-4 grid gap-2">
+          <div v-for="n in 3" :key="n" class="h-16.75 animate-pulse rounded-lg bg-muted" />
         </div>
 
-        <div v-else-if="historyFailed" :class="[panel, 'mt-[1rem] flex flex-wrap items-center justify-between gap-3 px-[1.3rem] py-[1rem]']">
+        <div v-else-if="historyFailed" :class="[panel, 'mt-4 flex flex-wrap items-center justify-between gap-3 px-5.25 py-4']">
           <p>We could not load your payments.</p>
           <Button variant="line" size="pill-sm" @click="() => refetchHistory()">Try again</Button>
         </div>
 
-        <p v-else-if="!payments.length" :class="[panel, 'mt-[1rem] px-[1.3rem] py-[1.2rem] text-muted-foreground']">
+        <p v-else-if="!payments.length" :class="[panel, 'mt-4 px-5.25 py-4.75 text-muted-foreground']">
           No payments yet. Each payment and refund is listed here once it happens.
         </p>
 
         <template v-else>
-          <ul :class="[panel, 'mt-[1rem] divide-y divide-border']">
-            <li v-for="payment in payments" :key="payment.id" class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-[1.3rem] py-[0.95rem]">
-              <div class="min-w-0 flex-[1_1_16rem]">
-                <b class="block font-semibold">{{ formatSubscriptionHistoryAction(payment.action) }}</b>
-                <span class="text-[0.9rem] break-words text-muted-foreground">
+          <ul :class="[panel, 'mt-4 divide-y divide-border']">
+            <li v-for="payment in payments" :key="payment.id" class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5.25 py-3.75">
+              <div class="min-w-0 grow basis-64">
+                <b class="block font-medium">{{ formatSubscriptionHistoryAction(payment.action) }}</b>
+                <span class="text-sm break-words text-muted-foreground">
                   {{ longDate(payment.createdAt) }}<template v-if="payment.cardCheck">
                     · {{ payment.cardCheck.saved ? (receiptCardLine(payment.cardCheck.card) ?? 'New card saved') : 'Your card was not changed' }} · Card check</template><template v-else-if="payment.paymentReference"> · Reference {{ payment.paymentReference }}</template>
                 </span>
               </div>
-              <div class="flex items-center gap-[0.8rem]">
-                <span class="rounded-full px-[0.7rem] py-[0.2rem] text-[0.8rem] font-bold whitespace-nowrap" :class="paymentPill(payment).class">
+              <div class="flex items-center gap-3.25">
+                <span class="rounded-full px-2.75 py-0.75 text-xs font-medium whitespace-nowrap" :class="paymentPill(payment).class">
                   {{ paymentPill(payment).label }}
                 </span>
-                <b class="min-w-[5.5rem] text-right font-display text-[1.15rem] font-[650] tracking-[-0.02em]">{{ paymentAmount(payment.action, payment.amountNaira) }}</b>
+                <b class="min-w-22 text-right font-display text-base font-normal tracking-tight">{{ paymentAmount(payment.action, payment.amountNaira) }}</b>
                 <!-- the same width on every row, so the amounts line up whether or not there is a receipt -->
-                <span class="flex min-w-[4.6rem] justify-end" :class="{ 'max-sm:hidden': !payment.hasReceipt }">
+                <span class="flex min-w-18.5 justify-end" :class="{ 'max-sm:hidden': !payment.hasReceipt }">
                   <NuxtLink
                     v-if="payment.hasReceipt"
                     :to="`/dashboard/subscription/receipts/${payment.id}`"
-                    class="inline-flex min-h-[2.75rem] items-center font-semibold text-brand underline underline-offset-[3px] transition-colors hover:text-foreground"
+                    class="inline-flex min-h-11 items-center font-medium text-brand underline underline-offset-3 transition-colors hover:text-foreground"
                     :aria-label="`Receipt for the payment on ${longDate(payment.createdAt)}`"
                   >Receipt</NuxtLink>
                 </span>
@@ -611,9 +611,9 @@ const panel = 'rounded-card border border-border bg-card'
             </li>
           </ul>
 
-          <nav v-if="pages && pages.totalPages > 1" aria-label="Payments pages" class="mt-[0.8rem] flex items-center justify-between gap-3">
-            <span class="text-[0.9rem] text-muted-foreground">Page {{ pages.page }} of {{ pages.totalPages }}</span>
-            <span class="flex gap-[0.5rem]">
+          <nav v-if="pages && pages.totalPages > 1" aria-label="Payments pages" class="mt-3.25 flex items-center justify-between gap-3">
+            <span class="text-sm text-muted-foreground">Page {{ pages.page }} of {{ pages.totalPages }}</span>
+            <span class="flex gap-2">
               <Button variant="line" size="pill-sm" :disabled="page <= 1 || historyFetching" @click="page -= 1">Previous</Button>
               <Button variant="line" size="pill-sm" :disabled="page >= pages.totalPages || historyFetching" @click="page += 1">Next</Button>
             </span>
@@ -624,28 +624,28 @@ const panel = 'rounded-card border border-border bg-card'
 
     <!-- ───────── changing the card: said plainly before anyone is charged ───────── -->
     <Dialog v-model:open="cardDialogOpen">
-      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
-        <DialogHeader class="gap-[0.5rem] text-left">
-          <DialogTitle class="font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]">{{ cardLine ? 'Change the card for renewals' : 'Add a card for renewals' }}</DialogTitle>
-          <DialogDescription class="text-[1rem] text-muted-foreground">
+      <DialogContent class="gap-4.5 rounded-2xl border-border bg-card p-5.5 md:p-7.75 lg:p-8 sm:max-w-120">
+        <DialogHeader class="gap-2 text-left">
+          <DialogTitle class="font-display text-xl leading-none font-normal tracking-tight">{{ cardLine ? 'Change the card for renewals' : 'Add a card for renewals' }}</DialogTitle>
+          <DialogDescription class="text-sm text-muted-foreground">
             You enter the new card on Paystack's secure page, then come back here.
           </DialogDescription>
         </DialogHeader>
-        <ul class="grid gap-[0.7rem]">
-          <li class="flex gap-[0.7rem]">
-            <CanopyGlyph name="card" :size="19" class="mt-[0.2rem] flex-none text-brand" />
-            <span>To check the card works, Paystack charges it <b class="font-semibold">{{ cardCheck ?? 'a small amount' }}</b>.</span>
+        <ul class="grid gap-2.75">
+          <li class="flex gap-2.75">
+            <CanopyGlyph name="card" :size="19" class="mt-0.75 flex-none text-brand" />
+            <span>To check the card works, Paystack charges it <b class="font-medium">{{ cardCheck ?? 'a small amount' }}</b>.</span>
           </li>
-          <li class="flex gap-[0.7rem]">
-            <CanopyGlyph name="tick" :size="19" class="mt-[0.2rem] flex-none text-brand" />
+          <li class="flex gap-2.75">
+            <CanopyGlyph name="tick" :size="19" class="mt-0.75 flex-none text-brand" />
             <span>We send that {{ cardCheck ?? 'amount' }} straight back. A refund can take a few working days to show on your statement.</span>
           </li>
-          <li class="flex gap-[0.7rem]">
-            <CanopyGlyph name="calendar" :size="19" class="mt-[0.2rem] flex-none text-brand" />
+          <li class="flex gap-2.75">
+            <CanopyGlyph name="calendar" :size="19" class="mt-0.75 flex-none text-brand" />
             <span>Your plan and renewal date stay the same<template v-if="nextBillingLabel && autoRenewOn">: the next payment is still on {{ nextBillingLabel }}</template>.</span>
           </li>
         </ul>
-        <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
+        <DialogFooter class="mt-1.25 gap-2.5">
           <Button variant="line" size="pill" :disabled="leavingForCard" @click="cardDialogOpen = false">Keep my current card</Button>
           <Button variant="canopy" size="pill" :disabled="leavingForCard" :aria-busy="leavingForCard" @click="changeCard">
             {{ leavingForCard ? 'Opening Paystack…' : 'Continue to Paystack' }}

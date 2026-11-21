@@ -41,10 +41,10 @@ function choose(state: string) {
 
 <template>
   <div>
-    <h1 class="text-[clamp(1.75rem,2.9vw,2.25rem)] leading-[1.04] font-[650] tracking-[-0.035em] text-balance">Which state are you in?</h1>
-    <p class="mt-[0.6rem] max-w-[38rem] text-muted-foreground">We show you lawyers who practise there first. You can search any other state whenever you like.</p>
+    <h1 class="text-3xl md:text-4xl leading-none font-normal tracking-tight text-balance">Which state are you in?</h1>
+    <p class="mt-2.5 max-w-152 text-muted-foreground">We show you lawyers who practise there first. You can search any other state whenever you like.</p>
 
-    <label for="state-search" class="mt-[1.6rem] flex items-center gap-3 rounded-full border border-border bg-card py-[0.3rem] pr-[0.3rem] pl-4">
+    <label for="state-search" class="mt-6.5 flex items-center gap-3 rounded-full border border-border bg-card py-1.25 pr-1.25 pl-4">
       <CanopyGlyph name="search" :size="18" :stroke="2.2" class="flex-none text-muted-foreground" />
       <span class="sr-only">Search states</span>
       <input
@@ -53,18 +53,18 @@ function choose(state: string) {
         type="search"
         placeholder="Search states"
         autocomplete="off"
-        class="min-h-11 min-w-0 flex-1 bg-transparent text-[1rem] outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
+        class="min-h-11 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-placeholder [&::-webkit-search-cancel-button]:hidden"
       >
     </label>
 
-    <div role="radiogroup" aria-label="State" class="mt-[1.1rem] flex flex-wrap gap-[0.4rem]">
+    <div role="radiogroup" aria-label="State" class="mt-4.5 flex flex-wrap gap-1.5">
       <button
         v-for="state in states"
         :key="state"
         type="button"
         role="radio"
         :aria-checked="storeState.state === state"
-        class="min-h-[2.6rem] cursor-pointer rounded-full border border-border bg-card px-[0.95rem] text-[0.92rem] font-semibold transition-colors duration-200 hover:border-brand aria-checked:border-foreground aria-checked:bg-foreground aria-checked:text-background"
+        class="min-h-10.5 cursor-pointer rounded-full border border-border bg-card px-3.75 text-base font-medium transition-colors duration-200 hover:border-brand aria-checked:border-foreground aria-checked:bg-foreground aria-checked:text-background"
         @click="choose(state)"
       >
         {{ displayName(state) }}
@@ -72,8 +72,8 @@ function choose(state: string) {
       <p v-if="states.length === 0" class="py-2 text-muted-foreground">No state matches “{{ query.trim() }}”.</p>
     </div>
 
-    <p aria-live="polite" class="mt-[0.9rem] text-[0.85rem] text-muted-foreground">
-      <template v-if="storeState.state"><b class="font-semibold text-brand">{{ displayName(storeState.state) }}</b> selected.</template>
+    <p aria-live="polite" class="mt-3.5 text-sm text-muted-foreground">
+      <template v-if="storeState.state"><b class="font-medium text-brand">{{ displayName(storeState.state) }}</b> selected.</template>
       <template v-else>getalawyer covers all 36 states and the FCT.</template>
     </p>
   </div>

@@ -29,7 +29,7 @@ const incompleteCount = computed(
 
     <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
       <div
-        class="h-full rounded-full bg-primary transition-all duration-500"
+        class="h-full rounded-full bg-primary transition-[width] duration-500"
         :style="{ width: `${percent}%` }"
       />
     </div>

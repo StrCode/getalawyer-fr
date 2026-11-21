@@ -17,19 +17,19 @@ defineProps<{
   <div class="w-full">
     <!-- centred, with room between it and the title, so it reads as a way out
          of the step rather than as part of the heading -->
-    <div v-if="$slots.back" class="mb-[1.6rem] flex justify-center">
+    <div v-if="$slots.back" class="mb-6.5 flex justify-center">
       <slot name="back" />
     </div>
-    <h1 class="text-[clamp(1.9rem,3.1vw,2.5rem)] leading-[1.02] font-[620] tracking-[-0.04em] text-balance">
+    <h1 class="text-3xl md:text-4xl leading-none font-normal tracking-tighter text-balance">
       {{ title }}
     </h1>
-    <p v-if="description || $slots.description" class="mt-[0.7rem] text-muted-foreground">
+    <p v-if="description || $slots.description" class="mt-2.75 text-muted-foreground">
       <slot name="description">{{ description }}</slot>
     </p>
-    <div class="mt-[1.7rem]">
+    <div class="mt-6.75">
       <slot />
     </div>
-    <div v-if="$slots.after" class="mt-[1.4rem] text-center text-[0.95rem] text-muted-foreground">
+    <div v-if="$slots.after" class="mt-5.5 text-center text-base text-muted-foreground">
       <slot name="after" />
     </div>
   </div>

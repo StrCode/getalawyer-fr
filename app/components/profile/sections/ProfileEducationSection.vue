@@ -57,13 +57,13 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
   <SettingsSectionCard
     title="Education"
     description="Law school, degrees and other study."
-    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+    content-class="grid gap-2.5 p-4.5 lg:p-5.75 xl:p-6"
   >
     <template #action>
-      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a school</Button>
+      <Button type="button" variant="line" size="pill-sm" class="h-10 px-3.75 text-sm" :disabled="disabled" @click="openCreate">Add a school</Button>
     </template>
 
-    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No schools added yet.</p>
+    <p v-if="items.length === 0" class="py-4.75 text-center text-muted-foreground">No schools added yet.</p>
     <ProfileListRow
       v-for="item in items"
       :key="item.id"
@@ -84,7 +84,7 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
     :saving="saving"
   >
     <form id="education-form" novalidate @submit.prevent="form.handleSubmit">
-      <FieldGroup class="gap-[1.1rem]">
+      <FieldGroup class="gap-4.5">
         <form.Field v-slot="{ field }" name="school">
           <Field :class="canopyField" :data-invalid="isInvalid(field)">
             <FieldLabel :for="field.name" :class="canopyLabel">School</FieldLabel>
@@ -103,7 +103,7 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
             <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
           </Field>
         </form.Field>
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="degree">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">Degree <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
@@ -141,7 +141,7 @@ const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, con
             </Field>
           </form.Field>
         </div>
-        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+        <div class="grid gap-4.5 sm:grid-cols-2">
           <form.Field v-slot="{ field }" name="startYear">
             <Field :class="canopyField" :data-invalid="isInvalid(field)">
               <FieldLabel :for="field.name" :class="canopyLabel">Year started <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
