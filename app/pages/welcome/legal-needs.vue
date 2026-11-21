@@ -22,9 +22,11 @@ watch(() => store.termsError, (error) => {
   if (error) void nextTick(() => legalFieldsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
 })
 
-const { useSpecializations } = useClientOnboarding()
+// The shared practice-area query (a plain list). A copy of it in
+// useClientOnboarding used the same cache key with a different shape, so after
+// any page that had loaded the shared one, this step showed no areas.
 const { data, isPending } = useSpecializations()
-const areas = computed(() => data.value?.specializations || [])
+const areas = computed(() => data.value ?? [])
 
 const query = ref('')
 const visible = computed(() => {
