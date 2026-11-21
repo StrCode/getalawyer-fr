@@ -18,7 +18,6 @@ definePageMeta({
 })
 
 useHead({ title: 'Change the time' })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const bookingId = computed(() => String(route.params.id ?? ''))

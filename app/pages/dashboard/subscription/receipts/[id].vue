@@ -40,7 +40,6 @@ const missing = computed(() => error.value instanceof ApiError && error.value.st
 
 // The browser offers the page title as the file name when saving a PDF.
 useHead({ title: () => receipt.value ? receiptTitle(receipt.value.paidAt) : 'Receipt' })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 const paidOn = computed(() => longDate(receipt.value?.paidAt))
 const cardLine = computed(() => receiptCardLine(receipt.value?.card))

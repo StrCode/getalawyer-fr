@@ -33,11 +33,13 @@ function priceFor(plan: MembershipPlan) {
   return `${formatNairaAmount(plan.priceNaira)} ${plan.termMonths === 1 ? 'a month' : `for ${termPhrase(plan.termMonths)}`}`
 }
 
-useHead({ title: 'Pricing for lawyers' })
-useSeoMeta({
-  description: computed(() => cheapest.value
-    ? `Lawyer membership on getalawyer from ${priceFor(cheapest.value)}. A verified profile, client messages and bookings, with no commission on your fees.`
-    : 'Lawyer membership on getalawyer: a verified profile, client messages and bookings, with no commission on your fees.'),
+usePageSeo({
+  title: 'Pricing for lawyers',
+  eyebrow: 'For lawyers',
+  // the price comes from the backend (never written here); without it, no figure
+  description: () => cheapest.value
+    ? `Lawyer membership on getalawyer from ${priceFor(cheapest.value)}: a verified profile in the directory, client messages and bookings. No commission on your fees.`
+    : 'Lawyer membership on getalawyer: a verified profile in the directory, client messages and bookings. No commission on your fees.',
 })
 
 const inclusions = [

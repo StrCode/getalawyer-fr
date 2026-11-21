@@ -23,12 +23,11 @@ definePageMeta({
   middleware: ['client-directory'],
 })
 
-useHead({
-  title: 'Find a lawyer',
-  meta: [
-    { name: 'description', content: 'Search verified Nigerian lawyers by practice area and state, and message one free.' },
-    { name: 'robots', content: 'noindex' },
-  ],
+// Indexed: filtered views (keywords, location, areas…) all share the canonical
+// /find-lawyers, since those parameters are not in the canonical whitelist.
+usePageSeo({
+  title: 'Find a lawyer in Nigeria',
+  description: 'Browse verified Nigerian lawyers. Filter by practice area, state and experience, compare fees and ways to meet, and message a lawyer free.',
 })
 
 type Sort = 'relevance' | 'experience' | 'recent'

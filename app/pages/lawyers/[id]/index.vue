@@ -58,20 +58,64 @@ const location = computed(() => {
   return parts.filter((part, index) => parts.indexOf(part) === index).join(', ') || 'Nigeria'
 })
 
-useHead({
-  title: computed(() => lawyer.value
-    ? `${lawyer.value.name} · ${primaryArea.value?.name ?? 'Lawyer'}`
-    : 'Lawyer profile'),
+// ---- search and sharing ----
+/** "Family law, Property & tenancy and Employment" (the first three areas). */
+const areaList = computed(() => {
+  // lower case mid-sentence: "Practises family law and employment."
+  const names = (lawyer.value?.specializations ?? []).slice(0, 3).map(area => area.name.charAt(0).toLowerCase() + area.name.slice(1))
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : (names[0] ?? '')
 })
-useSeoMeta({
-  description: computed(() => {
-    if (!lawyer.value) return 'A verified lawyer on getalawyer.'
-    const summary = profileSections.value?.about.headline?.trim()
-    return summary
-      ? `${lawyer.value.name}, ${location.value}. ${summary}`
-      : `${lawyer.value.name} is a verified lawyer in ${location.value}. Message free or book a consultation on getalawyer.`
-  }),
+const state = computed(() => lawyer.value?.practiceInfo?.officeState || 'Nigeria')
+
+usePageSeo({
+  // "Ada Obi, family law lawyer in Lagos"
+  title: () => lawyer.value
+    ? `${lawyer.value.name}, ${primaryArea.value ? `${primaryArea.value.name.toLowerCase()} lawyer` : 'lawyer'} in ${state.value}`
+    : 'Lawyer profile',
+  shareTitle: () => lawyer.value?.name ?? 'A verified lawyer on getalawyer',
+  eyebrow: () => primaryArea.value?.name ?? 'Verified lawyer',
+  photo: () => lawyer.value?.image,
+  description: () => {
+    if (!lawyer.value) return 'A verified lawyer on getalawyer. Message free or book a consultation.'
+    const years = yearsExperience.value ? `, ${yearsExperience.value} years at the Bar` : ''
+    const areas = areaList.value ? ` Practises ${areaList.value}.` : ''
+    const headline = profileSections.value?.about.headline?.trim()
+    const lead = `${lawyer.value.name} is a verified lawyer in ${location.value}${years}.${areas}`
+    // the headline only when it still fits a search result (about 160 characters)
+    const withHeadline = headline ? `${lead} ${headline.replace(/\.?$/, '.')}` : lead
+    return `${withHeadline.length <= 160 ? withHeadline : lead} Message free or book a consultation.`
+  },
 })
+
+// The page is a profile of one lawyer (Schema.org ProfilePage + Person). Built
+// once at setup: the lawyer is loaded above (awaited), and Nuxt remounts the
+// page when the id in the address changes.
+// One full id for the lawyer, so the page's mainEntity points at this lawyer
+// (the helpers expand a bare "#lawyer" differently, and not per page).
+const lawyerNodeId = `${useSiteConfig().url}/lawyers/${lawyerId.value}#lawyer`
+useSchemaOrg([
+  defineWebPage({ '@type': 'ProfilePage', mainEntity: { '@id': lawyerNodeId } }),
+  definePerson(lawyer.value
+    ? {
+        // its own id: the default (#identity) would replace the organisation behind the site
+        '@id': lawyerNodeId,
+        name: lawyer.value.name,
+        image: lawyer.value.image ?? undefined,
+        jobTitle: 'Lawyer',
+        description: profileSections.value?.about.headline?.trim() || undefined,
+        knowsAbout: (lawyer.value.specializations ?? []).map(area => area.name),
+        worksFor: lawyer.value.practiceInfo?.firmName
+          ? { '@type': 'Organization', name: lawyer.value.practiceInfo.firmName }
+          : undefined,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: lawyer.value.practiceInfo?.officeCity || undefined,
+          addressRegion: lawyer.value.practiceInfo?.officeState || undefined,
+          addressCountry: 'NG',
+        },
+      }
+    : { '@id': lawyerNodeId, name: 'Lawyer' }),
+])
 
 // ---- sections ----
 const about = computed(() => profileSections.value?.about.about?.trim() ?? '')

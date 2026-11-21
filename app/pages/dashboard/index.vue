@@ -16,7 +16,7 @@ const role = computed(() => getSessionUserType(session.value?.user))
 const { handleSignOut, isSigningOut } = useSignOut()
 
 useHead({ title: 'Overview' })
-useSeoMeta({ description: 'Your getalawyer overview.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Your getalawyer overview.' })
 </script>
 
 <template>

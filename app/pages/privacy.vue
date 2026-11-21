@@ -3,9 +3,9 @@ import LegalPageShell from '@/components/legal/LegalPageShell.vue'
 
 definePageMeta({ layout: 'site' })
 
-useHead({
+usePageSeo({
   title: 'Privacy policy',
-  meta: [{ name: 'description', content: 'What personal data GetaLawyer collects, why, and your rights under the Nigeria Data Protection Act.' }],
+  description: 'What personal data getalawyer collects, why, who we share it with, how long we keep it, and your rights under the Nigeria Data Protection Act 2023.',
 })
 </script>
 

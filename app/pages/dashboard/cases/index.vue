@@ -28,7 +28,7 @@ definePageMeta({
 })
 
 useHead({ title: 'Cases' })
-useSeoMeta({ description: 'Your cases.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Your cases.' })
 
 const route = useRoute()
 const router = useRouter()

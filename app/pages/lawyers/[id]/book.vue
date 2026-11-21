@@ -32,9 +32,9 @@ const consultationTypes = computed(() =>
   (lawyer.value?.consultationTypes ?? []).filter(t => t.isActive),
 )
 
+// kept out of search by the `/lawyers/*/book` route rule in nuxt.config
 useHead({
   title: computed(() => lawyer.value ? `Book ${lawyer.value.name}` : 'Book a consultation'),
-  meta: [{ name: 'robots', content: 'noindex' }],
 })
 
 const initials = computed(() =>

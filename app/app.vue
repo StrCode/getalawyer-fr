@@ -12,6 +12,16 @@ const pageTransition = computed<TransitionProps | false>(() =>
   route.path.startsWith('/dashboard') ? false : { name: 'page' },
 )
 
+// The site and its search, for search engines. The organisation behind it is
+// `schemaOrg.identity` in nuxt.config; pages add their own nodes.
+useSchemaOrg([
+  defineWebSite({
+    potentialAction: [
+      defineSearchAction({ target: '/find-lawyers?keywords={search_term_string}' }),
+    ],
+  }),
+])
+
 </script>
 
 <template>

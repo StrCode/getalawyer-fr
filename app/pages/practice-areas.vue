@@ -9,9 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton'
  */
 definePageMeta({ layout: 'site' })
 
-useHead({ title: 'Practice areas' })
-useSeoMeta({
-  description: 'Browse the areas of law covered on getalawyer and find verified Nigerian lawyers for each one.',
+usePageSeo({
+  title: 'Practice areas',
+  shareTitle: 'Choose the kind of help you need',
+  description: 'Family law, property and tenancy, criminal defence, employment and more. Choose the kind of help you need and see verified lawyers who do that work.',
 })
 
 const { data: specializations, isPending, isError, refetch, suspense } = useSpecializations()

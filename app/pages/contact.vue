@@ -11,9 +11,9 @@ import { Textarea } from '@/components/ui/textarea'
  */
 definePageMeta({ layout: 'site' })
 
-useHead({ title: 'Contact' })
-useSeoMeta({
-  description: 'Questions about finding a lawyer, your account or joining as a lawyer? Email the getalawyer team.',
+usePageSeo({
+  title: 'Contact us',
+  description: `Questions about finding a lawyer, your account or joining as a lawyer? Write to the getalawyer team at ${SUPPORT_EMAIL}.`,
 })
 
 const TOPICS = [

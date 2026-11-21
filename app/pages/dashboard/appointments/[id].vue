@@ -53,7 +53,6 @@ const { data: booking, isPending, error, refetch, isFetching } = useLawyerBookin
 const missing = computed(() => error.value instanceof ApiError && (error.value.status === 404 || error.value.status === 403))
 
 useHead({ title: () => booking.value?.client?.name ? `Appointment with ${booking.value.client.name}` : 'Appointment' })
-useSeoMeta({ robots: 'noindex, nofollow' })
 
 // The time is read in the browser only, and moves on while the page is open,
 // so "starting in 20 minutes" becomes "on now" without a reload.

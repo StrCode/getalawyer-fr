@@ -26,7 +26,7 @@ definePageMeta({
 })
 
 useHead({ title: 'Confirming your payment' })
-useSeoMeta({ description: 'Confirming your membership payment.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Confirming your membership payment.' })
 
 const route = useRoute()
 const queryClient = useQueryClient()

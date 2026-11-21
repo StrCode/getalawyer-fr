@@ -76,30 +76,61 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: !isProduction },
 
+  // ───────── search and sharing (@nuxtjs/seo) ─────────
+  // Indexing is on only when the site runs as production (`NUXT_SITE_ENV`, else
+  // NODE_ENV): previews and local copies tell search engines to stay away.
   site: {
     url: process.env.NUXT_SITE_URL || 'https://getalawyer.ng',
     name: 'getalawyer',
+    description: 'Find a verified lawyer in Nigeria. Search by practice area and state, message a lawyer free, then book a consultation.',
+    defaultLocale: 'en',
   },
   sitemap: {
-    // Auth-gated and transactional routes have no business in the sitemap.
-    exclude: [
-      '/dashboard/**',
-      '/application',
-      '/application/**',
-      '/welcome/**',
-      '/login',
-      '/register',
-      '/forgot-password',
-      '/reset-password',
-      '/verify',
-      '/verify-otp',
-      '/verify-payment',
-    ],
+    // Pages with `robots: false` below are left out automatically. Lawyer
+    // profiles come from the API (server/api/__sitemap__/lawyers.ts).
+    sources: ['/api/__sitemap__/lawyers'],
+    // /lawyers only forwards to /find-lawyers.
+    exclude: ['/lawyers'],
+  },
+  // Who runs the site, for search engines (Schema.org). Each page adds its own
+  // nodes: the site search in app.vue, a lawyer's profile on their page.
+  schemaOrg: {
+    identity: {
+      type: 'Organization',
+      name: 'getalawyer',
+      url: process.env.NUXT_SITE_URL || 'https://getalawyer.ng',
+      logo: '/favicon.svg',
+      email: 'support@getalawyer.com.ng',
+      areaServed: 'NG',
+      address: { addressLocality: 'Lagos', addressCountry: 'NG' },
+    },
+  },
+  ogImage: {
+    // The size WhatsApp, LinkedIn, Facebook and X all show in full.
+    defaults: { width: 1200, height: 630 },
+    // latin-ext carries the naira sign (₦) in prices
+    fontSubsets: ['latin', 'latin-ext'],
   },
 
   routeRules: {
     // Exceptions moved onto the Availability page as a tab.
     '/dashboard/availability/exceptions': { redirect: { to: '/dashboard/availability?tab=exceptions', statusCode: 301 } },
+    // Private pages: never in search results or the sitemap (noindex, nofollow
+    // and X-Robots-Tag). One place for all of them, instead of each page.
+    '/dashboard': { robots: false },
+    '/dashboard/**': { robots: false },
+    '/application': { robots: false },
+    '/application/**': { robots: false },
+    '/welcome': { robots: false },
+    '/welcome/**': { robots: false },
+    '/login': { robots: false },
+    '/register': { robots: false },
+    '/forgot-password': { robots: false },
+    '/reset-password': { robots: false },
+    '/verify': { robots: false },
+    '/verify-otp': { robots: false },
+    '/verify-payment': { robots: false },
+    '/lawyers/*/book': { robots: false },
   },
 
   css: ['~/assets/css/main.css'],
@@ -176,6 +207,11 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', sizes: '64x64', href: '/favicon.ico' },
       ],
+      meta: [
+        // The browser's own bar on phones, in the page colour of each theme.
+        { name: 'theme-color', content: '#FAFAFA', media: '(prefers-color-scheme: light)' },
+        { name: 'theme-color', content: '#0A0A0A', media: '(prefers-color-scheme: dark)' },
+      ],
     },
     // Enter-only fades (see the `.page-enter-*` rules): no `out-in`, so a new
     // page never waits for the old one to fade away first.
@@ -225,8 +261,12 @@ export default defineNuxtConfig({
     // variable fonts; latin-ext carries the naira sign. Builds need to reach
     // Google Fonts.
     families: [
-      { name: 'Onest', provider: 'google', weights: ['100 900'] },
-      { name: 'Mona Sans', provider: 'google', weights: ['200 900'] },
+      // `global` so the share images (nuxt-og-image) can use them too: they
+      // only read fonts @nuxt/fonts emits globally.
+      { name: 'Onest', provider: 'google', weights: ['100 900'], global: true },
+      { name: 'Mona Sans', provider: 'google', weights: ['200 900'], global: true },
+      // fallback for the naira sign (₦), which neither face above has
+      { name: 'Inter', provider: 'google', weights: ['100 900'], global: true },
     ],
     providers: {
       googleicons: false,

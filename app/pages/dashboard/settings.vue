@@ -38,7 +38,7 @@ import type { SettingsSectionId } from '~/types/account-settings'
  * own pages.
  */
 useHead({ title: 'Settings' })
-useSeoMeta({ description: 'Your sign-in details and support.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Your sign-in details and support.' })
 
 definePageMeta({
   layout: 'workspace',

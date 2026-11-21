@@ -13,7 +13,7 @@ definePageMeta({
 })
 
 useHead({ title: 'My lawyers' })
-useSeoMeta({ description: 'Lawyers you have booked or messaged.', robots: 'noindex, nofollow' })
+useSeoMeta({ description: 'Lawyers you have booked or messaged.' })
 
 const { session } = useAuth()
 const userId = computed(() => session.value?.user.id ?? null)
