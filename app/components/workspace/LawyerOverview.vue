@@ -165,10 +165,10 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
 </script>
 
 <template>
-  <div class="grid gap-[clamp(1.75rem,3vw,2.75rem)]">
+  <div class="grid gap-[clamp(1.25rem,2.4vw,2rem)]">
     <!-- ───────── loading / could not load ───────── -->
     <div v-if="loading && !bookingsFailed" role="status" aria-label="Loading your overview" class="grid gap-4">
-      <div class="h-[30rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
+      <div class="h-[22rem] animate-pulse rounded-panel bg-muted max-sm:rounded-[1.75rem]" />
       <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
       <div class="h-[4.6rem] animate-pulse rounded-[1.25rem] bg-muted" />
     </div>
@@ -181,38 +181,45 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
 
     <template v-else>
       <!-- ───────── now, and the next seven days ───────── -->
-      <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-[clamp(1.5rem,4vw,3rem)] max-sm:rounded-[1.75rem]">
-        <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
-        <h1 id="overview-title" class="mt-[0.9rem] max-w-[46rem] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.03] font-[620] tracking-[-0.04em] text-balance">
-          {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
-        </h1>
-        <p class="mt-[0.9rem] max-w-[38rem] text-[1.1rem] text-muted-foreground">{{ headline.detail }}</p>
+      <!-- compact on purpose: the greeting, the week and the first things to do fit on the first screen -->
+      <section aria-labelledby="overview-title" class="rounded-panel border border-border bg-card p-[clamp(1.2rem,2.6vw,2rem)] max-sm:rounded-[1.75rem]">
+        <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-[1rem]">
+          <div class="min-w-0 flex-[1_1_26rem]">
+            <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-brand uppercase">{{ eyebrow }}</p>
+            <h1 id="overview-title" class="mt-[0.5rem] max-w-[40rem] text-[clamp(1.5rem,2.4vw,1.9rem)] leading-[1.08] font-[620] tracking-[-0.035em] text-balance">
+              {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
+            </h1>
+            <p class="mt-[0.45rem] max-w-[38rem] text-muted-foreground">{{ headline.detail }}</p>
+          </div>
 
-        <div class="mt-[1.4rem] flex flex-wrap gap-[0.6rem]">
-          <Button v-if="headline.primary" as-child variant="canopy" size="pill">
-            <a v-if="headline.primary.to.startsWith('#')" :href="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></a>
-            <NuxtLink v-else :to="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></NuxtLink>
-          </Button>
-          <Button as-child variant="line" size="pill">
-            <NuxtLink to="/dashboard/appointments">All appointments</NuxtLink>
-          </Button>
+          <div class="flex flex-none flex-wrap gap-[0.5rem]">
+            <Button v-if="headline.primary" as-child variant="canopy" size="pill-sm">
+              <a v-if="headline.primary.to.startsWith('#')" :href="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></a>
+              <NuxtLink v-else :to="headline.primary.to">{{ headline.primary.label }}<CanopyArrowChip /></NuxtLink>
+            </Button>
+            <Button as-child variant="line" size="pill-sm">
+              <NuxtLink to="/dashboard/appointments">All appointments</NuxtLink>
+            </Button>
+          </div>
         </div>
 
-        <div class="mt-[clamp(1.6rem,3.5vw,2.4rem)] grid items-start gap-[clamp(1rem,2.4vw,1.75rem)] border-t border-border pt-[clamp(1.4rem,3vw,2rem)] tab:grid-cols-[minmax(0,1fr)_minmax(18rem,23rem)]">
+        <div class="mt-[clamp(1rem,2.2vw,1.5rem)] grid items-start gap-[clamp(1rem,2vw,1.5rem)] border-t border-border pt-[clamp(1rem,2.2vw,1.4rem)] tab:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
           <div class="min-w-0">
-            <h2 id="week-title" class="font-display text-[1.15rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
-            <p class="mt-[0.2rem] text-[0.95rem] text-muted-foreground">Choose a day to see what is in it.</p>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+              <h2 id="week-title" class="font-display text-[1.1rem] font-[650] tracking-[-0.02em]">Next 7 days</h2>
+              <p class="text-[0.9rem] text-muted-foreground">Choose a day to see what is in it.</p>
+            </div>
             <WorkspaceWeekStrip
               v-model="pickedKey"
               :days="days"
               aria-labelledby="week-title"
-              class="mt-[0.9rem]"
+              class="mt-[0.7rem]"
             />
           </div>
 
           <!-- the chosen day -->
-          <div v-if="pickedDay" aria-live="polite" class="min-w-0 rounded-[1.5rem] bg-mint p-[1.25rem] text-deep">
-            <h3 class="font-display text-[1.2rem] font-[650] tracking-[-0.02em]">
+          <div v-if="pickedDay" aria-live="polite" class="min-w-0 rounded-[1.25rem] bg-mint p-[1rem] text-deep">
+            <h3 class="font-display text-[1.1rem] font-[650] tracking-[-0.02em]">
               {{ pickedDay.isToday ? 'Today' : pickedDay.label }}
             </h3>
             <ol v-if="pickedDay.bookings.length" class="mt-[0.7rem] grid gap-[0.45rem]">
@@ -246,18 +253,18 @@ const tileLink = 'mt-auto inline-flex min-h-[2.75rem] w-fit items-center pt-[0.4
           <h2 id="todo-title" :class="sectionTitle">To do</h2>
           <p class="text-[0.95rem] text-muted-foreground">{{ todos.length === 1 ? '1 thing' : `${todos.length} things, most urgent first` }}</p>
         </div>
-        <ol class="mt-[1rem] grid gap-[0.55rem]">
+        <ol class="mt-[0.7rem] grid gap-[0.45rem]">
           <li v-for="(todo, index) in todos" :key="todo.id">
             <component
               :is="todo.to ? RowLink : 'button'"
               :to="todo.to"
               :type="todo.to ? undefined : 'button'"
-              class="group flex w-full cursor-pointer flex-wrap items-center gap-x-[0.9rem] gap-y-[0.4rem] rounded-[1.25rem] border border-border bg-card px-[1.1rem] py-[0.9rem] text-left transition-[border-color,translate] duration-200 ease-canopy hover:border-brand/45 active:translate-y-px"
+              class="group flex w-full cursor-pointer flex-wrap items-center gap-x-[0.9rem] gap-y-[0.4rem] rounded-[1.25rem] border border-border bg-card px-[1rem] py-[0.75rem] text-left transition-[border-color,translate] duration-200 ease-canopy hover:border-brand/45 active:translate-y-px"
               @click="todo.to ? undefined : runTodo(todo)"
             >
-              <span aria-hidden="true" class="grid size-[2.6rem] flex-none place-items-center rounded-[0.9rem] bg-background font-display font-bold">{{ index + 1 }}</span>
+              <span aria-hidden="true" class="grid size-[2.3rem] flex-none place-items-center rounded-[0.8rem] bg-background font-display font-bold">{{ index + 1 }}</span>
               <span class="min-w-0 flex-[1_1_16rem]">
-                <b class="block font-display text-[1.1rem] font-[650] tracking-[-0.02em]">{{ todo.title }}</b>
+                <b class="block font-display text-[1.02rem] font-[650] tracking-[-0.02em]">{{ todo.title }}</b>
                 <span class="block text-[0.92rem] text-muted-foreground">{{ todo.note }}</span>
               </span>
               <span class="inline-flex items-center gap-[0.4rem] font-semibold whitespace-nowrap text-brand max-sm:pl-[3.5rem]">

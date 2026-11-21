@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useForm } from '@tanstack/vue-form'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,15 +10,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import {
+  blankDateForm,
+  blankRangeForm,
+  dateFormPayload,
+  dateFormSchema,
   dateKeysBetween,
   EXCEPTION_PILL,
   exceptionDateLabel,
   exceptionHours,
   exceptionKind,
+  rangeFormPayload,
+  rangeFormSchema,
 } from '~/lib/availability-view'
 import type { AvailabilityException } from '~/types'
 import { localDateKey } from '~/utils/date'
@@ -49,6 +66,8 @@ const createMany = useBulkCreateExceptions()
 const removeOne = useDeleteAvailabilityException()
 
 const minDate = localDateKey()
+const dateFormId = useId()
+const rangeFormId = useId()
 
 function messageOf(error: unknown, fallback: string) {
   return error instanceof Error && error.message ? error.message : fallback
@@ -56,77 +75,74 @@ function messageOf(error: unknown, fallback: string) {
 
 // ───────── one date ─────────
 const dateOpen = ref(false)
-const dateForm = ref({ date: '', open: false, allDay: true, startTime: '09:00', endTime: '17:00', reason: '' })
+
+const dateForm = useForm({
+  defaultValues: blankDateForm(),
+  validators: {
+    onChange: dateFormSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    if (membershipBlocks('change your availability')) return
+    const payload = dateFormPayload(dateFormSchema.parse(value))
+    try {
+      await createOne.mutateAsync(payload)
+      toast.success(`${exceptionDateLabel(payload.date)} added.`)
+      dateOpen.value = false
+    }
+    catch (error: unknown) {
+      toast.error(messageOf(error, 'We could not add that date. Nothing has changed.'))
+    }
+  },
+})
+const { isInvalid: dateInvalid } = useAuthFieldInvalid(dateForm)
+const allDay = dateForm.useStore(state => state.values.allDay)
 
 function openDate() {
   if (membershipBlocks('change your availability')) return
-  dateForm.value = { date: '', open: false, allDay: true, startTime: '09:00', endTime: '17:00', reason: '' }
+  dateForm.reset(blankDateForm())
   dateOpen.value = true
-}
-
-const dateProblem = computed(() => {
-  const form = dateForm.value
-  if (!form.date) return 'Choose a date.'
-  if (!form.allDay) {
-    if (!form.startTime || !form.endTime) return 'Set both a start and an end time.'
-    if (form.startTime >= form.endTime) return 'The end time must be after the start time.'
-  }
-  return null
-})
-
-async function saveDate() {
-  if (dateProblem.value || createOne.isPending.value) return
-  if (membershipBlocks('change your availability')) return
-  const form = dateForm.value
-  try {
-    await createOne.mutateAsync({
-      date: form.date,
-      startTime: form.allDay ? undefined : `${form.startTime}:00`,
-      endTime: form.allDay ? undefined : `${form.endTime}:00`,
-      isAvailable: form.open,
-      reason: form.reason.trim() || undefined,
-    })
-    toast.success(`${exceptionDateLabel(form.date)} added.`)
-    dateOpen.value = false
-  }
-  catch (error: unknown) {
-    toast.error(messageOf(error, 'We could not add that date. Nothing has changed.'))
-  }
 }
 
 // ───────── a run of days off ─────────
 const rangeOpen = ref(false)
-const rangeForm = ref({ startDate: '', endDate: '', reason: '' })
+
+const rangeForm = useForm({
+  defaultValues: blankRangeForm(),
+  validators: {
+    onChange: rangeFormSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    if (membershipBlocks('change your availability')) return
+    const payload = rangeFormPayload(rangeFormSchema.parse(value))
+    const count = payload.dates.length
+    try {
+      await createMany.mutateAsync(payload)
+      toast.success(count === 1 ? '1 day taken off.' : `${count} days taken off.`)
+      rangeOpen.value = false
+    }
+    catch (error: unknown) {
+      toast.error(messageOf(error, 'We could not take those days off. Nothing has changed.'))
+    }
+  },
+})
+const { isInvalid: rangeInvalid } = useAuthFieldInvalid(rangeForm)
+const rangeValues = rangeForm.useStore(state => state.values)
+const rangeDays = computed(() => dateKeysBetween(rangeValues.value.startDate, rangeValues.value.endDate).length)
 
 function openRange() {
   if (membershipBlocks('change your availability')) return
-  rangeForm.value = { startDate: '', endDate: '', reason: '' }
+  rangeForm.reset(blankRangeForm())
   rangeOpen.value = true
-}
-
-const rangeDays = computed(() => dateKeysBetween(rangeForm.value.startDate, rangeForm.value.endDate))
-const rangeProblem = computed(() => {
-  if (!rangeForm.value.startDate || !rangeForm.value.endDate) return 'Choose the first and the last day.'
-  if (rangeDays.value.length === 0) return 'The last day must be on or after the first.'
-  return null
-})
-
-async function saveRange() {
-  if (rangeProblem.value || createMany.isPending.value) return
-  if (membershipBlocks('change your availability')) return
-  const count = rangeDays.value.length
-  try {
-    await createMany.mutateAsync({
-      dates: rangeDays.value,
-      isAvailable: false,
-      reason: rangeForm.value.reason.trim() || undefined,
-    })
-    toast.success(count === 1 ? '1 day taken off.' : `${count} days taken off.`)
-    rangeOpen.value = false
-  }
-  catch (error: unknown) {
-    toast.error(messageOf(error, 'We could not take those days off. Nothing has changed.'))
-  }
 }
 
 // ───────── removing one ─────────
@@ -155,10 +171,11 @@ const sectionTitle = 'font-display text-[1.15rem] font-[650] tracking-[-0.02em]'
 const panel = 'overflow-hidden rounded-card border border-border bg-card'
 const pad = 'px-[clamp(1.1rem,2.2vw,1.5rem)]'
 const pill = 'rounded-full px-[0.65rem] py-[0.12rem] text-[0.78rem] font-bold whitespace-nowrap'
-const dialog = 'gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]'
+const dialog = 'gap-0 overflow-hidden rounded-[1.75rem] border-border bg-card p-0 sm:max-w-[32rem]'
+const dialogHead = 'gap-[0.4rem] border-b border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1.1rem] text-left'
 const dialogTitle = 'font-display text-[1.5rem] leading-[1.1] font-[650] tracking-[-0.03em]'
-const field = 'h-[2.75rem] rounded-[0.9rem] bg-card'
-const choice = 'inline-flex min-h-[2.75rem] flex-1 cursor-pointer items-center justify-center rounded-full border px-[1rem] font-semibold transition-[background-color,border-color,color] duration-200 ease-canopy'
+const dialogBody = 'max-h-[min(62svh,34rem)] overflow-y-auto px-[clamp(1.2rem,4vw,1.75rem)] py-[1.2rem]'
+const dialogFoot = 'gap-[0.6rem] border-t border-border px-[clamp(1.2rem,4vw,1.75rem)] py-[1rem]'
 </script>
 
 <template>
@@ -219,104 +236,229 @@ const choice = 'inline-flex min-h-[2.75rem] flex-1 cursor-pointer items-center j
     <!-- ───────── one date ───────── -->
     <Dialog v-model:open="dateOpen">
       <DialogContent :class="dialog">
-        <DialogHeader class="gap-[0.5rem] text-left">
+        <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Add a date</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">On this date, this replaces your weekly hours.</DialogDescription>
         </DialogHeader>
 
-        <form class="grid gap-[1rem]" @submit.prevent="saveDate">
-          <div class="grid gap-[0.4rem]">
-            <Label for="ex-date" class="font-semibold">Date</Label>
-            <Input id="ex-date" v-model="dateForm.date" type="date" :min="minDate" required :class="field" />
-          </div>
+        <div :class="dialogBody">
+          <form :id="dateFormId" novalidate @submit.prevent="dateForm.handleSubmit">
+            <FieldGroup class="gap-[1.1rem]">
+              <dateForm.Field v-slot="{ field }" name="date">
+                <Field :class="canopyField" :data-invalid="dateInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">Date</FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="authInput"
+                    type="date"
+                    :min="minDate"
+                    :aria-invalid="dateInvalid(field)"
+                    :disabled="createOne.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="dateInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </dateForm.Field>
 
-          <div class="grid gap-[0.4rem]">
-            <span id="ex-kind" class="font-semibold">On this date I am</span>
-            <div role="group" aria-labelledby="ex-kind" class="flex gap-[0.4rem]">
-              <button
-                v-for="option in [{ open: false, label: 'Not available' }, { open: true, label: 'Available' }]"
-                :key="option.label"
-                type="button"
-                :aria-pressed="dateForm.open === option.open"
-                :class="[choice, dateForm.open === option.open ? 'border-forest bg-forest text-white dark:border-brand' : 'border-border bg-card text-muted-foreground hover:border-brand/45 hover:text-foreground']"
-                @click="dateForm.open = option.open"
-              >
-                {{ option.label }}
-              </button>
-            </div>
-          </div>
+              <dateForm.Field v-slot="{ field }" name="available">
+                <FieldSet :class="canopyField">
+                  <FieldLegend variant="label" :class="canopyLabel">On this date I am</FieldLegend>
+                  <RadioGroup
+                    :name="field.name"
+                    :model-value="field.state.value ? 'open' : 'off'"
+                    :disabled="createOne.isPending.value"
+                    class="grid grid-cols-2 gap-[0.5rem]"
+                    @update:model-value="(v) => {
+                      field.handleChange(v === 'open')
+                      field.handleBlur()
+                    }"
+                  >
+                    <FieldLabel v-for="option in [{ value: 'off', label: 'Not available' }, { value: 'open', label: 'Available' }]" :key="option.value" :for="`${dateFormId}-${option.value}`" :class="[canopyChoice, 'items-center']">
+                      <Field orientation="horizontal" class="items-center">
+                        <RadioGroupItem :id="`${dateFormId}-${option.value}`" :value="option.value" />
+                        <span class="text-[0.95rem] font-semibold">{{ option.label }}</span>
+                      </Field>
+                    </FieldLabel>
+                  </RadioGroup>
+                </FieldSet>
+              </dateForm.Field>
 
-          <label class="flex min-h-[2.75rem] cursor-pointer items-center gap-[0.7rem]">
-            <Switch :model-value="dateForm.allDay" @update:model-value="dateForm.allDay = $event" />
-            <span class="font-semibold">All day</span>
-          </label>
+              <dateForm.Field v-slot="{ field }" name="allDay">
+                <Field orientation="horizontal" class="items-center gap-[0.8rem]">
+                  <Switch
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :disabled="createOne.isPending.value"
+                    @update:model-value="(v) => field.handleChange(v === true)"
+                  />
+                  <FieldContent class="gap-0">
+                    <FieldLabel :for="field.name" class="font-semibold">All day</FieldLabel>
+                  </FieldContent>
+                </Field>
+              </dateForm.Field>
 
-          <div v-if="!dateForm.allDay" class="grid grid-cols-2 gap-[0.75rem]">
-            <div class="grid gap-[0.4rem]">
-              <Label for="ex-start" class="font-semibold">From</Label>
-              <Input id="ex-start" v-model="dateForm.startTime" type="time" required :class="field" />
-            </div>
-            <div class="grid gap-[0.4rem]">
-              <Label for="ex-end" class="font-semibold">Until</Label>
-              <Input id="ex-end" v-model="dateForm.endTime" type="time" required :class="field" />
-            </div>
-          </div>
+              <div v-if="!allDay" class="grid grid-cols-2 gap-[0.75rem]">
+                <dateForm.Field v-slot="{ field }" name="startTime">
+                  <Field :class="canopyField" :data-invalid="dateInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">From</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      :class="authInput"
+                      type="time"
+                      :aria-invalid="dateInvalid(field)"
+                      :disabled="createOne.isPending.value"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                    />
+                    <FieldError v-if="dateInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </dateForm.Field>
+                <dateForm.Field v-slot="{ field }" name="endTime">
+                  <Field :class="canopyField" :data-invalid="dateInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">Until</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      :class="authInput"
+                      type="time"
+                      :aria-invalid="dateInvalid(field)"
+                      :disabled="createOne.isPending.value"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                    />
+                    <FieldError v-if="dateInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </dateForm.Field>
+              </div>
 
-          <div class="grid gap-[0.4rem]">
-            <Label for="ex-reason" class="font-semibold">Note for yourself <span class="font-normal text-muted-foreground">(optional)</span></Label>
-            <Input id="ex-reason" v-model="dateForm.reason" maxlength="200" placeholder="For example: in court" :class="field" />
-          </div>
+              <dateForm.Field v-slot="{ field }" name="reason">
+                <Field :class="canopyField" :data-invalid="dateInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">
+                    Note for yourself
+                    <span class="font-normal text-muted-foreground">(optional)</span>
+                  </FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="authInput"
+                    maxlength="200"
+                    placeholder="For example: in court"
+                    :aria-invalid="dateInvalid(field)"
+                    :disabled="createOne.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="dateInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </dateForm.Field>
+            </FieldGroup>
+          </form>
+        </div>
 
-          <p v-if="dateForm.date && dateProblem" role="alert" class="text-[0.92rem] font-semibold text-destructive">{{ dateProblem }}</p>
-
-          <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
-            <Button type="button" variant="line" size="pill" :disabled="createOne.isPending.value" @click="dateOpen = false">Cancel</Button>
-            <Button type="submit" variant="canopy" size="pill" :disabled="!!dateProblem || createOne.isPending.value" :aria-busy="createOne.isPending.value">{{ createOne.isPending.value ? 'Adding…' : 'Add the date' }}</Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter :class="dialogFoot">
+          <Button type="button" variant="line" size="pill" :disabled="createOne.isPending.value" @click="dateOpen = false">Cancel</Button>
+          <Button type="submit" :form="dateFormId" variant="canopy" size="pill" :disabled="createOne.isPending.value" :aria-busy="createOne.isPending.value">{{ createOne.isPending.value ? 'Adding…' : 'Add the date' }}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
 
     <!-- ───────── a run of days off ───────── -->
     <Dialog v-model:open="rangeOpen">
       <DialogContent :class="dialog">
-        <DialogHeader class="gap-[0.5rem] text-left">
+        <DialogHeader :class="dialogHead">
           <DialogTitle :class="dialogTitle">Take days off</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">Clients cannot book you on any of these days. Appointments already booked stay as they are.</DialogDescription>
         </DialogHeader>
 
-        <form class="grid gap-[1rem]" @submit.prevent="saveRange">
-          <div class="grid grid-cols-1 gap-[0.75rem] sm:grid-cols-2">
-            <div class="grid gap-[0.4rem]">
-              <Label for="range-start" class="font-semibold">First day</Label>
-              <Input id="range-start" v-model="rangeForm.startDate" type="date" :min="minDate" required :class="field" />
-            </div>
-            <div class="grid gap-[0.4rem]">
-              <Label for="range-end" class="font-semibold">Last day</Label>
-              <Input id="range-end" v-model="rangeForm.endDate" type="date" :min="rangeForm.startDate || minDate" required :class="field" />
-            </div>
-          </div>
+        <div :class="dialogBody">
+          <form :id="rangeFormId" novalidate @submit.prevent="rangeForm.handleSubmit">
+            <FieldGroup class="gap-[1.1rem]">
+              <div class="grid grid-cols-1 gap-[0.75rem] sm:grid-cols-2">
+                <rangeForm.Field v-slot="{ field }" name="startDate">
+                  <Field :class="canopyField" :data-invalid="rangeInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">First day</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      :class="authInput"
+                      type="date"
+                      :min="minDate"
+                      :aria-invalid="rangeInvalid(field)"
+                      :disabled="createMany.isPending.value"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                    />
+                    <FieldError v-if="rangeInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </rangeForm.Field>
+                <rangeForm.Field v-slot="{ field }" name="endDate">
+                  <Field :class="canopyField" :data-invalid="rangeInvalid(field)">
+                    <FieldLabel :for="field.name" :class="canopyLabel">Last day</FieldLabel>
+                    <Input
+                      :id="field.name"
+                      :name="field.name"
+                      :model-value="field.state.value"
+                      :class="authInput"
+                      type="date"
+                      :min="rangeValues.startDate || minDate"
+                      :aria-invalid="rangeInvalid(field)"
+                      :disabled="createMany.isPending.value"
+                      @blur="field.handleBlur"
+                      @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                    />
+                    <FieldError v-if="rangeInvalid(field)" :errors="field.state.meta.errors" />
+                  </Field>
+                </rangeForm.Field>
+              </div>
 
-          <div class="grid gap-[0.4rem]">
-            <Label for="range-reason" class="font-semibold">Note for yourself <span class="font-normal text-muted-foreground">(optional)</span></Label>
-            <Input id="range-reason" v-model="rangeForm.reason" maxlength="200" placeholder="For example: annual leave" :class="field" />
-          </div>
+              <rangeForm.Field v-slot="{ field }" name="reason">
+                <Field :class="canopyField" :data-invalid="rangeInvalid(field)">
+                  <FieldLabel :for="field.name" :class="canopyLabel">
+                    Note for yourself
+                    <span class="font-normal text-muted-foreground">(optional)</span>
+                  </FieldLabel>
+                  <Input
+                    :id="field.name"
+                    :name="field.name"
+                    :model-value="field.state.value"
+                    :class="authInput"
+                    maxlength="200"
+                    placeholder="For example: annual leave"
+                    :aria-invalid="rangeInvalid(field)"
+                    :disabled="createMany.isPending.value"
+                    @blur="field.handleBlur"
+                    @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+                  />
+                  <FieldError v-if="rangeInvalid(field)" :errors="field.state.meta.errors" />
+                </Field>
+              </rangeForm.Field>
 
-          <p v-if="rangeForm.startDate && rangeForm.endDate" :role="rangeProblem ? 'alert' : undefined" class="text-[0.95rem]" :class="rangeProblem ? 'font-semibold text-destructive' : 'text-muted-foreground'">
-            {{ rangeProblem ?? (rangeDays.length === 1 ? 'This takes 1 day off.' : `This takes ${rangeDays.length} days off.`) }}
-          </p>
+              <FieldDescription v-if="rangeDays > 0" :class="canopyHint">
+                {{ rangeDays === 1 ? 'This takes 1 day off.' : `This takes ${rangeDays} days off.` }}
+              </FieldDescription>
+            </FieldGroup>
+          </form>
+        </div>
 
-          <DialogFooter class="mt-[0.3rem] gap-[0.6rem]">
-            <Button type="button" variant="line" size="pill" :disabled="createMany.isPending.value" @click="rangeOpen = false">Cancel</Button>
-            <Button type="submit" variant="canopy" size="pill" :disabled="!!rangeProblem || createMany.isPending.value" :aria-busy="createMany.isPending.value">{{ createMany.isPending.value ? 'Saving…' : 'Take the days off' }}</Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter :class="dialogFoot">
+          <Button type="button" variant="line" size="pill" :disabled="createMany.isPending.value" @click="rangeOpen = false">Cancel</Button>
+          <Button type="submit" :form="rangeFormId" variant="canopy" size="pill" :disabled="createMany.isPending.value" :aria-busy="createMany.isPending.value">{{ createMany.isPending.value ? 'Saving…' : 'Take the days off' }}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
 
     <!-- ───────── removing one ───────── -->
     <Dialog :open="pendingRemove !== null" @update:open="(open: boolean) => { if (!open && !removing) pendingRemove = null }">
-      <DialogContent :class="dialog">
+      <DialogContent class="gap-[1.1rem] rounded-[1.75rem] border-border bg-card p-[clamp(1.4rem,4vw,2rem)] sm:max-w-[30rem]">
         <DialogHeader class="gap-[0.5rem] text-left">
           <DialogTitle :class="dialogTitle">Remove this date?</DialogTitle>
           <DialogDescription class="text-[1rem] text-muted-foreground">

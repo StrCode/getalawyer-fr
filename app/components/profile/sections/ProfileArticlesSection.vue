@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { Add01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -16,240 +15,175 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import type {
-  CreateArticleInput,
-  LawyerArticleStatus,
-  LawyerProfileArticle,
-} from '~/types/lawyer-profile-editor'
+import { articlePayload, articleSchema, articleValues } from '~/lib/profile-forms'
+import type { CreateArticleInput, LawyerProfileArticle } from '~/types/lawyer-profile-editor'
 
+/** Articles a lawyer has written. Only published ones show on the public page. */
 const props = defineProps<{
   items: LawyerProfileArticle[]
   disabled?: boolean
   saving?: boolean
   onCreate: (payload: CreateArticleInput) => Promise<void>
-  onUpdate: (payload: { id: string; data: Partial<CreateArticleInput> }) => Promise<void>
+  onUpdate: (payload: { id: string, data: Partial<CreateArticleInput> }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }>()
 
-const dialogOpen = ref(false)
-const deleteOpen = ref(false)
-const editingId = ref<string | null>(null)
-const deleteId = ref<string | null>(null)
+const form = useForm({
+  defaultValues: articleValues(),
+  validators: {
+    onChange: articleSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    const payload = articlePayload(articleSchema.parse(value))
+    try {
+      if (editingId.value) await props.onUpdate({ id: editingId.value, data: payload })
+      else await props.onCreate(payload)
+      dialogOpen.value = false
+    }
+    catch {
+      // the page shows the message; the dialog stays open to try again
+    }
+  },
+})
 
-const title = ref('')
-const excerpt = ref('')
-const body = ref('')
-const status = ref<LawyerArticleStatus>('draft')
+const { isInvalid } = useAuthFieldInvalid(form)
 
-function resetForm() {
-  title.value = ''
-  excerpt.value = ''
-  body.value = ''
-  status.value = 'draft'
-}
+const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, confirmDelete } = useProfileEntryList<LawyerProfileArticle>({
+  seed: item => form.reset(articleValues(item)),
+  remove: id => props.onDelete(id),
+})
 
-function openCreate() {
-  editingId.value = null
-  resetForm()
-  dialogOpen.value = true
-}
-
-function openEdit(item: LawyerProfileArticle) {
-  editingId.value = item.id
-  title.value = item.title
-  excerpt.value = item.excerpt ?? ''
-  body.value = item.body
-  status.value = item.status
-  dialogOpen.value = true
-}
-
-function openDelete(id: string) {
-  deleteId.value = id
-  deleteOpen.value = true
-}
-
-const canSave = computed(
-  () => title.value.trim().length > 0 && body.value.trim().length > 0,
-)
-
-const dialogTitle = computed(() =>
-  editingId.value ? 'Edit article' : 'Add article',
-)
-
-function formatArticleDate(value: string | null | undefined): string | null {
+function articleDate(value: string | null | undefined): string | null {
   if (!value) return null
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return null
-  return date.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
-function buildPayload(): CreateArticleInput {
-  return {
-    title: title.value.trim(),
-    excerpt: excerpt.value.trim() || null,
-    body: body.value.trim(),
-    status: status.value,
-  }
-}
-
-async function onSave() {
-  if (!canSave.value) return
-  const payload = buildPayload()
-  try {
-    if (editingId.value) {
-      await props.onUpdate({ id: editingId.value, data: payload })
-    } else {
-      await props.onCreate(payload)
-    }
-    dialogOpen.value = false
-    editingId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
-
-async function onDeleteConfirm() {
-  if (!deleteId.value) return
-  try {
-    await props.onDelete(deleteId.value)
-    deleteOpen.value = false
-    deleteId.value = null
-  } catch {
-    // Parent shows toast
-  }
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <CardTitle>
-            Articles
-          </CardTitle>
-          <CardDescription>
-            Share insights on your profile. Only published articles are visible to clients.
-          </CardDescription>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          :disabled="disabled"
-          @click="openCreate"
-        >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          Add
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <p
-        v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
-      >
-        No articles yet. Publish legal insights for clients visiting your profile.
-      </p>
-      <div
-        v-else
-        class="space-y-3"
-      >
-        <ProfileListRow
-          v-for="item in items"
-          :key="item.id"
-          :primary="item.title"
-          :secondary="item.excerpt"
-          :tertiary="[
-            item.status === 'published' ? 'Published' : 'Draft',
-            formatArticleDate(item.publishedAt ?? item.updatedAt),
-          ].filter(Boolean).join(' · ') || null"
-          :badge="item.status"
-          :disabled="disabled"
-          @edit="openEdit(item)"
-          @delete="openDelete(item.id)"
-        />
-      </div>
-    </CardContent>
+  <SettingsSectionCard
+    title="Articles"
+    description="Writing that shows what you know. Only published articles show on your public page."
+    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+  >
+    <template #action>
+      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add an article</Button>
+    </template>
 
-    <ProfileEntryDialog
-      v-model:open="dialogOpen"
-      :title="dialogTitle"
-      description="Articles appear on your profile when published."
-      :save-label="editingId ? 'Update' : 'Add'"
-      :saving="saving"
-      :save-disabled="!canSave"
-      @save="onSave"
-    >
-      <FieldGroup>
-        <Field>
-          <FieldLabel for="article-title">
-            Title
-          </FieldLabel>
-          <Input
-            id="article-title"
-            v-model="title"
-            maxlength="200"
-            placeholder="e.g. What to know before signing a lease"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="article-excerpt">
-            Excerpt
-            <span class="font-normal text-muted-foreground">(optional)</span>
-          </FieldLabel>
-          <Input
-            id="article-excerpt"
-            v-model="excerpt"
-            maxlength="400"
-            placeholder="Short summary shown on your profile"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="article-body">
-            Body
-          </FieldLabel>
-          <Textarea
-            id="article-body"
-            v-model="body"
-            rows="8"
-            placeholder="Write your article…"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="article-status">
-            Status
-          </FieldLabel>
-          <Select v-model="status">
-            <SelectTrigger
-              id="article-status"
-              class="w-full"
-            >
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="draft">
-                Draft — only you can see this
-              </SelectItem>
-              <SelectItem value="published">
-                Published — visible on your profile
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
-      </FieldGroup>
-    </ProfileEntryDialog>
-
-    <ProfileDeleteConfirmDialog
-      v-model:open="deleteOpen"
-      title="Delete article?"
-      description="This article will be permanently removed from your profile."
-      :deleting="saving"
-      @confirm="onDeleteConfirm"
+    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No articles yet.</p>
+    <ProfileListRow
+      v-for="item in items"
+      :key="item.id"
+      :primary="item.title"
+      :secondary="item.excerpt"
+      :tertiary="articleDate(item.publishedAt ?? item.updatedAt)"
+      :badge="item.status === 'published' ? 'Published' : 'Draft'"
+      :disabled="disabled"
+      @edit="openEdit(item)"
+      @delete="openDelete(item.id)"
     />
-  </Card>
+  </SettingsSectionCard>
+
+  <ProfileEntryDialog
+    v-model:open="dialogOpen"
+    :title="editingId ? 'Edit this article' : 'Add an article'"
+    description="Save it as a draft until it is ready for clients to read."
+    form-id="article-form"
+    :saving="saving"
+  >
+    <form id="article-form" novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="title">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Title</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="200"
+              placeholder="For example: What to check before you sign a lease"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="excerpt">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Summary <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="400"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldDescription :class="canopyHint">One or two lines shown under the title on your public page.</FieldDescription>
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="body">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Article</FieldLabel>
+            <Textarea
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="canopyTextarea"
+              rows="9"
+              placeholder="Write the article here."
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="status">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Who can see it</FieldLabel>
+            <Select
+              :model-value="field.state.value"
+              :disabled="saving"
+              @update:model-value="(v) => {
+                field.handleChange(v === 'published' ? 'published' : 'draft')
+                field.handleBlur()
+              }"
+            >
+              <SelectTrigger :id="field.name" :class="canopySelect" :aria-invalid="isInvalid(field)">
+                <SelectValue placeholder="Choose" />
+              </SelectTrigger>
+              <SelectContent :class="canopyPanel">
+                <SelectItem value="draft">Only you (draft)</SelectItem>
+                <SelectItem value="published">Everyone (published)</SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+      </FieldGroup>
+    </form>
+  </ProfileEntryDialog>
+
+  <ProfileDeleteConfirmDialog
+    v-model:open="deleteOpen"
+    title="Delete this article?"
+    description="It is removed for good, from your profile and your public page."
+    :deleting="saving"
+    @confirm="confirmDelete"
+  />
 </template>

@@ -1,4 +1,5 @@
-import type { AvailabilityException, CreateScheduleInput, DayOfWeek, LawyerAvailabilitySchedule } from '~/types/availability'
+import * as z from 'zod'
+import type { AvailabilityException, BulkExceptionInput, CreateExceptionInput, CreateScheduleInput, DayOfWeek, LawyerAvailabilitySchedule } from '~/types/availability'
 
 /**
  * The reasoning behind the availability page, kept apart from the page so it
@@ -159,4 +160,91 @@ export function dateKeysBetween(start: string, end: string): string[] {
     day.setDate(day.getDate() + 1)
   }
   return keys
+}
+
+// ───────── the forms ─────────
+const timeText = z.string().regex(/^(\d{2}:\d{2})?$/, { error: 'Choose a time.' })
+const dateText = z.string().regex(/^(\d{4}-\d{2}-\d{2})?$/, { error: 'Choose a date.' })
+
+/** The week as a form holds it: one row per day, Monday first. */
+export const weekSchema = z.object({
+  days: z.array(z.object({
+    day: z.enum(['0', '1', '2', '3', '4', '5', '6']),
+    enabled: z.boolean(),
+    startTime: timeText,
+    endTime: timeText,
+  }).superRefine((row, ctx) => {
+    const problem = dayError(row)
+    if (problem) ctx.addIssue({ code: 'custom', path: [problem.includes('both') && !row.startTime ? 'startTime' : 'endTime'], message: problem })
+  })).length(7),
+})
+export type WeekFormValues = z.input<typeof weekSchema>
+
+export function weekFormValues(week: WeekHours): WeekFormValues {
+  return { days: WEEK_ORDER.map(day => ({ day, ...week[day] })) }
+}
+export function weekFromForm(values: WeekFormValues): WeekHours {
+  const week = emptyWeek()
+  for (const row of values.days) week[row.day as DayOfWeek] = { enabled: row.enabled, startTime: row.startTime, endTime: row.endTime }
+  return week
+}
+
+/** One date that differs from the week. */
+export const dateFormSchema = z
+  .object({
+    date: dateText.min(1, { error: 'Choose a date.' }),
+    available: z.boolean(),
+    allDay: z.boolean(),
+    startTime: timeText,
+    endTime: timeText,
+    reason: z.string().trim().max(200, { error: 'Keep the note to 200 characters.' }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.allDay) return
+    if (!data.startTime) ctx.addIssue({ code: 'custom', path: ['startTime'], message: 'Choose a start time.' })
+    if (!data.endTime) ctx.addIssue({ code: 'custom', path: ['endTime'], message: 'Choose an end time.' })
+    if (data.startTime && data.endTime && data.startTime >= data.endTime) {
+      ctx.addIssue({ code: 'custom', path: ['endTime'], message: 'The end time must be after the start time.' })
+    }
+  })
+export type DateFormValues = z.input<typeof dateFormSchema>
+
+export function blankDateForm(): DateFormValues {
+  return { date: '', available: false, allDay: true, startTime: '09:00', endTime: '17:00', reason: '' }
+}
+export function dateFormPayload(values: DateFormValues): CreateExceptionInput {
+  return {
+    date: values.date,
+    startTime: values.allDay ? undefined : `${values.startTime}:00`,
+    endTime: values.allDay ? undefined : `${values.endTime}:00`,
+    isAvailable: values.available,
+    reason: values.reason.trim() || undefined,
+  }
+}
+
+/** A run of days off. */
+export const MAX_DAYS_OFF = 90
+export const rangeFormSchema = z
+  .object({
+    startDate: dateText.min(1, { error: 'Choose the first day.' }),
+    endDate: dateText.min(1, { error: 'Choose the last day.' }),
+    reason: z.string().trim().max(200, { error: 'Keep the note to 200 characters.' }),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.startDate || !data.endDate) return
+    const days = dateKeysBetween(data.startDate, data.endDate).length
+    if (days === 0) ctx.addIssue({ code: 'custom', path: ['endDate'], message: 'The last day must be on or after the first.' })
+    else if (days > MAX_DAYS_OFF) ctx.addIssue({ code: 'custom', path: ['endDate'], message: `Take up to ${MAX_DAYS_OFF} days off at a time.` })
+  })
+export type RangeFormValues = z.input<typeof rangeFormSchema>
+
+export function blankRangeForm(): RangeFormValues {
+  return { startDate: '', endDate: '', reason: '' }
+}
+export function rangeFormPayload(values: RangeFormValues): BulkExceptionInput {
+  return {
+    dates: dateKeysBetween(values.startDate, values.endDate),
+    isAvailable: false,
+    reason: values.reason.trim() || undefined,
+  }
 }

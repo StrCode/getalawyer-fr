@@ -1,266 +1,234 @@
 <script setup lang="ts">
-import { Add01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { formatExperienceRange } from '~/lib/profile-list-format'
-import type {
-  CreateExperienceInput,
-  LawyerProfileExperience,
-} from '~/types/lawyer-profile-editor'
+import { experiencePayload, experienceSchema, experienceValues } from '~/lib/profile-forms'
+import type { CreateExperienceInput, LawyerProfileExperience } from '~/types/lawyer-profile-editor'
 
+/** The roles a lawyer has held, newest first as the server returns them. */
 const props = defineProps<{
   items: LawyerProfileExperience[]
   disabled?: boolean
   saving?: boolean
   onCreate: (payload: CreateExperienceInput) => Promise<void>
-  onUpdate: (payload: { id: string; data: Partial<CreateExperienceInput> }) => Promise<void>
+  onUpdate: (payload: { id: string, data: Partial<CreateExperienceInput> }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }>()
 
-const dialogOpen = ref(false)
-const deleteOpen = ref(false)
-const editingId = ref<string | null>(null)
-const deleteId = ref<string | null>(null)
-
-const title = ref('')
-const organization = ref('')
-const location = ref('')
-const startDate = ref('')
-const endDate = ref('')
-const isCurrent = ref(false)
-const description = ref('')
-
-function resetForm() {
-  title.value = ''
-  organization.value = ''
-  location.value = ''
-  startDate.value = ''
-  endDate.value = ''
-  isCurrent.value = false
-  description.value = ''
-}
-
-function openCreate() {
-  editingId.value = null
-  resetForm()
-  dialogOpen.value = true
-}
-
-function openEdit(item: LawyerProfileExperience) {
-  editingId.value = item.id
-  title.value = item.title
-  organization.value = item.organization
-  location.value = item.location ?? ''
-  startDate.value = item.startDate?.slice(0, 7) ?? ''
-  endDate.value = item.endDate?.slice(0, 7) ?? ''
-  isCurrent.value = item.isCurrent
-  description.value = item.description ?? ''
-  dialogOpen.value = true
-}
-
-function openDelete(id: string) {
-  deleteId.value = id
-  deleteOpen.value = true
-}
-
-watch(isCurrent, (current) => {
-  if (current) endDate.value = ''
+const form = useForm({
+  defaultValues: experienceValues(),
+  validators: {
+    onChange: experienceSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    const payload = experiencePayload(experienceSchema.parse(value))
+    try {
+      if (editingId.value) await props.onUpdate({ id: editingId.value, data: payload })
+      else await props.onCreate(payload)
+      dialogOpen.value = false
+    }
+    catch {
+      // the page shows the message; the dialog stays open to try again
+    }
+  },
 })
 
-const canSave = computed(
-  () => title.value.trim().length > 0 && organization.value.trim().length > 0,
-)
+const { isInvalid } = useAuthFieldInvalid(form)
 
-const dialogTitle = computed(() =>
-  editingId.value ? 'Edit experience' : 'Add experience',
-)
+const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, confirmDelete } = useProfileEntryList<LawyerProfileExperience>({
+  seed: item => form.reset(experienceValues(item)),
+  remove: id => props.onDelete(id),
+})
 
-function buildPayload(): CreateExperienceInput {
-  return {
-    title: title.value.trim(),
-    organization: organization.value.trim(),
-    location: location.value.trim() || null,
-    startDate: startDate.value || null,
-    endDate: isCurrent.value ? null : endDate.value || null,
-    isCurrent: isCurrent.value,
-    description: description.value.trim() || null,
-  }
-}
-
-async function onSave() {
-  if (!canSave.value) return
-  const payload = buildPayload()
-  try {
-    if (editingId.value) {
-      await props.onUpdate({ id: editingId.value, data: payload })
-    } else {
-      await props.onCreate(payload)
-    }
-    dialogOpen.value = false
-    editingId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
-
-async function onDeleteConfirm() {
-  if (!deleteId.value) return
-  try {
-    await props.onDelete(deleteId.value)
-    deleteOpen.value = false
-    deleteId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+const isCurrent = form.useStore(state => state.values.isCurrent)
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <CardTitle>
-            Experience
-          </CardTitle>
-          <CardDescription>
-            Roles and positions clients see on your profile.
-          </CardDescription>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          :disabled="disabled"
-          @click="openCreate"
-        >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          Add
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent class="space-y-2">
-      <p
-        v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
-      >
-        No roles added yet.
-      </p>
-      <ProfileListRow
-        v-for="item in items"
-        :key="item.id"
-        :primary="item.title"
-        :secondary="item.organization"
-        :tertiary="[formatExperienceRange(item), item.location].filter(Boolean).join(' · ') || null"
-        :disabled="disabled"
-        @edit="openEdit(item)"
-        @delete="openDelete(item.id)"
-      />
-    </CardContent>
-  </Card>
+  <SettingsSectionCard
+    title="Experience"
+    description="The roles clients see on your public page."
+    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+  >
+    <template #action>
+      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a role</Button>
+    </template>
+
+    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No roles added yet.</p>
+    <ProfileListRow
+      v-for="item in items"
+      :key="item.id"
+      :primary="item.title"
+      :secondary="item.organization"
+      :tertiary="[formatExperienceRange(item), item.location].filter(Boolean).join(' · ') || null"
+      :disabled="disabled"
+      @edit="openEdit(item)"
+      @delete="openDelete(item.id)"
+    />
+  </SettingsSectionCard>
 
   <ProfileEntryDialog
     v-model:open="dialogOpen"
-    :title="dialogTitle"
-    description="Add a role from your legal career."
-    :save-label="editingId ? 'Update' : 'Add'"
+    :title="editingId ? 'Edit this role' : 'Add a role'"
+    description="A role from your legal career."
+    form-id="experience-form"
     :saving="saving"
-    :save-disabled="!canSave"
-    @save="onSave"
   >
-    <FieldGroup class="gap-4">
-      <Field>
-        <FieldLabel for="exp-title">
-          Job title
-        </FieldLabel>
-        <Input
-          id="exp-title"
-          v-model="title"
-          maxlength="120"
-          placeholder="e.g. Senior Associate"
-        />
-      </Field>
-      <Field>
-        <FieldLabel for="exp-org">
-          Organization
-        </FieldLabel>
-        <Input
-          id="exp-org"
-          v-model="organization"
-          maxlength="160"
-          placeholder="e.g. Adeyemi & Partners"
-        />
-      </Field>
-      <Field>
-        <FieldLabel for="exp-location">
-          Location
-        </FieldLabel>
-        <Input
-          id="exp-location"
-          v-model="location"
-          maxlength="120"
-          placeholder="Optional"
-        />
-      </Field>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel for="exp-start">
-            Start date
-          </FieldLabel>
-          <Input
-            id="exp-start"
-            v-model="startDate"
-            type="month"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="exp-end">
-            End date
-          </FieldLabel>
-          <Input
-            id="exp-end"
-            v-model="endDate"
-            type="month"
-            :disabled="isCurrent"
-          />
-        </Field>
-      </div>
-      <Label class="flex cursor-pointer items-center gap-2">
-        <Checkbox
-          :model-value="isCurrent"
-          @update:model-value="(v) => { isCurrent = !!v }"
-        />
-        <span class="text-sm font-normal">I currently work here</span>
-      </Label>
-      <Field>
-        <FieldLabel for="exp-desc">
-          Description
-        </FieldLabel>
-        <Textarea
-          id="exp-desc"
-          v-model="description"
-          rows="4"
-          maxlength="4000"
-          placeholder="Optional — scope of work, highlights, etc."
-        />
-      </Field>
-    </FieldGroup>
+    <form id="experience-form" novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="title">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Job title</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="120"
+              placeholder="For example: Senior Associate"
+              autocomplete="organization-title"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="organization">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Firm or organisation</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="160"
+              placeholder="For example: Adeyemi & Partners"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="location">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Location <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="120"
+              placeholder="For example: Lagos"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+          <form.Field v-slot="{ field }" name="startDate">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Started <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                type="month"
+                placeholder="2019-04"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+          <form.Field v-slot="{ field }" name="endDate">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Ended <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                type="month"
+                placeholder="2022-01"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving || isCurrent"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
+        <form.Field v-slot="{ field }" name="isCurrent">
+          <Field :class="canopyField">
+            <Label :for="field.name" :class="canopyChoice">
+              <Checkbox
+                :id="field.name"
+                :model-value="field.state.value === true"
+                :class="canopyCheckbox"
+                :disabled="saving"
+                @update:model-value="(v) => {
+                  field.handleChange(!!v)
+                  // a role that has not ended has no end date
+                  if (v) form.setFieldValue('endDate', '')
+                  field.handleBlur()
+                }"
+              />
+              <span class="text-[0.95rem] leading-snug font-semibold text-foreground">I work here now</span>
+            </Label>
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="description">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">What you did <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Textarea
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="canopyTextarea"
+              rows="4"
+              maxlength="4000"
+              placeholder="The kind of work, and anything worth pointing out."
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+      </FieldGroup>
+    </form>
   </ProfileEntryDialog>
 
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
-    title="Remove experience?"
-    description="This role will no longer appear on your profile."
+    title="Remove this role?"
+    description="It will no longer show on your public page."
     :deleting="saving"
-    @confirm="onDeleteConfirm"
+    @confirm="confirmDelete"
   />
 </template>

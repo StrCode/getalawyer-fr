@@ -10,15 +10,21 @@ import ProfileOfficeSection from '@/components/profile/sections/ProfileOfficeSec
 import ProfilePhotoSection from '@/components/profile/sections/ProfilePhotoSection.vue'
 import ProfilePracticeAreasSection from '@/components/profile/sections/ProfilePracticeAreasSection.vue'
 import ProfileSkillSection from '@/components/profile/sections/ProfileSkillSection.vue'
-import LawyerPublishReadinessBanner from '@/components/profile/LawyerPublishReadinessBanner.vue'
-import ListingProgressPanel from '@/components/profile/ListingProgressPanel.vue'
-import ProfileSectionNav from '@/components/profile/ProfileSectionNav.vue'
-import ProfileMobileSectionSelect from '@/components/profile/ProfileMobileSectionSelect.vue'
-import LawyerProfilePreviewCard from '@/components/profile/LawyerProfilePreviewCard.vue'
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader.vue'
 import { Button } from '@/components/ui/button'
-import { CANOPY_CARDS, PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
-import { getIncompleteListingSectionIds } from '~/lib/profile-check-catalog'
+import { PANEL, PANEL_TITLE } from '@/lib/dashboard-panel'
+import {
+  defaultSection,
+  elsewhereRows,
+  isProfileSectionId,
+  PROFILE_GROUP_TITLE,
+  PROFILE_SECTIONS,
+  searchStanding,
+  sectionRows,
+  type ProfileSectionGroup,
+  type ProfileSectionId,
+} from '~/lib/profile-editor-view'
+import { initials } from '~/lib/client-overview'
 import { ApiError } from '~/lib/api/client'
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import {
@@ -35,22 +41,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
+/**
+ * A lawyer's profile, edited one section at a time. A band at the top shows
+ * the card clients see and whether they can find it; a list groups the
+ * sections by how much they matter to search, with what each holds; the
+ * chosen section opens beside the list. The section is in the address
+ * (`?section=about`). On a phone the list comes first and a section opens on
+ * its own, with a way back.
+ */
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-
-const LAWYER_SECTION_DEFS = [
-  { id: 'photo', label: 'Photo' },
-  { id: 'about', label: 'About' },
-  { id: 'office', label: 'Office' },
-  { id: 'practice-areas', label: 'Practice areas' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'education', label: 'Education' },
-  { id: 'licenses', label: 'Licenses' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'articles', label: 'Articles' },
-] as const
-
-const mobileSection = ref(LAWYER_SECTION_DEFS[0].id)
 
 const { session, isPending: authPending, refetchSession } = useAuth()
 
@@ -148,16 +148,51 @@ const avatarSrc = computed(
 
 const isUploadingAvatar = computed(() => uploadAvatar.isPending.value)
 
-const incompleteSectionIds = computed(() =>
-  getIncompleteListingSectionIds(profileStrength.value),
-)
+// ───────── which section is open ─────────
+const route = useRoute()
+const router = useRouter()
 
-const lawyerSections = computed(() =>
-  LAWYER_SECTION_DEFS.map((section) => ({
-    ...section,
-    incomplete: incompleteSectionIds.value.has(section.id),
+/** The section the address asks for, if it asks for one. */
+const chosen = computed<ProfileSectionId | null>(() => {
+  const value = Array.isArray(route.query.section) ? route.query.section[0] : route.query.section
+  return isProfileSectionId(value) ? value : null
+})
+/** The section on screen: the one asked for, else the first with something still to do. */
+const active = computed<ProfileSectionId>(() => chosen.value ?? defaultSection(profileStrength.value))
+
+function sectionLink(id: ProfileSectionId) {
+  return { path: '/dashboard/profile', query: { section: id } }
+}
+
+const rows = computed(() => sectionRows(profile.value, profileStrength.value, Boolean(avatarSrc.value)))
+const elsewhere = computed(() => elsewhereRows(profileStrength.value, activeConsultationTypeCount.value, hasAvailability.value))
+const groups = computed(() =>
+  ([1, 2, 3] as ProfileSectionGroup[]).map(group => ({
+    group,
+    title: PROFILE_GROUP_TITLE[group],
+    rows: rows.value.filter(row => row.group === group),
   })),
 )
+
+const activeIndex = computed(() => PROFILE_SECTIONS.findIndex(section => section.id === active.value))
+const previous = computed(() => PROFILE_SECTIONS[activeIndex.value - 1] ?? null)
+const next = computed(() => PROFILE_SECTIONS[activeIndex.value + 1] ?? null)
+
+const standing = computed(() => searchStanding(directoryEligibility.value, profileStrength.value))
+const percent = computed(() => profileStrength.value?.percent ?? 0)
+const shownAreas = computed(() => (profile.value?.practiceAreas ?? []).slice(0, 4))
+const moreAreas = computed(() => Math.max(0, (profile.value?.practiceAreas.length ?? 0) - 4))
+
+onMounted(() => {
+  // Older links pointed at a part of the long page (`#about`); open that section instead.
+  const fromHash = window.location.hash.replace('#', '')
+  if (!chosen.value && isProfileSectionId(fromHash)) void router.replace({ ...sectionLink(fromHash), hash: '' })
+})
+
+// On a phone a section replaces the list, so it should start at its top.
+watch(chosen, () => {
+  if (import.meta.client && window.matchMedia('(max-width: 61.99rem)').matches) window.scrollTo({ top: 0 })
+})
 
 const approvalHeaderBadge = computed(() =>
   getLawyerApprovalHeaderBadge(
@@ -395,8 +430,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- The sections below are still the shared cards; CANOPY_CARDS gives them the panel look. -->
-  <div :class="['grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]', CANOPY_CARDS]">
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1.25rem,2.4vw,2rem)]">
     <DashboardPageHeader
       eyebrow="Practice"
       title="Your profile"
@@ -426,12 +460,6 @@ onBeforeUnmount(() => {
       </template>
     </DashboardPageHeader>
 
-    <LawyerPublishReadinessBanner
-      v-if="!isLoading && !isError && profile"
-      :eligibility="directoryEligibility"
-      :is-approved="isApproved"
-    />
-
     <LawyerProfileApprovalBanner
       v-if="approvalNotice"
       :notice="approvalNotice"
@@ -453,130 +481,191 @@ onBeforeUnmount(() => {
     </section>
 
     <template v-else-if="profile">
-      <ListingProgressPanel
-        :eligibility="directoryEligibility"
-        :profile-strength="profileStrength"
-      />
-
-      <LawyerProfilePreviewCard
-        :name="displayName"
-        :image-url="avatarSrc"
-        :headline="profile.about.headline"
-        :about="profile.about.about"
-        :practice-areas="profile.practiceAreas"
-        :firm-name="profile.practiceInfo?.firmName"
-        :office-location="previewOfficeLocation"
-        :public-profile-url="publicProfileUrl"
-      />
-
-      <!-- the jump menu is for narrow screens; wide ones have the list beside the sections -->
-      <div class="lg:hidden">
-        <ProfileMobileSectionSelect
-          v-model="mobileSection"
-          :sections="lawyerSections"
-        />
-      </div>
-
-      <div class="lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-[clamp(1rem,2vw,1.5rem)]">
-        <aside class="relative hidden lg:block">
-          <!-- clears the dashboard bar, which stays at the top of the window -->
-          <div class="sticky top-[5.25rem] rounded-card border border-border bg-card p-3">
-            <ProfileSectionNav :sections="lawyerSections" />
+      <!-- ───────── how clients see you, and whether they can find you ───────── -->
+      <section
+        aria-label="Your public card"
+        :class="[PANEL, 'grid tab:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]', chosen ? 'max-tab:hidden' : '']"
+      >
+        <div class="flex min-w-0 items-start gap-[1rem] p-[clamp(1.1rem,2.2vw,1.5rem)]">
+          <span aria-hidden="true" class="grid size-[4.5rem] flex-none place-items-center overflow-hidden rounded-[1.25rem] bg-mint font-display text-[1.4rem] font-bold text-deep">
+            <img v-if="avatarSrc" :src="avatarSrc" alt="" class="size-full object-cover">
+            <template v-else>{{ initials(displayName) || '·' }}</template>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[0.8125rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">How clients see you</p>
+            <p class="mt-[0.2rem] font-display text-[1.3rem] leading-[1.15] font-[650] tracking-[-0.02em]">{{ displayName }}</p>
+            <p class="mt-[0.15rem]" :class="profile.about.headline?.trim() ? 'text-brand' : 'text-muted-foreground'">{{ profile.about.headline?.trim() || 'No headline yet' }}</p>
+            <p v-if="profile.practiceInfo?.firmName || previewOfficeLocation" class="mt-[0.15rem] text-[0.92rem] text-muted-foreground">
+              {{ [profile.practiceInfo?.firmName, previewOfficeLocation].filter(Boolean).join(' · ') }}
+            </p>
+            <ul v-if="shownAreas.length > 0" class="mt-[0.6rem] flex flex-wrap gap-[0.35rem]">
+              <li v-for="area in shownAreas" :key="area.id" class="rounded-full bg-muted px-[0.65rem] py-[0.12rem] text-[0.8rem] font-semibold">{{ area.name }}</li>
+              <li v-if="moreAreas > 0" class="rounded-full border border-border px-[0.65rem] py-[0.12rem] text-[0.8rem] font-semibold text-muted-foreground">{{ moreAreas }} more</li>
+            </ul>
           </div>
-        </aside>
+        </div>
 
-        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(1rem,2vw,1.5rem)] [&>div]:scroll-mt-[5.25rem]">
-          <div id="photo">
-            <ProfilePhotoSection
-              :name="displayName"
-              :email="session?.user?.email"
-              :image-url="avatarSrc"
-              :uploading="isUploadingAvatar"
-              description="Shown on your profile and in search results."
-              @upload="onAvatarUpload"
-            />
+        <div class="min-w-0 border-t border-border bg-background/60 p-[clamp(1.1rem,2.2vw,1.5rem)] tab:border-t-0 tab:border-l">
+          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <span class="rounded-full px-[0.75rem] py-[0.2rem] text-[0.85rem] font-bold" :class="standing.visible ? 'bg-mint text-deep' : 'bg-warning/15 text-warning-subtle-foreground'">{{ standing.label }}</span>
+            <span class="font-display text-[1.15rem] font-[650] tracking-[-0.02em] tabular-nums">{{ percent }}% complete</span>
           </div>
-
-          <div id="about">
-            <ProfileAboutSection
-              :about="profile.about"
-              :disabled="!canEdit"
-              :saving="updateAbout.isPending.value"
-              @save="handleSaveAbout"
-            />
+          <div class="mt-[0.7rem] h-[0.45rem] overflow-hidden rounded-full bg-muted" role="progressbar" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100" aria-label="How complete your profile is">
+            <div class="h-full rounded-full bg-primary transition-[width] duration-500 ease-canopy" :style="{ width: `${percent}%` }" />
           </div>
+          <p class="mt-[0.7rem] text-[0.95rem] text-muted-foreground">{{ standing.line }}</p>
+          <ul v-if="standing.blockers.length > 0" class="mt-[0.5rem] grid gap-[0.25rem]">
+            <li v-for="blocker in standing.blockers" :key="blocker.label" class="text-[0.95rem]">
+              <NuxtLink :to="blocker.to" class="font-semibold text-brand underline-offset-4 hover:underline">{{ blocker.label }} →</NuxtLink>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-          <div id="office">
-            <ProfileOfficeSection
-              :practice-info="profile.practiceInfo"
-              :disabled="!canEdit"
-              :saving="updateOffice.isPending.value"
-              @save="handleSaveOffice"
-            />
+      <div class="grid grid-cols-[minmax(0,1fr)] items-start gap-[clamp(1rem,2vw,1.5rem)] tab:grid-cols-[19rem_minmax(0,1fr)]">
+        <!-- ───────── the sections, grouped by how much they matter to search ───────── -->
+        <nav
+          aria-label="Profile sections"
+          :class="[PANEL, 'min-w-0 p-[0.5rem] tab:sticky tab:top-[5.25rem]', chosen ? 'max-tab:hidden' : '']"
+        >
+          <div v-for="item in groups" :key="item.group" class="min-w-0 pb-[0.4rem]">
+            <p class="px-[0.75rem] pt-[0.7rem] pb-[0.35rem] text-[0.8125rem] font-bold tracking-[0.08em] text-muted-foreground uppercase">{{ item.title }}</p>
+            <ul class="grid grid-cols-[minmax(0,1fr)] gap-[0.1rem]">
+              <li v-for="row in item.rows" :key="row.id">
+                <NuxtLink
+                  :to="sectionLink(row.id)"
+                  :aria-current="active === row.id ? 'true' : undefined"
+                  class="group flex min-h-[3.25rem] items-center gap-[0.7rem] rounded-[0.9rem] px-[0.75rem] py-[0.4rem] transition-colors duration-200 hover:bg-background"
+                  :class="active === row.id ? (chosen ? 'bg-mint text-deep' : 'tab:bg-mint tab:text-deep') : ''"
+                >
+                  <span
+                    class="grid size-[1.35rem] flex-none place-items-center rounded-full border"
+                    :class="row.done ? 'border-primary bg-primary text-white' : 'border-muted-foreground/40'"
+                  >
+                    <CanopyGlyph v-if="row.done" name="tick" :size="12" :stroke="3" />
+                    <span class="sr-only">{{ row.done ? 'Done' : 'To do' }}</span>
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block font-semibold">{{ row.label }}</span>
+                    <span class="block truncate text-[0.88rem] text-muted-foreground" :class="active === row.id ? (chosen ? 'text-deep/75' : 'tab:text-deep/75') : ''">{{ row.summary }}</span>
+                  </span>
+                  <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="flex-none -rotate-90 text-muted-foreground tab:hidden" />
+                </NuxtLink>
+              </li>
+              <!-- search also needs these two, which are set on their own pages -->
+              <template v-if="item.group === 1">
+                <li v-for="row in elsewhere" :key="row.id">
+                  <NuxtLink :to="row.to" class="group flex min-h-[3.25rem] items-center gap-[0.7rem] rounded-[0.9rem] px-[0.75rem] py-[0.4rem] transition-colors duration-200 hover:bg-background">
+                    <span
+                      class="grid size-[1.35rem] flex-none place-items-center rounded-full border"
+                      :class="row.done ? 'border-primary bg-primary text-white' : 'border-muted-foreground/40'"
+                    >
+                      <CanopyGlyph v-if="row.done" name="tick" :size="12" :stroke="3" />
+                      <span class="sr-only">{{ row.done ? 'Done' : 'To do' }}</span>
+                    </span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-semibold">{{ row.label }}</span>
+                      <span class="block truncate text-[0.88rem] text-muted-foreground">{{ row.summary }}</span>
+                    </span>
+                    <CanopyGlyph name="arrow" :size="14" class="flex-none text-muted-foreground transition-[translate] duration-200 ease-canopy group-hover:translate-x-[2px]" />
+                  </NuxtLink>
+                </li>
+              </template>
+            </ul>
           </div>
+        </nav>
 
-          <div id="practice-areas">
-            <ProfilePracticeAreasSection
-              :practice-areas="profile.practiceAreas"
-              :disabled="!canEdit"
-              :saving="replacePracticeAreas.isPending.value"
-              @save="handleSavePracticeAreas"
-            />
-          </div>
+        <!-- ───────── the section that is open ───────── -->
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-[clamp(0.8rem,1.6vw,1.1rem)]" :class="chosen ? '' : 'max-tab:hidden'">
+          <NuxtLink to="/dashboard/profile" class="inline-flex min-h-[2.75rem] w-fit items-center gap-[0.4rem] font-semibold text-brand tab:hidden">
+            <CanopyGlyph name="chevron" :size="14" :stroke="2.4" class="rotate-90" />All sections
+          </NuxtLink>
 
-          <div id="experience">
-            <ProfileExperienceSection
-              :items="profile.experiences"
-              :disabled="!canEdit"
-              :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
-              :on-create="createExperienceItem"
-              :on-update="updateExperienceItem"
-              :on-delete="deleteExperienceItem"
-            />
-          </div>
+          <ProfilePhotoSection
+            v-if="active === 'photo'"
+            title="Photo"
+            :name="displayName"
+            :email="session?.user?.email"
+            :image-url="avatarSrc"
+            :uploading="isUploadingAvatar"
+            description="Shown on your profile and in search results."
+            @upload="onAvatarUpload"
+          />
+          <ProfileAboutSection
+            v-else-if="active === 'about'"
+            :about="profile.about"
+            :disabled="!canEdit"
+            :saving="updateAbout.isPending.value"
+            @save="handleSaveAbout"
+          />
+          <ProfileOfficeSection
+            v-else-if="active === 'office'"
+            :practice-info="profile.practiceInfo"
+            :disabled="!canEdit"
+            :saving="updateOffice.isPending.value"
+            @save="handleSaveOffice"
+          />
+          <ProfilePracticeAreasSection
+            v-else-if="active === 'practice-areas'"
+            :practice-areas="profile.practiceAreas"
+            :disabled="!canEdit"
+            :saving="replacePracticeAreas.isPending.value"
+            @save="handleSavePracticeAreas"
+          />
+          <ProfileExperienceSection
+            v-else-if="active === 'experience'"
+            :items="profile.experiences"
+            :disabled="!canEdit"
+            :saving="createExperience.isPending.value || updateExperience.isPending.value || deleteExperience.isPending.value"
+            :on-create="createExperienceItem"
+            :on-update="updateExperienceItem"
+            :on-delete="deleteExperienceItem"
+          />
+          <ProfileEducationSection
+            v-else-if="active === 'education'"
+            :items="profile.education"
+            :disabled="!canEdit"
+            :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
+            :on-create="createEducationItem"
+            :on-update="updateEducationItem"
+            :on-delete="deleteEducationItem"
+          />
+          <ProfileLicenseSection
+            v-else-if="active === 'licenses'"
+            :items="profile.licenses"
+            :disabled="!canEdit"
+            :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
+            :on-create="createLicenseItem"
+            :on-update="updateLicenseItem"
+            :on-delete="deleteLicenseItem"
+          />
+          <ProfileSkillSection
+            v-else-if="active === 'skills'"
+            :items="profile.skills"
+            :disabled="!canEdit"
+            :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
+            :on-create="createSkillItem"
+            :on-update="updateSkillItem"
+            :on-delete="deleteSkillItem"
+          />
+          <ProfileArticlesSection
+            v-else
+            :items="profile.articles"
+            :disabled="!canEdit"
+            :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
+            :on-create="createArticleItem"
+            :on-update="updateArticleItem"
+            :on-delete="deleteArticleItem"
+          />
 
-          <div id="education">
-            <ProfileEducationSection
-              :items="profile.education"
-              :disabled="!canEdit"
-              :saving="createEducation.isPending.value || updateEducation.isPending.value || deleteEducation.isPending.value"
-              :on-create="createEducationItem"
-              :on-update="updateEducationItem"
-              :on-delete="deleteEducationItem"
-            />
-          </div>
-
-          <div id="licenses">
-            <ProfileLicenseSection
-              :items="profile.licenses"
-              :disabled="!canEdit"
-              :saving="createLicense.isPending.value || updateLicense.isPending.value || deleteLicense.isPending.value"
-              :on-create="createLicenseItem"
-              :on-update="updateLicenseItem"
-              :on-delete="deleteLicenseItem"
-            />
-          </div>
-
-          <div id="skills">
-            <ProfileSkillSection
-              :items="profile.skills"
-              :disabled="!canEdit"
-              :saving="createSkill.isPending.value || updateSkill.isPending.value || deleteSkill.isPending.value"
-              :on-create="createSkillItem"
-              :on-update="updateSkillItem"
-              :on-delete="deleteSkillItem"
-            />
-          </div>
-
-          <div id="articles">
-            <ProfileArticlesSection
-              :items="profile.articles"
-              :disabled="!canEdit"
-              :saving="createArticle.isPending.value || updateArticle.isPending.value || deleteArticle.isPending.value"
-              :on-create="createArticleItem"
-              :on-update="updateArticleItem"
-              :on-delete="deleteArticleItem"
-            />
+          <div class="flex flex-wrap items-center justify-between gap-[0.5rem]">
+            <Button v-if="previous" as-child variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]">
+              <NuxtLink :to="sectionLink(previous.id)">← {{ previous.label }}</NuxtLink>
+            </Button>
+            <span v-else />
+            <Button v-if="next" as-child variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]">
+              <NuxtLink :to="sectionLink(next.id)">{{ next.label }} →</NuxtLink>
+            </Button>
           </div>
         </div>
       </div>

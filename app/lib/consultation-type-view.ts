@@ -1,4 +1,5 @@
-import type { ConsultationType, MeetingType } from '~/types/booking'
+import * as z from 'zod'
+import type { ConsultationType, CreateConsultationTypeInput, MeetingType } from '~/types/booking'
 
 /**
  * How a consultation type is put into words on the lawyer's own list: its
@@ -59,4 +60,80 @@ export function typeFacts(type: Pick<ConsultationType, 'durationMinutes' | 'meet
 export function offeredSummary(types: Pick<ConsultationType, 'isActive'>[]): string {
   const count = types.filter(type => type.isActive).length
   return count === 0 ? 'None offered to clients' : `${count} offered to clients`
+}
+
+// ───────── the form for one type ─────────
+export const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120, 180, 240] as const
+export const BUFFER_OPTIONS = [0, 5, 10, 15, 30, 60] as const
+export const MEETING_TYPES = ['video', 'phone', 'in_person', 'any'] as const
+export const CURRENCIES = ['NGN', 'USD', 'EUR', 'GBP'] as const
+
+/**
+ * What the form may hold. The price is text, as the field holds it; the
+ * address is needed when the meeting is only in person; the video link, when
+ * given, must be a full web address.
+ */
+export const consultationTypeSchema = z
+  .object({
+    name: z.string().trim().min(1, { error: 'Give the consultation a name.' }).max(120, { error: 'Keep the name to 120 characters.' }),
+    description: z.string().trim().max(1000, { error: 'Keep this to 1,000 characters.' }),
+    durationMinutes: z.number().int().positive(),
+    bufferMinutes: z.number().int().min(0),
+    price: z.string().trim().refine(value => value === '' || (/^\d+(\.\d{1,2})?$/.test(value)), {
+      error: 'Enter an amount, for example 15000. Enter 0 for a free consultation.',
+    }),
+    currency: z.enum(CURRENCIES),
+    meetingType: z.enum(MEETING_TYPES),
+    officeAddress: z.string().trim().max(500, { error: 'Keep the address to 500 characters.' }),
+    defaultMeetingLink: z.string().trim().max(500, { error: 'Keep the link to 500 characters.' }).refine((value) => {
+      if (value === '') return true
+      try {
+        return ['http:', 'https:'].includes(new URL(value).protocol)
+      }
+      catch {
+        return false
+      }
+    }, { error: 'Enter a full link, starting with https://' }),
+    isActive: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.meetingType === 'in_person' && !data.officeAddress) {
+      ctx.addIssue({ code: 'custom', path: ['officeAddress'], message: 'Add the address where you meet clients.' })
+    }
+  })
+export type ConsultationTypeValues = z.input<typeof consultationTypeSchema>
+
+export function consultationTypeValues(saved?: ConsultationType | null): ConsultationTypeValues {
+  const price = saved ? Number.parseFloat(saved.price) : 0
+  return {
+    name: saved?.name ?? '',
+    description: saved?.description ?? '',
+    durationMinutes: saved?.durationMinutes ?? 30,
+    bufferMinutes: saved?.bufferMinutes ?? 15,
+    price: Number.isFinite(price) && price > 0 ? String(price) : '0',
+    currency: (CURRENCIES as readonly string[]).includes(saved?.currency ?? '') ? saved!.currency as ConsultationTypeValues['currency'] : 'NGN',
+    meetingType: saved?.meetingType ?? 'video',
+    officeAddress: saved?.officeAddress ?? '',
+    defaultMeetingLink: saved?.defaultMeetingLink ?? '',
+    isActive: saved?.isActive ?? true,
+  }
+}
+
+/** What is sent: the price as a number, and no address or link the meeting type does not use. */
+export function consultationTypePayload(values: ConsultationTypeValues): CreateConsultationTypeInput {
+  const usesAddress = values.meetingType === 'in_person' || values.meetingType === 'any'
+  const usesLink = values.meetingType === 'video' || values.meetingType === 'any'
+  const payload: CreateConsultationTypeInput = {
+    name: values.name.trim(),
+    durationMinutes: values.durationMinutes,
+    bufferMinutes: values.bufferMinutes,
+    price: values.price.trim() === '' ? 0 : Number(values.price),
+    currency: values.currency,
+    meetingType: values.meetingType,
+    isActive: values.isActive,
+  }
+  if (values.description.trim()) payload.description = values.description.trim()
+  if (usesAddress && values.officeAddress.trim()) payload.officeAddress = values.officeAddress.trim()
+  if (usesLink && values.defaultMeetingLink.trim()) payload.defaultMeetingLink = values.defaultMeetingLink.trim()
+  return payload
 }

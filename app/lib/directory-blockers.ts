@@ -17,17 +17,17 @@ export type DirectoryBlockerItem = {
 export const DIRECTORY_BLOCKER_ITEMS: Record<Exclude<DirectoryEligibilityBlocker, 'profile'>, DirectoryBlockerItem> = {
   approval: {
     id: 'approval',
-    label: 'Application not approved yet',
+    label: 'Your application is not approved yet',
     href: '/dashboard',
   },
   subscription_inactive: {
     id: 'subscription_inactive',
-    label: 'Subscription inactive',
+    label: 'Your membership is not active',
     href: '/dashboard/subscription',
   },
   payment_issue: {
     id: 'payment_issue',
-    label: 'Payment issue on your subscription',
+    label: 'There is a payment problem on your membership',
     href: '/dashboard/subscription',
   },
 }

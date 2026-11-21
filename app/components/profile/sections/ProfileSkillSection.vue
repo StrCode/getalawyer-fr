@@ -1,174 +1,119 @@
 <script setup lang="ts">
-import { Add01Icon, Cancel01Icon, PencilEdit01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
-import { Badge } from '@/components/ui/badge'
+import ProfileListRow from '@/components/profile/ProfileListRow.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { skillPayload, skillSchema, skillValues } from '~/lib/profile-forms'
 import type { CreateSkillInput, LawyerProfileSkill } from '~/types/lawyer-profile-editor'
 
+/** Short words for what a lawyer is good at, shown as tags on the public page. */
 const props = defineProps<{
   items: LawyerProfileSkill[]
   disabled?: boolean
   saving?: boolean
   onCreate: (payload: CreateSkillInput) => Promise<void>
-  onUpdate: (payload: { id: string; data: Partial<CreateSkillInput> }) => Promise<void>
+  onUpdate: (payload: { id: string, data: Partial<CreateSkillInput> }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }>()
 
-const dialogOpen = ref(false)
-const deleteOpen = ref(false)
-const editingId = ref<string | null>(null)
-const deleteId = ref<string | null>(null)
-const name = ref('')
-
-function openCreate() {
-  editingId.value = null
-  name.value = ''
-  dialogOpen.value = true
-}
-
-function openEdit(item: LawyerProfileSkill) {
-  editingId.value = item.id
-  name.value = item.name
-  dialogOpen.value = true
-}
-
-function openDelete(id: string) {
-  deleteId.value = id
-  deleteOpen.value = true
-}
-
-const canSave = computed(() => name.value.trim().length > 0)
-
-const dialogTitle = computed(() =>
-  editingId.value ? 'Edit skill' : 'Add skill',
-)
-
-async function onSave() {
-  if (!canSave.value) return
-  const payload = { name: name.value.trim() }
-  try {
-    if (editingId.value) {
-      await props.onUpdate({ id: editingId.value, data: payload })
-    } else {
-      await props.onCreate(payload)
+const form = useForm({
+  defaultValues: skillValues(),
+  validators: {
+    onChange: skillSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    const payload = skillPayload(skillSchema.parse(value))
+    try {
+      if (editingId.value) await props.onUpdate({ id: editingId.value, data: payload })
+      else await props.onCreate(payload)
+      dialogOpen.value = false
     }
-    dialogOpen.value = false
-    editingId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+    catch {
+      // the page shows the message; the dialog stays open to try again
+    }
+  },
+})
 
-async function onDeleteConfirm() {
-  if (!deleteId.value) return
-  try {
-    await props.onDelete(deleteId.value)
-    deleteOpen.value = false
-    deleteId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+const { isInvalid } = useAuthFieldInvalid(form)
+
+const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, confirmDelete } = useProfileEntryList<LawyerProfileSkill>({
+  seed: item => form.reset(skillValues(item)),
+  remove: id => props.onDelete(id),
+})
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <CardTitle>
-            Skills
-          </CardTitle>
-          <CardDescription>
-            Expertise and tools you want clients to know about.
-          </CardDescription>
-        </div>
-        <Button
+  <SettingsSectionCard
+    title="Skills"
+    description="What you are good at, in a few words each."
+    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+  >
+    <template #action>
+      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add a skill</Button>
+    </template>
+
+    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">No skills added yet.</p>
+    <ul v-else class="flex flex-wrap gap-[0.4rem]">
+      <li v-for="item in items" :key="item.id" class="inline-flex items-center gap-[0.15rem] rounded-full bg-muted py-[0.15rem] pr-[0.2rem] pl-[0.85rem] text-[0.95rem] font-semibold">
+        <button type="button" class="cursor-pointer disabled:cursor-default" :disabled="disabled" :aria-label="`Edit ${item.name}`" @click="openEdit(item)">{{ item.name }}</button>
+        <button
           type="button"
-          size="sm"
-          variant="outline"
+          class="grid size-[2rem] cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-200 hover:bg-card hover:text-foreground disabled:cursor-default"
           :disabled="disabled"
-          @click="openCreate"
+          :aria-label="`Remove ${item.name}`"
+          @click="openDelete(item.id)"
         >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          Add
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <p
-        v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
-      >
-        No skills added yet.
-      </p>
-      <div
-        v-else
-        class="flex flex-wrap gap-2"
-      >
-        <Badge
-          v-for="item in items"
-          :key="item.id"
-          variant="secondary"
-          class="gap-1.5 py-1.5 pl-3 pr-1.5 text-sm font-medium"
-        >
-          {{ item.name }}
-          <button
-            type="button"
-            class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
-            :disabled="disabled"
-            aria-label="Edit skill"
-            @click="openEdit(item)"
-          >
-            <HugeiconsIcon :icon="PencilEdit01Icon" class="size-3.5" />
-          </button>
-          <button
-            type="button"
-            class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
-            :disabled="disabled"
-            aria-label="Remove skill"
-            @click="openDelete(item.id)"
-          >
-            <HugeiconsIcon :icon="Cancel01Icon" class="size-3.5" />
-          </button>
-        </Badge>
-      </div>
-    </CardContent>
-  </Card>
+          <CanopyGlyph name="close" :size="12" :stroke="2.6" />
+        </button>
+      </li>
+    </ul>
+  </SettingsSectionCard>
 
   <ProfileEntryDialog
     v-model:open="dialogOpen"
-    :title="dialogTitle"
-    description="Add a skill or area of expertise."
-    :save-label="editingId ? 'Update' : 'Add'"
+    :title="editingId ? 'Edit this skill' : 'Add a skill'"
+    description="One skill at a time, in a few words."
+    form-id="skill-form"
     :saving="saving"
-    :save-disabled="!canSave"
-    @save="onSave"
   >
-    <Field>
-      <FieldLabel for="skill-name">
-        Skill name
-      </FieldLabel>
-      <Input
-        id="skill-name"
-        v-model="name"
-        maxlength="80"
-        placeholder="e.g. Contract negotiation"
-        @keydown.enter.prevent="onSave"
-      />
-    </Field>
+    <form id="skill-form" novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="name">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Skill</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="80"
+              placeholder="For example: Contract negotiation"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+      </FieldGroup>
+    </form>
   </ProfileEntryDialog>
 
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
-    title="Remove skill?"
-    description="This skill will no longer appear on your profile."
+    title="Remove this skill?"
+    description="It will no longer show on your public page."
     :deleting="saving"
-    @confirm="onDeleteConfirm"
+    @confirm="confirmDelete"
   />
 </template>

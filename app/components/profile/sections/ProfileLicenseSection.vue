@@ -1,248 +1,213 @@
 <script setup lang="ts">
-import { Add01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/vue'
+import { useForm } from '@tanstack/vue-form'
 import ProfileDeleteConfirmDialog from '@/components/profile/ProfileDeleteConfirmDialog.vue'
 import ProfileEntryDialog from '@/components/profile/ProfileEntryDialog.vue'
 import ProfileListRow from '@/components/profile/ProfileListRow.vue'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { formatLicenseDates } from '~/lib/profile-list-format'
-import type {
-  CreateLicenseInput,
-  LawyerProfileLicense,
-} from '~/types/lawyer-profile-editor'
+import { licensePayload, licenseSchema, licenseValues } from '~/lib/profile-forms'
+import type { CreateLicenseInput, LawyerProfileLicense } from '~/types/lawyer-profile-editor'
 
+/** Bar admissions, practising licences and professional certificates. */
 const props = defineProps<{
   items: LawyerProfileLicense[]
   disabled?: boolean
   saving?: boolean
   onCreate: (payload: CreateLicenseInput) => Promise<void>
-  onUpdate: (payload: { id: string; data: Partial<CreateLicenseInput> }) => Promise<void>
+  onUpdate: (payload: { id: string, data: Partial<CreateLicenseInput> }) => Promise<void>
   onDelete: (id: string) => Promise<void>
 }>()
 
-const dialogOpen = ref(false)
-const deleteOpen = ref(false)
-const editingId = ref<string | null>(null)
-const deleteId = ref<string | null>(null)
-
-const name = ref('')
-const issuingOrganization = ref('')
-const issueDate = ref('')
-const expirationDate = ref('')
-const credentialId = ref('')
-const credentialUrl = ref('')
-
-function resetForm() {
-  name.value = ''
-  issuingOrganization.value = ''
-  issueDate.value = ''
-  expirationDate.value = ''
-  credentialId.value = ''
-  credentialUrl.value = ''
-}
-
-function openCreate() {
-  editingId.value = null
-  resetForm()
-  dialogOpen.value = true
-}
-
-function openEdit(item: LawyerProfileLicense) {
-  editingId.value = item.id
-  name.value = item.name
-  issuingOrganization.value = item.issuingOrganization
-  issueDate.value = item.issueDate?.slice(0, 7) ?? ''
-  expirationDate.value = item.expirationDate?.slice(0, 7) ?? ''
-  credentialId.value = item.credentialId ?? ''
-  credentialUrl.value = item.credentialUrl ?? ''
-  dialogOpen.value = true
-}
-
-function openDelete(id: string) {
-  deleteId.value = id
-  deleteOpen.value = true
-}
-
-const canSave = computed(
-  () => name.value.trim().length > 0 && issuingOrganization.value.trim().length > 0,
-)
-
-const dialogTitle = computed(() =>
-  editingId.value ? 'Edit license' : 'Add license',
-)
-
-function buildPayload(): CreateLicenseInput {
-  return {
-    name: name.value.trim(),
-    issuingOrganization: issuingOrganization.value.trim(),
-    issueDate: issueDate.value || null,
-    expirationDate: expirationDate.value || null,
-    credentialId: credentialId.value.trim() || null,
-    credentialUrl: credentialUrl.value.trim() || null,
-  }
-}
-
-async function onSave() {
-  if (!canSave.value) return
-  const payload = buildPayload()
-  try {
-    if (editingId.value) {
-      await props.onUpdate({ id: editingId.value, data: payload })
-    } else {
-      await props.onCreate(payload)
+const form = useForm({
+  defaultValues: licenseValues(),
+  validators: {
+    onChange: licenseSchema,
+  },
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: async ({ value }) => {
+    const payload = licensePayload(licenseSchema.parse(value))
+    try {
+      if (editingId.value) await props.onUpdate({ id: editingId.value, data: payload })
+      else await props.onCreate(payload)
+      dialogOpen.value = false
     }
-    dialogOpen.value = false
-    editingId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+    catch {
+      // the page shows the message; the dialog stays open to try again
+    }
+  },
+})
 
-async function onDeleteConfirm() {
-  if (!deleteId.value) return
-  try {
-    await props.onDelete(deleteId.value)
-    deleteOpen.value = false
-    deleteId.value = null
-  } catch {
-    // Parent shows toast
-  }
-}
+const { isInvalid } = useAuthFieldInvalid(form)
+
+const { dialogOpen, editingId, deleteOpen, openCreate, openEdit, openDelete, confirmDelete } = useProfileEntryList<LawyerProfileLicense>({
+  seed: item => form.reset(licenseValues(item)),
+  remove: id => props.onDelete(id),
+})
+
+// Kept here, not in the template: a web address written straight into an attribute confuses the type checker.
+const linkExample = 'https://example.org/check'
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <CardTitle>
-            Licenses & certifications
-          </CardTitle>
-          <CardDescription>
-            Bar admissions, certificates, and professional credentials.
-          </CardDescription>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          :disabled="disabled"
-          @click="openCreate"
-        >
-          <HugeiconsIcon :icon="Add01Icon" class="size-4" />
-          Add
-        </Button>
-      </div>
-    </CardHeader>
-    <CardContent class="space-y-2">
-      <p
-        v-if="items.length === 0"
-        class="rounded-xl border border-dashed border-border/40 py-8 text-center text-sm text-muted-foreground"
-      >
-        No licenses listed yet.
-      </p>
-      <ProfileListRow
-        v-for="item in items"
-        :key="item.id"
-        :primary="item.name"
-        :secondary="item.issuingOrganization"
-        :tertiary="formatLicenseDates(item)"
-        :badge="item.isVerified ? 'Verified' : null"
-        :disabled="disabled"
-        @edit="openEdit(item)"
-        @delete="openDelete(item.id)"
-      />
-    </CardContent>
-  </Card>
+  <SettingsSectionCard
+    title="Licences and certificates"
+    description="Bar admissions, practising licences and professional certificates."
+    content-class="grid gap-[0.6rem] p-[clamp(1.1rem,2.2vw,1.5rem)]"
+  >
+    <template #action>
+      <Button type="button" variant="line" size="pill-sm" class="h-[2.5rem] px-[0.95rem] text-[0.95rem]" :disabled="disabled" @click="openCreate">Add one</Button>
+    </template>
+
+    <p v-if="items.length === 0" class="py-[1.2rem] text-center text-muted-foreground">None listed yet.</p>
+    <ProfileListRow
+      v-for="item in items"
+      :key="item.id"
+      :primary="item.name"
+      :secondary="item.issuingOrganization"
+      :tertiary="formatLicenseDates(item)"
+      :badge="item.isVerified ? 'Verified' : null"
+      :disabled="disabled"
+      @edit="openEdit(item)"
+      @delete="openDelete(item.id)"
+    />
+  </SettingsSectionCard>
 
   <ProfileEntryDialog
     v-model:open="dialogOpen"
-    :title="dialogTitle"
-    description="Add a bar admission or professional certificate."
-    :save-label="editingId ? 'Update' : 'Add'"
+    :title="editingId ? 'Edit this licence or certificate' : 'Add a licence or certificate'"
+    description="A bar admission, a practising licence or a professional certificate."
+    form-id="license-form"
     :saving="saving"
-    :save-disabled="!canSave"
-    @save="onSave"
   >
-    <FieldGroup class="gap-4">
-      <Field>
-        <FieldLabel for="lic-name">
-          Credential name
-        </FieldLabel>
-        <Input
-          id="lic-name"
-          v-model="name"
-          maxlength="160"
-          placeholder="e.g. Nigerian Bar Association"
-        />
-      </Field>
-      <Field>
-        <FieldLabel for="lic-org">
-          Issuing organization
-        </FieldLabel>
-        <Input
-          id="lic-org"
-          v-model="issuingOrganization"
-          maxlength="160"
-          placeholder="e.g. Body of Benchers"
-        />
-      </Field>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <Field>
-          <FieldLabel for="lic-issue">
-            Issue date
-          </FieldLabel>
-          <Input
-            id="lic-issue"
-            v-model="issueDate"
-            type="month"
-          />
-        </Field>
-        <Field>
-          <FieldLabel for="lic-expiry">
-            Expiration date
-          </FieldLabel>
-          <Input
-            id="lic-expiry"
-            v-model="expirationDate"
-            type="month"
-          />
-        </Field>
-      </div>
-      <Field>
-        <FieldLabel for="lic-id">
-          Credential ID
-        </FieldLabel>
-        <Input
-          id="lic-id"
-          v-model="credentialId"
-          maxlength="120"
-          placeholder="Optional"
-        />
-      </Field>
-      <Field>
-        <FieldLabel for="lic-url">
-          Credential URL
-        </FieldLabel>
-        <Input
-          id="lic-url"
-          v-model="credentialUrl"
-          type="url"
-          maxlength="500"
-          placeholder="https://"
-        />
-      </Field>
-    </FieldGroup>
+    <form id="license-form" novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="name">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Name</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="160"
+              placeholder="For example: Call to the Nigerian Bar"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="issuingOrganization">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Issued by</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="160"
+              placeholder="For example: Body of Benchers"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <div class="grid gap-[1.1rem] sm:grid-cols-2">
+          <form.Field v-slot="{ field }" name="issueDate">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Issued <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                type="month"
+                placeholder="2015-11"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+          <form.Field v-slot="{ field }" name="expirationDate">
+            <Field :class="canopyField" :data-invalid="isInvalid(field)">
+              <FieldLabel :for="field.name" :class="canopyLabel">Expires <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+              <Input
+                :id="field.name"
+                :name="field.name"
+                :model-value="field.state.value"
+                :class="authInput"
+                type="month"
+                placeholder="2027-11"
+                :aria-invalid="isInvalid(field)"
+                :disabled="saving"
+                @blur="field.handleBlur"
+                @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+              />
+              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+            </Field>
+          </form.Field>
+        </div>
+        <form.Field v-slot="{ field }" name="credentialId">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Certificate or enrolment number <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              maxlength="120"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+        <form.Field v-slot="{ field }" name="credentialUrl">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Link to check it <span class="font-normal text-muted-foreground">(optional)</span></FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              type="url"
+                            maxlength="500"
+              :placeholder="linkExample"
+              :aria-invalid="isInvalid(field)"
+              :disabled="saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldDescription :class="canopyHint">A page where anyone can confirm the licence or certificate.</FieldDescription>
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+      </FieldGroup>
+    </form>
   </ProfileEntryDialog>
 
   <ProfileDeleteConfirmDialog
     v-model:open="deleteOpen"
-    title="Remove license?"
-    description="This credential will no longer appear on your profile."
+    title="Remove this?"
+    description="It will no longer show on your public page."
     :deleting="saving"
-    @confirm="onDeleteConfirm"
+    @confirm="confirmDelete"
   />
 </template>

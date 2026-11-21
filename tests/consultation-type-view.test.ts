@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  consultationTypePayload,
+  consultationTypeSchema,
+  consultationTypeValues,
   durationLabel,
   meetingLabel,
   offeredSummary,
@@ -69,5 +72,42 @@ describe('offeredSummary', () => {
     expect(offeredSummary([{ isActive: true }, { isActive: false }, { isActive: true }])).toBe('2 offered to clients')
     expect(offeredSummary([{ isActive: false }])).toBe('None offered to clients')
     expect(offeredSummary([])).toBe('None offered to clients')
+  })
+})
+
+describe('the consultation type form', () => {
+  const base = consultationTypeValues(null)
+
+  it('starts a new type as a 30 minute video call, free, offered', () => {
+    expect(base).toMatchObject({ durationMinutes: 30, bufferMinutes: 15, price: '0', currency: 'NGN', meetingType: 'video', isActive: true })
+  })
+
+  it('reads a saved price as plain text', () => {
+    const saved = { id: 't', lawyerId: 'l', name: 'First consultation', description: null, durationMinutes: 60, price: '15000.00', currency: 'NGN', meetingType: 'phone' as const, officeAddress: null, defaultMeetingLink: null, bufferMinutes: 0, isActive: false, createdAt: '', updatedAt: '' }
+    expect(consultationTypeValues(saved)).toMatchObject({ price: '15000', meetingType: 'phone', isActive: false, description: '' })
+  })
+
+  it('wants a name and a price that is an amount', () => {
+    expect(consultationTypeSchema.safeParse(base).success).toBe(false)
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'First consultation' }).success).toBe(true)
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'First', price: '15,000' }).success).toBe(false)
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'First', price: '2500.50' }).success).toBe(true)
+  })
+
+  it('wants an address for a meeting in person only', () => {
+    const inPerson = consultationTypeSchema.safeParse({ ...base, name: 'Visit', meetingType: 'in_person' })
+    expect(inPerson.success).toBe(false)
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'Visit', meetingType: 'any' }).success).toBe(true)
+  })
+
+  it('takes a full video link or none', () => {
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'Call', defaultMeetingLink: 'meet.google.com/abc' }).success).toBe(false)
+    expect(consultationTypeSchema.safeParse({ ...base, name: 'Call', defaultMeetingLink: 'https://meet.google.com/abc' }).success).toBe(true)
+  })
+
+  it('sends the price as a number and leaves out what the meeting type does not use', () => {
+    const payload = consultationTypePayload({ ...base, name: ' Call ', price: '15000', meetingType: 'phone', officeAddress: '12 Broad St', defaultMeetingLink: 'https://meet.google.com/abc' })
+    expect(payload).toEqual({ name: 'Call', durationMinutes: 30, bufferMinutes: 15, price: 15000, currency: 'NGN', meetingType: 'phone', isActive: true })
+    expect(consultationTypePayload({ ...base, name: 'Visit', meetingType: 'in_person', officeAddress: '12 Broad St' }).officeAddress).toBe('12 Broad St')
   })
 })

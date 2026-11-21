@@ -31,7 +31,7 @@ describe('profile-check-catalog', () => {
 
     const photo = groups[0]?.items.find((item) => item.id === 'photo')
     expect(photo?.complete).toBe(false)
-    expect(photo?.href).toBe('/dashboard/profile#photo')
+    expect(photo?.href).toBe('/dashboard/profile?section=photo')
   })
 
   it('returns tier 1 incomplete items only', () => {

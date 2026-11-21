@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import ButtonBusy from '@/components/ButtonBusy.vue'
-import { Badge } from '@/components/ui/badge'
+import { useForm } from '@tanstack/vue-form'
+import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { ABOUT_MAX, aboutPayload, aboutSchema, aboutValues, HEADLINE_MAX, sameValues } from '~/lib/profile-forms'
 import type { LawyerProfileAbout } from '~/types/lawyer-profile-editor'
 
+/** The line under a lawyer's name in search, and the text about them on their public page. */
 const props = defineProps<{
   about: LawyerProfileAbout
   disabled?: boolean
@@ -16,88 +16,86 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  save: [payload: { headline: string | null; about: string | null }]
+  save: [payload: { headline: string | null, about: string | null }]
 }>()
 
-const headline = ref(props.about.headline ?? '')
-const about = ref(props.about.about ?? '')
-
-watch(
-  () => props.about,
-  (value) => {
-    headline.value = value.headline ?? ''
-    about.value = value.about ?? ''
+const form = useForm({
+  defaultValues: aboutValues(props.about),
+  validators: {
+    onChange: aboutSchema,
   },
-  { deep: true }
-)
+  listeners: {
+    onBlur: ({ fieldApi }) => {
+      fieldApi.validate('change')
+    },
+  },
+  onSubmit: ({ value }) => {
+    const payload = aboutPayload(aboutSchema.parse(value))
+    emit('save', { headline: payload.headline ?? null, about: payload.about ?? null })
+  },
+})
 
-const isDirty = computed(
-  () =>
-    headline.value !== (props.about.headline ?? '') ||
-    about.value !== (props.about.about ?? '')
-)
+const { isInvalid } = useAuthFieldInvalid(form)
 
-async function onSave() {
-  emit('save', {
-    headline: headline.value.trim() || null,
-    about: about.value.trim() || null,
-  })
-}
+const values = form.useStore(state => state.values)
+const dirty = computed(() => !sameValues(values.value, aboutValues(props.about)))
+
+// What is saved replaces what is in the form: after a save, and when the profile reloads.
+watch(() => props.about, saved => form.reset(aboutValues(saved)), { deep: true })
 </script>
 
 <template>
-  <Card>
-    <CardHeader>
-      <CardTitle>
-        About & headline
-      </CardTitle>
-      <CardDescription>
-        A short headline and bio appear at the top of your profile.
-      </CardDescription>
-    </CardHeader>
-    <CardContent class="space-y-4">
-      <FieldGroup>
-        <Field>
-          <FieldLabel for="profile-headline">
-            Headline
-          </FieldLabel>
-          <Input
-            id="profile-headline"
-            v-model="headline"
-            :disabled="disabled"
-            maxlength="160"
-            placeholder="e.g. Commercial litigation · Lagos"
-          />
-          <FieldDescription>
-            {{ headline.length }}/160 characters
-          </FieldDescription>
-        </Field>
+  <SettingsSectionCard
+    title="Headline and about"
+    description="The headline sits under your name in search. The about text is on your public page."
+  >
+    <form novalidate @submit.prevent="form.handleSubmit">
+      <FieldGroup class="gap-[1.1rem]">
+        <form.Field v-slot="{ field }" name="headline">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">Headline</FieldLabel>
+            <Input
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="authInput"
+              :maxlength="HEADLINE_MAX"
+              placeholder="For example: Commercial litigation in Lagos"
+              :aria-invalid="isInvalid(field)"
+              :disabled="disabled || saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldDescription :class="canopyHint">{{ field.state.value.length }} of {{ HEADLINE_MAX }} characters</FieldDescription>
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
 
-        <Field>
-          <FieldLabel for="profile-about">
-            About
-          </FieldLabel>
-          <Textarea
-            id="profile-about"
-            v-model="about"
-            :disabled="disabled"
-            rows="6"
-            maxlength="5000"
-            placeholder="Describe your practice, experience, and how you help clients."
-          />
-        </Field>
+        <form.Field v-slot="{ field }" name="about">
+          <Field :class="canopyField" :data-invalid="isInvalid(field)">
+            <FieldLabel :for="field.name" :class="canopyLabel">About you</FieldLabel>
+            <Textarea
+              :id="field.name"
+              :name="field.name"
+              :model-value="field.state.value"
+              :class="canopyTextarea"
+              rows="7"
+              :maxlength="ABOUT_MAX"
+              placeholder="The work you do, who you do it for and how you help them."
+              :aria-invalid="isInvalid(field)"
+              :disabled="disabled || saving"
+              @blur="field.handleBlur"
+              @update:model-value="(v) => field.handleChange(String(v ?? ''))"
+            />
+            <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+          </Field>
+        </form.Field>
+
+        <div class="flex flex-wrap items-center justify-end gap-[0.5rem]">
+          <Button v-if="dirty" type="button" variant="line" size="pill-sm" :disabled="saving" @click="form.reset(aboutValues(about))">Discard</Button>
+          <Button type="submit" variant="canopy" size="pill-sm" :disabled="disabled || !dirty || saving" :aria-busy="saving">{{ saving ? 'Saving…' : 'Save' }}</Button>
+        </div>
       </FieldGroup>
-
-      <div class="flex justify-end">
-        <ButtonBusy
-          size="sm"
-          :loading="saving"
-          :disabled="disabled || !isDirty"
-          @click="onSave"
-        >
-          Save about
-        </ButtonBusy>
-      </div>
-    </CardContent>
-  </Card>
+    </form>
+  </SettingsSectionCard>
 </template>
