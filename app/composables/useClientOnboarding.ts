@@ -30,12 +30,6 @@ interface Country {
   states: Array<{ code: string; name: string; subdivision: unknown }>
 }
 
-interface Specialization {
-  id: string
-  name: string
-  description: string
-}
-
 const clientOnboardingAPI = {
   completeOnboarding: async (data: OnboardingData): Promise<CompleteOnboardingResponse> => {
     return await httpClient.post<CompleteOnboardingResponse>(
@@ -48,9 +42,6 @@ const clientOnboardingAPI = {
     return await httpClient.get<{ data: Country[]; count?: number }>('/api/countries')
   },
 
-  getSpecializations: async (): Promise<{ specializations: Specialization[] }> => {
-    return await httpClient.get<{ specializations: Specialization[] }>('/api/specializations')
-  },
 }
 
 /** Plain POST — safe from Pinia (no vue-query hooks). */
@@ -73,17 +64,7 @@ export const useClientOnboarding = () => {
     })
   }
 
-  const useSpecializations = () => {
-    return useQuery({
-      queryKey: ['specializations'],
-      queryFn: clientOnboardingAPI.getSpecializations,
-      staleTime: 1000 * 60 * 30,
-      enabled: import.meta.client,
-    })
-  }
-
   return {
     useCountries,
-    useSpecializations,
   }
 }
