@@ -3,7 +3,7 @@
  * The lawyer's application home after it has been submitted. The same page
  * shape as the home they filled in (see components/application/DraftHome.vue),
  * now showing where the application stands: waiting for payment, in review,
- * needing changes, or failed verification. The sections are listed as
+ * closed, or withdrawn. The sections are listed as
  * submitted, then the membership row, then whatever the state needs (default
  * slot): the plan picker, a timeline, or the review team's feedback.
  */
@@ -14,12 +14,12 @@ const props = withDefaults(defineProps<{
   /** Small status mark beside the title. */
   pill?: { label: string, tone: 'ok' | 'warn' | 'bad' } | null
   /** Where membership stands. */
-  membership: 'due' | 'paid' | 'kept' | 'refunding' | 'refunded' | 'later'
+  membership: 'due' | 'paid' | 'owed' | 'refunding' | 'refunded' | 'none'
   /** What to call the four sections' state. */
   sectionsState?: 'submitted' | 'reopen'
 }>(), { description: '', pill: null, sectionsState: 'submitted' })
 
-const alreadyPaid = computed(() => props.membership === 'paid' || props.membership === 'kept')
+const alreadyPaid = computed(() => props.membership === 'paid')
 
 // When an application is reopened, everything typed comes back except the NIN,
 // which is removed and has to be entered again.
@@ -37,12 +37,12 @@ const PILL = {
 } as const
 
 const MEMBERSHIP = {
-  due: { status: 'Next', text: 'Choose a plan and pay. Refunded if verification does not pass.' },
+  due: { status: 'Next', text: 'Choose a plan and pay. Refunded if you are not approved.' },
   paid: { status: 'Paid', text: 'It starts the day you are approved.' },
-  kept: { status: 'Paid', text: 'Your payment is kept. It starts the day you are approved.' },
+  owed: { status: 'To be refunded', text: 'Our team will return your membership fee to you.' },
   refunding: { status: 'Refund on its way', text: 'Your membership fee is being returned to you.' },
   refunded: { status: 'Refunded', text: 'Your membership fee has been returned to you.' },
-  later: { status: 'After you resubmit', text: 'Choose a plan and pay once your application is back with us.' },
+  none: { status: 'Not paid', text: 'You had not paid for a membership.' },
 } as const
 </script>
 
@@ -75,7 +75,7 @@ const MEMBERSHIP = {
       </li>
       <li
         class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-3.5 rounded-lg border px-4 py-2.75 max-sm:grid-cols-[2.2rem_minmax(0,1fr)]"
-        :class="membership === 'due' ? 'border-brand bg-mint text-deep' : membership === 'later' ? 'border-dashed border-border' : 'border-border bg-card'"
+        :class="membership === 'due' ? 'border-brand bg-mint text-deep' : membership === 'none' ? 'border-dashed border-border' : 'border-border bg-card'"
       >
         <span class="grid size-8.75 place-items-center rounded-md font-display font-medium" :class="alreadyPaid ? 'bg-primary text-white' : 'bg-background text-deep'">
           <CanopyGlyph v-if="alreadyPaid" name="tick" :size="14" :stroke="3.2" />

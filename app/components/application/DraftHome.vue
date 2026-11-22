@@ -101,7 +101,7 @@ const legalError = computed(() => {
   return null
 })
 
-// Reopened after a request for changes: what they paid is kept, not asked for again.
+// Paid before the application was sent in, for example offline: not asked for again.
 const { data: membershipStatus } = useSubscriptionStatus()
 const alreadyPaid = computed(() => membershipStatus.value?.subscription?.notStarted === true)
 
@@ -175,7 +175,7 @@ async function submit() {
         <span class="grid size-10.5 place-items-center rounded-md bg-background font-display font-medium">{{ sections.length + 1 }}</span>
         <span class="min-w-0">
           <b class="block font-display text-lg font-normal tracking-tight text-foreground">Membership</b>
-          <small class="block text-sm">{{ alreadyPaid ? 'Paid. It starts the day you are approved.' : 'After you submit: choose a plan and pay. Refunded if verification does not pass.' }}</small>
+          <small class="block text-sm">{{ alreadyPaid ? 'Paid. It starts the day you are approved.' : 'After you submit: choose a plan and pay. Refunded if you are not approved.' }}</small>
         </span>
       </li>
     </ul>

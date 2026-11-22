@@ -130,7 +130,7 @@ const row = 'grid gap-x-6 gap-y-0.5 py-3.25 sm:grid-cols-[11rem_minmax(0,1fr)]'
           </h1>
           <p class="mt-2.75 text-base text-muted-foreground">
             <template v-if="paidOn">Paid on {{ paidOn }}</template><template v-else>Paid</template>
-            · {{ receipt.kind === 'renewal' ? 'Membership renewal' : 'Membership payment' }}
+            · {{ receipt.kind === 'verification_fee' ? 'Verification fee' : receipt.kind === 'renewal' ? 'Membership renewal' : 'Membership payment' }}
           </p>
         </div>
         <span class="rounded-full px-3.5 py-1.25 text-sm font-medium print:border print:border-border" :class="state.class">{{ state.label }}</span>
@@ -170,7 +170,7 @@ const row = 'grid gap-x-6 gap-y-0.5 py-3.25 sm:grid-cols-[11rem_minmax(0,1fr)]'
           <tr v-for="line in receipt.lines" :key="line.kind" class="border-t border-border">
             <th scope="row" class="py-3.25 pr-4 font-medium">
               {{ line.label }}
-              <span v-if="line.kind === 'verification_fee'" class="block text-sm font-normal text-muted-foreground">One-off, for checking your identity and enrolment</span>
+              <span v-if="line.kind === 'verification_fee'" class="block text-sm font-normal text-muted-foreground">{{ receipt.kind === 'verification_fee' ? 'For checking your correction' : 'One-off, for checking your identity and enrolment' }}</span>
             </th>
             <td class="py-3.25 text-right align-top font-medium">{{ formatNairaAmount(line.amountNaira) }}</td>
           </tr>

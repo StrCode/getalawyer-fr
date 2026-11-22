@@ -16,8 +16,9 @@ const COPY: Record<ApplicationState, { status: string, note: string, action: str
   draft: { status: 'Application in progress', note: 'Finish the sections, then submit it for review.', action: 'Continue your application', to: APPLICATION_HOME },
   payment: { status: 'One step left', note: 'Your application is submitted. Membership is still to pay.', action: 'Choose a plan and pay', to: APPLICATION_MEMBERSHIP },
   review: { status: 'In review', note: `We are checking your credentials. You will get an email, usually within ${REVIEW_TIME}.`, action: 'See where it stands', to: APPLICATION_HOME },
-  changes: { status: 'Changes needed', note: 'The review team left feedback on your application.', action: 'Read the feedback', to: APPLICATION_HOME },
-  failed: { status: 'Not verified', note: 'We could not verify your identity or enrolment.', action: 'See what to do next', to: APPLICATION_HOME },
+  changes: { status: 'Correction needed', note: 'The review team asked you to correct something.', action: 'See what to correct', to: APPLICATION_HOME },
+  closed: { status: 'Not approved', note: 'Your application is closed.', action: 'See why', to: APPLICATION_HOME },
+  withdrawn: { status: 'Withdrawn', note: 'You withdrew your application.', action: 'See where it stands', to: APPLICATION_HOME },
   approved: { status: 'Approved', note: 'Your application is approved.', action: 'Open your dashboard', to: '/dashboard' },
 }
 const copy = computed(() => COPY[state.value])

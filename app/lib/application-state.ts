@@ -1,7 +1,8 @@
 import {
   isLawyerAwaitingApproval,
-  isLawyerRejected,
-  isLawyerVerificationFailed,
+  isLawyerClosed,
+  isLawyerCorrecting,
+  isLawyerWithdrawn,
   onboardingCurrentState,
   type OnboardingStatusPayload,
 } from '~/lib/lawyerOnboardingStatus'
@@ -16,8 +17,9 @@ import {
  * - `draft`: being filled in (or reopened); the sections can be edited
  * - `payment`: submitted, membership not paid yet
  * - `review`: submitted and paid, waiting for a decision
- * - `changes`: the review team asked for changes
- * - `failed`: identity or enrolment could not be verified
+ * - `changes`: the review team asked for a correction
+ * - `closed`: rejected for good
+ * - `withdrawn`: the lawyer took it back
  * - `approved`: done; the lawyer belongs on the dashboard
  */
 export type ApplicationState =
@@ -27,7 +29,8 @@ export type ApplicationState =
   | 'payment'
   | 'review'
   | 'changes'
-  | 'failed'
+  | 'closed'
+  | 'withdrawn'
   | 'approved'
 
 export function applicationStateOf(input: {
@@ -46,8 +49,9 @@ export function applicationStateOf(input: {
     if (input.statusPending) return 'loading'
     return input.statusError ? 'unavailable' : 'loading'
   }
-  if (isLawyerRejected(status)) return 'changes'
-  if (isLawyerVerificationFailed(status)) return 'failed'
+  if (isLawyerCorrecting(status)) return 'changes'
+  if (isLawyerClosed(status)) return 'closed'
+  if (isLawyerWithdrawn(status)) return 'withdrawn'
   if (onboardingCurrentState(status) === 'approved') return 'approved'
   if (isLawyerAwaitingApproval(status)) {
     if (input.hasActiveSubscription === true) return 'review'

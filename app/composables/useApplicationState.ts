@@ -1,7 +1,8 @@
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import { applicationStateOf, type ApplicationState } from '~/lib/application-state'
-import { isLawyerAwaitingApproval, isLawyerRejected, isLawyerVerificationFailed } from '~/lib/lawyerOnboardingStatus'
+import { returnedMembership } from '~/lib/application-correction'
+import { isLawyerAwaitingApproval, isLawyerClosed, isLawyerCorrecting, isLawyerWithdrawn } from '~/lib/lawyerOnboardingStatus'
 
 /**
  * Where the signed-in lawyer's application stands (see lib/application-state),
@@ -19,22 +20,21 @@ export function useApplicationState(options?: {
   const status = computed(() => statusQuery.data.value ?? null)
 
   const submitted = computed(() => status.value != null && isLawyerAwaitingApproval(status.value))
-  const verificationFailed = computed(() => status.value != null && isLawyerVerificationFailed(status.value))
-  // After a request for changes: whether a payment is waiting for them.
-  const rejected = computed(() => status.value != null && isLawyerRejected(status.value))
+  // Over, one way or the other: whether a refund is owed or on its way.
+  const over = computed(() => status.value != null && (isLawyerClosed(status.value) || isLawyerWithdrawn(status.value)))
+  // While it is being corrected: whether a payment is being confirmed.
+  const correcting = computed(() => status.value != null && isLawyerCorrecting(status.value))
 
-  // A failed verification refunds the membership, and the application cannot be
-  // started again until that refund has gone through: keep checking on it.
-  const refundInFlight = ref(false)
+  // A refund is finished by our team and Paystack, so the page keeps checking on it.
+  const refundPending = ref(false)
   const subscriptionQuery = useSubscriptionStatus({
-    enabled: computed(() => import.meta.client && (submitted.value || verificationFailed.value || rejected.value)),
-    poll: refundInFlight,
+    enabled: computed(() => import.meta.client && (submitted.value || over.value || correcting.value)),
+    poll: refundPending,
   })
   const subscription = computed(() => subscriptionQuery.data.value?.subscription ?? null)
+  const returned = computed(() => returnedMembership(subscription.value))
   watchEffect(() => {
-    const value = subscription.value?.status
-    // `verification_failed` on the subscription means the refund has not started yet.
-    refundInFlight.value = verificationFailed.value && (value === 'refund_processing' || value === 'verification_failed')
+    refundPending.value = over.value && (returned.value === 'owed' || returned.value === 'refunding')
   })
 
   const state = computed<ApplicationState>(() => applicationStateOf({
@@ -51,7 +51,8 @@ export function useApplicationState(options?: {
     status,
     subscription,
     subscriptionPending: subscriptionQuery.isPending,
-    refundInFlight,
+    returned,
+    correction: computed(() => status.value?.correction ?? null),
     refetchStatus: statusQuery.refetch,
   }
 }

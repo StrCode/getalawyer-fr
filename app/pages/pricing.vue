@@ -69,13 +69,13 @@ const steps = computed(() => [
 const questions = computed(() => [
   { q: 'Do you take a percentage of my fees?', a: 'No. Membership is the only payment to getalawyer. There is no commission on consultations or on any work that follows.' },
   { q: 'Do clients pay through getalawyer?', a: 'No. Fees are agreed and paid directly between you and the client.' },
-  fee.value > 0 && { q: 'What is the verification fee?', a: 'A one-off fee added to your first payment that covers checking your identity and enrolment. It is charged once, not on renewals.' },
+  fee.value > 0 && { q: 'What is the verification fee?', a: 'A fee added to your first payment that covers checking your identity and enrolment. It is not charged on renewals. If your NIN or Supreme Court number has to be corrected and checked again, the fee is paid again for that check.' },
   several.value && { q: 'Can I switch plans later?', a: 'Yes. Pick a different plan from your dashboard and it takes effect at your next renewal. Nothing is charged in between.' },
   {
     q: 'What happens if my verification fails?',
     a: fee.value > 0
-      ? 'Your membership payment is refunded. The verification fee is kept because the checks were carried out.'
-      : 'Your membership payment is refunded.',
+      ? `You can correct what did not match and pay the ${formatNairaAmount(fee.value)} verification fee again; your membership payment is kept for you meanwhile. If you are not approved, or you would rather stop, your membership payment is refunded. The verification fee is kept because the checks were carried out.`
+      : 'You can correct what did not match. If you are not approved, or you would rather stop, your membership payment is refunded.',
   },
   { q: 'Can I cancel?', a: 'Turn off auto-renew at any time. Your profile stays live until the end of the term you have paid for.' },
 ].filter(Boolean) as Array<{ q: string, a: string }>)
@@ -185,7 +185,7 @@ const kicker = 'text-sm font-medium tracking-widest text-brand uppercase'
             <NuxtLink :to="REGISTER" @click="rememberPreferredPlan(selected.key)">Register as a lawyer<CanopyArrowChip /></NuxtLink>
           </Button>
           <p class="mt-3.25 text-sm text-muted-foreground">
-            If your verification does not pass, the membership is refunded.<template v-if="fee > 0"> The verification fee is not.</template>
+            If you are not approved, the membership is refunded.<template v-if="fee > 0"> The verification fee is not.</template>
           </p>
         </aside>
       </section>

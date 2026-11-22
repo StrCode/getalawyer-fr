@@ -81,7 +81,7 @@ const questions = computed(() => [
   },
   { q: 'Do clients pay through getalawyer?', a: 'No. You agree fees with clients in messages or before the session, and they pay you directly on the terms you set, for example by bank transfer.' },
   { q: 'What happens if a client cancels?', a: 'You set your own cancellation policy. Rescheduling and any refund are handled between you and the client; getalawyer does not hold consultation fees.' },
-  { q: 'What if my verification does not pass?', a: fee.value > 0 ? 'Your membership payment is refunded. The verification fee is kept because the checks were carried out.' : 'Your membership payment is refunded.' },
+  { q: 'What if my verification does not pass?', a: fee.value > 0 ? 'You can correct what did not match and pay the verification fee again; your membership payment is kept for you meanwhile. If you are not approved, or you would rather stop, your membership payment is refunded. The verification fee is kept because the checks were carried out.' : 'You can correct what did not match. If you are not approved, or you would rather stop, your membership payment is refunded.' },
 ])
 </script>
 

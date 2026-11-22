@@ -26,10 +26,11 @@ describe('applicationStateOf', () => {
     expect(applicationStateOf({ ...base, status, hasActiveSubscription: true })).toBe('review')
   })
 
-  it('tells a request for changes from a failed verification', () => {
-    // A failed verification also sets the current state to "rejected".
-    expect(applicationStateOf({ ...base, status: { currentState: 'rejected', applicationStatus: 'rejected' } })).toBe('changes')
-    expect(applicationStateOf({ ...base, status: { currentState: 'rejected', applicationStatus: 'verification_failed' } })).toBe('failed')
+  it('tells a correction from an application that is closed or withdrawn', () => {
+    expect(applicationStateOf({ ...base, status: { currentState: 'review', applicationStatus: 'changes_requested' } })).toBe('changes')
+    expect(applicationStateOf({ ...base, status: { currentState: 'rejected', applicationStatus: 'rejected' } })).toBe('closed')
+    expect(applicationStateOf({ ...base, status: { currentState: 'rejected', applicationStatus: 'verification_failed' } })).toBe('closed')
+    expect(applicationStateOf({ ...base, status: { currentState: 'rejected', applicationStatus: 'withdrawn' } })).toBe('withdrawn')
   })
 
   it('is approved when the status or the session says so', () => {
