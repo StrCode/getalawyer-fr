@@ -100,7 +100,7 @@ export default defineNuxtConfig({
       name: 'getalawyer',
       url: process.env.NUXT_SITE_URL || 'https://getalawyer.ng',
       logo: '/favicon.svg',
-      email: 'support@getalawyer.com.ng',
+      email: 'support@getalawyer.ng',
       areaServed: 'NG',
       address: { addressLocality: 'Lagos', addressCountry: 'NG' },
     },

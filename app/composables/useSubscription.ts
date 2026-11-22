@@ -47,6 +47,8 @@ interface SubscriptionStatusPayload {
    * Absent on backends from before this rule.
    */
   access?: 'full' | 'read_only'
+  /** A transfer, cash or POS payment staff have recorded and are confirming. */
+  offlinePayment?: { amountNaira: number, method: string, planName: string, receivedOn: string } | null
   subscription: SubscriptionRecord | null
 }
 
@@ -407,6 +409,10 @@ export interface SubscriptionPaymentReceipt {
   coversUntil: string | null
   paymentReference: string | null
   card: { last4: string | null, brand: string | null, bank: string | null } | null
+  /** Set when the money was paid outside Paystack. */
+  offline?: { method: string, reference: string | null } | null
+  /** Set when the payment was recorded by mistake and taken off again. */
+  reversedAt?: string | null
   paidBy: { name: string, email: string }
   refund: { amountNaira: number, refundedAt: string } | null
 }
@@ -441,6 +447,7 @@ export function formatSubscriptionHistoryAction(action: string): string {
     refund_initiated: 'Refund processing',
     refunded: 'Refund',
     refund_failed: 'Refund failed',
+    payment_reversed: 'Payment reversed',
     card_changed: 'Card changed',
     card_check_rejected: 'Card check: card not saved',
   }
@@ -452,7 +459,7 @@ export function getSubscriptionHistoryStatus(
 ): SubscriptionPaymentHistoryStatus {
   if (action === 'refunded') return 'refund'
   if (action === 'refund_initiated') return 'pending'
-  if (['payment_failed', 'failed_renewal', 'refund_failed'].includes(action)) {
+  if (['payment_failed', 'payment_reversed', 'failed_renewal', 'refund_failed'].includes(action)) {
     return 'failed'
   }
   return 'paid'

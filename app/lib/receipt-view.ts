@@ -28,6 +28,20 @@ export function receiptCardLine(card: ReceiptCard | null | undefined): string | 
   return parts.length ? parts.join(', ') : null
 }
 
+const OFFLINE_METHODS: Record<string, string> = {
+  cash: 'Cash',
+  bank_transfer: 'Bank transfer',
+  pos: 'POS',
+  other: 'Paid to getalawyer directly',
+}
+
+/** "Bank transfer, reference 0021": how a payment made outside Paystack was paid. */
+export function receiptOfflineLine(offline: { method: string, reference: string | null } | null | undefined): string | null {
+  if (!offline) return null
+  const method = OFFLINE_METHODS[offline.method] ?? OFFLINE_METHODS.other!
+  return offline.reference ? `${method}, reference ${offline.reference}` : method
+}
+
 /** "14 August 2026 to 14 August 2027": the membership term a payment bought. */
 export function receiptTermLine(from: string | null | undefined, until: string | null | undefined): string | null {
   const start = longDate(from)

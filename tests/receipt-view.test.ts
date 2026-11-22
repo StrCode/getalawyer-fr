@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { receiptCardLine, receiptTermLine, receiptTitle } from '../app/lib/receipt-view'
+import { receiptCardLine, receiptOfflineLine, receiptTermLine, receiptTitle } from '../app/lib/receipt-view'
 
 describe('receiptCardLine', () => {
   it('names the card and the bank', () => {
@@ -47,5 +47,14 @@ describe('receiptTitle', () => {
   it('still reads as a receipt without a date', () => {
     expect(receiptTitle(null)).toBe('Receipt')
     expect(receiptTitle('nonsense')).toBe('Receipt')
+  })
+})
+
+describe('receiptOfflineLine', () => {
+  it('names how it was paid, with its reference when there is one', () => {
+    expect(receiptOfflineLine({ method: 'bank_transfer', reference: 'TRF-0021' })).toBe('Bank transfer, reference TRF-0021')
+    expect(receiptOfflineLine({ method: 'cash', reference: null })).toBe('Cash')
+    expect(receiptOfflineLine({ method: 'something new', reference: null })).toBe('Paid to getalawyer directly')
+    expect(receiptOfflineLine(null)).toBeNull()
   })
 })
