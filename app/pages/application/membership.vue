@@ -292,11 +292,11 @@ async function retry() {
       v-else
       kicker="Application submitted"
       title="One step left: membership"
-      description="Pay while we review your application. Your profile goes live after approval."
+      description="Pay while we review your application. Your membership starts the day you are approved."
       membership="due"
     >
       <template v-if="submittedLabel" #description>
-        Pay while we review your application. Your profile goes live after approval. Submitted {{ submittedLabel }}.
+        Pay while we review your application. Your membership starts the day you are approved. Submitted {{ submittedLabel }}.
       </template>
 
       <p v-if="hasCheckoutFailure" role="alert" class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3.5 text-warning-subtle-foreground">
@@ -343,7 +343,7 @@ async function retry() {
 
         <p v-if="hasActiveSubscription" role="status" class="mt-4 flex items-start gap-3 rounded-lg bg-mint px-4 py-3 text-deep">
           <span class="grid size-6.5 flex-none place-items-center rounded-full bg-primary text-white"><CanopyGlyph name="tick" :size="12" :stroke="3.4" /></span>
-          <span><b class="font-medium">Payment received.</b> Membership active<template v-if="subscriptionEndLabel"> until {{ subscriptionEndLabel }}</template>. Taking you to your application status…</span>
+          <span><b class="font-medium">Payment received.</b> <template v-if="subscriptionEndLabel">Membership active until {{ subscriptionEndLabel }}.</template><template v-else>Your membership starts the day you are approved.</template> Taking you to your application status…</span>
         </p>
 
         <template v-else>
