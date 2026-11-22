@@ -64,7 +64,7 @@ const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
       <Button variant="line" size="pill-sm" @click="refetchStatus()">Try again</Button>
     </div>
 
-    <ApplicationNeedsChanges v-else-if="state === 'changes'" :reason="reviewNotes" />
+    <ApplicationNeedsChanges v-else-if="state === 'changes'" :reason="reviewNotes" :paid="subscription?.notStarted === true" />
     <ApplicationVerificationFailed
       v-else-if="state === 'failed'"
       :reason="reviewNotes"

@@ -9,6 +9,8 @@ import { useReopenApplication } from '~/composables/useOnboardingRestart'
 defineProps<{
   /** What the review team wrote. */
   reason: string
+  /** They have already paid: the payment waits for them and is not asked for again. */
+  paid?: boolean
 }>()
 
 const { reopen, isPending } = useReopenApplication()
@@ -24,7 +26,7 @@ async function reopenApplication() {
     title="Your application needs changes"
     description="Our review team could not approve it yet. Read the feedback, reopen your application, fix what is listed and submit again."
     :pill="{ label: 'Needs changes', tone: 'warn' }"
-    membership="later"
+    :membership="paid ? 'kept' : 'later'"
     sections-state="reopen"
   >
     <section aria-labelledby="feedback-title" class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3.75 text-warning-subtle-foreground">

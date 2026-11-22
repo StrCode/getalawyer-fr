@@ -7,17 +7,19 @@
  * submitted, then the membership row, then whatever the state needs (default
  * slot): the plan picker, a timeline, or the review team's feedback.
  */
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   kicker: string
   title: string
   description?: string
   /** Small status mark beside the title. */
   pill?: { label: string, tone: 'ok' | 'warn' | 'bad' } | null
   /** Where membership stands. */
-  membership: 'due' | 'paid' | 'refunding' | 'refunded' | 'later'
+  membership: 'due' | 'paid' | 'kept' | 'refunding' | 'refunded' | 'later'
   /** What to call the four sections' state. */
   sectionsState?: 'submitted' | 'reopen'
 }>(), { description: '', pill: null, sectionsState: 'submitted' })
+
+const alreadyPaid = computed(() => props.membership === 'paid' || props.membership === 'kept')
 
 // When an application is reopened, everything typed comes back except the NIN,
 // which is removed and has to be entered again.
@@ -36,7 +38,8 @@ const PILL = {
 
 const MEMBERSHIP = {
   due: { status: 'Next', text: 'Choose a plan and pay. Refunded if verification does not pass.' },
-  paid: { status: 'Paid', text: 'You are covered while we finish the review.' },
+  paid: { status: 'Paid', text: 'It starts the day you are approved.' },
+  kept: { status: 'Paid', text: 'Your payment is kept. It starts the day you are approved.' },
   refunding: { status: 'Refund on its way', text: 'Your membership fee is being returned to you.' },
   refunded: { status: 'Refunded', text: 'Your membership fee has been returned to you.' },
   later: { status: 'After you resubmit', text: 'Choose a plan and pay once your application is back with us.' },
@@ -74,8 +77,8 @@ const MEMBERSHIP = {
         class="grid grid-cols-[2.2rem_minmax(0,1fr)_auto] items-center gap-3.5 rounded-lg border px-4 py-2.75 max-sm:grid-cols-[2.2rem_minmax(0,1fr)]"
         :class="membership === 'due' ? 'border-brand bg-mint text-deep' : membership === 'later' ? 'border-dashed border-border' : 'border-border bg-card'"
       >
-        <span class="grid size-8.75 place-items-center rounded-md font-display font-medium" :class="membership === 'paid' ? 'bg-primary text-white' : 'bg-background text-deep'">
-          <CanopyGlyph v-if="membership === 'paid'" name="tick" :size="14" :stroke="3.2" />
+        <span class="grid size-8.75 place-items-center rounded-md font-display font-medium" :class="alreadyPaid ? 'bg-primary text-white' : 'bg-background text-deep'">
+          <CanopyGlyph v-if="alreadyPaid" name="tick" :size="14" :stroke="3.2" />
           <template v-else>5</template>
         </span>
         <span class="min-w-0">

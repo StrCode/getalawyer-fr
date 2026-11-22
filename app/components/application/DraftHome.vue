@@ -101,6 +101,10 @@ const legalError = computed(() => {
   return null
 })
 
+// Reopened after a request for changes: what they paid is kept, not asked for again.
+const { data: membershipStatus } = useSubscriptionStatus()
+const alreadyPaid = computed(() => membershipStatus.value?.subscription?.notStarted === true)
+
 const submitting = ref(false)
 async function submit() {
   if (submitting.value || !allDone.value) return
@@ -113,7 +117,11 @@ async function submit() {
     const ok = await store.saveStep('review')
     if (!ok) return
     // The submit refreshed the application's status; the page moves on from that.
-    toast.success('Application submitted', { description: 'Choose a membership plan and pay on the next screen.' })
+    toast.success('Application submitted', {
+      description: alreadyPaid.value
+        ? 'It is back in review. Your payment is kept.'
+        : 'Choose a membership plan and pay on the next screen.',
+    })
   }
   finally {
     submitting.value = false
@@ -167,7 +175,7 @@ async function submit() {
         <span class="grid size-10.5 place-items-center rounded-md bg-background font-display font-medium">{{ sections.length + 1 }}</span>
         <span class="min-w-0">
           <b class="block font-display text-lg font-normal tracking-tight text-foreground">Membership</b>
-          <small class="block text-sm">After you submit: choose a plan and pay. Refunded if verification does not pass.</small>
+          <small class="block text-sm">{{ alreadyPaid ? 'Paid. It starts the day you are approved.' : 'After you submit: choose a plan and pay. Refunded if verification does not pass.' }}</small>
         </span>
       </li>
     </ul>

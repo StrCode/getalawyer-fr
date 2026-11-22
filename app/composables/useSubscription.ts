@@ -10,6 +10,10 @@ export type { SubscriptionPlanOption, SubscriptionPlanSummary } from '~/lib/subs
 interface SubscriptionRecord {
   id: string
   status: string
+  /** Paid for, and waiting for the application to be approved before it starts: no dates yet. */
+  notStarted?: boolean
+  /** When the latest payment arrived. */
+  paidAt?: string | null
   subscriptionStartDate?: string | null
   subscriptionEndDate?: string | null
   nextBillingDate?: string | null

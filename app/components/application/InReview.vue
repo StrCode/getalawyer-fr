@@ -43,7 +43,7 @@ const submittedLabel = computed(() => {
 /** What happens from here, in order. "now" marks where the application is. */
 const timeline = computed(() => [
   { state: 'done', title: 'Application submitted', note: submittedLabel.value ?? 'Received' },
-  { state: 'done', title: 'Membership paid', note: 'You are covered while we finish the review.' },
+  { state: 'done', title: 'Membership paid', note: 'It starts the day you are approved, so none of it is used while you wait.' },
   { state: 'now', title: 'Identity and enrolment checks', note: 'In progress' },
   { state: 'next', title: 'Decision by email', note: `Usually within ${REVIEW_TIME}` },
   { state: 'next', title: 'Your profile goes live', note: 'Clients can find and message you' },

@@ -1,7 +1,7 @@
 import { useLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { useSubscriptionStatus } from '~/composables/useSubscription'
 import { applicationStateOf, type ApplicationState } from '~/lib/application-state'
-import { isLawyerAwaitingApproval, isLawyerVerificationFailed } from '~/lib/lawyerOnboardingStatus'
+import { isLawyerAwaitingApproval, isLawyerRejected, isLawyerVerificationFailed } from '~/lib/lawyerOnboardingStatus'
 
 /**
  * Where the signed-in lawyer's application stands (see lib/application-state),
@@ -20,12 +20,14 @@ export function useApplicationState(options?: {
 
   const submitted = computed(() => status.value != null && isLawyerAwaitingApproval(status.value))
   const verificationFailed = computed(() => status.value != null && isLawyerVerificationFailed(status.value))
+  // After a request for changes: whether a payment is waiting for them.
+  const rejected = computed(() => status.value != null && isLawyerRejected(status.value))
 
   // A failed verification refunds the membership, and the application cannot be
   // started again until that refund has gone through: keep checking on it.
   const refundInFlight = ref(false)
   const subscriptionQuery = useSubscriptionStatus({
-    enabled: computed(() => import.meta.client && (submitted.value || verificationFailed.value)),
+    enabled: computed(() => import.meta.client && (submitted.value || verificationFailed.value || rejected.value)),
     poll: refundInFlight,
   })
   const subscription = computed(() => subscriptionQuery.data.value?.subscription ?? null)
