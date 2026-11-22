@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/vue-query'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
+import { canEditSection } from '~/lib/application-correction'
 import { applicationStateOf } from '~/lib/application-state'
 import { getSessionUserType } from '~/lib/session-user'
 import { APPLICATION_HOME, applicationSectionKeyFor, setupHomeFor } from '~/lib/setup-paths'
@@ -7,8 +8,9 @@ import { APPLICATION_HOME, applicationSectionKeyFor, setupHomeFor } from '~/lib/
 /**
  * For the lawyer application pages. Only lawyers have an application, and its
  * sections can be opened only while it is being filled in: once it is
- * submitted, in review or needing changes, a section address goes back to the
- * application home, which shows where things stand.
+ * submitted, in review or closed, a section address goes back to the application
+ * home, which shows where things stand. While it is being corrected, only the
+ * sections that were opened can be.
  */
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
@@ -21,7 +23,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(setupHomeFor(user), { replace: true })
   }
 
-  if (!applicationSectionKeyFor(to.path)) return
+  const section = applicationSectionKeyFor(to.path)
+  if (!section) return
 
   try {
     const status = await ensureLawyerOnboardingStatus(useQueryClient())
@@ -33,7 +36,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
       hasActiveSubscription: undefined,
       subscriptionPending: false,
     })
-    if (state !== 'draft') return navigateTo(APPLICATION_HOME, { replace: true })
+    // While it is being corrected, only the sections that were opened.
+    const editable = state === 'draft' || (state === 'changes' && canEditSection(status.correction, section))
+    if (!editable) return navigateTo(APPLICATION_HOME, { replace: true })
   }
   catch {
     // Let the section open if the status is briefly unavailable; saving will say so if it matters.

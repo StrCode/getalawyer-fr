@@ -12,6 +12,7 @@ describe('membershipMode', () => {
     expect(membershipMode({ status: 'refund_processing' }, false)).toBe('refunding')
     expect(membershipMode({ status: 'verification_failed' }, false)).toBe('refund_stuck')
     expect(membershipMode({ status: 'refunded' }, false)).toBe('refunded')
+    expect(membershipMode({ status: 'active', refundDueAt: '2026-11-22T10:00:00Z' }, true)).toBe('refund_due')
   })
 
   it('shows a membership as ended when the record still says active but it is not on', () => {
@@ -24,6 +25,7 @@ describe('what each situation allows', () => {
     expect(['none', 'unfinished', 'payment_issue', 'ended', 'refunded'].every(m => canPayFor(m as never))).toBe(true)
     expect(canPayFor('active')).toBe(false)
     expect(canPayFor('refunding')).toBe(false)
+    expect(canPayFor('refund_due')).toBe(false)
     expect(canPayFor('refund_stuck')).toBe(false)
   })
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useQueryClient } from '@tanstack/vue-query'
 import { ensureLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
-import { onboardingSubmittedAt, VERIFICATION_FAILED_COPY } from '~/lib/lawyerOnboardingStatus'
+import { onboardingSubmittedAt } from '~/lib/lawyerOnboardingStatus'
 import { APPLICATION_MEMBERSHIP } from '~/lib/setup-paths'
 import { Button } from '@/components/ui/button'
 
 /**
  * A lawyer's application, at one address whatever state it is in: being filled
- * in, in review, needing changes, or failed verification. The page shows the
+ * in, in review, being corrected, closed, or withdrawn. The page shows the
  * screen for the state the application is in and follows it as it changes
  * (submitting, reopening, a decision arriving), so nothing here redirects to a
  * sibling page and back. Only two things leave: membership still to pay goes to
@@ -22,15 +22,16 @@ const router = useRouter()
 const queryClient = useQueryClient()
 await useAsyncData('application-status', () => ensureLawyerOnboardingStatus(queryClient))
 
-const { state, status, subscription, subscriptionPending, refundInFlight, refetchStatus } = useApplicationState({ poll: true })
+const { state, status, correction, returned, subscriptionPending, refetchStatus } = useApplicationState({ poll: true })
 
-// The failed-verification screen says where the refund stands, so it waits for that answer.
-const loading = computed(() => state.value === 'loading' || (state.value === 'failed' && subscriptionPending.value))
+// These two say where the refund stands, so they wait for that answer.
+const loading = computed(() => state.value === 'loading' || ((state.value === 'closed' || state.value === 'withdrawn') && subscriptionPending.value))
 
 const TITLES: Partial<Record<typeof state.value, string>> = {
   review: 'Application in review',
-  changes: 'Your application needs changes',
-  failed: VERIFICATION_FAILED_COPY.title,
+  changes: 'Your application needs a correction',
+  closed: 'Your application was not approved',
+  withdrawn: 'You withdrew your application',
 }
 useHead({
   title: () => TITLES[state.value] ?? 'Your application',
@@ -45,12 +46,6 @@ watch(state, (value) => {
 
 const reviewNotes = computed(() => status.value?.reviewNotes?.trim() || '')
 const submittedAt = computed(() => (status.value ? onboardingSubmittedAt(status.value) : null))
-
-/** Where the money stands after a failed verification. */
-const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
-  if (refundInFlight.value) return 'refunding'
-  return subscription.value?.status === 'refunded' ? 'refunded' : 'later'
-})
 </script>
 
 <template>
@@ -64,13 +59,9 @@ const failedMembership = computed<'refunding' | 'refunded' | 'later'>(() => {
       <Button variant="line" size="pill-sm" @click="refetchStatus()">Try again</Button>
     </div>
 
-    <ApplicationNeedsChanges v-else-if="state === 'changes'" :reason="reviewNotes" :paid="subscription?.notStarted === true" />
-    <ApplicationVerificationFailed
-      v-else-if="state === 'failed'"
-      :reason="reviewNotes"
-      :membership="failedMembership"
-      :refund-in-flight="refundInFlight"
-    />
+    <ApplicationCorrection v-else-if="state === 'changes' && correction" :correction="correction" />
+    <ApplicationClosed v-else-if="state === 'closed'" :reason="reviewNotes" :membership="returned" />
+    <ApplicationWithdrawn v-else-if="state === 'withdrawn'" :membership="returned" />
     <ApplicationInReview v-else-if="state === 'review'" :submitted-at="submittedAt" @refresh="refetchStatus()" />
     <ApplicationDraftHome v-else />
   </div>

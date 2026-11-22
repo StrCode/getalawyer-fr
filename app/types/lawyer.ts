@@ -87,7 +87,7 @@ export interface LawyerProfile {
   name: string
   email: string | null
   image: string | null
-  applicationStatus: 'pending' | 'approved' | 'rejected'
+  applicationStatus: 'pending' | 'pending_verification' | 'approved' | 'rejected' | 'verification_failed' | 'changes_requested' | 'withdrawn'
   ninVerified: boolean
   ninVerifiedAt: string | null
   personalInfo: LawyerPersonalInfo | null

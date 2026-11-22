@@ -1,5 +1,5 @@
 /**
- * Restarts rejected or verification-failed lawyer applications for resubmit.
+ * Opens an application again after the lawyer withdrew it.
  */
 
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
@@ -45,8 +45,7 @@ export const useOnboardingRestart = () => {
 }
 
 /**
- * Reopen a submitted application so it can be edited again (after the review
- * team asked for changes, or verification failed), and load the forms from
+ * Open an application again after it was withdrawn, and load the forms from
  * what the server rebuilt. `restart` resolves once the application's status and
  * saved details have been fetched again, so the application page shows the
  * editable home without any navigation.

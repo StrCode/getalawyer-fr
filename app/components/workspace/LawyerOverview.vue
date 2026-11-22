@@ -32,10 +32,10 @@ const { session } = useAuth()
 const userId = computed(() => session.value?.user.id ?? null)
 const firstName = computed(() => session.value?.user.name?.trim().split(/\s+/)[0] ?? '')
 
-// A rejected application has no dashboard: back to the application.
+// An application that is closed, withdrawn or being corrected has no dashboard.
 const applicationStatus = computed(() => (session.value?.user as { applicationStatus?: string } | undefined)?.applicationStatus)
 watch(applicationStatus, (status) => {
-  if (status === 'rejected') void navigateTo(APPLICATION_HOME)
+  if (status && ['rejected', 'verification_failed', 'changes_requested', 'withdrawn'].includes(status)) void navigateTo(APPLICATION_HOME)
 }, { immediate: true })
 const isApproved = computed(() => applicationStatus.value === 'approved')
 

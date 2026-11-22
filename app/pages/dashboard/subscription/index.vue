@@ -78,7 +78,7 @@ const {
 
 const subscription = computed(() => statusPayload.value?.subscription ?? null)
 const mode = computed(() => membershipMode(subscription.value, statusPayload.value?.hasActiveSubscription === true))
-watchEffect(() => { refundOnItsWay.value = mode.value === 'refunding' })
+watchEffect(() => { refundOnItsWay.value = mode.value === 'refunding' || mode.value === 'refund_due' })
 const loading = computed(() => !isLawyer.value || statusPending.value || pricingPending.value)
 const loadFailed = computed(() => statusFailed.value || pricingFailed.value)
 

@@ -1,4 +1,4 @@
-import { SUPPORT_EMAIL } from '~/utils/site-facts'
+import { type ApplicationCorrection, readCorrection } from '~/lib/application-correction'
 /**
  * Normalizes GET /api/onboarding/status payloads for onboarding UI.
  */
@@ -9,6 +9,8 @@ export type ApplicationStatus =
   | 'approved'
   | 'rejected'
   | 'verification_failed'
+  | 'changes_requested'
+  | 'withdrawn'
   | null
   | string
 
@@ -22,6 +24,8 @@ export interface OnboardingStatusPayload {
   applicationStatus?: ApplicationStatus
   reviewNotes?: string | null
   review_notes?: string | null
+  /** What has to be corrected, while the application is `changes_requested`. */
+  correction?: ApplicationCorrection | null
 }
 
 function unwrapData<T extends Record<string, unknown>>(res: unknown): T {
@@ -59,6 +63,7 @@ export function parseOnboardingStatus(res: unknown): OnboardingStatusPayload {
     applicationStatus,
     reviewNotes,
     review_notes: reviewNotes,
+    correction: readCorrection(o.correction),
   }
 }
 
@@ -94,7 +99,7 @@ const AWAITING_REVIEW_APPLICATION_STATUSES = new Set([
 
 /** Lawyer application is in the admin review queue (from onboarding status). */
 export function isLawyerAwaitingApproval(payload: OnboardingStatusPayload): boolean {
-  if (isLawyerVerificationFailed(payload) || isLawyerRejected(payload)) {
+  if (isLawyerClosed(payload) || isLawyerCorrecting(payload) || isLawyerWithdrawn(payload)) {
     return false
   }
 
@@ -107,17 +112,19 @@ export function isLawyerAwaitingApproval(payload: OnboardingStatusPayload): bool
   return cs === 'submitted' || AWAITING_REVIEW_APPLICATION_STATUSES.has(String(appStatus))
 }
 
-export function isLawyerVerificationFailed(payload: OnboardingStatusPayload): boolean {
-  return onboardingApplicationStatus(payload) === 'verification_failed'
+/** Rejected for good, at a check or at the final decision. */
+export function isLawyerClosed(payload: OnboardingStatusPayload): boolean {
+  const status = onboardingApplicationStatus(payload)
+  return status === 'rejected' || status === 'verification_failed'
 }
 
-/**
- * Application-level rejection (admin "Reject application").
- * Do not treat `currentState: 'rejected'` alone — NIN/SCN verification failures also set that
- * while `applicationStatus` is `verification_failed` (refund path → pending page).
- */
-export function isLawyerRejected(payload: OnboardingStatusPayload): boolean {
-  return onboardingApplicationStatus(payload) === 'rejected'
+/** The review team has asked for a correction. */
+export function isLawyerCorrecting(payload: OnboardingStatusPayload): boolean {
+  return onboardingApplicationStatus(payload) === 'changes_requested'
+}
+
+export function isLawyerWithdrawn(payload: OnboardingStatusPayload): boolean {
+  return onboardingApplicationStatus(payload) === 'withdrawn'
 }
 
 export type ApplicationStatusNoticeTone = 'pending' | 'approved' | 'failed'
@@ -128,44 +135,19 @@ export interface ApplicationStatusNotice {
   description: string
 }
 
-/**
- * The refund policy as someone reads it before paying (the terms step and the
- * checkout). After a failed verification, `VERIFICATION_FAILED_COPY.refundNote`
- * says the same thing in the past tense.
- */
+/** What happens when something does not check out, as someone reads it before paying. */
 export const REFUND_POLICY_SUMMARY
-  = 'If we cannot verify you, your membership fee is refunded. The verification fee is kept to cover the check that was already run.'
-
-/** Centralized copy for NIN/SCN verification failure (pending page + notices). */
-export const VERIFICATION_FAILED_COPY = {
-  title: 'Verification could not be completed',
-  description:
-    'We could not verify your identity (NIN) or bar enrolment (SCN) against the details you submitted.',
-  refundNote:
-    'If you paid, your membership fee is refunded. The verification fee is kept to cover the check that was already run.',
-  resubmitTitle: 'Start a new application',
-  resubmitDescription:
-    'You can correct your details and submit again on the same account. Your saved draft is kept so you can edit what needs fixing. After you resubmit, you’ll pay the first payment again (membership + verification fee) before review.',
-  resubmitSteps: [
-    'Update the details that failed verification (NIN and/or SCN).',
-    'Review and submit the application again.',
-    'Complete payment, then wait for a new review.',
-  ],
-  ctaLabel: 'Start a new application',
-  supportLabel: 'Questions?',
-  supportEmail: SUPPORT_EMAIL,
-} as const
+  = 'If something does not check out, you can correct it and pay the verification fee again. If you are not approved, or you withdraw, your membership fee is refunded. The verification fee is kept to cover the check.'
 
 /** Human-readable application decision for post-submit subscription and status pages. */
 export function getLawyerApplicationStatusNotice(
   payload: OnboardingStatusPayload,
 ): ApplicationStatusNotice | null {
-  if (isLawyerVerificationFailed(payload)) {
-    return {
-      tone: 'failed',
-      title: VERIFICATION_FAILED_COPY.title,
-      description: `${VERIFICATION_FAILED_COPY.description} ${VERIFICATION_FAILED_COPY.refundNote}`,
-    }
+  if (isLawyerClosed(payload)) {
+    return { tone: 'failed', title: 'Application not approved', description: 'Our review team could not approve it, and it is now closed.' }
+  }
+  if (isLawyerCorrecting(payload)) {
+    return { tone: 'pending', title: 'Your application needs a correction', description: 'Correct what the review team listed and send it back.' }
   }
 
   const appStatus = String(onboardingApplicationStatus(payload) ?? '')
@@ -219,16 +201,16 @@ export function getLawyerApprovalHeaderBadge(
   applicationStatusFallback?: ApplicationStatus | null,
 ): LawyerApprovalHeaderBadge | null {
   if (payload) {
-    if (isLawyerVerificationFailed(payload)) {
-      return {
-        label: 'Verification failed',
-        className: 'border-destructive/40 bg-destructive/10 text-destructive',
-      }
-    }
-    if (isLawyerRejected(payload)) {
+    if (isLawyerClosed(payload)) {
       return {
         label: 'Not approved',
         className: 'border-destructive/40 bg-destructive/10 text-destructive',
+      }
+    }
+    if (isLawyerCorrecting(payload)) {
+      return {
+        label: 'Needs a correction',
+        className: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-500',
       }
     }
     if (onboardingApplicationStatus(payload) === 'approved') {
@@ -252,16 +234,16 @@ export function getLawyerApprovalHeaderBadge(
       className: 'border-primary/40 bg-primary/10 text-primary',
     }
   }
-  if (status === 'rejected') {
+  if (status === 'rejected' || status === 'verification_failed') {
     return {
       label: 'Not approved',
       className: 'border-destructive/40 bg-destructive/10 text-destructive',
     }
   }
-  if (status === 'verification_failed') {
+  if (status === 'changes_requested') {
     return {
-      label: 'Verification failed',
-      className: 'border-destructive/40 bg-destructive/10 text-destructive',
+      label: 'Needs a correction',
+      className: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-500',
     }
   }
   if (status === 'pending' || status === 'pending_verification') {
@@ -288,21 +270,19 @@ export function getProfileEditorApprovalNotice(
     return null
   }
 
-  if (isLawyerVerificationFailed(payload)) {
-    return {
-      variant: 'destructive',
-      title: 'Profile edits unavailable',
-      description:
-        'Your verification did not complete. Profile changes are disabled until your account status is resolved.',
-    }
-  }
-
-  if (isLawyerRejected(payload)) {
+  if (isLawyerClosed(payload)) {
     return {
       variant: 'destructive',
       title: 'Application not approved',
-      description:
-        'Update and resubmit your application from onboarding before you can edit your profile.',
+      description: 'Your application is closed, so your profile cannot be changed.',
+    }
+  }
+
+  if (isLawyerCorrecting(payload)) {
+    return {
+      variant: 'warning',
+      title: 'Your application needs a correction',
+      description: 'Correct your application and send it back before you can edit your profile.',
     }
   }
 

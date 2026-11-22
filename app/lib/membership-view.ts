@@ -13,11 +13,12 @@ export type MembershipMode
     | 'active'
     | 'payment_issue' // a renewal charge failed; still inside the retry window
     | 'ended' // expired or cancelled
-    | 'refunding' // verification failed; the membership payment is being returned
+    | 'refund_due' // not approved, or withdrawn: our team will send the payment back
+    | 'refunding' // the membership payment is being returned
     | 'refund_stuck' // the refund could not be sent automatically
     | 'refunded'
 
-interface StatusLike { status: string }
+interface StatusLike { status: string, refundDueAt?: string | null }
 
 /**
  * `hasActive` is the backend's own answer to "is this membership on right now".
@@ -27,7 +28,7 @@ interface StatusLike { status: string }
 export function membershipMode(subscription: StatusLike | null | undefined, hasActive: boolean): MembershipMode {
   if (!subscription) return 'none'
   switch (subscription.status) {
-    case 'active': return hasActive ? 'active' : 'ended'
+    case 'active': return subscription.refundDueAt ? 'refund_due' : hasActive ? 'active' : 'ended'
     case 'pending': return 'unfinished'
     case 'failed_renewal': return 'payment_issue'
     case 'expired':
@@ -96,6 +97,12 @@ export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts 
       return reason
         ? { lead: 'Your last payment', accent: 'did not go through.', detail: `${withFullStop(reason)} Nothing was taken. Try again when you are ready.` }
         : { lead: 'Your payment', accent: 'is not finished.', detail: 'Choose your plan and pay to switch your membership on.' }
+    case 'refund_due':
+      return {
+        lead: 'Your refund',
+        accent: 'is being arranged.',
+        detail: 'Our team will send your membership payment back. You will get an email when it has been sent.',
+      }
     case 'refunding':
       return {
         lead: 'Your refund',
@@ -161,6 +168,8 @@ export function membershipTile(mode: MembershipMode, facts: MembershipFacts = {}
       return { lead: 'Ended.', detail: facts.endLabel ? `It ran out on ${facts.endLabel}.` : 'Renew to take new bookings again.', action: 'Renew membership' }
     case 'unfinished':
       return { lead: 'Payment not finished.', detail: 'Choose a plan and pay to switch it on.', action: 'Finish payment' }
+    case 'refund_due':
+      return { lead: 'Refund being arranged.', detail: 'You will get an email when it has been sent.', action: 'See the refund' }
     case 'refunding':
       return { lead: 'Refund on its way.', detail: 'It can take a few working days to reach your account.', action: 'See the refund' }
     case 'refund_stuck':

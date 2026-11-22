@@ -17,6 +17,8 @@ interface SubscriptionRecord {
   subscriptionStartDate?: string | null
   subscriptionEndDate?: string | null
   nextBillingDate?: string | null
+  /** To be given back: our team has not sent the refund yet. */
+  refundDueAt?: string | null
   daysRemaining?: number
   cardLast4?: string | null
   bank?: string | null
@@ -399,7 +401,7 @@ export function useSubscriptionPaymentHistory(
 /** One payment's receipt, as the backend recorded it on the day. */
 export interface SubscriptionPaymentReceipt {
   id: string
-  kind: 'first_payment' | 'renewal'
+  kind: 'first_payment' | 'renewal' | 'verification_fee'
   paidAt: string
   totalNaira: number
   lines: Array<{ kind: 'membership' | 'verification_fee', label: string, amountNaira: number }>
@@ -442,6 +444,7 @@ export function formatSubscriptionHistoryAction(action: string): string {
   const labels: Record<string, string> = {
     created: 'Membership',
     renewed: 'Membership renewal',
+    verification_fee: 'Verification fee',
     payment_failed: 'Payment failed',
     failed_renewal: 'Renewal failed',
     refund_initiated: 'Refund processing',
