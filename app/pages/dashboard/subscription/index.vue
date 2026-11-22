@@ -96,12 +96,21 @@ const nextBillingLabel = computed(() => longDate(subscription.value?.nextBilling
 const autoRenewOn = computed(() => subscription.value?.autoRenewEnabled ?? true)
 const failureReason = computed(() => getSubscriptionPaymentFailureMessage(subscription.value))
 
-const headline = computed(() => membershipHeadline(mode.value, {
-  endLabel: endLabel.value,
-  planName: subscription.value?.plan?.name,
-  autoRenew: autoRenewOn.value,
-  failureReason: failureReason.value,
-}))
+/** A transfer or cash payment staff have recorded: nothing to pay while they confirm it. */
+const offlinePayment = computed(() => statusPayload.value?.offlinePayment ?? null)
+
+const headline = computed(() => offlinePayment.value
+  ? {
+      lead: 'We are confirming',
+      accent: 'your payment.',
+      detail: `${formatNairaAmount(offlinePayment.value.amountNaira)} for the ${offlinePayment.value.planName} plan has been recorded. You will get a receipt by email once it is confirmed, and there is nothing else to pay.`,
+    }
+  : membershipHeadline(mode.value, {
+      endLabel: endLabel.value,
+      planName: subscription.value?.plan?.name,
+      autoRenew: autoRenewOn.value,
+      failureReason: failureReason.value,
+    }))
 
 const manageable = computed(() => canManage(mode.value))
 const payable = computed(() => canPayFor(mode.value) && plans.value.length > 0)
@@ -424,11 +433,14 @@ const panel = 'rounded-card border border-border bg-card'
             {{ headline.lead }} <em class="text-brand not-italic">{{ headline.accent }}</em>
           </h1>
           <p class="mt-3.5 max-w-136 text-base text-muted-foreground">{{ headline.detail }}</p>
+          <p v-if="offlinePayment" class="mt-2 text-sm text-muted-foreground">
+            Have you not paid this? <NuxtLink to="/contact" class="font-medium text-brand underline underline-offset-3">Contact us</NuxtLink>.
+          </p>
           <p v-if="daysLeft" class="mt-3.5 inline-flex items-center gap-2 rounded-full bg-mint px-3.25 py-1.25 text-sm font-medium text-deep">
             <CanopyGlyph name="clock" :size="15" />{{ daysLeft }}
           </p>
           <!-- for someone who paid and came back before it was confirmed; not after a declined payment -->
-          <div v-if="mode === 'unfinished' && !failureReason" class="mt-4.75">
+          <div v-if="mode === 'unfinished' && !failureReason && !offlinePayment" class="mt-4.75">
             <Button variant="line" size="pill-sm" :disabled="checkingPayment" :aria-busy="checkingPayment" @click="checkPayment">
               {{ checkingPayment ? 'Checking…' : 'I have paid: check again' }}
             </Button>
@@ -458,7 +470,7 @@ const panel = 'rounded-card border border-border bg-card'
       </section>
 
       <!-- ───────── pay: a first payment, or a renewal after a lapse ───────── -->
-      <section v-if="payable" id="membership-checkout" aria-labelledby="pay-title" class="scroll-mt-24">
+      <section v-if="payable && !offlinePayment" id="membership-checkout" aria-labelledby="pay-title" class="scroll-mt-24">
         <h2 id="pay-title" :class="sectionTitle">{{ isRenewal ? 'Renew your membership' : 'Choose your plan' }}</h2>
         <p class="mt-2 max-w-160 text-muted-foreground">
           Every plan includes the same profile, messages and bookings. The only difference is how long one payment covers.

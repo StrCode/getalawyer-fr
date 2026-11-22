@@ -98,6 +98,9 @@ const hasActiveSubscription = computed(
   () => subscriptionStatus.value?.hasActiveSubscription === true,
 )
 
+// A transfer or cash payment staff have recorded: nothing to pay while they confirm it.
+const offlinePayment = computed(() => subscriptionStatus.value?.offlinePayment ?? null)
+
 const hasPendingSubscription = computed(
   () => subscriptionStatus.value?.subscription?.status === 'pending',
 )
@@ -304,7 +307,17 @@ async function retry() {
         {{ paymentFailureMessage }}
       </p>
 
-      <div v-if="pricingError || (!pricing && !pricingPending)" role="alert" class="grid justify-items-start gap-2.5 rounded-lg border border-dashed border-border p-4">
+      <section v-if="offlinePayment && !hasActiveSubscription" role="status" class="rounded-card border border-brand bg-mint p-4.5 text-deep lg:p-6">
+        <h2 class="text-xl font-normal tracking-tight">We are confirming your payment</h2>
+        <p class="mt-2">
+          {{ formatNairaAmount(offlinePayment.amountNaira) }} for the {{ offlinePayment.planName }} plan has been recorded. You will get a receipt by email once it is confirmed, and there is nothing else to pay.
+        </p>
+        <p class="mt-3 text-sm">
+          Have you not paid this? Write to <a :href="`mailto:${SUPPORT_EMAIL}`" class="font-medium underline underline-offset-3">{{ SUPPORT_EMAIL }}</a>.
+        </p>
+      </section>
+
+      <div v-else-if="pricingError || (!pricing && !pricingPending)" role="alert" class="grid justify-items-start gap-2.5 rounded-lg border border-dashed border-border p-4">
         <b class="font-medium">Prices are not loading right now.</b>
         <p class="text-muted-foreground">We need the current price before checkout. Nothing has been charged.</p>
         <Button variant="line" size="pill-sm" @click="refetchPricing()">Try again</Button>

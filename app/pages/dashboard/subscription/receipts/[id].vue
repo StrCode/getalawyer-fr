@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { ApiError } from '~/lib/api/client'
 import { formatNairaAmount, useSubscriptionPaymentReceipt } from '~/composables/useSubscription'
 import { longDate } from '~/lib/membership-view'
-import { receiptCardLine, receiptTermLine, receiptTitle } from '~/lib/receipt-view'
+import { receiptCardLine, receiptOfflineLine, receiptTermLine, receiptTitle } from '~/lib/receipt-view'
 
 /**
  * The receipt for one membership payment: what was paid, when, by whom, with
@@ -42,13 +42,14 @@ const missing = computed(() => error.value instanceof ApiError && error.value.st
 useHead({ title: () => receipt.value ? receiptTitle(receipt.value.paidAt) : 'Receipt' })
 
 const paidOn = computed(() => longDate(receipt.value?.paidAt))
-const cardLine = computed(() => receiptCardLine(receipt.value?.card))
+const paidWith = computed(() => receiptOfflineLine(receipt.value?.offline) ?? receiptCardLine(receipt.value?.card))
 const termLine = computed(() => receiptTermLine(receipt.value?.coversFrom, receipt.value?.coversUntil))
 
 const refund = computed(() => receipt.value?.refund ?? null)
 const refundedInFull = computed(() => Boolean(refund.value && receipt.value && refund.value.amountNaira >= receipt.value.totalNaira))
 
 const state = computed(() => {
+  if (receipt.value?.reversedAt) return { label: 'Reversed', class: 'bg-muted text-foreground' }
   if (!refund.value) return { label: 'Paid', class: 'bg-mint text-deep' }
   return refundedInFull.value
     ? { label: 'Refunded', class: 'bg-muted text-foreground' }
@@ -143,9 +144,9 @@ const row = 'grid gap-x-6 gap-y-0.5 py-3.25 sm:grid-cols-[11rem_minmax(0,1fr)]'
             <span class="block break-words text-muted-foreground">{{ receipt.paidBy.email }}</span>
           </dd>
         </div>
-        <div v-if="cardLine" :class="row">
+        <div v-if="paidWith" :class="row">
           <dt class="text-muted-foreground">Paid with</dt>
-          <dd class="font-medium">{{ cardLine }}</dd>
+          <dd class="font-medium">{{ paidWith }}</dd>
         </div>
         <div v-if="receipt.paymentReference" :class="row">
           <dt class="text-muted-foreground">Payment reference</dt>
@@ -182,13 +183,16 @@ const row = 'grid gap-x-6 gap-y-0.5 py-3.25 sm:grid-cols-[11rem_minmax(0,1fr)]'
         </tfoot>
       </table>
 
+      <p v-if="receipt.reversedAt" class="mt-5.5 rounded-lg bg-muted px-4.5 py-3.5 print:border print:border-border">
+        This payment was reversed<template v-if="longDate(receipt.reversedAt)"> on {{ longDate(receipt.reversedAt) }}</template> and no longer counts towards your membership.
+      </p>
       <p v-if="refund" class="mt-5.5 rounded-lg bg-muted px-4.5 py-3.5 print:border print:border-border">
         <b class="font-medium">{{ formatNairaAmount(refund.amountNaira) }}</b>
         {{ refundedInFull ? 'was refunded' : 'of this payment was refunded' }}<template v-if="longDate(refund.refundedAt)"> on {{ longDate(refund.refundedAt) }}</template>.
       </p>
 
       <p class="mt-6.5 md:mt-7.75 lg:mt-9.5 text-sm text-muted-foreground">
-        Payment taken by Paystack for getalawyer. Questions about this payment?
+        {{ receipt.offline ? 'Payment received by getalawyer.' : 'Payment taken by Paystack for getalawyer.' }} Questions about this payment?
         <NuxtLink to="/contact" class="font-medium text-brand underline underline-offset-3 print:text-foreground print:no-underline">Contact us</NuxtLink>
         and quote the payment reference.
       </p>
