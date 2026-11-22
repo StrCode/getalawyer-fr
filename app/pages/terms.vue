@@ -108,7 +108,7 @@ usePageSeo({
    <h2>12. Contact</h2>
     <p>
       Questions about these terms:
-      <a href="mailto:support@getalawyer.com.ng">support@getalawyer.com.ng</a>.
+      <a href="mailto:support@getalawyer.ng">support@getalawyer.ng</a>.
     </p>
   </LegalPageShell>
 </template>

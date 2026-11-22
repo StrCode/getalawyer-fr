@@ -5,7 +5,7 @@
  */
 
 /** Where people write to us. Also the address in the terms and privacy policy. */
-export const SUPPORT_EMAIL = 'support@getalawyer.com.ng'
+export const SUPPORT_EMAIL = 'support@getalawyer.ng'
 
 /** How long a lawyer's application review usually takes, as a phrase after "within". */
 export const REVIEW_TIME = 'one to two business days'

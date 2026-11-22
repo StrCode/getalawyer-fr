@@ -36,7 +36,7 @@ usePageSeo({
    <h2>Data subject requests</h2>
     <p>
       Requests to access, correct, delete, restrict, or port personal data go to
-      <a href="mailto:support@getalawyer.com.ng">support@getalawyer.com.ng</a> with the subject
+      <a href="mailto:support@getalawyer.ng">support@getalawyer.ng</a> with the subject
       line "Data request". We verify the requester's identity before acting and respond within
       the NDPA's timelines.
     </p>
@@ -58,7 +58,7 @@ usePageSeo({
    <h2>Questions</h2>
     <p>
       For anything this page doesn't answer, contact
-      <a href="mailto:support@getalawyer.com.ng">support@getalawyer.com.ng</a>.
+      <a href="mailto:support@getalawyer.ng">support@getalawyer.ng</a>.
     </p>
   </LegalPageShell>
 </template>

@@ -19,7 +19,7 @@ usePageSeo({
     <p>
       GetaLawyer operates this platform and is the data controller for the personal data
       described here. Contact for privacy matters:
-      <a href="mailto:support@getalawyer.com.ng">support@getalawyer.com.ng</a>.
+      <a href="mailto:support@getalawyer.ng">support@getalawyer.ng</a>.
     </p>
 
    <h2>2. What we collect</h2>
@@ -83,7 +83,7 @@ usePageSeo({
       <li>withdraw consent where processing is based on consent.</li>
     </ul>
     <p>
-      Write to <a href="mailto:support@getalawyer.com.ng">support@getalawyer.com.ng</a> — we
+      Write to <a href="mailto:support@getalawyer.ng">support@getalawyer.ng</a> — we
       respond within the timelines the NDPA sets. You also have the right to complain to the
       Nigeria Data Protection Commission.
     </p>
