@@ -17,6 +17,7 @@ useHead({ title: 'Which state are you in?' })
 
 const store = useClientOnboardingStore()
 const storeState = store.clientState
+onMounted(() => store.applyInvitationPrefill())
 
 /** What each state is called on screen; the stored value stays the list's own name. */
 function displayName(state: string) {
