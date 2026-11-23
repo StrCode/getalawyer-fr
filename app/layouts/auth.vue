@@ -76,6 +76,8 @@ const PANELS: Record<Audience, {
 const route = useRoute()
 const pickedRole = useState<'client' | 'lawyer' | null>('auth-panel-role', () => null)
 const audience = computed<Audience>(() => {
+  // An invitation says who it is for once it has loaded.
+  if (route.path.startsWith('/invite/')) return pickedRole.value ?? 'general'
   if (route.path !== '/register') return 'general'
   if (pickedRole.value) return pickedRole.value
   return route.query.role === 'lawyer' ? 'lawyer' : route.query.role === 'client' ? 'client' : 'general'

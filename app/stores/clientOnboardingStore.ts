@@ -47,6 +47,26 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
         }, { deep: true })
     }
 
+    /**
+     * Someone invited by our staff starts from the state and legal areas staff
+     * chose for them. Only fills what is still empty, and only once.
+     */
+    let prefilled = false
+    const applyInvitationPrefill = async () => {
+        if (prefilled || !import.meta.client) return
+        prefilled = true
+        try {
+            const { invitationsAPI } = await import('~/lib/api/invitations')
+            const { prefill } = await invitationsAPI.mine()
+            if (prefill?.state && !clientState.state) clientState.state = prefill.state
+            if (prefill?.interests?.length && !clientState.specializationIds.length) {
+                clientState.specializationIds = prefill.interests.slice(0, 3)
+            }
+        } catch {
+            // Nothing filled in; they choose as anyone would.
+        }
+    }
+
     const validationError = ref<string | null>(null)
     // Rendered inline next to the terms checkbox, not in the layout banner.
     const termsError = ref<string | null>(null)
@@ -109,5 +129,6 @@ export const useClientOnboardingStore = defineStore('client-onboarding', () => {
         termsError,
         saveStep,
         resetStore,
+        applyInvitationPrefill,
     }
 })
