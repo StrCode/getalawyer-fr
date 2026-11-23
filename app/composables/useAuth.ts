@@ -73,6 +73,12 @@ export function useAuth() {
 
   // Unified session: prefer server session during initial load, then client session
   const session = computed<Session | null>(() => {
+    // On the server, only this request's own session. The auth client is one
+    // object for the whole server process, so its session belongs to no request
+    // in particular (the admin app was caught out by exactly this).
+    if (import.meta.server) {
+      return serverSession.value;
+    }
     // If we have server session and client is still loading, use server session
     // This prevents flash of login form during hydration
     if (serverSession.value && clientPending.value) {
@@ -84,7 +90,7 @@ export function useAuth() {
 
   // isPending is true only if we don't have any session and client is loading
   const isPending = computed(() => {
-    return !serverSession.value && clientPending.value;
+    return import.meta.client && !serverSession.value && clientPending.value;
   });
 
   // Auth methods from Better Auth client
