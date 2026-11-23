@@ -181,6 +181,11 @@ export function useSubscriptionPricing(options?: { enabled?: MaybeRef<boolean> }
   })
 }
 
+/** Where the lawyer's membership stands; the query below and anything warming its cache share it. */
+export async function fetchSubscriptionStatus(): Promise<SubscriptionStatusPayload> {
+  return httpClient.getAuth<SubscriptionStatusPayload>('/api/subscriptions/status')
+}
+
 export function useSubscriptionStatus(options?: {
   enabled?: MaybeRef<boolean>
   /** Check again once a minute while true: for a screen waiting on a refund to settle. */
@@ -190,12 +195,7 @@ export function useSubscriptionStatus(options?: {
     queryKey: queryKeys.subscription.status,
     enabled: options?.enabled !== undefined ? options.enabled : import.meta.client,
     refetchInterval: () => (unref(options?.poll) ? 60 * 1000 : false),
-    queryFn: async () => {
-      const res = await httpClient.getAuth<SubscriptionStatusPayload>(
-        '/api/subscriptions/status',
-      )
-      return res
-    },
+    queryFn: fetchSubscriptionStatus,
     staleTime: 30 * 1000,
   })
 }
@@ -493,7 +493,7 @@ export function useSyncPendingSubscription() {
       return res
     },
     onSuccess: (data) => {
-      if (data?.success && data.status === 'active' && import.meta.client) {
+      if (data?.status === 'active' && import.meta.client) {
         sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_REF_KEY)
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status })
