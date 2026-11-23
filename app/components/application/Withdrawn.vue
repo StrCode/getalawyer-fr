@@ -6,7 +6,7 @@ import { useReopenApplication } from '~/composables/useOnboardingRestart'
 const props = defineProps<{ membership: ReturnedMembership }>()
 
 const { reopen, isPending } = useReopenApplication()
-const refundPending = computed(() => props.membership === 'owed' || props.membership === 'refunding')
+const refundPending = computed(() => props.membership === 'owed' || props.membership === 'refunding' || props.membership === 'bank_account')
 
 async function applyAgain() {
   await reopen({
@@ -25,6 +25,7 @@ async function applyAgain() {
     :membership="membership"
     sections-state="reopen"
   >
+    <RefundBankAccount />
     <AuthSubmit type="button" :loading="isPending" :disabled="refundPending" @click="applyAgain">
       Apply again
     </AuthSubmit>

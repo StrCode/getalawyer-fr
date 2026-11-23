@@ -78,7 +78,7 @@ const {
 
 const subscription = computed(() => statusPayload.value?.subscription ?? null)
 const mode = computed(() => membershipMode(subscription.value, statusPayload.value?.hasActiveSubscription === true))
-watchEffect(() => { refundOnItsWay.value = mode.value === 'refunding' || mode.value === 'refund_due' })
+watchEffect(() => { refundOnItsWay.value = mode.value === 'refunding' || mode.value === 'refund_due' || mode.value === 'refund_bank_account' })
 const loading = computed(() => !isLawyer.value || statusPending.value || pricingPending.value)
 const loadFailed = computed(() => statusFailed.value || pricingFailed.value)
 
@@ -468,6 +468,9 @@ const panel = 'rounded-card border border-border bg-card'
           </dd>
         </dl>
       </section>
+
+      <!-- a refund Paystack cannot return the way it was paid: the account to send it to -->
+      <RefundBankAccount />
 
       <!-- ───────── pay: a first payment, or a renewal after a lapse ───────── -->
       <section v-if="payable && !offlinePayment" id="membership-checkout" aria-labelledby="pay-title" class="scroll-mt-24">

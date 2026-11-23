@@ -19,6 +19,8 @@ interface SubscriptionRecord {
   nextBillingDate?: string | null
   /** To be given back: our team has not sent the refund yet. */
   refundDueAt?: string | null
+  /** What is being given back, once a refund has been started. */
+  refundNaira?: number | null
   daysRemaining?: number
   cardLast4?: string | null
   bank?: string | null

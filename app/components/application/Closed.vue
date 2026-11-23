@@ -21,6 +21,7 @@ defineProps<{
       <h2 id="closed-title" class="font-medium text-destructive">What the review team found</h2>
       <p class="mt-1 whitespace-pre-line">{{ reason }}</p>
     </section>
+    <RefundBankAccount />
     <p v-if="membership === 'owed'" class="text-muted-foreground">
       You do not need to do anything for the refund. The verification fee is kept, because the checks were carried out, and you will get an email when the rest has been sent.
     </p>

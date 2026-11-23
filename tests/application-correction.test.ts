@@ -46,6 +46,7 @@ describe('what happens to the membership when it is over', () => {
     expect(returnedMembership({ status: 'active', refundDueAt: '2026-11-22' })).toBe('owed')
     expect(returnedMembership({ status: 'verification_failed', refundDueAt: '2026-11-22' })).toBe('owed')
     expect(returnedMembership({ status: 'refund_processing' })).toBe('refunding')
+    expect(returnedMembership({ status: 'refund_processing', lastFailureReason: 'refund.needs-attention: customer bank details required' })).toBe('bank_account')
     expect(returnedMembership({ status: 'refunded', refundDueAt: '2026-11-22' })).toBe('refunded')
     expect(returnedMembership({ status: 'pending' })).toBe('none')
   })

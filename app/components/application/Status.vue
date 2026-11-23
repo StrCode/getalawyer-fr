@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{
   /** Small status mark beside the title. */
   pill?: { label: string, tone: 'ok' | 'warn' | 'bad' } | null
   /** Where membership stands. */
-  membership: 'due' | 'paid' | 'owed' | 'refunding' | 'refunded' | 'none'
+  membership: 'due' | 'paid' | 'owed' | 'refunding' | 'bank_account' | 'refunded' | 'none'
   /** What to call the four sections' state. */
   sectionsState?: 'submitted' | 'reopen'
 }>(), { description: '', pill: null, sectionsState: 'submitted' })
@@ -41,6 +41,7 @@ const MEMBERSHIP = {
   paid: { status: 'Paid', text: 'It starts the day you are approved.' },
   owed: { status: 'To be refunded', text: 'Our team will return your membership fee to you.' },
   refunding: { status: 'Refund on its way', text: 'Your membership fee is being returned to you.' },
+  bank_account: { status: 'Needs a bank account', text: 'Add the bank account your refund should be paid into.' },
   refunded: { status: 'Refunded', text: 'Your membership fee has been returned to you.' },
   none: { status: 'Not paid', text: 'You had not paid for a membership.' },
 } as const
