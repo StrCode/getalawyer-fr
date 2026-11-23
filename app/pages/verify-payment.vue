@@ -5,10 +5,12 @@ import { useQueryClient } from '@tanstack/vue-query'
 import {
   SUBSCRIPTION_PAYMENT_FROM_KEY,
   SUBSCRIPTION_PAYMENT_REF_KEY,
+  fetchSubscriptionStatus,
   useSubscriptionStatus,
   useSyncPendingSubscription,
   useVerifySubscription,
 } from '~/composables/useSubscription'
+import { fetchLawyerOnboardingStatus } from '~/composables/useLawyerOnboarding'
 import { paymentReturn } from '~/lib/payment-return'
 import { queryKeys } from '~/lib/query-client'
 import { Button } from '@/components/ui/button'
@@ -45,6 +47,23 @@ const reference = computed(() => {
   return null
 })
 
+/**
+ * Load what the next page shows before going there, so it opens finished
+ * instead of on a skeleton while it asks again. "Payment confirmed" stays on
+ * screen meanwhile; a slow answer never keeps anyone here more than a few seconds.
+ */
+async function loadNextPage() {
+  const fresh = { staleTime: 0 } as const
+  await Promise.race([
+    Promise.allSettled([
+      queryClient.fetchQuery({ queryKey: queryKeys.lawyerOnboarding.status, queryFn: fetchLawyerOnboardingStatus, ...fresh }),
+      queryClient.fetchQuery({ queryKey: queryKeys.subscription.status, queryFn: fetchSubscriptionStatus, ...fresh }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.pricing }),
+    ]),
+    new Promise(resolve => setTimeout(resolve, 6000)),
+  ])
+}
+
 function forgetPayment() {
   sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_REF_KEY)
   sessionStorage.removeItem(SUBSCRIPTION_PAYMENT_FROM_KEY)
@@ -70,7 +89,7 @@ watch([reference, status, statusPending], async ([ref, current, pending]) => {
   if (!active && current?.subscription?.status === 'pending') {
     try {
       const result = await syncPending()
-      active = result?.success === true && result.status === 'active'
+      active = result?.status === 'active'
     }
     catch {
       // not confirmed: offer to pay again below
@@ -78,6 +97,7 @@ watch([reference, status, statusPending], async ([ref, current, pending]) => {
   }
   const destination = active ? back.value.done : back.value.retry
   forgetPayment()
+  if (active) await loadNextPage()
   await navigateTo(destination, { replace: true })
 }, { immediate: true })
 
@@ -89,7 +109,8 @@ const outcome = computed<'checking' | 'paid' | 'failed' | 'pending' | 'unknown' 
   // 404: no payment with this reference on this account (an old or mistyped link)
   if (checkFailed.value) return (checkError.value as { status?: number } | null)?.status === 404 ? 'unknown' : 'unreachable'
   const state = result.value?.status
-  if (result.value?.success === true && state === 'active') return 'paid'
+  // "active" is the answer; the API's success flag once went missing on it and the page waited forever.
+  if (state === 'active') return 'paid'
   if (state === 'failed' || state === 'abandoned' || state === 'cancelled') return 'failed'
   return 'pending'
 })
@@ -102,11 +123,7 @@ watch(outcome, async (now) => {
   if (now !== 'paid') return
   const destination = back.value.done
   forgetPayment()
-  await Promise.all([
-    queryClient.invalidateQueries({ queryKey: queryKeys.subscription.status }),
-    queryClient.invalidateQueries({ queryKey: queryKeys.subscription.pricing }),
-    queryClient.invalidateQueries({ queryKey: queryKeys.lawyerOnboarding.status }),
-  ])
+  await loadNextPage()
   await navigateTo(destination, { replace: true })
 }, { immediate: true })
 

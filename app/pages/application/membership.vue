@@ -168,7 +168,7 @@ async function confirmPendingPayment() {
   confirmingPendingPayment.value = true
   try {
     const result = await syncPendingSubscription()
-    if (result?.success && result.status === 'active') {
+    if (result?.status === 'active') {
       toast.success('Payment confirmed', {
         description: 'Taking you to your application status.',
       })
