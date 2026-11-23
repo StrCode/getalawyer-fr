@@ -1,4 +1,5 @@
 import type { ApplicationSectionKey } from '~/lib/setup-paths'
+import { refundNeedsBankAccount } from '~/lib/refund-bank-account'
 
 /**
  * A correction the review team has asked for, as the application pages show it.
@@ -48,13 +49,15 @@ export function resubmitLabel(correction: ApplicationCorrection, formatNaira: (a
 }
 
 /** Where the money stands once an application is closed or withdrawn. */
-export type ReturnedMembership = 'owed' | 'refunding' | 'refunded' | 'none'
+/** `bank_account`: on its way, but Paystack needs a bank account from the lawyer to pay it into. */
+export type ReturnedMembership = 'owed' | 'refunding' | 'bank_account' | 'refunded' | 'none'
 
 export function returnedMembership(
-  subscription: { status: string, refundDueAt?: string | null } | null | undefined,
+  subscription: { status: string, refundDueAt?: string | null, lastFailureReason?: string | null } | null | undefined,
 ): ReturnedMembership {
   if (!subscription) return 'none'
   if (subscription.status === 'refunded') return 'refunded'
+  if (refundNeedsBankAccount(subscription)) return 'bank_account'
   if (subscription.status === 'refund_processing') return 'refunding'
   // Paystack did not take it the first time: our team sends it again.
   if (subscription.status === 'verification_failed') return 'owed'

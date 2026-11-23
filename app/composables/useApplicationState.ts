@@ -34,7 +34,7 @@ export function useApplicationState(options?: {
   const subscription = computed(() => subscriptionQuery.data.value?.subscription ?? null)
   const returned = computed(() => returnedMembership(subscription.value))
   watchEffect(() => {
-    refundPending.value = over.value && (returned.value === 'owed' || returned.value === 'refunding')
+    refundPending.value = over.value && (returned.value === 'owed' || returned.value === 'refunding' || returned.value === 'bank_account')
   })
 
   const state = computed<ApplicationState>(() => applicationStateOf({

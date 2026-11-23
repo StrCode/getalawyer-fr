@@ -10,6 +10,8 @@ describe('membershipMode', () => {
     expect(membershipMode({ status: 'expired' }, false)).toBe('ended')
     expect(membershipMode({ status: 'cancelled' }, false)).toBe('ended')
     expect(membershipMode({ status: 'refund_processing' }, false)).toBe('refunding')
+    expect(membershipMode({ status: 'refund_processing', lastFailureReason: 'refund.needs-attention: customer bank details required' }, false)).toBe('refund_bank_account')
+    expect(membershipMode({ status: 'refund_processing', lastFailureReason: 'refund.bank-account-given: Guaranty Trust Bank ••6789' }, false)).toBe('refunding')
     expect(membershipMode({ status: 'verification_failed' }, false)).toBe('refund_stuck')
     expect(membershipMode({ status: 'refunded' }, false)).toBe('refunded')
     expect(membershipMode({ status: 'active', refundDueAt: '2026-11-22T10:00:00Z' }, true)).toBe('refund_due')
@@ -25,6 +27,7 @@ describe('what each situation allows', () => {
     expect(['none', 'unfinished', 'payment_issue', 'ended', 'refunded'].every(m => canPayFor(m as never))).toBe(true)
     expect(canPayFor('active')).toBe(false)
     expect(canPayFor('refunding')).toBe(false)
+    expect(canPayFor('refund_bank_account')).toBe(false)
     expect(canPayFor('refund_due')).toBe(false)
     expect(canPayFor('refund_stuck')).toBe(false)
   })
@@ -55,7 +58,7 @@ describe('membershipHeadline', () => {
   })
 
   it('has words for every situation, with or without a date', () => {
-    for (const mode of ['none', 'unfinished', 'active', 'payment_issue', 'ended', 'refunding', 'refund_stuck', 'refunded'] as const) {
+    for (const mode of ['none', 'unfinished', 'active', 'payment_issue', 'ended', 'refunding', 'refund_bank_account', 'refund_stuck', 'refunded'] as const) {
       const h = membershipHeadline(mode)
       expect(h.lead && h.accent && h.detail).toBeTruthy()
       expect(`${h.lead} ${h.accent} ${h.detail}`).not.toMatch(/undefined|null/)

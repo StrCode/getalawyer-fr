@@ -7,6 +7,8 @@
  * about (`MembershipMode`): is it on, is a payment needed, is money coming back.
  */
 
+import { refundNeedsBankAccount } from '~/lib/refund-bank-account'
+
 export type MembershipMode
   = | 'none' // never paid
     | 'unfinished' // a checkout was started and not completed
@@ -15,10 +17,11 @@ export type MembershipMode
     | 'ended' // expired or cancelled
     | 'refund_due' // not approved, or withdrawn: our team will send the payment back
     | 'refunding' // the membership payment is being returned
+    | 'refund_bank_account' // being returned, but Paystack needs a bank account from the lawyer
     | 'refund_stuck' // the refund could not be sent automatically
     | 'refunded'
 
-interface StatusLike { status: string, refundDueAt?: string | null }
+interface StatusLike { status: string, refundDueAt?: string | null, lastFailureReason?: string | null }
 
 /**
  * `hasActive` is the backend's own answer to "is this membership on right now".
@@ -33,7 +36,7 @@ export function membershipMode(subscription: StatusLike | null | undefined, hasA
     case 'failed_renewal': return 'payment_issue'
     case 'expired':
     case 'cancelled': return 'ended'
-    case 'refund_processing': return 'refunding'
+    case 'refund_processing': return refundNeedsBankAccount(subscription) ? 'refund_bank_account' : 'refunding'
     case 'verification_failed': return 'refund_stuck'
     case 'refunded': return 'refunded'
     default: return hasActive ? 'active' : 'none'
@@ -109,6 +112,12 @@ export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts 
         accent: 'is on its way.',
         detail: 'We are returning your membership payment. It can take up to 10 business days to reach your account.',
       }
+    case 'refund_bank_account':
+      return {
+        lead: 'Your refund',
+        accent: 'needs a bank account.',
+        detail: 'It cannot go back the way you paid, for example a bank transfer, USSD, or a card that has since been closed. Add the account it should be paid into below.',
+      }
     case 'refund_stuck':
       return {
         lead: 'Your refund',
@@ -172,6 +181,8 @@ export function membershipTile(mode: MembershipMode, facts: MembershipFacts = {}
       return { lead: 'Refund being arranged.', detail: 'You will get an email when it has been sent.', action: 'See the refund' }
     case 'refunding':
       return { lead: 'Refund on its way.', detail: 'It can take up to 10 business days to reach your account.', action: 'See the refund' }
+    case 'refund_bank_account':
+      return { lead: 'Refund needs a bank account.', detail: 'Add the account it should be paid into.', action: 'Add a bank account' }
     case 'refund_stuck':
       return { lead: 'Refund needs our help.', detail: 'Our team has been told and will complete it.', action: 'See the refund' }
     case 'refunded':
