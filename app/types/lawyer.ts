@@ -38,13 +38,6 @@ export interface LawyerSpecialization {
   yearsOfExperience: number
 }
 
-export interface LawyerDocument {
-  id: string
-  type: 'bar_license' | 'certification'
-  url: string
-  originalName: string | null
-}
-
 export interface PublicConsultationType {
   id: string
   name: string
@@ -98,7 +91,6 @@ export interface LawyerProfile {
   profile?: LawyerPublicProfileSections
   /** Published articles from GET /api/lawyers/:id → data.articles */
   articles?: LawyerProfileArticle[]
-  documents: LawyerDocument[]
   consultationTypes: PublicConsultationType[]
   availability: LawyerAvailability
   createdAt: string

@@ -43,7 +43,6 @@ function lawyer(overrides: Partial<LawyerProfile> = {}): LawyerProfile {
     professionalInfo: null,
     practiceInfo: null,
     specializations: [],
-    documents: [],
     consultationTypes: [],
     availability: { schedule: [], exceptions: [] },
     createdAt: '2024-01-01T00:00:00.000Z',
