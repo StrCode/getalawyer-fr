@@ -106,22 +106,6 @@
   /* Keyboard focus: brand green on the page, lime on forest, ink on lime. */
   .canopy :focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; border-radius: 8px; }
 
-  /*
-   * Autofill. Browsers paint a filled-in field pale blue, and only the input
-   * itself: in a field with a button beside it (show password) the tint stops
-   * short and its square corners cut into the rounded border. Paint the input
-   * in the field's own colour instead and keep the text colour. The focus ring
-   * (a box-shadow too) is kept alongside.
-   */
-  .canopy input:-webkit-autofill,
-  .canopy input:-webkit-autofill:hover,
-  .canopy input:-webkit-autofill:focus,
-  .canopy textarea:-webkit-autofill,
-  .canopy select:-webkit-autofill {
-    -webkit-text-fill-color: var(--foreground);
-    caret-color: var(--foreground);
-    box-shadow: 0 0 0 1000px var(--card) inset, var(--tw-ring-shadow, 0 0 #0000) !important;
-  }
   .canopy [data-surface="forest"] :focus-visible { outline-color: var(--lime); }
   .canopy [data-surface="lime"] :focus-visible { outline-color: var(--night); }
 
@@ -169,4 +153,29 @@
 html[data-density="compact"] .canopy [data-slot="button"] {
   font-size: var(--text-sm);
   line-height: var(--text-sm--line-height);
+}
+
+/*
+ * Autofill. Browsers tint a field they filled in (pale blue in light mode, a
+ * bright blue in some dark ones), and only the input itself: in a field with a
+ * button beside it (show password) the tint stops short and its square corners
+ * cut into the rounded border. Keep the field's own look instead.
+ *
+ * Outside the layers on purpose, like the rule above, so no utility outranks it.
+ * Browsers lock their autofill background, so it is covered, not replaced:
+ * - a 1000px inner shadow in the field colour, with the focus ring kept on top;
+ * - `filter: none` for Firefox, which tints with a filter rather than a colour;
+ * - a 9999-second transition, which holds the browser's colour off for good
+ *   where the shadow alone does not hide it;
+ * - both selectors: `:autofill` is the standard, `:-webkit-autofill` what older
+ *   Safari knows. `:is()` ignores the one a browser does not understand.
+ * A password manager that paints the field itself (an inline style or a layer
+ * on top) is beyond what a page can change.
+ */
+.canopy :is(input, textarea, select):is(:-webkit-autofill, :autofill) {
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  box-shadow: 0 0 0 1000px var(--card) inset, var(--tw-ring-shadow, 0 0 #0000) !important;
+  filter: none !important;
+  transition: background-color 9999s ease-out, color 9999s ease-out;
 }
