@@ -679,7 +679,7 @@ const panel = 'rounded-card border border-border bg-card'
           </li>
           <li class="flex gap-2.75">
             <CanopyGlyph name="tick" :size="19" class="mt-0.75 flex-none text-brand" />
-            <span>We send that {{ cardCheck ?? 'amount' }} straight back. A refund can take a few working days to show on your statement.</span>
+            <span>We send that {{ cardCheck ?? 'amount' }} straight back. A refund can take up to 10 business days to show on your statement.</span>
           </li>
           <li class="flex gap-2.75">
             <CanopyGlyph name="calendar" :size="19" class="mt-0.75 flex-none text-brand" />

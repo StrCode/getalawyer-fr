@@ -107,7 +107,7 @@ export function membershipHeadline(mode: MembershipMode, facts: MembershipFacts 
       return {
         lead: 'Your refund',
         accent: 'is on its way.',
-        detail: 'We are returning your membership payment. It can take a few working days to reach your account.',
+        detail: 'We are returning your membership payment. It can take up to 10 business days to reach your account.',
       }
     case 'refund_stuck':
       return {
@@ -171,7 +171,7 @@ export function membershipTile(mode: MembershipMode, facts: MembershipFacts = {}
     case 'refund_due':
       return { lead: 'Refund being arranged.', detail: 'You will get an email when it has been sent.', action: 'See the refund' }
     case 'refunding':
-      return { lead: 'Refund on its way.', detail: 'It can take a few working days to reach your account.', action: 'See the refund' }
+      return { lead: 'Refund on its way.', detail: 'It can take up to 10 business days to reach your account.', action: 'See the refund' }
     case 'refund_stuck':
       return { lead: 'Refund needs our help.', detail: 'Our team has been told and will complete it.', action: 'See the refund' }
     case 'refunded':
@@ -206,7 +206,7 @@ export function cardChangeNotice(outcome: CardChangeOutcome, facts: { cardLine?:
   const check = facts.check ? `${facts.check} check` : 'check charge'
   const refundLine = outcome.refund === 'failed'
     ? `We could not send the ${check} back automatically. Our team has been told and will return it.`
-    : `The ${check} is on its way back to that card. Refunds can take a few working days to show.`
+    : `The ${check} is on its way back to that card. Refunds can take up to 10 business days to show.`
   switch (outcome.status) {
     case 'changed':
       return {
