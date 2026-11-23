@@ -1,112 +1,102 @@
 <template>
-  <div class="grid grid-cols-1 gap-4 lg:gap-5 xl:gap-6">
-    <SettingsSectionCard
-      v-if="needsLinkEmail"
-      title="Email address"
-      description="Add an email to get notices about your bookings and to recover your account."
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-muted-foreground">You sign in with your phone. An email lets you get notices and recover your account.</p>
-        <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">Add an email</Button>
-      </div>
-    </SettingsSectionCard>
+  <section class="overflow-hidden rounded-card border border-border bg-card">
+    <header class="border-b border-border px-4.5 py-4.5 lg:px-5.75 xl:px-6">
+      <h2 class="font-display text-lg font-normal tracking-tight">Sign-in details</h2>
+      <p class="mt-0.75 text-sm text-muted-foreground">How you sign in, and where we send notices about your account.</p>
+    </header>
 
-    <SettingsSectionCard
-      v-else-if="needsVerifyEmail"
-      title="Email address"
-      description="Confirm your email to get notices about your bookings and your account."
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="min-w-0">
-          <p class="truncate font-medium">{{ session?.user?.email }}</p>
-          <p class="mt-0.5 text-sm text-muted-foreground">Not confirmed yet</p>
-        </div>
-        <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">Confirm your email</Button>
-      </div>
-    </SettingsSectionCard>
+    <div class="divide-y divide-border">
+      <!-- Email: add one (phone sign-ups), confirm it, or see it confirmed -->
+      <SettingsRow
+        label="Email address"
+        :hint="needsLinkEmail ? 'For notices and to recover your account.' : 'You sign in with it.'"
+      >
+        <template v-if="needsLinkEmail">
+          <span class="text-muted-foreground">None yet</span>
+        </template>
+        <template v-else>
+          <span class="min-w-0 truncate">{{ session?.user?.email }}</span>
+          <span :class="needsVerifyEmail ? pending : confirmed">{{ needsVerifyEmail ? 'Not confirmed' : 'Confirmed' }}</span>
+        </template>
+        <template v-if="needsLinkEmail || needsVerifyEmail" #action>
+          <Button type="button" variant="canopy" size="pill-sm" @click="openDialog">{{ needsLinkEmail ? 'Add an email' : 'Confirm it' }}</Button>
+        </template>
+      </SettingsRow>
 
-    <SettingsSectionCard
-      v-else
-      title="Email address"
-      description="You sign in with it, and notices about your account go to it."
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="min-w-0 truncate font-medium">{{ session?.user?.email }}</p>
-        <span class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Confirmed</span>
-      </div>
-    </SettingsSectionCard>
+      <!-- Phone: confirmed with a code sent by text -->
+      <SettingsRow label="Mobile number" hint="To sign in with it and get texts about bookings.">
+        <template v-if="phoneVerified">
+          <span class="tabular-nums">{{ phoneForm.state.values.phone }}</span>
+          <span :class="confirmed">Confirmed</span>
+        </template>
+        <span v-else class="text-muted-foreground">{{ addingPhone ? 'We text a 6-digit code to it.' : 'Not added' }}</span>
+        <template v-if="!phoneVerified && !addingPhone" #action>
+          <Button type="button" variant="line" size="pill-sm" @click="addingPhone = true">Add a number</Button>
+        </template>
+        <template v-if="!phoneVerified && addingPhone" #more>
+          <form novalidate class="flex flex-col gap-3 sm:flex-row sm:items-start" @submit.prevent="phoneForm.handleSubmit">
+            <phoneForm.Field v-slot="{ field }" name="phone">
+              <Field :class="[canopyField, 'min-w-0 flex-1']" :data-invalid="isInvalid(field)">
+                <AuthPhoneInput
+                  label=""
+                  :model-value="field.state.value"
+                  :invalid="isInvalid(field)"
+                  :disabled="isSendingOtp"
+                  @blur="field.handleBlur"
+                  @update:model-value="(v: string) => field.handleChange(v ?? '')"
+                />
+                <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
+              </Field>
+            </phoneForm.Field>
+            <div class="flex flex-none gap-2">
+              <Button type="submit" variant="canopy" size="pill" :disabled="isSendingOtp" :aria-busy="isSendingOtp">
+                {{ isSendingOtp ? 'Sending…' : otpSent ? 'Send a new code' : 'Send a code' }}
+              </Button>
+              <Button type="button" variant="line" size="pill" :disabled="isSendingOtp || isVerifying" @click="cancelPhone">Cancel</Button>
+            </div>
+          </form>
 
-    <SettingsSectionCard
-      title="Phone number"
-      description="Confirm your mobile number to sign in with it and get text messages about your bookings."
-    >
-      <div v-if="phoneVerified" class="flex flex-wrap items-center justify-between gap-3">
-        <p class="min-w-0 font-medium tabular-nums">{{ phoneForm.state.values.phone }}</p>
-        <span class="rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep">Confirmed</span>
-      </div>
+          <div v-if="otpSent" class="mt-4 grid gap-3.25">
+            <AuthOtpStep
+              v-model="otpCode"
+              :error="otpError"
+              :blocked="otpBlocked"
+              :is-submitting="isVerifying"
+              :is-resending="isSendingOtp"
+              @resend="sendCode"
+              @request-new-code="sendCode"
+            />
+            <AuthDevOtpHint />
+          </div>
+          <p v-if="linkError" role="alert" class="mt-2.75 text-sm font-medium text-destructive">{{ linkError }}</p>
+        </template>
+      </SettingsRow>
 
-      <template v-else>
-        <form novalidate class="flex flex-col gap-3 sm:flex-row sm:items-start" @submit.prevent="phoneForm.handleSubmit">
-          <phoneForm.Field v-slot="{ field }" name="phone">
-            <Field :class="[canopyField, 'min-w-0 flex-1']" :data-invalid="isInvalid(field)">
-              <AuthPhoneInput
-                label="Mobile number"
-                :model-value="field.state.value"
-                :invalid="isInvalid(field)"
-                :disabled="isSendingOtp"
-                @blur="field.handleBlur"
-                @update:model-value="(v: string) => field.handleChange(v ?? '')"
-              />
-              <FieldError v-if="isInvalid(field)" :errors="field.state.meta.errors" />
-            </Field>
-          </phoneForm.Field>
-          <Button type="submit" variant="line" size="pill" class="flex-none sm:mt-7.5" :disabled="isSendingOtp" :aria-busy="isSendingOtp">
-            {{ isSendingOtp ? 'Sending…' : otpSent ? 'Send a new code' : 'Send a code' }}
-          </Button>
-        </form>
-
-        <div v-if="otpSent" class="mt-4 grid gap-3.25">
-          <AuthOtpStep
-            v-model="otpCode"
-            :error="otpError"
-            :blocked="otpBlocked"
-            :is-submitting="isVerifying"
-            :is-resending="isSendingOtp"
-            @resend="sendCode"
-            @request-new-code="sendCode"
-          />
-          <AuthDevOtpHint />
-        </div>
-        <p v-if="linkError" role="alert" class="mt-2.75 text-sm font-medium text-destructive">{{ linkError }}</p>
-      </template>
-    </SettingsSectionCard>
-
-    <SettingsSectionCard
-      title="Password"
-      description="You need your current password to choose a new one."
-    >
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <p class="text-muted-foreground">Choose a new password at any time.</p>
-        <Button type="button" variant="line" size="pill-sm" @click="changePasswordOpen = true">Change password</Button>
-      </div>
-    </SettingsSectionCard>
+      <SettingsRow label="Password" hint="You need your current one to choose a new one.">
+        <span class="tracking-widest text-muted-foreground" aria-label="Set">••••••••</span>
+        <template #action>
+          <Button type="button" variant="line" size="pill-sm" @click="changePasswordOpen = true">Change password</Button>
+        </template>
+      </SettingsRow>
+    </div>
 
     <SettingsChangePasswordDialog v-model="changePasswordOpen" />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { codeErrorMessage } from '~/lib/code-errors'
 import { useForm } from '@tanstack/vue-form'
 import SettingsChangePasswordDialog from '@/components/settings/SettingsChangePasswordDialog.vue'
-import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
+import SettingsRow from '@/components/settings/SettingsRow.vue'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError } from '@/components/ui/field'
 import { phoneToVerifySchema } from '~/lib/client-profile-forms'
 
 /**
- * Sign-in details: the email (add it, confirm it, or see it confirmed), the
- * phone number (confirmed with a code sent by text), and the password. The
+ * Sign-in details as one panel of rows, as on the other dashboard pages: the
+ * email (add it, confirm it, or see it confirmed), the phone number (confirmed
+ * with a code sent by text), and the password. The
  * phone number is a TanStack form; sending it asks for a code, and typing the
  * six digits confirms it.
  */
@@ -116,6 +106,19 @@ const { needsLinkEmail, needsVerifyEmail } = useEmailVerificationPrompt()
 const { openDialog } = useEmailVerificationDialog()
 
 const changePasswordOpen = ref(false)
+/** The phone form opens on asking, not as an empty field on every visit. */
+const addingPhone = ref(false)
+
+const confirmed = 'rounded-full bg-mint px-2.5 py-0.5 text-xs font-medium text-deep'
+const pending = 'rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground'
+
+function cancelPhone() {
+  addingPhone.value = false
+  otpSent.value = false
+  otpCode.value = ''
+  otpError.value = ''
+  linkError.value = ''
+}
 
 const otpSent = ref(false)
 const otpCode = ref('')

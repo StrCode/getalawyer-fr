@@ -1,54 +1,34 @@
 <template>
-  <div class="space-y-6">
-    <SettingsSectionCard
-      title="Help & support"
-      description="Get answers or reach our team."
-    >
-      <ul class="divide-y divide-border/80">
-        <li class="flex items-center justify-between gap-4 py-4 first:pt-0">
-          <div>
-            <p class="text-sm font-medium text-foreground">
-              Contact us
-            </p>
-            <p class="text-xs text-muted-foreground">
-              Questions about bookings, your account, or using GetALawyer
-            </p>
-          </div>
-          <Button
-            as-child
-            variant="outline"
-            size="sm"
-          >
-            <NuxtLink to="/contact">
-              Open form
-            </NuxtLink>
+  <section class="overflow-hidden rounded-card border border-border bg-card">
+    <header class="border-b border-border px-4.5 py-4.5 lg:px-5.75 xl:px-6">
+      <h2 class="font-display text-lg font-normal tracking-tight">Help & support</h2>
+      <p class="mt-0.75 text-sm text-muted-foreground">Questions about bookings, your account or how getalawyer works.</p>
+    </header>
+
+    <div class="divide-y divide-border">
+      <SettingsRow label="Write to us" hint="Tell us what it is about on the contact page.">
+        <template #action>
+          <Button as-child variant="line" size="pill-sm">
+            <NuxtLink to="/contact">Open the form</NuxtLink>
           </Button>
-        </li>
-        <li class="flex items-center justify-between gap-4 py-4 last:pb-0">
-          <div>
-            <p class="text-sm font-medium text-foreground">
-              Email support
-            </p>
-            <p class="text-xs text-muted-foreground">
-              {{ SUPPORT_EMAIL }}
-            </p>
-          </div>
-          <Button
-            as-child
-            variant="outline"
-            size="sm"
-          >
-            <a :href="`mailto:${SUPPORT_EMAIL}`">
-              Email
-            </a>
+        </template>
+      </SettingsRow>
+
+      <SettingsRow label="Email support" hint="From your own email app.">
+        <a :href="`mailto:${SUPPORT_EMAIL}`" class="min-w-0 truncate font-medium text-brand underline underline-offset-3">{{ SUPPORT_EMAIL }}</a>
+        <template #action>
+          <Button as-child variant="line" size="pill-sm">
+            <a :href="`mailto:${SUPPORT_EMAIL}`">Email us</a>
           </Button>
-        </li>
-      </ul>
-    </SettingsSectionCard>
-  </div>
+        </template>
+      </SettingsRow>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import SettingsSectionCard from '@/components/settings/SettingsSectionCard.vue'
+import SettingsRow from '@/components/settings/SettingsRow.vue'
 import { Button } from '@/components/ui/button'
+
+/** Ways to reach a person, in the same rows as the sign-in details. */
 </script>
