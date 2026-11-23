@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LegalAcceptanceFields from '~/components/onboarding/LegalAcceptanceFields.vue'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useClientOnboarding } from '~/composables/useClientOnboarding'
 import { useClientOnboardingStore } from '~/stores/clientOnboardingStore'
@@ -25,7 +26,7 @@ watch(() => store.termsError, (error) => {
 // The shared practice-area query (a plain list). A copy of it in
 // useClientOnboarding used the same cache key with a different shape, so after
 // any page that had loaded the shared one, this step showed no areas.
-const { data, isPending } = useSpecializations()
+const { data, isPending, isError, isFetching, refetch } = useSpecializations()
 const areas = computed(() => data.value ?? [])
 
 const query = ref('')
@@ -63,6 +64,15 @@ const lastPicked = computed(() => {
 
     <div v-if="isPending" class="mt-6.5 flex flex-wrap gap-1.5" aria-busy="true" aria-label="Loading practice areas">
       <Skeleton v-for="n in 9" :key="n" class="h-10.5 w-32 rounded-full" />
+    </div>
+
+    <!-- The list could not be loaded: say so, rather than "No practice area matches". -->
+    <div v-else-if="isError && !areas.length" role="alert" class="mt-6.5 grid justify-items-start gap-2.75 rounded-card border border-dashed border-border p-6">
+      <p class="font-medium">We could not load the practice areas.</p>
+      <p class="text-muted-foreground">Check your connection and try again.</p>
+      <Button variant="line" size="pill-sm" :disabled="isFetching" @click="refetch()">
+        {{ isFetching ? 'Trying again…' : 'Try again' }}
+      </Button>
     </div>
 
     <template v-else>

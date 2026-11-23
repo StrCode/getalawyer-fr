@@ -7,6 +7,8 @@ interface PageSeo {
   description: MaybeRefOrGetter<string>
   /** The title on share cards and the share image, when it should differ from the page title. */
   shareTitle?: MaybeRefOrGetter<string>
+  /** A shorter line for the share image, when the description is too long to sit under the title in large type. */
+  shareDescription?: MaybeRefOrGetter<string>
   /** A short label above the title on the share image (a practice area, "For lawyers"). */
   eyebrow?: MaybeRefOrGetter<string>
   /** A person's photo for the share image (a lawyer's profile). */
@@ -38,7 +40,7 @@ export function usePageSeo(seo: PageSeo) {
 
   defineOgImage('Canopy', {
     title: shareTitle,
-    description,
+    description: () => toValue(seo.shareDescription ?? seo.description),
     eyebrow: () => toValue(seo.eyebrow) ?? '',
     photo: () => toValue(seo.photo) ?? '',
   })

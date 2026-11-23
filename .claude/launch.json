@@ -4,15 +4,30 @@
     {
       "name": "getalawyer-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3002,
       "autoPort": true
     },
     {
       "name": "getalawyer-audit",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "NUXT_PUBLIC_API_URL=http://localhost:3004 NUXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3004/api/auth npm run dev"],
+      "runtimeArgs": [
+        "-c",
+        "NUXT_PUBLIC_API_URL=http://localhost:3004 NUXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3004/api/auth npm run dev"
+      ],
       "port": 3002
+    },
+    {
+      "name": "getalawyer-admin",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd ../getalawyer-admin && npx nuxt dev --port 3000"
+      ],
+      "port": 3000
     }
   ]
 }
