@@ -5,7 +5,9 @@ import { pickTurn } from '~/lib/take-turns'
 /**
  * Lawyers on the homepage, with the two checks every lawyer passes before being
  * listed. The cards show real lawyers only: they need four listed lawyers with a
- * photo, and stay away below that (no stand-ins); the heading and checks remain.
+ * photo. Below that the whole section stays away (no stand-ins, and no promise
+ * of lawyers with none to show); only the gap it leaves between the practice
+ * areas and "How it works" remains.
  *
  * The four change every hour, working through everyone eligible in turn, so no
  * lawyer holds the homepage. The pool is the first POOL lawyers the directory
@@ -33,9 +35,8 @@ defineExpose({ ready })
 </script>
 
 <template>
-  <!-- The heading and the two checks always show; the cards join them once there
-       are four real lawyers with photos. -->
-  <section id="lawyers" class="scroll-mt-24 py-14 lg:py-18 xl:py-22.5">
+  <!-- Only once there are four real lawyers with photos to show. -->
+  <section v-if="ready" id="lawyers" class="scroll-mt-24 py-14 lg:py-18 xl:py-22.5">
     <CanopySectionHead title="Real lawyers. Checked before you meet them.">
       <div class="grid min-w-0 grow-0 basis-116 justify-items-start gap-3.5">
         <p class="text-muted-foreground">Nobody is listed until we check two things.</p>
@@ -54,8 +55,10 @@ defineExpose({ ready })
         </Button>
       </div>
     </CanopySectionHead>
-    <div v-if="ready" class="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4.5 [scrollbar-width:thin] max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-3.5 max-sm:overflow-x-auto max-sm:pb-2.5">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4.5 [scrollbar-width:thin] max-sm:flex max-sm:snap-x max-sm:snap-mandatory max-sm:gap-3.5 max-sm:overflow-x-auto max-sm:pb-2.5">
       <CanopyLawyerCard v-for="lawyer in featured" :key="lawyer.id" :lawyer="lawyer" />
     </div>
   </section>
+  <!-- Without it, the space it kept between the sections above and below. -->
+  <div v-else aria-hidden="true" class="pt-14 lg:pt-18 xl:pt-22.5" />
 </template>
