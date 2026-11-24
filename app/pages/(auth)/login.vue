@@ -148,6 +148,7 @@ import { authClient } from '~/lib/auth-client'
 import { isValidNgPhone } from '~/lib/phone'
 import { isOnboardingIncomplete, type SessionUserWithOnboarding } from '~/lib/session-user'
 import { setupHomeFor } from '~/lib/setup-paths'
+import { googleReturn, socialSignInError } from '~/lib/social-sign-in'
 
 definePageMeta({
   layout: 'auth',
@@ -205,7 +206,8 @@ const loginSchema = z.object({
 
 const isSubmitting = ref(false)
 const socialProvider = ref<'google' | null>(null)
-const apiError = ref('')
+// Back from Google with an error (Better Auth adds ?error=<code>): say what happened.
+const apiError = ref(socialSignInError(route.query.error) ?? '')
 
 const form = useForm({
   defaultValues: {
@@ -367,9 +369,11 @@ const handleSocialLogin = async (provider: 'google') => {
   apiError.value = ''
 
   try {
+    // Full addresses on this site: Google returns through the API's address.
+    const back = redirectAfterLogin.value === '/dashboard' ? '/login' : `/login?redirect=${encodeURIComponent(redirectAfterLogin.value)}`
     await authClient.signIn.social({
       provider,
-      callbackURL: redirectAfterLogin.value,
+      ...googleReturn(redirectAfterLogin.value, back, window.location.origin),
     })
   }
   catch (err: unknown) {

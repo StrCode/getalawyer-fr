@@ -121,6 +121,7 @@ import { authClient } from '~/lib/auth-client'
 import { ApiError } from '~/lib/api/client'
 import { invitationsAPI, type InvitationSummary } from '~/lib/api/invitations'
 import { APPLICATION_HOME, WELCOME_HOME } from '~/lib/setup-paths'
+import { googleReturn, socialSignInError } from '~/lib/social-sign-in'
 
 /**
  * Accepting an invitation from our staff. The link proves the address is
@@ -189,7 +190,8 @@ const schema = z.object({
 
 const isSubmitting = ref(false)
 const googling = ref(false)
-const apiError = ref('')
+// Back from Google with an error (Better Auth adds ?error=<code>): say what happened.
+const apiError = ref(socialSignInError(route.query.error) ?? '')
 
 const form = useForm({
   defaultValues: { name: '', password: '' },
@@ -243,7 +245,8 @@ async function continueWithGoogle() {
   googling.value = true
   apiError.value = ''
   try {
-    await authClient.signIn.social({ provider: 'google', callbackURL: WELCOME_HOME })
+    // Full addresses on this site: Google returns through the API's address.
+    await authClient.signIn.social({ provider: 'google', ...googleReturn(WELCOME_HOME, route.path, window.location.origin) })
   }
   catch (err: unknown) {
     apiError.value = err instanceof Error ? err.message : 'Could not continue with Google.'

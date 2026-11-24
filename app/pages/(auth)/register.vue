@@ -246,6 +246,7 @@
 
 <script setup lang="ts">
 import { codeErrorMessage } from '~/lib/code-errors'
+import { googleReturn, socialSignInError } from '~/lib/social-sign-in'
 import { useForm } from '@tanstack/vue-form'
 import { z } from 'zod'
 import { Input } from '@/components/ui/input'
@@ -279,7 +280,9 @@ const selectedRole = ref<'client' | 'lawyer' | undefined>(
       ? 'client'
       : undefined,
 )
-const step = ref<'role' | 'form' | 'verify'>('role')
+// Back from Google with an error: straight to the client form, with the reason.
+const googleError = socialSignInError(route.query.error)
+const step = ref<'role' | 'form' | 'verify'>(googleError && selectedRole.value === 'client' ? 'form' : 'role')
 const authMethod = ref<'email' | 'phone'>('email')
 
 // Tell the layout's brand panel who is signing up, so it can speak to them.
@@ -364,7 +367,7 @@ const registerSchema = z.object({
 })
 
 const isSubmitting = ref(false)
-const apiError = ref('')
+const apiError = ref(googleError ?? '')
 const socialProvider = ref<'google' | null>(null)
 
 // Same Better Auth social flow as login: signIn.social creates the account
@@ -375,9 +378,10 @@ const handleSocialSignup = async (provider: 'google') => {
   isSubmitting.value = true
   apiError.value = ''
   try {
+    // Full addresses on this site: Google returns through the API's address.
     await authClient.signIn.social({
       provider,
-      callbackURL: '/dashboard',
+      ...googleReturn('/dashboard', '/register?role=client', window.location.origin),
     })
   }
   catch (err: unknown) {
