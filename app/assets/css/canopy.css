@@ -16,6 +16,7 @@
     /* brand: fixed in both themes */
     --forest: #0B3327;
     --forest-2: #124435;
+    --forest-night: #061B14; /* green so dark it reads as black: the homepage hero and the lawyer call */
     --on-forest: #C7D8CE;
     --lime: #CDF36B;
     --night: #171717;       /* text on lime */

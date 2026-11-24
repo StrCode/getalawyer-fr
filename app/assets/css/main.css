@@ -109,6 +109,7 @@
   /* brand tokens (defined on body.canopy in canopy.css) */
   --color-forest: var(--forest);
   --color-forest-2: var(--forest-2);
+  --color-forest-night: var(--forest-night);
   --color-on-forest: var(--on-forest);
   --color-lime: var(--lime);
   --color-night: var(--night);
@@ -314,11 +315,11 @@
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-/* Hero photo (wide screens): melts into the green panel on the left and at the foot. */
+/* Hero photo (wide screens): melts into the near-black green panel on the left and at the foot. */
 @utility hero-photo-fade {
   background:
-    linear-gradient(90deg, var(--forest) 0%, rgba(11, 51, 39, 0.72) 16%, rgba(11, 51, 39, 0) 52%),
-    linear-gradient(0deg, rgba(11, 51, 39, 0.94) 0%, rgba(11, 51, 39, 0.6) 20%, rgba(11, 51, 39, 0) 44%);
+    linear-gradient(90deg, var(--forest-night) 0%, color-mix(in srgb, var(--forest-night) 72%, transparent) 16%, transparent 52%),
+    linear-gradient(0deg, color-mix(in srgb, var(--forest-night) 94%, transparent) 0%, color-mix(in srgb, var(--forest-night) 60%, transparent) 20%, transparent 44%);
 }
 /* Sign-in panel photo: a light forest wash behind the chip, solid forest behind the text at the foot. */
 @utility auth-photo-fade {
