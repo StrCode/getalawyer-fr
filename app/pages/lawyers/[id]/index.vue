@@ -149,6 +149,46 @@ const sectionLinks = computed(() => [
   publishedArticles.value.length && { id: 'articles', label: 'Articles' },
 ].filter(Boolean) as Array<{ id: string, label: string }>)
 
+/**
+ * The section being read: the last one whose top has passed under the
+ * section bar. At the very bottom of the page the last section counts, even
+ * when it is too short to reach the bar.
+ */
+const currentSection = ref<string | null>(null)
+const sectionBar = ref<HTMLElement | null>(null)
+/** The bar is stuck under the header (rather than in its place under the name). */
+const barStuck = ref(false)
+let spyTicking = false
+function spySections() {
+  if (spyTicking) return
+  spyTicking = true
+  requestAnimationFrame(() => {
+    spyTicking = false
+    const ids = sectionLinks.value.map(link => link.id)
+    const bar = sectionBar.value?.getBoundingClientRect()
+    const offset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--site-header-offset')) || 0
+    barStuck.value = !!bar && bar.top <= offset + 1
+    const line = (bar?.bottom ?? 0) + 24
+    let found: string | null = null
+    for (const id of ids) {
+      const top = document.getElementById(id)?.getBoundingClientRect().top
+      if (top !== undefined && top <= line) found = id
+    }
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+    currentSection.value = atBottom && ids.length ? ids[ids.length - 1]! : found ?? ids[0] ?? null
+  })
+}
+onMounted(() => {
+  window.addEventListener('scroll', spySections, { passive: true })
+  window.addEventListener('resize', spySections, { passive: true })
+  spySections()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', spySections)
+  window.removeEventListener('resize', spySections)
+})
+watch(sectionLinks, () => nextTick(spySections))
+
 function publishedOn(value: string | null) {
   if (!value) return ''
   const date = new Date(value)
@@ -184,7 +224,8 @@ function ask() {
   askOpen.value = true
 }
 
-const block = 'scroll-mt-24 pt-7 lg:pt-7.75 xl:pt-9.5'
+// Jumping to a section leaves room for the header and the section bar above it.
+const block = 'scroll-mt-[calc(var(--site-header-offset,0px)+4.5rem)] pt-7 lg:pt-7.75 xl:pt-9.5'
 const blockTitle = 'mb-3.5 text-2xl font-normal tracking-tight'
 const itemTitle = 'text-lg font-normal tracking-tight'
 const row = 'flex items-center justify-between gap-4 rounded-card border border-border bg-card px-4.75 py-4 max-sm:flex-col max-sm:items-start'
@@ -244,20 +285,32 @@ const when = 'text-sm font-medium text-muted-foreground tabular-nums'
         <div class="min-w-0">
           <CanopyProfileHead :lawyer="lawyer" :location="location" :years-at-bar="yearsExperience" :accepting="isAcceptingClients" />
 
-          <nav
+          <!-- The sections as tabs: one page, the bar sticks under the header and
+               underlines the section being read. Links, not tab panels, so every
+               section stays on the page for skimming and for search engines. -->
+          <!-- While stuck, the strip above the bar (under the header) takes the page
+               colour, so text scrolling behind the header does not peek out. -->
+          <div
             v-if="sectionLinks.length > 1"
-            aria-label="On this page"
-            class="mt-6.5 flex gap-1.25 overflow-x-auto border-b border-border pb-2 text-base font-medium text-muted-foreground [scrollbar-width:thin]"
+            ref="sectionBar"
+            class="sticky top-[var(--site-header-offset,0px)] z-20 -mx-1 mt-6.5 border-b border-border bg-background transition-[top] duration-250 ease-canopy motion-reduce:transition-none"
+            :class="barStuck && 'before:absolute before:inset-x-0 before:bottom-full before:h-[var(--site-header-offset,0px)] before:bg-background'"
           >
-            <NuxtLink
-              v-for="link in sectionLinks"
-              :key="link.id"
-              :to="{ hash: `#${link.id}` }"
-              class="inline-flex min-h-11 items-center rounded-full px-3.75 whitespace-nowrap transition-colors duration-200 hover:bg-mint hover:text-deep"
+            <nav
+              aria-label="On this page"
+              class="-mb-px flex overflow-x-auto px-1 text-base font-medium text-muted-foreground [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {{ link.label }}
-            </NuxtLink>
-          </nav>
+              <NuxtLink
+                v-for="link in sectionLinks"
+                :key="link.id"
+                :to="{ hash: `#${link.id}` }"
+                :aria-current="currentSection === link.id ? 'location' : undefined"
+                class="relative inline-flex min-h-12 flex-none items-center px-3.5 whitespace-nowrap transition-colors duration-200 hover:text-foreground aria-[current=location]:text-foreground after:absolute after:inset-x-3.5 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:transition-colors after:duration-200 aria-[current=location]:after:bg-brand"
+              >
+                {{ link.label }}
+              </NuxtLink>
+            </nav>
+          </div>
 
           <!-- the owner's own empty listing: say what to do next -->
           <section v-if="isOwnProfile && !hasProfileContent" class="mt-6.5 rounded-card border border-dashed border-border px-6 py-8 text-center">

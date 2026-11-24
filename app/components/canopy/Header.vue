@@ -57,6 +57,18 @@ const hidden = ref(false)
 const menuOpen = ref(false)
 const current = ref<string | null>(null)
 const linksEl = ref<HTMLElement | null>(null)
+const headerEl = ref<HTMLElement | null>(null)
+
+/**
+ * How much of the top of the screen the header covers right now, as the CSS
+ * variable --site-header-offset, so bars that stick below it (the profile's
+ * section bar) sit right under it, and move up when the phone header slides
+ * away.
+ */
+function publishOffset() {
+  const covered = hidden.value || !headerEl.value ? 0 : headerEl.value.offsetHeight
+  document.documentElement.style.setProperty('--site-header-offset', `${covered}px`)
+}
 const glider = ref({ width: 0, x: 0, visible: false })
 
 function moveTo(key: string | null) {
@@ -85,6 +97,7 @@ function onScroll() {
     else if (delta > 6) hidden.value = true
     else if (delta < -6) hidden.value = false
     if (Math.abs(delta) > 6 || y < 80) lastY = y
+    publishOffset()
     // Back in the hero: no section is current, so drop the highlight.
     if (route.path === '/' && window.scrollY < 300 && current.value) {
       current.value = null
@@ -118,17 +131,22 @@ function watchSections() {
 
 function setMenu(open: boolean) {
   menuOpen.value = open
-  if (open) hidden.value = false
+  if (open) {
+    hidden.value = false
+    publishOffset()
+  }
   document.documentElement.classList.toggle('overflow-hidden', open)
 }
 
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', publishOffset, { passive: true })
   onScroll()
   nextTick(watchSections)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', publishOffset)
   spy?.disconnect()
   document.documentElement.classList.remove('overflow-hidden')
 })
@@ -140,9 +158,10 @@ watch(() => route.fullPath, () => {
 
 <template>
   <header
+    ref="headerEl"
     class="sticky top-0 z-30 py-2.75 pt-[calc(0.6875rem+env(safe-area-inset-top,0px))] max-sm:border-b max-sm:py-2 max-sm:pt-[calc(0.5rem+env(safe-area-inset-top,0px))] max-sm:[transition:translate_0.25s_var(--ease-canopy),background-color_0.3s,border-color_0.3s] max-sm:motion-reduce:[transition:none]"
     :class="[stuck ? 'max-sm:border-border max-sm:bg-background' : 'max-sm:border-transparent', hidden && 'max-sm:-translate-y-full']"
-    @focusin="hidden = false"
+    @focusin="hidden = false; publishOffset()"
   >
     <div class="mx-auto max-w-site safe-x">
       <div
