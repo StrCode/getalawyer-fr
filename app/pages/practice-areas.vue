@@ -71,7 +71,7 @@ function directory(id: string) {
 
     <!-- loading -->
     <div v-if="isPending" class="mt-5.5 grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-4.5" aria-busy="true" aria-label="Loading practice areas">
-      <Skeleton v-for="n in 8" :key="n" class="h-40 rounded-card" />
+      <Skeleton v-for="n in 8" :key="n" class="h-80 rounded-card" />
     </div>
 
     <!-- could not load -->
@@ -106,15 +106,18 @@ function directory(id: string) {
         <li v-for="area in matches" :key="area.id" class="flex">
           <NuxtLink
             :to="directory(area.id)"
-            class="group/area flex w-full flex-col rounded-card border border-border bg-card p-5.25 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:border-brand hover:shadow-lift"
+            class="group/tile flex w-full flex-col rounded-card border border-border bg-card p-1.5 transition-[translate,box-shadow,border-color] duration-200 ease-canopy hover:border-brand hover:shadow-lift"
           >
-            <span class="flex items-center gap-2 text-xs font-medium tracking-widest text-brand uppercase">
-              <i class="size-2 rounded-full bg-brand" />{{ area.isFeatured ? 'Popular' : 'Practice area' }}
-            </span>
-            <b class="mt-2.5 block font-display text-xl leading-tight font-normal tracking-tight">{{ area.name }}</b>
-            <span v-if="area.description" class="mt-1.5 block text-base text-muted-foreground">{{ area.description }}</span>
-            <span class="mt-auto flex items-center justify-between gap-3 pt-4.5 text-base font-medium">
-              See lawyers<CanopyArrowChip class="group-hover/area:translate-x-0.75" />
+            <CanopyAreaPhoto :src="area.imageUrl" class="aspect-16/10" />
+            <span class="flex flex-1 flex-col px-3.75 pt-4 pb-3.75">
+              <span class="flex items-center gap-2 text-xs font-medium tracking-widest text-brand uppercase">
+                <i class="size-2 rounded-full bg-brand" />{{ area.isFeatured ? 'Popular' : 'Practice area' }}
+              </span>
+              <b class="mt-2.5 block font-display text-xl leading-tight font-normal tracking-tight">{{ area.name }}</b>
+              <span v-if="area.description" class="mt-1.5 block text-base text-muted-foreground">{{ area.description }}</span>
+              <span class="mt-auto flex items-center justify-between gap-3 pt-4.5 text-base font-medium">
+                See lawyers<CanopyArrowChip class="group-hover/tile:translate-x-0.75" />
+              </span>
             </span>
           </NuxtLink>
         </li>
