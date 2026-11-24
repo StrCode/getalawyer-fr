@@ -163,7 +163,9 @@ watch(() => route.fullPath, () => {
           >
             Sign in
           </NuxtLink>
-          <Button as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:px-4">
+          <!-- Phones, signed in: the account button and the menu leave no room, so this
+               button goes; the same link is in the menu. -->
+          <Button as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:px-4" :class="isSignedIn && 'max-sm:hidden'">
             <NuxtLink :to="primary.to">{{ primary.label }}<CanopyArrowChip class="max-sm:hidden" /></NuxtLink>
           </Button>
           <button
