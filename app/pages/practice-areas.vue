@@ -110,10 +110,7 @@ function directory(id: string) {
           >
             <CanopyAreaPhoto :src="area.imageUrl" class="aspect-16/10" />
             <span class="flex flex-1 flex-col px-3.75 pt-4 pb-3.75">
-              <span class="flex items-center gap-2 text-xs font-medium tracking-widest text-brand uppercase">
-                <i class="size-2 rounded-full bg-brand" />{{ area.isFeatured ? 'Popular' : 'Practice area' }}
-              </span>
-              <b class="mt-2.5 block font-display text-xl leading-tight font-normal tracking-tight">{{ area.name }}</b>
+              <b class="block font-display text-xl leading-tight font-normal tracking-tight">{{ area.name }}</b>
               <span v-if="area.description" class="mt-1.5 block text-base text-muted-foreground">{{ area.description }}</span>
               <span class="mt-auto flex items-center justify-between gap-3 pt-4.5 text-base font-medium">
                 See lawyers<CanopyArrowChip class="group-hover/tile:translate-x-0.75" />

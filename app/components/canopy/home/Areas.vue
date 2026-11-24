@@ -5,10 +5,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 /**
  * Practice areas as a still grid under the hero: the second way to start, for
  * someone who would rather tap than type. Each tile shows a small photo of the
- * kind of matter, the area's name, "Popular" for the ones staff mark so, and
- * the plain-words line the catalog holds for it, and opens the directory
- * filtered to that area. All of it comes from the catalog, which staff edit in
- * the admin. While it loads, grey tiles of the same shape hold its place.
+ * kind of matter, the area's name and the plain-words line the catalog holds
+ * for it, and opens the directory filtered to that area. Areas staff mark
+ * Popular come first; no tag says so, to keep the tiles plain. All of it comes
+ * from the catalog, which staff edit in the admin. While it loads, grey tiles
+ * of the same shape hold its place.
  *
  * Phones show the first few and a link to the full list, so the page is not a
  * long scroll of tiles before anything else.
@@ -49,12 +50,7 @@ const areas = computed(() =>
         >
           <CanopyAreaPhoto :src="area.imageUrl" thumb class="size-18 flex-none" />
           <span class="min-w-0 flex-1 py-1.5">
-            <span class="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-              <b class="font-display text-lg font-normal leading-tight tracking-tight">{{ area.name }}</b>
-              <span v-if="area.isFeatured" class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest text-brand uppercase">
-                <i class="size-1.5 rounded-full bg-brand" />Popular
-              </span>
-            </span>
+            <b class="block font-display text-lg font-normal leading-tight tracking-tight">{{ area.name }}</b>
             <span v-if="area.description" class="mt-1 line-clamp-2 text-sm leading-snug text-muted-foreground">{{ area.description }}</span>
           </span>
           <CanopyGlyph name="arrow" :stroke="2.2" class="flex-none text-brand transition-transform duration-200 ease-canopy group-hover/tile:translate-x-0.75" />

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 /**
- * "How it works": three connected steps, each with a small product view and a cost tag.
+ * "How it works": three connected steps, each with a small product view. The
+ * first two carry a "Free" tag; the third has none, as the consultation and any
+ * fee are agreed between the client and the lawyer, not through us.
  *
  * The product views play once, in order, when the section scrolls into view: a
- * search is typed and lawyers appear, a question is sent, a booking is confirmed.
+ * search is typed and lawyers appear, a question is sent, a time is picked.
  * Each piece arrives at its own moment (`piece(at)`), about three seconds in all.
  * See usePlayOnce for when the sequence is skipped.
  */
@@ -22,9 +24,9 @@ const body = 'mt-1.5 text-base text-muted-foreground'
 
 <template>
   <section id="how" class="scroll-mt-24 pb-14 lg:pb-18 xl:pb-22.5">
-    <CanopySectionHead kicker="How it works" title="Three steps. You only pay at the last one.">
+    <CanopySectionHead kicker="How it works" title="Three steps to the right lawyer.">
       <div class="grid min-w-0 grow-0 basis-96 justify-items-start gap-3.5">
-        <p class="max-w-136 text-muted-foreground">Searching and asking are free. A fee comes in only when you book a consultation, and you see it before you confirm.</p>
+        <p class="max-w-136 text-muted-foreground">Searching and asking are free. When you are ready, book a consultation and agree the details with your lawyer.</p>
         <Button as-child variant="line" size="pill">
           <NuxtLink to="/find-lawyers">Start a search →</NuxtLink>
         </Button>
@@ -71,14 +73,17 @@ const body = 'mt-1.5 text-base text-muted-foreground'
       </li>
 
       <li data-rise :class="step">
-        <div class="flex items-center gap-3"><span :class="number">3</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(2150, 'draw')" /><span :class="[cost, 'border-lime bg-lime text-night']">Fee agreed first</span></div>
+        <div class="flex items-center gap-3"><span :class="number">3</span><i class="h-px flex-1 origin-left bg-border" v-bind="piece(2150, 'draw')" /></div>
         <div aria-hidden="true" :class="demo">
-          <div class="flex items-center gap-2.75">
-            <span class="grid size-7.5 flex-none place-items-center rounded-full bg-primary text-white" v-bind="piece(2430, 'pop')"><CanopyGlyph name="tick" :size="14" :stroke="3.2" /></span>
-            <div v-bind="piece(2230)"><b class="block">Thu 19 Nov, 10:30 AM</b><small class="text-sm text-muted-foreground">Video call with your lawyer</small></div>
+          <!-- three times appear, one is picked, then the request is sent -->
+          <div class="grid grid-cols-3 gap-2" v-bind="piece(2230)">
+            <span class="rounded-lg border border-border bg-card py-2 text-center">10:00</span>
+            <span class="rounded-lg border border-primary bg-primary py-2 text-center font-medium text-white" v-bind="press(2480)">10:30</span>
+            <span class="rounded-lg border border-border bg-card py-2 text-center">11:00</span>
           </div>
-          <div class="flex items-baseline justify-between gap-2 border-t border-dashed border-border pt-2.5 text-muted-foreground" v-bind="piece(2650)">
-            <span>Consultation fee</span><b class="font-display text-base font-normal tracking-tight text-foreground">Shown before you book</b>
+          <div class="flex items-center gap-2.5 pl-1.25 text-muted-foreground">
+            <span class="grid size-6 flex-none place-items-center rounded-full bg-primary text-white" v-bind="piece(2700, 'pop')"><CanopyGlyph name="tick" :size="12" :stroke="3.2" /></span>
+            <span v-bind="piece(2780)">Request sent to your lawyer</span>
           </div>
         </div>
         <h3 :class="title">Book a consultation</h3>
