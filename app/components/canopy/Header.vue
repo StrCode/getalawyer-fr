@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMediaQuery } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
 import { getSessionUserType, isOnboardingIncomplete } from '~/lib/session-user'
 import { APPLICATION_HOME } from '~/lib/setup-paths'
@@ -7,11 +8,17 @@ import { APPLICATION_HOME } from '~/lib/setup-paths'
  * Site header: a bar that condenses to a floating pill once the page scrolls. A highlight slides under
  * the hovered or current link; small screens get a full-screen menu.
  *
+ * Phones keep a plain bar across the top instead of the pill: once the page
+ * scrolls it takes a solid background and a hairline underneath, and the name
+ * stays beside the mark.
+ *
  * The menu goes to the site's pages. "How it works" has no page of its own, so
  * it goes to that part of the homepage and lights up while it is on screen.
  */
 const route = useRoute()
 const { session } = useAuth()
+/** Wider than a phone (Tailwind's sm): only there does the header become a pill. */
+const wide = useMediaQuery('(min-width: 40rem)')
 const isSignedIn = computed(() => Boolean(session.value?.user))
 const isLawyer = computed(() => getSessionUserType(session.value?.user) === 'lawyer')
 /** The bar's one button: clients look for a lawyer; lawyers go to their own side of the site. */
@@ -119,15 +126,18 @@ watch(() => route.fullPath, () => {
 </script>
 
 <template>
-  <header class="sticky top-[env(safe-area-inset-top,0px)] z-30 py-2.75">
+  <header
+    class="sticky top-0 z-30 py-2.75 pt-[calc(0.6875rem+env(safe-area-inset-top,0px))] max-sm:border-b max-sm:[transition:background-color_0.3s,border-color_0.3s]"
+    :class="stuck ? 'max-sm:border-border max-sm:bg-background' : 'max-sm:border-transparent'"
+  >
     <div class="mx-auto max-w-site safe-x">
       <div
         class="mx-auto flex items-center justify-between gap-4 rounded-full border py-1.75 pr-1.75 [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
         :class="stuck
-          ? 'max-w-232 border-border bg-card pl-4.5 shadow-pill'
+          ? 'sm:max-w-232 sm:border-border sm:bg-card sm:pl-4.5 sm:shadow-pill max-sm:border-transparent max-sm:pl-1'
           : 'max-w-site border-transparent pl-1'"
       >
-        <CanopyBrand :condensed="stuck" />
+        <CanopyBrand :condensed="stuck && wide" />
         <nav
           ref="linksEl"
           aria-label="Main"
