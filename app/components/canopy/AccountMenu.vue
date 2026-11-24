@@ -68,10 +68,10 @@ async function signOut() {
       <!-- a chip, not a bare dot: initials, first name and an arrow; initials alone on phones -->
       <DropdownMenuTrigger
         :aria-label="`Account menu for ${displayName}`"
-        class="group/acct inline-flex h-11 flex-none cursor-pointer items-center gap-2.25 rounded-full border border-border bg-card p-0.75 transition-colors duration-250 hover:border-brand data-[state=open]:border-brand sm:pr-3.25"
+        class="group/acct inline-flex h-11 max-sm:h-10 flex-none cursor-pointer items-center gap-2.25 rounded-full border border-border bg-card p-0.75 transition-colors duration-250 hover:border-brand data-[state=open]:border-brand sm:pr-3.25"
       >
         <span class="relative flex-none">
-          <Avatar class="size-9">
+          <Avatar class="size-9 max-sm:size-8">
             <AvatarImage :src="avatarUrl" alt="" />
             <AvatarFallback class="bg-primary text-sm font-medium text-white">{{ initials }}</AvatarFallback>
           </Avatar>

@@ -8,9 +8,10 @@ import { APPLICATION_HOME } from '~/lib/setup-paths'
  * Site header: a bar that condenses to a floating pill once the page scrolls. A highlight slides under
  * the hovered or current link; small screens get a full-screen menu.
  *
- * Phones keep a plain bar across the top instead of the pill: once the page
- * scrolls it takes a solid background and a hairline underneath, and the name
- * stays beside the mark.
+ * Phones keep a plain, compact bar (56px) across the top instead of the pill.
+ * It slides away while the visitor scrolls down to read and comes straight
+ * back when they scroll up, so the menu is never far; once the page has
+ * scrolled it has a solid background and a hairline underneath.
  *
  * The menu goes to the site's pages. "How it works" has no page of its own, so
  * it goes to that part of the homepage and lights up while it is on screen.
@@ -51,6 +52,8 @@ function pageKey() {
 }
 
 const stuck = ref(false)
+/** Phones: the bar is out of view while scrolling down. */
+const hidden = ref(false)
 const menuOpen = ref(false)
 const current = ref<string | null>(null)
 const linksEl = ref<HTMLElement | null>(null)
@@ -68,11 +71,20 @@ function moveTo(key: string | null) {
 }
 
 let ticking = false
+let lastY = 0
 function onScroll() {
   if (ticking) return
   ticking = true
   requestAnimationFrame(() => {
-    stuck.value = window.scrollY > 40
+    const y = window.scrollY
+    stuck.value = y > 40
+    // Phones: away while reading down, back on the way up. A few pixels either
+    // way are ignored, so a shaky thumb does not make it flicker.
+    const delta = y - lastY
+    if (wide.value || menuOpen.value || y < 80) hidden.value = false
+    else if (delta > 6) hidden.value = true
+    else if (delta < -6) hidden.value = false
+    if (Math.abs(delta) > 6 || y < 80) lastY = y
     // Back in the hero: no section is current, so drop the highlight.
     if (route.path === '/' && window.scrollY < 300 && current.value) {
       current.value = null
@@ -106,6 +118,7 @@ function watchSections() {
 
 function setMenu(open: boolean) {
   menuOpen.value = open
+  if (open) hidden.value = false
   document.documentElement.classList.toggle('overflow-hidden', open)
 }
 
@@ -127,12 +140,13 @@ watch(() => route.fullPath, () => {
 
 <template>
   <header
-    class="sticky top-0 z-30 py-2.75 pt-[calc(0.6875rem+env(safe-area-inset-top,0px))] max-sm:border-b max-sm:[transition:background-color_0.3s,border-color_0.3s]"
-    :class="stuck ? 'max-sm:border-border max-sm:bg-background' : 'max-sm:border-transparent'"
+    class="sticky top-0 z-30 py-2.75 pt-[calc(0.6875rem+env(safe-area-inset-top,0px))] max-sm:border-b max-sm:py-2 max-sm:pt-[calc(0.5rem+env(safe-area-inset-top,0px))] max-sm:[transition:translate_0.25s_var(--ease-canopy),background-color_0.3s,border-color_0.3s] max-sm:motion-reduce:[transition:none]"
+    :class="[stuck ? 'max-sm:border-border max-sm:bg-background' : 'max-sm:border-transparent', hidden && 'max-sm:-translate-y-full']"
+    @focusin="hidden = false"
   >
     <div class="mx-auto max-w-site safe-x">
       <div
-        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-1.75 pr-1.75 [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
+        class="mx-auto flex items-center justify-between gap-4 rounded-full border py-1.75 pr-1.75 max-sm:py-0 [transition:max-width_0.3s_var(--ease-canopy),padding_0.3s_var(--ease-canopy),background-color_0.3s,border-color_0.3s,box-shadow_0.3s]"
         :class="stuck
           ? 'sm:max-w-232 sm:border-border sm:bg-card sm:pl-4.5 sm:shadow-pill max-sm:border-transparent max-sm:pl-1'
           : 'max-w-site border-transparent pl-1'"
@@ -175,12 +189,12 @@ watch(() => route.fullPath, () => {
           </NuxtLink>
           <!-- Phones, signed in: the account button and the menu leave no room, so this
                button goes; the same link is in the menu. -->
-          <Button as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:px-4" :class="isSignedIn && 'max-sm:hidden'">
+          <Button as-child variant="canopy" size="pill-sm" class="group/btn gap-3 pr-1.5 max-sm:h-10 max-sm:px-4" :class="isSignedIn && 'max-sm:hidden'">
             <NuxtLink :to="primary.to">{{ primary.label }}<CanopyArrowChip class="max-sm:hidden" /></NuxtLink>
           </Button>
           <button
             type="button"
-            class="hidden size-11 cursor-pointer place-items-center rounded-full border border-border bg-card text-foreground max-nav:grid"
+            class="hidden size-11 cursor-pointer place-items-center rounded-full border border-border bg-card text-foreground max-nav:grid max-sm:size-10"
             :aria-expanded="menuOpen"
             aria-controls="site-menu"
             :aria-label="menuOpen ? 'Close menu' : 'Open menu'"
