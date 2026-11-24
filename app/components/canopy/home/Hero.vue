@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 /**
- * Homepage hero, on the dark green panel: the headline, a photo, and the
+ * Homepage hero, on the near-black green panel: the headline, a photo, and the
  * search, which is what the page is for. A short line under the search says
  * what getalawyer is and is not.
  *
@@ -28,7 +28,7 @@ function search() {
 <template>
   <section
     data-surface="forest"
-    class="relative isolate grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-x-8 md:gap-x-9.5 lg:gap-x-12.75 xl:gap-x-16 gap-y-8 lg:gap-y-9 xl:gap-y-10 tab:content-center overflow-hidden rounded-panel px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-7 lg:py-8.75 xl:py-11 tab:min-h-[clamp(34rem,74svh,42rem)] bg-forest text-white max-tab:grid-cols-1 max-sm:rounded-2xl"
+    class="relative isolate grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-x-8 md:gap-x-9.5 lg:gap-x-12.75 xl:gap-x-16 gap-y-8 lg:gap-y-9 xl:gap-y-10 tab:content-center overflow-hidden rounded-panel px-5 md:px-8.75 lg:px-11.5 xl:px-14.5 py-6 lg:py-7.5 xl:py-9 tab:min-h-[clamp(31rem,68svh,38.5rem)] bg-forest-night text-white max-tab:grid-cols-1 max-sm:rounded-2xl"
   >
     <div class="relative z-2 col-start-1 row-start-1 min-w-0">
       <!-- three lines by design: each span is one line. On phones the size follows
@@ -49,7 +49,7 @@ function search() {
          Narrower: the same photo, blurred, behind the whole panel. One image either
          way, so phones download nothing extra (and a smaller copy, as it is blurred). -->
     <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 tab:inset-y-0 tab:right-0 tab:left-auto tab:w-1/2">
-      <div class="absolute inset-0 overflow-hidden bg-forest tab:animate-photo-in">
+      <div class="absolute inset-0 overflow-hidden bg-forest-night tab:animate-photo-in">
         <NuxtImg
           src="/images/canopy/hero-desk.jpg"
           width="1024"
@@ -60,7 +60,7 @@ function search() {
           class="size-full scale-110 object-cover object-[65%_40%] blur-[6px] tab:scale-100 tab:object-[70%_35%] tab:opacity-85 tab:blur-none"
         />
         <span class="absolute inset-0 hidden hero-photo-fade tab:block" />
-        <span class="absolute inset-0 bg-[linear-gradient(180deg,rgb(11_51_39/0.5),rgb(11_51_39/0.82))] tab:hidden" />
+        <span class="absolute inset-0 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--forest-night)_50%,transparent),color-mix(in_srgb,var(--forest-night)_82%,transparent))] tab:hidden" />
       </div>
     </div>
 
