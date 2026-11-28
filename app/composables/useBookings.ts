@@ -190,8 +190,10 @@ export const useBookings = () => {
           queryClient.setQueryData(queryKeys.bookings.lawyer, context.previousBookings)
         }
       },
-      onSettled: () => {
+      onSettled: (_data, _error, { id }) => {
         queryClient.invalidateQueries({ queryKey: queryKeys.bookings.lawyer })
+        // The open booking too, so the page shows what was saved.
+        queryClient.invalidateQueries({ queryKey: queryKeys.bookings.detail(id) })
       },
     })
   }

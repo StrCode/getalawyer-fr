@@ -50,6 +50,11 @@ export const CLIENT_EMPTY: Record<ClientBookingsTab, string> = {
 export interface ClientBookingLike extends AppointmentLike {
   lawyer?: { name?: string | null } | null
   cancellationReason?: string | null
+  /**
+   * The last moment the client can change or cancel an accepted booking here
+   * (ISO, from the server's notice period). None for a request not yet accepted.
+   */
+  clientChangeDeadline?: string | null
 }
 
 export const CLIENT_STAGE_PILL: Record<AppointmentStage, { label: string, class: string }> = {
@@ -103,13 +108,24 @@ export function clientStageLine(booking: ClientBookingLike, now: Date): string {
   }
 }
 
-/** What the client can still do: change the time or cancel, until it starts. */
-export function clientActions(stage: AppointmentStage): { reschedule: boolean, cancel: boolean, bookAgain: boolean } {
-  const open = stage === 'request' || stage === 'coming'
+/**
+ * What the client can still do. A request not yet accepted can be moved or
+ * withdrawn until it starts. An accepted booking can be changed here only
+ * until its deadline (the notice period before it starts); after that
+ * `tooLate` is true and the client is pointed to their lawyer.
+ */
+export function clientActions(
+  stage: AppointmentStage,
+  deadline: string | null | undefined = null,
+  now: Date = new Date(),
+): { reschedule: boolean, cancel: boolean, bookAgain: boolean, tooLate: boolean } {
+  const pastDeadline = stage === 'coming' && !!deadline && now.getTime() >= new Date(deadline).getTime()
+  const open = (stage === 'request' || stage === 'coming') && !pastDeadline
   return {
     reschedule: open,
     cancel: open,
     bookAgain: stage === 'outcome' || stage === 'done' || stage === 'cancelled' || stage === 'no_show',
+    tooLate: pastDeadline,
   }
 }
 

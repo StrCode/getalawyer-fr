@@ -11,6 +11,8 @@ export interface Booking {
   lawyerId: string
   consultationTypeId: string
   caseId?: string | null
+  /** Clients' views only: the last moment the client can change an accepted booking themselves (ISO). */
+  clientChangeDeadline?: string | null
   scheduledDate: string
   scheduledStartTime: string
   scheduledEndTime?: string
@@ -107,9 +109,11 @@ export interface RescheduleBookingInput {
   newStartTime: string
 }
 
+/** What a lawyer adds to a booking: private notes and how to join. An empty string clears a field. */
 export interface UpdateLawyerBookingInput {
-  status?: BookingStatus
   lawyerNotes?: string
+  meetingUrl?: string
+  meetingLocation?: string
 }
 
 export interface CreateConsultationTypeInput {
