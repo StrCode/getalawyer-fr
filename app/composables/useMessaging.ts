@@ -68,6 +68,15 @@ export const useMessaging = () => {
         createdAt: message.createdAt,
       }
 
+      // A chat we have not listed yet (someone's first question): fetch the list.
+      const listed = queryClient
+        .getQueryData<ConversationInfo[]>(queryKeys.messaging.conversations)
+        ?.some((c) => c.id === message.conversationId)
+      if (!listed) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.messaging.conversations })
+        return
+      }
+
       if (isActiveConversation && fromOther) {
         patchConversationInList(queryClient, message.conversationId, {
           lastMessageAt: message.createdAt,
@@ -89,6 +98,20 @@ export const useMessaging = () => {
           lastMessage: preview,
         })
       }
+    })
+
+    // A message changed (a fee request answered or withdrawn): swap it in.
+    socket.on('message:updated', (message: Message) => {
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.messaging.conversation(message.conversationId) },
+        (old: any) => {
+          if (!old?.messages) return old
+          return {
+            ...old,
+            messages: (old.messages as Message[]).map((m) => (m.id === message.id ? { ...m, ...message, sender: m.sender } : m)),
+          }
+        },
+      )
     })
 
     socket.on('conversation:joined', ({ conversationId }: { conversationId: string }) => {

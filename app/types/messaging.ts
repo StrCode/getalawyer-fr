@@ -136,6 +136,8 @@ export interface StartConversationResponse {
 // Socket Event Types
 export interface ServerToClientEvents {
   'message:new': (message: Message) => void
+  /** A message changed after it was sent (a fee request answered or withdrawn). */
+  'message:updated': (message: Message) => void
   'message:status': (data: { conversationId: string; messageId: string; status: 'sent' | 'delivered' | 'read'; readBy: string }) => void
   'notification:new': (notification: Notification) => void
   'typing:start': (data: { userId: string; userName: string }) => void
