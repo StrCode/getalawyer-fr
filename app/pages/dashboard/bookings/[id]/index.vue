@@ -52,7 +52,7 @@ const loading = computed(() => !now.value || isPending.value)
 
 const stage = computed(() => booking.value && now.value ? appointmentStage(booking.value, now.value) : null)
 const pill = computed(() => stage.value ? CLIENT_STAGE_PILL[stage.value] : null)
-const can = computed(() => stage.value ? clientActions(stage.value) : null)
+const can = computed(() => stage.value ? clientActions(stage.value, booking.value?.clientChangeDeadline, now.value ?? new Date()) : null)
 const held = computed(() => booking.value ? clientHowHeld(booking.value) : null)
 const HELD_ICON = { link: 'video', phone: 'phone', address: 'office' } as const
 const HELD_LABEL = { link: 'Meeting link', phone: 'The number your lawyer will call', address: 'Where' } as const
@@ -167,6 +167,12 @@ const panel = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6
               <NuxtLink :to="`/lawyers/${booking.lawyerId}`">View profile</NuxtLink>
             </Button>
           </div>
+          <!-- too close to the time to change it here: the lawyer can still move or cancel it -->
+          <p v-if="can.tooLate" class="mt-3.5 max-w-136 text-sm text-muted-foreground">
+            It is too close to the time to change or cancel this booking here.
+            <template v-if="booking.conversationId">Message {{ booking.lawyer?.name?.split(' ')[0] ?? 'your lawyer' }} and they can move or cancel it.</template>
+            <template v-else>Contact your lawyer and they can move or cancel it.</template>
+          </p>
         </div>
 
         <!-- how it is held, and the one thing needed for it -->

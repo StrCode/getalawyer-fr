@@ -154,6 +154,11 @@ function saveNotes() {
   )
 }
 
+// How to join (the link or the address) can be added or changed until it is over.
+const joinEditable = computed(() =>
+  !!held.value && held.value.kind !== 'phone' && (stage.value === 'request' || stage.value === 'coming' || stage.value === 'underway'),
+)
+
 // Class lists shared across the page (full strings, so Tailwind sees them).
 const sectionTitle = 'font-display text-base font-normal tracking-tight'
 const panel = 'rounded-card border border-border bg-card p-4.75 lg:p-6.25 xl:p-6.5'
@@ -240,6 +245,12 @@ const quiet = 'shadow-none hover:translate-y-0'
             <p v-else class="mt-0.5 font-medium">{{ held.detail }}</p>
           </template>
           <p v-else class="mt-2">{{ held.missing }}</p>
+          <WorkspaceJoinDetailsEditor
+            v-if="joinEditable && held.kind !== 'phone'"
+            :booking-id="booking.id"
+            :kind="held.kind"
+            :current="held.detail"
+          />
           <p v-if="booking.timezone" class="mt-3.25 text-sm opacity-80">Times are in {{ booking.timezone.replace('_', ' ') }}.</p>
         </div>
       </section>

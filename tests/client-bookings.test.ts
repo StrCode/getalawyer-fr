@@ -86,12 +86,22 @@ describe('clientStageLine', () => {
 
 describe('clientActions', () => {
   it('lets the client change the time or cancel until it starts, and book again afterwards', () => {
-    expect(clientActions('request')).toEqual({ reschedule: true, cancel: true, bookAgain: false })
-    expect(clientActions('coming')).toEqual({ reschedule: true, cancel: true, bookAgain: false })
-    expect(clientActions('underway')).toEqual({ reschedule: false, cancel: false, bookAgain: false })
+    expect(clientActions('request')).toEqual({ reschedule: true, cancel: true, bookAgain: false, tooLate: false })
+    expect(clientActions('coming')).toEqual({ reschedule: true, cancel: true, bookAgain: false, tooLate: false })
+    expect(clientActions('underway')).toEqual({ reschedule: false, cancel: false, bookAgain: false, tooLate: false })
     for (const stage of ['outcome', 'done', 'cancelled', 'no_show'] as const) {
-      expect(clientActions(stage)).toEqual({ reschedule: false, cancel: false, bookAgain: true })
+      expect(clientActions(stage)).toEqual({ reschedule: false, cancel: false, bookAgain: true, tooLate: false })
     }
+  })
+
+  it('stops changes to an accepted booking once its deadline has passed, and says so', () => {
+    const deadline = new Date(2026, 10, 20, 8, 0).toISOString()
+    expect(clientActions('coming', deadline, now)).toEqual({ reschedule: false, cancel: false, bookAgain: false, tooLate: true })
+    expect(clientActions('coming', new Date(2026, 10, 20, 10, 0).toISOString(), now).cancel).toBe(true)
+  })
+
+  it('a request not yet accepted has no deadline: it can be withdrawn until it starts', () => {
+    expect(clientActions('request', null, now)).toMatchObject({ reschedule: true, cancel: true, tooLate: false })
   })
 })
 

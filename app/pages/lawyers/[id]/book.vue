@@ -154,7 +154,8 @@ function handleConfirm() {
       meetingType: meetingType.value,
       meetingPhone: meetingType.value === 'phone' ? phone.value.trim() : undefined,
       clientNotes: clientNotes.value.trim() || undefined,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      // Times are offered in Lagos time, so the booking is in Lagos time wherever the client is.
+      timezone: 'Africa/Lagos',
     },
     {
       onSuccess: (booking) => {
@@ -172,10 +173,11 @@ function handleConfirm() {
           })
           return
         }
-        // 409: someone else took the time between picking it and confirming.
+        // 409: the time is no longer free (taken meanwhile, too soon, outside the lawyer's hours).
+        // The server says which in plain words.
         if (err?.status === 409 || err?.code === 'SLOT_NOT_AVAILABLE' || message.includes('no longer available')) {
-          toast.error('Slot unavailable', {
-            description: 'That time was just taken. Pick another slot.',
+          toast.error('That time cannot be booked', {
+            description: err?.code === 'SLOT_NOT_AVAILABLE' && err?.message ? err.message : 'That time was just taken. Pick another time.',
           })
           selectedSlot.value = null
           step.value = 2
